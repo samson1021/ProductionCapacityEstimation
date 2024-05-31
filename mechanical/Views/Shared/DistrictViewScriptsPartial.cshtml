@@ -1,0 +1,95 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+
+@* <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/usermanagment/getusers',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.DistrictName)
+                $('#example1').DataTable({
+                    data: data,
+                    columns: [
+                        // { data: 'Id', 'title': 'ID' },
+                        { data: 'Name', 'title': 'Name' },
+                        { data: 'Email', 'title': 'Email' },
+                        { data: 'DistrictName', 'title': 'District' },
+                        { data: 'Branch', 'title': 'Branch' },
+                        { data: 'RoleName', 'title': 'Role' },
+                        { data: 'Status', 'title': 'Status' },
+                        // { data: 'Browser' },
+                        // { data: 'Platforms' },
+                        // { data: 'EngineVersion' },
+                        // { data: 'CssGrade' }
+                    ],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            }
+        });
+    });
+
+</script> *@
+
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/UserManagment/GetDistrict',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                $('#example1').DataTable({
+                    data: data,
+                    columns: [
+                        { data: 'Name', 'title': 'Name' },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                var editButton = '<a href="/DistrictManagment/edit/' + data.DistrictId + '" class="edit-btn" data-id="' + data.DistrictId + '">Edit</a>';
+                                var deleteButton = '<a href="/DistrictManagment/delete/' + data.DistrictId + '" class="delete-btn" data-id="' + data.DistrictId + '">Delete</a>';
+                                return editButton + ' | ' + deleteButton;
+                            }
+                        }
+                    ],
+                    // columnDefs: [
+                    //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
+                    // ],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            }
+        });
+
+        // Edit button click event
+        $('#example1').on('click', '.edit-btn', function () {
+            var userId = $(this).data('id');
+            // Perform edit operation for the selected user
+            // ...
+        });
+
+        // Delete button click event
+        $('#example1').on('click', '.delete-btn', function () {
+            var userId = $(this).data('id');
+            // Perform delete operation for the selected user
+            // ...
+        });
+    });
+</script>

@@ -1,0 +1,193 @@
+﻿<!-- Bootstrap CDN -->
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- jQuery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS CDN -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+@* @{
+    Layout = "_CaseMainSideBar";
+} *@
+
+@* <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ *@<!-- jQuery CDN -->
+@* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ *@<!-- Bootstrap JS CDN -->
+@* <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ *@
+<link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/bootstrap/js/bootstrap.min.js"></script>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple">
+            <div class="card-header">
+                <h3 class="card-title">Please Search Employee By Id and Add Signature of Employee </h3>
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="employeeId">Employee ID:</label>
+                            <input type="text" class="form-control" id="employeeId" placeholder="Enter Employee ID">
+                        </div>
+                        <button type="button" class="btn bg-purple" id="searchButton" onclick="showName()">Search</button>
+                    </div>
+                </div>
+                <div id="resultContainer" style="display:none;">
+                    <label id="resultLabel"> Getnet Adane</label>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn bg-purple" data-toggle="modal" data-target="#signatureModal">Sign Here</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn bg-purple" data-toggle="modal" data-target="#signatureUploadModal">Upload Signature</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Signature Modal -->
+<div class="modal fade" id="signatureModal" tabindex="-1" role="dialog" aria-labelledby="signatureModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signatureModalLabel">Sign Here</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 id="userName"></h4>
+                <canvas id="signatureCanvas" width="400" height="200"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-purple mr-auto" id="clearButton">Clear</button>
+                <button type="button" class="btn bg-purple" data-dismiss="modal">Close</button>
+                <button type="button" class="btn bg-purple" id="saveButton">Save Signature</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Signature Upload Modal -->
+<div class="modal fade" id="signatureUploadModal" tabindex="-1" role="dialog" aria-labelledby="signatureUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signatureUploadModalLabel">Upload Signature</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="signatureFileInput" accept="image/*">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-purple" data-dismiss="modal">Close</button>
+                <button type="button" class="btn bg-purple" id="saveButton">Save Signature</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+<script>
+    let signatureCanvas;
+    let signatureContext;
+    let isDrawing = false;
+    let previousX = 0;
+    let previousY = 0;
+
+    function startDrawing(e) {
+        isDrawing = true;
+        const rect = signatureCanvas.getBoundingClientRect();
+        [previousX, previousY] = [e.clientX - rect.left, e.clientY - rect.top];
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        const rect = signatureCanvas.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+        signatureContext.beginPath();
+        signatureContext.moveTo(previousX, previousY);
+        signatureContext.lineTo(currentX, currentY);
+        signatureContext.strokeStyle = '#000';
+        signatureContext.lineWidth = 2;
+        signatureContext.stroke();
+        [previousX, previousY] = [currentX, currentY];
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+    }
+    function showName() {
+        // Show the result container
+        $('#resultContainer').show();
+    }
+    $('#signatureModal').on('shown.bs.modal', function () {
+        signatureCanvas = document.getElementById('signatureCanvas');
+        signatureContext = signatureCanvas.getContext('2d');
+        signatureCanvas.addEventListener('mousedown', startDrawing);
+        signatureCanvas.addEventListener('mousemove', draw);
+        signatureCanvas.addEventListener('mouseup', stopDrawing);
+        signatureCanvas.addEventListener('mouseout', stopDrawing);
+    });
+
+    $('#signatureModal').on('hidden.bs.modal', function () {
+        signatureCanvas.removeEventListener('mousedown', startDrawing);
+        signatureCanvas.removeEventListener('mousemove', draw);
+        signatureCanvas.removeEventListener('mouseup', stopDrawing);
+        signatureCanvas.removeEventListener('mouseout', stopDrawing);
+    });
+
+    const saveButton = document.getElementById('saveButton');
+    saveButton.addEventListener('click', saveSignature);
+
+    const clearButton = document.getElementById('clearButton');
+    clearButton.addEventListener('click', clearSignature);
+
+    function saveSignature() {
+        const signatureData = signatureCanvas.toDataURL();
+        // Do whatever you need with the signature data
+  
+        var UserEmployeeId = document.getElementById("#employeeId");
+        console.log(signatureData);
+        console.log("50168");
+        // Create an object to hold the data
+        var data = {
+            File: signatureData,
+            Emp_Id: "050168"
+        };
+
+        // Send the data to the server
+        $.ajax({
+            url: '/Signature/Create',
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                // Handle the success response from the server
+            },
+            error: function (xhr, status, error) {
+                // Handle the error response from the server
+            }
+        });
+
+
+
+        $('#signatureModal').modal('hide');
+    }
+
+    function clearSignature() {
+        signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    }
+</script>

@@ -1,0 +1,24 @@
+﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+}
+
+<div class="card">
+    <input type="hidden" asp-for="CaseId" value="@myCase.Id" />
+    <div class="card-body">
+        <table id="PendCollaterals" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Property Owner</th>
+                    <th>Role</th>
+                    <th>Equipment Catagory</th>
+                    <th>Equipment Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+        </table>
+      
+    </div>
+</div>
+

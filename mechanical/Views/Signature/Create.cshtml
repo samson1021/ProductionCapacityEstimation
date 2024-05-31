@@ -1,0 +1,301 @@
+﻿@{
+    var id = ViewData["UserId"] as string;
+}
+
+<link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple">
+            <div class="card-header">
+                <h3 class="card-title">Please Enter Your Employee Id and Add Your Signature </h3>
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="employeeId">Employee ID:</label>
+                            <input type="text" class="form-control" value="@id" id="employeeId" placeholder="@id" readonly>
+                        </div>
+                        <button type="button" class="btn bg-purple" id="searchButton" onclick="showName()">Search</button>
+                    </div>
+                </div>
+                <div id="resultContainer" style="display:none;">
+                    Your ID:- <label id="YourName"> </label><br />
+                    Your Supervisor Name:- <label id="supervisorName"></label>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn bg-purple" data-toggle="modal" data-target="#signatureModal">Sign Here</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn bg-purple" data-toggle="modal" data-target="#signatureUploadModal">Upload Signature</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Signature Modal -->
+<div class="modal fade" id="signatureModal" tabindex="-1" role="dialog" aria-labelledby="signatureModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signatureModalLabel">Sign Here</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 id="userName"></h4>
+                <canvas id="signatureCanvas" width="400" height="200"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-purple mr-auto" id="clearButton">Clear</button>
+                <button type="button" class="btn bg-purple" data-dismiss="modal">Close</button>
+                <button type="button" class="btn bg-purple" id="saveButton">Save Signature</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Signature Upload Modal -->
+<div class="modal fade" id="signatureUploadModal" tabindex="-1" role="dialog" aria-labelledby="signatureUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signatureUploadModalLabel">Upload Signature</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="signatureFileInput" accept="image/*">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-purple" data-dismiss="modal">Close</button>
+                <button type="button" class="btn bg-purple" id="UploadButton">Upload Signature</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/bootstrap/js/bootstrap.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+
+
+<script>
+    let signatureCanvas;
+    let signatureContext;
+    let isDrawing = false;
+    let previousX = 0;
+    let previousY = 0;
+
+    function startDrawing(e) {
+        isDrawing = true;
+        const rect = signatureCanvas.getBoundingClientRect();
+        [previousX, previousY] = [e.clientX - rect.left, e.clientY - rect.top];
+    }
+    function draw(e) {
+        if (!isDrawing) return;
+        const rect = signatureCanvas.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+        signatureContext.beginPath();
+        signatureContext.moveTo(previousX, previousY);
+        signatureContext.lineTo(currentX, currentY);
+        signatureContext.strokeStyle = '#000';
+        signatureContext.lineWidth = 2;
+        signatureContext.stroke();
+        [previousX, previousY] = [currentX, currentY];
+    }
+    function stopDrawing() {
+        isDrawing = false;
+    }
+    function showName() {
+        var input = $('#employeeId').val();
+
+        // Append the file to the formData object
+        if (input==="") {
+            alert("please enter your Employee ID!");
+        } else {
+            var formData = new FormData();
+            formData.append('Emp_Id', input);
+            console.log(input);
+            $.ajax({
+                url: '/Signature/getEmployeeName',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#resultContainer').show();
+                    var name = response.emp_ID;
+                    var supervisorName = response.supervisor_name;
+                    // Set the text of the labels
+                    $('#YourName').text(name);
+                    $('#supervisorName').text(supervisorName);
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response from the server
+                }
+            });
+        }
+        
+    }
+    $('#signatureModal').on('shown.bs.modal', function () {
+
+        var input = document.getElementById("employeeId");
+        if (input.value.trim().length === 0) {
+            alert("Please input the ID.");
+        } else {
+            // Perform further actions if the input is not empty
+        signatureCanvas = document.getElementById('signatureCanvas');
+        signatureContext = signatureCanvas.getContext('2d');
+        signatureCanvas.addEventListener('mousedown', startDrawing);
+        signatureCanvas.addEventListener('mousemove', draw);
+        signatureCanvas.addEventListener('mouseup', stopDrawing);
+        signatureCanvas.addEventListener('mouseout', stopDrawing);
+        }
+
+    });
+
+    $('#signatureModal').on('hidden.bs.modal', function () {
+        signatureCanvas.removeEventListener('mousedown', startDrawing);
+        signatureCanvas.removeEventListener('mousemove', draw);
+        signatureCanvas.removeEventListener('mouseup', stopDrawing);
+        signatureCanvas.removeEventListener('mouseout', stopDrawing);
+    });
+
+    const saveButton = document.getElementById('saveButton');
+    saveButton.addEventListener('click', saveSignature);
+
+    const clearButton = document.getElementById('clearButton');
+    clearButton.addEventListener('click', clearSignature);
+
+    function saveSignature() {
+        $('#signatureModal').modal('hide');
+
+        var formData = new FormData();
+
+        var dataURL = signatureCanvas.toDataURL('image/png');
+
+        // Convert the data URL to a file
+        fetch(dataURL)
+            .then(res => res.blob())
+            .then(blob => {
+                // Convert the blob to a file
+                const file = new File([blob], "Signature-image.png", { type: "image/png" });
+                var UserId = $('#employeeId').val();
+
+                // Append the file to the formData object
+                formData.append('File', file);
+                formData.append('Emp_Id', UserId);
+                // var data = {Emp_Id:"050168"};
+                // var Emp_Id = "050168";
+                console.log(file);
+                $.ajax({
+                    url: '/Signature/Create',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.response === false) {
+                            // Handle the null response
+                            // Show appropriate message in your view page
+                            $('#signatureModal').modal('hide');
+                            toastr.warning('You cannot enter double signature', 'Warning');
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            // Handle the success response from the server
+                            $('#signatureModal').modal('hide');
+                            toastr.success('Successfully Submitted Your Signature', 'Success');
+                            // Reload the page after a successful response
+                            // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle the error response from the server
+                        $('#signatureModal').modal('hide');
+                        toastr.error(' You cannot enter double signature', 'Error');
+                        // Reload the page after an error response
+                        // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    }
+                });
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the conversion or fetch
+                console.error('Error converting to file:', error);
+            });
+
+        $('#signatureModal').modal('hide');
+    }
+
+    function clearSignature() {
+        signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    }
+    //uploaded signature from 
+    $(document).ready(function () {
+        $("#UploadButton").click(function () {
+            var fileInput = document.getElementById("signatureFileInput");
+            var file = fileInput.files[0];
+            var UserId = $('#employeeId').val();
+
+
+            var formData = new FormData();
+            formData.append("file", file);
+            formData.append("Emp_Id", UserId);
+            $.ajax({
+                url: '/Signature/Create',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.response === false) {
+                        // Handle the null response
+                        // Show appropriate message in your view page
+                        $('#signatureModal').modal('hide');
+                        toastr.warning('You cannot enter double signature', 'Warning');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        // Handle the success response from the server
+                        $('#signatureModal').modal('hide');
+                        toastr.success('Successfully Submitted Your Signature', 'Success');
+                        // Reload the page after a successful response
+                        // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response from the server
+                    $('#signatureModal').modal('hide');
+                    toastr.error(' You cannot enter double signature', 'Error');
+                    // Reload the page after an error response
+                    // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                }
+            });
+        });
+    });
+
+</script>

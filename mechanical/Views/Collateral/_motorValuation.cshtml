@@ -1,0 +1,284 @@
+﻿@model mechanical.Models.Dto.CollateralDto.ReturnCollateralDto;
+@{
+    var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
+    var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
+    var currentStage = Model.CurrentStage;
+}
+<script>
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        var value = parseFloat(element.textContent);
+        var formattedValue = formatNumber(value);
+        element.textContent = formattedValue;
+    }
+</script>
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <div class="card">
+            <div class="card-body">
+                @{
+                    if (movaluation != null)
+                    {
+
+                        <div class="row mb-2">
+                            <div class="col-sm-12 col-xl-12">
+                                <h4 class="m-0 text-center">Collateral valuation result</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="container col-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h4 class="text-center">General Information</h4>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Motor Vehicle Make:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.MotorVehicleMake</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Year Of Manufacture:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.YearOfManufacture</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Country Of Origin:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.CountryOfOrigin</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Model No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.ModelNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Engine No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.EngineNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>TD No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.TDNo</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Plate No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.PlateNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Chassis No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.ChassisNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Serial No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.SerialNo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="container col-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h4 class="text-center">Assessment Information</h4>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Current Equipment Condition:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.CurrentEqpmntCondition</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Allocated Points Range:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.AllocatedPointsRange </div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Market Share Factor:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.MarketShareFactor</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Depreciation Rate:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.DepreciationRate</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Equipment Condition Factor:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.EqpmntConditionFactor</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Replacement Cost:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div id="ReplacementCost">@movaluation.ReplacementCost</div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:1.25rem;">
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label class="text-purple">Net Estimation Value:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="text-purple" id="NetEstimationValue">@movaluation.NetEstimationValue</div>
+                                            </div>
+                                        </div>
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label>Physical and Installation Assessment:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div>@movaluation.PhysicalAndInstallationAssesment </div>
+                                            </div>
+                                        </div>
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label>Overall Survey Assessment:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div>@movaluation.OverallSurveyAssesment</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:1.25rem;">
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label>Remark:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div>@movaluation.Remark </div>
+                                            </div>
+                                        </div>
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label>Invoice Value:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div id="InvoiceValue">@movaluation.InvoiceValue </div>
+                                            </div>
+                                        </div>
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label>Currency:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div></div>@movaluation.Currency
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-12">
+
+                            @{
+                                if (movaluation.EvaluatorUserID == CurrentUserId && currentStage == "Maker Officer")
+                                {
+                                    @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post))
+                                    {
+                                        <div class="row col-12">
+                                            <div style="margin-top:1.25rem;" class="col-2">
+                                                <input name="CollateralId" value=@movaluation.CollateralId type="hidden" id="CollateralId" />
+
+                                                <div class="row">
+                                                    <button type="submit" class="col-xl-11  btn btn-sm  bg-purple">send for checker  <i class="fas fa-paper-plane"></i></button>
+
+                                                </div>
+                                            </div>
+                                            <div style="margin-top:1.25rem;" class="col-2">
+                                                <div class="row">
+                                                    <a href="@Url.Action("EditMoterVehicle", "MotorVehicle")?id=@movaluation.CollateralId" class="col-xl-12  btn btn-sm  bg-purple">Edit  <i class="fas fa-pen"></i></a>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <h6 class="text-center">not evaluated yet </h6>
+                        </div>
+                    }
+
+                }
+               
+            </div>
+        </div>
+
+    </section>
+</section>
+<script>
+    formatAndDisplayValue('ReplacementCost');
+    formatAndDisplayValue('InvoiceValue');
+    formatAndDisplayValue('NetEstimationValue');
+</script>
