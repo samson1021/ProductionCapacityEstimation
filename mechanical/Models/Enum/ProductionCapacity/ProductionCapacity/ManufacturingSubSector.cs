@@ -23,14 +23,37 @@ namespace mechanical.Models.Enum.ProductionCapacity
             Dronemanufacturing,
             [Display(Name = "Aerospace composite materials manufacturing")]
             Aerospacecompositematerialsmanufacturing,
-            [Display(Name = " Others, please specify")]
-            Otherspleasespecify
+            [Display(Name = " Other")]
+            Other
         }
         enum Agriculturalmachinery
         {
-            A,
-            B,
-            c
+            [Display(Name = "Tractor manufacturing")]
+            TractorManufacturing,
+
+            [Display(Name = "Combine harvester manufacturing")]
+            CombineHarvesterManufacturing,
+
+            [Display(Name = "Irrigation equipment manufacturing")]
+            IrrigationEquipmentManufacturing,
+
+            [Display(Name = "Seed processing equipment manufacturing")]
+            SeedProcessingEquipmentManufacturing,
+
+            [Display(Name = "Livestock equipment manufacturing")]
+            LivestockEquipmentManufacturing,
+
+            [Display(Name = "Farm implement manufacturing")]
+            FarmImplementManufacturing,
+
+            [Display(Name = "Agricultural sprayer manufacturing")]
+            AgriculturalSprayerManufacturing,
+
+            [Display(Name = "Precision agriculture technology manufacturing")]
+            PrecisionAgricultureTechnologyManufacturing,
+
+            [Display(Name = "Other")]
+            Other
         }
 
     }

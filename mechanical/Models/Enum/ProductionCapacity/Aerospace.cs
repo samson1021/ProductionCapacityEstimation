@@ -1,26 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
 
-namespace mechanical.Models.Enum.ProductionCapacity
+using System.ComponentModel.DataAnnotations;
+
+namespace mechanical.Models.Enums.ProductionCapacity
 {
     public enum Aerospace
     {
         [Display(Name = "Aircraft manufacturing")]
-        Aircraftmanufacturing,
+        AircraftManufacturing,
+
         [Display(Name = "Spacecraft manufacturing")]
-        Spacecraftmanufacturing,
+        SpacecraftManufacturing,
+
         [Display(Name = "Satellite manufacturing")]
-        Satellitemanufacturing,
+        SatelliteManufacturing,
+
         [Display(Name = "Aircraft engine manufacturing")]
-        Aircraftenginemanufacturing,
-        [Display(Name = "Avionics manufacturingg")]
-        Avionicsmanufacturing,
+        AircraftEngineManufacturing,
+
+        [Display(Name = "Avionics manufacturing")]
+        AvionicsManufacturing,
+
         [Display(Name = "Missile and defense system manufacturing")]
-        Missileanddefensesystemmanufacturing,
+        MissileAndDefenseSystemManufacturing,
+
         [Display(Name = "Drone manufacturing")]
-        Dronemanufacturing,
+        DroneManufacturing,
+
         [Display(Name = "Aerospace composite materials manufacturing")]
-        Aerospacecompositematerialsmanufacturing,
-        [Display(Name = " Others, please specify")]
-        Otherspleasespecify
+        AerospaceCompositeMaterialsManufacturing,
+
+        [Display(Name = "Other")]
+        Other
     }
 }

@@ -5,11 +5,7 @@ namespace mechanical.Models.Enum
     {
         [Display(Name = "Manufacturing")]
         Manufacturing,
-
         [Display(Name = "Plant")]
         Plant,
-
-        [Display(Name = "Other")]
-        Other
     }
 }
