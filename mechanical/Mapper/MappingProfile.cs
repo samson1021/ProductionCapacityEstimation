@@ -15,6 +15,9 @@ using mechanical.Models.Dto.UserDto;
 using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 
 
 namespace mechanical.Mapper
@@ -23,6 +26,15 @@ namespace mechanical.Mapper
     {
         public MappingProfile()
         {
+
+
+            //create the new mapping for PCE
+            CreateMap<PCECaseDto, PCECase>().ReverseMap();
+            CreateMap<PCECaseReturntDto, PCECase>().ReverseMap();
+
+            CreateMap<PCENewCaseDto, PCECase>().ReverseMap();
+            CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
+
 
 
             CreateMap<CollateralPostDto, Collateral>();
