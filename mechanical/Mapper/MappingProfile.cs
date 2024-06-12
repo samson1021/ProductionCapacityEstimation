@@ -16,6 +16,10 @@ using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
 
+/////
+using mechanical.Models.Dto.ProductionCapacityDto;
+using mechanical.Models.Entities.ProductionCapacity;
+/////
 
 namespace mechanical.Mapper
 {
@@ -122,6 +126,19 @@ namespace mechanical.Mapper
             CreateMap<CreateUser, UserReturnDto>()
                     .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
+            
+            ///////
+            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationDto>()
+                .ForMember(dest => dest.PerShiftProduction, opt => opt.MapFrom(src => src.PerShiftProduction))
+                .ForMember(dest => dest.PerDayProduction, opt => opt.MapFrom(src => src.PerDayProduction))
+                .ForMember(dest => dest.PerMonthProduction, opt => opt.MapFrom(src => src.PerMonthProduction))
+                .ForMember(dest => dest.PerYearProduction, opt => opt.MapFrom(src => src.PerYearProduction))
+                .ReverseMap();
+            CreateMap<CollateralEstimationFee, CollateralEstimationFeeDto>().ReverseMap();
+            CreateMap<ShiftHour, ShiftHourDto>().ReverseMap();
+            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            ///////
+        
         }
 
         string EnumToDisplayName<TEnum>(TEnum enumValue)

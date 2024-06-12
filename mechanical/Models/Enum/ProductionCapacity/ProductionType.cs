@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace mechanical.Models.Enum
+
+namespace mechanical.Models.Enum.ProductionCapacity
 {
     public enum ProductionType
     {

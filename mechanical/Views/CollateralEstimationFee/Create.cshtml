@@ -1,0 +1,85 @@
+@model mechanical.Models.Dto.ProductionCapacityDto.CollateralEstimationFeeDto
+@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums
+
+@{
+    ViewData["Title"] = "Create Collateral Estimation Fee";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Create Collateral Estimation Fee</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">Create Collateral Estimation Fee</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <section class="col-xl-10 offset-xl-1 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                    Collateral Estimation Fee
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Create">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="CollateralClass">Collateral Class <i class="text-danger">*</i></label>
+                            <select asp-for="CollateralClass" class="form-control" asp-items="Html.GetEnumSelectList<CollateralClass>()"></select>
+                            <span asp-validation-for="CollateralClass" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="CollateralCategory">Collateral Category <i class="text-danger">*</i></label>
+                            <select asp-for="CollateralCategory" class="form-control" asp-items="Html.GetEnumSelectList<CollateralCategory>()"></select>
+                            <span asp-validation-for="CollateralCategory" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="UnitOfMeasure">Unit of Measure <i class="text-danger">*</i></label>
+                            <select asp-for="UnitOfMeasure" class="form-control" asp-items="Html.GetEnumSelectList<UnitOfMeasure>()"></select>
+                            <span asp-validation-for="UnitOfMeasure" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="EstimationFeePerUnit">Estimation Fee Per Unit <i class="text-danger">*</i></label>
+                            <input asp-for="EstimationFeePerUnit" class="form-control" />
+                            <span asp-validation-for="EstimationFeePerUnit" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="Quantity">Quantity <i class="text-danger">*</i></label>
+                            <input asp-for="Quantity" class="form-control" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <button type="submit" class="col-xl-4 btn bg-purple">Create</button>
+                        <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+}

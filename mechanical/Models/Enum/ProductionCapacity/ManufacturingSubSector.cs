@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace mechanical.Models.Enum.ProductionCapacity
+namespace mechanical.Models.Enum.ProductionCapacity.ProductionCapacity
 {
      //namespace ManufacturingSubSector
     public class ManufacturingSubSector

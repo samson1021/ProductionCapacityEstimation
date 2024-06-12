@@ -1,0 +1,63 @@
+@model IEnumerable<mechanical.Models.Dto.ProductionCapacityDto.CollateralEstimationFeeDto>
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Collateral Estimation Fee Details</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">Collateral Estimation Fee Details</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Category</th>
+                                    <th>Unit of Measure</th>
+                                    <th>Estimation Fee Per Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Total Fee</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var fee in Model)
+                                {
+                                    <tr>
+                                        <td>@fee.CollateralClass</td>
+                                        <td>@fee.CollateralCategory</td>
+                                        <td>@fee.UnitOfMeasure</td>
+                                        <td>@fee.EstimationFeePerUnit</td>
+                                        <td>@fee.Quantity</td>
+                                        <td>@fee.TotalFee</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <form method="post" asp-action="Validate" asp-controller="CollateralEstimationFee">
+                            <button type="submit" class="btn btn-primary">Validate</button>
+                        </form>
+                        <form method="post" asp-action="Commit" asp-controller="CollateralEstimationFee">
+                            <button type="submit" class="btn btn-success">Commit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

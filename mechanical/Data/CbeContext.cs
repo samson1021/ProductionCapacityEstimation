@@ -1,12 +1,11 @@
-﻿using mechanical.Models;
-using mechanical.Models.Entities;
-using mechanical.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-//using mechanical.Models.Dto.CaseDto;
+using mechanical.Data;
+using mechanical.Models;
+using mechanical.Models.Entities;
+using mechanical.Models.Entities.ProductionCapacity;
 
 //using mechanical.Migrations;
-
 
 namespace mechanical.Data
 {
@@ -48,6 +47,13 @@ namespace mechanical.Data
         public DbSet<IndBldgFacilityEquipment> IndBldgFacilityEquipment { get; set; }
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
+
+        ///////
+        public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
+        public virtual DbSet<ProductionCapacityEstimation> ProductionCapacityEstimations { get; set; }
+        public virtual DbSet<ProductionCapacitySchedule> ProductionCapacitySchedules { get; set; }
+        ///////
+
         public virtual DbSet<CreateRole> CreateRoles { get; set; }
         public virtual DbSet<CreateUser> CreateUsers { get; set; }
         public virtual DbSet<District> Districts { get; set; }

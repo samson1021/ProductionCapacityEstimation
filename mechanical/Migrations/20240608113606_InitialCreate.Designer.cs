@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240401081233_first")]
-    partial class first
+    [Migration("20240608113606_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,9 +46,6 @@ namespace mechanical.Migrations
                     b.Property<Guid>("CaseOriginatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CaseOriginatordId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreationAt")
                         .HasColumnType("datetime2");
 
@@ -75,7 +72,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("BussinessLicenceId");
 
-                    b.HasIndex("CaseOriginatordId");
+                    b.HasIndex("CaseOriginatorId");
 
                     b.HasIndex("DistrictId");
 
@@ -598,21 +595,21 @@ namespace mechanical.Migrations
                     b.ToTable("Corrections");
                 });
 
-            modelBuilder.Entity("mechanical.Models.Entities.CreateRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
+            // modelBuilder.Entity("mechanical.Models.Entities.CreateRole", b =>
+            //     {
+            //         b.Property<Guid>("Id")
+            //             .ValueGeneratedOnAdd()
+            //             .HasColumnType("uniqueidentifier")
+            //             .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+            //         b.Property<string>("Name")
+            //             .IsRequired()
+            //             .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+            //         b.HasKey("Id");
 
-                    b.ToTable("CreateRoles");
-                });
+            //         b.ToTable("CreateRoles");
+            //     });
 
             modelBuilder.Entity("mechanical.Models.Entities.CreateUser", b =>
                 {
@@ -1098,9 +1095,11 @@ namespace mechanical.Migrations
                         .WithMany()
                         .HasForeignKey("BussinessLicenceId");
 
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "CaseOriginatord")
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "CaseOriginator")
                         .WithMany()
-                        .HasForeignKey("CaseOriginatordId");
+                        .HasForeignKey("CaseOriginatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("mechanical.Models.Entities.District", "District")
                         .WithMany()
@@ -1110,7 +1109,7 @@ namespace mechanical.Migrations
 
                     b.Navigation("BussinessLicence");
 
-                    b.Navigation("CaseOriginatord");
+                    b.Navigation("CaseOriginator");
 
                     b.Navigation("District");
                 });

@@ -981,6 +981,235 @@ namespace mechanical.Migrations
                     b.ToTable("MotorVehicles");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.CollateralEstimationFee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CollateralCategory")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CollateralClass")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("EstimationFeePerUnit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UnitOfMeasure")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CaseId");
+
+                    b.ToTable("CollateralEstimationFees");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<decimal?>("ActualProductionCapacity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("AttainableProductionCapacity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BottleneckProductionLineCapacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CountryOfOrigin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("DepreciationRateApplied")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("DesignProductionCapacity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Discrepancies")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EffectiveProductionHour")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EffectiveProductionHourPerShift")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EffectiveProductionHourType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("EstimatedProductionCapacity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("FactorsAffectingProductionCapacity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("InspectionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("MachineFunctionalityReason")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MachineFunctionalityStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OtherMachineFunctionalityReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OverallActualCurrentPlantCapacity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PhaseOfOutput")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlaceOfInspection")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductionLineOrEquipmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProductionMeasurement")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ProductionPerHour")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("RejectionReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ShiftsPerDay")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SurveyRemark")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TechnicalObsolescenceStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TimeConsumedToCheckEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TimeConsumedToCheckStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TypeOfOutput")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UnitOfProduction")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WorkingDaysPerMonth")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductionCapacityEstimations");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacitySchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductionCapacityEstimationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ScheduleDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityEstimationId");
+
+                    b.ToTable("ProductionCapacitySchedule");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ShiftHour", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ProductionCapacityEstimationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityEstimationId");
+
+                    b.ToTable("ShiftHour");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Reject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1072,6 +1301,12 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ProductionCapacityEstimationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductionCapacityEstimationId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
@@ -1082,6 +1317,10 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityEstimationId");
+
+                    b.HasIndex("ProductionCapacityEstimationId1");
 
                     b.ToTable("UploadFiles");
                 });
@@ -1354,6 +1593,35 @@ namespace mechanical.Migrations
                     b.Navigation("EvaluatorUser");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.CollateralEstimationFee", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.Case", "Case")
+                        .WithMany()
+                        .HasForeignKey("CaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Case");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacitySchedule", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", "ProductionCapacityEstimation")
+                        .WithMany()
+                        .HasForeignKey("ProductionCapacityEstimationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductionCapacityEstimation");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ShiftHour", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
+                        .WithMany("ShiftHours")
+                        .HasForeignKey("ProductionCapacityEstimationId");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Signatures", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "SignatureFile")
@@ -1365,9 +1633,29 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.UploadFile", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
+                        .WithMany("ProductionProcessFlowDiagrams")
+                        .HasForeignKey("ProductionCapacityEstimationId");
+
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
+                        .WithMany("SupportingEvidences")
+                        .HasForeignKey("ProductionCapacityEstimationId1");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
                 {
                     b.Navigation("Collaterals");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", b =>
+                {
+                    b.Navigation("ProductionProcessFlowDiagrams");
+
+                    b.Navigation("ShiftHours");
+
+                    b.Navigation("SupportingEvidences");
                 });
 #pragma warning restore 612, 618
         }

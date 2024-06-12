@@ -1,16 +1,22 @@
-using mechanical.Data;
+using System.Web.Services.Description;
 using Microsoft.EntityFrameworkCore;
-using mechanical.Services.CaseServices;
-using mechanical.Services.UploadFileService;
-using mechanical.Models.Entities;
-using mechanical.Services.CollateralService;
-using mechanical.Services.AnnexService;
-using mechanical.Services.MotorVehicleService;
 using Microsoft.AspNetCore.Identity;
-using mechanical;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
+
+using mechanical;
+using mechanical.Data;
+using mechanical.Controllers;
+using mechanical.Models.Entities;
+
+using mechanical.Services.CaseServices;
+using mechanical.Services.UploadFileService;
+using mechanical.Services.CollateralService;
+using mechanical.Services.AnnexService;
+using mechanical.Services.MotorVehicleService;
 using mechanical.Services.SignatureService;
 using mechanical.Services.CaseAssignmentService;
 using mechanical.Services.CaseTimeLineService;
@@ -18,7 +24,6 @@ using mechanical.Services.AuthenticatioinService;
 using mechanical.Services.ConstMngAgrMachineryService;
 using mechanical.Services.CorrectionServices;
 using mechanical.Services.UserService;
-
 using mechanical.Services.MMCaseService;
 using mechanical.Services.MailService;
 using mechanical.Services.MOCaseService;
@@ -28,10 +33,11 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.IndBldgF;
 using mechanical.Services.IndBldgFacilityEquipmentService;
 using mechanical.Services.CaseTerminateService;
-using System.Web.Services.Description;
-using mechanical.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
+
+/////////////
+using mechanical.Mapper;
+using mechanical.Services.ProductionCapacityService;
+/////////////
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -90,6 +96,15 @@ builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
+
+///////////////
+// Registering PCE services
+// builder.Services.AddHttpClient();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddScoped<IProductionCapacityEstimationService, ProductionCapacityEstimationService>();
+builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
+///////////////////////////////
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

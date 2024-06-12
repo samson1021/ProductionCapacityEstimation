@@ -1,0 +1,76 @@
+@model IEnumerable<mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto>
+
+@* @{
+    ViewData["Title"] = "Production Capacity Estimations";
+} *@
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Production Capacity Estimations</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">Production Capacity Estimations</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                    Production Capacity Estimations
+                </h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Create")" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Create New</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Production Line/Equipment Name</th>
+                            <th>Type of Output</th>
+                            <th>Country of Origin</th>
+                            <th>Shifts Per Day</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ProductionLineOrEquipmentName</td>
+                                <td>@item.TypeOfOutput</td>
+                                <td>@item.CountryOfOrigin</td>
+                                <td>@item.ShiftsPerDay</td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Edit</a>
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Details</a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable if needed
+            $('.table').DataTable();
+        });
+    </script>
+}

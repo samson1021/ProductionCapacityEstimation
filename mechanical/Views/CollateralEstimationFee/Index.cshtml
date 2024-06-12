@@ -1,0 +1,91 @@
+@model IEnumerable<mechanical.Models.Dto.ProductionCapacityDto.CollateralEstimationFeeDto>
+
+@{
+    ViewData["Title"] = "Collateral Estimation Fees";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Collateral Estimation Fees</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">Collateral Estimation Fees</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <section class="col-xl-10 offset-xl-1 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                    Collateral Estimation Fees
+                </h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    <a asp-action="Create" class="btn btn-primary">Create New</a>
+                </p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().CollateralClass)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().CollateralCategory)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().UnitOfMeasure)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Quantity)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().TotalFee)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CollateralClass)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CollateralCategory)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UnitOfMeasure)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalFee)
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+}

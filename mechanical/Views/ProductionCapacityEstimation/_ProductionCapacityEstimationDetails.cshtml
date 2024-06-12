@@ -1,0 +1,48 @@
+@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
+
+<dl class="row">
+    <dt class="col-sm-3">Production Line/Equipment Name</dt>
+    <dd class="col-sm-9">@Model.ProductionLineOrEquipmentName</dd>
+    <dt class="col-sm-3">Type of Output</dt>
+    <dd class="col-sm-9">@Model.TypeOfOutput</dd>
+    <dt class="col-sm-3">Country of Origin</dt>
+    <dd class="col-sm-9">@Model.CountryOfOrigin</dd>
+    <dt class="col-sm-3">Shifts Per Day</dt>
+    <dd class="col-sm-9">@Model.ShiftsPerDay</dd>
+    <dt class="col-sm-3">Working Days Per Month</dt>
+    <dd class="col-sm-9">@Model.WorkingDaysPerMonth</dd>
+    <dt class="col-sm-3">Effective Production Hour Per Shift</dt>
+    <dd class="col-sm-9">@Model.EffectiveProductionHourPerShift</dd>
+    <dt class="col-sm-3">Production Per Hour</dt>
+    <dd class="col-sm-9">@Model.ProductionPerHour</dd>
+    <dt class="col-sm-3">Unit of Production</dt>
+    <dd class="col-sm-9">@Model.UnitOfProduction</dd>
+    <dt class="col-sm-3">Design Production Capacity</dt>
+    <dd class="col-sm-9">@Model.DesignProductionCapacity</dd>
+    <dt class="col-sm-3">Attainable Production Capacity</dt>
+    <dd class="col-sm-9">@Model.AttainableProductionCapacity</dd>
+    <dt class="col-sm-3">Actual Production Capacity</dt>
+    <dd class="col-sm-9">@Model.ActualProductionCapacity</dd>
+    <dt class="col-sm-3">Factors Affecting Production Capacity</dt>
+    <dd class="col-sm-9">@Model.FactorsAffectingProductionCapacity</dd>
+    <dt class="col-sm-3">Machine Functionality Status</dt>
+    <dd class="col-sm-9">@Model.MachineFunctionalityStatus</dd>
+    <dt class="col-sm-3">Machine Functionality Reason</dt>
+    <dd class="col-sm-9">@Model.MachineFunctionalityReason</dd>
+    <dt class="col-sm-3">Other Machine Functionality Reason</dt>
+    <dd class="col-sm-9">@Model.OtherMachineFunctionalityReason</dd>
+    <dt class="col-sm-3">Supporting Evidences</dt>
+    <dd class="col-sm-9">
+        @foreach (var evidence in Model.SupportingEvidences)
+        {
+            <a href="@Url.Action("DownloadFile", "UploadFile", new { id = evidence.Id })">@evidence.Name</a><br />
+        }
+    </dd>
+    <dt class="col-sm-3">Production Process Flow Diagrams</dt>
+    <dd class="col-sm-9">
+        @foreach (var diagram in Model.ProductionProcessFlowDiagrams)
+        {
+            <a href="@Url.Action("DownloadFile", "UploadFile", new { id = diagram.Id })">@diagram.Name</a><br />
+        }
+    </dd>
+</dl>

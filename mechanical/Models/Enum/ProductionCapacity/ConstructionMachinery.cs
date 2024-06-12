@@ -1,7 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace mechanical.Models.Enums.ProductionCapacity
+namespace mechanical.Models.Enum.ProductionCapacity
 {
     public enum ConstructionMachinery
     {

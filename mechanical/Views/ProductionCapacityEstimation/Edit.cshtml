@@ -1,0 +1,195 @@
+@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
+@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums
+
+@* @{
+    ViewData["Title"] = "Edit Production Capacity Estimation";
+    var myCase = ViewData["case"] as CaseReturntDto;
+    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+} *@
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Edit Production Capacity Estimation</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("Index", "ProductionCapacityEstimation")">Production Capacity Estimations</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <section class="col-xl-10 offset-xl-1 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                    Production Capacity Estimation
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Edit">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="ProductionLineOrEquipmentName">Production Line/Equipment Name <i class="text-danger">*</i></label>
+                            <input asp-for="ProductionLineOrEquipmentName" class="form-control" />
+                            <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="TypeOfOutput">Type of Output <i class="text-danger">*</i></label>
+                            <input asp-for="TypeOfOutput" class="form-control" />
+                            <span asp-validation-for="TypeOfOutput" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>
+                            <input asp-for="CountryOfOrigin" class="form-control" />
+                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="ShiftsPerDay">Shifts Per Day <i class="text-danger">*</i></label>
+                            <input asp-for="ShiftsPerDay" class="form-control" />
+                            <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="WorkingDaysPerMonth">Working Days Per Month <i class="text-danger">*</i></label>
+                            <input asp-for="WorkingDaysPerMonth" class="form-control" />
+                            <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="EffectiveProductionHourPerShift">Effective Production Hour Per Shift <i class="text-danger">*</i></label>
+                            <input asp-for="EffectiveProductionHourPerShift" class="form-control" />
+                            <span asp-validation-for="EffectiveProductionHourPerShift" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="ProductionPerHour">Production Per Hour <i class="text-danger">*</i></label>
+                            <input asp-for="ProductionPerHour" class="form-control" />
+                            <span asp-validation-for="ProductionPerHour" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="UnitOfProduction">Unit of Production <i class="text-danger">*</i></label>
+                            <select asp-for="UnitOfProduction" class="form-control" asp-items="Html.GetEnumSelectList<UnitOfProduction>()"></select>
+                            <span asp-validation-for="UnitOfProduction" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="DesignProductionCapacity">Design Production Capacity <i class="text-danger">*</i></label>
+                            <input asp-for="DesignProductionCapacity" class="form-control" />
+                            <span asp-validation-for="DesignProductionCapacity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="AttainableProductionCapacity">Attainable Production Capacity <i class="text-danger">*</i></label>
+                            <input asp-for="AttainableProductionCapacity" class="form-control" />
+                            <span asp-validation-for="AttainableProductionCapacity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="ActualProductionCapacity">Actual Production Capacity <i class="text-danger">*</i></label>
+                            <input asp-for="ActualProductionCapacity" class="form-control" />
+                            <span asp-validation-for="ActualProductionCapacity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="FactorsAffectingProductionCapacity">Factors Affecting Production Capacity <i class="text-danger">*</i></label>
+                            <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control"></textarea>
+                            <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="MachineFunctionalityStatus">Machine Functionality Status <i class="text-danger">*</i></label>
+                            <select asp-for="MachineFunctionalityStatus" class="form-control" asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()"></select>
+                            <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row" id="functionalityReasonRow" style="display: none;">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="MachineFunctionalityReason">Machine Functionality Reason <i class="text-danger">*</i></label>
+                            <select asp-for="MachineFunctionalityReason" class="form-control" asp-items="Html.GetEnumSelectList<MachineFunctionalityReason>()"></select>
+                            <span asp-validation-for="MachineFunctionalityReason" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row" id="otherReasonRow" style="display: none;">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="OtherMachineFunctionalityReason">Other Machine Functionality Reason <i class="text-danger">*</i></label>
+                            <input asp-for="OtherMachineFunctionalityReason" class="form-control" />
+                            <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="SupportingEvidences">Supporting Evidences <i class="text-danger">*</i></label>
+                            <input asp-for="SupportingEvidences" type="file" class="form-control" multiple />
+                            <span asp-validation-for="SupportingEvidences" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="ProductionProcessFlowDiagrams">Production Process Flow Diagrams <i class="text-danger">*</i></label>
+                            <input asp-for="ProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
+                            <span asp-validation-for="ProductionProcessFlowDiagrams" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <button type="submit" class="col-xl-4 btn bg-purple">Save Changes</button>
+                        <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+    <script>
+        $(document).ready(function () {
+            // Handle dynamic display of functionality reasons
+            $("#MachineFunctionalityStatus").change(function () {
+                var selectedStatus = $(this).val();
+                if (selectedStatus === 'NotFunctional') {
+                    $("#functionalityReasonRow").show();
+                } else {
+                    $("#functionalityReasonRow").hide();
+                    $("#otherReasonRow").hide();
+                }
+            });
+
+            $("#MachineFunctionalityReason").change(function () {
+                var selectedReason = $(this).val();
+                if (selectedReason === 'Other') {
+                    $("#otherReasonRow").show();
+                } else {
+                    $("#otherReasonRow").hide();
+                }
+            });
+        });
+    </script>
+}
