@@ -34,6 +34,9 @@ namespace mechanical.Mapper
 
             CreateMap<PCENewCaseDto, PCECase>().ReverseMap();
             CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
+            CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
+
+
 
 
 

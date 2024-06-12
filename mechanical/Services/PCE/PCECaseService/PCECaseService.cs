@@ -77,6 +77,28 @@ namespace mechanical.Services.PCE.PCECaseService
             }
         }
 
+        public async Task<PCECaseReturntDto> PCEEdit(Guid userId, PCECaseReturntDto caseDto)
+        {
+            var pceCase = await _cbeContext.PCECases.FirstOrDefaultAsync(c => c.Id == userId);
+
+            if (pceCase != null)
+            {
+                pceCase.ApplicantName = caseDto.ApplicantName;
+                pceCase.CustomerEmail = caseDto.CustomerEmail;
+                pceCase.CustomerUserId = caseDto.CustomerUserId;
+
+                await _cbeContext.SaveChangesAsync();
+
+                return _mapper.Map<PCECaseReturntDto>(pceCase);
+            }
+            else
+            {
+                // If the PCECase is not found, return null
+                return _mapper.Map<PCECaseReturntDto>(pceCase);
+            }
+        }
+
+
         public async Task<IEnumerable<PCENewCaseDto>> GetPCEPendingCases(Guid userId)
         {
             var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "Pending" && res.CurrentStage == "Relation Manager").ToListAsync();
