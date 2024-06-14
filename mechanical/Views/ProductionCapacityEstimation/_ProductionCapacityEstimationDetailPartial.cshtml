@@ -1,0 +1,76 @@
+@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
+
+<dl class="row">
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TypeOfOutput)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.TypeOfOutput)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CountryOfOrigin)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.CountryOfOrigin)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ShiftsPerDay)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.ShiftsPerDay)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.WorkingDaysPerMonth)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.WorkingDaysPerMonth)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EffectiveProductionHourPerShift)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.EffectiveProductionHourPerShift)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionPerHour)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionPerHour)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UnitOfProduction)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.UnitOfProduction)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.DesignProductionCapacity)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.AttainableProductionCapacity)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.ActualProductionCapacity)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.FactorsAffectingProductionCapacity)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerShiftProduction)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerShiftProduction)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerDayProduction)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerDayProduction)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerMonthProduction)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerMonthProduction)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerYearProduction)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerYearProduction)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.MachineFunctionalityStatus)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MachineFunctionalityReason)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.MachineFunctionalityReason)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason)</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.OtherMachineFunctionalityReason)</dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.SupportingEvidences)</dt>
+    <dd class="col-sm-8">
+        @foreach (var evidence in Model.SupportingEvidences)
+        {
+            <a href="@Url.Action("DownloadFile", "UploadFile", new { id = evidence.Id })">@evidence.Name</a><br />
+        }
+    </dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionProcessFlowDiagrams)</dt>
+    <dd class="col-sm-8">
+        @foreach (var diagram in Model.ProductionProcessFlowDiagrams)
+        {
+            <a href="@Url.Action("DownloadFile", "UploadFile", new { id = diagram.Id })">@diagram.Name</a><br />
+        }
+    </dd>
+</dl>

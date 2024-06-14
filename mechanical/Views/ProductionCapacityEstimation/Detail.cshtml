@@ -1,10 +1,9 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
 
-@* @{
+@{
     ViewData["Title"] = "Production Capacity Estimation Detail";
-    var myCase = ViewData["case"] as CaseReturntDto;
-    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
-} *@
+    @* var Model =  ViewData["productionCapacityEstimation"]; *@
+}
 
 <section class="content-header">
     <div class="container-fluid">
@@ -15,7 +14,7 @@
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("Index", "ProductionCapacityEstimation")">Production Capacity Estimations</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "ProductionCapacityEstimation")">Production Capacity Estimations</a></li>
                     <li class="breadcrumb-item active">Detail</li>
                 </ol>
             </div>
@@ -48,15 +47,18 @@
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @* Add General Information here *@
+                        General Information 
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                        @Html.Partial("_ProductionCapacityEstimationDetails", Model)
+                        @Html.Partial("_ProductionCapacityEstimationDetailPartial", Model)
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
-                        @* Schedule details here *@
+                        @* Add Schedule details here *@
+                        Schedule details 
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                        @* Comments details here *@
+                        @* Add Comments details here *@
+                        Comments details 
                     </div>
                 </div>
             </div>

@@ -1,11 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
+using mechanical.Models;
 using mechanical.Models.Dto.ProductionCapacityDto;
 using mechanical.Services.ProductionCapacityService;
 
@@ -27,14 +28,15 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Index()
         {
             try
-            {
-                var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(base.GetCurrentUserId());
+            {   
+                var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0"));
+                // var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(base.GetCurrentUserId());
                 return View(collateralEstimationFees);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching collateral estimation fees for user {UserId}", base.GetCurrentUserId());
-                return View("Error", new { message = "An error occurred while fetching collateral estimation fees." });
+                _logger.LogError(ex, "Error fetching Collateral Estimation Fees for user {UserId}", base.GetCurrentUserId());
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -51,8 +53,8 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching details for collateral estimation fee with ID {Id}", id);
-                return View("Error", new { message = "An error occurred while fetching the collateral estimation fee details." });
+                _logger.LogError(ex, "Error fetching Collateral Estimation Fee details for ID {Id}", id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -64,20 +66,21 @@ namespace mechanical.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CollateralEstimationFeeDto dto)
-        {
+        {            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _collateralEstimationFeeService.CreateCollateralEstimationFee(base.GetCurrentUserId(), dto);
-                    return RedirectToAction(nameof(Index));
+                    var productionCapacityEstimation = await _collateralEstimationFeeService.CreateCollateralEstimationFee(base.GetCurrentUserId(), dto);
+                    return RedirectToAction("Detail", new { id = productionCapacityEstimation.Id });
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error creating collateral estimation fee for user {UserId}", base.GetCurrentUserId());
-                    ModelState.AddModelError(string.Empty, "An error occurred while creating the collateral estimation fee.");
+                    _logger.LogError(ex, "Error creating Collateral Estimation Fee for user {UserId}", base.GetCurrentUserId());
+                    ModelState.AddModelError("", "An error occurred while creating the estimation fee.");
                 }
             }
+            
             return View(dto);
         }
 
@@ -94,8 +97,8 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching collateral estimation fee for editing with ID {Id}", id);
-                return View("Error", new { message = "An error occurred while fetching the collateral estimation fee for editing." });
+                _logger.LogError(ex, "Error fetching Collateral Estimation Fee details for editing, ID {Id}", id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -112,8 +115,8 @@ namespace mechanical.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error editing collateral estimation fee with ID {Id} for user {UserId}", id, base.GetCurrentUserId());
-                    ModelState.AddModelError(string.Empty, "An error occurred while editing the collateral estimation fee.");
+                    _logger.LogError(ex, "Error editing Collateral Estimation Fee for ID {Id}", id);
+                    ModelState.AddModelError("", "An error occurred while editing the estimation fee.");
                 }
             }
             return View(dto);
@@ -132,8 +135,8 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching collateral estimation fee for deletion with ID {Id}", id);
-                return View("Error", new { message = "An error occurred while fetching the collateral estimation fee for deletion." });
+                _logger.LogError(ex, "Error fetching Collateral Estimation Fee details for deletion, ID {Id}", id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -148,8 +151,8 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting collateral estimation fee with ID {Id}", id);
-                return View("Error", new { message = "An error occurred while deleting the collateral estimation fee." });
+                _logger.LogError(ex, "Error deleting Collateral Estimation Fee for ID {Id}", id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -168,8 +171,8 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error validating fees for case ID {CaseId}", caseId);
-                return View("Error", new { message = "An error occurred while validating the fees." });
+                _logger.LogError(ex, "Error validating fees for Case ID {CaseId}", caseId);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -188,8 +191,8 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error committing fees for case ID {CaseId}", caseId);
-                return View("Error", new { message = "An error occurred while committing the fees." });
+                _logger.LogError(ex, "Error committing fees for Case ID {CaseId}", caseId);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
     }

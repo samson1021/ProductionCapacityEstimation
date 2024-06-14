@@ -1,17 +1,18 @@
 using AutoMapper;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+
 using mechanical.Data;
 using mechanical.Services.UploadFileService;
-using mechanical.Models.Entities.ProductionCapacity;
-using mechanical.Models.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.Dto.ProductionCapacityDto;
+using mechanical.Models.Entities.ProductionCapacity;
+using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation;
 
 namespace mechanical.Services.ProductionCapacityService
 {
@@ -19,15 +20,15 @@ namespace mechanical.Services.ProductionCapacityService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
-        private readonly IUploadFileService _uploadFileService;
         private readonly ILogger<ProductionCapacityEstimationService> _logger;
+        private readonly IUploadFileService _uploadFileService;
 
-        public ProductionCapacityEstimationService(CbeContext context, IMapper mapper, IUploadFileService uploadFileService, ILogger<ProductionCapacityEstimationService> logger)
+        public ProductionCapacityEstimationService(CbeContext context, IMapper mapper, ILogger<ProductionCapacityEstimationService> logger, IUploadFileService uploadFileService)
         {
             _cbeContext = context;
             _mapper = mapper;
-            _uploadFileService = uploadFileService;
             _logger = logger;
+            _uploadFileService = uploadFileService;
         }
 
         public async Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid userId, ProductionCapacityEstimationDto dto)
@@ -37,14 +38,32 @@ namespace mechanical.Services.ProductionCapacityService
                 var entity = _mapper.Map<ProductionCapacityEstimation>(dto);
                 entity.Id = Guid.NewGuid();
                 entity.CreatedBy = userId;
+                entity.CreatedAt = DateTime.Now;
+                entity.Status = Status.New;
+ 
+                /////////
+                entity.CaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                entity.RejectionReason = null;
+                /////////
+
                 await _cbeContext.ProductionCapacityEstimations.AddAsync(entity);
                 await _cbeContext.SaveChangesAsync();
+
+                ////
+                var resultDto = _mapper.Map<ProductionCapacityEstimationDto>(entity);
+                resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
+                resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
+                resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
+                resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
+                return resultDto;
+                ////
+
                 return _mapper.Map<ProductionCapacityEstimationDto>(entity);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating production capacity estimation for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error creating production capacity estimation");
+                throw new ApplicationException("An error occurred while creating the production capacity estimation.");
             }
         }
 
@@ -53,17 +72,29 @@ namespace mechanical.Services.ProductionCapacityService
             try
             {
                 var entity = await _cbeContext.ProductionCapacityEstimations.FindAsync(id);
-                if (entity == null) return null;
+                if (entity == null)
+                {
+                    _logger.LogWarning("Production capacity estimation with id {Id} not found", id);
+                    throw new KeyNotFoundException("Production capacity estimation not found");
+                }
 
                 _mapper.Map(dto, entity);
                 _cbeContext.ProductionCapacityEstimations.Update(entity);
                 await _cbeContext.SaveChangesAsync();
+                /////
+                var resultDto = _mapper.Map<ProductionCapacityEstimationDto>(entity);
+                resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
+                resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
+                resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
+                resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
+                return resultDto;
+                /////
                 return _mapper.Map<ProductionCapacityEstimationDto>(entity);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error editing production capacity estimation with ID {Id} for user {UserId}", id, userId);
-                throw;
+                _logger.LogError(ex, "Error editing production capacity estimation");
+                throw new ApplicationException("An error occurred while editing the production capacity estimation.");
             }
         }
 
@@ -71,15 +102,21 @@ namespace mechanical.Services.ProductionCapacityService
         {
             try
             {
-                var entity = await _cbeContext.ProductionCapacityEstimations.Include(e => e.SupportingEvidences)
-                                                                         .Include(e => e.ProductionProcessFlowDiagrams)
-                                                                         .FirstOrDefaultAsync(e => e.Id == id);
+                var entity = await _cbeContext.ProductionCapacityEstimations
+                    .Include(e => e.SupportingEvidences)
+                    .Include(e => e.ProductionProcessFlowDiagrams)
+                    .FirstOrDefaultAsync(e => e.Id == id);
+                if (entity == null)
+                {
+                    _logger.LogWarning("Production capacity estimation with id {Id} not found", id);
+                    throw new KeyNotFoundException("Production capacity estimation not found");
+                }
                 return _mapper.Map<ProductionCapacityEstimationDto>(entity);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching production capacity estimation with ID {Id} for user {UserId}", id, userId);
-                throw;
+                _logger.LogError(ex, "Error fetching production capacity estimation");
+                throw new ApplicationException("An error occurred while fetching the production capacity estimation.");
             }
         }
 
@@ -87,13 +124,13 @@ namespace mechanical.Services.ProductionCapacityService
         {
             try
             {
-                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == "New").ToListAsync();
+                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.New).ToListAsync();
                 return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching new production capacity estimations for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error fetching new estimations");
+                throw new ApplicationException("An error occurred while fetching new estimations.");
             }
         }
 
@@ -101,13 +138,13 @@ namespace mechanical.Services.ProductionCapacityService
         {
             try
             {
-                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == "Rejected").ToListAsync();
+                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.Rejected).ToListAsync();
                 return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching rejected production capacity estimations for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error fetching rejected estimations");
+                throw new ApplicationException("An error occurred while fetching rejected estimations.");
             }
         }
 
@@ -115,13 +152,13 @@ namespace mechanical.Services.ProductionCapacityService
         {
             try
             {
-                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == "Terminated").ToListAsync();
+                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.Terminated).ToListAsync();
                 return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching terminated production capacity estimations for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error fetching terminated estimations");
+                throw new ApplicationException("An error occurred while fetching terminated estimations.");
             }
         }
 
@@ -129,13 +166,13 @@ namespace mechanical.Services.ProductionCapacityService
         {
             try
             {
-                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == "Pending").ToListAsync();
+                var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.Pending).ToListAsync();
                 return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching pending production capacity estimations for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error fetching pending estimations");
+                throw new ApplicationException("An error occurred while fetching pending estimations.");
             }
         }
 
@@ -147,14 +184,14 @@ namespace mechanical.Services.ProductionCapacityService
                 var estimations = await _cbeContext.ProductionCapacityEstimations.Where(e => ids.Contains(e.Id)).ToListAsync();
                 foreach (var estimation in estimations)
                 {
-                    estimation.Status = "PendingApproval";
+                    estimation.Status = Status.Approved;
                 }
                 await _cbeContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error sending production capacity estimations for approval");
-                throw;
+                _logger.LogError(ex, "Error sending estimations for approval");
+                throw new ApplicationException("An error occurred while sending estimations for approval.");
             }
         }
 
@@ -163,18 +200,21 @@ namespace mechanical.Services.ProductionCapacityService
             try
             {
                 var estimation = await _cbeContext.ProductionCapacityEstimations.FindAsync(id);
-                if (estimation != null)
+                if (estimation == null)
                 {
-                    estimation.Status = "Rejected";
-                    estimation.RejectionReason = rejectionReason;
-                    _cbeContext.ProductionCapacityEstimations.Update(estimation);
-                    await _cbeContext.SaveChangesAsync();
+                    _logger.LogWarning("Production capacity estimation with id {Id} not found", id);
+                    throw new KeyNotFoundException("Production capacity estimation not found");
                 }
+
+                estimation.Status = Status.Rejected;
+                estimation.RejectionReason = rejectionReason;
+                _cbeContext.ProductionCapacityEstimations.Update(estimation);
+                await _cbeContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error rejecting production capacity estimation with ID {Id}", id);
-                throw;
+                _logger.LogError(ex, "Error rejecting estimation");
+                throw new ApplicationException("An error occurred while rejecting the estimation.");
             }
         }
 
@@ -190,12 +230,10 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating schedule for production capacity estimation");
-                throw;
+                _logger.LogError(ex, "Error creating schedule");
+                throw new ApplicationException("An error occurred while creating the schedule.");
             }
         }
-
-          
 
         public async Task<int> GetDashboardEstimationCount(Guid userId)
         {
@@ -205,8 +243,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching dashboard estimation count for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error fetching dashboard estimation count");
+                throw new ApplicationException("An error occurred while fetching the dashboard estimation count.");
             }
         }
 
@@ -218,8 +256,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching my dashboard estimation count for user {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error fetching my dashboard estimation count");
+                throw new ApplicationException("An error occurred while fetching your dashboard estimation count.");
             }
         }
 
@@ -229,14 +267,15 @@ namespace mechanical.Services.ProductionCapacityService
             {
                 var evidence = await _cbeContext.UploadFiles.FindAsync(Id);
                 if (evidence == null) return false;
+
                 _cbeContext.UploadFiles.Remove(evidence);
                 await _cbeContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting supporting evidence with ID {Id}", Id);
-                throw;
+                _logger.LogError(ex, "Error deleting supporting evidence");
+                throw new ApplicationException("An error occurred while deleting the supporting evidence.");
             }
         }
 
@@ -246,14 +285,15 @@ namespace mechanical.Services.ProductionCapacityService
             {
                 var diagram = await _cbeContext.UploadFiles.FindAsync(Id);
                 if (diagram == null) return false;
+
                 _cbeContext.UploadFiles.Remove(diagram);
                 await _cbeContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting process flow diagram with ID {Id}", Id);
-                throw;
+                _logger.LogError(ex, "Error deleting process flow diagram");
+                throw new ApplicationException("An error occurred while deleting the process flow diagram.");
             }
         }
 
@@ -278,8 +318,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error uploading supporting evidence for case ID {CaseId}", caseId);
-                throw;
+                _logger.LogError(ex, "Error uploading supporting evidence");
+                throw new ApplicationException("An error occurred while uploading the supporting evidence.");
             }
         }
 
@@ -304,8 +344,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error uploading process flow diagram for case ID {CaseId}", caseId);
-                throw;
+                _logger.LogError(ex, "Error uploading process flow diagram");
+                throw new ApplicationException("An error occurred while uploading the process flow diagram.");
             }
         }
 
@@ -318,13 +358,12 @@ namespace mechanical.Services.ProductionCapacityService
                     .Include(p => p.SupportingEvidences)
                     .Include(p => p.ProductionProcessFlowDiagrams)
                     .ToListAsync();
-
                 return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching all production capacity estimations");
-                throw;
+                throw new ApplicationException("An error occurred while fetching all production capacity estimations.");
             }
         }
 
@@ -340,13 +379,12 @@ namespace mechanical.Services.ProductionCapacityService
 
                 _cbeContext.ProductionCapacityEstimations.Remove(entity);
                 await _cbeContext.SaveChangesAsync();
-
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting production capacity estimation with ID {Id}", id);
-                throw;
+                _logger.LogError(ex, "Error deleting production capacity estimation");
+                throw new ApplicationException("An error occurred while deleting the production capacity estimation.");
             }
         }
     }

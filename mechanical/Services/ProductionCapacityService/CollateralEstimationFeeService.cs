@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging; // Add this using directive
+using Microsoft.Extensions.Logging;
+
 using mechanical.Data;
-// using mechanical.Services.UploadFileService;
-using mechanical.Models.Entities.ProductionCapacity;
 using mechanical.Models.Dto.ProductionCapacityDto;
-using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums;
+using mechanical.Models.Entities.ProductionCapacity;
+using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.Collateral;
 
 namespace mechanical.Services.ProductionCapacityService
 {
@@ -35,6 +35,12 @@ namespace mechanical.Services.ProductionCapacityService
                 entity.CreatedBy = userId;
                 entity.CreatedAt = DateTime.Now;
                 entity.TotalFee = CalculateTotalFee(entity.EstimationFeePerUnit, entity.Quantity);
+                entity.Status = FeeStatus.New;
+
+                ////// 
+                entity.CaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                entity.RejectionReason = null;
+                /////////
 
                 await _cbeContext.CollateralEstimationFees.AddAsync(entity);
                 await _cbeContext.SaveChangesAsync();
@@ -43,7 +49,7 @@ namespace mechanical.Services.ProductionCapacityService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating collateral estimation fee");
-                throw;
+                throw new ApplicationException("An error occurred while creating the collateral estimation fee.");
             }
         }
 
@@ -54,8 +60,8 @@ namespace mechanical.Services.ProductionCapacityService
                 var entity = await _cbeContext.CollateralEstimationFees.FindAsync(id);
                 if (entity == null)
                 {
-                    _logger.LogWarning($"Collateral estimation fee with ID {id} not found");
-                    return null;
+                    _logger.LogWarning("Collateral estimation fee with id {Id} not found", id);
+                    throw new KeyNotFoundException("Collateral estimation fee not found");
                 }
 
                 _mapper.Map(dto, entity);
@@ -66,8 +72,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error editing collateral estimation fee with ID {id}");
-                throw;
+                _logger.LogError(ex, "Error editing collateral estimation fee");
+                throw new ApplicationException("An error occurred while editing the collateral estimation fee.");
             }
         }
 
@@ -76,12 +82,17 @@ namespace mechanical.Services.ProductionCapacityService
             try
             {
                 var entity = await _cbeContext.CollateralEstimationFees.FindAsync(id);
+                if (entity == null)
+                {
+                    _logger.LogWarning("Collateral estimation fee with id {Id} not found", id);
+                    throw new KeyNotFoundException("Collateral estimation fee not found");
+                }
                 return _mapper.Map<CollateralEstimationFeeDto>(entity);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching collateral estimation fee with ID {id}");
-                throw;
+                _logger.LogError(ex, "Error fetching collateral estimation fee");
+                throw new ApplicationException("An error occurred while fetching the collateral estimation fee.");
             }
         }
 
@@ -94,8 +105,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching all collateral estimation fees for case ID {caseId}");
-                throw;
+                _logger.LogError(ex, "Error fetching all collateral estimation fees");
+                throw new ApplicationException("An error occurred while fetching all collateral estimation fees.");
             }
         }
 
@@ -106,7 +117,7 @@ namespace mechanical.Services.ProductionCapacityService
                 var entity = await _cbeContext.CollateralEstimationFees.FindAsync(id);
                 if (entity == null)
                 {
-                    _logger.LogWarning($"Collateral estimation fee with ID {id} not found");
+                    _logger.LogWarning("Collateral estimation fee with id {Id} not found", id);
                     return false;
                 }
 
@@ -116,26 +127,22 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error deleting collateral estimation fee with ID {id}");
-                throw;
+                _logger.LogError(ex, "Error deleting collateral estimation fee");
+                throw new ApplicationException("An error occurred while deleting the collateral estimation fee.");
             }
         }
 
         public async Task<bool> ValidateFees(Guid caseId)
         {
-            
             try
             {
-                // var result = await _temenosClient.ValidateEstimationFee(caseId);
-                // return result.IsSuccess;
-
                 var fees = await _cbeContext.CollateralEstimationFees
-                                            .Where(f => f.CaseId == caseId && f.Status == FeeStatus.Pending)
-                                            .ToListAsync();
+                    .Where(f => f.CaseId == caseId && f.Status == FeeStatus.Pending)
+                    .ToListAsync();
 
                 if (!fees.Any())
                 {
-                    _logger.LogWarning($"No pending fees found for case ID {caseId}");
+                    _logger.LogWarning("No pending fees found for case id {CaseId}", caseId);
                     return false;
                 }
 
@@ -143,7 +150,7 @@ namespace mechanical.Services.ProductionCapacityService
                 {
                     if (!ValidateFee(fee))
                     {
-                        _logger.LogWarning($"Validation failed for fee ID {fee.Id}");
+                        _logger.LogWarning("Fee validation failed for fee id {Id}", fee.Id);
                         return false;
                     }
 
@@ -156,8 +163,8 @@ namespace mechanical.Services.ProductionCapacityService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error validating fees for case ID {caseId}");
-                throw;
+                _logger.LogError(ex, "Error validating fees");
+                throw new ApplicationException("An error occurred while validating the fees.");
             }
         }
 
@@ -165,29 +172,23 @@ namespace mechanical.Services.ProductionCapacityService
         {
             if (fee.Quantity <= 0 || fee.EstimationFeePerUnit <= 0)
             {
-                _logger.LogWarning($"Invalid fee data for fee ID {fee.Id}");
                 return false;
             }
-
             decimal expectedTotalFee = CalculateTotalFee(fee.EstimationFeePerUnit, fee.Quantity);
             return fee.TotalFee == expectedTotalFee;
         }
 
         public async Task<bool> CommitFees(Guid caseId)
         {
-            
             try
             {
-                // var result = await _temenosClient.CommitEstimationFee(caseId);
-                // return result.IsSuccess;
-                
                 var fees = await _cbeContext.CollateralEstimationFees
-                                            .Where(f => f.CaseId == caseId && f.Status == FeeStatus.Validated)
-                                            .ToListAsync();
+                    .Where(f => f.CaseId == caseId && f.Status == FeeStatus.Validated)
+                    .ToListAsync();
 
                 if (!fees.Any())
                 {
-                    _logger.LogWarning($"No validated fees found for case ID {caseId}");
+                    _logger.LogWarning("No validated fees found for case id {CaseId}", caseId);
                     return false;
                 }
 
@@ -197,7 +198,7 @@ namespace mechanical.Services.ProductionCapacityService
 
                     if (!success)
                     {
-                        _logger.LogWarning($"Failed to deduct fee from core banking system for fee ID {fee.Id}");
+                        _logger.LogWarning("Fee deduction failed for fee id {Id}", fee.Id);
                         return false;
                     }
 
@@ -205,30 +206,20 @@ namespace mechanical.Services.ProductionCapacityService
                     _cbeContext.Update(fee);
                 }
 
-                // _cbeContext.CollateralEstimationFees.UpdateRange(fees);
                 await _cbeContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error committing fees for case ID {caseId}");
-                throw;
+                _logger.LogError(ex, "Error committing fees");
+                throw new ApplicationException("An error occurred while committing the fees.");
             }
         }
 
         private async Task<bool> DeductFeeFromCoreBankingSystem(CollateralEstimationFee fee)
         {
-            try
-            {
-                // External API call to the core banking system
-                _logger.LogInformation($"Deducting fee from core banking system for fee ID {fee.Id}");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error deducting fee from core banking system for fee ID {fee.Id}");
-                return false;
-            }
+            // External API call to core banking system
+            return true; 
         }
 
         public decimal CalculateTotalFee(decimal estimationFeePerUnit, int quantity)

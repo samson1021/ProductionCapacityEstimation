@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 
@@ -11,9 +12,11 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    partial class CbeContextModelSnapshot : ModelSnapshot
+    [Migration("20240612130148_Phase2UpdatedEntityAndDTOs")]
+    partial class Phase2UpdatedEntityAndDTOs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -988,7 +991,7 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<Guid?>("CaseId")
+                    b.Property<Guid>("CaseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CollateralCategory")
@@ -1010,6 +1013,7 @@ namespace mechanical.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RejectionReason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -1044,10 +1048,11 @@ namespace mechanical.Migrations
                     b.Property<int?>("BottleneckProductionLineCapacity")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("CaseId")
+                    b.Property<Guid>("CaseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CountryOfOrigin")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1063,6 +1068,7 @@ namespace mechanical.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Discrepancies")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("EffectiveProductionHour")
@@ -1078,6 +1084,7 @@ namespace mechanical.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("FactorsAffectingProductionCapacity")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("InspectionDate")
@@ -1090,27 +1097,17 @@ namespace mechanical.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("OtherMachineFunctionalityReason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OverallActualCurrentPlantCapacity")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("PerDayProduction")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PerMonthProduction")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PerShiftProduction")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PerYearProduction")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int?>("PhaseOfOutput")
                         .HasColumnType("int");
 
                     b.Property<string>("PlaceOfInspection")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductionLineOrEquipmentName")
@@ -1124,15 +1121,18 @@ namespace mechanical.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RejectionReason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ShiftsPerDay")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SurveyRemark")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TechnicalObsolescenceStatus")
@@ -1145,6 +1145,7 @@ namespace mechanical.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TypeOfOutput")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UnitOfProduction")
@@ -1611,7 +1612,9 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.Entities.Case", "Case")
                         .WithMany()
-                        .HasForeignKey("CaseId");
+                        .HasForeignKey("CaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Case");
                 });
@@ -1620,7 +1623,9 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.Entities.Case", "Case")
                         .WithMany()
-                        .HasForeignKey("CaseId");
+                        .HasForeignKey("CaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Case");
                 });

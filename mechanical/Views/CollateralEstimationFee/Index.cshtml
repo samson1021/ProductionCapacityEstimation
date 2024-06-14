@@ -21,61 +21,46 @@
 </section>
 
 <section class="content">
-    <section class="col-xl-10 offset-xl-1 connectedSortable">
-        <div class="card">
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
             <div class="card-header">
                 <h3 class="card-title">
                     <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                     Collateral Estimation Fees
                 </h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Create")" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Create New</a>
+                </div>
             </div>
             <div class="card-body">
-                <p>
-                    <a asp-action="Create" class="btn btn-primary">Create New</a>
-                </p>
                 <table class="table">
                     <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().CollateralClass)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().CollateralCategory)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().UnitOfMeasure)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().Quantity)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().TotalFee)
-                            </th>
-                            <th></th>
+                        <tr>                        
+                            <th>@Html.DisplayNameFor(model => model.First().CollateralClass)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().CollateralCategory)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().UnitOfMeasure)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().EstimationFeePerUnit)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Quantity)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().TotalFee)</th>
+                            <th>@Html.DisplayNameFor(model => model.First().Status)</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>@Html.DisplayFor(modelItem => item.CollateralClass)</td>
+                                <td>@Html.DisplayFor(modelItem => item.CollateralCategory)</td>
+                                <td>@Html.DisplayFor(modelItem => item.UnitOfMeasure)</td>
+                                <td>@Html.DisplayFor(modelItem => item.EstimationFeePerUnit)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                <td>@Html.DisplayFor(modelItem => item.TotalFee)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Status)</td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.CollateralClass)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.CollateralCategory)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.UnitOfMeasure)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Quantity)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.TotalFee)
-                                </td>
-                                <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                    <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>        
                                 </td>
                             </tr>
                         }

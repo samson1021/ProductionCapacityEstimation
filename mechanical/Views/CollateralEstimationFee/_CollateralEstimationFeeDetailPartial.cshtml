@@ -1,0 +1,38 @@
+@model mechanical.Models.Dto.ProductionCapacityDto.CollateralEstimationFeeDto
+
+<dl class="row">
+    <dt class="col-sm-3">Collateral Class</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.CollateralClass" />
+    </dd>
+
+    <dt class="col-sm-3">Collateral Category</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.CollateralCategory" />
+    </dd>
+
+    <dt class="col-sm-3">Unit of Measure</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.UnitOfMeasure" />
+    </dd>
+
+    <dt class="col-sm-3">Estimation Fee Per Unit</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.EstimationFeePerUnit" />
+    </dd>
+
+    <dt class="col-sm-3">Quantity</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.Quantity" />
+    </dd>
+
+    <dt class="col-sm-3">Total Fee</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.TotalFee" />
+    </dd>
+
+    <dt class="col-sm-3">Rejection Reason</dt>
+    <dd class="col-sm-9">
+        <input class="form-control-plaintext" readonly value="@Model.RejectionReason" />
+    </dd>
+</dl>

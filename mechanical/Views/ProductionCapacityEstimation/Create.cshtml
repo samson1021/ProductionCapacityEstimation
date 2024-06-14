@@ -1,9 +1,8 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
-@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums
-@* 
+@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation
 @{
     ViewData["Title"] = "Create Production Capacity Estimation";
-} *@
+}
 
 <section class="content-header">
     <div class="container-fluid">
@@ -139,101 +138,6 @@
                             <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="EffectiveProductionHour">Effective Production Hour</label>
-                            <input asp-for="EffectiveProductionHour" class="form-control" />
-                            <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="ProductionMeasurement">Production Measurement</label>
-                            <select asp-for="ProductionMeasurement" class="form-control" asp-items="Html.GetEnumSelectList<ProductionMeasurement>()"></select>
-                            <span asp-validation-for="ProductionMeasurement" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="EstimatedProductionCapacity">Estimated Production Capacity</label>
-                            <input asp-for="EstimatedProductionCapacity" class="form-control" />
-                            <span asp-validation-for="EstimatedProductionCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="BottleneckProductionLineCapacity">Bottleneck Production Line Capacity</label>
-                            <input asp-for="BottleneckProductionLineCapacity" class="form-control" />
-                            <span asp-validation-for="BottleneckProductionLineCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="OverallActualCurrentPlantCapacity">Overall Actual Current Plant Capacity</label>
-                            <input asp-for="OverallActualCurrentPlantCapacity" class="form-control" />
-                            <span asp-validation-for="OverallActualCurrentPlantCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="TimeConsumedToCheckStart">Time Consumed To Check Start</label>
-                            <input asp-for="TimeConsumedToCheckStart" class="form-control" />
-                            <span asp-validation-for="TimeConsumedToCheckStart" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="TimeConsumedToCheckEnd">Time Consumed To Check End</label>
-                            <input asp-for="TimeConsumedToCheckEnd" class="form-control" />
-                            <span asp-validation-for="TimeConsumedToCheckEnd" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="TechnicalObsolescenceStatus">Technical Obsolescence Status</label>
-                            <select asp-for="TechnicalObsolescenceStatus" class="form-control" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()"></select>
-                            <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="DepreciationRateApplied">Depreciation Rate Applied</label>
-                            <input asp-for="DepreciationRateApplied" class="form-control" />
-                            <span asp-validation-for="DepreciationRateApplied" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="Discrepancies">Discrepancies</label>
-                            <textarea asp-for="Discrepancies" class="form-control"></textarea>
-                            <span asp-validation-for="Discrepancies" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="PlaceOfInspection">Place Of Inspection</label>
-                            <input asp-for="PlaceOfInspection" class="form-control" />
-                            <span asp-validation-for="PlaceOfInspection" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="InspectionDate">Inspection Date</label>
-                            <input asp-for="InspectionDate" class="form-control" />
-                            <span asp-validation-for="InspectionDate" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="SurveyRemark">Survey Remark</label>
-                            <textarea asp-for="SurveyRemark" class="form-control"></textarea>
-                            <span asp-validation-for="SurveyRemark" class="text-danger"></span>
-                        </div>
-                    </div>
-
-
-
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="SupportingEvidences">Supporting Evidences <i class="text-danger">*</i></label>

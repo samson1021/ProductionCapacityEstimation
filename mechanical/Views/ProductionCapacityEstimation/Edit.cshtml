@@ -1,10 +1,8 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
-@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums
+@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation
 
 @* @{
     ViewData["Title"] = "Edit Production Capacity Estimation";
-    var myCase = ViewData["case"] as CaseReturntDto;
-    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
 } *@
 
 <section class="content-header">
@@ -29,14 +27,17 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                    Production Capacity Estimation
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Edit Icon">
+                    Edit Production Capacity Estimation
                 </h3>
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Edit">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CaseId" />
+                    <input type="hidden" asp-for="CreatedBy" />
+                    <input type="hidden" asp-for="CreatedAt" />
 
                     <div class="row">
                         <div class="form-group col-xl-10">
@@ -145,20 +146,42 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="SupportingEvidences">Supporting Evidences <i class="text-danger">*</i></label>
+                            <label asp-for="SupportingEvidences">Supporting Evidences</label>
                             <input asp-for="SupportingEvidences" type="file" class="form-control" multiple />
                             <span asp-validation-for="SupportingEvidences" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="ProductionProcessFlowDiagrams">Production Process Flow Diagrams <i class="text-danger">*</i></label>
+                            <label asp-for="ProductionProcessFlowDiagrams">Production Process Flow Diagrams</label>
                             <input asp-for="ProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
                             <span asp-validation-for="ProductionProcessFlowDiagrams" class="text-danger"></span>
                         </div>
                     </div>
+                    
                     <div class="row">
-                        <button type="submit" class="col-xl-4 btn bg-purple">Save Changes</button>
+                        <div class="form-group col-xl-12">
+                            <label asp-for="Status" class="control-label">Status</label>
+                            <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<Status>()" id="status"></select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row" id="rejectionReasonRow" style="display: none;">
+                        <div class="form-group col-xl-12">
+                            <label asp-for="RejectionReason" class="control-label">Rejection Reason</label>
+                            <input asp-for="RejectionReason" class="form-control" />
+                            <span asp-validation-for="RejectionReason" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <button type="submit" class="col-xl-4 btn bg-purple">Save</button>
+                        <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
+                    </div>
+                    <div class="row">
+                        <button type="submit" class="col-xl-4 btn bg-purple">Save</button>
                         <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
                     </div>
                 </form>
@@ -172,9 +195,8 @@
     <script>
         $(document).ready(function () {
             // Handle dynamic display of functionality reasons
-            $("#MachineFunctionalityStatus").change(function () {
-                var selectedStatus = $(this).val();
-                if (selectedStatus === 'NotFunctional') {
+            $("#MachineFunctionalityStatus").change(function () {              
+                if ($(this).val() === 'NotFunctional') {
                     $("#functionalityReasonRow").show();
                 } else {
                     $("#functionalityReasonRow").hide();
@@ -183,11 +205,29 @@
             });
 
             $("#MachineFunctionalityReason").change(function () {
-                var selectedReason = $(this).val();
-                if (selectedReason === 'Other') {
+                if ($(this).val() === 'Other') {
                     $("#otherReasonRow").show();
                 } else {
                     $("#otherReasonRow").hide();
+                }
+            });
+
+            function calculateTotalFee() {
+                var feePerUnit = parseFloat($('#estimationFeePerUnit').val()) || 0;
+                var quantity = parseInt($('#quantity').val()) || 0;
+                var totalFee = feePerUnit * quantity;
+                $('#totalFee').val(totalFee.toFixed(2));
+            }
+
+            $('#estimationFeePerUnit, #quantity').on('input', function() {
+                calculateTotalFee();
+            });
+            
+            $("#status").change(function () {
+                if ($(this).val() ===  '@((int)Status.Rejected)') {
+                    $("#rejectionReasonRow").show();
+                } else {
+                    $("#rejectionReasonRow").hide();
                 }
             });
         });

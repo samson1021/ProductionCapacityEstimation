@@ -1,8 +1,8 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
 
-@* @{
+@{
     ViewData["Title"] = "Delete Production Capacity Estimation";
-} *@
+}
 
 <section class="content-header">
     <div class="container-fluid">
@@ -35,9 +35,9 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
                     <p>Are you sure you want to delete this estimation?</p>
-
+                    
                     <!-- Display fields in read-only mode -->
-                    @Html.Partial("_ProductionCapacityEstimationDetail", Model)
+                    @Html.Partial("_ProductionCapacityEstimationDeletePartial.cshtml", Model)
 
                     <div class="row">
                         <button type="submit" class="col-xl-4 btn bg-danger">Delete</button>

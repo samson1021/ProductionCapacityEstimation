@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 
@@ -11,9 +12,11 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    partial class CbeContextModelSnapshot : ModelSnapshot
+    [Migration("20240613124303_Phase2UpdatedEntityAndDTOsOptional2")]
+    partial class Phase2UpdatedEntityAndDTOsOptional2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1095,18 +1098,6 @@ namespace mechanical.Migrations
                     b.Property<int?>("OverallActualCurrentPlantCapacity")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("PerDayProduction")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PerMonthProduction")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PerShiftProduction")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PerYearProduction")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int?>("PhaseOfOutput")
                         .HasColumnType("int");
 
@@ -1129,8 +1120,8 @@ namespace mechanical.Migrations
                     b.Property<int?>("ShiftsPerDay")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SurveyRemark")
                         .HasColumnType("nvarchar(max)");

@@ -1,5 +1,5 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.CollateralEstimationFeeDto
-@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums
+@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.Collateral
 
 @{
     ViewData["Title"] = "Create Collateral Estimation Fee";
@@ -41,6 +41,7 @@
                             <span asp-validation-for="CollateralClass" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CollateralCategory">Collateral Category <i class="text-danger">*</i></label>
@@ -48,6 +49,7 @@
                             <span asp-validation-for="CollateralCategory" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="UnitOfMeasure">Unit of Measure <i class="text-danger">*</i></label>
@@ -55,18 +57,28 @@
                             <span asp-validation-for="UnitOfMeasure" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="EstimationFeePerUnit">Estimation Fee Per Unit <i class="text-danger">*</i></label>
-                            <input asp-for="EstimationFeePerUnit" class="form-control" />
+                            <input asp-for="EstimationFeePerUnit" class="form-control" id="estimationFeePerUnit" />
                             <span asp-validation-for="EstimationFeePerUnit" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="Quantity">Quantity <i class="text-danger">*</i></label>
-                            <input asp-for="Quantity" class="form-control" />
+                            <input asp-for="Quantity" class="form-control" id="quantity" />
                             <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="TotalFee">Total Fee <i class="text-danger">*</i></label>
+                            <input asp-for="TotalFee" class="form-control" readonly id="totalFee" />
+                            <span asp-validation-for="TotalFee" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -82,4 +94,18 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+    <script>
+        $(document).ready(function() {
+            function calculateTotalFee() {
+                var feePerUnit = parseFloat($('#estimationFeePerUnit').val()) || 0;
+                var quantity = parseInt($('#quantity').val()) || 0;
+                var totalFee = feePerUnit * quantity;
+                $('#totalFee').val(totalFee.toFixed(2));
+            }
+
+            $('#estimationFeePerUnit, #quantity').on('input', function() {
+                calculateTotalFee();
+            });
+        });
+    </script>
 }
