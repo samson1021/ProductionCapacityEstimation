@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using mechanical.Data;
 using mechanical.Models;
@@ -30,6 +31,51 @@ namespace mechanical.Data
                     idProperty.ValueGeneratedOnAdd();
                 }
             }
+
+            // modelBuilder.Entity<ProductionCapacityEstimation>()
+            //     .HasMany(e => e.SupportingEvidences)
+            //     .WithOne(f => f.PCE)
+            //     .HasForeignKey(f => f.PCEId)
+            //     .OnDelete(DeleteBehavior.Cascade);
+
+            // modelBuilder.Entity<ProductionCapacityEstimation>()
+            //     .HasMany(e => e.ProductionProcessFlowDiagrams)
+            //     .WithOne(f => f.PCE)
+            //     .HasForeignKey(f => f.PCEId)
+            //     .OnDelete(DeleteBehavior.Cascade);            
+            
+            modelBuilder.Entity<ProductionCapacityEstimation>()
+                .HasMany(p => p.SupportingDocuments)
+                .WithOne(f => f.PCE)
+                .HasForeignKey(f => f.PCEId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder);
+
+            var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
+                v => v.ToTimeSpan(),
+                v => TimeOnly.FromTimeSpan(v));
+
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+                v => v.ToDateTime(TimeOnly.MinValue),
+                v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<TimePeriod>(entity =>
+            {
+                entity.Property(e => e.Start).HasConversion(timeOnlyConverter);
+                entity.Property(e => e.End).HasConversion(timeOnlyConverter);
+            });
+
+            modelBuilder.Entity<DatePeriod>(entity =>
+            {
+                entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
+                entity.Property(e => e.End).HasConversion(dateOnlyConverter);
+            });
+
+            modelBuilder.Entity<ProductionCapacityEstimation>(entity =>
+            {
+                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
+            });
         }
         public CbeContext(DbContextOptions<CbeContext> options) : base(options)
         {
@@ -51,6 +97,7 @@ namespace mechanical.Data
         ///////
         public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
         public virtual DbSet<ProductionCapacityEstimation> ProductionCapacityEstimations { get; set; }
+        public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<ProductionCapacitySchedule> ProductionCapacitySchedules { get; set; }
         ///////
 

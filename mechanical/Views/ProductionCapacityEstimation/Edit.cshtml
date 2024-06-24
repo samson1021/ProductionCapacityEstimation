@@ -35,7 +35,7 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Edit">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="CaseId" />
+                    <input type="hidden" asp-for="PCECaseId" />
                     <input type="hidden" asp-for="CreatedBy" />
                     <input type="hidden" asp-for="CreatedAt" />
 
@@ -48,16 +48,16 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="TypeOfOutput">Type of Output <i class="text-danger">*</i></label>
-                            <input asp-for="TypeOfOutput" class="form-control" />
-                            <span asp-validation-for="TypeOfOutput" class="text-danger"></span>
+                            <label asp-for="OutputType">Type of Output <i class="text-danger">*</i></label>
+                            <input asp-for="OutputType" class="form-control" />
+                            <span asp-validation-for="OutputType" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>
-                            <input asp-for="CountryOfOrigin" class="form-control" />
-                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
+                            <label asp-for="OriginCountry">Country of Origin <i class="text-danger">*</i></label>
+                            <input asp-for="OriginCountry" class="form-control" />
+                            <span asp-validation-for="OriginCountry" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
@@ -76,23 +76,23 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="EffectiveProductionHourPerShift">Effective Production Hour Per Shift <i class="text-danger">*</i></label>
-                            <input asp-for="EffectiveProductionHourPerShift" class="form-control" />
-                            <span asp-validation-for="EffectiveProductionHourPerShift" class="text-danger"></span>
+                            <label asp-for="EffectiveProductionHour">Effective Production Hour<i class="text-danger">*</i></label>
+                            <input asp-for="EffectiveProductionHour" class="form-control" />
+                            <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="ProductionPerHour">Production Per Hour <i class="text-danger">*</i></label>
-                            <input asp-for="ProductionPerHour" class="form-control" />
-                            <span asp-validation-for="ProductionPerHour" class="text-danger"></span>
+                            <label asp-for="EffectiveProductionHourType">Production Hour Type<i class="text-danger">*</i></label>
+                            <input asp-for="EffectiveProductionHourType" class="form-control" />
+                            <span asp-validation-for="EffectiveProductionHourType" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="UnitOfProduction">Unit of Production <i class="text-danger">*</i></label>
-                            <select asp-for="UnitOfProduction" class="form-control" asp-items="Html.GetEnumSelectList<UnitOfProduction>()"></select>
-                            <span asp-validation-for="UnitOfProduction" class="text-danger"></span>
+                            <label asp-for="ProductionUnit">Unit of Production <i class="text-danger">*</i></label>
+                            <select asp-for="ProductionUnit" class="form-control" asp-items="Html.GetEnumSelectList<ProductionUnit>()"></select>
+                            <span asp-validation-for="ProductionUnit" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">

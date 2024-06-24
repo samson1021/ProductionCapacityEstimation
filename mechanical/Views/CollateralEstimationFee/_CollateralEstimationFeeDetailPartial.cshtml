@@ -1,38 +1,72 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.CollateralEstimationFeeDto
+@using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.Collateral
 
-<dl class="row">
-    <dt class="col-sm-3">Collateral Class</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.CollateralClass" />
-    </dd>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Collateral Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Collateral Information</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CollateralClass)</dt>
+                        <dd class="col-sm-8">
+                            <h6><strong>@Html.DisplayFor(model => model.CollateralClass)</strong></h6>
+                        </dd>
 
-    <dt class="col-sm-3">Collateral Category</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.CollateralCategory" />
-    </dd>
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CollateralCategory)</dt>
+                        <dd class="col-sm-8">
+                            <h6><strong>@Html.DisplayFor(model => model.CollateralCategory)</strong></h6>
+                        </dd>
 
-    <dt class="col-sm-3">Unit of Measure</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.UnitOfMeasure" />
-    </dd>
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UnitOfMeasure)</dt>
+                        <dd class="col-sm-8">
+                            <h6><strong>@Html.DisplayFor(model => model.UnitOfMeasure)</strong></h6>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
 
-    <dt class="col-sm-3">Estimation Fee Per Unit</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.EstimationFeePerUnit" />
-    </dd>
+        <!-- Fee Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Fee Information</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.EstimationFeePerUnit)</dt>
+                        <dd class="col-sm-6">
+                            <h6><strong>@Html.DisplayFor(model => model.EstimationFeePerUnit)</strong></h6>
+                        </dd>
 
-    <dt class="col-sm-3">Quantity</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.Quantity" />
-    </dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Quantity)</dt>
+                        <dd class="col-sm-6">
+                            <h6><strong>@Html.DisplayFor(model => model.Quantity)</strong></h6>
+                        </dd>
 
-    <dt class="col-sm-3">Total Fee</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.TotalFee" />
-    </dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.TotalFee)</dt>
+                        <dd class="col-sm-6">
+                            <h6><strong>@Html.DisplayFor(model => model.TotalFee)</strong></h6>
+                        </dd>
 
-    <dt class="col-sm-3">Rejection Reason</dt>
-    <dd class="col-sm-9">
-        <input class="form-control-plaintext" readonly value="@Model.RejectionReason" />
-    </dd>
-</dl>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Status)</dt>
+                        <dd class="col-sm-6">
+                            <h6><strong>@Html.DisplayFor(model => model.Status)</strong></h6>
+                        </dd>
+                        @if (Model.Status == FeeStatus.Rejected)
+                        {
+                            <dt class="col-sm-6">@Html.DisplayNameFor(model => model.RejectionReason)</dt>
+                            <dd class="col-sm-6">
+                                <h6><strong>@Html.DisplayFor(model => model.RejectionReason)</strong></h6>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

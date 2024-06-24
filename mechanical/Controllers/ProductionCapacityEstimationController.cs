@@ -15,23 +15,37 @@ using mechanical.Models;
 using mechanical.Models.Dto.ProductionCapacityDto;
 using mechanical.Models.Entities.ProductionCapacity;
 using mechanical.Services.ProductionCapacityService;
-using mechanical.Services.UploadFileService;
+// using mechanical.Services.UploadFileService;
+
+
+
 
 namespace mechanical.Controllers
 {
     public class ProductionCapacityEstimationController : BaseController
     {
         private readonly IProductionCapacityEstimationService _productionCapacityEstimationService;
-        private readonly IUploadFileService _uploadFileService;
         private readonly ILogger<ProductionCapacityEstimationController> _logger;
         private readonly IMapper _mapper;
+        // private readonly IUploadFileService _uploadFileService;
 
-        public ProductionCapacityEstimationController(IMapper mapper, IProductionCapacityEstimationService productionCapacityEstimationService, IUploadFileService uploadFileService, ILogger<ProductionCapacityEstimationController> logger)
-        {
+        // private readonly IPCECaseService _PCEcaseService;
+        // private readonly IPCECaseScheduleService _PCEcaseScheduleService;
+        // private readonly IPCECaseTerminateService _PCEcaseTermnateService;
+
+
+        public ProductionCapacityEstimationController(IMapper mapper, IProductionCapacityEstimationService productionCapacityEstimationService, ILogger<ProductionCapacityEstimationController> logger) 
+            // IPCECaseService PCEcaseService, IPCECaseTerminateService PCEcaseTermnateService, IPCECaseScheduleService PCEcaseScheduleService)
+       
+{
             _productionCapacityEstimationService = productionCapacityEstimationService;
-            _uploadFileService = uploadFileService;
             _mapper = mapper;
             _logger = logger;
+            // _uploadFileService = uploadFileService;
+
+            // _PCEcaseService = PCEcaseService;
+            // _PCEcaseScheduleService = PCEcaseScheduleService;
+            // _PCEcaseTermnateService = PCEcaseTermnateService;
         }
 
         [HttpGet]
@@ -43,18 +57,18 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductionCapacityEstimationDto productionCapacityEstimationDto)
+        public async Task<IActionResult> Create(Guid PCEcaseId, ProductionCapacityEstimationDto productionCapacityEstimationDto)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var productionCapacityEstimation = await _productionCapacityEstimationService.CreateProductionCapacityEstimation(base.GetCurrentUserId(), productionCapacityEstimationDto);
+                    var productionCapacityEstimation = await _productionCapacityEstimationService.CreateProductionCapacityEstimation(base.GetCurrentUserId(), PCEcaseId, productionCapacityEstimationDto);
                     /////
-                    productionCapacityEstimation.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(productionCapacityEstimation.EffectiveProductionHourPerShift, productionCapacityEstimation.ProductionPerHour);
-                    productionCapacityEstimation.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(productionCapacityEstimation.ShiftsPerDay, productionCapacityEstimation.PerShiftProduction);
-                    productionCapacityEstimation.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(productionCapacityEstimation.WorkingDaysPerMonth, productionCapacityEstimation.PerDayProduction);
-                    productionCapacityEstimation.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(productionCapacityEstimation.PerMonthProduction);
+                    // productionCapacityEstimation.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(productionCapacityEstimation.EffectiveProductionHourPerShift, productionCapacityEstimation.ProductionPerHour);
+                    // productionCapacityEstimation.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(productionCapacityEstimation.ShiftsPerDay, productionCapacityEstimation.PerShiftProduction);
+                    // productionCapacityEstimation.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(productionCapacityEstimation.WorkingDaysPerMonth, productionCapacityEstimation.PerDayProduction);
+                    // productionCapacityEstimation.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(productionCapacityEstimation.PerMonthProduction);
                     //////
                     return RedirectToAction("NewEstimations");
                     return RedirectToAction("Detail", new { id = productionCapacityEstimation.Id });
@@ -98,10 +112,10 @@ namespace mechanical.Controllers
                     var productionCapacityEstimation = await _productionCapacityEstimationService.EditProductionCapacityEstimation(base.GetCurrentUserId(), id, productionCapacityEstimationDto);
                     
                     //////
-                    productionCapacityEstimation.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(productionCapacityEstimation.EffectiveProductionHourPerShift, productionCapacityEstimation.ProductionPerHour);
-                    productionCapacityEstimation.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(productionCapacityEstimation.ShiftsPerDay, productionCapacityEstimation.PerShiftProduction);
-                    productionCapacityEstimation.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(productionCapacityEstimation.WorkingDaysPerMonth, productionCapacityEstimation.PerDayProduction);
-                    productionCapacityEstimation.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(productionCapacityEstimation.PerMonthProduction);
+                    // productionCapacityEstimation.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(productionCapacityEstimation.EffectiveProductionHourPerShift, productionCapacityEstimation.ProductionPerHour);
+                    // productionCapacityEstimation.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(productionCapacityEstimation.ShiftsPerDay, productionCapacityEstimation.PerShiftProduction);
+                    // productionCapacityEstimation.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(productionCapacityEstimation.WorkingDaysPerMonth, productionCapacityEstimation.PerDayProduction);
+                    // productionCapacityEstimation.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(productionCapacityEstimation.PerMonthProduction);
                     ///////
 
                     return RedirectToAction("NewEstimations");
@@ -288,42 +302,6 @@ namespace mechanical.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UploadSupportingEvidence(IFormFile supportingEvidence, Guid estimationId)
-        {
-            try
-            {
-                if (await _productionCapacityEstimationService.UploadSupportingEvidence(base.GetCurrentUserId(), supportingEvidence, estimationId))
-                {
-                    return Ok();
-                }
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading supporting evidence for estimation ID {EstimationId}", estimationId);
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UploadProcessFlowDiagram(IFormFile processFlowDiagram, Guid estimationId)
-        {
-            try
-            {
-                if (await _productionCapacityEstimationService.UploadProcessFlowDiagram(base.GetCurrentUserId(), processFlowDiagram, estimationId))
-                {
-                    return Ok();
-                }
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading process flow diagram for estimation ID {EstimationId}", estimationId);
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetDashboardEstimationCount()
         {
@@ -367,7 +345,108 @@ namespace mechanical.Controllers
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
+        
+        [HttpGet]
+        public IActionResult MyPCECases()
+        {
+            return View();
+        }
+        
+        // [HttpGet]
+        // public async Task<IActionResult> MyPCECase(Guid Id)
+        // {
+        //     var PCEcase = await _PCEcaseService.GetPCECaseDetail(Id);
+        //     var PCEcaseSchedule = await _PCEcaseScheduleService.GetPCECaseSchedules(Id);
+        //     var PCEcaseTerminate = await _PCEcaseTermnateService.GetPCECaseTerminates(Id);
+        //     ViewData["PCEcaseTerminate"] = PCEcaseTerminate;
+        //     if (PCEcase == null) { return RedirectToAction("NewPCECases"); }
+        //     ViewData["PCEcase"] = PCEcase;
+        //     ViewData["PCECaseSchedule"] = PCEcaseSchedule;
+        //     ViewData["Id"]=base.GetCurrentUserId();
+        //     return View();
+        // }
 
+        // public IActionResult RemarkPCECases()
+        // {
+        //     return View();
+        // }
+
+        // [HttpGet]
+        // public async Task<IActionResult> GetRemarkedCases()
+        // {
+        //     var myPCECase = await _mOCaseService.GetMoRemarkedCases(GetCurrentUserId());
+        //     if (myPCECase == null) { return BadRequest("Unable to load case"); }
+        //     string jsonData = JsonConvert.SerializeObject(myPCECase);
+        //     return Content(jsonData, "application/json");
+        // }
+        // [HttpGet]
+        // public async Task<IActionResult> GetMyPCECases()
+        // {
+        //     var myPCECase = await _mOCaseService.GetMMNewCases(GetCurrentUserId());
+        //     if (myPCECase == null) { return BadRequest("Unable to load case"); }
+        //     string jsonData = JsonConvert.SerializeObject(myPCECase);
+        //     return Content(jsonData, "application/json");
+        // }
+        // [HttpGet]
+        // public IActionResult MypendingCase()
+        // {
+
+        //     return View();
+        // }
+        // [HttpGet]
+        // public async Task<IActionResult> GetMyPendingCases()
+        // {
+        //     var myPCECase = await _mOCaseService.GetMMPendingCases(GetCurrentUserId());
+        //     if (myPCECase == null) { return BadRequest("Unable to load case"); }
+        //     string jsonData = JsonConvert.SerializeObject(myPCECase);
+        //     return Content(jsonData, "application/json");
+        // }
+        
+        [HttpGet]
+        public async Task<IActionResult> Evaluation(Guid id)
+        {
+            try
+            {
+                var productionCapacityEstimation = await _productionCapacityEstimationService.GetProductionCapacityEstimation(base.GetCurrentUserId(), id);
+                
+                // return RedirectToAction("Create", "PCE", new { Id = Id });
+                
+            
+                string jsonData = JsonConvert.SerializeObject(productionCapacityEstimation);
+
+                return Content(jsonData, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Production Capacity Estimation for editing, ID {Id}", id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+
+
+        // public async Task<IActionResult>ReEvaluation(Guid Id)
+        // {
+        //     var collateral = await _productionCapacityEstimationService.GetCollateral(base.GetCurrentUserId(), Id);
+        //     if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
+        //     {
+        //         return RedirectToAction("GetReturnedEvaluatedPCE", "MotorVehicle", new { Id = Id });
+        //     }
+        
+        //     string jsonData = JsonConvert.SerializeObject(collateral);
+        //     return Content(jsonData, "application/json");
+        // }
+        // [HttpGet]
+        // public async Task<IActionResult> MyPendDetail(Guid Id)
+        // {
+        //     var PCEcase = await _caseService.GetPCECaseDetail(Id);
+        //     var caseSchedule = await _caseScheduleService.GetPCECaseSchedules(Id);
+        //     if (PCEcase == null) { return RedirectToAction("NewCases"); }
+        //     ViewData["case"] = PCEcase;
+        //     ViewData["CaseSchedule"] = caseSchedule;
+        //     ViewData["Id"] = base.GetCurrentUserId();
+        //     return View();
+        // }
+ 
         public async Task<ActionResult> Delete(Guid id)
         {
             try
@@ -405,5 +484,41 @@ namespace mechanical.Controllers
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
+
+        // [HttpPost]
+        // public async Task<IActionResult> UploadSupportingEvidence(IFormFile supportingEvidence, Guid estimationId)
+        // {
+        //     try
+        //     {
+        //         if (await _productionCapacityEstimationService.UploadSupportingEvidence(base.GetCurrentUserId(), supportingEvidence, estimationId))
+        //         {
+        //             return Ok();
+        //         }
+        //         return BadRequest();
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error uploading supporting evidence for estimation ID {EstimationId}", estimationId);
+        //         return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //     }
+        // }
+
+        // [HttpPost]
+        // public async Task<IActionResult> UploadProcessFlowDiagram(IFormFile processFlowDiagram, Guid estimationId)
+        // {
+        //     try
+        //     {
+        //         if (await _productionCapacityEstimationService.UploadProcessFlowDiagram(base.GetCurrentUserId(), processFlowDiagram, estimationId))
+        //         {
+        //             return Ok();
+        //         }
+        //         return BadRequest();
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error uploading process flow diagram for estimation ID {EstimationId}", estimationId);
+        //         return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //     }
+        // }
     }
 }

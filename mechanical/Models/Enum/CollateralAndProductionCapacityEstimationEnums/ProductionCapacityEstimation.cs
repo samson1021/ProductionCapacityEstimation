@@ -2,12 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation
 {
-    public enum PhaseOfOutput
+    public enum OutputPhase
     {
-        [Display(Name = "Finished Product")]
         FinishedProduct,
-
-        [Display(Name = "Raw Material for Next Line")]
         RawMaterialForNextLine
     }
 
@@ -23,10 +20,10 @@ namespace mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.
     public enum MachineFunctionalityStatus
     {
         [Display(Name = "Functional at Time of Visit")]
-        FunctionalAtTimeOfVisit,
+        Functional,
 
         [Display(Name = "Not Functional at Time of Visit")]
-        NotFunctionalAtTimeOfVisit
+        NotFunctional
     }
 
     public enum MachineFunctionalityReason
@@ -40,8 +37,8 @@ namespace mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.
         [Display(Name = "Scheduled Maintenance")]
         ScheduledMaintenance,
 
-        [Display(Name = "Others")]
-        Others
+        [Display(Name = "Other")]
+        Other
     }
 
     public enum Status
@@ -96,7 +93,7 @@ namespace mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.
         PerYear
     }
 
-    public enum UnitOfProduction
+    public enum ProductionUnit
     {
         [Display(Name = "Number")]
         Number,
@@ -158,7 +155,7 @@ namespace mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.
         [Display(Name = "Units")]
         Units,
 
-        [Display(Name = "Others")]
-        Others
+        [Display(Name = "Other")]
+        Other
     }
 }

@@ -104,6 +104,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddScoped<IProductionCapacityEstimationService, ProductionCapacityEstimationService>();
 builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 ///////////////////////////////
 
 // Add services to the container.

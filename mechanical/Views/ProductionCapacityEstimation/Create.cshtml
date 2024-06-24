@@ -1,7 +1,88 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
 @using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation
-@{
-    ViewData["Title"] = "Create Production Capacity Estimation";
+
+@section Scripts {
+    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/jszip.min.js"></script>
+    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
+    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $("#ShiftsPerDay").change(function () {
+                var shiftsPerDay = $(this).val();
+                var shiftHoursContainer = $("#shiftHoursContainer");
+
+                shiftHoursContainer.empty();
+
+                if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
+                    for (var i = 0; i < shiftsPerDay; i++) {
+                        shiftHoursContainer.append(`
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
+                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" />
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
+                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" />
+                                </div>
+                            </div>
+                        `);
+                    }
+                } else {
+                    alert("Please enter a value between 1 and 5 for Shifts Per Day.");
+                }
+            });
+
+            $("#ShiftsPerDay").attr({
+                "min": 1,
+                "max": 5
+            });
+
+            $("#MachineFunctionalityStatus").change(function () {
+                var selectedStatus = $(this).val();
+                if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
+                    $("#functionalityReasonRow").show();
+                } else {
+                    $("#functionalityReasonRow").hide();
+                    $("#otherReasonRow").hide();
+                }
+            });
+
+            $("#MachineFunctionalityReason").change(function () {
+                var selectedReason = $(this).val();
+                if (selectedReason === '@((int)MachineFunctionalityReason.Other)') {
+                    $("#otherReasonRow").show();
+                } else {
+                    $("#otherReasonRow").hide();
+                }
+            });
+
+            $("#Status").change(function () {
+                var selectedStatus = $(this).val();
+                if (selectedStatus === '@((int)Status.Rejected)') {
+                    $("#rejectionReasonRow").show();
+                } else {
+                    $("#rejectionReasonRow").hide();
+                }
+            });
+
+            $("button[data-toggle='tab']").on("click", function (e) {
+                var targetTab = $(this).attr("href");
+                $('.nav-tabs a[href="' + targetTab + '"]').tab('show');
+            });
+        });
+    </script>
 }
 
 <section class="content-header">
@@ -33,158 +114,253 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
                     @Html.AntiForgeryToken()
 
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="ProductionLineOrEquipmentName">Production Line/Equipment Name <i class="text-danger">*</i></label>
-                            <input asp-for="ProductionLineOrEquipmentName" class="form-control" />
-                            <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger"></span>
+                    <!-- Tabs Navigation -->
+                    <ul class="nav nav-tabs" id="estimationTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="general-info-tab" data-toggle="tab" href="#general-info" role="tab" aria-controls="general-info" aria-selected="true">General Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="capacity-info-tab" data-toggle="tab" href="#capacity-info" role="tab" aria-controls="capacity-info" aria-selected="false">Capacity Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="inspection-info-tab" data-toggle="tab" href="#inspection-info" role="tab" aria-controls="inspection-info" aria-selected="false">Inspection Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="additional-info-tab" data-toggle="tab" href="#additional-info" role="tab" aria-controls="additional-info" aria-selected="false">Additional Information</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Contents -->
+                    <div class="tab-content" id="estimationTabsContent">
+                        <!-- General Information Tab -->
+                        <div class="tab-pane fade show active" id="general-info" role="tabpanel" aria-labelledby="general-info-tab">
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
+                                    <input asp-for="ProductionLineOrEquipmentName" class="form-control form-control-sm" required />
+                                    <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.OriginCountry) <i class="text-danger">*</i></label>
+                                    <input asp-for="OriginCountry" class="form-control form-control-sm" required />
+                                    <span asp-validation-for="OriginCountry" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.OutputType) <i class="text-danger">*</i></label>
+                                    <input asp-for="OutputType" class="form-control form-control-sm" required />
+                                    <span asp-validation-for="OutputType" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
+                                    <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" required></select>
+                                    <span asp-validation-for="OutputPhase" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour) <i class="text-danger">*</i></label>
+                                    <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" required />
+                                    <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.EffectiveProductionHourType) <i class="text-danger">*</i></label>
+                                    <select asp-for="EffectiveProductionHourType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionHourType>()" required></select>
+                                    <span asp-validation-for="EffectiveProductionHourType" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
+                                    <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" required />
+                                    <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label>@Html.DisplayNameFor(model => model.ShiftsPerDay) <i class="text-danger">*</i></label>
+                                    <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" required />
+                                    <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-5" id="shiftHoursContainer"></div>
+                            </div>
+                            <div class="row mt-3">                                
+                                <div class="col-xl-11"></div>
+                                <button type="button" class="col-xl-1 btn btn-primary" data-toggle="tab" href="#capacity-info">Next</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="TypeOfOutput">Type of Output <i class="text-danger">*</i></label>
-                            <input asp-for="TypeOfOutput" class="form-control" />
-                            <span asp-validation-for="TypeOfOutput" class="text-danger"></span>
+
+                        <!-- Capacity Information Tab -->
+                        <div class="tab-pane fade" id="capacity-info" role="tabpanel" aria-labelledby="capacity-info-tab">
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.DesignProductionCapacity) <i class="text-danger">*</i></label>
+                                    <input asp-for="DesignProductionCapacity" class="form-control form-control-sm" type="number" step="0.01" required />
+                                    <span asp-validation-for="DesignProductionCapacity" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.AttainableProductionCapacity) <i class="text-danger">*</i></label>
+                                    <input asp-for="AttainableProductionCapacity" class="form-control form-control-sm" type="number" step="0.01" required />
+                                    <span asp-validation-for="AttainableProductionCapacity" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.ActualProductionCapacity) <i class="text-danger">*</i></label>
+                                    <input asp-for="ActualProductionCapacity" class="form-control form-control-sm" type="number" step="0.01" required />
+                                    <span asp-validation-for="ActualProductionCapacity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.EstimatedProductionCapacity)</label>
+                                    <input asp-for="EstimatedProductionCapacity" class="form-control form-control-sm" type="number" step="0.01" />
+                                    <span asp-validation-for="EstimatedProductionCapacity" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.BottleneckProductionLineCapacity)</label>
+                                    <input asp-for="BottleneckProductionLineCapacity" class="form-control form-control-sm" type="number" />
+                                    <span asp-validation-for="BottleneckProductionLineCapacity" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.OverallActualCurrentPlantCapacity)</label>
+                                    <input asp-for="OverallActualCurrentPlantCapacity" class="form-control form-control-sm" type="number" />
+                                    <span asp-validation-for="OverallActualCurrentPlantCapacity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.ProductionUnit) <i class="text-danger">*</i></label>
+                                    <select asp-for="ProductionUnit" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionUnit>()" required></select>
+                                    <span asp-validation-for="ProductionUnit" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.ProductionMeasurement)</label>
+                                    <select asp-for="ProductionMeasurement" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionMeasurement>()"></select>
+                                    <span asp-validation-for="ProductionMeasurement" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.DepreciationRateApplied)</label>
+                                    <input asp-for="DepreciationRateApplied" class="form-control form-control-sm" type="number" step="0.01" />
+                                    <span asp-validation-for="DepreciationRateApplied" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label>@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</label>
+                                    <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control form-control-sm"></textarea>
+                                    <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>@Html.DisplayNameFor(model => model.Discrepancies)</label>
+                                    <textarea asp-for="Discrepancies" class="form-control form-control-sm"></textarea>
+                                    <span asp-validation-for="Discrepancies" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <button type="button" class="col-xl-1 btn btn-secondary" data-toggle="tab" href="#general-info">Back</button>
+                                <div class="col-xl-10"></div>
+                                <button type="button" class="col-xl-1 btn btn-primary" data-toggle="tab" href="#inspection-info">Next</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>
-                            <input asp-for="CountryOfOrigin" class="form-control" />
-                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
+
+                        <!-- Inspection Information Tab -->
+                        <div class="tab-pane fade" id="inspection-info" role="tabpanel" aria-labelledby="inspection-info-tab">
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <i class="text-danger">*</i></label>
+                                    <select asp-for="MachineFunctionalityStatus" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()" required></select>
+                                    <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4" id="functionalityReasonRow" style="display: none;">
+                                    <label>@Html.DisplayNameFor(model => model.MachineFunctionalityReason) <i class="text-danger">*</i></label>
+                                    <select asp-for="MachineFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityReason>()" required></select>
+                                    <span asp-validation-for="MachineFunctionalityReason" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4" id="otherReasonRow" style="display: none;">
+                                    <label>@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason) <i class="text-danger">*</i></label>
+                                    <input asp-for="OtherMachineFunctionalityReason" class="form-control form-control-sm" required />
+                                    <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-4">
+                                    <label>@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</label>
+                                    <select asp-for="TechnicalObsolescenceStatus" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()"></select>
+                                    <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>Inspection Started At</label>
+                                    <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" />
+                                    <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>Inspection Ended At</label>
+                                    <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" />
+                                    <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
+                                </div>
+                            </div>   
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-6">
+                                    <label>@Html.DisplayNameFor(model => model.SupportingEvidences) <i class="text-danger">*</i></label>
+                                    <input asp-for="SupportingEvidences" type="file" class="form-control form-control-sm" multiple required />
+                                    <span asp-validation-for="SupportingEvidences" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>@Html.DisplayNameFor(model => model.ProductionProcessFlowDiagrams) <i class="text-danger">*</i></label>
+                                    <input asp-for="ProductionProcessFlowDiagrams" type="file" class="form-control form-control-sm" multiple required />
+                                    <span asp-validation-for="ProductionProcessFlowDiagrams" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <button type="button" class="col-xl-1 btn btn-secondary" data-toggle="tab" href="#capacity-info">Back</button>
+                                <div class="col-xl-10"></div>
+                                <button type="button" class="col-xl-1 btn btn-primary" data-toggle="tab" href="#additional-info">Next</button>
+                            </div>
+                            
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="ShiftsPerDay">Shifts Per Day <i class="text-danger">*</i></label>
-                            <input asp-for="ShiftsPerDay" class="form-control" />
-                            <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
+
+                        <!-- Additional Information Tab -->
+                        <div class="tab-pane fade" id="additional-info" role="tabpanel" aria-labelledby="additional-info-tab">
+                            
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-12">
+                                    <label>@Html.DisplayNameFor(model => model.SurveyRemark)</label>
+                                    <textarea asp-for="SurveyRemark" class="form-control form-control-sm"></textarea>
+                                    <span asp-validation-for="SurveyRemark" class="text-danger"></span>
+                                </div>
+                            </div>    
+                            <div class="row mt-3">
+                                <div class="form-group col-lg-2">
+                                    <label>@Html.DisplayNameFor(model => model.Status)</label>
+                                    <select asp-for="Status" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<Status>()"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4"></div>
+                                <div class="form-group col-lg-3">
+                                    <label>@Html.DisplayNameFor(model => model.InspectionPlace)</label>
+                                    <input asp-for="InspectionPlace" class="form-control form-control-sm" />
+                                    <span asp-validation-for="InspectionPlace" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label>@Html.DisplayNameFor(model => model.InspectionDate)</label>
+                                    <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" />
+                                    <span asp-validation-for="InspectionDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-12" id="rejectionReasonRow" style="display: none;">
+                                    <label>@Html.DisplayNameFor(model => model.RejectionReason)</label>
+                                    <textarea asp-for="RejectionReason" class="form-control form-control-sm"></textarea>
+                                    <span asp-validation-for="RejectionReason" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <button type="button" class="col-xl-1 btn btn-secondary" data-toggle="tab" href="#inspection-info">Back</button>
+                                <div class="col-xl-4"></div>
+                                <a asp-action="Index" class="col-xl-2 btn btn-secondary">Back to List</a>
+                                <div class="col-xl-4"></div>
+                                <button type="submit" class="col-xl-1 btn bg-purple">Create</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="WorkingDaysPerMonth">Working Days Per Month <i class="text-danger">*</i></label>
-                            <input asp-for="WorkingDaysPerMonth" class="form-control" />
-                            <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="EffectiveProductionHourPerShift">Effective Production Hour Per Shift <i class="text-danger">*</i></label>
-                            <input asp-for="EffectiveProductionHourPerShift" class="form-control" />
-                            <span asp-validation-for="EffectiveProductionHourPerShift" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="ProductionPerHour">Production Per Hour <i class="text-danger">*</i></label>
-                            <input asp-for="ProductionPerHour" class="form-control" />
-                            <span asp-validation-for="ProductionPerHour" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="UnitOfProduction">Unit of Production <i class="text-danger">*</i></label>
-                            <select asp-for="UnitOfProduction" class="form-control" asp-items="Html.GetEnumSelectList<UnitOfProduction>()"></select>
-                            <span asp-validation-for="UnitOfProduction" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="DesignProductionCapacity">Design Production Capacity <i class="text-danger">*</i></label>
-                            <input asp-for="DesignProductionCapacity" class="form-control" />
-                            <span asp-validation-for="DesignProductionCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="AttainableProductionCapacity">Attainable Production Capacity <i class="text-danger">*</i></label>
-                            <input asp-for="AttainableProductionCapacity" class="form-control" />
-                            <span asp-validation-for="AttainableProductionCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="ActualProductionCapacity">Actual Production Capacity <i class="text-danger">*</i></label>
-                            <input asp-for="ActualProductionCapacity" class="form-control" />
-                            <span asp-validation-for="ActualProductionCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="FactorsAffectingProductionCapacity">Factors Affecting Production Capacity <i class="text-danger">*</i></label>
-                            <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control"></textarea>
-                            <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="MachineFunctionalityStatus">Machine Functionality Status <i class="text-danger">*</i></label>
-                            <select asp-for="MachineFunctionalityStatus" class="form-control" asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()"></select>
-                            <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row" id="functionalityReasonRow" style="display: none;">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="MachineFunctionalityReason">Machine Functionality Reason <i class="text-danger">*</i></label>
-                            <select asp-for="MachineFunctionalityReason" class="form-control" asp-items="Html.GetEnumSelectList<MachineFunctionalityReason>()"></select>
-                            <span asp-validation-for="MachineFunctionalityReason" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row" id="otherReasonRow" style="display: none;">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="OtherMachineFunctionalityReason">Other Machine Functionality Reason <i class="text-danger">*</i></label>
-                            <input asp-for="OtherMachineFunctionalityReason" class="form-control" />
-                            <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="SupportingEvidences">Supporting Evidences <i class="text-danger">*</i></label>
-                            <input asp-for="SupportingEvidences" type="file" class="form-control" multiple />
-                            <span asp-validation-for="SupportingEvidences" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-10">
-                            <label asp-for="ProductionProcessFlowDiagrams">Production Process Flow Diagrams <i class="text-danger">*</i></label>
-                            <input asp-for="ProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
-                            <span asp-validation-for="ProductionProcessFlowDiagrams" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <button type="submit" class="col-xl-4 btn bg-purple">Create</button>
-                        <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
                     </div>
                 </form>
             </div>
         </div>
     </section>
 </section>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
-    <script>
-        $(document).ready(function () {
-            // Handle dynamic display of functionality reasons
-            $("#MachineFunctionalityStatus").change(function () {
-                var selectedStatus = $(this).val();
-                if (selectedStatus === 'NotFunctional') {
-                    $("#functionalityReasonRow").show();
-                } else {
-                    $("#functionalityReasonRow").hide();
-                    $("#otherReasonRow").hide();
-                }
-            });
-
-            $("#MachineFunctionalityReason").change(function () {
-                var selectedReason = $(this).val();
-                if (selectedReason === 'Other') {
-                    $("#otherReasonRow").show();
-                } else {
-                    $("#otherReasonRow").hide();
-                }
-            });
-        });
-    </script>
-}

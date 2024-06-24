@@ -8,7 +8,7 @@ namespace mechanical.Services.ProductionCapacityService
 {
     public interface IProductionCapacityEstimationService
     {
-        Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid userId, ProductionCapacityEstimationDto dto);
+        Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid userId, Guid PCEcaseId, ProductionCapacityEstimationDto dto);
         Task<ProductionCapacityEstimationDto> EditProductionCapacityEstimation(Guid userId, Guid id, ProductionCapacityEstimationDto dto);
         Task<ProductionCapacityEstimationDto> GetProductionCapacityEstimation(Guid userId, Guid id);
         Task<IEnumerable<ProductionCapacityEstimationDto>> GetAllProductionCapacityEstimations();
@@ -23,8 +23,8 @@ namespace mechanical.Services.ProductionCapacityService
         Task<int> GetMyDashboardEstimationCount(Guid userId);
         Task<bool> DeleteSupportingEvidence(Guid Id);
         Task<bool> DeleteProcessFlowDiagram(Guid Id);
-        Task<bool> UploadSupportingEvidence(Guid userId, IFormFile file, Guid caseId);
-        Task<bool> UploadProcessFlowDiagram(Guid userId, IFormFile file, Guid caseId);
         Task<bool> DeleteProductionCapacityEstimation(Guid userId, Guid id);
+        // Task<bool> UploadSupportingEvidence(Guid userId, IFormFile file, Guid PCEcaseId);
+        // Task<bool> UploadProcessFlowDiagram(Guid userId, IFormFile file, Guid PCEcaseId);
     }
 }

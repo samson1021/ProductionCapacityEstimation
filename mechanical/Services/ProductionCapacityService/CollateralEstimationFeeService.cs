@@ -38,7 +38,7 @@ namespace mechanical.Services.ProductionCapacityService
                 entity.Status = FeeStatus.New;
 
                 ////// 
-                entity.CaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                entity.PCECaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
                 entity.RejectionReason = null;
                 /////////
 
@@ -96,11 +96,11 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<CollateralEstimationFeeDto>> GetAllCollateralEstimationFees(Guid caseId)
+        public async Task<IEnumerable<CollateralEstimationFeeDto>> GetAllCollateralEstimationFees(Guid PCECaseId)
         {
             try
             {
-                var entities = await _cbeContext.CollateralEstimationFees.Where(f => f.CaseId == caseId).ToListAsync();
+                var entities = await _cbeContext.CollateralEstimationFees.Where(f => f.PCECaseId == PCECaseId).ToListAsync();
                 return _mapper.Map<IEnumerable<CollateralEstimationFeeDto>>(entities);
             }
             catch (Exception ex)
@@ -132,17 +132,17 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<bool> ValidateFees(Guid caseId)
+        public async Task<bool> ValidateFees(Guid PCECaseId)
         {
             try
             {
                 var fees = await _cbeContext.CollateralEstimationFees
-                    .Where(f => f.CaseId == caseId && f.Status == FeeStatus.Pending)
+                    .Where(f => f.PCECaseId == PCECaseId && f.Status == FeeStatus.Pending)
                     .ToListAsync();
 
                 if (!fees.Any())
                 {
-                    _logger.LogWarning("No pending fees found for case id {CaseId}", caseId);
+                    _logger.LogWarning("No pending fees found for case id {PCECaseId}", PCECaseId);
                     return false;
                 }
 
@@ -178,17 +178,17 @@ namespace mechanical.Services.ProductionCapacityService
             return fee.TotalFee == expectedTotalFee;
         }
 
-        public async Task<bool> CommitFees(Guid caseId)
+        public async Task<bool> CommitFees(Guid PCECaseId)
         {
             try
             {
                 var fees = await _cbeContext.CollateralEstimationFees
-                    .Where(f => f.CaseId == caseId && f.Status == FeeStatus.Validated)
+                    .Where(f => f.PCECaseId == PCECaseId && f.Status == FeeStatus.Validated)
                     .ToListAsync();
 
                 if (!fees.Any())
                 {
-                    _logger.LogWarning("No validated fees found for case id {CaseId}", caseId);
+                    _logger.LogWarning("No validated fees found for case id {PCECaseId}", PCECaseId);
                     return false;
                 }
 

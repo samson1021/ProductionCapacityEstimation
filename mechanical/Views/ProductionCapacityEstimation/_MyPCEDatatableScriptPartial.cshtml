@@ -1,0 +1,666 @@
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@* @model mechanical.Models.Dto.CollateralDto.CollateralPostDto; *@
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+}
+<div class="modal fade" id="addMechanicalCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Mechanical Collateral</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("AddCollateralByMO", "Collateral", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
+            {
+                <div class="modal-body" style="padding-top:0px;">
+                    <div class="card-body">
+                        <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="PropertyOwner">Property Owner<i class="text-danger">*</i></label>
+                                <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner *" required>
+                                <span id="PropertyOwner-error" asp-validation-for="PropertyOwner" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Role">Role <i class="text-danger">*</i></label>
+                                <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                                    <option value="" disabled selected>Select Role *</option>
+                                    <option value="Applicant">Applicant</option>
+                                    <option value="Guarantor">Guarantor</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Category">Category <i class="text-danger">*</i></label>
+                                <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm">
+                                    <option value="IBFEqupment" selected>IND (Mfg) & BLDG FACILITY EQUIPMENT</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Type">Type <i class="text-danger">*</i></label>
+                                <select asp-for="Type" required class="form-control form-control-sm" id="typeDropdown" onchange="handleTypeChange(this)">
+                                    <option value="" disabled selected>Select Equipment Type *</option>
+                                    <option value="IndustrialMachinery">Industrial (Mfg) Machinery</option>
+                                     <option value="BuildingFacilityEquipment">Building Facility Equipment</option>
+                                     <option value="Other">Others, please specify</option>'
+
+                                 </select>
+                                <input type="text" class="form-control form-control-sm mt-2" id="OtherType" name="Type" style="display: none;">
+                                <span asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row" id="IndusteryProp">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="MachineName">Machine Name <i class="text-danger">*</i></label>
+                                <input asp-for="MachineName" type="text" class="form-control form-control-sm" placeholder="Enter Machine Name" id="MachineName" required>
+                                <span asp-validation-for="MachineName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="Purpose">Purpose <i class="text-danger">*</i></label>
+                                <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose" required>
+                                <span asp-validation-for="Purpose" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="ModelNo">Model Number</label>
+                                <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
+                                <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="ManufactureYear">Manufactuing Year</label>
+                                <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
+                                <span asp-validation-for="ManufactureYear" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="InvoiceNo">Invoice Number</label>
+                                <input asp-for="InvoiceNo" type="text" class="form-control form-control-sm" id="InvoiceNo" placeholder="Enter Invoice Number">
+                                <span id="InvoiceNo-error" asp-validation-for="InvoiceNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="SerialNo">Serial Number</label>
+                                <input asp-for="SerialNo" type="text" class="form-control form-control-sm" id="SerialNo" placeholder="XXXXXXXXXXXX">
+                                <span id="SerialNo-error" asp-validation-for="SerialNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body" style="padding-bottom:0px;">
+                                <h5 class="text-center">Property Address</h5>
+                                <div class="row">
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="Region">Region</label>
+                                        <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)">
+                                            <option value="">Select Region</option>
+                                            <option value="Addis Ababa">Addis Ababa</option>
+                                            <option value="Afar">Afar</option>
+                                            <option value="Amhara">Amhara</option>
+                                            <option value="Benshangul">Benshangul</option>
+                                            <option value="Central Ethiopia">Central Ethiopia</option>
+                                            <option value="Diredawa">Diredawa</option>
+                                            <option value="Gambella">Gambella</option>
+                                            <option value="Harrari">Harrari</option>
+                                            <option value="Oromia">Oromia</option>
+                                            <option value="Sidama">Sidama</option>
+                                            <option value="Somalia">Somalia</option>
+                                            <option value="South western Ethiopia">South western Ethiopia</option>
+                                            <option value="Southern Ethiopia">Southern Ethiopia</option>
+                                            <option value="Tigray">Tigray</option>
+                                            <option value="Others">Others, please specify</option>
+                                        </select>
+                                        <input type="text" class="form-control form-control-sm mt-2" id="OtherRegion" name="Region" style="display: none;">
+                                        <span asp-validation-for="Region" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="Zone">Zone</label>
+                                        <input asp-for="Zone" type="text" class="form-control form-control-sm" id="Zone" placeholder="Enter Zone" oninput="validateZoneInput(this)">
+                                        <span id="Zone-error" asp-validation-for="Zone" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="City">City</label>
+                                        <input asp-for="City" type="text" class="form-control form-control-sm" id="City" placeholder="Enter City" oninput="validateCityInput(this)">
+                                        <span id="City-error" asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="SubCity">Sub-City</label>
+                                        <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="SubCity" placeholder="Enter Sub City" oninput="validateSubCityInput(this)">
+                                        <span id="SubCity-error" asp-validation-for="SubCity" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Wereda">Wereda</label>
+                                        <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="Wereda" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
+                                        <span id="Wereda-error" asp-validation-for="Wereda" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Kebele">Kebele</label>
+                                        <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="Kebele" placeholder="Enter Kebele" oninput="validateKebeleInput(this)">
+                                        <span id="Kebele-error" asp-validation-for="Kebele" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="HouseNo">House Number</label>
+                                        <input asp-for="HouseNo" type="text" class="form-control form-control-sm" id="HouseNo" placeholder="Enter House Number" oninput="validateHouseNoInput(this)">
+                                        <span id="HouseNo-error" asp-validation-for="HouseNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="TitleDeed">Title Deed</label>
+                                <input asp-for="TitleDeed" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
+                                <span asp-validation-for="TitleDeed" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CommercialInvoice">Commercial Invoice</label>
+                                <input asp-for="CommercialInvoice" type="file" class="form-control  form-control-sm" id="businessLicenseCertificate">
+                                <span asp-validation-for="CommercialInvoice" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CustomDeclaration">Custom Declaration</label>
+                                <input asp-for="CustomDeclaration" type="file" class="form-control  form-control-sm" id="ownerCertificate">
+                                <span asp-validation-for="CustomDeclaration" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="PackingList">Packing List</label>
+                                <input asp-for="PackingList" type="file" class="form-control form-control-sm" id="PackingList">
+                                <span asp-validation-for="PackingList" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="SalesDocument">Sales Agreement</label>
+                                <input asp-for="SalesDocument" type="file" class="form-control  form-control-sm" id="SalesDocument">
+                                <span asp-validation-for="SalesDocument" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="OtherDocument">Other Supportive Document</label>
+                                <input asp-for="OtherDocument" type="file" class="form-control form-control-sm" id="OtherDocument" multiple>
+                                <span asp-validation-for="OtherDocument" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Add</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var CaseId = $('#CaseId').val();
+
+        
+        function initializeDataTable(data) {
+            caseCollateralsTable = $('#caseCollaterals').DataTable({
+                language: {
+                    emptyTable: "There is no collateral register for this case"
+                },
+                responsive: true,
+                pageLength: 5,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    { data: 'PropertyOwner', width: '20%' },
+                    { data: 'Role', width: '15%' },
+                    { data: 'Category', width: '25%' },
+                    { data: 'Type', width: '25%' },
+                    {
+                        data: 'Id',
+                        width: '15%',
+                        render: function (data, type, row, meta) {
+                            var cat = row.Category;
+                            return '<a href="@Url.Action("Evaluation", "MOCase")?Id=' + data + '">Evaluation</a> | <a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details</a> | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>' + (cat === 'IND (Mfg) & BLDG FACILITY EQUIPMENT' ? ' | <a href="#" onclick="openAddCollateralModal()">Add</a>' : '');
+                        }
+                    }
+                ]
+            }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
+        }
+       
+        function loadCollaterals() {
+
+            $.ajax({
+                url: '/Collateral/GetMMCollaterals?CaseId=' + CaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
+                        var caseCollateralsTable = $('#caseCollaterals').DataTable();
+                        caseCollateralsTable.destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load collaterals");
+                    console.log(error);
+                }
+            });
+        }
+
+        loadCollaterals();
+        function loadComments() {
+            $.ajax({
+                url: '/CaseComment/GetCaseComments?caseId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseComments = data.caseComments;
+                    var countComment = data.caseComments.length;
+                    $(".CommentBage").text(countComment);
+                    console.log(countComment);
+                    var users = [];
+
+                    if (caseComments && caseComments.length > 0) {
+                        caseComments.forEach(function (comment) {
+                            var chatMsg = $('<div>').addClass('direct-chat-msg');
+                            var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+                            var chatName = $('<a>');
+
+                            var chatImg = $('<a>');
+                            var chatImgInner = $('<img>').attr('src', '/img/avatar5.png').addClass('direct-chat-img');
+                            var chatText = $('<div>').addClass('direct-chat-text');
+
+                            chatName.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.append(chatImgInner);
+
+                            var createdAt = new Date(comment.CreatedAt);
+
+
+                            chatText.text(comment.Content);
+
+                            if (comment.AuthorId === currentUserID) {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp');
+                                $('<span>').addClass('direct-chat-name float-right').text(comment.AuthorName).appendTo(chatName);
+                                chatMsg.addClass('right');
+                            } else {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp float-right');
+                                $('<span>').addClass('direct-chat-name').text(comment.AuthorName).appendTo(chatName);
+                            }
+                            var formattedDate = formatDate(createdAt);
+                            chatTimestamp.text(formattedDate);
+
+                            chatInfos.append(chatName, chatTimestamp);
+                            chatMsg.append(chatInfos, chatImg, chatText);
+                            $('.direct-chat-messages').append(chatMsg);
+
+                            var existingUser = users.find(function (user) {
+                                return user.id === comment.AuthorId;
+                            });
+
+                            if (!existingUser) {
+                                var newUser = {
+                                    id: comment.AuthorId,
+                                    name: comment.AuthorName,
+                                    avatar: '/img/avatar5.png',
+                                    lastMessage: comment.Content,
+                                    date: formattedDate
+                                };
+                                users.push(newUser);
+                            }
+                        });
+                        populateContactList(users);
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('.direct-chat-messages').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+        function populateContactList(users) {
+            var contactList = $('.contacts-list');
+            contactList.empty();
+
+            users.forEach(function (user) {
+                var listItem = $('<li>');
+                var link = $('<a>').attr('href', '/UserManagment/Profile/' + user.id);
+                var avatarImg = $('<img>').addClass('contacts-list-img').attr('src', user.avatar);
+                var infoDiv = $('<div>').addClass('contacts-list-info');
+                var nameSpan = $('<span>').addClass('contacts-list-name').text(user.name);
+                var dateSpan = $('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date));
+                var messageSpan = $('<span>').addClass('contacts-list-msg').text(user.lastMessage);
+
+                infoDiv.append(nameSpan, dateSpan);
+                link.append(avatarImg, infoDiv, messageSpan);
+                listItem.append(link);
+                contactList.append(listItem);
+            });
+        }
+        function formatDate(date) {
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            return date.toLocaleString('en-US', options);
+        }
+
+        loadComments();
+
+        function sendMessage(message, CaseId) {
+            var requestData = {
+                Content: message,
+                CaseId: CaseId
+            };
+
+            $.ajax({
+                url: '/CaseComment/CreateCaseComment',
+                method: 'POST',
+                data: requestData,
+                success: function (response) {
+                    console.log(response);
+                    $('#messageinput').val('');
+                    var chatMessages = $('.direct-chat-messages');
+                    var scrollHeight = chatMessages[0].scrollHeight;
+                    chatMessages.scrollTop(scrollHeight);
+                },
+                error: function () {
+                    console.log('Error while sending the message.');
+                }
+            });
+        }
+
+        $('#SendButton').click(function (e) {
+            e.preventDefault();
+            var message = $('input[name="message"]').val();
+            if (message.trim() !== '') {
+                // Send the message
+                sendMessage(message, CaseId);
+                location.reload();
+                $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
+                // loadComments();
+                var chatMessages = $('.direct-chat-messages');
+                var scrollHeight = chatMessages[0].scrollHeight;
+                chatMessages.scrollTop(scrollHeight);
+            }
+        });
+    });
+
+    function openAddCollateralModal() {
+        $('#addMechanicalCollateralModal').modal('show');
+        // console.log("this is to test");
+    }
+    function openRejectionModal(collateralId) {
+        $('#CollateralId').val(collateralId);
+        $('#rejectionModal1').modal('show');
+    }
+
+        $('#rejectionModal1').on('shown.bs.modal', function () {
+            $('#rejectionComment').focus();
+        });
+
+        $('#rejectionForm').submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var rejectionComment = $('#rejectionComment').val();
+            var CollateralId = $('#CollateralId').val();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+
+                data: { rejectionComment: rejectionComment, CollateralId: CollateralId },
+                success: function (response) {
+                    // Handle the response from the controller if needed
+                    toastr.success(' Reason for Return saved successfully');
+                    $('#rejectionModal1').modal('hide');
+                    window.location.href = '/MOCase/MyCases';
+
+                },
+                error: function (error) {
+                    // Handle the error if needed
+                    toastr.error('Error saving rejection comment:', error);
+                }
+            });
+        });
+   
+
+    document.getElementById("PropertyOwner").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("PropertyOwner-error").textContent = "";
+        }
+    });
+    document.getElementById("ChassisNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("ChassisNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("ChassisNo-error").textContent = "";
+        }
+    });
+    document.getElementById("EngineMotorNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("EngineMotorNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("EngineMotorNo-error").textContent = "";
+        }
+    });
+    document.getElementById("InvoiceNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("InvoiceNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+
+    });
+    document.getElementById("ModelNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("ModelNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+
+    });
+
+    ModelNo
+    // function for the Region dropdown value
+    function handleRegionChange(selectElement) {
+        var otherRegionInput = document.getElementById("OtherRegion");
+        if (selectElement.value === "Others") {
+            otherRegionInput.style.display = "block";
+            otherRegionInput.setAttribute("required", "required");
+            otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
+        } else {
+            otherRegionInput.style.display = "none";
+            otherRegionInput.removeAttribute("required");
+            otherRegionInput.removeAttribute("name"); // Remove the name attribute
+        }
+    }
+    function handleTypeChange(selectElement) {
+        var otherTypeInput = document.getElementById("OtherType");
+        if (selectElement.value === "Other") {
+            otherTypeInput.style.display = "block";
+            otherTypeInput.setAttribute("required", "required");
+            otherTypeInput.setAttribute("name", "Type"); // Set the name attribute to "Region"
+        } else {
+            otherTypeInput.style.display = "none";
+            otherTypeInput.removeAttribute("required");
+            otherTypeInput.removeAttribute("name"); // Remove the name attribute
+        }
+    }
+
+
+    
+    //this is to validate all collateral addresses
+    function validateZoneInput(inputElement) {
+        var zoneError = document.getElementById("Zone-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Zone must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateCityInput(inputElement) {
+        var zoneError = document.getElementById("City-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "City must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateSubCityInput(inputElement) {
+        var zoneError = document.getElementById("SubCity-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "SubCity must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateWeredaInput(inputElement) {
+        var zoneError = document.getElementById("Wereda-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Wereda must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateKebeleInput(inputElement) {
+        var zoneError = document.getElementById("Kebele-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Kebele must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateHouseNoInput(inputElement) {
+        var zoneError = document.getElementById("HouseNo-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+
+</script>

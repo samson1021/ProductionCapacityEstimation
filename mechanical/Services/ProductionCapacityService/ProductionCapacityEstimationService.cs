@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 using mechanical.Data;
-using mechanical.Services.UploadFileService;
-using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Services.ProductionCapacityService;
 using mechanical.Models.Dto.ProductionCapacityDto;
+using mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto;
 using mechanical.Models.Entities.ProductionCapacity;
+using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.File;
 using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation;
 
 namespace mechanical.Services.ProductionCapacityService
@@ -21,44 +22,63 @@ namespace mechanical.Services.ProductionCapacityService
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductionCapacityEstimationService> _logger;
-        private readonly IUploadFileService _uploadFileService;
+        private readonly IFileUploadService _fileUploadService;
 
-        public ProductionCapacityEstimationService(CbeContext context, IMapper mapper, ILogger<ProductionCapacityEstimationService> logger, IUploadFileService uploadFileService)
+        public ProductionCapacityEstimationService(CbeContext context, IMapper mapper, ILogger<ProductionCapacityEstimationService> logger, IFileUploadService fileUploadService)
         {
             _cbeContext = context;
             _mapper = mapper;
             _logger = logger;
-            _uploadFileService = uploadFileService;
+            _fileUploadService = fileUploadService;
         }
-
-        public async Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid userId, ProductionCapacityEstimationDto dto)
+        
+        public async Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid userId, Guid PCECaseId, ProductionCapacityEstimationDto dto)
         {
             try
             {
                 var entity = _mapper.Map<ProductionCapacityEstimation>(dto);
                 entity.Id = Guid.NewGuid();
                 entity.CreatedBy = userId;
+                PCECaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                entity.PCECaseId = PCECaseId;
                 entity.CreatedAt = DateTime.Now;
                 entity.Status = Status.New;
- 
-                /////////
-                entity.CaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
                 entity.RejectionReason = null;
-                /////////
+        
+               // CreateFiles(Guid userId, Guid PCEId, IEnumerable<FileCreateDto> files, DocumentType Type);
 
+                await _fileUploadService.CreateFiles(userId, entity.Id, dto.SupportingEvidences, DocumentType.SupportingEvidence);
+                await _fileUploadService.CreateFiles(userId, entity.Id, dto.ProductionProcessFlowDiagrams, DocumentType.ProductionProcessFlowDiagram);
+                // await _fileUploadService.CreateFiles(userId, entity.Id, dto.Others, DocumentType.Other);
+
+
+                // await this.UploadFile(userId, entity, dto.SupportingEvidences);
+                // await this.UploadFile(userId, entity, dto.ProductionProcessFlowDiagrams);
+                // if(dto.SupportingEvidences != null)
+                // {
+                //     foreach (var Document in dto.SupportingEvidences)
+                //     {
+                //         await this.UploadFile(userId, entity, Document);
+                //     }
+                // }
+                // if(dto.SupportingEvidences != null)
+                // {   
+                //     foreach (var Document in dto.SupportingEvidences)
+                //     {
+                //         await this.UploadFile(userId, entity, Document);
+                //     }
+                // }
                 await _cbeContext.ProductionCapacityEstimations.AddAsync(entity);
                 await _cbeContext.SaveChangesAsync();
 
                 ////
                 var resultDto = _mapper.Map<ProductionCapacityEstimationDto>(entity);
-                resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
-                resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
-                resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
-                resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
+                // resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
+                // resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
+                // resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
+                // resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
                 return resultDto;
                 ////
-
-                return _mapper.Map<ProductionCapacityEstimationDto>(entity);
             }
             catch (Exception ex)
             {
@@ -83,10 +103,10 @@ namespace mechanical.Services.ProductionCapacityService
                 await _cbeContext.SaveChangesAsync();
                 /////
                 var resultDto = _mapper.Map<ProductionCapacityEstimationDto>(entity);
-                resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
-                resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
-                resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
-                resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
+                // resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
+                // resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
+                // resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
+                // resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
                 return resultDto;
                 /////
                 return _mapper.Map<ProductionCapacityEstimationDto>(entity);
@@ -103,6 +123,7 @@ namespace mechanical.Services.ProductionCapacityService
             try
             {
                 var entity = await _cbeContext.ProductionCapacityEstimations
+                    .Include(e => e.TimeConsumedToCheck)
                     .Include(e => e.SupportingEvidences)
                     .Include(e => e.ProductionProcessFlowDiagrams)
                     .FirstOrDefaultAsync(e => e.Id == id);
@@ -297,64 +318,13 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<bool> UploadSupportingEvidence(Guid userId, IFormFile file, Guid caseId)
-        {
-            try
-            {
-                if (file == null || caseId == Guid.Empty)
-                {
-                    return false;
-                }
-
-                var createFileDto = new CreateFileDto
-                {
-                    File = file,
-                    Catagory = "Supporting Evidence",
-                    CaseId = caseId
-                };
-
-                var result = await _uploadFileService.CreateUploadFile(userId, createFileDto);
-                return result != Guid.Empty;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading supporting evidence");
-                throw new ApplicationException("An error occurred while uploading the supporting evidence.");
-            }
-        }
-
-        public async Task<bool> UploadProcessFlowDiagram(Guid userId, IFormFile file, Guid caseId)
-        {
-            try
-            {
-                if (file == null || caseId == Guid.Empty)
-                {
-                    return false;
-                }
-
-                var createFileDto = new CreateFileDto
-                {
-                    File = file,
-                    Catagory = "Process Flow Diagram",
-                    CaseId = caseId
-                };
-
-                var result = await _uploadFileService.CreateUploadFile(userId, createFileDto);
-                return result != Guid.Empty;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading process flow diagram");
-                throw new ApplicationException("An error occurred while uploading the process flow diagram.");
-            }
-        }
-
         public async Task<IEnumerable<ProductionCapacityEstimationDto>> GetAllProductionCapacityEstimations()
         {
             try
             {
                 var entities = await _cbeContext.ProductionCapacityEstimations
                     .Include(p => p.ShiftHours)
+                    .Include(p => p.TimeConsumedToCheck)
                     .Include(p => p.SupportingEvidences)
                     .Include(p => p.ProductionProcessFlowDiagrams)
                     .ToListAsync();
@@ -387,5 +357,72 @@ namespace mechanical.Services.ProductionCapacityService
                 throw new ApplicationException("An error occurred while deleting the production capacity estimation.");
             }
         }
+
+        // private async Task UploadFile(Guid userId, ProductionCapacityEstimation entity, IFormFile? file, String Type)
+        // {
+        //     if (file != null)
+        //     {
+        //         await _fileUploadService.CreateFile(userId, new FileCreateDto()
+        //         {
+        //             File = file,
+        //             Id = Guid.NewGuid(),
+        //             PCEId = entity.Id
+        //             Type = Type
+        //         });
+        //     }
+        // }
+
+        
+        // public async Task<bool> UploadSupportingEvidence(Guid userId, IFormFile file, Guid PCEId)
+        // {
+        //     try
+        //     {
+        //         if (file == null || PCEId == Guid.Empty)
+        //         {
+        //             return false;
+        //         }
+
+        //         var createFileDto = new CreateFileDto
+        //         {
+        //             File = file,
+        //             Catagory = "Supporting Evidence",
+        //             PCEId = PCEId
+        //         };
+
+        //         var result = await _fileUploadService.CreateUploadFile(userId, createFileDto);
+        //         return result != Guid.Empty;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error uploading supporting evidence");
+        //         throw new ApplicationException("An error occurred while uploading the supporting evidence.");
+        //     }
+        // }
+
+        // public async Task<bool> UploadProcessFlowDiagram(Guid userId, IFormFile file, Guid PCEId)
+        // {
+        //     try
+        //     {
+        //         if (file == null || PCEId == Guid.Empty)
+        //         {
+        //             return false;
+        //         }
+
+        //         var createFileDto = new CreateFileDto
+        //         {
+        //             File = file,
+        //             Catagory = "Process Flow Diagram",
+        //             PCEId = PCEId
+        //         };
+
+        //         var result = await _fileUploadService.CreateUploadFile(userId, createFileDto);
+        //         return result != Guid.Empty;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error uploading process flow diagram");
+        //         throw new ApplicationException("An error occurred while uploading the process flow diagram.");
+        //     }
+        // }
     }
 }

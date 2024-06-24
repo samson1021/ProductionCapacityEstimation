@@ -47,6 +47,7 @@
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @* Add General Information here *@
+                        @* @await Html.PartialAsync("_GeneralPCEInfo") *@
                         General Information 
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
@@ -55,10 +56,12 @@
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @* Add Schedule details here *@
                         Schedule details 
+                        @* @await Html.PartialAsync("_Schedule") *@
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @* Add Comments details here *@
                         Comments details 
+                        @await Html.PartialAsync("_Comment")
                     </div>
                 </div>
             </div>

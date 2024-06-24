@@ -18,6 +18,7 @@ using mechanical.Models.Dto.CaseTerminateDto;
 
 /////
 using mechanical.Models.Dto.ProductionCapacityDto;
+using mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto;
 using mechanical.Models.Entities.ProductionCapacity;
 /////
 
@@ -108,7 +109,7 @@ namespace mechanical.Mapper
 
 
             CreateMap<ConstMngAgrMachineryPostDto, ConstMngAgrMachinery>();
-            CreateMap< ConstMngAgrMachinery, ConstMngAgrMachineryPostDto>();
+            CreateMap<ConstMngAgrMachinery, ConstMngAgrMachineryPostDto>();
             CreateMap<MoRejectCaseDto, Reject>();
           
             CreateMap<IndBldgFacilityEquipmentPostDto, IndBldgFacilityEquipment>();
@@ -122,21 +123,33 @@ namespace mechanical.Mapper
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentPostDto>();
 
             CreateMap<UploadFile, ReturnFileDto>();
-
             CreateMap<CreateUser, UserReturnDto>()
                     .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
             
             ///////
-            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationDto>()
-                .ForMember(dest => dest.PerShiftProduction, opt => opt.MapFrom(src => src.PerShiftProduction))
-                .ForMember(dest => dest.PerDayProduction, opt => opt.MapFrom(src => src.PerDayProduction))
-                .ForMember(dest => dest.PerMonthProduction, opt => opt.MapFrom(src => src.PerMonthProduction))
-                .ForMember(dest => dest.PerYearProduction, opt => opt.MapFrom(src => src.PerYearProduction))
+            CreateMap<FileUpload, FileReturnDto>();
+            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            CreateMap<TimePeriod, TimePeriodDto>().ReverseMap();
+            CreateMap<DatePeriod, DatePeriodDto>().ReverseMap();
+            CreateMap<DateTimePeriodDto, DateTimePeriod>()
+                .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.Start))
+                .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.End))
                 .ReverseMap();
             CreateMap<CollateralEstimationFee, CollateralEstimationFeeDto>().ReverseMap();
-            CreateMap<ShiftHour, ShiftHourDto>().ReverseMap();
-            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationDto>()
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => new DateTimePeriod
+                {
+                    Start = src.TimeConsumedToCheck.Start,
+                    End = src.TimeConsumedToCheck.End
+                }))
+                // .ForMember(dest => dest.PerShiftProduction, opt => opt.MapFrom(src => src.PerShiftProduction))
+                // .ForMember(dest => dest.PerDayProduction, opt => opt.MapFrom(src => src.PerDayProduction))
+                // .ForMember(dest => dest.PerMonthProduction, opt => opt.MapFrom(src => src.PerMonthProduction))
+                // .ForMember(dest => dest.PerYearProduction, opt => opt.MapFrom(src => src.PerYearProduction))
+                .ReverseMap();
+
+
             ///////
         
         }

@@ -1,76 +1,212 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
 
-<dl class="row">
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</dd>
+<div class="container-fluid">
+    <div class="row">
+        <!-- General Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">General Information</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TypeOfOutput)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.TypeOfOutput)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputType)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.OutputType)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CountryOfOrigin)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.CountryOfOrigin)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputPhase)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.OutputPhase)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ShiftsPerDay)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.ShiftsPerDay)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OriginCountry)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.OriginCountry)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.WorkingDaysPerMonth)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.WorkingDaysPerMonth)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.WorkingDaysPerMonth)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.WorkingDaysPerMonth)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EffectiveProductionHourPerShift)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.EffectiveProductionHourPerShift)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ShiftsPerDay)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.ShiftsPerDay)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionPerHour)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionPerHour)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.EffectiveProductionHourType)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.EffectiveProductionHourType)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UnitOfProduction)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.UnitOfProduction)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.EffectiveProductionHour)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.EffectiveProductionHour)</strong></h6></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.DesignProductionCapacity)</dd>
+        <!-- Capacity Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Capacity Information</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.DesignProductionCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.AttainableProductionCapacity)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.AttainableProductionCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.ActualProductionCapacity)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.ActualProductionCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.FactorsAffectingProductionCapacity)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.EstimatedProductionCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.EstimatedProductionCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerShiftProduction)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerShiftProduction)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.BottleneckProductionLineCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.BottleneckProductionLineCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerDayProduction)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerDayProduction)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OverallActualCurrentPlantCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.OverallActualCurrentPlantCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerMonthProduction)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerMonthProduction)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionUnit)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.ProductionUnit)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PerYearProduction)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.PerYearProduction)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionMeasurement)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.ProductionMeasurement)</strong></h6></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.MachineFunctionalityStatus)</dd>
+    <div class="row">
+        <!-- Additional Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Additional Information</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.TechnicalObsolescenceStatus)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MachineFunctionalityReason)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.MachineFunctionalityReason)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.DepreciationRateApplied)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.DepreciationRateApplied)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.OtherMachineFunctionalityReason)</dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.FactorsAffectingProductionCapacity)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.SupportingEvidences)</dt>
-    <dd class="col-sm-8">
-        @foreach (var evidence in Model.SupportingEvidences)
-        {
-            <a href="@Url.Action("DownloadFile", "UploadFile", new { id = evidence.Id })">@evidence.Name</a><br />
-        }
-    </dd>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Discrepancies)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.Discrepancies)</strong></h6></dd>
 
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionProcessFlowDiagrams)</dt>
-    <dd class="col-sm-8">
-        @foreach (var diagram in Model.ProductionProcessFlowDiagrams)
-        {
-            <a href="@Url.Action("DownloadFile", "UploadFile", new { id = diagram.Id })">@diagram.Name</a><br />
-        }
-    </dd>
-</dl>
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.MachineFunctionalityStatus)</strong></h6></dd>
+
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.MachineFunctionalityReason)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.MachineFunctionalityReason)</strong></h6></dd>
+
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.OtherMachineFunctionalityReason)</strong></h6></dd>
+
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Status)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.Status)</strong></h6></dd>
+
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.RejectionReason)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.RejectionReason)</strong></h6></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspection Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Inspection Information</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Inspection Started At</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.TimeConsumedToCheck.Start, new { @class = "datetime-format" })</strong></h6></dd>
+
+                        <dt class="col-sm-6">Inspection Ended At</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.TimeConsumedToCheck.End, new { @class = "datetime-format" })</strong></h6></dd>
+
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.InspectionPlace)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.InspectionPlace)</strong></h6></dd>
+
+                        <dt class="col-sm-6">@Html.DisplayNameFor(model => model.InspectionDate)</dt>
+                        <dd class="col-sm-6"><h6><strong>@Html.DisplayFor(model => model.InspectionDate)</strong></h6></dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Supporting Documents</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.SupportingEvidences == null || !Model.SupportingEvidences.Any())
+                                {
+                                    <tr>
+                                        <td colspan="2">There is no Supporting Evidence related to this PCE case</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var evidence in Model.SupportingEvidences)
+                                    {
+                                        <tr>
+                                            <td>@evidence.Name</td>
+                                            <td><a href="@Url.Action("DownloadFile", "UploadFile", new { id = evidence.Id })">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Production Process Flow Diagrams</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
+                                {
+                                    <tr>
+                                        <td colspan="2">There is no Production Process Flow Diagram related to this PCE case</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var diagram in Model.ProductionProcessFlowDiagrams)
+                                    {
+                                        <tr>
+                                            <td>@diagram.Name</td>
+                                            <td><a href="@Url.Action("DownloadFile", "UploadFile", new { id = diagram.Id })">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

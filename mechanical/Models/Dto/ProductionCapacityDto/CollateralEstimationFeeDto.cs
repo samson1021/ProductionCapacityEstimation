@@ -11,7 +11,7 @@ namespace mechanical.Models.Dto.ProductionCapacityDto
         public Guid Id { get; set; }
 
         [Display(Name = "Case Id")]
-        public Guid? CaseId { get; set; }
+        public Guid? PCECaseId { get; set; }
 
         [Display(Name = "Created By")]
         public Guid CreatedBy { get; set; }

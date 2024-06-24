@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240613124303_Phase2UpdatedEntityAndDTOsOptional2")]
-    partial class Phase2UpdatedEntityAndDTOsOptional2
+    [Migration("20240621084301_phase3")]
+    partial class phase3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1031,6 +1031,94 @@ namespace mechanical.Migrations
                     b.ToTable("CollateralEstimationFees");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.DatePeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DatePeriod");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.DateTimePeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DateTimePeriod");
+                });
+
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.FileUpload", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ProductionCapacityEstimationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductionCapacityEstimationId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UploadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UploadedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityEstimationId");
+
+                    b.HasIndex("ProductionCapacityEstimationId1");
+
+                    b.ToTable("FileUploads");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1047,12 +1135,6 @@ namespace mechanical.Migrations
                     b.Property<int?>("BottleneckProductionLineCapacity")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("CaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CountryOfOrigin")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1068,11 +1150,8 @@ namespace mechanical.Migrations
                     b.Property<string>("Discrepancies")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EffectiveProductionHour")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EffectiveProductionHourPerShift")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("EffectiveProductionHour")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("EffectiveProductionHourType")
                         .HasColumnType("int");
@@ -1086,23 +1165,32 @@ namespace mechanical.Migrations
                     b.Property<DateTime?>("InspectionDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("InspectionPlace")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("MachineFunctionalityReason")
                         .HasColumnType("int");
 
                     b.Property<int?>("MachineFunctionalityStatus")
                         .HasColumnType("int");
 
+                    b.Property<string>("OriginCountry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherMachineFunctionalityReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OutputPhase")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OutputType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OverallActualCurrentPlantCapacity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PhaseOfOutput")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlaceOfInspection")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ProductionLineOrEquipmentName")
                         .IsRequired()
@@ -1111,8 +1199,8 @@ namespace mechanical.Migrations
                     b.Property<int?>("ProductionMeasurement")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("ProductionPerHour")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int?>("ProductionUnit")
+                        .HasColumnType("int");
 
                     b.Property<string>("RejectionReason")
                         .HasColumnType("nvarchar(max)");
@@ -1120,8 +1208,8 @@ namespace mechanical.Migrations
                     b.Property<int?>("ShiftsPerDay")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("SurveyRemark")
                         .HasColumnType("nvarchar(max)");
@@ -1129,16 +1217,7 @@ namespace mechanical.Migrations
                     b.Property<int?>("TechnicalObsolescenceStatus")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("TimeConsumedToCheckEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("TimeConsumedToCheckStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TypeOfOutput")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("UnitOfProduction")
+                    b.Property<int?>("TimeConsumedToCheckId")
                         .HasColumnType("int");
 
                     b.Property<int?>("WorkingDaysPerMonth")
@@ -1146,7 +1225,9 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CaseId");
+                    b.HasIndex("PCECaseId");
+
+                    b.HasIndex("TimeConsumedToCheckId");
 
                     b.ToTable("ProductionCapacityEstimations");
                 });
@@ -1191,7 +1272,7 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionCapacitySchedules");
                 });
 
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ShiftHour", b =>
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.TimePeriod", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1199,20 +1280,20 @@ namespace mechanical.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("End")
+                        .HasColumnType("time");
 
                     b.Property<Guid?>("ProductionCapacityEstimationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("Start")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductionCapacityEstimationId");
 
-                    b.ToTable("ShiftHour");
+                    b.ToTable("TimePeriod");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Reject", b =>
@@ -1306,12 +1387,6 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ProductionCapacityEstimationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProductionCapacityEstimationId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
@@ -1322,10 +1397,6 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductionCapacityEstimationId");
-
-                    b.HasIndex("ProductionCapacityEstimationId1");
 
                     b.ToTable("UploadFiles");
                 });
@@ -1607,13 +1678,30 @@ namespace mechanical.Migrations
                     b.Navigation("Case");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.FileUpload", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
+                        .WithMany("ProductionProcessFlowDiagrams")
+                        .HasForeignKey("ProductionCapacityEstimationId");
+
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
+                        .WithMany("SupportingEvidences")
+                        .HasForeignKey("ProductionCapacityEstimationId1");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.Case", "Case")
                         .WithMany()
-                        .HasForeignKey("CaseId");
+                        .HasForeignKey("PCECaseId");
+
+                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.DateTimePeriod", "TimeConsumedToCheck")
+                        .WithMany()
+                        .HasForeignKey("TimeConsumedToCheckId");
 
                     b.Navigation("Case");
+
+                    b.Navigation("TimeConsumedToCheck");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ProductionCapacitySchedule", b =>
@@ -1627,7 +1715,7 @@ namespace mechanical.Migrations
                     b.Navigation("ProductionCapacityEstimation");
                 });
 
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.ShiftHour", b =>
+            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity.TimePeriod", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
                         .WithMany("ShiftHours")
@@ -1643,17 +1731,6 @@ namespace mechanical.Migrations
                         .IsRequired();
 
                     b.Navigation("SignatureFile");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.UploadFile", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
-                        .WithMany("ProductionProcessFlowDiagrams")
-                        .HasForeignKey("ProductionCapacityEstimationId");
-
-                    b.HasOne("mechanical.Models.Entities.ProductionCapacity.ProductionCapacityEstimation", null)
-                        .WithMany("SupportingEvidences")
-                        .HasForeignKey("ProductionCapacityEstimationId1");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
