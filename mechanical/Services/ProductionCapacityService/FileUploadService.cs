@@ -2,6 +2,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
 
 using mechanical.Data;
 using mechanical.Models.Entities.ProductionCapacity;
@@ -15,58 +17,161 @@ namespace mechanical.Services.ProductionCapacityService
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public FileUploadService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public FileUploadService(IWebHostEnvironment webHostEnvironment, CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _webHostEnvironment = webHostEnvironment;
         }
   
-        public async Task<Guid> CreateFile(Guid userId, Guid PCEId, FileCreateDto FileDto, DocumentType Type)
+
+        public async Task<List<FileUpload>> CreateFiles(Guid UserId, Guid PCEId, ICollection<FileCreateDto> Files, DocumentType Type, string folderName)
         {
-            var fileId = Guid.NewGuid();
+            Console.WriteLine("file upload service create files...............................................................");
+            var savedFiles = new List<FileUpload>();
 
-            using (var memoryStream = new MemoryStream())
-            {
-                await FileDto.File.CopyToAsync(memoryStream);
-                var file = new FileUpload
-                {                   
-                    Id = fileId,
-                    Name = FileDto.File.FileName,
-                    Type = Type,
-                    ContentType = FileDto.File.ContentType,
-                    Extension = Path.GetExtension(FileDto.File.FileName),
-                    Size = FileDto.File.Length,   
-                    PCEId = PCEId,
-                    UploadAt = DateTime.Now,
-                    UploadedBy = userId
-                };
-
-                file.Path = Path.Combine("file", file.Id.ToString() + file.Extension);
-                _cbeContext.FileUploads.AddAsync(file);
-                await _cbeContext.SaveChangesAsync();
-            }
-
-            return fileId;
-        }
+            string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
+            Directory.CreateDirectory(uploadPath);
+            Console.WriteLine("Files count: " + Files.Count); // Add this line
         
-        public async Task<IEnumerable<Guid>> CreateFiles(Guid userId, Guid PCEId, IEnumerable<FileCreateDto> Files, DocumentType Type)
-        {
-            var fileIds = new List<Guid>();
-
-            if (Files != null)
+            if (Files != null && Files.Count > 0)
             {
-                foreach (var file in Files)
+                foreach (var fileDto in Files)
                 {
-                    var fileId = await CreateFile(userId, PCEId, file, Type);
-                    fileIds.Add(fileId);
+            Console.WriteLine("#################################dto");
+            Console.WriteLine(fileDto != null);
+            Console.WriteLine("#################################");
+                    if (fileDto.File.Length > 0)
+                    {
+                        var fileId = Guid.NewGuid();
+                        string filePath = Path.Combine(uploadPath, fileId.ToString() + "_" + fileDto.File.FileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await fileDto.File.CopyToAsync(stream);
+                        }
+
+                        var file = new FileUpload
+                        {
+                            Id = fileId,
+                            Name = fileDto.File.FileName,
+                            Type = Type,
+                            ContentType = fileDto.File.ContentType,
+                            Extension = Path.GetExtension(fileDto.File.FileName),
+                            Size = fileDto.File.Length,
+                            PCEId = PCEId,
+                            UploadAt = DateTime.UtcNow, 
+                            UploadedBy = UserId,
+                            Path = filePath
+                        };
+                        savedFiles.Add(file);
+                    }
                 }
 
+                // Adding all file uploads to the database context in one batch
+                await _cbeContext.AddRangeAsync(savedFiles);
+                await _cbeContext.SaveChangesAsync();
             }
-            return fileIds;
+            Console.WriteLine("#################################");
+            Console.WriteLine(savedFiles != null);
+            Console.WriteLine("#################################");
+            return savedFiles;
         }
 
-        // public async Task<Guid> CreateFile(Guid userId, Guid PCEId, FileCreateDto File, String Type)
+        // public async Task<List<FileUpload>> CreateFiles(Guid UserId, Guid PCEId, ICollection<FileCreateDto> Files, DocumentType Type, string folderName)
+        // // private async Task<List<FileUpload>> SaveFilesAsync(ICollection<FileCreateDto> Files)
+        // {
+         
+        //     Console.WriteLine("file upload service create files...............................................................");
+        //     var savedFiles = new List<FileUpload>();
+
+        //     string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
+        //     Directory.CreateDirectory(uploadPath);
+
+        //     if (Files != null)
+        //     {
+        //         Console.WriteLine(Files);
+        //         foreach (var file in Files)
+        //         {
+        //             Console.WriteLine("inside file upload service create files...............................................................");
+        //             if (file.File.Length > 0)
+        //             {
+        //                 string filePath = Path.Combine(uploadPath, Guid.NewGuid().ToString() + "_" + file.File.FileName);
+        //                 using (var stream = new FileStream(filePath, FileMode.Create))
+        //                 {
+        //                     await file.File.CopyToAsync(stream);
+        //                 }
+
+        //                 savedFiles.Add(new FileUpload
+        //                 {
+        //                     Id = Guid.NewGuid(),
+        //                     Name = file.File.FileName,
+        //                     ContentType = file.File.ContentType,
+        //                     Size = file.File.Length,
+        //                     Path = filePath,
+        //                     Type = file.Type,
+        //                     PCEId = PCEId,
+        //                     UploadAt = DateTime.UtcNow,
+        //                     UploadedBy = UserId
+        //                 });
+        //             }
+        //         }
+        //     }
+
+        //     return savedFiles;
+        // }
+
+
+
+        // public async Task<Guid> CreateFile(Guid UserId, Guid PCEId, FileCreateDto FileDto, DocumentType Type)
+        // {
+        //     var fileId = Guid.NewGuid();
+        //     Console.WriteLine("create file...............................................................");
+        //     using (var memoryStream = new MemoryStream())
+        //     {
+        //         await FileDto.File.CopyToAsync(memoryStream);
+        //         var file = new FileUpload
+        //         {                   
+        //             Id = fileId,
+        //             Name = FileDto.File.FileName,
+        //             Type = Type,
+        //             ContentType = FileDto.File.ContentType,
+        //             Extension = Path.GetExtension(FileDto.File.FileName),
+        //             Size = FileDto.File.Length,   
+        //             PCEId = PCEId,
+        //             UploadAt = DateTime.Now,
+        //             UploadedBy = UserId
+        //         };
+
+        //         file.Path = Path.Combine("file", file.Id.ToString() + file.Extension);
+        //         _cbeContext.FileUploads.AddAsync(file);
+        //         await _cbeContext.SaveChangesAsync();
+        //     }
+
+        //     return fileId;
+        // }
+        
+        // public async Task<IEnumerable<Guid>> CreateFiles(Guid UserId, Guid PCEId, IEnumerable<FileCreateDto> Files, DocumentType Type)
+        // {
+        //     var fileIds = new List<Guid>();
+
+        //     Console.WriteLine("file upload service create files...............................................................");
+        //     if (Files != null)
+        //     {
+        //         foreach (var file in Files)
+        //         {
+        //             var fileId = await CreateFile(UserId, PCEId, file, Type);
+        //             fileIds.Add(fileId);
+        //         }
+
+        //     }
+        //     return fileIds;
+        // }
+
+        // public async Task<Guid> CreateFile(Guid UserId, Guid PCEId, FileCreateDto File, String Type)
         // {
         //     var file = new FileUpload();
         //     file.Id = Guid.NewGuid();
@@ -86,7 +191,7 @@ namespace mechanical.Services.ProductionCapacityService
         //     file.Path = filePath;
         //     file.PCEId = PCEId;
         //     file.UploadAt = DateTime.Now;
-        //     file.UploadedBy = userId;
+        //     file.UploadedBy = UserId;
         //     await _cbeContext.FileUploads.AddAsync(file);
         //     await _cbeContext.SaveChangesAsync();
         //     return file.Id;
@@ -167,7 +272,7 @@ namespace mechanical.Services.ProductionCapacityService
             file.Path = filePath;
             file.PCEId = PCEId;
             file.UploadAt = DateTime.Now;
-            file.UploadedBy = Guid.Parse(httpContext.Session.GetString("userId"));
+            file.UploadedBy = Guid.Parse(httpContext.Session.GetString("UserId"));
 
             _cbeContext.Update(file);
             await _cbeContext.SaveChangesAsync();

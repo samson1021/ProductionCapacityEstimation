@@ -122,14 +122,17 @@ namespace mechanical.Mapper
              .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentPostDto>();
 
-            CreateMap<UploadFile, ReturnFileDto>();
+            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
             CreateMap<CreateUser, UserReturnDto>()
                     .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
             
             ///////
-            CreateMap<FileUpload, FileReturnDto>();
-            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            CreateMap<FileUpload, FileReturnDto>().ReverseMap();
+            CreateMap<FileCreateDto, FileReturnDto>()
+                .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType))
+                .ReverseMap();
+       
             CreateMap<TimePeriod, TimePeriodDto>().ReverseMap();
             CreateMap<DatePeriod, DatePeriodDto>().ReverseMap();
             CreateMap<DateTimePeriodDto, DateTimePeriod>()

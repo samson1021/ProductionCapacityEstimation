@@ -108,11 +108,6 @@ namespace mechanical.Models.Dto.ProductionCapacityDto
         // public ICollection<FileUpload>? ProductionProcessFlowDiagrams { get; set; }  
         public ICollection<FileCreateDto>? ProductionProcessFlowDiagrams { get; set; }  
      
-        // public List<ReturnFileDto>? SupportingEvidences { get; set; } = new List<ReturnFileDto>();
-        // public List<ReturnFileDto>? ProductionProcessFlowDiagrams { get; set; } = new List<ReturnFileDto>();
-        // public List<CreateFileDto> SupportingEvidences { get; set; } = new List<CreateFileDto>();
-        // // public List<CreateFileDto> ProductionProcessFlowDiagrams { get; set; } = new List<CreateFileDto>();  
-
         [Display(Name = "Status")]
         public Status? Status { get; set; }
 

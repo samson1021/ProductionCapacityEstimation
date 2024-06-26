@@ -6,11 +6,9 @@ namespace mechanical.Models.Entities.ProductionCapacity
 {
     public class CapacityEstimationCase
     {
-          
-     
-     
+        [Key]
+        public Guid Id { get; set; }    
 
-        public Guid Id { get; set; }        
         public required string CapacityEstimationNo { get; set; }
         public required string ApplicantName { get; set; }
         public string CustomerId { get; set; } = string.Empty;

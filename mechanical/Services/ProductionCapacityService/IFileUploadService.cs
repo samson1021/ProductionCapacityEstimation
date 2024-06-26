@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto;
+using mechanical.Models.Entities.ProductionCapacity;
 using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.File;
 
 namespace mechanical.Services.ProductionCapacityService
 {
     public interface IFileUploadService
     {
-        Task<Guid> CreateFile(Guid userId, Guid PCEId, FileCreateDto file, DocumentType Type);
-        Task<IEnumerable<Guid>> CreateFiles(Guid userId, Guid PCEId, IEnumerable<FileCreateDto> files, DocumentType Type);
+        // Task<Guid> CreateFile(Guid userId, Guid PCEId, FileCreateDto file, DocumentType Type);
+        Task<List<FileUpload>> CreateFiles(Guid UserId, Guid PCEId, ICollection<FileCreateDto> Files, DocumentType Type, string folderName);
+        // Task<IEnumerable<Guid>> CreateFiles(Guid userId, Guid PCEId, IEnumerable<FileCreateDto> files, DocumentType Type);
         Task<FileReturnDto> GetFile(Guid? FileId);
         Task<IEnumerable<FileReturnDto>> GetFileByPCEId(Guid? EntityId);
         Task<bool> DeleteFile(Guid Id);

@@ -26,13 +26,13 @@ namespace mechanical.Services.ProductionCapacityService
             _logger = logger;
         }
 
-        public async Task<CollateralEstimationFeeDto> CreateCollateralEstimationFee(Guid userId, CollateralEstimationFeeDto dto)
+        public async Task<CollateralEstimationFeeDto> CreateCollateralEstimationFee(Guid UserId, CollateralEstimationFeeDto dto)
         {
             try
             {
                 var entity = _mapper.Map<CollateralEstimationFee>(dto);
                 entity.Id = Guid.NewGuid();
-                entity.CreatedBy = userId;
+                entity.CreatedBy = UserId;
                 entity.CreatedAt = DateTime.Now;
                 entity.TotalFee = CalculateTotalFee(entity.EstimationFeePerUnit, entity.Quantity);
                 entity.Status = FeeStatus.New;
@@ -53,7 +53,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<CollateralEstimationFeeDto> EditCollateralEstimationFee(Guid userId, Guid id, CollateralEstimationFeeDto dto)
+        public async Task<CollateralEstimationFeeDto> EditCollateralEstimationFee(Guid UserId, Guid id, CollateralEstimationFeeDto dto)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<CollateralEstimationFeeDto> GetCollateralEstimationFee(Guid userId, Guid id)
+        public async Task<CollateralEstimationFeeDto> GetCollateralEstimationFee(Guid UserId, Guid id)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<CollateralEstimationFeeDto>> GetAllCollateralEstimationFees(Guid PCECaseId)
+        public async Task<IEnumerable<CollateralEstimationFeeDto>> GetAllCollateralEstimationFees(Guid UserId, Guid PCECaseId)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<bool> DeleteCollateralEstimationFee(Guid id)
+        public async Task<bool> DeleteCollateralEstimationFee(Guid UserId, Guid id)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<bool> ValidateFees(Guid PCECaseId)
+        public async Task<bool> ValidateFees(Guid UserId, Guid PCECaseId)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace mechanical.Services.ProductionCapacityService
             return fee.TotalFee == expectedTotalFee;
         }
 
-        public async Task<bool> CommitFees(Guid PCECaseId)
+        public async Task<bool> CommitFees(Guid UserId, Guid PCECaseId)
         {
             try
             {

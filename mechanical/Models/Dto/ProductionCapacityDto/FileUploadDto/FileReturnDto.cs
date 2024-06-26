@@ -17,6 +17,8 @@ namespace mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto
         [Display(Name = "Document Type")]
         public DocumentType Type { get; set; }
 
+        public Guid? PCEId { get; set; }
+
         public string ContentType { get; set; } = string.Empty;
     }
 

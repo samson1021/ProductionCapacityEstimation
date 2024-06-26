@@ -50,7 +50,8 @@ namespace mechanical.Models.Entities.ProductionCapacity
         public string? InspectionPlace { get; set; }
         public DateOnly? InspectionDate { get; set; } //Schedule
         public string? SurveyRemark { get; set; }
-
+    
+    
         // public virtual ICollection<FileUpload>? SupportingEvidences { get; set; } = new List<FileUpload>();
         // public virtual ICollection<FileUpload>? ProductionProcessFlowDiagrams { get; set; } = new List<FileUpload>();
         public virtual ICollection<FileUpload> SupportingDocuments { get; set; } = new List<FileUpload>();

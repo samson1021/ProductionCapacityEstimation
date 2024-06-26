@@ -29,8 +29,8 @@ namespace mechanical.Controllers
         {
             try
             {   
-                var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0"));
-                // var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(base.GetCurrentUserId());
+                var PCECaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(base.GetCurrentUserId(), PCECaseId);
                 return View(collateralEstimationFees);
             }
             catch (Exception ex)
@@ -146,7 +146,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                await _collateralEstimationFeeService.DeleteCollateralEstimationFee(id);
+                await _collateralEstimationFeeService.DeleteCollateralEstimationFee(base.GetCurrentUserId(), id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -162,7 +162,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                var result = await _collateralEstimationFeeService.ValidateFees(caseId);
+                var result = await _collateralEstimationFeeService.ValidateFees(base.GetCurrentUserId(), caseId);
                 if (result)
                 {
                     return RedirectToAction(nameof(Index));
@@ -182,7 +182,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                var result = await _collateralEstimationFeeService.CommitFees(caseId);
+                var result = await _collateralEstimationFeeService.CommitFees(base.GetCurrentUserId(), caseId);
                 if (result)
                 {
                     return RedirectToAction(nameof(Index));

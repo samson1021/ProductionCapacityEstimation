@@ -31,6 +31,14 @@ namespace mechanical.Data
                     idProperty.ValueGeneratedOnAdd();
                 }
             }
+ 
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ProductionCapacityEstimation>()
+                .HasMany(p => p.SupportingDocuments)
+                .WithOne(f => f.PCE)
+                .HasForeignKey(f => f.PCEId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // modelBuilder.Entity<ProductionCapacityEstimation>()
             //     .HasMany(e => e.SupportingEvidences)
@@ -42,16 +50,8 @@ namespace mechanical.Data
             //     .HasMany(e => e.ProductionProcessFlowDiagrams)
             //     .WithOne(f => f.PCE)
             //     .HasForeignKey(f => f.PCEId)
-            //     .OnDelete(DeleteBehavior.Cascade);            
-            
-            modelBuilder.Entity<ProductionCapacityEstimation>()
-                .HasMany(p => p.SupportingDocuments)
-                .WithOne(f => f.PCE)
-                .HasForeignKey(f => f.PCEId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            base.OnModelCreating(modelBuilder);
-
+            //     .OnDelete(DeleteBehavior.Cascade);          
+                
             var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
                 v => v.ToTimeSpan(),
                 v => TimeOnly.FromTimeSpan(v));

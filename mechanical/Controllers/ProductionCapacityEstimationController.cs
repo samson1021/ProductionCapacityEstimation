@@ -13,12 +13,10 @@ using Newtonsoft.Json;
 using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Dto.ProductionCapacityDto;
+using mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto;
 using mechanical.Models.Entities.ProductionCapacity;
 using mechanical.Services.ProductionCapacityService;
 // using mechanical.Services.UploadFileService;
-
-
-
 
 namespace mechanical.Controllers
 {
@@ -27,6 +25,9 @@ namespace mechanical.Controllers
         private readonly IProductionCapacityEstimationService _productionCapacityEstimationService;
         private readonly ILogger<ProductionCapacityEstimationController> _logger;
         private readonly IMapper _mapper;
+        
+        private readonly IFileUploadService _fileUploadService;
+
         // private readonly IUploadFileService _uploadFileService;
 
         // private readonly IPCECaseService _PCEcaseService;
@@ -34,13 +35,15 @@ namespace mechanical.Controllers
         // private readonly IPCECaseTerminateService _PCEcaseTermnateService;
 
 
-        public ProductionCapacityEstimationController(IMapper mapper, IProductionCapacityEstimationService productionCapacityEstimationService, ILogger<ProductionCapacityEstimationController> logger) 
+        public ProductionCapacityEstimationController(IMapper mapper, IProductionCapacityEstimationService productionCapacityEstimationService, ILogger<ProductionCapacityEstimationController> logger, IFileUploadService fileUploadService) 
             // IPCECaseService PCEcaseService, IPCECaseTerminateService PCEcaseTermnateService, IPCECaseScheduleService PCEcaseScheduleService)
        
 {
             _productionCapacityEstimationService = productionCapacityEstimationService;
             _mapper = mapper;
             _logger = logger;
+
+            _fileUploadService = fileUploadService;
             // _uploadFileService = uploadFileService;
 
             // _PCEcaseService = PCEcaseService;
@@ -57,13 +60,42 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Guid PCEcaseId, ProductionCapacityEstimationDto productionCapacityEstimationDto)
+        public async Task<IActionResult> Create(Guid PCEcaseId, ProductionCapacityEstimationDto dto)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var productionCapacityEstimation = await _productionCapacityEstimationService.CreateProductionCapacityEstimation(base.GetCurrentUserId(), PCEcaseId, productionCapacityEstimationDto);
+
+                    // Debugging: Check if files are received
+                    if (dto.SupportingEvidences != null)
+                    {
+                        Console.WriteLine($"SupportingEvidences count: {dto.SupportingEvidences.Count}");
+                        foreach (var file in dto.SupportingEvidences)
+                        {
+                            Console.WriteLine($"Received file: {file.File.FileName}, size: {file.File.Length}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No SupportingEvidences files received");
+                    }
+
+                    if (dto.ProductionProcessFlowDiagrams != null)
+                    {
+                        Console.WriteLine($"ProductionProcessFlowDiagrams count: {dto.ProductionProcessFlowDiagrams.Count}");
+                        foreach (var file in dto.ProductionProcessFlowDiagrams)
+                        {
+                            Console.WriteLine($"Received file: {file.File.FileName}, size: {file.File.Length}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No ProductionProcessFlowDiagrams files received");
+                    }
+
+
+                    var productionCapacityEstimation = await _productionCapacityEstimationService.CreateProductionCapacityEstimation(base.GetCurrentUserId(), PCEcaseId, dto);
                     /////
                     // productionCapacityEstimation.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(productionCapacityEstimation.EffectiveProductionHourPerShift, productionCapacityEstimation.ProductionPerHour);
                     // productionCapacityEstimation.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(productionCapacityEstimation.ShiftsPerDay, productionCapacityEstimation.PerShiftProduction);
@@ -79,7 +111,7 @@ namespace mechanical.Controllers
                     ModelState.AddModelError("", "An error occurred while creating the production capacity estimation.");
                 }
             }
-            return View(productionCapacityEstimationDto);
+            return View(dto);
         }
 
         [HttpGet]
@@ -103,13 +135,13 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ProductionCapacityEstimationDto productionCapacityEstimationDto)
+        public async Task<IActionResult> Edit(Guid id, ProductionCapacityEstimationDto dto)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var productionCapacityEstimation = await _productionCapacityEstimationService.EditProductionCapacityEstimation(base.GetCurrentUserId(), id, productionCapacityEstimationDto);
+                    var productionCapacityEstimation = await _productionCapacityEstimationService.EditProductionCapacityEstimation(base.GetCurrentUserId(), id, dto);
                     
                     //////
                     // productionCapacityEstimation.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(productionCapacityEstimation.EffectiveProductionHourPerShift, productionCapacityEstimation.ProductionPerHour);
@@ -126,7 +158,7 @@ namespace mechanical.Controllers
                     ModelState.AddModelError("", "An error occurred while editing the production capacity estimation.");
                 }
             }
-            return View(productionCapacityEstimationDto);
+            return View(dto);
         }
 
         [HttpGet]
@@ -141,6 +173,10 @@ namespace mechanical.Controllers
                 }
                 // ViewData["productionCapacityEstimation"] = productionCapacityEstimation;
                 // return View();
+
+                // productionCapacityEstimation.SupportingEvidences = _mapper.Map<ICollection<FileReturnDto>>(productionCapacityEstimation.SupportingEvidences);
+                // productionCapacityEstimation.ProductionProcessFlowDiagrams = _mapper.Map<ICollection<FileCreateDto>>(productionCapacityEstimation.ProductionProcessFlowDiagrams);
+        
                 return View(productionCapacityEstimation);
             }
             catch (Exception ex)
@@ -336,7 +372,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                var estimations = await _productionCapacityEstimationService.GetAllProductionCapacityEstimations();
+                var estimations = await _productionCapacityEstimationService.GetAllProductionCapacityEstimations(base.GetCurrentUserId());
                 return View(estimations);
             }
             catch (Exception ex)

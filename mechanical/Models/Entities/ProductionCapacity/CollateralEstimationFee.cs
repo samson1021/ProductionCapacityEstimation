@@ -10,7 +10,7 @@ namespace mechanical.Models.Entities.ProductionCapacity
         [Key]
         public Guid Id { get; set; }
         public Guid? PCECaseId { get; set; } 
-        [ForeignKey("CaseId")]
+        [ForeignKey("PCECaseId")]
         public virtual Case? PCECase { get; set; } 
 
         public CollateralClass CollateralClass { get; set; }

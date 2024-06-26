@@ -8,23 +8,23 @@ namespace mechanical.Services.ProductionCapacityService
 {
     public interface IProductionCapacityEstimationService
     {
-        Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid userId, Guid PCEcaseId, ProductionCapacityEstimationDto dto);
-        Task<ProductionCapacityEstimationDto> EditProductionCapacityEstimation(Guid userId, Guid id, ProductionCapacityEstimationDto dto);
-        Task<ProductionCapacityEstimationDto> GetProductionCapacityEstimation(Guid userId, Guid id);
-        Task<IEnumerable<ProductionCapacityEstimationDto>> GetAllProductionCapacityEstimations();
-        Task<IEnumerable<ProductionCapacityEstimationDto>> GetNewEstimations(Guid userId);
-        Task<IEnumerable<ProductionCapacityEstimationDto>> GetRejectedEstimations(Guid userId);
-        Task<IEnumerable<ProductionCapacityEstimationDto>> GetTerminatedEstimations(Guid userId);
-        Task<IEnumerable<ProductionCapacityEstimationDto>> GetPendingEstimations(Guid userId);
+        Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid UserId, Guid PCEcaseId, ProductionCapacityEstimationDto dto);
+        Task<ProductionCapacityEstimationDto> EditProductionCapacityEstimation(Guid UserId, Guid id, ProductionCapacityEstimationDto dto);
+        Task<ProductionCapacityEstimationDto> GetProductionCapacityEstimation(Guid UserId, Guid id);
+        Task<IEnumerable<ProductionCapacityEstimationDto>> GetAllProductionCapacityEstimations(Guid UserId);
+        Task<IEnumerable<ProductionCapacityEstimationDto>> GetNewEstimations(Guid UserId);
+        Task<IEnumerable<ProductionCapacityEstimationDto>> GetRejectedEstimations(Guid UserId);
+        Task<IEnumerable<ProductionCapacityEstimationDto>> GetTerminatedEstimations(Guid UserId);
+        Task<IEnumerable<ProductionCapacityEstimationDto>> GetPendingEstimations(Guid UserId);
         Task SendForApproval(string selectedEstimationIds, string CenterId);
         Task RejectEstimation(Guid id, string rejectionReason);
-        Task<ProductionCapacityScheduleDto> CreateSchedule(Guid userId, ProductionCapacityScheduleDto scheduleDto);
-        Task<int> GetDashboardEstimationCount(Guid userId);
-        Task<int> GetMyDashboardEstimationCount(Guid userId);
+        Task<ProductionCapacityScheduleDto> CreateSchedule(Guid UserId, ProductionCapacityScheduleDto scheduleDto);
+        Task<int> GetDashboardEstimationCount(Guid UserId);
+        Task<int> GetMyDashboardEstimationCount(Guid UserId);
         Task<bool> DeleteSupportingEvidence(Guid Id);
         Task<bool> DeleteProcessFlowDiagram(Guid Id);
-        Task<bool> DeleteProductionCapacityEstimation(Guid userId, Guid id);
-        // Task<bool> UploadSupportingEvidence(Guid userId, IFormFile file, Guid PCEcaseId);
-        // Task<bool> UploadProcessFlowDiagram(Guid userId, IFormFile file, Guid PCEcaseId);
+        Task<bool> DeleteProductionCapacityEstimation(Guid UserId, Guid id);
+        // Task<bool> UploadSupportingEvidence(Guid UserId, IFormFile file, Guid PCEcaseId);
+        // Task<bool> UploadProcessFlowDiagram(Guid UserId, IFormFile file, Guid PCEcaseId);
     }
 }
