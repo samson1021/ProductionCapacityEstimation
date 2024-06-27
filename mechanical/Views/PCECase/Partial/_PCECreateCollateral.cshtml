@@ -1,8 +1,13 @@
-﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
-@{
-    var myCase = ViewData["case"] as CaseReturntDto;
-}
-
+﻿@*         public Guid Id { get; set; }
+        public required string CaseNo { get; set; }
+        public required string ApplicantName { get; set; }
+        public string CustomerUserId { get; set; } = string.Empty;
+        public string CustomerEmail { get; set; } = string.Empty;
+        public Guid DistrictId { get; set; }
+        public string CurrentStage { get; set; } = string.Empty;
+        public string CurrentStatus { get; set; } = string.Empty;
+        public DateTime CreationDate { get; set; }
+        public DateTime MakerAssignmentDate { get; set; } *@
 <div class="card">
     <div class="Card-header">
         <div class="col-12">
@@ -10,13 +15,13 @@
                 <div class="col-12 col-sm-6" style="margin-top:1rem;">
                     <div class="btn-group">
                         <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Add Mechanical Collateral
+                            <i class="fas fa-plus-circle"></i> Estimate Mechanical Collateral
                         </button>
                         <button id="addCivilCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addCivilCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Add Civil Collateral
+                            <i class="fas fa-plus-circle"></i> Estimate Plane Collateral
                         </button>
                         <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Add Agricultural Collateral
+                            <i class="fas fa-plus-circle"></i> Add any other
                         </button>
                         <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = "88" })">
                             <i class="nav-icon fas fa-sitemap"></i>
@@ -50,9 +55,9 @@
         </div>
     </div>
 </div>
-
+@* 
 @* collateral delete modal *@
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+@* <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -166,7 +171,7 @@
                                 <span id="EngineMotorNo-error" asp-validation-for="EngineMotorNo" class="text-danger"></span>
                             </div>
                         </div>
-@*                        industerial collateral attributes *@
+                       industerial collateral attributes 
 
                         <div class="row" id="IndusteryProp">
                             <div class="form-group col-lg-4">
@@ -346,12 +351,14 @@
         </div>
     </div>
 </div>
-@section Scripts {
+ *@
+
+@* @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_DetailDatatableSriptsPartial");
     }
-}
-<script>
+} *@
+@* <script>
     document.getElementById("ChassisNo").addEventListener("input", function () {
         var input = this.value;
         var alphanumericRegex = /^[A-Za-z0-9]+$/;
@@ -504,4 +511,4 @@
     }
    
 
-</script>
+</script>  *@

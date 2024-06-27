@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>My New Case</h4>
+                <h4>PCE New Case</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -25,7 +25,7 @@
                             <th>Case No</th>
                             <th>Aplicant Name</th>
                             <th>Customer Id</th>
-                            <th>New Collateral</th>
+                            <th>Current Status</th>
                             <th>Total Collateral</th>
                             <th>Action</th>
                         </tr>
@@ -37,9 +37,8 @@
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_NewCasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("Partial/_PCENewCasesDatatableSriptsPartial");
     }
 }
 
- 
-                 
+

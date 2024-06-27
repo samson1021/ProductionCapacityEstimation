@@ -14,47 +14,49 @@
 <script>
     $(document).ready(function () {
         $.ajax({
-            url: '/Case/GetNewCases',
+            url: '/PCECase/GetPCENewCases',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
+                console.log(data);
+                console.log("data class");
                 $('#MyNewCase').DataTable({
                     data: data,
                     columns: [
                         {
-                            data: 'CreationAt',
+                            data: 'CreationDate',
                             width: '15%',
                             render: function (data, type, row, meta) {
                                 var date = new Date(data);
-                                return date.toLocaleString(); 
+                                return date.toLocaleString();
                             }
-                        }, 
+                        },
                         { data: 'CaseNo', width: '10%' },
                         { data: 'ApplicantName', width: '20%' },
-                        { data: 'CustomerId', width: '15%' },
-                        { data: 'NoOfCollateral', width: '15%' },
-                        { data: 'TotalNoOfCollateral', width: '15%' },
+                        { data: 'CustomerUserId', width: '15%' },
+                        { data: 'CurrentStatus', width: '15%' },
+                        { data: 'CustomerUserId', width: '15%' },
                         {
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                return '<a href="@Url.Action("Detail", "Case")?Id=' + data + '">Details | </a><a href="@Url.Action("Edit", "Case")?Id=' + data + '"> Edit | </a><a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                                return '<a href="@Url.Action("PCEDetail", "PCECase")?Id=' + data + '">Details | </a><a href="@Url.Action("PCEEdit", "PCECase")?Id=' + data + '"> Edit | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
                             }
                         }
-                        
-                    ], 
+
+                    ],
                     order: [[0, 'desc']],
                     responsive: true,
                     lengthChange: false,
                     autoWidth: false,
-                    buttons: [{extend: 'copy',title: 'RM New Case'},
-                    {extend: 'csv',title: 'RM New Case'}, 
-                    { extend: 'excel', title: 'RM New Case'}, 
-                    { extend: 'pdf',title: 'RM New Case - pdf'},
-                    { extend: 'print',title: 'RM New Case - Print' },  'colvis'   ]
+                    buttons: [{ extend: 'copy', title: 'RM PCE New Case' },
+                    { extend: 'csv', title: 'RM PCE New Case' },
+                    { extend: 'excel', title: 'RM PCE New Case' },
+                    { extend: 'pdf', title: 'RM PCE New Case - pdf' },
+                    { extend: 'print', title: 'RM PCE New Case - Print' }, 'colvis']
                 }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
             }
         });
     });
-   
+
 </script>
