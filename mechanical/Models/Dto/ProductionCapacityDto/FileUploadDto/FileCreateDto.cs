@@ -16,8 +16,7 @@ namespace mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto
         [Display(Name = "Document Type")]
         public DocumentType Type { get; set; }
 
-        // public Guid? PCEId { get; set; }
-        // public required IFormFile File { get; set; }
-        public IFormFile File { get; set; }
+        public Guid? PCEId { get; set; }
+        public required IFormFile File { get; set; }
     }
 }

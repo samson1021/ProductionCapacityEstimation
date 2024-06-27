@@ -140,7 +140,8 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.End))
                 .ReverseMap();
             CreateMap<CollateralEstimationFee, CollateralEstimationFeeDto>().ReverseMap();
-            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationDto>()
+            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationReturnDto>().ReverseMap();
+            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationPostDto>()
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => new DateTimePeriod
                 {
                     Start = src.TimeConsumedToCheck.Start,

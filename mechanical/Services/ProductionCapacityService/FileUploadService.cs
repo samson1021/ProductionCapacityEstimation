@@ -72,7 +72,8 @@ namespace mechanical.Services.ProductionCapacityService
                 }
 
                 // Adding all file uploads to the database context in one batch
-                await _cbeContext.AddRangeAsync(savedFiles);
+                await _cbeContext.FileUploads.AddRangeAsync(savedFiles);
+                // await _cbeContext.AddRangeAsync(savedFiles);
                 await _cbeContext.SaveChangesAsync();
             }
             Console.WriteLine("#################################");

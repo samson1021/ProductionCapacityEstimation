@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 using mechanical.Data;
 using mechanical.Services.ProductionCapacityService;
+using mechanical.Models.Entities.ProductionCapacity;
 using mechanical.Models.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto;
-using mechanical.Models.Entities.ProductionCapacity;
 using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.File;
 using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation;
 
@@ -34,7 +34,7 @@ namespace mechanical.Services.ProductionCapacityService
             _fileUploadService = fileUploadService;
         }
         
-        public async Task<ProductionCapacityEstimationDto> CreateProductionCapacityEstimation(Guid UserId, Guid PCECaseId, ProductionCapacityEstimationDto dto)
+        public async Task<ProductionCapacityEstimationPostDto> CreateProductionCapacityEstimation(Guid UserId, Guid PCECaseId, ProductionCapacityEstimationPostDto dto)
         {
             try
             {
@@ -48,18 +48,50 @@ namespace mechanical.Services.ProductionCapacityService
                 entity.Status = Status.New;
                 entity.RejectionReason = null;
         
+
+                if (dto.SupportingEvidences != null)
+                {
+                    foreach (var supportingEvidenceDto in dto.SupportingEvidences)
+                    {
+                        var supportingEvidenceEntity = new FileUpload
+                        {
+                            Name = supportingEvidenceDto.Name,
+                            Type = supportingEvidenceDto.Type,
+                            PCEId = entity.Id,
+                            // File = supportingEvidenceDto.File,
+                        };
+                        entity.SupportingDocuments.Add(supportingEvidenceEntity);
+                    }
+                }
+
+                if (dto.ProductionProcessFlowDiagrams != null)
+                {
+                    foreach (var flowDiagramDto in dto.ProductionProcessFlowDiagrams)
+                    {
+                        var flowDiagramEntity = new FileUpload
+                        {
+                            Name = flowDiagramDto.Name,
+                            Type = flowDiagramDto.Type,
+                            PCEId = entity.Id, 
+                            // File = flowDiagramDto.File, 
+                        };
+                        entity.SupportingDocuments.Add(flowDiagramEntity);
+                    }
+                }
+
+
                 await _cbeContext.ProductionCapacityEstimations.AddAsync(entity);
                 await _cbeContext.SaveChangesAsync();
 
-                var supportingEvidences = await _fileUploadService.CreateFiles(UserId, entity.Id, dto.SupportingEvidences, DocumentType.SupportingEvidence, "supportingEvidences");
-                var productionDiagrams = await _fileUploadService.CreateFiles(UserId, entity.Id, dto.ProductionProcessFlowDiagrams, DocumentType.ProductionProcessFlowDiagram, "productionDiagrams");
+                var supportingEvidences = await _fileUploadService.CreateFiles(UserId, entity.Id, dto.SupportingEvidences, DocumentType.SupportingEvidence, "SupportingEvidences");
+                var productionDiagrams = await _fileUploadService.CreateFiles(UserId, entity.Id, dto.ProductionProcessFlowDiagrams, DocumentType.ProductionProcessFlowDiagram, "ProductionDiagrams");
                 // _cbeContext.FileUploads.AddRange(supportingEvidences);
                 // _cbeContext.FileUploads.AddRange(productionDiagrams);
                 
                 await _cbeContext.SaveChangesAsync();
                 Console.WriteLine("after create file...............................................................");
                 ////
-                var resultDto = _mapper.Map<ProductionCapacityEstimationDto>(entity);
+                var resultDto = _mapper.Map<ProductionCapacityEstimationPostDto>(entity);
                 // resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
                 // resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
                 // resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
@@ -74,7 +106,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
         
-        public async Task<ProductionCapacityEstimationDto> EditProductionCapacityEstimation(Guid UserId, Guid id, ProductionCapacityEstimationDto dto)
+        public async Task<ProductionCapacityEstimationPostDto> EditProductionCapacityEstimation(Guid UserId, Guid id, ProductionCapacityEstimationPostDto dto)
         {
             try
             {
@@ -89,14 +121,14 @@ namespace mechanical.Services.ProductionCapacityService
                 _cbeContext.ProductionCapacityEstimations.Update(entity);
                 await _cbeContext.SaveChangesAsync();
                 /////
-                var resultDto = _mapper.Map<ProductionCapacityEstimationDto>(entity);
+                var resultDto = _mapper.Map<ProductionCapacityEstimationPostDto>(entity);
                 // resultDto.PerShiftProduction = ProductionCapacityCalculationUtility.CalculatePerShiftProduction(entity.EffectiveProductionHourPerShift, entity.ProductionPerHour);
                 // resultDto.PerDayProduction = ProductionCapacityCalculationUtility.CalculatePerDayProduction(entity.ShiftsPerDay, resultDto.PerShiftProduction);
                 // resultDto.PerMonthProduction = ProductionCapacityCalculationUtility.CalculatePerMonthProduction(entity.WorkingDaysPerMonth, resultDto.PerDayProduction);
                 // resultDto.PerYearProduction = ProductionCapacityCalculationUtility.CalculatePerYearProduction(resultDto.PerMonthProduction);
                 return resultDto;
                 /////
-                return _mapper.Map<ProductionCapacityEstimationDto>(entity);
+                return _mapper.Map<ProductionCapacityEstimationPostDto>(entity);
             }
             catch (Exception ex)
             {
@@ -105,7 +137,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<ProductionCapacityEstimationDto> GetProductionCapacityEstimation(Guid UserId, Guid id)
+        public async Task<ProductionCapacityEstimationReturnDto> GetProductionCapacityEstimation(Guid UserId, Guid id)
         {
             try
             {
@@ -114,13 +146,14 @@ namespace mechanical.Services.ProductionCapacityService
                     .Include(e => e.SupportingDocuments)
                     // .Include(e => e.SupportingEvidences)
                     // .Include(e => e.ProductionProcessFlowDiagrams)
+
                     .FirstOrDefaultAsync(e => e.Id == id);
                 if (entity == null)
                 {
                     _logger.LogWarning("Production capacity estimation with id {Id} not found", id);
                     throw new KeyNotFoundException("Production capacity estimation not found");
                 }
-                return _mapper.Map<ProductionCapacityEstimationDto>(entity);
+                return _mapper.Map<ProductionCapacityEstimationReturnDto>(entity);
             }
             catch (Exception ex)
             {
@@ -129,12 +162,12 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<ProductionCapacityEstimationDto>> GetNewEstimations(Guid UserId)
+        public async Task<IEnumerable<ProductionCapacityEstimationReturnDto>> GetNewEstimations(Guid UserId)
         {
             try
             {
                 var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.New).ToListAsync();
-                return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
+                return _mapper.Map<IEnumerable<ProductionCapacityEstimationReturnDto>>(entities);
             }
             catch (Exception ex)
             {
@@ -143,12 +176,12 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<ProductionCapacityEstimationDto>> GetRejectedEstimations(Guid UserId)
+        public async Task<IEnumerable<ProductionCapacityEstimationReturnDto>> GetRejectedEstimations(Guid UserId)
         {
             try
             {
                 var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.Rejected).ToListAsync();
-                return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
+                return _mapper.Map<IEnumerable<ProductionCapacityEstimationReturnDto>>(entities);
             }
             catch (Exception ex)
             {
@@ -157,12 +190,12 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<ProductionCapacityEstimationDto>> GetTerminatedEstimations(Guid UserId)
+        public async Task<IEnumerable<ProductionCapacityEstimationReturnDto>> GetTerminatedEstimations(Guid UserId)
         {
             try
             {
                 var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.Terminated).ToListAsync();
-                return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
+                return _mapper.Map<IEnumerable<ProductionCapacityEstimationReturnDto>>(entities);
             }
             catch (Exception ex)
             {
@@ -171,12 +204,12 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<ProductionCapacityEstimationDto>> GetPendingEstimations(Guid UserId)
+        public async Task<IEnumerable<ProductionCapacityEstimationReturnDto>> GetPendingEstimations(Guid UserId)
         {
             try
             {
                 var entities = await _cbeContext.ProductionCapacityEstimations.Where(e => e.Status == Status.Pending).ToListAsync();
-                return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
+                return _mapper.Map<IEnumerable<ProductionCapacityEstimationReturnDto>>(entities);
             }
             catch (Exception ex)
             {
@@ -306,7 +339,7 @@ namespace mechanical.Services.ProductionCapacityService
             }
         }
 
-        public async Task<IEnumerable<ProductionCapacityEstimationDto>> GetAllProductionCapacityEstimations(Guid UserId)
+        public async Task<IEnumerable<ProductionCapacityEstimationReturnDto>> GetAllProductionCapacityEstimations(Guid UserId)
         {
             try
             {
@@ -317,7 +350,7 @@ namespace mechanical.Services.ProductionCapacityService
                     // .Include(e => e.SupportingEvidences)
                     // .Include(e => e.ProductionProcessFlowDiagrams)
                     .ToListAsync();
-                return _mapper.Map<IEnumerable<ProductionCapacityEstimationDto>>(entities);
+                return _mapper.Map<IEnumerable<ProductionCapacityEstimationReturnDto>>(entities);
             }
             catch (Exception ex)
             {

@@ -1,121 +1,5 @@
-@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
+@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationPostDto
 @using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.ProductionCapacityEstimation
-
-@section Scripts {
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
-    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");}
-    <script>
-        $(document).ready(function () {
-            $("#ShiftsPerDay").change(function () {
-                var shiftsPerDay = $(this).val();
-                var shiftHoursContainer = $("#shiftHoursContainer");
-
-                shiftHoursContainer.empty();
-
-                if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
-                    for (var i = 0; i < shiftsPerDay; i++) {
-                        shiftHoursContainer.append(`
-                            <div class="row">
-                                <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
-                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" />
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
-                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" />
-                                </div>
-                            </div>
-                        `);
-                    }
-                } else {
-                    alert("Please enter a value between 1 and 5 for Shifts Per Day.");
-                }
-            });
-
-            $("#ShiftsPerDay").attr({
-                "min": 1,
-                "max": 5
-            });
-
-            $("#MachineFunctionalityStatus").change(function () {
-                var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
-                    $("#functionalityReasonRow").show();
-                } else {
-                    $("#functionalityReasonRow").hide();
-                    $("#otherReasonRow").hide();
-                }
-            });
-
-            $("#MachineFunctionalityReason").change(function () {
-                var selectedReason = $(this).val();
-                if (selectedReason === '@((int)MachineFunctionalityReason.Other)') {
-                    $("#otherReasonRow").show();
-                } else {
-                    $("#otherReasonRow").hide();
-                }
-            });
-
-            $("#Status").change(function () {
-                var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)Status.Rejected)') {
-                    $("#rejectionReasonRow").show();
-                } else {
-                    $("#rejectionReasonRow").hide();
-                }
-            });
-
-            // Add alphanumeric validation
-            function addAlphanumericValidation(elementId, errorElementId) {
-                document.getElementById(elementId).addEventListener("input", function () {
-                    var input = this.value;
-                    var alphanumericRegex = /^[A-Za-z0-9]+$/;
-                    if (!alphanumericRegex.test(input)) {
-                        this.setCustomValidity("Only alphanumeric characters are allowed.");
-                        document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
-                    } else {
-                        this.setCustomValidity("");
-                        document.getElementById(errorElementId).textContent = "";
-                    }
-                });
-            }
-
-            // Applying alphanumeric validation to various input fields
-            // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
-            // addAlphanumericValidation("OriginCountry", "OriginCountry-error");
-            // addAlphanumericValidation("OutputType", "OutputType-error");
-
-            // Function for handling dropdown value changes
-            function handleDropdownChange(selectElement, otherInputId) {
-                var otherInput = document.getElementById(otherInputId);
-                if (selectElement.value === "Other") {
-                    otherInput.style.display = "block";
-                    otherInput.setAttribute("required", "required");
-                } else {
-                    otherInput.style.display = "none";
-                    otherInput.removeAttribute("required");
-                }
-            }
-
-            // Add event listeners for dropdown changes
-            document.getElementById("OutputPhase").addEventListener("change", function () {
-                handleDropdownChange(this, "OtherOutputPhase");
-            });
-        });
-    </script>
-}
 
 <section class="content-header">
     <div class="container-fluid">
@@ -286,12 +170,12 @@
                             <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label>Inspection Started At</label>
+                            <label>Checking Started At</label>
                             <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" />
                             <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label>Inspection Ended At</label>
+                            <label>Checking Ended At</label>
                             <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" />
                             <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
                         </div>
@@ -356,6 +240,122 @@
     </section>
 </section>
 
+
+@section Scripts {
+    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/jszip.min.js"></script>
+    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
+    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $("#ShiftsPerDay").change(function () {
+                var shiftsPerDay = $(this).val();
+                var shiftHoursContainer = $("#shiftHoursContainer");
+
+                shiftHoursContainer.empty();
+
+                if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
+                    for (var i = 0; i < shiftsPerDay; i++) {
+                        shiftHoursContainer.append(`
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
+                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" />
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
+                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" />
+                                </div>
+                            </div>
+                        `);
+                    }
+                } else {
+                    alert("Please enter a value between 1 and 5 for Shifts Per Day.");
+                }
+            });
+
+            $("#ShiftsPerDay").attr({
+                "min": 1,
+                "max": 5
+            });
+
+            $("#MachineFunctionalityStatus").change(function () {
+                var selectedStatus = $(this).val();
+                if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
+                    $("#functionalityReasonRow").show();
+                } else {
+                    $("#functionalityReasonRow").hide();
+                    $("#otherReasonRow").hide();
+                }
+            });
+
+            $("#MachineFunctionalityReason").change(function () {
+                var selectedReason = $(this).val();
+                if (selectedReason === '@((int)MachineFunctionalityReason.Other)') {
+                    $("#otherReasonRow").show();
+                } else {
+                    $("#otherReasonRow").hide();
+                }
+            });
+
+            $("#Status").change(function () {
+                var selectedStatus = $(this).val();
+                if (selectedStatus === '@((int)Status.Rejected)') {
+                    $("#rejectionReasonRow").show();
+                } else {
+                    $("#rejectionReasonRow").hide();
+                }
+            });
+
+            // Add alphanumeric validation
+            function addAlphanumericValidation(elementId, errorElementId) {
+                document.getElementById(elementId).addEventListener("input", function () {
+                    var input = this.value;
+                    var alphanumericRegex = /^[A-Za-z0-9]+$/;
+                    if (!alphanumericRegex.test(input)) {
+                        this.setCustomValidity("Only alphanumeric characters are allowed.");
+                        document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
+                    } else {
+                        this.setCustomValidity("");
+                        document.getElementById(errorElementId).textContent = "";
+                    }
+                });
+            }
+
+            // Applying alphanumeric validation to various input fields
+            // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
+            // addAlphanumericValidation("OriginCountry", "OriginCountry-error");
+            // addAlphanumericValidation("OutputType", "OutputType-error");
+
+            // Function for handling dropdown value changes
+            function handleDropdownChange(selectElement, otherInputId) {
+                var otherInput = document.getElementById(otherInputId);
+                if (selectElement.value === "Other") {
+                    otherInput.style.display = "block";
+                    otherInput.setAttribute("required", "required");
+                } else {
+                    otherInput.style.display = "none";
+                    otherInput.removeAttribute("required");
+                }
+            }
+
+            // Add event listeners for dropdown changes
+            document.getElementById("OutputPhase").addEventListener("change", function () {
+                handleDropdownChange(this, "OtherOutputPhase");
+            });
+        });
+    </script>
+}
 
 
 

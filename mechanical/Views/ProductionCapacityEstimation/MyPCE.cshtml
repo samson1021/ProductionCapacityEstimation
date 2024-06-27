@@ -2,7 +2,7 @@
 @model mechanical.Models.Dto.ProductionCapacityDto.PCECaseTerminatePostDto;
 
 @{
-    var myPCECase = ViewData["PCEcase"] as ProductionCapacityEstimationDto;
+    var myPCECase = ViewData["PCEcase"] as ProductionCapacityEstimationReturnDto;
     @* var myPCECase = ViewData["PCEcase"] as PCECaseReturntDto; *@
     var PCEcaseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
     var PCEcaseTerminate = ViewData["PCEcaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;

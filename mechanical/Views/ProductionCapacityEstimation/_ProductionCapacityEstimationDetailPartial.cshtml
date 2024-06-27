@@ -1,4 +1,4 @@
-@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationDto
+@model mechanical.Models.Dto.ProductionCapacityDto.ProductionCapacityEstimationReturnDto
 
 <div class="container-fluid">
     <div class="row">
@@ -150,7 +150,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @* @{
+                            @{
                                 if (Model.SupportingEvidences == null || !Model.SupportingEvidences.Any())
                                 {
                                     <tr>
@@ -167,7 +167,7 @@
                                         </tr>
                                     }
                                 }
-                            } *@
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -185,7 +185,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @* @{
+                            @{
                                 if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
                                 {
                                     <tr>
@@ -202,7 +202,7 @@
                                         </tr>
                                     }
                                 }
-                            } *@
+                            }
                         </tbody>
                     </table>
                 </div>

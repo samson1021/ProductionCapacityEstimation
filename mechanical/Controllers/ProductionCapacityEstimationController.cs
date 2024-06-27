@@ -60,7 +60,8 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Guid PCEcaseId, ProductionCapacityEstimationDto dto)
+        public async Task<IActionResult> Create(Guid PCEcaseId, ProductionCapacityEstimationPostDto dto)
+
         {
             if (ModelState.IsValid)
             {
@@ -135,7 +136,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ProductionCapacityEstimationDto dto)
+        public async Task<IActionResult> Edit(Guid id, ProductionCapacityEstimationPostDto dto)
         {
             if (ModelState.IsValid)
             {

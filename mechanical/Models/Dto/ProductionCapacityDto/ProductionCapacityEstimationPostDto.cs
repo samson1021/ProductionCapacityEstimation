@@ -9,7 +9,7 @@ using mechanical.Models.Enum.CollateralAndProductionCapacityEstimationEnums.Prod
 
 namespace mechanical.Models.Dto.ProductionCapacityDto
 {
-    public class ProductionCapacityEstimationDto
+    public class ProductionCapacityEstimationPostDto
     {
         public Guid Id { get; set; }
 
