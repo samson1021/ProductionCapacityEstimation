@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 using mechanical.Models;
-using mechanical.Models.Dto.ProductionCapacityDto;
-using mechanical.Services.ProductionCapacityService;
+using mechanical.Models.PCE.Dto.PCEDto;
+using mechanical.Services.PCE.PCEService;
 
 namespace mechanical.Controllers
 {
@@ -71,8 +71,8 @@ namespace mechanical.Controllers
             {
                 try
                 {
-                    var productionCapacityEstimation = await _collateralEstimationFeeService.CreateCollateralEstimationFee(base.GetCurrentUserId(), dto);
-                    return RedirectToAction("Detail", new { id = productionCapacityEstimation.Id });
+                    var pce = await _collateralEstimationFeeService.CreateCollateralEstimationFee(base.GetCurrentUserId(), dto);
+                    return RedirectToAction("Detail", new { id = pce.Id });
                 }
                 catch (Exception ex)
                 {

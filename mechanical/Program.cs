@@ -36,15 +36,15 @@ using mechanical.Services.CaseTerminateService;
 
 /////////////
 using mechanical.Mapper;
-using mechanical.Services.ProductionCapacityService;
-/////////////
-
 using System.Web.Services.Description;
 using mechanical.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using mechanical.Services.PCE.PCECaseTimeLineService;
+using mechanical.Services.PCE.PCEService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCECaseTimeLineService;
+/////////////
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -121,7 +121,7 @@ builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 // builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddScoped<IProductionCapacityEstimationService, ProductionCapacityEstimationService>();
+builder.Services.AddScoped<IPCEService, PCEService>();
 builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 ///////////////////////////////

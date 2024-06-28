@@ -15,14 +15,13 @@ using mechanical.Models.Dto.UserDto;
 using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
+
+/////
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECase;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-
-/////
-using mechanical.Models.Dto.ProductionCapacityDto;
-using mechanical.Models.Dto.ProductionCapacityDto.FileUploadDto;
-using mechanical.Models.Entities.ProductionCapacity;
+using mechanical.Models.PCE.Dto.PCEDto;
+using mechanical.Models.PCE.Dto.FileUploadDto;
 /////
 
 namespace mechanical.Mapper
@@ -155,8 +154,8 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.End))
                 .ReverseMap();
             CreateMap<CollateralEstimationFee, CollateralEstimationFeeDto>().ReverseMap();
-            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationReturnDto>().ReverseMap();
-            CreateMap<ProductionCapacityEstimation, ProductionCapacityEstimationPostDto>()
+            CreateMap<ProductionCapacityEstimation, PCEReturnDto>().ReverseMap();
+            CreateMap<ProductionCapacityEstimation, PCEPostDto>()
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => new DateTimePeriod
                 {
                     Start = src.TimeConsumedToCheck.Start,

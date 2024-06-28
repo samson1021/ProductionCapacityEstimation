@@ -5,7 +5,6 @@ using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
-using mechanical.Models.Entities.ProductionCapacity;
 
 //using mechanical.Migrations;
 
@@ -107,7 +106,7 @@ namespace mechanical.Data
         public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
         public virtual DbSet<ProductionCapacityEstimation> ProductionCapacityEstimations { get; set; }
         public virtual DbSet<FileUpload> FileUploads { get; set; }
-        public virtual DbSet<ProductionCapacitySchedule> ProductionCapacitySchedules { get; set; }
+        public virtual DbSet<PCESchedule> PCESchedules { get; set; }
         ///////
 
         public virtual DbSet<CreateRole> CreateRoles { get; set; }
