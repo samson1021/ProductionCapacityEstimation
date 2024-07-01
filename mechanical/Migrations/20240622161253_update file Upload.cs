@@ -5,7 +5,7 @@
 namespace mechanical.Migrations
 {
     /// <inheritdoc />
-    public partial class checking : Migration
+    public partial class updatefileUpload : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

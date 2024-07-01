@@ -34,6 +34,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCECollateralService;
+using mechanical.Services.PCE.UploadFileService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -78,6 +80,10 @@ builder.Services.AddDbContext<CbeContext>(options =>
 //production capacity estimation
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
+builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
+builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
+
+
 
 
 

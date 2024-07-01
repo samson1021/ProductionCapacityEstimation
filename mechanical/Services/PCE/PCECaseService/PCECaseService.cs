@@ -56,19 +56,42 @@ namespace mechanical.Services.PCE.PCECaseService
        // Task<IEnumerable<PCECaseDto>> GetPCENewCases(Guid userId);
         public async Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId)
         {
-            var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager").ToListAsync();
+            //var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager").ToListAsync();
+            //var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
+            //return caseDtos;
+            var cases = await _cbeContext.PCECases.Include(x => x.PCECollaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+                .Where(res => res.RMUserId == userId && res.CurrentStatus == "New").ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             return caseDtos;
+
+           // var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+           //.Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+           //.ToListAsync();
+           // var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+           // foreach (var caseDto in caseDtos)
+           // {
+           //     caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+           // }
+           // return caseDtos;
+
         }
 
 
         public PCECaseReturntDto GetPCECase(Guid userId, Guid id)
         {
+
+            //var loanCase = await _cbeContext.Cases
+            //   .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+            //   .FirstOrDefaultAsync(c => c.Id == id && c.CaseOriginatorId == userId);
+            //return _mapper.Map<CaseReturntDto>(loanCase);
             try
             {
-                _logger.LogInformation("in the service class");
-                var result = _cbeContext.PCECases.Where(c => c.Id == id).FirstOrDefault();
-                return _mapper.Map<PCECaseReturntDto>(result);
+                var result = _cbeContext.PCECases.Include(res => res.District)
+                    .Include(res=>res.PCECollaterals).Include(res=>res.BussinessLicence)
+                    .Where(c => c.Id == id && c.RMUserId==userId).FirstOrDefault();
+                var lastResult = _mapper.Map<PCECaseReturntDto>(result);
+                return lastResult;
+
             }
             catch (Exception ex)
             {

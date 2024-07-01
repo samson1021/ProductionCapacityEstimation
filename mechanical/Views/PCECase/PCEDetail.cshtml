@@ -1,15 +1,10 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECase
-@model PCECaseReturntDto;
-@*     public Guid Id { get; set; }
-        public required string CaseNo { get; set; }
-        public required string ApplicantName { get; set; }
-        public string CustomerUserId { get; set; } = string.Empty;
-        public string CustomerEmail { get; set; } = string.Empty;
-        public Guid DistrictId { get; set; }
-        public string CurrentStage { get; set; } = string.Empty;
-        public string CurrentStatus { get; set; } = string.Empty;
-        public DateTime CreationDate { get; set; }
-        public DateTime MakerAssignmentDate { get; set; } *@
+@{
+    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
+
+}
+
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -53,25 +48,25 @@
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @await Html.PartialAsync("Partial/_PCEGeneralInfo")
                     </div>
-                   <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                        @await Html.PartialAsync("Partial/_PCECreateCollateral")
-                    </div>
-                      <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                    <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                         @await Html.PartialAsync("Partial/_PCECreateCollateral")
+                        </div> 
+                    <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("Partial/_PCECaseSchedule")
-                    </div>@* *@
+                    </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                    @await Html.PartialAsync("Partial/_PCECaseComment")
+                        @await Html.PartialAsync("Partial/_PCECaseComment")
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@* @section Scripts {
+@section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("Partial/_DetailCaseSriptsPartial");
+        await Html.RenderPartialAsync("Partial/_DetailCaseDataTableSriptsPartial");
+         //await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
 
-} *@
+} 

@@ -111,9 +111,10 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)
         {
-            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            return View("PCEDetail", pcecaseDto);
-        }
+            var pcecaseDto =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            ViewData["pcecaseDtos"] = pcecaseDto;
+            return View();
+        } 
 
       
         public async Task<IActionResult> PCEEdit(Guid Id)

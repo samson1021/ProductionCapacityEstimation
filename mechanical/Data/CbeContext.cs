@@ -41,6 +41,11 @@ namespace mechanical.Data
         //production capacity estimation
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
+        public DbSet<PCEUploadFile> PCEUploadFiles { get; set; }
+        public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
+
+
+
 
 
 

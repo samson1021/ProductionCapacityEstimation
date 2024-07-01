@@ -199,6 +199,9 @@ namespace mechanical.Services.CollateralService
                 .GetCustomAttributes(typeof(DisplayAttribute), false)
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
+
+
+
         public async Task<Collateral> EditCollateral(Guid userId, Guid CollaterlId, CollateralPostDto createCollateralDto)
         {
             var collateral = await _cbeContext.Collaterals.FindAsync(CollaterlId);
@@ -221,6 +224,10 @@ namespace mechanical.Services.CollateralService
             }
                 throw new Exception("unable to Edit collateral");
         }
+
+
+
+
         public async Task<IEnumerable<ReturnCollateralDto>> GetCollaterals(Guid CaseId)
         {
             var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && (res.CurrentStatus=="New" && res.CurrentStage=="Relation Manager")).ToListAsync();

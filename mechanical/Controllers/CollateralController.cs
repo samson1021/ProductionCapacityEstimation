@@ -137,6 +137,7 @@ namespace mechanical.Controllers
 
             return RedirectToAction("MyCompleteCases", "Case");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, CollateralPostDto collateralPostDto)

@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240516115226_16-05-2024")]
-    partial class _16052024
+    [Migration("20240622084818_MyFirstMigration")]
+    partial class MyFirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1089,6 +1089,261 @@ namespace mechanical.Migrations
                     b.ToTable("UploadFiles");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("ApplicantName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CaseNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CompletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentStage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DistrictId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MakerAssignmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("RMUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("RMUserId");
+
+                    b.ToTable("PCECases");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Activity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentStage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("NewCaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewCaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PCECaseTimeLines");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEUploadFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Catagory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PlantCapacityEstimationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UploadDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PCECaseId")
+                        .IsUnique();
+
+                    b.ToTable("PCEUploadFiles");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PlantCapacityEstimation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CollateralType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentStage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOfInspection")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HouseNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Kebele")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LHCNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NamePlant")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ObsolescenceStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerNameLHC")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerOfPlant")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantCity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantDepreciationRate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantKebele")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantRegion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantSubCity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantWereda")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantZone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PurposeOfPCE")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubCity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TradeLicenseNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Wereda")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("YearOfManifacturing")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Zone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CaseId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("PlantCapacityEstimations");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -1368,9 +1623,80 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.District", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "RMUser")
+                        .WithMany()
+                        .HasForeignKey("RMUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("District");
+
+                    b.Navigation("RMUser");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "NewCase")
+                        .WithMany()
+                        .HasForeignKey("NewCaseId");
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NewCase");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEUploadFile", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", null)
+                        .WithOne("BussinessLicence")
+                        .HasForeignKey("mechanical.Models.PCE.Entities.PCEUploadFile", "PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PlantCapacityEstimation", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "Case")
+                        .WithMany("PCECollaterals")
+                        .HasForeignKey("CaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Case");
+
+                    b.Navigation("CreatedBy");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
                 {
                     b.Navigation("Collaterals");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
+                {
+                    b.Navigation("BussinessLicence");
+
+                    b.Navigation("PCECollaterals");
                 });
 #pragma warning restore 612, 618
         }
