@@ -110,6 +110,8 @@ namespace mechanical.Controllers
             if (response == null) { return RedirectToAction("NewCases"); }
             return View(response);
         }
+
+
         [HttpPost]
         public async Task<IActionResult> handleRemark(Guid CollateralId, Guid EvaluatorUserID ,String RemarkType,CreateFileDto uploadFile, Guid CheckerUserID)
         {

@@ -16,6 +16,7 @@ namespace mechanical.Models.Entities
         public Guid userId { get; set; }
         public Guid CaseId { get; set; }
         public Guid? CollateralId { get; set; }
+       /// public Guid? ProductionCapacityId { get; set; }
 
     }
 }

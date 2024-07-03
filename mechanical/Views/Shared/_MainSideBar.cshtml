@@ -35,6 +35,8 @@
                             </p>
                         </a>
                     </li>
+
+
                     <li class="nav-item">
                         <a href="@Url.Action("Create", "Case")" class="nav-link">
                             <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
@@ -99,6 +101,94 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Create", "ProductionCase")" class="nav-link">
+                            <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p>
+                                Create new Production case
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("PNewCases", "ProductionCase")" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>
+                                Production case
+                            </p>
+                        </a>
+                    </li>
+                    @* Start Production Capacity Estimation *@
+
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("PCECreate", "PCECase")" class="nav-link">
+                            <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p>
+                                Create new PCE case
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p>My PCE Case<i class="fas fa-angle-left right"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCENewCases", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        New PCE Case
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCEPendingCases", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Pending PCE Case
+                                    </p>
+                                </a>
+                            </li>
+                          @*   <li class="nav-item">
+                                <a href="@Url.Action("RemarkCases", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Remark Release PCE Case
+                                    </p>
+                                </a>
+                            </li> *@
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCECompleteCases", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Completed PCE Case
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCERejectedCases", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Returned  PCE Case
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCETotalCases", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Total case
+                                    </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+@*                     End Product Capacity Estimation
+ *@
+
                 </ul>
 
 

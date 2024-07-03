@@ -1,0 +1,46 @@
+﻿
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>My New PCE Case</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">New PCE Case</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="PMyNewCase" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Created At</th>
+                            <th>Case No</th>
+                            <th>Aplicant Name</th>
+                            <th>Customer Id</th>
+                            <th> New PCE </th>
+                            <th>Total PCE</th> 
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ProductionCaseScriptPartial/_NewCasesDatatableSriptsPartial");
+    }
+}
+
+
+

@@ -1,0 +1,160 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var CaseId = $('#CaseId').val();
+        var applicantNameElement = document.querySelector('#ApplicantName').innerText;
+        $('#addCollateralButton').click(function () {
+            $('#addCollateralModal').modal('show');
+        });
+        var caseCollateralsTable;
+
+        function initializeDataTable(data) {
+            caseCollateralsTable = $('#caseCollaterals').DataTable({
+                language: {
+                    emptyTable: "There is no collateral register for this case please click the above add button to add collaterals"
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: [
+                    { extend: 'copy', title: 'Motor Vehicle Evaluation Report Summary - Copy', exportOptions: { columns: ':visible' } },
+                    { extend: 'csv', title: 'Motor Vehicle Evaluation Report Summary - CSV', exportOptions: { columns: ':visible' } },
+                    {
+                        extend: 'excelHtml5', title: 'Motor Vehicle Evaluation Report Summaryy - Excel', exportOptions: { columns: ':visible' }, customize: function (xlsx) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            $('row c[r^="J"]', sheet).attr('s', '55');
+                        }
+                    },
+                    {
+                        extend: 'pdf', title: 'Motor Vehicle Evaluation Report Summary - PDF', exportOptions: { columns: ':visible' },
+                    },
+                    {
+                        extend: 'print', title: 'Motor Vehicle Evaluation Report Summary - Print', exportOptions: { columns: ':visible' },
+                        customize: function (win) {
+                            $(win.document.body).find('h1').text('Motor Vehicle Evaluation Report Summary').addClass('text-center');
+                            $(win.document.body).find('table').prepend(
+                                '<tr><th colspan="10" class="text-center"><h2>Commerecial Bank Of Ethiopia</h2></th></tr>' +
+                                '<tr><th colspan="3">Applicant Name</th><th colspan="2">Applicant Address</th><th colspan="2">Date Of Evaluation</th><th colspan="3">Mechanical Equipment Type</th></tr>' +
+                                '<tr><td colspan="3">' + applicantNameElement + '</td><td colspan="2"></td><td colspan="2"></td><td colspan="3">Motor Vehicle</td></tr>' +
+                                '<tr><th colspan="10">PART II: SUMMARY OF VALUATION</th></tr>' +
+                                '<tr>' +
+                                '<th>S/No.</th>' +
+                                '<th>Mechanical Equipment Name</th>' +
+                                '<th>YoMfg & Origin</th>' +
+                                '<th>Model & Engine No., Chassis & Serial No.</th>' +
+                                '<th>Physical & Technical Assessment</th>' +
+                                '<th>Property Of</th>' +
+                                '<th>Replacement Cost</th>' +
+                                '<th>Depreciation Rate</th>' +
+                                '<th>Net Estimation Value</th>' +
+                                '<th>Remark</th>' +
+                                '</tr>'
+                            );
+                            $(win.document.body).find('table thead').empty();
+                        }
+                    },
+
+                    'colvis'
+                ],
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        width: '5%',
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '10%',
+                        render: function (data, type, row, meta) {
+                            return data.MotorVehicleMake + ' ' + data.BodyType;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '10%',
+                        render: function (data, type, row, meta) {
+                            return data.YearOfManufacture;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '10%',
+                        render: function (data, type, row, meta) {
+                            return data.CountryOfOrigin;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '20%',
+                        render: function (data, type, row, meta) {
+                            return data.ModelNo;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '20%',
+                        render: function (data, type, row, meta) {
+                            return data.EngineNo;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '20%',
+                        render: function (data, type, row, meta) {
+                            return data.ChassisNo;
+                        }
+                    },
+                    {
+                        data: null,
+                        width: '20%',
+                        render: function (data, type, row, meta) {
+                            return data.SerialNo;
+                        }
+                    },
+                    { data: 'PhysicalAndInstallationAssesment', width: '20%' },
+                    { data: 'Remark', width: '10%' },
+                    { data: 'ReplacementCost', width: '10%' },
+                    { data: 'DepreciationRate', width: '10%' },
+                    { data: 'NetEstimationValue', width: '10%' },
+                    { data: 'Remark', width: '10%' }
+                ]
+            }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
+        }
+
+        function loadCollaterals() {
+            $.ajax({
+                url: '/IndBldgFacilityEquipment/GetIndBldgFacilityEquipmentSummary?CaseId=' + CaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
+                        var caseCollateralsTable = $('#caseCollaterals').DataTable();
+                        caseCollateralsTable.destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load collaterals");
+                    console.log(error);
+                }
+            });
+        }
+        loadCollaterals();
+    });
+</script>

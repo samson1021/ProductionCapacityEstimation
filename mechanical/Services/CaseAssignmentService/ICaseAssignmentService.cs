@@ -9,13 +9,13 @@ namespace mechanical.Services.CaseAssignmentService
     {
         Task<List<CaseAssignmentDto>> SendForValuation(string selectedCollateralIds, string employeeId);
         Task<List<CaseAssignmentDto>> SendForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId);
-        //Task<CaseAssignmentDto> CreateCaseAssignment(CaseAssignmentDto caseAssignmentDto);
+       // Task<CaseAssignmentDto> CreateCaseAssignment(CaseAssignmentDto caseAssignmentDto);
         Task<List<CaseAssignmentDto>> AssignMakerTeamleader(Guid userId, string selectedCollateralIds, string employeeId);
-        //Task<List<CaseAssignmentDto>> AssignMakerOfficer(Guid userId, string selectedCollateralIds, string employeeId);
+       // Task<List<CaseAssignmentDto>> AssignMakerOfficer(Guid userId, string selectedCollateralIds, string employeeId);
         Task<List<CaseAssignmentDto>> ReAssignMakerTeamleader(Guid userId, string selectedCollateralIds, string employeeId);
 
         Task<List<CaseAssignmentDto>> AssignCheckerTeamleader(Guid userId, string selectedCollateralIds, string employeeId);
-        //Task<List<CaseAssignmentDto>> AssignCheckerOfficer(string selectedCollateralIds, string employeeId);
+       // Task<List<CaseAssignmentDto>> AssignCheckerOfficer(string selectedCollateralIds, string employeeId);
         Task<List<CaseAssignmentDto>> ReAssignCheckerTeamleader(Guid userId, string selectedCollateralIds, string employeeId);
     }
 }

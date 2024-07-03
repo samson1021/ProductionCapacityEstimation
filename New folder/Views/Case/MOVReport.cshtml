@@ -1,0 +1,337 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var collaterals = ViewData["collaterals"] as List<Collateral>;
+    var cases = ViewData["cases"] as Case;
+    var MotorVehicle = ViewData["MotorVehicles"] as List<MotorVehicle>;
+    var caseSchedule = ViewData["caseSchedule"] as CaseSchedule;
+    var commaSeparatedRegions = "";
+    var commaSeparatedPropertyof = "";
+    var commaSeparatedType = "";
+
+    if (collaterals != null)
+    {
+        var uniqueRegions = collaterals.Select(m => m.Region).Distinct();
+        commaSeparatedRegions = string.Join(", ", uniqueRegions);
+        var ProportyOF = collaterals.Select(m => m.PropertyOwner).Distinct();
+        commaSeparatedPropertyof = string.Join(", ", ProportyOF);
+        var Type = collaterals.Select(m => m.Type).Distinct();
+        commaSeparatedType = string.Join(", ", Type);
+
+    }
+
+    var maker = MotorVehicle.Select(m => m.EvaluatorUser).Distinct();
+
+    var checker = MotorVehicle.Select(m => m.CheckerUser).Distinct();
+
+    var caseScheduleDate = DateTime.Now;
+    if (caseSchedule != null)
+    {
+        caseScheduleDate = caseSchedule.ScheduleDate;
+    }
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Case Detail</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "Case")">Motor Vehicle Report </a></li>
+                    <li class="breadcrumb-item active">Case Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <input value=@cases.Id type="hidden" id="CaseId" />
+                <table id="caseCollaterals" class="table table-bordered table-striped ">
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="text-center"><h2>Commerecial Bank Of Ethiopia</h2></th>
+                        </tr>
+                        <tr>
+                            <th class="text-right" colspan="4">
+                                Case Ref. No.:@cases.CaseNo
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="text-right" colspan="4">@caseScheduleDate</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">
+                                Report on Valuation of Mechanical Equipment of:Motor Vehicle
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">PART I:EXECUTIVE SUMMERY</th>
+                        </tr>
+                        <tr>
+                            <th colspan="4">This is to notify that on request of @cases.ApplicantName we have visited <br /> the mechanical equipment of Motor Vehicle found at (@commaSeparatedRegions) <br /> area on date @caseScheduleDate to carry out valuation of Motor Vehicle lying there in.</th>
+
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">General Description</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2"> Property of:</th>
+                            <td colspan="2">(@commaSeparatedPropertyof)</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Machinery and Equipment Location</th>
+                            <td colspan="2">(@commaSeparatedRegions)</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Type of Mechanical Equipment: </th>
+                            <td colspan="2">(@commaSeparatedType)</td>
+                        </tr>
+                        @*   <tr>
+                        <th colspan="2">Purpose for which Valuation is made:</th>
+                        <td colspan="2">TEST1</td>
+                        </tr> *@
+                        <tr>
+                            <th colspan="2">Date as on which Valuation is made:</th>
+                            <td colspan="2">TEST1</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">The Machineries are utilized for:</th>
+                            
+                            <td colspan="2">@caseScheduleDate</td>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">PART II: Assesment and Remark</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">Our survey assessment and remarks are as under:</th>
+                        </tr>
+                        @{
+                            foreach (var item in MotorVehicle)
+                            {
+                                if (item.Remark != null && item.Remark != String.Empty)
+                                {
+                                    <tr>
+                                        <td colspan="4">
+                                            @item.Remark
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+
+                        <tr>
+                            <th colspan="2">
+                                Maker’s Name:
+                            </th>
+                            <th colspan="1">
+                                Signature:
+                            </th>
+                            <th colspan="1">
+                                Date:
+                            </th>
+                        </tr>
+                        <tr>
+                            @{
+                                foreach (var item in maker)
+                                {
+                                    <td colspan="2">@item.Name</td>
+                                    <td>test user sig</td>
+                                    <td>@caseScheduleDate</td>
+                                }
+                            }
+
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                Checker’s Name:
+                            </th>
+                            <th colspan="1">
+                                Signature:
+                            </th>
+                            <th colspan="1">
+                                Date:
+                            </th>
+                        </tr>
+                        <tr>
+                            @{
+                                foreach (var item in checker)
+                                {
+                                    if (item == null)
+                                    {
+                                        continue;
+                                    }
+                                    <td colspan="2">@item.Name</td>
+                                    <td>test user sig</td>
+                                    <td>@caseScheduleDate</td>
+                                }
+                            }
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="text-center">PART III: COST SUMMERY</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                RC, Total Replacement Cost (new) :
+                            </th>
+                            <td colspan="2">
+                                @{
+                                    var sum = 0.0;
+                                    foreach (var item in MotorVehicle)
+                                    {
+                                        sum = item.ReplacementCost + sum;
+                                    }
+                                }
+                                @sum
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>Min:</th>
+                            <th>Max:</th>
+                            <th>Average:</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Mm, Manufacturer’s Market Share
+                            </th>
+                            <td>
+                                @{
+                                    var minValue = MotorVehicle.Min(obj => obj.MarketShareFactor);
+                                }
+                                @minValue
+                            </td>
+                            <td>
+                                @{
+                                    var maxValue = MotorVehicle.Max(obj => obj.MarketShareFactor);
+                                }
+                                @maxValue
+                            </td>
+                            <td>
+                                @{
+                                    var AvrValue = MotorVehicle.Average(obj => obj.MarketShareFactor);
+                                }
+                                @AvrValue
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Dr, Depreciation Rate by Age
+                            </th>
+                            <td>
+                                @{
+                                    var DminValue = MotorVehicle.Min(obj => obj.DepreciationRate);
+                                }
+                                @DminValue
+                            </td>
+                            <td>
+                                @{
+                                    var DmaxValue = MotorVehicle.Max(obj => obj.DepreciationRate);
+                                }
+                                @DmaxValue
+                            </td>
+                            <td>
+                                @{
+                                    var DAvrValue = MotorVehicle.Average(obj => obj.DepreciationRate);
+                                }
+                                @DAvrValue
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                EC, Equipment Condition
+                            </th>
+                            <td>
+                                @{
+                                    var EminValue = MotorVehicle.Min(obj => obj.EqpmntConditionFactor);
+                                }
+                                @EminValue
+                            </td>
+                            <td>
+                                @{
+                                    var EmaxValue = MotorVehicle.Max(obj => obj.EqpmntConditionFactor);
+                                }
+                                @EmaxValue
+                            </td>
+                            <td>
+                                @{
+                                    var EAvrValue = MotorVehicle.Average(obj => obj.EqpmntConditionFactor);
+                                }
+                                @EAvrValue
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                Total Estimation/Market Value
+                            </th>
+                            <td colspan="2">
+                                @{
+                                    var NAvrValue = MotorVehicle.Sum(obj => obj.NetEstimationValue);
+                                }
+                                @NAvrValue
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">
+                                Based on above, we certify that, 	"Total present market value of 		@AvrValue
+                                Motor Vehicle as of 	@caseScheduleDate	is   @NAvrValue Birr
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                Maker’s Name:
+                            </th>
+                            <th colspan="1">
+                                Signature:
+                            </th>
+                            <th colspan="1">
+                                Date:
+                            </th>
+                        </tr>
+                        <tr>
+                            @{
+                                foreach (var item in maker)
+                                {
+                                    <td colspan="2">@item.Name</td>
+                                    <td>test user sig</td>
+                                    <td>@caseScheduleDate</td>
+                                }
+                            }
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                Checker’s Name:
+                            </th>
+                            <th colspan="1">
+                                Signature:
+                            </th>
+                            <th colspan="1">
+                                Date:
+                            </th>
+                        </tr>
+                        <tr>
+                            @{
+                                foreach (var item in checker)
+                                {
+                                    if (item == null)
+                                    {
+                                        continue;
+                                    }
+                                    <td colspan="2">@item.Name</td>
+                                    <td>test user sig</td>
+                                    <td>@caseScheduleDate</td>
+                                }
+                            }
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</section>

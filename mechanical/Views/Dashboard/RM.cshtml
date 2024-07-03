@@ -99,6 +99,104 @@
                         </div>
                     </div>
                 </div>
+
+    @*                 Production capacity case
+    *@
+                <div class="row">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-green update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcsnewCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCS New Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1><i class="fas fa-plus"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCENewCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info<i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-yellow update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcspendingCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCS Pending Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1><i class="fas fa-spinner"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCEPendingCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcscompletedCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCS Completed Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCECompleteCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-blue update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcstotalCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCS Total Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1> <i class="fas fa-grip-lines"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCETotalCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+@* @* Production Estimation Capacity Estimation *@ 
+
+
+
                 <div class="row">
                     <div class="card">
                         <div class="card-header border-transparent">
@@ -211,6 +309,50 @@
                 }, 20);
             }
         });
+
+
+
+
+
+
+
+
+        // production capacity estimation start
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/PCECase/GetDashboardPCSCaseCount")
+                .then(response => response.json())
+                .then(data => {
+                    animateCount("pcsnewCasesCount", data.PCSNewCaseCount);
+                    animateCount("pcspendingCasesCount", data.PCSPendingCaseCount);
+                    animateCount("pcscompletedCasesCount", data.PCSCompletedCaseCount);
+                    animateCount("pcstotalCasesCount", data.PCSTotalCaseCount);
+                })
+                .catch(error => {
+                    console.error("Error fetching card counts:", error);
+                });
+
+            function animateCount(elementId, targetCount) {
+                const element = document.getElementById(elementId);
+                const duration = 2000;
+                const startCount = 1;
+                const step = Math.ceil(targetCount / (duration / 20));
+
+                let currentCount = startCount;
+                const animationInterval = setInterval(() => {
+                    currentCount += step;
+                    if (currentCount >= targetCount) {
+                        clearInterval(animationInterval);
+                        currentCount = targetCount;
+                    }
+                    element.textContent = currentCount;
+                }, 20);
+            }
+        });
+
+        // Production capacity estimation case end
+
+
+
     </script>
 }
 

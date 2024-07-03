@@ -22,8 +22,6 @@
                             <i class="nav-icon fas fa-sitemap"></i>
                         </a>
                     </div>
-
-
                 </div>
                 <div class="col-12 col-sm-4">
                 </div>
@@ -45,7 +43,7 @@
 
         </table>
         <div class="row">
-                @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
+                 <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
                 <div class="row">
                 <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
                 </div>
@@ -89,6 +87,7 @@
         $('#addCivilCollateralModal').modal('show');
     });
 </script> 
+
 <div class="modal fade" id="addMechanicalCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">

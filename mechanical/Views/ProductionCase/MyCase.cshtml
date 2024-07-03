@@ -1,0 +1,405 @@
+﻿@using mechanical.Models.Dto.ProductionCaseDto
+@using mechanical.Models.Enum.ProductionCapcityEstimation
+
+@model mechanical.Models.Dto.ProductionCapacityDto.ProductionPostDto
+@{
+    var myCase = ViewData["case"] as RetunProductionCaseDto;
+}
+
+@* @{
+    Layout = "_CaseMainSideBar";
+} *@
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Case Detail</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "ProductionCase")">My ProductionCase</a></li>
+                    <li class="breadcrumb-item active">Case Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            @*<div class="Card-header">
+                <div class="col-12" style="margin-top:0.5em;">
+                    <div class="row">
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Case number</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CaseNo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Applicant name</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.ApplicantName</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted"> User Customer Id </span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CustomerId</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Center</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.Center</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Created at</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CreationDate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <div class="btn-group">
+                                <button id="addCollateralButton" type="button" class="btn bg-purple" data-toggle="modal" data-target="#addCollateralModal">
+                                    <i class="fas fa-plus-circle"></i> Add Mechanical Collateral
+                                </button>
+                                <button id="addCollateralButton" type="button" class="btn bg-purple  ms-1" data-toggle="modal" data-target="#addCollateralModal">
+                                    <i class="fas fa-plus-circle"></i> Add Civil Collateral
+                                </button>
+                                <button id="addCollateralButton" type="button" class="btn bg-purple  ms-1" data-toggle="modal" data-target="#addCollateralModal">
+                                    <i class="fas fa-plus-circle"></i> Add Agricultural Collateral
+                                </button>
+                                <a class="btn bg-purple  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = myCase.Id })">
+                                    <i class="nav-icon fas fa-sitemap"></i>
+                                </a>
+                            </div>
+                                    
+                            
+                        </div>
+                        <div class="col-12 col-sm-4">
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+            <div class="card-body">
+                <table id="caseCollaterals" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Property Owner</th>
+                            <th>Role</th>
+                            <th>Equipment Catagory</th>
+                            <th>Equipment Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                </table>
+                <div class="row">
+                    @using (Html.BeginForm("SendEvaluation", "ProductionCase", FormMethod.Post))
+                    {
+                       @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
+                        <div class="row">
+                            <button type="submit" class="col-xl-2  btn  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade" id="addCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Mechanical Collateral</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("Create", "ProductionCapcity", FormMethod.Post, new { id = "addCollateralForm" }))
+            {
+                <div class="modal-body" style="padding-top:0px;">
+                    <div class="card-body">
+                       @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="PropertyOwner">Property Owner</label>
+                                <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" required>
+                                <span asp-validation-for="PropertyOwner" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Role">Role</label>
+                                <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                                    <option value="" disabled selected>Select Role</option>
+                                    <option value="Applicant">Applicant</option>
+                                    <option value="Guarantor">Guarantor</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Category">Category</label>
+                                <select id="categoryDropdown" asp-for="Category" class="form-control form-control-sm"
+                                        asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                    <option value="" disabled selected>Select Equipment Category</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Type">Type</label>
+                                <select id="typeDropdown" asp-for="Type" class="form-control form-control-sm">
+                                    <option value="" disabled selected>Select Equipment Type</option>
+                                </select>
+                                <span asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                           @*  <div class="form-group col-lg-4">
+                                <label asp-for="PlateNo">Plate Number</label>
+                                <input asp-for="PlateNo" type="text" class="form-control form-control-sm" id="modelName" required>
+                                <span asp-validation-for="PlateNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="ChassisNo">Chassis Number</label>
+                                <input asp-for="ChassisNo" type="text" class="form-control form-control-sm" id="qty" required>
+                                <span asp-validation-for="ChassisNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="EngineMotorNo">Engine/Motor Number</label>
+                                <input asp-for="EngineMotorNo" type="text" class="form-control form-control-sm" id="location" required>
+                                <span asp-validation-for="EngineMotorNo" class="text-danger"></span>
+                            </div> *@
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="ManufactureYear">Manufactuing Year</label>
+                                <input asp-for="ManufactureYear" type="text" class="form-control form-control-sm" id="modelName" required>
+                                <span asp-validation-for="ManufactureYear" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="ModelNo">Model Number</label>
+                                <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="qty" required>
+                                <span asp-validation-for="ModelNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="SerialNo">Serial Number</label>
+                                <input asp-for="SerialNo" type="text" class="form-control form-control-sm" id="location" required>
+                                <span asp-validation-for="SerialNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body" style="padding-bottom:0px;">
+                                <p>Property Address</p>
+                                <div class="row">
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="Region">Region</label>
+                                        <input asp-for="Region" type="text" class="form-control form-control-sm" id="modelName" required>
+                                        <span asp-validation-for="Region" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="City">City</label>
+                                        <input asp-for="City" type="text" class="form-control form-control-sm" id="qty" required>
+                                        <span asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="Zone">Zone</label>
+                                        <input asp-for="Zone" type="text" class="form-control form-control-sm" id="location" required>
+                                        <span asp-validation-for="Zone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="SubCity">Sub-City</label>
+                                        <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="modelName" required>
+                                        <span asp-validation-for="SubCity" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Wereda">Wereda</label>
+                                        <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="qty" required>
+                                        <span asp-validation-for="Wereda" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Kebele">Kebele</label>
+                                        <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="location" required>
+                                        <span asp-validation-for="Kebele" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="HouseNo">House Number</label>
+                                        <input asp-for="HouseNo" type="text" class="form-control form-control-sm" id="location" required>
+                                        <span asp-validation-for="HouseNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        <div class="row">
+                            @* <div class="form-group col-lg-4">
+                                <label asp-for="TitleDeed">Title Deed</label>
+                                <input asp-for="TitleDeed" type="file" class="form-control  form-control-sm" id="landHoldingCertificate">
+                                <span asp-validation-for="TitleDeed" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CommercialInvoice">Commercial Invoice</label>
+                                <input asp-for="CommercialInvoice" type="file" class="form-control  form-control-sm" id="businessLicenseCertificate">
+                                <span asp-validation-for="CommercialInvoice" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CustomDeclaration">Custom Declaration</label>
+                                <input asp-for="CustomDeclaration" type="file" class="form-control  form-control-sm" id="ownerCertificate">
+                                <span asp-validation-for="CustomDeclaration" class="text-danger"></span>
+                            </div *@>
+                        </div>
+                        <div class="row">
+                            @* <div class="form-group col-lg-4">
+                                <label asp-for="PackingList">Packing List</label>
+                                <input asp-for="PackingList" type="file" class="form-control form-control-sm" id="businessLicenseCertificate">
+                                <span asp-validation-for="PackingList" class="text-danger"></span>
+                            </div>
+                            *@
+                        </div>
+                        
+                        <div class="row">
+                            <button type="submit" class="col-xl-4  btn btn-sm bg-purple">Add</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/RM/_RMMyCaseDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+   <script>
+        $(document).ready(function () {
+            var typeDropdown = $("#typeDropdown");
+            typeDropdown.prop("disabled", true);
+            function populateTypeDropdown() {
+                var category = $("#categoryDropdown").val();
+                typeDropdown = $("#typeDropdown");
+                typeDropdown.empty();
+                typeDropdown.append('<option value="" disabled selected>Select Equipment Type</option>');
+                switch (category) {
+                    case "MOV":
+                        typeDropdown.append('<option value="Automobile">Automobile</option>');
+                        typeDropdown.append('<option value="Bus">Bus</option>');
+                        typeDropdown.append('<option value="Minibus">Minibus</option>');
+                        typeDropdown.append('<option value="Truck">Truck</option>');
+                        typeDropdown.append('<option value="TruckWithTrail">Truck with trail</option>');
+                        typeDropdown.append('<option value="Hatchback">Hatchback</option>');
+                        typeDropdown.append('<option value="SUV">SUV</option>');
+                        typeDropdown.append('<option value="Minivan">Minivan</option>');
+                        typeDropdown.append('<option value="StationWagon">Station Wagon</option>');
+                        typeDropdown.append('<option value="Sedan">Sedan</option>');
+                        typeDropdown.append('<option value="Coupe">Coupe</option>');
+                        typeDropdown.append('<option value="Crossover">Crossover</option>');
+                        typeDropdown.append('<option value="Convertible">Convertible</option>');
+                        typeDropdown.append('<option value="SportsCar">Sports car</option>');
+                        typeDropdown.append('<option value="Pickup">Pickup</option>');
+                        typeDropdown.append('<option value="MUV">MUV</option>');
+                        typeDropdown.append('<option value="Motorcycles">Motorcycles</option>');
+                        typeDropdown.append('<option value="CompactCar">Compact car</option>');
+                        typeDropdown.append('<option value="Limousine">Limousine</option>');
+                        typeDropdown.append('<option value="Taxi">Taxi</option>');
+                        typeDropdown.append('<option value="FamilyCar">Family car</option>');
+                        typeDropdown.append('<option value="RecreationalVehicle">Recreational vehicle</option>');
+                        typeDropdown.append('<option value="FullSizeCar">Full-size car</option>');
+                        typeDropdown.append('<option value="Roadster">Roadster</option>');
+                        typeDropdown.append('<option value="CUV">CUV</option>');
+                        typeDropdown.append('<option value="Others">Others, please specify</option>');
+                        break;
+                    case "CMAMachinery":
+                        typeDropdown.append('<option value="ChainExcavator">Chain Excavator</option>');
+                        typeDropdown.append('<option value="BullDozer">Bull Dozer</option>');
+                        typeDropdown.append('<option value="WheelLoader">Wheel Loader</option>');
+                        typeDropdown.append('<option value="MotorGrader">Motor Grader</option>');
+                        typeDropdown.append('<option value="DryCargoTruck">Dry Cargo Truck</option>');
+                        typeDropdown.append('<option value="ConcreteMixer">Concrete Mixer</option>');
+                        typeDropdown.append('<option value="PowerTruck">Power Truck</option>');
+                        typeDropdown.append('<option value="BulkCementCargo">Bulk Cement Cargo</option>');
+                        typeDropdown.append('<option value="ChainLoader">Chain Loader</option>');
+                        typeDropdown.append('<option value="SewageCleanerTruck">Sewage Cleaner Truck</option>');
+                        typeDropdown.append('<option value="ClosedCargoTruck">Closed Cargo Truck</option>');
+                        typeDropdown.append('<option value="DrawBarTrailer">Draw Bar Trailer</option>');
+                        typeDropdown.append('<option value="RigidDumpTruck">Rigid Dump Truck</option>');
+                        typeDropdown.append('<option value="ConcretePump">Concrete Pump</option>');
+                        typeDropdown.append('<option value="FuelCargo">Fuel Cargo</option>');
+                        typeDropdown.append('<option value="WaterSprinkler">Water Sprinkler</option>');
+                        typeDropdown.append('<option value="TipperDumpTruck">Tipper Dump Truck</option>');
+                        typeDropdown.append('<option value="CargoHalfCraneTruck">Cargo Half Crane Truck</option>');
+                        typeDropdown.append('<option value="MobileCrane">Mobile Crane</option>');
+                        typeDropdown.append('<option value="LowBed2AxleSemiTrailer">Low Bed 2Axle Semi Trailer</option>');
+                        typeDropdown.append('<option value="LowBed3AxleSemiTrailer">Low Bed 3Axle Semi Trailer</option>');
+                        typeDropdown.append('<option value="ConcertBatchingPlant">Concert Batching Plant</option>');
+                        typeDropdown.append('<option value="AsphaltBatchingPlant">Asphalt Batching Plant</option>');
+                        typeDropdown.append('<option value="DrillingRig">Drilling Rig</option>');
+                        typeDropdown.append('<option value="Compactor">Compactor</option>');
+                        typeDropdown.append('<option value="Backhoe">Backhoe</option>');
+                        typeDropdown.append('<option value="WheelTractorScraper">Wheel Tractor-Scraper</option>');
+                        typeDropdown.append('<option value="BackhoeLoader">Backhoe Loader</option>');
+                        typeDropdown.append('<option value="SkidSteerLoader">Skid-Steer Loader</option>');
+                        typeDropdown.append('<option value="TelescopicHandler">Telescopic Handler</option>');
+                        typeDropdown.append('<option value="DragLineExcavator">Drag-line Excavator</option>');
+                        typeDropdown.append('<option value="Forklift">Forklift</option>');
+                        typeDropdown.append('<option value="FactoryMachinery">Factory Machinery</option>');
+                        typeDropdown.append('<option value="Tractor">Tractor</option>');
+                        typeDropdown.append('<option value="CombineHarvester">Combine Harvester</option>');
+                        typeDropdown.append('<option value="ATVOrUTV">ATV or UTV</option>');
+                        typeDropdown.append('<option value="TractorWithDiscPlow">Tractor with Disc plow</option>');
+                        typeDropdown.append('<option value="TractorWithDiscHarrow">Tractor with Disc harrow</option>');
+                        typeDropdown.append('<option value="TractorWithDiscPloughAndDiscHarrow">Tractor with Disc plough & Disc harrow</option>');
+                        typeDropdown.append('<option value="TractorWithBackhoe">Tractor with backhoe</option>');
+                        typeDropdown.append('<option value="TractorWithLoader">Tractor with loader</option>');
+                        typeDropdown.append('<option value="TractorWithBucket">Tractor with bucket</option>');
+                        typeDropdown.append('<option value="TractorWithTrolleyOrTrailer">Tractor with trolley/trailer</option>');
+                        typeDropdown.append('<option value="TractorWithSeeder">Tractor with seeder</option>');
+                        typeDropdown.append('<option value="TractorWithChemicalSpreader">Tractor with Chemical spreader</option>');
+                        typeDropdown.append('<option value="TractorWithCultivator">Tractor with cultivator</option>');
+                        typeDropdown.append('<option value="TractorWithBaler">Tractor with baler</option>');
+                        typeDropdown.append('<option value="TractorWithRotavator">Tractor with Rotavator</option>');
+                        typeDropdown.append('<option value="DiscPlow">Disc plow</option>');
+                        typeDropdown.append('<option value="DiscHarrow">Disc harrow</option>');
+                        typeDropdown.append('<option value="Harvester">Harvester</option>');
+                        typeDropdown.append('<option value="Other">Others, please specify</option>');
+                        break;
+                    case "IBFEqupment":
+                        typeDropdown.append('<option value="IndustrialMachinery">Industrial (Mfg) Machinery</option>');
+                        typeDropdown.append('<option value="BuildingFacilityEquipment">Building Facility Equipment</option>');
+                        typeDropdown.append('<option value="Other">Others, please specify</option>');
+                        break;
+                    default:
+                        break;
+                }
+            }
+            $("#categoryDropdown").change(function () {
+                typeDropdown.prop("disabled", false);
+                populateTypeDropdown();
+            });
+            populateTypeDropdown();
+        });
+   </script>
+}

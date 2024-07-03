@@ -147,5 +147,13 @@ namespace mechanical.Services.UploadFileService
                 File.Delete(filePath);
             }
         }
+
+        //public Task<IEnumerable<ReturnFileDto>> GetUploadFileByProductionCapacityId(Guid? ProductionCapacityId)
+        //{
+        //    if (ProductionCapacityId == null) return null;
+
+        //    var uploadFiles = await _cbeContext.UploadFiles.Where(res => res.ProductionCapacityId == ProductionCapacityId).ToListAsync();
+        //    return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
+        //}
     }
 }

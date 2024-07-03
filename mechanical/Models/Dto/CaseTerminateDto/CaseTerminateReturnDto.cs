@@ -9,7 +9,8 @@ namespace mechanical.Models.Dto.CaseTerminateDto
         public string? Status { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public Guid CaseId { get; set; }
+        public Guid CaseId { get; set; }= Guid.NewGuid();
+       // public Guid ProductionCaseId { get; set; } = Guid.Empty;
 
         public virtual CreateUser? User { get; set; }
     }

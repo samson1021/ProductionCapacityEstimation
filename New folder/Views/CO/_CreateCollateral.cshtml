@@ -1,0 +1,26 @@
+﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="caseCollaterals" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Property Owner</th>
+                            <th>Role</th>
+                            <th>Equipment Catagory</th>
+                            <th>Equipment Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+

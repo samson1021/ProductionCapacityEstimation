@@ -1,0 +1,152 @@
+﻿@using mechanical.Models.Dto.CaseScheduleDto;
+@using mechanical.Models.Dto.CaseTerminateDto;
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+    var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
+    var caseTerminate = ViewData["caseTerminate"] as IEnumerable<CaseTerminateReturnDto>;
+    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>Case Detail</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "Case")">My Case</a></li>
+                    <li class="breadcrumb-item active">Case Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" id="custom-tabs-four-CollateralInfo-tab" data-toggle="pill" href="#custom-tabs-four-CollateralInfo" role="tab" aria-controls="custom-tabs-four-CollateralInfo" aria-selected="false"><i class="nav-icon fas fa-file"></i> Collaterals Informations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-Schedule-tab" data-toggle="pill" href="#custom-tabs-four-Schedule" role="tab" aria-controls="custom-tabs-four-Schedule" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-Comments-tab" data-toggle="pill" href="#custom-tabs-four-Comments" role="tab" aria-controls="custom-tabs-four-Comments" aria-selected="false">
+                            <i class="fas fa-comments"> </i>
+                            Comments <span class="badge badge-warning right CommentBage"> </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
+                            <i class="fas fa-ban"> </i>
+                            Terminate @{
+                                if (caseTerminate.Count() > 0)
+                                {
+                                    <span class="right badge badge-danger">New</span>
+                                }
+                            }
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                        @await Html.PartialAsync("_GeneralInfo")
+                    </div>
+                    <div class="tab-pane fade show active" id="custom-tabs-four-CollateralInfo" role="tabpanel" aria-labelledby="custom-tabs-four-CollateralInfo-tab">
+                        @await Html.PartialAsync("_PendCollateral")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-Schedule" role="tabpanel" aria-labelledby="custom-tabs-four-Schedule-tab">
+                        @await Html.PartialAsync("_CaseSchedule")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-Comments" role="tabpanel" aria-labelledby="custom-tabs-four-Comments-tab">
+                        @await Html.PartialAsync("_CaseComment")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-Terminate" role="tabpanel" aria-labelledby="custom-tabs-four-Terminate-tab">
+                        @await Html.PartialAsync("_CaseTerminate")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#terminationForm').submit(function (event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+
+                var submitButton = $(this).find('button[type="submit"]');
+                submitButton.prop('disabled', true);
+                submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: formData,
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function () {
+                        $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                    },
+                    complete: function () {
+                        submitButton.prop('disabled', false);
+                        submitButton.html('<i class="fas fa-ban"></i> Terminate');
+                    }
+                });
+            });
+    
+          $('#UpdateTerminate').on('click', function (event) {
+               event.preventDefault();
+               $('#modalReason').val($('#caseTerminateReason').val());
+               $('#updateModal').modal('show');
+           });
+
+         $('#updateForm').submit(function (event) {
+          event.preventDefault();
+
+          $('#updateButton').prop('disabled', true);
+
+          var formData = new FormData(this);
+          var Id = $('#CaseSchedulleId').val();
+          formData.append('Id', Id);
+          $.ajax({
+            url: '/Case/UpdateTermination',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+               toastr.success('Successfuly update case termination request');
+               setTimeout(function () {
+                location.reload();
+               }, 1200);
+            },
+            error: function () {
+              $('#updateButton').prop('disabled', false);
+                toastr.error('Error occurred while updating the date.');
+            }
+          });
+        });
+
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_PendDetailCaseDataTableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+ 
+}

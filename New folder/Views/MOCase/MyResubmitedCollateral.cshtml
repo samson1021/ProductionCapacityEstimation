@@ -1,0 +1,179 @@
+﻿
+@{
+    ViewData["Title"] = "My Resubmited Collateral";
+}
+
+
+@{
+    ViewData["Title"] = "My Returned Case";
+}
+
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseDto;
+}<style>
+     .purple-checkbox input[type="checkbox"]:checked + label::before {
+         background-color: purple;
+     }
+</style>
+<input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Case Detail</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("MyCase", "Case")">My Case/</a></li>
+                    <li class="breadcrumb-item active">Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="Card-header">
+                <div class="col-12" style="margin-top:0.5em;">
+                    <div class="row">
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Case number</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CaseNo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Applicant name</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.ApplicantName</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Applicant address</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CaseNo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Created at</span>
+                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CreationAt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <div class="btn-group">
+                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = myCase.Id })">
+                                    Time Line <i class="nav-icon fas fa-sitemap"></i>
+                                </a>
+                                @* <button id="showCollateralFile" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#CollateralFileModal">
+                                Related Document <i class="fas fa-file"></i>
+                                </button>*@
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="caseCollaterals" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Property Owner</th>
+                            <th>Role</th>
+                            <th>Equipment Catagory</th>
+                            <th>Equipment Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+@section Scripts {
+    <script>
+        function fetchCollateralDetails(collateralId) {
+            $('#CollateralFileModal').modal('show');
+            $.ajax({
+                url: '/UploadFile/GetUploadFileByCollateralId',
+                type: 'GET',
+                data: { CollateralId: collateralId },
+                success: function (response) {
+                    // Populate the modal table with the fetched data
+                    populateModalTable(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        function populateModalTable(data) {
+            var tableBody = '';
+            data.forEach(function (collateralFile) {
+                tableBody += '<tr>';
+                tableBody += '<td>' + collateralFile.Name + '</td>';
+                tableBody += '<td>' + collateralFile.Catagory + '</td>';
+                tableBody += '<td>' + collateralFile.ContentType + '</td>';
+                tableBody += '<td><a href="/Collateral/DownloadFile/' + collateralFile.Id + '">Download</a></td>';
+                tableBody += '</tr>';
+            });
+
+            // Append the table body to the modal table
+            $('#CollateralFileModal tbody').html(tableBody);
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/MO/_MOMyResubmitedCollateralDatatableSriptsPartial");
+    }
+}
+
+
+
+
+
+<div class="modal fade" id="CollateralFileModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CollateralFileModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Collateral Related Document List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>File Category</th>
+                        <th>File Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="modalTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,333 @@
+﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
+@using mechanical.Models.Dto.IndBldgFacilityEquipmentDto;
+@using mechanical.Models.Dto.ProductionCapacityDto
+@model mechanical.Models.Dto.ProductionCapacityDto.ReturnProductionDto;
+@{
+    // var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
+    // var Cavaluation = ViewData["Cavaluation"] as ConstMngAgMachineryReturnDto;
+    // var Ibvaluation = ViewData["Ibvaluation"] as IndBldgFacilityEquipmentReturnDto;
+
+    var Productionvaluation = ViewData["Prvaluation"] as ReturnProductionDto;
+    var loggedRole = ViewData["loggedRole"] as CreateRole;
+    var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as ProductionCapacity;
+}
+
+<section class="content">
+
+        <div class="card direct-chat direct-chat-purple">
+            <div class="card-header">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h4> PCE Remark Detail</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+            @{
+                    if (Productionvaluation != null)
+                    {
+                        if (Productionvaluation.Remark == "" || Productionvaluation.Remark == null)
+                        {
+                      
+                            <h6 >There is No Remark related to this Production Capacity</h6>
+                           
+                        }
+                        else
+                        {
+
+                            if (loggedRole.Name == "Relation Manager")
+                            {
+                                <div class="card">
+                                    <h6>@Productionvaluation.Remark</h6>
+                                </div>
+                                <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
+                                    <input name="collateralId" type="hidden" value=@Productionvaluation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@Productionvaluation.EvaluatorUserID />
+                                    <input name="CheckerUserID" type="hidden" value=@Productionvaluation.CheckerUserID />
+                                    <div class="card">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
+                                            <label class="form-check-label" for="Justification">
+                                                Justfication
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="RemarkType" id="Verfication" value="Verfication">
+                                            <label class="form-check-label" for="Verfication">
+                                                Verfication
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label for="Catagory">Category</label>
+                                        <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
+                                        <span validation-for="Catagory" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label for="File">Remark Document</label>
+                                        <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
+                                        <span validation-for="File" class="text-danger"></span>
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-append">
+                                            <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            }
+                            else if (loggedRole.Name == "Maker Officer")
+                            {
+                                if (@Model.CurrentStatus == "Remark Justfication")
+                                {
+                                    <div class="card">
+                                        <h6>Remark Justfication</h6>
+                                    </div>
+                                    <form action="/MotorVehicle/RemarkRelease" method="post">
+                                        <div class="card">
+                                            <textarea class="form-control" name="Remark">@Productionvaluation.Remark</textarea>
+                                        </div>
+
+
+                                        <input name="CollateralId" type="hidden" value=@Productionvaluation.Id />
+                                        <input name="EvaluatorUserID" type="hidden" value=@Productionvaluation.EvaluatorUserID />
+                                        <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                                        <input name="Id" type="hidden" value=@Productionvaluation.Id />
+                                        <div class="input-group">
+                                            <span class="input-group-append">
+                                                <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
+                                            </span>
+                                        </div>
+                                    </form>
+                                }
+                                else if (@Model.CurrentStatus == "Remark Verfication")
+                                {
+                                    <div class="card">
+                                        <h6>Remark Verfication</h6>
+                                    </div>
+                                    <form action="/MOCase/ReEvaluation" method="post">
+                                        <div class="card">
+                                            <textarea class="form-control" name="Remark">@Productionvaluation.Remark</textarea>
+                                        </div>
+
+                                        <input name="Id" type="hidden" value=@Productionvaluation.Id />
+                                        <input name="EvaluatorUserID" type="hidden" value=@Productionvaluation.EvaluatorUserID />
+                                        <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                                        <div class="input-group">
+                                            <span class="input-group-append">
+                                                <button type="submit" class="btn btn-primary" id="Edit">Edit</button>
+                                            </span>
+                                        </div>
+                                    </form>
+
+                                }
+                            }
+                        }
+                    }
+
+
+
+                
+                // else if (Model.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.IBFEqupment))
+                // {
+                //     if (Ibvaluation != null)
+                //     {
+                //         if (Ibvaluation.Remark == "" || Ibvaluation.Remark == null)
+                //         {
+                //             <h6>There is No Remark related to this Collateral</h6>
+                //         }
+                //         else
+                //         {
+
+                //             if (loggedRole.Name == "Relation Manager")
+                //             {
+                //                 <div class="card">
+                //                     <h6>@Ibvaluation.Remark</h6>
+                //                 </div>
+                //                 <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
+                //                     <input name="collateralId" type="hidden" value=@Ibvaluation.CollateralId />
+                //                     <input name="EvaluatorUserID" type="hidden" value=@Ibvaluation.EvaluatorUserID />
+                //                     <input name="CheckerUserID" type="hidden" value=@Ibvaluation.CheckerUserID />
+                //                     <div class="card">
+                //                         <div class="form-check">
+                //                             <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
+                //                             <label class="form-check-label" for="Justfication">
+                //                                 Justfication
+                //                             </label>
+                //                         </div>
+                //                         <div class="form-check">
+                //                             <input class="form-check-input" type="radio" name="RemarkType" id="Verfication" value="Verfication">
+                //                             <label class="form-check-label" for="Verfication">
+                //                                 Verfication
+                //                             </label>
+                //                         </div>
+                //                     </div>
+                //                     <div class="form-group col-lg-4">
+                //                         <label for="Catagory">Category</label>
+                //                         <input name="Catagory" type="text" class="form-control form-control-sm" id="category">
+                //                         <span validation-for="Catagory" class="text-danger"></span>
+                //                     </div>
+                //                     <div class="form-group col-lg-4">
+                //                         <label for="File">Remark Document</label>
+                //                         <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
+                //                         <span validation-for="File" class="text-danger"></span>
+                //                     </div>
+                //                     <div class="input-group">
+                //                         <span class="input-group-append">
+                //                             <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
+                //                         </span>
+                //                     </div>
+                //                 </form>
+                //             }
+                //             else if (loggedRole.Name == "Maker Officer")
+                //             {
+                //                 if (@Model.CurrentStatus == "Remark Justfication")
+                //                 {
+                //                     <div class="card">
+                //                         <h6>Remark Justfication</h6>
+                //                     </div>
+                //                     <form action="/IndBldgFacilityEquipment/RemarkRelease" method="post">
+                //                         <div class="card">
+                //                             <textarea class="form-control" name="Remark">@Ibvaluation.Remark</textarea>
+                //                         </div>
+
+                //                         <input name="CollateralId" type="hidden" value=@Ibvaluation.CollateralId />
+                //                         <input name="EvaluatorUserID" type="hidden" value=@Ibvaluation.EvaluatorUserID />
+                //                         <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                //                         <input name="Id" type="hidden" value=@Ibvaluation.Id />
+                //                         <div class="input-group">
+                //                             <span class="input-group-append">
+                //                                 <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
+                //                             </span>
+                //                         </div>
+                //                     </form>
+                //                 }
+                //                 else if (@Model.CurrentStatus == "Remark Verfication")
+                //                 {
+                //                     <div class="card">
+                //                         <h6>Remark Verfication</h6>
+                //                     </div>
+                //                     <form action="/MOCase/ReEvaluation" method="post">
+                //                         <div class="card">
+                //                             <textarea class="form-control" name="Remark">@Ibvaluation.Remark</textarea>
+                //                         </div>
+                //                         <input name="Id" type="hidden" value=@Ibvaluation.CollateralId />
+                //                         <input name="EvaluatorUserID" type="hidden" value=@Ibvaluation.EvaluatorUserID />
+                //                         <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                //                         <div class="input-group">
+                //                             <span class="input-group-append">
+                //                                 <button type="submit" class="btn btn-primary" id="Edit">Edit</button>
+                //                             </span>
+                //                         </div>
+                //                     </form>
+                //                 }
+                //             }
+                //         }
+                //     }
+
+                // }
+                // else if (Model.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
+                // {
+                //     if (Cavaluation != null)
+                //     {
+                //         if (Cavaluation.Remark == "" || Cavaluation.Remark == null)
+                //         {
+                //             <h6>There is No Remark related to this Collateral</h6>
+                //         }
+                //         else
+                //         {
+
+                //             if (loggedRole.Name == "Relation Manager")
+                //             {
+                //                 <div class="card">
+                //                     <h6>@Cavaluation.Remark</h6>
+                //                 </div>
+                //                 <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
+                //                     <input name="collateralId" type="hidden" value=@Cavaluation.CollateralId />
+                //                     <input name="EvaluatorUserID" type="hidden" value=@Cavaluation.EvaluatorUserID />
+                //                     <input name="CheckerUserID" type="hidden" value=@Cavaluation.CheckerUserID />
+                //                     <div class="card">
+                //                         <div class="form-check">
+                //                             <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
+                //                             <label class="form-check-label" for="Justfication">
+                //                                 Justfication
+                //                             </label>
+                //                         </div>
+                //                         <div class="form-check">
+                //                             <input class="form-check-input" type="radio" name="RemarkType" id="Verfication" value="Verfication">
+                //                             <label class="form-check-label" for="Verfication">
+                //                                 Verfication
+                //                             </label>
+                //                         </div>
+                //                     </div>
+                //                     <div class="form-group col-lg-4">
+                //                         <label for="Catagory">Catagory</label>
+                //                         <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
+                //                         <span validation-for="Catagory" class="text-danger"></span>
+                //                     </div>
+                //                     <div class="form-group col-lg-4">
+                //                         <label for="File">Remark Document</label>
+                //                         <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
+                //                         <span validation-for="File" class="text-danger"></span>
+                //                     </div>
+                //                     <div class="input-group">
+                //                         <span class="input-group-append">
+                //                             <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
+                //                         </span>
+                //                     </div>
+                //                 </form>
+                //             }
+                //             else if (loggedRole.Name == "Maker Officer")
+                //             {
+                //                 if (@Model.CurrentStatus == "Remark Justfication")
+                //                 {
+                //                     <div class="card">
+                //                         <h2>Remark Justfication</h2>
+                //                     </div>
+                //                     <form action="/ConstMngAgrMachinery/RemarkRelease" method="post">
+                //                         <div class="card">
+                //                             <textarea class="form-control" name="Remark">@Cavaluation.Remark</textarea>
+                //                         </div>
+
+                //                         <input name="CollateralId" type="hidden" value=@Cavaluation.CollateralId />
+                //                         <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                //                         <input name="EvaluatorUserID" type="hidden" value=@Cavaluation.EvaluatorUserID />
+                //                         <input name="Id" type="hidden" value=@Cavaluation.Id />
+                //                         <div class="input-group">
+
+                //                             <span class="input-group-append">
+                //                                 <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
+                //                             </span>
+                //                         </div>
+                //                     </form>
+                //                 }
+                //                 else if (@Model.CurrentStatus == "Remark Verfication")
+                //                 {
+                //                     <form action="/MOCase/ReEvaluation" method="post">
+                //                         <div class="card">
+                //                             <h2>Remark Verfication</h2>
+                //                         </div>
+                //                         <div class="card">
+
+                //                             <textarea class="form-control" name="Remark">@Cavaluation.Remark</textarea>
+                //                         </div>
+
+                //                         <input name="Id" type="hidden" value=@Cavaluation.CollateralId />
+                //                         <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                //                         <input name="EvaluatorUserID" type="hidden" value=@Cavaluation.EvaluatorUserID />
+                //                         <div class="input-group">
+                //                             <span class="input-group-append">
+                //                                 <button type="submit" class="btn btn-primary" id="Edit">Edit</button>
+                //                             </span>
+                //                         </div>
+                //                     </form>
+                //                 }
+                //             }
+                //         }
+                //     }
+                   
+                // }
+            }
+            </div>
+        </div>
+</section>

@@ -1,0 +1,180 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#showCollateralFile').click(function () {
+            $('#CollateralFileModal').modal('show');
+        });
+    });
+    //this method is to give comment for maker and change the status of collateral 
+    $(document).ready(function () {
+        $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            $(modal).modal('show');
+            $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.save-comment').click(function () {
+            var fieldId = $(this).data('field-id');
+            var comment = $('#comment').val();
+            var collateralId = $('#TxtmovId').val();
+            var EquipmentId = $('#TxtEquipmentId').val();
+
+
+            // Perform your save operation here
+            var formdata = new FormData();
+            formdata.append('CollateralID', collateralId);
+            formdata.append('EquipmentId', EquipmentId);
+            formdata.append('Comment', comment);
+            formdata.append('CommentedAttribute', fieldId);
+
+            var correctionDto = JSON.stringify(formdata);
+            console.log('jsonData ID:', correctionDto);
+
+            $.ajax({
+                url: '/Correction/Create',
+                type: 'Post',
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function (data) {      
+                    toastr.success('Successfuly Submited Your Comment', 'Success');
+                    // Reload the page after a successful response
+                    // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                },
+
+                error: function (error) {
+                    toastr.error("Failed to Post Correction");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                    console.log(error);
+                }
+            });
+
+
+        });
+        //this is a method to change the status of a collaterals 
+        $(document).ready(function () {
+            // Attach click event handlers to the buttons
+            $("#checkedButton").click(function () {
+                sendRequest("Complete");
+            });
+
+            $("#saveButton").click(function () {
+                sendRequest("saved");
+            });
+
+            $("#correctionButton").click(function () {
+                sendRequest("correction");
+            });
+            var collateralId = $('#TxtmovId').val();
+            // Function to send the AJAX request
+            function sendRequest(action) {
+                $.ajax({
+                    url: "/Collateral/changeCollateralStatus",
+                    method: "POST",
+                    data: { status: action, Id: collateralId },
+                    success: function (response) {
+                        toastr.success('Successfully Return Your collateral to Maker', 'Success');
+                        // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                        setTimeout(function () {
+                            location.reload();
+                            window.location.href = '/CO/Mycases';
+
+                        }, 2000);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle the error response from the server
+                        console.log("Request failed: " + error);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    }
+                });
+            }
+        });
+    });
+    //this is the script to show the comment of the filed given by Checker
+    document.querySelector("#btnComment").addEventListener("click", event => {
+        var comment = event.target.dataset.comment;
+        //var modal = $('#CommentBoxModal');
+        $('#CommentModal').text(comment);
+        //modal.find('#comment').val(comment);
+        console.log('jsonData ID:', event.target.dataset.comment);
+
+    })
+
+    $(document).ready(function () {
+        $("#btnSaveForResubmiting").click(function (){
+            saveReValuation("Save");
+        })
+        var collateralId = $('#TxtmovId').val();
+        console.log(collateralId);
+        function saveReValuation(action) {
+            $.ajax({
+                Url: "/MOCase/Mycases"
+            })
+        }
+    })
+    function validateKebeleInput(inputElement) {
+        var zoneError = document.getElementById("Kebele-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Kebele must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+
+    function LoadComments(){
+        $.ajax({
+            url: '/Correction/GetComment',
+            type: 'get',
+            data: { id: userId }, // Pass the ID as a parameter
+            success: function (data) {
+                // Handle the success scenario
+                toastr.success('Successfully Submitted Your Comment', 'Success');
+                // Show message based on user ID
+                if (userId === 1) {
+                    // Show message for user with ID 1
+                    toastr.info('You are user 1');
+                } else if (userId === 2) {
+                    // Show message for user with ID 2
+                    toastr.info('You are user 2');
+                }
+                setTimeout(function () {
+                    location.reload();
+                }, 2000); // Reload the page after a successful response
+            },
+            error: function (error) {
+                // Handle the error scenario
+                toastr.error('Failed to Post Correction');
+                setTimeout(function () {
+                    location.reload();
+                }, 2000); // Reload the page after an error response
+                console.log(error);
+            }
+        });
+
+    }
+
+
+</script>

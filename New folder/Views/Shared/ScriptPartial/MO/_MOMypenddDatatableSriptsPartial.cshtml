@@ -1,0 +1,204 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var CaseId = $('#CaseId').val();
+
+        function loadComments() {
+            $.ajax({
+                url: '/CaseComment/GetCaseComments?caseId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseComments = data.caseComments;
+                    var countComment = data.caseComments.length;
+                    $(".CommentBage").text(countComment);
+                    console.log(countComment);
+                    var users = [];
+
+                    if (caseComments && caseComments.length > 0) {
+                        caseComments.forEach(function (comment) {
+                            var chatMsg = $('<div>').addClass('direct-chat-msg');
+                            var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+                            var chatName = $('<a>');
+
+                            var chatImg = $('<a>');
+                            var chatImgInner = $('<img>').attr('src', '/img/avatar5.png').addClass('direct-chat-img');
+                            var chatText = $('<div>').addClass('direct-chat-text');
+
+                            chatName.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.append(chatImgInner);
+
+                            var createdAt = new Date(comment.CreatedAt);
+
+
+                            chatText.text(comment.Content);
+
+                            if (comment.AuthorId === currentUserID) {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp');
+                                $('<span>').addClass('direct-chat-name float-right').text(comment.AuthorName).appendTo(chatName);
+                                chatMsg.addClass('right');
+                            } else {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp float-right');
+                                $('<span>').addClass('direct-chat-name').text(comment.AuthorName).appendTo(chatName);
+                            }
+                            var formattedDate = formatDate(createdAt);
+                            chatTimestamp.text(formattedDate);
+
+                            chatInfos.append(chatName, chatTimestamp);
+                            chatMsg.append(chatInfos, chatImg, chatText);
+                            $('.direct-chat-messages').append(chatMsg);
+
+                            var existingUser = users.find(function (user) {
+                                return user.id === comment.AuthorId;
+                            });
+
+                            if (!existingUser) {
+                                var newUser = {
+                                    id: comment.AuthorId,
+                                    name: comment.AuthorName,
+                                    avatar: '/img/avatar5.png',
+                                    lastMessage: comment.Content,
+                                    date: formattedDate
+                                };
+                                users.push(newUser);
+                            }
+                        });
+                        populateContactList(users);
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('.direct-chat-messages').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+        function populateContactList(users) {
+            var contactList = $('.contacts-list');
+            contactList.empty();
+
+            users.forEach(function (user) {
+                var listItem = $('<li>');
+                var link = $('<a>').attr('href', '/UserManagment/Profile/' + user.id);
+                var avatarImg = $('<img>').addClass('contacts-list-img').attr('src', user.avatar);
+                var infoDiv = $('<div>').addClass('contacts-list-info');
+                var nameSpan = $('<span>').addClass('contacts-list-name').text(user.name);
+                var dateSpan = $('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date));
+                var messageSpan = $('<span>').addClass('contacts-list-msg').text(user.lastMessage);
+
+                infoDiv.append(nameSpan, dateSpan);
+                link.append(avatarImg, infoDiv, messageSpan);
+                listItem.append(link);
+                contactList.append(listItem);
+            });
+        }
+        function formatDate(date) {
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            return date.toLocaleString('en-US', options);
+        }
+
+        loadComments();
+
+        function sendMessage(message, CaseId) {
+            var requestData = {
+                Content: message,
+                CaseId: CaseId
+            };
+
+            $.ajax({
+                url: '/CaseComment/CreateCaseComment',
+                method: 'POST',
+                data: requestData,
+                success: function (response) {
+                    console.log(response);
+                    $('#messageinput').val('');
+                    var chatMessages = $('.direct-chat-messages');
+                    var scrollHeight = chatMessages[0].scrollHeight;
+                    chatMessages.scrollTop(scrollHeight);
+                },
+                error: function () {
+                    console.log('Error while sending the message.');
+                }
+            });
+        }
+
+        $('#SendButton').click(function (e) {
+            e.preventDefault();
+            var message = $('input[name="message"]').val();
+            if (message.trim() !== '') {
+                // Send the message
+                sendMessage(message, CaseId);
+                location.reload();
+                $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
+                // loadComments();
+                var chatMessages = $('.direct-chat-messages');
+                var scrollHeight = chatMessages[0].scrollHeight;
+                chatMessages.scrollTop(scrollHeight);
+            }
+        });
+
+        function initializeDataTable(data) {
+            caseCollateralsTable = $('#caseCollaterals').DataTable({
+                language: {
+                    emptyTable: "There is no collateral register for this case"
+                },
+                responsive: true,
+                pageLength: 5,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    { data: 'PropertyOwner', width: '20%' },
+                    { data: 'Role', width: '15%' },
+                    { data: 'Category', width: '25%' },
+                    { data: 'Type', width: '25%' },
+                    {
+                        data: 'Id',
+                        width: '15%',
+                        render: function (data, type, row, meta) {
+                            return '\<a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details</a>';
+                        }
+                    }
+
+                ]
+            }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
+        }
+
+        function loadCollaterals() {
+
+            $.ajax({
+                url: '/Collateral/GetMMPendCollaterals?CaseId=' + CaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
+                        var caseCollateralsTable = $('#caseCollaterals').DataTable();
+                        caseCollateralsTable.destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load collaterals");
+                    console.log(error);
+                }
+            });
+        }
+
+        loadCollaterals();
+    });
+</script>

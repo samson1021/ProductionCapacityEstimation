@@ -1,0 +1,118 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+
+@* <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/usermanagment/getusers',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.DistrictName)
+                $('#example1').DataTable({
+                    data: data,
+                    columns: [
+                        // { data: 'Id', 'title': 'ID' },
+                        { data: 'Name', 'title': 'Name' },
+                        { data: 'Email', 'title': 'Email' },
+                        { data: 'DistrictName', 'title': 'District' },
+                        { data: 'Branch', 'title': 'Branch' },
+                        { data: 'RoleName', 'title': 'Role' },
+                        { data: 'Status', 'title': 'Status' },
+                        // { data: 'Browser' },
+                        // { data: 'Platforms' },
+                        // { data: 'EngineVersion' },
+                        // { data: 'CssGrade' }
+                    ],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            }
+        });
+    });
+
+</script> *@
+
+
+<script>
+    $(document).ready(function () {
+        // Get the loading GIF element
+        var loading = $('<div id="loading" style="display: none; text-align: center;"><img src="img/waiting.gif" alt="Loading"></div>');
+
+        // Append the loading GIF element to the card body
+        $('.card-body').append(loading);
+
+        // Display the loading GIF while fetching data
+        loading.show();
+
+        $.ajax({
+            url: '/usermanagment/getusers',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Hide the loading GIF
+                loading.hide();
+                console.log(data.DistrictName)
+                $('#example1').DataTable({
+                    data: data,
+                    columns: [
+                        { data: 'Name', 'title': 'Name' },
+                        { data: 'Email', 'title': 'Email' },
+                        { data: 'DistrictName', 'title': 'District' },
+                        { data: 'Branch', 'title': 'Branch' },
+                        { data: 'Department', 'title': 'Department' },
+                        { data: 'RoleName', 'title': 'Role' },
+                        { data: 'Status', 'title': 'Status' },
+                        
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                var editButton = '<a href="/usermanagment/edit/' + data.Id + '" class="edit-btn" data-id="' + data.Id + '">Edit</a>';
+                                var deleteButton = '<a href="/usermanagment/delete/' + data.Id + '" class="delete-btn" data-id="' + data.Id + '">Delete</a>';
+                                return editButton + ' | ' + deleteButton;
+                            }
+                        }
+                    ],
+                    // columnDefs: [
+                    //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
+                    // ],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            },
+            error: function () {
+                // Hide the loading GIF
+                loading.hide();
+                alert('Error loading data from the database.');
+            }
+        });
+
+        // Edit button click event
+        $('#example1').on('click', '.edit-btn', function () {
+            var userId = $(this).data('id');
+            // Perform edit operation for the selected user
+            // ...
+        });
+
+        // Delete button click event
+        $('#example1').on('click', '.delete-btn', function () {
+            var userId = $(this).data('id');
+            // Perform delete operation for the selected user
+            // ...
+        });
+    });
+</script>
