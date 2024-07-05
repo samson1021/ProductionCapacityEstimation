@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-using mechanical.Models.PCE.Enum.PCEEnums.File;
+using mechanical.Models.PCE.Enum.File;
 
 namespace mechanical.Models.PCE.Dto.FileUploadDto
 {
@@ -14,12 +14,12 @@ namespace mechanical.Models.PCE.Dto.FileUploadDto
         [Display(Name = "File Name")]
         public string Name { get; set; } = string.Empty;
 
-        [Display(Name = "Document Type")]
-        public DocumentType Type { get; set; }
-
-        // public Guid? PCEId { get; set; }
+        [Display(Name = "Document Category")]
+        public Category Category { get; set; }
 
         public string ContentType { get; set; } = string.Empty;
+
+        // public Guid? PCEEId { get; set; }
     }
 
 }

@@ -174,6 +174,16 @@ namespace mechanical.Services.CaseServices
                     .OrderByDescending(res => res.CreationAt).Take(7).ToListAsync();
             return _mapper.Map<IEnumerable<CaseDto>>(cases);
         }
+        public async Task<IEnumerable<CaseDto>> GetMoLatestCases(Guid userId)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var cases = await _cbeContext.Cases
+                    .Include(x => x.Collaterals)
+                    .Include(x => x.District)
+                    .Where(res => res.CaseOriginatorId == userId)
+                    .OrderByDescending(res => res.CreationAt).Take(7).ToListAsync();
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
         public async Task<CaseCountDto> GetDashboardCaseCount(Guid userId)
         {
             return new CaseCountDto()

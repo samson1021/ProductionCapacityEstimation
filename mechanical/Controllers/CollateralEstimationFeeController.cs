@@ -1,14 +1,18 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 
 using mechanical.Models;
-using mechanical.Models.PCE.Dto.PCEDto;
-using mechanical.Services.PCE.PCEService;
+using mechanical.Models.PCE.Enum.Collateral;
+using mechanical.Models.PCE.Dto.CollateralEstimationFeeDto;
+using mechanical.Services.PCE.CollateralEstimationFeeService;
 
 namespace mechanical.Controllers
 {
@@ -28,7 +32,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Index()
         {
             try
-            {   
+            {
                 var PCECaseId = Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
                 var collateralEstimationFees = await _collateralEstimationFeeService.GetAllCollateralEstimationFees(base.GetCurrentUserId(), PCECaseId);
                 return View(collateralEstimationFees);
@@ -60,13 +64,46 @@ namespace mechanical.Controllers
 
         public IActionResult Create()
         {
+
+            // Populate ViewBag with enum values for CollateralClass
+            ViewBag.CollateralClassSelectList = Enum.GetValues(typeof(CollateralClass))
+                                                      .Cast<CollateralClass>()
+                                                      .Select(c => new SelectListItem
+                                                      {
+                                                          Value = c.ToString(),
+                                                          Text = EnumHelper.GetEnumDisplayName(c)
+                                                      })
+                                                      .ToList();
+
+            // Initialize empty lists for CollateralCategory and UnitOfMeasure
+            ViewBag.CollateralCategorySelectList = new List<SelectListItem>();
+            ViewBag.UnitOfMeasureSelectList = new List<SelectListItem>();
+            // ViewBag.CollateralCategorySelectList = Enum.GetValues(typeof(CollateralCategory))
+            //                                            .Cast<CollateralCategory>()
+            //                                            .Select(c => new SelectListItem
+            //                                            {
+            //                                                Value = c.ToString(),
+            //                                                Text = EnumHelper.GetEnumDisplayName(c)
+            //                                            })
+            //                                            .ToList();
+
+            // ViewBag.UnitOfMeasureSelectList = Enum.GetValues(typeof(UnitOfMeasure))
+            //                                       .Cast<UnitOfMeasure>()
+            //                                       .Select(u => new SelectListItem
+            //                                       {
+            //                                           Value = u.ToString(),
+            //                                           Text = EnumHelper.GetEnumDisplayName(u)
+            //                                       })
+            //                                       .ToList();
+
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CollateralEstimationFeeDto dto)
-        {            
+        {
             if (ModelState.IsValid)
             {
                 try
@@ -194,6 +231,51 @@ namespace mechanical.Controllers
                 _logger.LogError(ex, "Error committing fees for Case ID {CaseId}", caseId);
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
+        }
+
+        [HttpGet]
+        public IActionResult LoadCategories(string collateralClass)
+        {
+            if (Enum.TryParse(collateralClass, out CollateralClass selectedClass))
+            {
+                var categoryList = CollateralMapping.ClassToCategoryMap[selectedClass]
+                                                    .Select(cat => new SelectListItem
+                                                    {
+                                                        Value = cat.ToString(),
+                                                        Text = EnumHelper.GetEnumDisplayName(cat) 
+                                                    }).ToList();
+                // var categoryList = Enum.GetValues(typeof(CollateralCategory))
+                //                      .Cast<CollateralCategory>()
+                //                      .Where(c => CollateralMapping.ClassToCategoryMap[selectedClass].Contains(c))
+                //                      .Select(c => c.ToString())
+                //                      .ToList();
+                return Json(categoryList);
+            }
+
+            return BadRequest("Invalid collateral class.");
+        }
+
+        [HttpGet]
+        public IActionResult LoadUnits(string collateralCategory)
+        {
+            if (Enum.TryParse(collateralCategory, out CollateralCategory selectedCategory))
+            {
+                var unitList =  CollateralMapping.CategoryToUnitMap[selectedCategory]
+                                                .Select(unit => new SelectListItem
+                                                {
+                                                    Value = unit.ToString(),
+                                                    Text = EnumHelper.GetEnumDisplayName(unit) 
+                                                }).ToList();
+
+                // var unitList = Enum.GetValues(typeof(UnitOfMeasure))
+                //                 .Cast<UnitOfMeasure>()
+                //                 .Where(u => CollateralMapping.CategoryToUnitMap[selectedCategory].Contains(u))
+                //                 .Select(u => u.ToString())
+                //                 .ToList();
+                return Json(unitList);
+            }
+
+            return BadRequest("Invalid collateral category.");
         }
     }
 }

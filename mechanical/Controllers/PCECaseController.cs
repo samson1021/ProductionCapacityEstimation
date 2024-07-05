@@ -1,5 +1,5 @@
 ﻿using mechanical.Data;
-using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
 using Microsoft.AspNetCore.Mvc;

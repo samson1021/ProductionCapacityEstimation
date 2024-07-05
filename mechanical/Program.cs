@@ -1,11 +1,11 @@
 using System.Web.Services.Description;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 using mechanical;
 using mechanical.Data;
@@ -36,13 +36,12 @@ using mechanical.Services.CaseTerminateService;
 
 /////////////
 using mechanical.Mapper;
-using System.Web.Services.Description;
 using mechanical.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
-using mechanical.Services.PCE.PCEService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.FileUploadService;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+using mechanical.Services.PCE.CollateralEstimationFeeService;
 /////////////
 
 
@@ -91,9 +90,6 @@ builder.Services.AddDbContext<CbeContext>(options =>
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 
-
-
-
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService,CaseAssignmentService>();
@@ -121,9 +117,9 @@ builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 // builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddScoped<IPCEService, PCEService>();
-builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
 ///////////////////////////////
 
 // Add services to the container.

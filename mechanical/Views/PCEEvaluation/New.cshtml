@@ -1,0 +1,39 @@
+@model IEnumerable<mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto>
+
+@{
+    ViewData["Title"] = "New Estimations";
+}
+
+<h2>New Estimations</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ProductionLineOrEquipmentName)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().OriginCountry)</th>
+            @* <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ShiftsPerDay)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().WorkingDaysPerMonth)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().EffectiveProductionHourType)</th> *@
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Status)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.ProductionLineOrEquipmentName)</td>
+                <td>@Html.DisplayFor(modelItem => item.OriginCountry)</td>
+                @* <td>@Html.DisplayFor(modelItem => item.ShiftsPerDay)</td>
+                <td>@Html.DisplayFor(modelItem => item.WorkingDaysPerMonth)</td>
+                <td>@Html.DisplayFor(modelItem => item.EffectiveProductionHourType)</td> *@
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    <a asp-action="Detail" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

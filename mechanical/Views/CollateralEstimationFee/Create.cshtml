@@ -1,5 +1,5 @@
-@model mechanical.Models.PCE.Dto.PCEDto.CollateralEstimationFeeDto
-@using mechanical.Models.PCE.Enum.PCEEnums.Collateral
+@model mechanical.Models.PCE.Dto.CollateralEstimationFeeDto.CollateralEstimationFeeDto
+@using mechanical.Models.PCE.Enum.Collateral
 
 @{
     ViewData["Title"] = "Create Collateral Estimation Fee";
@@ -37,7 +37,13 @@
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CollateralClass">Collateral Class <i class="text-danger">*</i></label>
-                            <select asp-for="CollateralClass" class="form-control" asp-items="Html.GetEnumSelectList<CollateralClass>()"></select>
+                            <select asp-for="CollateralClass" class="form-control" id="CollateralClass" asp-items="@((List<SelectListItem>)ViewBag.CollateralClassSelectList)">
+                                <option disabled selected value="">Select Class</option>  
+                                @* @foreach (var item in ViewBag.CollateralClassSelectList as List<SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                } *@
+                            </select>
                             <span asp-validation-for="CollateralClass" class="text-danger"></span>
                         </div>
                     </div>
@@ -45,7 +51,14 @@
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CollateralCategory">Collateral Category <i class="text-danger">*</i></label>
-                            <select asp-for="CollateralCategory" class="form-control" asp-items="Html.GetEnumSelectList<CollateralCategory>()"></select>
+                            <select asp-for="CollateralCategory" class="form-control" id="CollateralCategory" asp-items="@((List<SelectListItem>)ViewBag.CollateralCategorySelectList)"></select>
+                            @* <select asp-for="CollateralCategory" class="form-control" id="CollateralCategory">
+                                <option value="">Select Category</option>
+                                @foreach (var item in ViewBag.CollateralCategorySelectList as List<SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select> *@
                             <span asp-validation-for="CollateralCategory" class="text-danger"></span>
                         </div>
                     </div>
@@ -53,7 +66,14 @@
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="UnitOfMeasure">Unit of Measure <i class="text-danger">*</i></label>
-                            <select asp-for="UnitOfMeasure" class="form-control" asp-items="Html.GetEnumSelectList<UnitOfMeasure>()"></select>
+                            <select asp-for="UnitOfMeasure" class="form-control" id="UnitOfMeasure" asp-items="@((List<SelectListItem>)ViewBag.UnitOfMeasureSelectList)"></select>
+                            @* <select asp-for="UnitOfMeasure" class="form-control" id="UnitOfMeasure">
+                                <option value="">Select Unit</option>
+                                @foreach (var item in ViewBag.UnitOfMeasureSelectList as List<SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select> *@
                             <span asp-validation-for="UnitOfMeasure" class="text-danger"></span>
                         </div>
                     </div>
@@ -95,7 +115,13 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
+            
+            $('#CollateralCategory').empty();
+            $('#CollateralCategory').prop('disabled', true);
+            $('#UnitOfMeasure').empty();
+            $('#UnitOfMeasure').prop('disabled', true);
+            
             function calculateTotalFee() {
                 var feePerUnit = parseFloat($('#estimationFeePerUnit').val()) || 0;
                 var quantity = parseInt($('#quantity').val()) || 0;
@@ -108,4 +134,206 @@
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            // Function to load categories based on selected class
+            function loadCategories(collateralClass) {
+                $.ajax({
+                    url: '@Url.Action("LoadCategories", "CollateralEstimationFee")',
+                    type: 'GET',
+                    data: { collateralClass: collateralClass },
+                    success: function (response) {
+                        var categoriesSelect = $('#CollateralCategory');
+                        categoriesSelect.empty();
+                        categoriesSelect.prop('disabled', false);
+
+                        $('#UnitOfMeasure').empty();
+                        $('#UnitOfMeasure').prop('disabled', true);
+
+                        categoriesSelect.append($('<option disabled selected>').text('Select Category').attr('value', ''));
+                        $.each(response, function(index, item) {
+                            categoriesSelect.append($('<option>').text(item.Text).attr('value', item.Value));
+                        });
+                    },
+                    error: function () {
+                        console.error('Error loading categories.');
+                    }
+                });
+            }
+
+            // Function to load units based on selected category
+            function loadUnits(collateralCategory) {
+                $.ajax({
+                    url: '@Url.Action("LoadUnits", "CollateralEstimationFee")',
+                    type: 'GET',
+                    data: { collateralCategory: collateralCategory },
+                    success: function (response) {
+                        var unitsSelect = $('#UnitOfMeasure');
+                        unitsSelect.empty();
+                        unitsSelect.prop('disabled', false);
+                        unitsSelect.append($('<option disabled selected>').text('Select Unit of Measure').attr('value', ''));
+                        $.each(response, function (index, item) {
+                            unitsSelect.append($('<option>').text(item.Text).attr('value', item.Value));
+                        });
+                    },
+                    error: function () {
+                        console.error('Error loading units.');
+                    }
+                });
+            }
+
+            // Event handler for CollateralClass selection change
+            $('#CollateralClass').on('change', function () {
+                var selectedClass = $(this).val();
+                loadCategories(selectedClass);
+            });
+
+            // Event handler for CollateralCategory selection change
+            $('#CollateralCategory').on('change', function () {
+                var selectedCategory = $(this).val();
+                loadUnits(selectedCategory);
+            });
+
+            // Initialize categories and units based on initial CollateralClass selection
+            var initialCollateralClass = $('#CollateralClass').val();
+            if (initialCollateralClass) {
+                loadCategories(initialCollateralClass);
+            }     
+        });
+    </script>
+@*     
+                <div class="form-group">
+                    <label asp-for="CollateralClass">Collateral Class</label>
+                    <select asp-for="CollateralClass" class="form-control" id="CollateralClass">
+                        <option value="">Select Class</option>
+                        @foreach (var item in ViewBag.CollateralClassSelectList as List<SelectListItem>)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CollateralCategory">Collateral Category</label>
+                    <select asp-for="CollateralCategory" class="form-control" id="CollateralCategory">
+                        <option value="">Select Category</option>
+                        @foreach (var item in ViewBag.CollateralCategorySelectList as List<SelectListItem>)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="UnitOfMeasure">Unit of Measure</label>
+                    <select asp-for="UnitOfMeasure" class="form-control" id="UnitOfMeasure">
+                        <option value="">Select Unit</option>
+                        @foreach (var item in ViewBag.UnitOfMeasureSelectList as List<SelectListItem>)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+        
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var collateralClassSelect = document.getElementById("CollateralClass");
+            var collateralCategorySelect = document.getElementById("CollateralCategory");
+            var unitOfMeasureSelect = document.getElementById("UnitOfMeasure");
+
+            collateralClassSelect.addEventListener("change", function () {
+                var selectedClass = this.value;
+                unitOfMeasureSelect.empty();
+                updateCategories(selectedClass);
+            });
+
+            collateralCategorySelect.addEventListener("change", function () {
+                var selectedCategory = this.value;
+                unitOfMeasureSelect.empty();
+                updateUnits(selectedCategory);
+            });
+
+            function updateCategories(selectedClass) {
+                // Filter categories based on selected collateral class
+                var categories = [];
+                switch (selectedClass) {
+                    @foreach (var item in ViewBag.CollateralClassSelectList as List<SelectListItem>)
+                    {
+                        var enumClass = item.Value;
+                        <text>
+                        case "@enumClass":
+                            categories = [@{
+                                var enumValues = Enum.GetValues(typeof(CollateralCategory))
+                                                     .Cast<CollateralCategory>()
+                                                     .Where(c => CollateralMapping.ClassToCategoryMap[(CollateralClass)Enum.Parse(typeof(CollateralClass), enumClass)].Contains(c))
+                                                     .Select(c => "\"" + c.ToString() + "\"")
+                                                     .ToList();
+                                @Html.Raw(string.Join(",", enumValues))
+                            }];
+                            break;
+                        </text>
+                    }
+                    default:
+                        categories = [];
+                        break;
+                }
+
+                // Clear previous options
+                collateralCategorySelect.innerHTML = '<option disabled selected value="">Select Category</option>';
+               
+
+                // Populate categories dropdown
+                categories.forEach(function (category) {
+                    var option = document.createElement("option");
+                    option.textContent = category;
+                    option.value = category;
+                    collateralCategorySelect.appendChild(option);
+                });
+
+                // Update units based on the first category
+                var selectedCategory = collateralCategorySelect.value;
+                updateUnits(selectedCategory);
+            }
+
+            function updateUnits(selectedCategory) {
+                // Filter units based on selected collateral category
+                var units = [];
+                switch (selectedCategory) {
+                    @foreach (var item in ViewBag.CollateralCategorySelectList as List<SelectListItem>)
+                    {
+                        var enumCategory = item.Value;
+                        <text>
+                        case "@enumCategory":
+                            units = [@{
+                                var enumValues = Enum.GetValues(typeof(UnitOfMeasure))
+                                                     .Cast<UnitOfMeasure>()
+                                                     .Where(u => CollateralMapping.CategoryToUnitMap[(CollateralCategory)Enum.Parse(typeof(CollateralCategory), enumCategory)].Contains(u))
+                                                     .Select(u => "\"" + u.ToString() + "\"")
+                                                     .ToList();
+                                @Html.Raw(string.Join(",", enumValues))
+                            }];
+                            break;
+                        </text>
+                    }
+                    default:
+                        units = [];
+                        break;
+                }
+
+                // Clear previous options
+                unitOfMeasureSelect.innerHTML = '<option disabled selected value="">Select Unit</option>';
+
+                // Populate units dropdown
+                units.forEach(function (unit) {
+                    var option = document.createElement("option");
+                    option.textContent = unit;
+                    option.value = unit;
+                    unitOfMeasureSelect.appendChild(option);
+                });
+            }
+        });
+    </script> *@
 }
+
+

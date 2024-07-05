@@ -1,0 +1,85 @@
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
+
+@{
+    ViewData["Title"] = "Delete PCE Evaluation";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Delete PCE Evaluation</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("Index", "PCE")">PCE Evaluations</a></li>
+                    <li class="breadcrumb-item active">Delete</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <section class="col-xl-10 offset-xl-1 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                    Delete PCE Evaluation
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="Delete">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <p>Are you sure you want to delete this estimation?</p>
+                    
+                    <!-- Display fields in read-only mode -->                                 
+                    <dl class="row">
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OriginCountry)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.OriginCountry)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EffectiveProductionHourType)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.EffectiveProductionHourType)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EffectiveProductionHour)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.EffectiveProductionHour)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionUnit)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionUnit)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.DesignProductionCapacity)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.AttainableProductionCapacity)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ActualProductionCapacity)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.InspectionPlace)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.InspectionPlace)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Status)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
+                    </dl>
+
+
+                    <div class="row">
+                        <button type="submit" class="col-xl-4 btn bg-danger">Delete</button>
+                        <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+}

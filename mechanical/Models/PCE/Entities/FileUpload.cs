@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using mechanical.Models.PCE.Enum.PCEEnums.File;
+using mechanical.Models.PCE.Enum.File;
 
 namespace mechanical.Models.PCE.Entities
 {
@@ -17,15 +17,13 @@ namespace mechanical.Models.PCE.Entities
         public string Extension { get; set; } = string.Empty;
         public string Path { get; set; } = string.Empty;
 
-        public Guid? PCEId { get; set; } 
-        [ForeignKey("PCEId")]
-        
-        [JsonIgnore]
-        public virtual ProductionCapacityEstimation PCE { get; set; }
-
-        public DocumentType Type { get; set; }
-        public DateTime UploadAt { get; set; }
+        public Category Category { get; set; }
+        public DateTime UploadedAt { get; set; }
         public Guid UploadedBy { get; set; }
 
+        public Guid? PCEEId { get; set; } 
+        [ForeignKey("PCEEId")]
+        // [JsonIgnore]
+        public virtual PCEEvaluation PCEEvaluation { get; set; }
     }
 }

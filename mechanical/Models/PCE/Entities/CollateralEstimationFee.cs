@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using mechanical.Models.Entities;
-using mechanical.Models.PCE.Enum.PCEEnums.Collateral;
+using mechanical.Models.PCE.Enum.Collateral;
 
 namespace mechanical.Models.PCE.Entities
 {
@@ -11,11 +11,9 @@ namespace mechanical.Models.PCE.Entities
     {
         [Key]
         public Guid Id { get; set; }
-        [ForeignKey("PCEId")]
-        public Guid? PCEId { get; set; } 
-        // public Guid? PCECaseId { get; set; } 
-        // public virtual Case? PCE { get; set; } 
-        public virtual ProductionCapacityEstimation? PCE { get; set; } 
+        [ForeignKey("PCEEId")]
+        public Guid? PCEEId { get; set; } 
+        public virtual PCEEvaluation? PCEE { get; set; } 
 
         public CollateralClass CollateralClass { get; set; }
         public CollateralCategory CollateralCategory { get; set; }

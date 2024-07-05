@@ -34,23 +34,11 @@ namespace mechanical.Data
  
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<ProductionCapacityEstimation>()
+            modelBuilder.Entity<PCEEvaluation>()
                 .HasMany(p => p.SupportingDocuments)
-                .WithOne(f => f.PCE)
-                .HasForeignKey(f => f.PCEId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // modelBuilder.Entity<ProductionCapacityEstimation>()
-            //     .HasMany(e => e.SupportingEvidences)
-            //     .WithOne(f => f.PCE)
-            //     .HasForeignKey(f => f.PCEId)
-            //     .OnDelete(DeleteBehavior.Cascade);
-
-            // modelBuilder.Entity<ProductionCapacityEstimation>()
-            //     .HasMany(e => e.ProductionProcessFlowDiagrams)
-            //     .WithOne(f => f.PCE)
-            //     .HasForeignKey(f => f.PCEId)
-            //     .OnDelete(DeleteBehavior.Cascade);          
+                .WithOne(f => f.PCEEvaluation)
+                .HasForeignKey(f => f.PCEEId)
+                .OnDelete(DeleteBehavior.Cascade);  
                 
             var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
                 v => v.ToTimeSpan(),
@@ -72,7 +60,7 @@ namespace mechanical.Data
                 entity.Property(e => e.End).HasConversion(dateOnlyConverter);
             });
 
-            modelBuilder.Entity<ProductionCapacityEstimation>(entity =>
+            modelBuilder.Entity<PCEEvaluation>(entity =>
             {
                 entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
             });
@@ -86,6 +74,11 @@ namespace mechanical.Data
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
 
+        public virtual DbSet<FileUpload> FileUploads { get; set; }
+        public virtual DbSet<PCESchedule> PCESchedules { get; set; }
+        public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
+        ///////
 
 
         public DbSet<Case> Cases { get; set; }
@@ -102,12 +95,6 @@ namespace mechanical.Data
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
 
-        ///////
-        public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
-        public virtual DbSet<ProductionCapacityEstimation> ProductionCapacityEstimations { get; set; }
-        public virtual DbSet<FileUpload> FileUploads { get; set; }
-        public virtual DbSet<PCESchedule> PCESchedules { get; set; }
-        ///////
 
         public virtual DbSet<CreateRole> CreateRoles { get; set; }
         public virtual DbSet<CreateUser> CreateUsers { get; set; }

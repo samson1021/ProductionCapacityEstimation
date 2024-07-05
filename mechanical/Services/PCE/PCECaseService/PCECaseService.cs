@@ -2,7 +2,7 @@
 using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.PCE.Dto;
-using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseTimeLineService;
