@@ -11,10 +11,13 @@ namespace mechanical.Models.PCE.Dto.PCECase
         public required string CustomerUserId { get; set; }
         public string CustomerEmail { get; set; } = string.Empty;
         public Guid DistrictId { get; set; }
-   public DateTime CreationDate { get; set; }
-
+        public DateTime CreationDate { get; set; }
         public string CurrentStatus { get; set; } = string.Empty;
-     
+
+
+        public int NoOfCollateral { get; set; } = 0;
+        public int TotalNoOfCollateral { get; set; } = 0;
+
 
     }
 }

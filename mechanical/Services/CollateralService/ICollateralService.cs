@@ -42,7 +42,7 @@ namespace mechanical.Services.CollateralService
         Task<IEnumerable<ReturnCollateralDto>> MyResubmitedCollaterals(Guid userId);
         Task<ReturnCollateralDto> MyResubmitedCollateral(Guid userId, Guid id);
         Task<ReturnCollateralDto> MyReturnedCollateral(Guid userId, Guid id);
-        
+
         Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid CollateralId);
         Task<bool> DeleteCollateralFile(Guid userId, Guid Id);
         Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory);

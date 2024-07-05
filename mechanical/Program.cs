@@ -34,14 +34,14 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.ProductionCaseService;
-using mechanical.Services.ProductionCapacityServices;
-using mechanical.Services.ProductionCaseScheduleService;
-using mechanical.Services.ProductionCaseTimeLineService;
-using mechanical.Services.ProductionCorrectionService;
-using mechanical.Services.ProductionCaseAssignmentServices;
-using mechanical.Services.ProductionCaseTerminateService;
-using mechanical.Services.ProductionUploadFileService;
+using mechanical.Services.PCE.PCECollateralService;
+using mechanical.Services.PCE.UploadFileService;
+using Microsoft.EntityFrameworkCore.Migrations;
+using mechanical.Services.PCE.ProductionCapacityServices;
+using mechanical.Services.PCE.ProductionUploadFileService;
+using mechanical.Services.PCE.ProductionCaseScheduleService;
+using mechanical.Services.PCE.ProductionCorrectionService;
+using mechanical.Models.PCE.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -86,15 +86,13 @@ builder.Services.AddDbContext<CbeContext>(options =>
 //production capacity estimation
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
-builder.Services.AddScoped<IProductionCapacityServices, ProductionCapacityServices> ();
-builder.Services.AddScoped<IProductionCaseService, ProductionCaseService>();
+builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
+builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
+//manufacturing
+builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityServices>();
 builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
-builder.Services.AddScoped<IProductionCaseTimeLineService, ProductionCaseTimeLineService>();
-builder.Services.AddScoped<IProductionCorrectionService,  ProductionCorrectionService>();
-builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
-builder.Services.AddScoped<IProductionCaseTerminateService, ProductionCaseTerminateService>();
+builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IProductionUploadFileService, ProductionUploadFileService>();
-
 
 
 

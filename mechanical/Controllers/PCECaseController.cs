@@ -111,9 +111,32 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)
         {
-            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            return View("PCEDetail", pcecaseDto);
+            var pcecaseDto =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            ViewData["pcecaseDtos"] = pcecaseDto;
+            return View();
+        } 
+
+      
+        public async Task<IActionResult> PCEEdit(Guid Id)
+        {
+            var editCase =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (editCase == null) { return RedirectToAction("PCENewCases"); }
+            return View(editCase);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> PCEEdit(PCECaseReturntDto caseDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var cases = await _PCECaseService.PCEEdit(caseDto.Id, caseDto);
+                return RedirectToAction("PCENewCases");
+            }
+            return View();
+        }
+
+
+
 
 
         [HttpGet]

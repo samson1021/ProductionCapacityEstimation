@@ -41,17 +41,22 @@ namespace mechanical.Data
         //production capacity estimation
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
-        public DbSet<ProductionCapacity> ProductionCapacities { get; set; }
-        public DbSet<ProductionCase> ProductionCases {  get; set; }
-        public DbSet<ProductionCaseSchedule> ProductionCaseSchedules { get; set; }
-        public DbSet<ProductionCaseTimeLine> ProductionCaseTimeLines { get; set; }
+        public DbSet<PCEUploadFile> PCEUploadFiles { get; set; }
+        public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
+
+
+        // Manufacture
+        public DbSet<ProductionCapacity> ProductionCapacities { get; set; }     
+        public DbSet<ProductionCaseSchedule> ProductionCaseSchedules { get; set; }        
         public DbSet<ProductionReject> ProductionRejects { get; set; }
         public DbSet<ProductionCaseAssignment> ProductionCaseAssignments { get; set; }
         public DbSet<ProductionCapacityReestimation> ProductionCapacityReestimations { get; set; }
         public DbSet<ProductionCapcityCorrection> ProductionCapcityCorrections { get; set; }
-        public DbSet<ProductionCaseTerminate> ProductionCaseTerminates { get; set; }
-        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
         public DbSet<ProductionUploadFile> ProductionUploadFiles { get; set; }
+
+
+
+
 
 
 

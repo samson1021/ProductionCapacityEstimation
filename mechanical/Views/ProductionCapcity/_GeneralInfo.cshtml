@@ -1,7 +1,9 @@
-﻿@using mechanical.Models.Dto.ProductionUploadFileDto
-@model mechanical.Models.Dto.ProductionCapacityDto.ReturnProductionDto;
+﻿@* @using mechanical.Models.PCE.Dto.ProductionUploadFileDto *@
+@using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Entities
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
-    var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnProductionFileDto>;
+    var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>;
     var rejectedProductions = ViewData["RejectedCollateral"] as ProductionReject;
     var user = ViewData["user"] as CreateUser;
 }
@@ -78,7 +80,7 @@
                             </thead>
                             <tbody>
                                 @{
-                                    if (productionFiles.Count() == 0)
+                                    if (productionFiles != null && productionFiles.Count() == 0)
                                     {
 
                                         <tr class="text-center"> <td colspan="3"><h6>There is no document related to this PCE</h6></td></tr>
@@ -90,7 +92,7 @@
                                             <tr>
                                                 <td>@productionFile.Name</td>
                                                 <td>@productionFile.Catagory</td>
-                                                <td><a href="@Url.Action("ViewFile","ProductionUploadFile" ,new { Id =productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="@Url.Action("DownloadFile","ProductionUploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                                <td><a href="@Url.Action("ViewFile","UploadFile" ,new { Id =productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
                                                 
                                                 
                                             </tr>

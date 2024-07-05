@@ -19,5 +19,14 @@ namespace mechanical.Services.PCE.PCECaseService
         PCECaseReturntDto GetPCECase(Guid userId, Guid id);
 
 
+      Task<PCECaseReturntDto> PCEEdit(Guid userId, PCECaseReturntDto caseDto);
+
+        ////manufuctuer
+        Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id);
+
+        //Task<PCECase> CreateProductionCase(Guid userId, PCECaseDto createCaseDto);
+        //Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id);
+
+
     }
 }

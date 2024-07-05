@@ -58,7 +58,7 @@
                 }
             });
         });
-        
+
         $('#PlateName').on('input', function () {
             let value = $(this).val().replace(/[^0-9a-zA-Z]/g, '').substr(0, 10);
             let formattedValue = '';
@@ -185,11 +185,11 @@
                 }
             });
         });
-       
+
 
         function loadComments() {
             $.ajax({
-                url: '/CaseComment/GetCaseComments?CaseId=' + CaseId,
+                url: '/CaseComment/GetCaseComments?caseId=' + CaseId,
                 method: 'GET',
                 success: function (data) {
                     var currentUserID = data.userId;
@@ -204,7 +204,7 @@
                             var chatMsg = $('<div>').addClass('direct-chat-msg');
                             var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
                             var chatName = $('<a>');
-                         
+
                             var chatImg = $('<a>');
                             var chatImgInner = $('<img>').attr('src', '/img/avatar5.png').addClass('direct-chat-img');
                             var chatText = $('<div>').addClass('direct-chat-text');
@@ -214,7 +214,7 @@
                             chatImg.append(chatImgInner);
 
                             var createdAt = new Date(comment.CreatedAt);
-                     
+
 
                             chatText.text(comment.Content);
 
@@ -285,14 +285,14 @@
 
         loadComments();
 
-        function sendMessage(message,CaseId) {
+        function sendMessage(message, CaseId) {
             var requestData = {
                 Content: message,
                 CaseId: CaseId
             };
 
             $.ajax({
-                url: '/CaseComment/CreateCaseComment', 
+                url: '/CaseComment/CreateCaseComment',
                 method: 'POST',
                 data: requestData,
                 success: function (response) {
@@ -313,7 +313,7 @@
             var message = $('input[name="message"]').val();
             if (message.trim() !== '') {
                 // Send the message
-                sendMessage(message,CaseId);
+                sendMessage(message, CaseId);
                 location.reload();
                 $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
                 // loadComments();
@@ -323,7 +323,6 @@
             }
         });
 
-        // do Collateral 
 
 
 
@@ -349,7 +348,7 @@
                     { data: 'PropertyOwner', width: '25%' },
                     { data: 'Role', width: '25%' },
                     { data: 'CollateralType', width: '35%' },
-                    
+
                     {
                         data: 'Id',
                         width: '10%',
@@ -367,7 +366,6 @@
                 $('#deleteItem').data('id', itemId);
                 $('#deleteConfirmationModal').modal('show');
             });
-
             //this is to delete the collateral
             $('#deleteItem').on('click', function () {
                 var itemId = $(this).data('id');
@@ -425,7 +423,7 @@
                 var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
 
 
-                if (MachineName === "" || Purpose === "" ) {
+                if (MachineName === "" || Purpose === "") {
                     toastr.error("Please fill in all required fields.");
                     return;
                 }
@@ -452,8 +450,6 @@
                 }
             });
         });
-
-
         loadCollaterals();
         $('#addCivilCollateralForm').submit(function (e) {
             e.preventDefault();
@@ -553,7 +549,7 @@
             }
             return null; // Attribute not found
         }
-        
+
         var chatMessages = $('.direct-chat-messages');
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
@@ -680,7 +676,7 @@
         var chatMessages = $('.direct-chat-messages');
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
-     
+
         $('#proposeNewSchedule-form').submit(function (event) {
             event.preventDefault();
             var formData = new FormData(this);
@@ -705,4 +701,3 @@
 
     });
 </script>
- 

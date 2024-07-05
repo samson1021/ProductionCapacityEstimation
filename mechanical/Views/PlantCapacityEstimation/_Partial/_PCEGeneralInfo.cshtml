@@ -1,0 +1,126 @@
+﻿@using mechanical.Models.PCE.Dto.PCEUploadFileDto
+
+@model mechanical.Models.PCE.Dto.PlantCapacityEstimationDto.PCEReturnCollateralDto;
+@{
+    var collateralFiles = ViewData["collateralFiles"] as IEnumerable<PCEReturnFileDto>;
+    // var rejectedCollaterals = ViewData["RejectedCollateral"] as Reject;
+    // var user = ViewData["user"] as CreateUser;
+} 
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Collateral Information</h3>
+                    </div>
+                    <div class="card-body">
+                       @if (!string.IsNullOrEmpty(Model.OwnerNameLHC)){<h6><strong>Owner Name LHC :</strong> @Model.OwnerNameLHC</h6> }
+                        @if (!string.IsNullOrEmpty(Model.PurposeOfPCE)){<h6 style="margin-top:1.2rem;"><strong>Purpose Of PCE: </strong> @Model.PurposeOfPCE</h6>}
+                        @if (!string.IsNullOrEmpty(Model.CollateralType)){ <h6 style="margin-top:1.2rem;"><strong>Equipment Category:</strong> @Model.CollateralType</h6> }
+                        @if (!string.IsNullOrEmpty(Model.LHCNo))  { <h6 style="margin-top:1.2rem;"><strong>LHC Number:</strong> @Model.LHCNo</h6>  }
+                        @if (!string.IsNullOrEmpty(Model.NamePlant)) { <h6 style="margin-top:1.2rem;"><strong>Name Plant </strong> @Model.NamePlant</h6>  }
+                        @if (!string.IsNullOrEmpty(Model.ObsolescenceStatus)) { <h6 style="margin-top:1.2rem;"><strong>Obsolescence Status:</strong> @Model.ObsolescenceStatus</h6> }
+                        @if (!string.IsNullOrEmpty(Model.PlantDepreciationRate)) {<h6 style="margin-top:1.2rem;"><strong>Plant Depreciation Rate :</strong> @Model.PlantDepreciationRate</h6> }
+                        @if (!string.IsNullOrEmpty(Model.OwnerOfPlant)){<h6 style="margin-top:1.2rem;"><strong>Owner Of Plant :</strong> @Model.OwnerOfPlant</h6> }
+                        @if (!string.IsNullOrEmpty(Model.TradeLicenseNo))  { <h6 style="margin-top:1.2rem;"><strong>Trade License Number:</strong> @Model.TradeLicenseNo</h6> } 
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Property Address</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(Model.PlantRegion)){ <h6><strong>Region:</strong> @Model.PlantRegion</h6> }
+                        @if (!string.IsNullOrEmpty(Model.PlantZone)) { <h6 style="margin-top:1.2rem;"><strong>Zone:</strong> @Model.PlantZone</h6>  }
+                        @if (!string.IsNullOrEmpty(Model.PlantCity)) { <h6 style="margin-top:1.2rem;"><strong>City: </strong> @Model.PlantCity</h6> }
+                        @if (!string.IsNullOrEmpty(Model.PlantSubCity))  {<h6 style="margin-top:1.2rem;"><strong>Sub-City:</strong> @Model.PlantSubCity</h6>  }
+                        @if (!string.IsNullOrEmpty(Model.PlantWereda)){<h6 style="margin-top:1.2rem;"><strong>Woreda: </strong> @Model.PlantWereda</h6> }
+                        @if (!string.IsNullOrEmpty(Model.PlantKebele)){<h6 style="margin-top:1.2rem;"><strong>Kebele:</strong> @Model.PlantKebele</h6> }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Attached Document</h3>
+                    </div>
+                     <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>File Category</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (collateralFiles.Count() == 0)
+                                    {
+                                        <tr class="text-center">
+                                            <td colspan="3">
+                                                <h6>There is no document related to this Collateral</h6>
+                                            </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        foreach (var collateralFile in collateralFiles)
+                                        {
+                                            <tr>
+                                                <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@collateralFile.Name</td>
+                                                <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@collateralFile.Catagory</td>
+                                                <td>
+                                                    <a href="@Url.Action("ViewFile","UploadFile" ,new { Id = collateralFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>
+                                                    &nbsp;|&nbsp;
+                                                    <a href="@Url.Action("DownloadFile","UploadFile" ,new { Id = collateralFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title text-danger">Returned Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Returned  By</th>
+                                    <th>Reason for return </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                     @{
+                                    //     if (rejectedCollaterals == null || user == null)
+                                    //     {
+
+                                       <tr class="text-center"> <td colspan="3"><h6>There is no document related to this Collateral</h6></td></tr>
+                                    //     }
+                                    //     else
+                                    // {
+                                    //         <tr>
+                                    //             <td><a href="@Url.Action("Profile","UserManagment")?id=@user.Id">@user.Name</a> (@user.Role.Name)</td>
+                                    //             <td>@rejectedCollaterals.RejectionComment</td>
+                                                
+                                    //         </tr>  
+                                    //     }
+                                    }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section

@@ -43,7 +43,7 @@
 
         </table>
         <div class="row">
-                 <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+                @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
                 <div class="row">
                 <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
                 </div>
@@ -87,7 +87,6 @@
         $('#addCivilCollateralModal').modal('show');
     });
 </script> 
-
 <div class="modal fade" id="addMechanicalCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
@@ -102,7 +101,7 @@
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
                         <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
-                        <div class="row">
+                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="PropertyOwner">Property Owner<i class="text-danger">*</i></label>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner *" required>

@@ -110,8 +110,6 @@ namespace mechanical.Controllers
             if (response == null) { return RedirectToAction("NewCases"); }
             return View(response);
         }
-
-
         [HttpPost]
         public async Task<IActionResult> handleRemark(Guid CollateralId, Guid EvaluatorUserID ,String RemarkType,CreateFileDto uploadFile, Guid CheckerUserID)
         {
@@ -139,6 +137,7 @@ namespace mechanical.Controllers
 
             return RedirectToAction("MyCompleteCases", "Case");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, CollateralPostDto collateralPostDto)

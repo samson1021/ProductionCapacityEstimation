@@ -1,6 +1,6 @@
 ﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
-@using mechanical.Models.Dto.ProductionCapacityDto
-@model mechanical.Models.Dto.ProductionCapacityDto.ReturnProductionDto;
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
     var ProductionCavaluation = ViewData["Prvaluation"] as ReturnProductionDto;
     var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;

@@ -26,7 +26,7 @@ builder.Services.AddDbContext<MyDbContext>(options =>
                          throw new InvalidOperationException("Connection string 'MyDbContext' not found.")));
 
 
-builder.Services.AddScoped<IAcknowledgementService, AcknowledgementService>();
+//builder.Services.AddScoped<IAcknowledgementService, AcknowledgementService>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
 //builder.Services.AddSingleton<IWebHostEnvironment>(provider => provider.GetRequiredService<IWebHostEnvironment>());
 builder.Services.AddRazorPages();

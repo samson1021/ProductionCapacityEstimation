@@ -1,11 +1,12 @@
 ﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
 @using mechanical.Models.Dto.IndBldgFacilityEquipmentDto;
 @using mechanical.Models.Dto.CaseScheduleDto;
-@using mechanical.Models.Dto.ProductionCapacityDto;
-@using mechanical.Models.Dto.ProductionCaseDto
+@using mechanical.Models.PCE.Dto.PCECase
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@using mechanical.Models.PCE.Entities
 
 @model ReturnProductionDto;
-@{  
+@{
     var collateralFiles = ViewData["collateralFiles"] as IEnumerable<ReturnFileDto>;
     // var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
     var ProductionCavaluation = ViewData["Prvaluation"] as ReturnProductionDto;
@@ -15,7 +16,7 @@
     var loggedRole = ViewData["loggedRole"] as CreateRole;
     var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
     var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as ProductionCapacity;
-    var myCase = ViewData["case"] as RetunProductionCaseDto;
+    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
     var restimation = ViewData["restimation"] as ProductionCapacityReestimation;
     // var motorVehicle = ViewData["motorVehicle"] as List<MotorVehicle>;
     // var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;
@@ -31,15 +32,16 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("PNewCases", "ProductionCase")">My PCE Case</a></li>
-                    <li class="breadcrumb-item active">Case Detail</li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCENewCases", "PCECase")">My PCE Case</a></li>
+                    <li class="breadcrumb-item active">PCE Case Detail</li>
+
                 </ol>
             </div>
         </div>
     </div>
 </section>
 <section class="content">
-    
+
     <div class="container-fluid">
         <div class="card card-purple card-outline card-outline-tabs">
             @{
@@ -70,7 +72,7 @@
                         <a class="nav-link" id="custom-tabs-four-remark-tab" data-toggle="pill" href="#custom-tabs-four-remark" role="tab" aria-controls="custom-tabs-four-remark" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Remark</a>
                     </li>
 
-                   
+
                 </ul>
             </div>
             <div class="card-body">
@@ -80,34 +82,34 @@
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @{
-                            if(restimation == null)
+                            if (restimation == null)
                             {
 
                                 @await Html.PartialAsync("_ProductionValuation")
-                                
+
                             }
-                          
+
                         }
-                       
+
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         <h6>there is no checker unit comment</h6>
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @{
-                            if(restimation != null)
+                            if (restimation != null)
                             {
                                 @await Html.PartialAsync("_ProductionValuation")
 
                             }
-                          
-                        } 
+
+                        }
                     </div>
 
                     <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
                         @await Html.PartialAsync("_ProductionRemark")
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -115,7 +117,7 @@
 </section>
 @section Scripts {
     @{
-       // await Html.RenderPartialAsync("ProductionCaseScriptPartial/_DetailCaseSriptsPartial");
+        // await Html.RenderPartialAsync("ProductionCaseScriptPartial/_DetailCaseSriptsPartial");
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 

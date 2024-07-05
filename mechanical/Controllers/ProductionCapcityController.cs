@@ -5,40 +5,41 @@ using mechanical.Models;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.CaseServices;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.ProductionCaseService;
+//using mechanical.Services.ProductionCaseService;
 using mechanical.Services.UploadFileService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using mechanical.Services.ProductionCapacityServices;
-using mechanical.Models.Dto.CollateralDto;
-using mechanical.Models.Dto.ProductionCapacityDto;
-using mechanical.Models.Enum.ProductionCapcityEstimation;
+using mechanical.Services.PCE.ProductionCapacityServices;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+
+using mechanical.Services.PCE.ProductionUploadFileService;
+using mechanical.Models.PCE.Dto.ProductionUploadFileDto;
 using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.Entities;
-using mechanical.Services.ProductionUploadFileService;
-using mechanical.Models.Dto.ProductionUploadFileDto;
+
 
 namespace mechanical.Controllers
 {
-    public class ProductionCapcityController :BaseController
+    public class ProductionCapcityController : BaseController
     {
-        private readonly IProductionCaseService _productionCaseService;
+        private readonly IPCECaseService _pCECaseService;
         private readonly IProductionCapacityServices _productionCapacityServices;
         private readonly ILogger<ProductionCapcityController> _logger;
         private readonly CbeContext _cbeContext;
-        private readonly IProductionUploadFileService _productionUploadFileService;
+        //private readonly IProductionUploadFileService _productionUploadFileService;
+        private readonly IUploadFileService _uploadFileService;
 
-        public ProductionCapcityController(CbeContext cbeContext, IProductionCaseService productionCaseService, IProductionCapacityServices productionCapacityServices, IProductionUploadFileService productionUploadFileService)
+        public ProductionCapcityController(CbeContext cbeContext, IPCECaseService pCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
-            _productionCaseService = productionCaseService;
-            _productionUploadFileService = productionUploadFileService;
-            
+            _pCECaseService = pCECaseService;
+            //_productionUploadFileService = productionUploadFileService;
+            _uploadFileService = uploadFileService;
+
 
         }
-  
+
         public IActionResult Index()
         {
             return View();
@@ -46,23 +47,25 @@ namespace mechanical.Controllers
 
 
         [HttpPost]
-       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Guid ProductionCaseId, ProductionPostDto productionDto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Guid PCECaseId, ProductionPostDto productionDto)
         {
+            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
             if (ModelState.IsValid)
             {
-                await _productionCapacityServices.CreateProductionCapacity(base.GetCurrentUserId(), ProductionCaseId, productionDto);
+                await _productionCapacityServices.CreateProductionCapacity(base.GetCurrentUserId(), PCECaseId, productionDto);
                 var response = new { message = "PCE created successfully" };
                 return Ok(response);
             }
             return BadRequest();
-           
+
         }
-       
+
         [HttpGet]
-        public async Task<IActionResult> GetProductions(Guid ProductionCaseId)
+        public async Task<IActionResult> GetProductions(Guid PCECaseId)
         {
-            var products = await _productionCapacityServices.GetProductions(ProductionCaseId);
+            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
+            var products = await _productionCapacityServices.GetProductions(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(products);
             return Content(jsonData, "application/json");
 
@@ -72,29 +75,29 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Detail(Guid id)
         {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var loanCase = await _productionCaseService.GetProductionCaseDetail(id);
+            var loanCase = await _pCECaseService.GetProductionCaseDetail(id);
 
-            var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
-            if (restimation != null)
-            {
-                ViewData["restimation"] = restimation;
-            }
+            //var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
+            //if (restimation != null)
+            //{
+            //    ViewData["restimation"] = restimation;
+            //}
 
-            if (response == null) { return RedirectToAction("PNewCases"); }
-            var file = await _productionUploadFileService.GetUploadFileByProductionCapacityId(id);
+            if (response == null) { return RedirectToAction("PCENewCases"); }
+            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
             var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
-            var productionById= await _productionCapacityServices.GetProductionCapacityById(id);
-            
+            var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
+
             if (rejectedProduction != null)
             {
                 var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedProduction.RejectedBy);
                 ViewData["user"] = user;
 
             }
-           
+
             ViewData["Prvaluation"] = productionById;
-            ViewData["case"] = loanCase;
+            ViewData["pcecaseDtos"] = loanCase;
             ViewData["productionFiles"] = file;
             ViewData["rejectedCollateral"] = rejectedProduction;
             ViewData["CurrentUserId"] = base.GetCurrentUserId();
@@ -121,7 +124,7 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> DeleteProduction(Guid id)
         {
 
@@ -158,7 +161,7 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, ProductionPostDto collateralPostDto)
@@ -166,7 +169,7 @@ namespace mechanical.Controllers
             if (ModelState.IsValid)
             {
                 var collateral = await _productionCapacityServices.EditProduction(base.GetCurrentUserId(), id, collateralPostDto);
-                return RedirectToAction("Detail", "ProductionCase", new { Id = collateral.ProductionCaseId });
+                return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
             }
             return View();
         }
@@ -175,9 +178,9 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var file = await _productionUploadFileService.GetUploadFileByProductionCapacityId(id);
+            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
             ViewData["productionFiles"] = file;
-            if (response == null) { return RedirectToAction("PNewCases"); }
+            if (response == null) { return RedirectToAction("PCENewCases"); }
             return View(response);
         }
         [HttpPost]
@@ -191,19 +194,20 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadProductionFile(IFormFile ProductionBussinessLicence, Guid ProductionCaseId, string DocumentCatagory)
+        public async Task<ActionResult> UploadProductionFile(IFormFile BussinessLicence, Guid caseId, string DocumentCatagory)
         {
-            if (await _productionCapacityServices.UploadProductionFile(base.GetCurrentUserId(), ProductionBussinessLicence, ProductionCaseId, DocumentCatagory))
+
+           
+            if (await _productionCapacityServices.UploadProductionFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCatagory))
             {
                 return Ok();
             }
             return BadRequest();
+           
         }
-
-
-
+       
         [HttpPost]
-        public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateProductionFileDto uploadFile, Guid CheckerUserID)
+        public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
         {
             var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
             ProductioncaseAssignment.Status = "Remark";
@@ -220,16 +224,16 @@ namespace mechanical.Controllers
             }
             if (uploadFile.File != null)
             {
-                uploadFile.ProductionCaseId = Production.ProductionCaseId;
-                await _productionUploadFileService.CreateProductionUploadFile(base.GetCurrentUserId(), uploadFile);
+                uploadFile.CaseId = Production.PCECaseId;
+                await _uploadFileService.CreateUploadFile(base.GetCurrentUserId(), uploadFile);
             }
             Production.CurrentStage = "Maker Officer";
             _cbeContext.Update(Production);
             _cbeContext.SaveChanges();
 
             //return RedirectToAction("MyCompleteCases", "Case");
-                //just for opration 
-            return RedirectToAction("PNewCases", "ProductionCase");
+            //just for opration 
+            return RedirectToAction("PCENewCases", "PCECase");
         }
 
         [HttpGet]
