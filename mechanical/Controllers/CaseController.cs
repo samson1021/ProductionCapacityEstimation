@@ -72,6 +72,9 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
+
+
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -90,6 +93,10 @@ namespace mechanical.Controllers
             return View();
         }
       
+
+
+
+
         [HttpGet]
         public IActionResult NewCases()
         {
@@ -116,12 +123,14 @@ namespace mechanical.Controllers
         {
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> GetNewCases()
         {
             var newCases = await _caseService.GetNewCases(base.GetCurrentUserId());
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
+
         [HttpGet]
         public async Task<IActionResult> GetHOCases()
         {

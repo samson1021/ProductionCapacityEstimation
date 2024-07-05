@@ -2,6 +2,7 @@
 using mechanical.Models.Entities;
 using mechanical.Data;
 using Microsoft.EntityFrameworkCore;
+using mechanical.Models.PCE.Entities;
 
 //using mechanical.Models.Dto.CaseDto;
 
@@ -35,6 +36,30 @@ namespace mechanical.Data
         public CbeContext(DbContextOptions<CbeContext> options) : base(options)
         {
         }
+
+
+        //production capacity estimation
+        public DbSet<PCECase> PCECases { get; set; }
+        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
+        public DbSet<PCEUploadFile> PCEUploadFiles { get; set; }
+        public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
+
+
+        // Manufacture
+        public DbSet<ProductionCapacity> ProductionCapacities { get; set; }     
+        public DbSet<ProductionCaseSchedule> ProductionCaseSchedules { get; set; }        
+        public DbSet<ProductionReject> ProductionRejects { get; set; }
+        public DbSet<ProductionCaseAssignment> ProductionCaseAssignments { get; set; }
+        public DbSet<ProductionCapacityReestimation> ProductionCapacityReestimations { get; set; }
+        public DbSet<ProductionCapcityCorrection> ProductionCapcityCorrections { get; set; }
+        public DbSet<ProductionUploadFile> ProductionUploadFiles { get; set; }
+
+
+
+
+
+
+
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }

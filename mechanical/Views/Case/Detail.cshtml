@@ -42,7 +42,6 @@
                             Comments <span class="badge badge-warning right CommentBage"> </span>
                         </a>
                     </li>
-                   
                 </ul>
             </div>
             <div class="card-body">
@@ -64,11 +63,12 @@
         </div>
     </div>
 </section>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+       await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
+       await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
    
 }

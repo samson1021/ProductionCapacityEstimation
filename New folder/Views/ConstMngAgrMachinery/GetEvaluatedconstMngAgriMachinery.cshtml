@@ -1,0 +1,729 @@
+﻿@{
+    ViewData["Title"] = "Get Evaluated Moter Vehicle";
+}
+@* @model mechanical.Models.Dto.MotorVehicleDto.CreateMotorVehicleDto;
+ *@
+@model mechanical.Models.Dto.ConstMngAgrMachineryDto.ConstMngAgMachineryReturnDto;
+
+@{
+    var collateral = ViewData["collateral"] as ReturnEvaluatedCaseDto;
+    var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
+    Console.WriteLine(collateral);
+}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6">
+                <h1 class="m-0">Construction and Machinery Equipment Valuated Checking Form </h1>
+            </div>
+            <div class="col-sm-6 col-xl-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">My Case</li>
+                    <li class="breadcrumb-item active">Detail</li>
+                    <li class="breadcrumb-item active">Collateral evaluation</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <div class="card">
+            <div class="card-body">
+                <input id="TxtmovId" value="@Model.CollateralId" type="hidden" />
+                <input id="TxtEquipmentId" value="@Model.Id" type="hidden" />
+
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="NoOfCylinder">Machinery Name</label>
+                            <div class="input-group">
+                                <input id="NoOfCylinders" value=@Model.constructionMiningAgriculturalMachineryType type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="IndustrialBuildingMachineryType">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblEngineType">Engine Type</label>
+                            <div class="input-group">
+                                <input id="txtCollateralId" value="@Model.EngineType" type="text" class="form-control" readonly />
+                                <span id="SpEngineType" class="text-danger"></span>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="EngineType">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="TransmissionType">Power Supply</label>
+                            <div class="input-group">
+                                <input id="TransmissionTypes" value="@Model.PowerSupply" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="PowerSupply">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lbcoolingSystem">Number Of Cylinder</label>
+                            <div class="input-group">
+                                <input id="txtcoolingSystem" value="@Model.NoOfCylinder" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="NoOfCylinder">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblEnginePower">Working Production Capacity</label>
+                            <div class="input-group">
+                                <input id="txtEnginePower" value="@Model.WorkingProductionCapacity" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" ata-field-id="WorkingProductionCapacity">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblLoadingCapacity">Ignition System</label>
+                            <div class="input-group">
+                                <input id="txtLoadingCapacity" value="@Model.IgnitionSystem" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="IgnitionSystem">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblBodyType">Maker Company</label>
+                            <div class="input-group">
+                                <input id="txtBodyType" value="@Model.MakerCompany" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="MakerCompany">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblCabinType">Technology Standard</label>
+                            <div class="input-group">
+                                <input id="txtCabinType" value="@Model.TechnologyStandard" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="TechnologyStandard">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblNumberOfAxle">Maker Preference Type</label>
+                            <div class="input-group">
+                                <input id="txtNumberOfAxle" value="@Model.MakerPreferenceType" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="MakerPreferenceType">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+@*                 this is added
+ *@                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="TransmissionType">Transmission Type</label>
+                            <div class="input-group">
+                                <input id="txtTransmissionType" value="@Model.TransmissionType" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="TransmissionType">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblCabinType">CabinType</label>
+                            <div class="input-group">
+                                <input id="txtCabinType" value="@Model.CabinType" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="CabinType">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblNumberOfAxle">Number Of Axle</label>
+                            <div class="input-group">
+                                <input id="txtNumberOfAxle" value="@Model.NumberOfAxle" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="NumberOfAxle">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblModelNo">Model Number</label>
+                            <div class="input-group">
+                                <input id="lblModelNo" value="@Model.ModelNo" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblSerialNo">Serial Number</label>
+                            <div class="input-group">
+                                <input id="txtSerialNo" type="text" value="@Model.SerialNo" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="SerialNo">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblEngineNo">Engine Number</label>
+                            <div class="input-group">
+                                <input id="txtEngineNo" type="text" value="@Model.EngineNo" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="EngineNo">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+@*                 new added 
+ *@                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblColor">Color</label>
+                            <div class="input-group">
+                                <input id="lblColor" value="@Model.Color" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="Color">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="ChassisNo">ChassisNo</label>
+                            <div class="input-group">
+                                <input id="txtChassisNoo" type="text" value="@Model.ChassisNo" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="ChassisNo">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="PlateNo">Plate Number</label>
+                            <div class="input-group">
+                                <input id="txtPlateNo" type="text" value="@Model.PlateNo" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="PlateNo">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-xl-6">
+                        <div class="form-group">
+                            <label id="lblYearOfManufacture">Year of Manufacture</label>
+                            <div class="input-group">
+                                <input id="txtYearOfManufacture" value="@Model.YearOfManufacture" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="YearOfManufacture">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-6">
+                        <div class="form-group">
+                            <label id="lblCountryOfOrigin">Country of Origin</label>
+                            <div class="input-group">
+                                <input id="txtCountryOfOrigin" value=@Model.CountryOfOrigin type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="CountryOfOrigin">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+@*                 new added
+ *@                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="TDNo">TD No</label>
+                            <div class="input-group">
+                                <input id="txtTDNo" value="@Model.TDNo" type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="TDNo">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblCoolingType">Cooling Type</label>
+                            <div class="input-group">
+                                <input id="txtCoolingType" value=@Model.CoolingType type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="CoolingType">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblEnginePower">Engine Power</label>
+                            <div class="input-group">
+                                <input id="txtEnginePower" value=@Model.EnginePower type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="EnginePower">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblPhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
+                            <div class="input-group">
+                                <textarea id="txtTDNo" type="text" value="@Model.PhysicalAndInstallationAssesment" class="form-control" readonly>@Model.PhysicalAndInstallationAssesment</textarea>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblOverallSurveyAssesment">Overall Survey Assessment</label>
+                            <div class="input-group">
+                                <textarea id="txtaOverallSurveyAssesment" class="form-control" value="@Model.OverallSurveyAssesment" type="text" readonly>@Model.OverallSurveyAssesment</textarea>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblRemark">Remark</label>
+                            <div class="input-group">
+                                <textarea id="txtCountryOfOrigin" value=@Model.Remark type="text" class="form-control" readonly>@Model.Remark</textarea>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="Remark">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblInvoiceValue">Invoice Value</label>
+                            <div class="input-group">
+                                <input id="txtInvoiceValue" type="number" class="form-control" value="@Model.InvoiceValue" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="InvoiceValue">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblCurrency">Currency</label>
+                            <div class="input-group">
+                                <input id="txtCurrency" list="currencyList" type="text" value="@Model.Currency" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="Currency">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <div class="form-group">
+                            <label id="lblExchangeRate">Exchange Rate</label>
+                            <div class="input-group">
+                                <input id="txtExchangeRate" type="number" value="@Model.ExchangeRate" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                            data-target="#CommentBoxModal" data-field-id="ExchangeRate">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-gray-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">Assessment Information</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Current Equipment Condition</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.CurrentEqpmntCondition</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Allocated Points Range</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.AllocatedPointsRange</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Market Share Factor</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.MarketShareFactor</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="market-share-factor">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Depreciation Rate</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.DepreciationRate</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="depreciation-rate">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Equipment Condition Factor</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.EqpmntConditionFactor</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="EqpmntConditionFactor">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Replacement Cost</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.ReplacementCost</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="ReplacementCost">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Net Estimation Value</label>
+                                    <div class="input-group">
+                                        <p class="form-control">@Model.NetEstimationValue</p>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                    data-target="#CommentBoxModal" data-field-id="NetEstimationValue">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Please Enter Your Additional Comments </label>
+                                        <div class="input-group-append">
+                                            <label class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                                   data-target="#CommentBoxModal" data-field-id="AdditionalComment">
+                                                Additional Comment
+                                                <i class="fas fa-plus"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-3" style="margin-top: 1.25rem;">
+            <button type="submit" id="checkedButton" class="btn btn-sm bg-info">Checked <i class="fas fa-paper-plane"></i></button>
+        </div>
+
+        <div class="col-xl-3" style="margin-top: 1.25rem;">
+            <button type="submit" id="saveButton" class="btn btn-sm bg-info">Save <i class="fas fa-save"></i></button>
+        </div>
+
+        <div class="col-xl-3" style="margin-top: 1.25rem;">
+            <button type="submit" id="correctionButton" class="btn btn-sm bg-danger">Send For Correction <i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-append">
+                        <button id="CheckAssesmentButton" type="button" class="btn btn-sm bg-info" data-toggle="modal" data-target="#CheckAssesmentModal">
+                            <i class="fas fa-paper-plane"></i> Check Assesment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@await Html.PartialAsync("CheckAssesment")
+
+<script>
+    const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
+
+    // const myCaseId = "myCase.Id";
+    CheckAssesmentButton.addEventListener("click", function () {
+        $('#CheckAssesmentModal').modal('show');
+    });
+</script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_InduSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+        }
+
+<!--this is file Box modal code-->
+<div class="modal fade" id="CollateralFileModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CollateralFileModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Collateral Related Document List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>File Catagory</th>
+                        <th>File Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (collateralFiles != null)
+                        {
+
+
+                            foreach (var collateralFile in collateralFiles)
+                            {
+                                <tr>
+                                    <td>@collateralFile.Name</td>
+                                    <td>@collateralFile.Catagory</td>
+                                    <td>@collateralFile.ContentType</td>
+                                    <td><a href="@Url.Action("DownloadFile", "Collateral", new { id = collateralFile.Id })">Download</a></td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- this is the updated comment box modal code-->
+<div class="modal fade" id="CommentBoxModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <textarea id="comment" class="form-control" rows="4" placeholder="Enter your comment"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary save-comment">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

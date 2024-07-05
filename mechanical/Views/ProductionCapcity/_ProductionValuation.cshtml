@@ -1,0 +1,147 @@
+﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
+@{
+    var ProductionCavaluation = ViewData["Prvaluation"] as ReturnProductionDto;
+    var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
+    var currentStage = Model.CurrentStage;
+}
+<script>
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        var value = parseFloat(element.textContent);
+        var formattedValue = formatNumber(value);
+        element.textContent = formattedValue;
+    }
+</script>
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <div class="card">
+            <div class="card-body">
+                @{
+                    if (ProductionCavaluation != null)
+                    {
+
+                        <div class="row mb-2">
+                            <div class="col-sm-12 col-xl-12">
+                                <h4 class="m-0 text-center"> PCE valuation result</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="container col-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h4 class="text-center">General Information</h4>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Manufacturing Catagory:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.Category</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label> Manufacture Year:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.ManufactureYear</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Region:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.Region</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Model Number:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.ModelNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Production Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.ProductionType</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Bussiness Licence:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.ProductionBussinessLicence</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                             
+                            </div>
+                        </div>
+          
+
+
+                      
+                        <div class="row col-12">
+                            @{
+                                if (ProductionCavaluation.EvaluatorUserID == CurrentUserId && currentStage == "Maker Officer")
+                                {
+                                    @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post))
+                                    {
+                                        <div class="row col-12">
+                                            <div style="margin-top:1.25rem;" class="col-2">
+                                                <input name="CollateralId" value=@ProductionCavaluation.Id type="hidden" id="CollateralId" />
+
+                                                <div class="row">
+                                                    <button type="submit" class="col-xl-11  btn btn-sm  bg-purple">send for checker  <i class="fas fa-paper-plane"></i></button>
+
+                                                </div>
+                                            </div>
+                                            <div style="margin-top:1.25rem;" class="col-2">
+                                                <div class="row">
+                                                    <a href="@Url.Action("Edit", "ProductionCapcity")?id=@ProductionCavaluation.Id" class="col-xl-12  btn btn-sm  bg-purple">Edit  <i class="fas fa-pen"></i></a>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <h6 class="text-center">not evaluated yet </h6>
+                        </div>
+                    }
+
+                }
+               
+            </div>
+        </div>
+    </section>
+</section>
+<script>
+    // formatAndDisplayValue('ReplacementCost');
+    // formatAndDisplayValue('InvoiceValue');
+    // formatAndDisplayValue('NetEstimationValue');
+</script>

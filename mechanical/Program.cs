@@ -32,6 +32,16 @@ using System.Web.Services.Description;
 using mechanical.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
+using mechanical.Services.PCE.PCECaseTimeLineService;
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCECollateralService;
+using mechanical.Services.PCE.UploadFileService;
+using Microsoft.EntityFrameworkCore.Migrations;
+using mechanical.Services.PCE.ProductionCapacityServices;
+using mechanical.Services.PCE.ProductionUploadFileService;
+using mechanical.Services.PCE.ProductionCaseScheduleService;
+using mechanical.Services.PCE.ProductionCorrectionService;
+using mechanical.Models.PCE.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -69,6 +79,23 @@ builder.Services.AddDbContext<CbeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
                          throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
 
+
+
+
+
+//production capacity estimation
+builder.Services.AddScoped<IPCECaseService, PCECaseService>();
+builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
+builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
+builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
+//manufacturing
+builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityServices>();
+builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
+builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
+builder.Services.AddScoped<IProductionUploadFileService, ProductionUploadFileService>();
+
+
+
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService,CaseAssignmentService>();
@@ -85,7 +112,7 @@ builder.Services.AddScoped<IMotorVehicleService, MotorVehicleService>();
 builder.Services.AddScoped<IMMCaseService, MMCaseService>();
 builder.Services.AddScoped<ICOCaseService, MOCaseService>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
-builder.Services.AddScoped<ISignatureService,SignatureService>();
+//builder.Services.AddScoped<ISignatureService,SignatureService>();
 builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();

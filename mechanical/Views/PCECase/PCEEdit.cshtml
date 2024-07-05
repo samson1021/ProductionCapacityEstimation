@@ -1,0 +1,119 @@
+﻿@using mechanical.Models.PCE.Dto.PCECase
+@model PCECaseReturntDto;
+
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Edit PCE Case</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("RM", "Dashboard")">Home</a></li>
+                    <li class="breadcrumb-item active">Edit case</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <section class="col-xl-10 offset-xl-1 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                    Case
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <form method="post" enctype="multipart/form-data" asp-action="PCEEdit">
+                        <div class="row">
+                            <input asp-for="Id" hidden />
+
+                            <div class="form-group col-xl-10">
+                                <label asp-for="CaseNo">Case Number</label>
+                                <input asp-for="CaseNo" type="text" class="form-control" readonly>
+                                <span asp-validation-for="CaseNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xl-10">
+                                <label asp-for="ApplicantName" id="ApplicantNameLabel">Applicant Name</label>
+                                <input asp-for="ApplicantName" type="text" class="form-control" id="ApplicantName">
+                                <span asp-validation-for="ApplicantName" class="text-danger" id="ApplicantName-error"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xl-10">
+                                <label asp-for="CustomerUserId">User Customer ID</label>
+                                <input asp-for="CustomerUserId" type="text" class="form-control" id="CustomerUserId">
+                                <span asp-validation-for="CustomerUserId" class="text-danger" id="CustomerUserId-error"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xl-10">
+                                <label asp-for="CustomerEmail">User Customer Email</label>
+                                <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerEmail">
+                                <span asp-validation-for="CustomerEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="col-xl-4 btn bg-purple">Edit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="row" style="margin-top:1.2rem;margin-bottom:0.2rem;">
+                    <table class="table table-bordered " style="border-top: 3px solid #6f42c1;">
+                        <thead>
+                            <tr>
+                                <th colspan="4"><h4>Edit Case Document</h4></th>
+                            </tr>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Document Catagory</th>
+                                <th>Document Type</th>
+                                <th>Document Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+              
+                                    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">There is no document related to this case (Click to Add new Document)</a></h6></td></tr>
+       
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+
+
+<script>
+    document.getElementById("ApplicantName").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
+
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("ApplicantName-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("ApplicantName-error").textContent = "";
+        }
+    });
+
+    document.getElementById("CustomerUserId").addEventListener("input", function () {
+        var input = this.value;
+        if (input.length !== 10) {
+            this.setCustomValidity("Customer ID must be exactly 10 digits.");
+            document.getElementById("CustomerUserId-error").textContent = "Customer ID must be exactly 10 digits.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("CustomerUserId-error").textContent = "";
+        }
+    });
+</script>
