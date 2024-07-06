@@ -48,17 +48,17 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <input type="hidden" id="selectedCategory" value="@Model.Category" />
-                                <label asp-for="Category">Manufacturing Category *</label>
+                                <label asp-for="Category"> Manufacturing Main Sector *</label>
                                 <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
                                         asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                    <option value="" disabled selected>Select Equipment Category</option>
+                                    <option value="" disabled selected>Select Manufacturing Main Sector</option>
                                 </select>
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label asp-for="Type">Manufacturing Sub Type *</label>
+                                <label asp-for="Type">Manufacturing Sub Sector *</label>
                                 <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
-                                    <option value="" selected>Select Manufacturing Sub Type  *</option>
+                                    <option value="" selected>Select Manufacturing Sub Sector  *</option>
                                 </select>
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
@@ -113,12 +113,15 @@
                                 <div class="row" id="MachineryInstalledPlace">
                                     <div class="form-group col-lg-6">
                                         <label asp-for="MachineryInstalledPlace"> Machinery Installed Place  <i class="text-danger">*</i></label>
-                                        <select id="MachineryInstalledPlace" asp-for="MachineryInstalledPlace" required class="form-control form-control-sm"
-                                                asp-items="@(new SelectList(Enum.GetValues(typeof(MachineryInstalledPlace)).Cast<MachineryInstalledPlace>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                        <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
                                             <option value="" disabled selected>Select Machinery Installed Place </option>
+                                            <option value="Private Owned LHC">Private Owned LHC</option>
+                                            <option value="Industrial Park">Industrial Park</option>
                                         </select>
                                         <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
+
                                     </div>
+
                                     <div class="form-group col-lg-6">
                                         <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
                                         <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
