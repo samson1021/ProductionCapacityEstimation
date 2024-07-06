@@ -13,11 +13,11 @@ using Microsoft.CodeAnalysis.Operations;
 //using mechanical.Models.Dto.ProductionCaseTimeLineDto;
 using System.ComponentModel.DataAnnotations;
 using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
-using mechanical.Models.PCE.Dto.ProductionUploadFileDto;
+
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-using mechanical.Services.PCE.ProductionUploadFileService;
+
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCEUploadFileDto;
 
@@ -175,12 +175,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             foreach (var item in userSupervised)
             {
                 var productionCaseAssignment = await _cbeContext.ProductionCaseAssignments.Include(x => x.User).Include(x => x.ProductionCapacity).Where(res => res.UserId == item.Id && res.ProductionCapacity.PCECaseId == ProductionCaseId).ToListAsync();
-                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.ProductionCapacityId).ToList();
+                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.PCECaseId).ToList();
                 foreach (var items in productionCaseAssignment)
                 {
                     var productionAssigmentDto = new ProductionAssignmentDto
                     {
-                        ProductionCapacityId = items.ProductionCapacityId,
+                        ProductionCapacityId = items.PCECaseId,
                         PCECaseId = ProductionCaseId,
                         PropertyOwner = items.ProductionCapacity.PropertyOwner,
                         ProductionCaseAssignmentId = items.Id,
@@ -216,7 +216,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             {
                 foreach (var caseAssignment in caseAssignments)
                 {
-                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.ProductionCapacityId && ca.CurrentStatus == "Correction");
+                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.PCECaseId && ca.CurrentStatus == "Correction");
                     if (collatearal != null)
                     {
                         mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));

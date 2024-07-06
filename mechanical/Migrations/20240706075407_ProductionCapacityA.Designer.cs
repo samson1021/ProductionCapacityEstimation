@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240704071650_Manufacturing")]
-    partial class Manufacturing
+    [Migration("20240706075407_ProductionCapacityA")]
+    partial class ProductionCapacityA
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -984,325 +984,6 @@ namespace mechanical.Migrations
                     b.ToTable("MotorVehicles");
                 });
 
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CheckerUserID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CurrentStage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrentStatus")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EvaluatorUserID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("HouseNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Industrialpark")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InvoiceNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Kebele")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LHCNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MachineName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MachineryInstalledPlace")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ManufactureYear")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ModelNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ProductDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductionBussinessLicence")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductionType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyOwner")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Purpose")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Region")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SerialNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubCity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Wereda")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Zone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("PCECaseId");
-
-                    b.ToTable("ProductionCapacities");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacityReestimation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductionCapacityId");
-
-                    b.ToTable("ProductionCapacityReestimations");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapcityCorrection", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CommentedAttribute")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CommentedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CommentedByUserIdsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EquipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentedByUserIdsId");
-
-                    b.ToTable("ProductionCapcityCorrections");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCaseAssignment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("AssignmentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CompletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductionCapacityId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProductionCaseAssignments");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCaseSchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductionCaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ScheduleDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PCECaseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProductionCaseSchedules");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionReject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RejectedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RejectionComment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductionRejects");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionUploadFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Catagory")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("Size")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UploadDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("userId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductionUploadFiles");
-                });
-
             modelBuilder.Entity("mechanical.Models.Entities.Reject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1668,6 +1349,304 @@ namespace mechanical.Migrations
                     b.ToTable("PlantCapacityEstimations");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("CheckerUserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentStage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EvaluatorUserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("HouseNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Industrialpark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Kebele")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LHCNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MachineName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MachineryInstalledPlace")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ManufactureYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModelNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductionBussinessLicence")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductionType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyOwner")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Purpose")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SerialNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubCity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Wereda")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Zone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("PCECaseId");
+
+                    b.ToTable("ProductionCapacities");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityId");
+
+                    b.ToTable("ProductionCapacityReestimations");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapcityCorrection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CommentedAttribute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CommentedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CommentedByUserIdsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentedByUserIdsId");
+
+                    b.ToTable("ProductionCapcityCorrections");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("AssignmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CompletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProductionCaseAssignments");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ScheduleDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PCECaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProductionCaseSchedules");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityId");
+
+                    b.ToTable("ProductionReestimations");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RejectedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RejectionComment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductionRejects");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -1936,79 +1915,6 @@ namespace mechanical.Migrations
                     b.Navigation("EvaluatorUser");
                 });
 
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacity", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
-                        .WithMany("ProductionCapacities")
-                        .HasForeignKey("PCECaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("PCECase");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapacityReestimation", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.ProductionCapacity", "ProductionCapacity")
-                        .WithMany()
-                        .HasForeignKey("ProductionCapacityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductionCapacity");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCapcityCorrection", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
-                        .WithMany()
-                        .HasForeignKey("CommentedByUserIdsId");
-
-                    b.Navigation("CommentedByUserIds");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCaseAssignment", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.ProductionCapacity", "ProductionCapacity")
-                        .WithMany()
-                        .HasForeignKey("ProductionCapacityId");
-
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductionCapacity");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("mechanical.Models.Entities.ProductionCaseSchedule", b =>
-                {
-                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
-                        .WithMany()
-                        .HasForeignKey("PCECaseId");
-
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PCECase");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("mechanical.Models.Entities.Signatures", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "SignatureFile")
@@ -2100,6 +2006,90 @@ namespace mechanical.Migrations
                     b.Navigation("Case");
 
                     b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacity", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany("ProductionCapacities")
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("PCECase");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
+                        .WithMany()
+                        .HasForeignKey("ProductionCapacityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductionCapacity");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapcityCorrection", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
+                        .WithMany()
+                        .HasForeignKey("CommentedByUserIdsId");
+
+                    b.Navigation("CommentedByUserIds");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
+                        .WithMany()
+                        .HasForeignKey("ProductionCapacityId");
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductionCapacity");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseSchedule", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany()
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PCECase");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
+                        .WithMany()
+                        .HasForeignKey("ProductionCapacityId");
+
+                    b.Navigation("ProductionCapacity");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>

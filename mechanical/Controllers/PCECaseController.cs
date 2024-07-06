@@ -2,6 +2,7 @@
 using mechanical.Models.PCE.Dto.PCECase;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -16,10 +17,14 @@ namespace mechanical.Controllers.PCE
         private readonly IPCECaseService _PCECaseService;
         private readonly ILogger<PCECaseController> _logger;
         private readonly IPCECaseService _iPCECaseService;
-        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService)
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
+
+
+        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices)
         {
             _cbeContext = cbeContext;
             _PCECaseService = ipCECaseService;
+            _productionCaseAssignmentServices = productionCaseAssignmentServices;
         }
 
 
@@ -174,6 +179,23 @@ namespace mechanical.Controllers.PCE
                  return Json(pceCases);
             }
                 
+        }
+
+        // Newly Added
+        [HttpPost]
+        public async Task<IActionResult> SendForValuation(string selectedCollateralIds, string CenterId)
+        {
+            try
+            {
+                await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
+                var response = new { message = "PCe assigned successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var error = new { message = ex.Message };
+                return BadRequest(error);
+            }
         }
 
     }

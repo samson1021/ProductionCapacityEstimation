@@ -61,17 +61,17 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-6">
-                                <label asp-for="Category"> Manufacturing Category <i class="text-danger">*</i></label>
+                                <label asp-for="Category"> Manufacturing Main Sector <i class="text-danger">*</i></label>
                                 <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
                                         asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                    <option value="" disabled selected>Select Manufacturing Category</option>
+                                    <option value="" disabled selected>Select manufacturing main sector</option>
                                 </select>
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label asp-for="Type">Manufacturing Sub Type <i class="text-danger">*</i></label>
+                                <label asp-for="Type">Manufacturing Sub Sector <i class="text-danger">*</i></label>
                                 <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
-                                    <option value="" disabled selected>Select Manufacturing Sub Type *</option>
+                                    <option value="" disabled selected>Select manufacturing sub sector </option>
                                 </select>
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
@@ -140,12 +140,12 @@
                         <div class="row" id="MachineryInstalledPlace">
                             <div class="form-group col-lg-4">
                                 <label asp-for="MachineryInstalledPlace"> Machinery Installed Place  <i class="text-danger">*</i></label>
-                                <select name="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
-                                    <option value="" disabled selected>Select Machinery Installed Place *</option>
+                                <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
+                                    <option value="" disabled selected>Select Machinery Installed Place </option>
                                     <option value="Private Owned LHC">Private Owned LHC</option>
                                     <option value="Industrial Park">Industrial Park</option>
                                 </select>
-                                <span name-for="MachineryInstalledPlace" class="text-danger"></span>
+                                <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
                                    
                             </div>
                            
@@ -251,12 +251,6 @@
                                     </div>
 
 
-
-                                  @*   <div class="form-group col-lg-3">
-                                        <label asp-for="LHCNo">LHC Number</label>
-                                        <input asp-for="LHCNo" type="text" class="form-control  form-control-sm" placeholder="Enter LHC Number" id="LHCNo">
-                                        <span asp-validation-for="LHCNo" class="text-danger"></span>
-                                    </div> *@
                                 </div>
                             </div>
 
@@ -315,7 +309,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("SendForValuation", "Case", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("SendForValuation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
                     <div class="form-group">

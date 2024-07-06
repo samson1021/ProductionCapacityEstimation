@@ -52,7 +52,10 @@ namespace mechanical.Data
         public DbSet<ProductionCaseAssignment> ProductionCaseAssignments { get; set; }
         public DbSet<ProductionCapacityReestimation> ProductionCapacityReestimations { get; set; }
         public DbSet<ProductionCapcityCorrection> ProductionCapcityCorrections { get; set; }
-        public DbSet<ProductionUploadFile> ProductionUploadFiles { get; set; }
+        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
+    
+
+
 
 
 

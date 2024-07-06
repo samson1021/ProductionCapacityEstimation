@@ -11,7 +11,7 @@ namespace mechanical.Models.PCE.Entities
         public string? Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid UserId { get; set; }
-        public Guid ProductionCaseId { get; set; }
+        public Guid PCECaseId { get; set; }
 
 
         public virtual PCECase? PCECase { get; set; }

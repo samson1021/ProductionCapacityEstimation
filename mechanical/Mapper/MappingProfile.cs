@@ -21,6 +21,7 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.PCEUploadFileDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 
 
 namespace mechanical.Mapper
@@ -53,18 +54,21 @@ namespace mechanical.Mapper
             CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
 
             CreateMap<PCEReturnFileDto, PCEUploadFile>().ReverseMap();
-            CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();
+            CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();           
 
             CreateMap<PlantCapacityEstimationPostDto, PlantCapacityEstimation>().ReverseMap();
             CreateMap<PlantCapacityEstimationEditPostDto, PlantCapacityEstimation>().ReverseMap();
 
             CreateMap<PCEReturnCollateralDto, PlantCapacityEstimation>().ReverseMap();
             
-            //manufatring PCe
+            //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>();
             CreateMap<ProductionCapacity, ReturnProductionDto>()
                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));
+
+            CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
+
 
 
 

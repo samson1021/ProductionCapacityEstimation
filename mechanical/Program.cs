@@ -38,10 +38,10 @@ using mechanical.Services.PCE.PCECollateralService;
 using mechanical.Services.PCE.UploadFileService;
 using Microsoft.EntityFrameworkCore.Migrations;
 using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Services.PCE.ProductionUploadFileService;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Models.PCE.Entities;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -92,7 +92,8 @@ builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityServices>();
 builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
-builder.Services.AddScoped<IProductionUploadFileService, ProductionUploadFileService>();
+builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
+
 
 
 
