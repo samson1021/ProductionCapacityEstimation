@@ -113,7 +113,7 @@
                                 <div class="row" id="MachineryInstalledPlace">
                                     <div class="form-group col-lg-6">
                                         <label asp-for="MachineryInstalledPlace"> Machinery Installed Place  <i class="text-danger">*</i></label>
-                                        <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
+                                        <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" handleMachineryInstalledPlaceChange required>
                                             <option value="" disabled selected>Select Machinery Installed Place </option>
                                             <option value="Private Owned LHC">Private Owned LHC</option>
                                             <option value="Industrial Park">Industrial Park</option>
@@ -121,7 +121,10 @@
                                         <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
 
                                     </div>
-
+                                   
+                                </div>
+                              
+                                <div class="row" id="IndustrialPark" style="display: none;">
                                     <div class="form-group col-lg-6">
                                         <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
                                         <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
@@ -129,10 +132,12 @@
                                             <option value="" disabled selected>Select Industrial Park </option>
                                         </select>
                                         <span asp-validation-for="Industrialpark" class="text-danger"></span>
-
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" id="PrivateownedLHC">
+                            </div>
+
+                            <div id="PrivateownedLHC" style="display: none;">
+                                <div class="row"
                                     <div class="form-group col-lg-6">
                                         <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
                                         <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
@@ -145,6 +150,8 @@
                                     </div>
                                 </div>
                             </div>
+                         
+                                    
                         </div>
 
                         <div class="card">
@@ -349,6 +356,25 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script>
+        //this is for the Machinery Installed Place
+        function handleMachineryInstalledPlaceChange(selectElement) {
+            var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace");
+            var PrivateownedLHC = document.getElementById("PrivateownedLHC");
+            var IndustrialPark = document.getElementById("IndustrialPark");
+            if (selectElement.value === "Private Owned LHC") {
+                PrivateownedLHC.style.display = "block";
+                IndustrialPark.style.display = "none";
+
+            } else if (selectElement.value === "Industrial Park") {
+                IndustrialPark.style.display = "block";
+                PrivateownedLHC.style.display = "none";
+
+            } else {
+                PrivateownedLHC.style.display = "none";
+                IndustrialPark.style.display = "none";
+            }
+        }
+
         $(function () {
             $('#sendEvaluationButtonModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
@@ -378,6 +404,8 @@
                 });
             });
         });
+        
+
     </script>
     <script>
         $(document).ready(function () {

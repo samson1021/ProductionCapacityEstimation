@@ -25,19 +25,19 @@
             var Id = $('#CaseSchedulleId').val();
             formData.append('Id', Id);
 
-            // $.ajax({
-            //     url: '/MOCase/UpdateSchedule',
-            //     type: 'POST',
-            //     data: formData,
-            //     processData: false,
-            //     contentType: false,
-            //     success: function (response) {
-            //         location.reload();
-            //     },
-            //     error: function () {
-            //         alert('Error occurred while updating the date.');
-            //     }
-            // });
+            $.ajax({
+                url: '/MOCase/UpdateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
+            });
         });
         $('#AcceptButton').click(function (event) {
             event.preventDefault();
@@ -45,19 +45,19 @@
             var Id = $('#CaseScheduleId').val();
             formData.append('Id', Id);
 
-            // $.ajax({
-            //     url: '/MOCase/ApproveSchedule',
-            //     type: 'POST',
-            //     data: formData,
-            //     processData: false,
-            //     contentType: false,
-            //     success: function (response) {
-            //         location.reload();
-            //     },
-            //     error: function () {
-            //         alert('Error occurred while updating the date.');
-            //     }
-            // });
+            $.ajax({
+                url: '/MOCase/ApproveSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
+            });
         });
 
         $('#PlateName').on('input', function () {
@@ -324,7 +324,7 @@
             }
         });
 
-        // do Collateral
+        // do Manufactirung
 
 
 
@@ -475,53 +475,51 @@
             });
         });
 
+        // Do Plant
 
-        // loadCollaterals();
-        // $('#addCivilCollateralForm').submit(function (e) {
-        //     e.preventDefault();
-        //     var formDataArray = $(this).serializeArray();
-        //     console.log("here");
-        //     var Category = getAttributeByName(formDataArray, 'Category');
-        //     if (Category == "Aerospace" || Category == "CMAMachinery") {
-        //         var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
-        //         var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
-        //         if (PlateName === "" || ChassisNo === "") {
-        //             toastr.error("Please fill in all required fields.");
-        //             return;
-        //         }
-        //     } else if (Category == "IBFEqupment") {
-        //         var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-        //         var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
+       
+        $('#EstimatePlaneCollateralForm').submit(function (e) {
+            e.preventDefault();
+            var formDataArray = $(this).serializeArray();
+            console.log("here");
+            var Category = getAttributeByName(formDataArray, 'Category');
+            if (Category == "MOV" || Category == "CMAMachinery") {
+                var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
+                var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
+                if (PlateName === "" || ChassisNo === "") {
+                    toastr.error("Please fill in all required fields.");
+                    return;
+                }
+            } else if (Category == "IBFEqupment") {
+                var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
+                var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
+                if (MachineName === "" || Purpose === "" ) {
+                    toastr.error("Please fill in all required fields.");
+                    return;
+                }
+            }
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/ProductionCapcity/CreatePlant',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+
+                    $('#EstimatePlaneCollateralModal').modal('hide');
+                    loadCollaterals();
+                },
+                error: function (error) {
+                    toastr.error("Unable to create Plant PCE collateral");
+                    console.log(error);
+                }
+            });
+        });
+        
 
 
-        //         if (MachineName === "" || Purpose === "") {
-        //             toastr.error("Please fill in all required fields.");
-        //             return;
-        //         }
-        //     }
-
-
-        //     var formData = new FormData(this);
-
-        //     $.ajax({
-        //         url: '/Collateral/CreateCivil',
-        //         type: 'POST',
-        //         data: formData,
-        //         processData: false,
-        //         contentType: false,
-        //         success: function (response) {
-        //             toastr.success(response.message);
-
-        //             $('#addCivilCollateralModal').modal('hide');
-        //             loadCollaterals();
-        //         },
-        //         error: function (error) {
-        //             toastr.error("Unable to create collateral");
-        //             console.log(error);
-        //         }
-        //     });
-        // });
-        // loadCollaterals();
         // $('#addAgricultureCollateralForm').submit(function (e) {
         //     e.preventDefault();
         //     var formDataArray = $(this).serializeArray();

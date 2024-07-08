@@ -57,7 +57,18 @@ namespace mechanical.Controllers
             return BadRequest();
 
         }
-
+        [HttpPost]
+       // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePlant(Guid caseId, PlantCapacityEstimationPostDto PlantCollateralDto)
+        {
+            if (ModelState.IsValid)
+            {
+                await _productionCapacityServices.CreatePlantProduction(base.GetCurrentUserId(), caseId, PlantCollateralDto);
+                var response = new { message = "Plant PCE created successfully" };
+                return Ok(response);
+            }
+            return BadRequest();
+        }
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid PCECaseId)
         {

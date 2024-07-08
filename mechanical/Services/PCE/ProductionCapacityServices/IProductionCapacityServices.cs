@@ -1,4 +1,6 @@
 ﻿
+using mechanical.Models.Dto.CollateralDto;
+using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
 using mechanical.Models.PCE.Entities;
@@ -8,6 +10,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
     public interface IProductionCapacityServices
     {
         Task<ProductionCapacity> CreateProductionCapacity(Guid userId, Guid caseId, ProductionPostDto createProductionDto);
+        Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantCapacityEstimationPostDto createplantDto);
         Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid CaseId);
         Task<ReturnProductionDto> GetProduction(Guid userId, Guid id);
         Task<bool> DeleteProduction(Guid userId, Guid id);

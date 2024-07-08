@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using mechanical.Services.PCE.UploadFileService;
 using mechanical.Models.Dto.CollateralDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 
 
 namespace mechanical.Controllers
@@ -28,7 +29,7 @@ namespace mechanical.Controllers
             {
                 pceDto.CreatedById = base.GetCurrentUserId();
                 await _pCECollateralService.CreatePCECollateral(pceDto);
-                var response = new { message = "Plant Collateral Estimation Created Successfully" };
+                var response = new { message = "Plant PCE Created Successfully" };
                 return Ok(response);
             }
             return BadRequest();
@@ -75,7 +76,7 @@ namespace mechanical.Controllers
             }
 
             var collateral = await _pCECollateralService.EditCollateral(base.GetCurrentUserId(), id, collateralPostDto);
-            return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.CaseId });
+            return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
         }
 
 

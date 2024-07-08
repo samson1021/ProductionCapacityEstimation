@@ -338,7 +338,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
         {
             var centerId = Guid.Parse(CenterId);
             var districtName = await _cbeContext.Districts.Where(c => c.Id == centerId).Select(c => c.Name).FirstOrDefaultAsync();
-            var CivilUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Civil" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
+            var CivilUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Manufacturing" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             var MechanicalUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             var AgricultureUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
 
@@ -365,6 +365,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                     var UserID = Guid.Empty;
                     string UserName = "";
                     string District = "";
+                   
                     if (collateral.ProductionType == "Manufacturing")
                     {
                         if (CivilUser == null)

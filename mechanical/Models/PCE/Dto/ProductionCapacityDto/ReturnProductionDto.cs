@@ -47,7 +47,15 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Remark { get; set; } = string.Empty;
         public Guid EvaluatorUserID { get; set; }
         public Guid? CheckerUserID { get; set; }
-
+        //plant
+         public required string PlantName { get; set; }       
+        public string? OwnerOfPlant { get; set; }
+       
+        public string? ObsolescenceStatus { get; set; }
+        public string? PlantDepreciationRate { get; set; }
+        public DateTime? DateOfInspection { get; set; }
+        public DateTime? CreationDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }

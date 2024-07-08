@@ -47,7 +47,7 @@ namespace mechanical.Mapper
 
             CreateMap<PCENewCaseDto, PCECase>();
             CreateMap<PCECase, PCENewCaseDto>()
-                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.PCECollaterals.Count()));
+                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
 
             CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
@@ -56,13 +56,9 @@ namespace mechanical.Mapper
             CreateMap<PCEReturnFileDto, PCEUploadFile>().ReverseMap();
             CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();           
 
-            CreateMap<PlantCapacityEstimationPostDto, PlantCapacityEstimation>().ReverseMap();
-            CreateMap<PlantCapacityEstimationEditPostDto, PlantCapacityEstimation>().ReverseMap();
-
-            CreateMap<PCEReturnCollateralDto, PlantCapacityEstimation>().ReverseMap();
-            
             //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>();
+            CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();
             CreateMap<ProductionCapacity, ReturnProductionDto>()
                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));

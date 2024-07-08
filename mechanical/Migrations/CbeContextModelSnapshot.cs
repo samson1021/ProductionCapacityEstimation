@@ -1353,7 +1353,7 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<int>("Category")
+                    b.Property<int?>("Category")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("CheckerUserID")
@@ -1362,10 +1362,10 @@ namespace mechanical.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("CreatedById")
+                    b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime?>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CurrentStage")
@@ -1374,7 +1374,13 @@ namespace mechanical.Migrations
                     b.Property<string>("CurrentStatus")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("EvaluatorUserID")
+                    b.Property<DateTime?>("DateOfInspection")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EvaluatorUserID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("HouseNo")
@@ -1404,11 +1410,20 @@ namespace mechanical.Migrations
                     b.Property<string>("ModelNo")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ObsolescenceStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OwnerName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("PCECaseId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PlantDepreciationRate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlantName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductDescription")
                         .HasColumnType("nvarchar(max)");
@@ -1443,7 +1458,6 @@ namespace mechanical.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Wereda")
@@ -2009,9 +2023,7 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.Entities.CreateUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatedById");
 
                     b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
                         .WithMany("ProductionCapacities")

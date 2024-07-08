@@ -310,6 +310,49 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return false;
         }
 
+        public async Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantCapacityEstimationPostDto createplantDto)
+        {
+            var collateral = _mapper.Map<ProductionCapacity>(createplantDto);
+            collateral.Id = Guid.NewGuid();
+            collateral.PCECaseId = caseId;
+            //try
+            //{
+            //    await this.UploadFile(userId, "Commercial Invoice", collateral, createplantDto.CommercialInvoice);
+            //    await this.UploadFile(userId, "Customs Declaration Document", collateral, createplantDto.customDeclaration);
+            //    await this.UploadFile(userId, "LHC Document", collateral, createplantDto.LHC);
+            //    await this.UploadFile(userId, "Bussiness License Document", collateral, createplantDto.BussinessLicence);
+            //    if (createplantDto.OtherDocument != null)
+            //    {
+            //        foreach (var otherDocument in createplantDto.OtherDocument)
+            //        {
+            //            await this.UploadFile(userId, "Other Supportive Document", collateral, otherDocument);
+            //        }
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    throw new Exception("unable to upload file");
+            //}
+            collateral.CreationDate = DateTime.Now;
+            collateral.EndDate = DateTime.Now;
+            collateral.CreatedById = userId;
+            collateral.CurrentStage = "Relation Manager";
+            collateral.CurrentStatus = "New";
+            collateral.ProductionType = "Plant";
+
+            await _cbeContext.ProductionCapacities.AddAsync(collateral);
+            await _cbeContext.SaveChangesAsync();
+
+            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+            {
+                CaseId = collateral.PCECaseId,
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {collateral.PlantName}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+                CurrentStage = "Relation Manager"
+            });
+
+            return collateral;
+        }
+
     }
     
 }
