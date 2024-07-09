@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-﻿
-
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6">
-=======
 ﻿@*      public Guid Id { get; set; }
         public required string CaseNo { get; set; }
         public required string ApplicantName { get; set; }
@@ -17,7 +9,7 @@
         public DateTime CreationDate { get; set; }
         public DateTime MakerAssignmentDate { get; set; } *@
 
-@using mechanical.Models.PCE.Dto.PCECase
+@using mechanical.Models.PCE.Dto.PCECaseDto
 @{
     var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
 
@@ -26,21 +18,14 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-5">
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Applicant Information</h3>
                     </div>
                     <div class="card-body">
-<<<<<<< HEAD
-                        <h6><strong>Name:</strong> @Model.ApplicantName</h6>
-                        <h6 style="margin-top:1.2rem;"><strong>Customer Id: </strong> @Model.CustomerUserId</h6>
-                        <h6 style="margin-top:1.2rem;"><strong>Email:</strong> @Model.CustomerEmail</h6>
-=======
                         <h6><strong>Name:</strong> @myCase.ApplicantName</h6>
                         <h6 style="margin-top:1.2rem;"><strong>Customer Id: </strong> @myCase.CustomerUserId</h6>
                         <h6 style="margin-top:1.2rem;"><strong>Email:</strong> @myCase.CustomerEmail</h6>
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                     </div>
                 </div>
 
@@ -49,18 +34,6 @@
                         <h3 class="card-title">Case Information</h3>
                     </div>
                     <div class="card-body">
-<<<<<<< HEAD
-@*                         <h6><strong>Segment:</strong> @myCase.Segement</h6>
- *@                        <h6 style="margin-top:1.2rem;"><strong>Case No:</strong> @Model.CaseNo </h6>
-                        <h6 style="margin-top:1.2rem;"><strong>Status:</strong>@Model.CurrentStatus </h6>
-                        <h6 style="margin-top:1.2rem;"><strong>Center: </strong> @Model.DistrictId </h6>
-@*                         <h6 style="margin-top:1.2rem;"><strong>Total Number of Collateral:</strong> @myCase.</h6>
- *@                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-=======
                       @* <h6><strong>Segment:</strong> @myCase.Type</h6> *@
                         <h6><strong>Segment:</strong> Plant Capacity Estimation</h6>
                         <h6 style="margin-top:1.2rem;"><strong>Case No:</strong> @myCase.CaseNo </h6>
@@ -72,7 +45,6 @@
             </div>
 
             <div class="col-md-7">
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Attached Document</h3>
@@ -86,13 +58,8 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-<<<<<<< HEAD
-                            <tbody>
-@*                                 @{
-=======
                                                 <tbody>
                                 @{
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                                     if(myCase.BussinessLicence == null)
                                     {
                                         <tr>
@@ -107,13 +74,8 @@
                                             <td><a href="/UploadFile/ViewFile/' + @myCase.BussinessLicence.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + @myCase.BussinessLicence.Id+ '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
                                         </tr>
                                     }
-<<<<<<< HEAD
-                                } *@
-                             <tr><td><h3>Licenece.Name</h3></td></tr>
-=======
                                 }
                              
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                             </tbody>
                         </table>
                     </div>

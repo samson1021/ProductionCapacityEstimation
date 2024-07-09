@@ -1,14 +1,8 @@
 ﻿using mechanical.Data;
-<<<<<<< HEAD
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
-=======
-using mechanical.Models.PCE.Dto.PCECase;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -23,12 +17,6 @@ namespace mechanical.Controllers.PCE
         private readonly IPCECaseService _PCECaseService;
         private readonly ILogger<PCECaseController> _logger;
         private readonly IPCECaseService _iPCECaseService;
-<<<<<<< HEAD
-        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService)
-        {
-            _cbeContext = cbeContext;
-            _PCECaseService = ipCECaseService;
-=======
         private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
 
 
@@ -37,7 +25,6 @@ namespace mechanical.Controllers.PCE
             _cbeContext = cbeContext;
             _PCECaseService = ipCECaseService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
         }
 
 
@@ -129,16 +116,10 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)
         {
-<<<<<<< HEAD
-            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            return View("PCEDetail", pcecaseDto);
-        }
-=======
             var pcecaseDto =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
             ViewData["pcecaseDtos"] = pcecaseDto;
             return View();
         } 
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
 
       
         public async Task<IActionResult> PCEEdit(Guid Id)
@@ -200,8 +181,6 @@ namespace mechanical.Controllers.PCE
                 
         }
 
-<<<<<<< HEAD
-=======
         // Newly Added
         [HttpPost]
         public async Task<IActionResult> SendForValuation(string selectedCollateralIds, string CenterId)
@@ -219,6 +198,5 @@ namespace mechanical.Controllers.PCE
             }
         }
 
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
     }
 }

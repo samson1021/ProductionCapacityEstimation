@@ -1,3 +1,4 @@
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 
 <!-- Return Modal -->
 <div class="modal fade" id="ReturnModal1" tabindex="-1" role="dialog" aria-labelledby="ReturnModalLabel" aria-hidden="true">
@@ -10,16 +11,20 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="ReturnForm" action="/PCEEvaluation/Return" method="post">
+
+            
+                @using (Html.BeginForm("Return", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
+                {
+                    <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />                       
                     <div class="form-group">
                         <label for="ReturnReason">Reason</label>
-                        <textarea class="form-control" id="ReturnReason" name="ReturnReason" rows="3" required></textarea>
+                        <textarea class="form-control"  asp-for="ReturnReason" rows="3" required></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-danger">Return</button>
                     </div>
-                </form>
+                }
             </div>
         </div>
     </div>

@@ -19,11 +19,8 @@ namespace mechanical.Models.PCE.Entities
         public required Guid RMUserId { get; set; }
         public virtual District? District { get; set; }
         public virtual CreateUser? RMUser { get; set; }
-<<<<<<< HEAD
-=======
         public virtual PCEUploadFile? BussinessLicence { get; set; }
         public virtual ICollection<PlantCapacityEstimation>? PCECollaterals { get; set; }
         public virtual ICollection<ProductionCapacity>? ProductionCapacities { get; set; }
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
     }
 }

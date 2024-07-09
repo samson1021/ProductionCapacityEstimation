@@ -37,29 +37,19 @@ using mechanical.Services.CaseTerminateService;
 /////////////
 using mechanical.Mapper;
 using mechanical.Controllers;
-<<<<<<< HEAD
-using mechanical.Services.PCE.PCECaseService;
+using mechanical.Models.PCE.Entities;
 // using mechanical.Services.PCE.FileUploadService;
 using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.CollateralEstimationFeeService;
-/////////////
-
-
-=======
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECollateralService;
 using mechanical.Services.PCE.UploadFileService;
-using Microsoft.EntityFrameworkCore.Migrations;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
-using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
+/////////////
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -104,8 +94,6 @@ builder.Services.AddDbContext<CbeContext>(options =>
 //production capacity estimation
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
-<<<<<<< HEAD
-=======
 builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
 builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
@@ -116,7 +104,6 @@ builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssi
 
 
 
->>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ICaseService, CaseService>();

@@ -306,29 +306,25 @@
                 </div>
                 }
             </div>
-            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2"></div>
-            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1">
-                    @using (Html.BeginForm("Delete", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
+            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
+            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2">
+                @using (Html.BeginForm("Delete", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
                 {
                 <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
                 <div class="row">
-                    <button id="delete-btn" type="submit" class="col-xl-12 btn btn-sm btn-danger">Delete <i class="fas fa-trash"></i></button>
-                </div>
-                }
-            </div>
-            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2"></div>
-            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1">
-                    @using (Html.BeginForm("Return", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
-                {
-                <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
-                <div class="row">
-                    <button id="return-btn" type="submit" class="col-xl-12 btn btn-sm btn-dark">Return <i class="fas fa-undo"></i></button>
+                    <button id="delete-btn" type="submit" class="col-xl-12 btn btn-sm btn-dark">Delete <i class="fas fa-trash"></i></button>
                 </div>
                 }
             </div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
+            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2">
+                <div class="row">
+                    <button id="return-btn"  type="button" class="col-xl-12 btn btn-sm btn-danger" data-toggle="modal" data-target="#ReturnModal1">Return <i class="fas fa-undo"></i></button>
+                </div>  
+            </div>
+            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem; margin-left:2.5rem;" class="col-2">
-                    @using (Html.BeginForm("SendToRM", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
+                @using (Html.BeginForm("SendToRM", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
                 {
                 <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
                 <div class="row">
@@ -343,6 +339,7 @@
   
 @section Scripts {
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+    @{await Html.RenderPartialAsync("_ReturnModal");} 
 
     <script>
         // formatAndDisplayValue('CollateralEstimationFee');
