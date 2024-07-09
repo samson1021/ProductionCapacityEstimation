@@ -9,9 +9,9 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public required string PropertyOwner { get; set; }
         public required string Role { get; set; }
         [Display(Name = "Manufacturing Main-Sector")]
-        public string Category { get; set; }
+        public string? Category { get; set; }
         [Display(Name = "Manufacturing Sub-Sector")]
-        public string Type { get; set; }
+        public string? Type { get; set; }
         public string? MachineName { get; set; }
         public string? Purpose { get; set; }
         public string? ModelNo { get; set; }

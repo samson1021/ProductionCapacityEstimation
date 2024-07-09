@@ -20,6 +20,7 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCEUploadFileDto;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -202,7 +203,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 .GetCustomAttributes(typeof(DisplayAttribute), false)
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
-
+        
 
 
 
@@ -346,14 +347,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
             {
                 CaseId = collateral.PCECaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {collateral.PlantName}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+                Activity = $" <strong>A new PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+               // Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {collateral.PlantName}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
                 CurrentStage = "Relation Manager"
             });
-
             return collateral;
         }
-
     }
-    
 }
     
