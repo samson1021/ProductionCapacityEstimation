@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Data;
+
 namespace mechanical.Models
 {
     public static class EnumHelper

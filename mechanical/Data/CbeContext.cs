@@ -34,11 +34,11 @@ namespace mechanical.Data
  
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<PCEEvaluation>()
-                .HasMany(p => p.SupportingDocuments)
-                .WithOne(f => f.PCEEvaluation)
-                .HasForeignKey(f => f.PCEEId)
-                .OnDelete(DeleteBehavior.Cascade);  
+            // modelBuilder.Entity<PCEEvaluation>()
+            //     .HasMany(p => p.SupportingDocuments)
+            //     .WithOne(f => f.CaseId)
+            //     // .HasForeignKey(f => f.CollateralId)
+            //     .OnDelete(DeleteBehavior.Cascade);  
                 
             var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
                 v => v.ToTimeSpan(),
@@ -74,7 +74,7 @@ namespace mechanical.Data
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
 
-        public virtual DbSet<FileUpload> FileUploads { get; set; }
+        // public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<PCESchedule> PCESchedules { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
         public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }

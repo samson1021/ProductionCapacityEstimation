@@ -48,16 +48,16 @@ namespace mechanical.Models.PCE.Entities
 
         public string? FactorsAffectingProductionCapacity { get; set; }
         public MachineFunctionalityStatus? MachineFunctionalityStatus { get; set; }
-        public MachineFunctionalityReason? MachineFunctionalityReason { get; set; }
-        public string? OtherMachineFunctionalityReason { get; set; }
+        public MachineNonFunctionalityReason? MachineNonFunctionalityReason { get; set; }
+        public string? OtherMachineNonFunctionalityReason { get; set; }
         public string? InspectionPlace { get; set; }
         public DateOnly? InspectionDate { get; set; } //Schedule
         public string? SurveyRemark { get; set; }
     
-        public virtual ICollection<FileUpload> SupportingDocuments { get; set; } = new List<FileUpload>();
+        public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
 
         public Status? Status { get; set; }
-        public string? RejectionReason { get; set; }
+        public string? ReturnReason { get; set; }
 
         public string? Remark { get; set; } = string.Empty;
         

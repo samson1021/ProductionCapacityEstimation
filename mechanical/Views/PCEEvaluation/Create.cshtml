@@ -29,7 +29,7 @@
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="Create">
+                <form method="post" enctype="multipart/form-data" asp-action="Create" id="form">
   
                     @Html.AntiForgeryToken()
                     @Html.Partial("_DataLists")
@@ -47,8 +47,6 @@
                             <input asp-for="OriginCountry" type="text" class="form-control form-control-sm" placeholder="Select Country of Origin" list="country" required>
                             <span asp-validation-for="OriginCountry" class="text-danger" id="OriginCountry-error"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-lg-4">
                             <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
                             <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" >
@@ -56,31 +54,33 @@
                             </select>
                             <span asp-validation-for="OutputPhase" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-lg-4">
-                            <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour) <i class="text-danger">*</i></label>
-                            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" />
-                            <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>@Html.DisplayNameFor(model => model.EffectiveProductionHourType) <i class="text-danger">*</i></label>
-                            <select asp-for="EffectiveProductionHourType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionHourType>()" >
-                                <option value="" disabled selected>Select Hour Type</option>
-                            </select>
-                            <span asp-validation-for="EffectiveProductionHourType" class="text-danger"></span>
-                        </div>                 
                     </div>
                     <div class="row">
                         <div class="form-group col-lg-4">
                             <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
                             <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
                             <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-lg-3">
+                        </div>  
+                        <div class="form-group col-lg-4">
+                            <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour) <i class="text-danger">*</i></label>
+                            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" />
+                            <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
+                        </div> 
+                        <div class="form-group col-lg-4">
+                            <label>@Html.DisplayNameFor(model => model.EffectiveProductionHourType) <i class="text-danger">*</i></label>
+                            <select asp-for="EffectiveProductionHourType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionHourType>()" >
+                                <option value="" disabled selected>Select Hour Type</option>
+                            </select>
+                            <span asp-validation-for="EffectiveProductionHourType" class="text-danger"></span>
+                        </div>              
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-sm-4">
                             <label>@Html.DisplayNameFor(model => model.ShiftsPerDay) <i class="text-danger">*</i></label>
                             <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
                             <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-lg-5" id="shiftHoursContainer"></div>
+                        <div class="form-group col-lg-8" id="shiftHoursContainer"></div>
                     </div>
 
                     <!-- Capacity Information -->
@@ -167,34 +167,32 @@
                             <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4" id="functionalityReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.MachineFunctionalityReason) <i class="text-danger">*</i></label>
-                            <select asp-for="MachineFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityReason>()">
+                            <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <i class="text-danger">*</i></label>
+                            <select asp-for="MachineNonFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()">
                                 <option value="" disabled selected>Select Reason of Unfunctionality </option>
                             </select>
-                            <span asp-validation-for="MachineFunctionalityReason" class="text-danger"></span>
+                            <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4" id="otherReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason) <i class="text-danger">*</i></label>
-                            <textarea asp-for="OtherMachineFunctionalityReason" class="form-control form-control-sm"></textarea>
-                            <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
+                            <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <i class="text-danger">*</i></label>
+                            <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control form-control-sm"></textarea>
+                            <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="form-group col-lg-4">
                             <label>@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</label>
-                            <select asp-for="TechnicalObsolescenceStatus" class="form-control form-control-sm">
-                                <option value="" disabled selected>Select Techinal Status</option>
-                            </select>
+                            <input asp-for="TechnicalObsolescenceStatus" class="form-control form-control-sm" />
                             <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label>Checking Started At</label>
-                            <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") />
+                            <label>Checkingg Started At</label>
+                            <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" />
                             <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
                             <label>Checking Ended At</label>
-                            <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") />
+                            <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" />
                             <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
                         </div>
                     </div>  
@@ -232,34 +230,23 @@
                             <span asp-validation-for="InspectionDate" class="text-danger"></span>
                         </div>
                     </div>
-                        @* <div class="form-group col-lg-2">
-                            <label>@Html.DisplayNameFor(model => model.Status)</label>
-                            <select asp-for="Status" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<Status>()">
-                                <option value="" disabled selected>Select Status</option>
-                            </select>
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </div> 
-                    <div class="row">
-                        <div class="form-group col-lg-12" id="rejectionReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.RejectionReason)</label>
-                            <textarea asp-for="RejectionReason" class="form-control form-control-sm"></textarea>
-                            <span asp-validation-for="RejectionReason" class="text-danger"></span>
-                        </div>
-                    </div> *@
-
-                    <!-- Form Buttons -->
-                    <div class="row mt-4">
-                        <div class="col-md-6 ">
-                            <div class="col-xl-1"></div>
-                            <button type="submit" class="col-xl-4 btn bg-purple">Save</button>
-                        </div>
-                        <div class="col-md-6 ">
-                            <button type="button" id="RejectButton" class="btn btn-sm btn-danger col-3" data-toggle="modal" data-target="#rejectionModal1">
-                                Return <i class="fas fa-backward"></i>
-                            </button>
-                        </div>
-                    </div>
                     
+                    <!-- Form Buttons -->                   
+                   <div class="row mt-4">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-md btn-primary">
+                                    <i class="fas fa-save mr-2"></i> Save
+                                </button>
+                                <button type="button" id="ReturnButton" class="btn btn-md btn-danger" data-toggle="modal" data-target="#ReturnModal1">
+                                    <i class="fas fa-undo mr-2"></i> Return
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+
                 </form>
             </div>
         </div>
@@ -283,9 +270,10 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ReturnModal");} 
 
     <script>
-        $(document).ready(function () {
+         $(document).ready(function () {
             $("#ShiftsPerDay").change(function () {
                 var shiftsPerDay = $(this).val();
                 var shiftHoursContainer = $("#shiftHoursContainer");
@@ -298,11 +286,11 @@
                             <div class="row">
                                 <div class="form-group col-lg-6">
                                     <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
-                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm")" />
+                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
-                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm")" />
+                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
                                 </div>
                             </div>
                         `);
@@ -327,9 +315,9 @@
                 }
             });
 
-            $("#MachineFunctionalityReason").change(function () {
+            $("#MachineNonFunctionalityReason").change(function () {
                 var selectedReason = $(this).val();
-                if (selectedReason === '@((int)MachineFunctionalityReason.Other)') {
+                if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
                     $("#otherReasonRow").show();
                 } else {
                     $("#otherReasonRow").hide();
@@ -338,10 +326,10 @@
 
             $("#Status").change(function () {
                 var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)Status.Rejected)') {
-                    $("#rejectionReasonRow").show();
+                if (selectedStatus === '@((int)Status.Returned)') {
+                    $("#ReturnReasonRow").show();
                 } else {
-                    $("#rejectionReasonRow").hide();
+                    $("#ReturnReasonRow").hide();
                 }
             });
 
@@ -382,31 +370,6 @@
             });
         });
    
-        $(function () {
-            $('#rejectionModal1').on('shown.bs.modal', function () {
-                $('#rejectionComment').focus();
-            });
-
-            $('#rejectionForm').submit(function (event) {
-                event.preventDefault(); 
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: $(this).attr('method'),
-
-                    data: { rejectionComment: $('#rejectionComment').val(), PCEId: $('#PCEId').val()},
-                    success: function (response) {
-                        toastr.success(' Reason for Return saved successfully');
-                        $('#rejectionModal1').modal('hide');
-                        window.location.href = '/PCECases/MyCases';
-
-                    },
-                    error: function (error) {
-                        toastr.error('Error saving rejection comment:', error);
-                    }
-                });
-            });
-        });
     </script>
 }
 
@@ -475,9 +438,9 @@
                 }
             });
 
-            $("#MachineFunctionalityReason").change(function () {
+            $("#MachineNonFunctionalityReason").change(function () {
                 var selectedReason = $(this).val();
-                if (selectedReason === '@((int)MachineFunctionalityReason.Other)') {
+                if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
                     $("#otherReasonRow").show();
                 } else {
                     $("#otherReasonRow").hide();
@@ -486,10 +449,10 @@
 
             $("#Status").change(function () {
                 var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)Status.Rejected)') {
-                    $("#rejectionReasonRow").show();
+                if (selectedStatus === '@((int)Status.Returned)') {
+                    $("#ReturnReasonRow").show();
                 } else {
-                    $("#rejectionReasonRow").hide();
+                    $("#ReturnReasonRow").hide();
                 }
             });
 
@@ -684,14 +647,14 @@
                                     <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-4" id="functionalityReasonRow" style="display: none;">
-                                    <label>@Html.DisplayNameFor(model => model.MachineFunctionalityReason) <i class="text-danger">*</i></label>
-                                    <select asp-for="MachineFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityReason>()" required></select>
-                                    <span asp-validation-for="MachineFunctionalityReason" class="text-danger"></span>
+                                    <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <i class="text-danger">*</i></label>
+                                    <select asp-for="MachineNonFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()" required></select>
+                                    <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-4" id="otherReasonRow" style="display: none;">
-                                    <label>@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason) <i class="text-danger">*</i></label>
-                                    <input asp-for="OtherMachineFunctionalityReason" class="form-control form-control-sm" required />
-                                    <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
+                                    <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <i class="text-danger">*</i></label>
+                                    <input asp-for="OtherMachineNonFunctionalityReason" class="form-control form-control-sm" required />
+                                    <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -760,10 +723,10 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-lg-12" id="rejectionReasonRow" style="display: none;">
-                                    <label>@Html.DisplayNameFor(model => model.RejectionReason)</label>
-                                    <textarea asp-for="RejectionReason" class="form-control form-control-sm"></textarea>
-                                    <span asp-validation-for="RejectionReason" class="text-danger"></span>
+                                <div class="form-group col-lg-12" id="ReturnReasonRow" style="display: none;">
+                                    <label>@Html.DisplayNameFor(model => model.ReturnReason)</label>
+                                    <textarea asp-for="ReturnReason" class="form-control form-control-sm"></textarea>
+                                    <span asp-validation-for="ReturnReason" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row mt-4">

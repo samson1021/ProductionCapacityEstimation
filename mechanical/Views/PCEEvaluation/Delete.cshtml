@@ -24,55 +24,71 @@
 <section class="content">
     <section class="col-xl-10 offset-xl-1 connectedSortable">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-danger text-white">
                 <h3 class="card-title">
-                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                    Delete PCE Evaluation
+                    Are you sure you want to delete this evaluation?
                 </h3>
             </div>
             <div class="card-body">
                 <form method="post" asp-action="Delete">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
-                    <p>Are you sure you want to delete this estimation?</p>
-                    
-                    <!-- Display fields in read-only mode -->                                 
-                    <dl class="row">
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</dd>
 
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OriginCountry)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.OriginCountry)</dd>
+                    <!-- Display fields in read-only mode with formatted data columns -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</th>
+                                    <td>@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.OriginCountry)</th>
+                                    <td>@Html.DisplayFor(model => model.OriginCountry)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.EffectiveProductionHourType)</th>
+                                    <td>@Html.DisplayFor(model => model.EffectiveProductionHourType)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.EffectiveProductionHour)</th>
+                                    <td>@Html.DisplayFor(model => model.EffectiveProductionHour)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.ProductionUnit)</th>
+                                    <td>@Html.DisplayFor(model => model.ProductionUnit)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.DesignProductionCapacity)</th>
+                                    <td>@Html.DisplayFor(model => model.DesignProductionCapacity)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</th>
+                                    <td>@Html.DisplayFor(model => model.AttainableProductionCapacity)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.ActualProductionCapacity)</th>
+                                    <td>@Html.DisplayFor(model => model.ActualProductionCapacity)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.InspectionPlace)</th>
+                                    <td>@Html.DisplayFor(model => model.InspectionPlace)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Status)</th>
+                                    <td>@Html.DisplayFor(model => model.Status)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EffectiveProductionHourType)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.EffectiveProductionHourType)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EffectiveProductionHour)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.EffectiveProductionHour)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ProductionUnit)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductionUnit)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.DesignProductionCapacity)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.AttainableProductionCapacity)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ActualProductionCapacity)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.InspectionPlace)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.InspectionPlace)</dd>
-
-                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Status)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
-                    </dl>
-
-
-                    <div class="row">
-                        <button type="submit" class="col-xl-4 btn bg-danger">Delete</button>
-                        <a asp-action="Index" class="col-xl-4 btn btn-secondary">Back to List</a>
+                    <div class="row justify-content-end">
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                            <a asp-action="Index" class="btn btn-secondary btn-block w-100"> <i class="fas fa-times mr-2"></i> Cancel</a>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                            <button type="submit" class="btn bg-danger text-white w-100">Delete</button>
+                        </div>
                     </div>
                 </form>
             </div>

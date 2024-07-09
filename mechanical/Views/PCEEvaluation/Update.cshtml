@@ -1,26 +1,41 @@
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@using mechanical.Models.PCE.Dto.FileUploadDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
-@using mechanical.Models.PCE.Enum.File
+@using mechanical.Models.Dto.UploadFileDto
 
 @{
-    ViewData["Title"] = "Edit PCE Evaluation";
+    ViewData["Title"] = "Update PCE Evaluation";
     var PCEReturn = ViewData["PCEReturn"] as PCEEvaluationReturnDto;
-    @* var PCEFiles = ViewData["PCEFile"] as IEnumerable<FileReturnDto>; *@
 }
 
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
+            <div class="col-sm-6 col-xl-4">
+                <div class="row align-items-center">
+                   
+                    <div class="col-auto">
+                        <h5>
+                            @if (Model.Status != null)
+                            {
+                                <span id="status-badge" class="badge badge-lg badge-pill badge-primary">@Model.Status</span>
+                            }
+                            else
+                            {
+                                <span id="status-badge" class="badge badge-lg badge-pill badge-secondary">Unknown</span>
+                            }
+                        </h5>
+                    </div>
+                </div>
+            </div>
             <div class="col-sm-6 col-xl-6 offset-xl-1">
-                <h4 class="m-0">Edit PCE Evaluation</h4>
+                <h4 class="m-0">Update PCE Evaluation</h4>
             </div>
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
                     <li class="breadcrumb-item active"><a href="@Url.Action("Index", "PCEEvaluation")">PCE Evaluations</a></li>
-                    <li class="breadcrumb-item active">Edit</li>
+                    <li class="breadcrumb-item active">Update</li>
                 </ol>
             </div>
         </div>
@@ -32,12 +47,12 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Edit Icon">
-                    Edit PCE Evaluation
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Update Icon">
+                    Update PCE Evaluation
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="Edit">
+                <form method="post" enctype="multipart/form-data" asp-action="Update">
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)
                     <input type="hidden" asp-for="PCEId" />
@@ -57,12 +72,17 @@
                             <input asp-for="OriginCountry" class="form-control form-control-sm" />
                             <span asp-validation-for="OriginCountry" class="text-danger" id="OriginCountry-error"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-lg-4">
                             <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
                             <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" ></select>
                             <span asp-validation-for="OutputPhase" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-4">
+                            <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
+                            <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
+                            <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
                             <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour) <i class="text-danger">*</i></label>
@@ -76,17 +96,12 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-lg-4">
-                            <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
-                            <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
-                            <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-lg-3">
+                        <div class="form-group col-sm-4">
                             <label>@Html.DisplayNameFor(model => model.ShiftsPerDay) <i class="text-danger">*</i></label>
                             <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
                             <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-lg-5" id="shiftHoursContainer"></div>
+                        <div class="form-group col-lg-8" id="shiftHoursContainer"></div>
                     </div>
 
                     <!-- Capacity Information -->
@@ -162,15 +177,15 @@
                             <select asp-for="MachineFunctionalityStatus" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()"></select>
                             <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-lg-4" id="functionalityReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.MachineFunctionalityReason) <i class="text-danger">*</i></label>
-                            <select asp-for="MachineFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityReason>()"></select>
-                            <span asp-validation-for="MachineFunctionalityReason" class="text-danger"></span>
+                        <div class="form-group col-lg-4" id="functionalityReasonRow" @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NotFunctional ? "" : "style=\"display: none;\"")>
+                            <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <i class="text-danger">*</i></label>
+                            <select asp-for="MachineNonFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()"></select>
+                            <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-lg-4" id="otherReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.OtherMachineFunctionalityReason) <i class="text-danger">*</i></label>
-                            <textarea asp-for="OtherMachineFunctionalityReason" class="form-control form-control-sm"></textarea>
-                            <span asp-validation-for="OtherMachineFunctionalityReason" class="text-danger"></span>
+                        <div class="form-group col-lg-4" id="otherReasonRow" @(Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other ? "" : "style=\"display: none;\"")>
+                            <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <i class="text-danger">*</i></label>
+                            <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control form-control-sm"></textarea>
+                            <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -193,7 +208,7 @@
                     </div>  
 
 
-                    <!-- Edit Documents -->
+                    <!-- Update Documents -->
                     <div class="row">
                         <div class="form-group col-xl-12">
                             <label>Supporting Evidences</label>
@@ -220,8 +235,8 @@
                                             <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
                                                 <td>@file.Name</td>
                                                 <td>
-                                                    <a href="@Url.Action("DownloadFile", "FileUpload", new { id = file.Id })" class="btn btn-sm btn-primary">Download</a>
-                                                    <a href="@Url.Action("ViewFile", "FileUpload", new { id = file.Id })" class="btn btn-sm btn-info" target="_blank">View</a>
+                                                    <a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-primary">Download</a>
+                                                    <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-info" target="_blank">View</a>
                                                     <a href="#" class="btn btn-sm btn-danger delete-file" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)">Delete</a>
                                                 </td>
                                             </tr>
@@ -259,8 +274,8 @@
                                             <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
                                                 <td>@file.Name</td>
                                                 <td>
-                                                    <a href="@Url.Action("DownloadFile", "FileUpload", new { id = file.Id })" class="btn btn-sm btn-primary">Download</a>
-                                                    <a href="@Url.Action("ViewFile", "FileUpload", new { id = file.Id })" class="btn btn-sm btn-info" target="_blank">View</a>
+                                                    <a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-primary">Download</a>
+                                                    <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-info" target="_blank">View</a>
                                                     <a href="#" class="btn btn-sm btn-danger delete-file" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)">Delete</a>
                                                 </td>
                                             </tr>
@@ -292,7 +307,9 @@
                         <div class="form-group col-lg-3"></div>
                         <div class="form-group col-lg-3">
                             <label>@Html.DisplayNameFor(model => model.InspectionDate)</label>
-                            <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" />
+                            @* <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" /> *@
+                            @Html.EditorFor(m => m.InspectionDate, new { htmlAttributes = new { @class = "form-control", value = DateTime.Now.ToString("yyyy-MM-dd") } })
+                            @Html.ValidationMessageFor(m => m.InspectionDate)
                             <span asp-validation-for="InspectionDate" class="text-danger"></span>
                         </div>
                     </div>
@@ -303,24 +320,38 @@
                             <select asp-for="Status" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<Status>()"></select>
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-lg-12" id="rejectionReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.RejectionReason)</label>
-                            <textarea asp-for="RejectionReason" class="form-control form-control-sm"></textarea>
-                            <span asp-validation-for="RejectionReason" class="text-danger"></span>
+                        <div class="form-group col-lg-12" id="ReturnReasonRow" style="display: none;">
+                            <label>@Html.DisplayNameFor(model => model.ReturnReason)</label>
+                            <textarea asp-for="ReturnReason" class="form-control form-control-sm"></textarea>
+                            <span asp-validation-for="ReturnReason" class="text-danger"></span>
                         </div>
                     </div> *@
                     
-                    <div class="form-group row">
-                        <div class="col-xl-12"></div>
-                        <a href="@Url.Action("Index", "PCEEvaluation")" class="btn btn-secondary col-xl-2">Cancel</a>
-                        <div class="col-xl-8"></div>
-                        <input type="submit" value="Update" class="btn btn-primary col-xl-2" />
-                    </div>                   
+                   <div class="form-group row justify-content-center">
+                        <div class="col-xl-2">
+                            <a href="@Url.Action("Index", "PCEEvaluation")" class="btn btn-secondary btn-block">
+                                <i class="fas fa-times mr-2"></i> Cancel
+                            </a>
+                        </div>
+                        <div class="col-xl-3"></div>
+                        <div class="col-xl-2">
+                            <button type="button" id="ReturnButton" class="btn btn-danger btn-block" data-toggle="modal" data-target="#ReturnModal1">
+                                <i class="fas fa-undo mr-2"></i> Return
+                            </button>
+                        </div>
+                        <div class="col-xl-3"></div>
+                        <div class="col-xl-2">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save mr-2"></i> Update
+                            </button>
+                        </div>
+                    </div>          
                 </form>
             </div>
         </div>
     </section>
 </section>
+
 
 @section Scripts {
 
@@ -339,131 +370,7 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");} 
-
-    <script>
-        $(document).ready(function () {
-            $("#ShiftsPerDay").change(function () {
-                var shiftsPerDay = $(this).val();
-                var shiftHoursContainer = $("#shiftHoursContainer");
-
-                shiftHoursContainer.empty();
-
-                if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
-                    for (var i = 0; i < shiftsPerDay; i++) {
-                        shiftHoursContainer.append(`
-                            <div class="row">
-                                <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
-                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
-                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
-                                </div>
-                            </div>
-                        `);
-                    }
-                } else {
-                    alert("Please enter a value between 1 and 5 (inclusive) for Shifts Per Day.");
-                }
-            });
-
-            $("#ShiftsPerDay").attr({
-                "min": 1,
-                "max": 5
-            });
-
-            $("#MachineFunctionalityStatus").change(function () {
-                var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
-                    $("#functionalityReasonRow").show();
-                } else {
-                    $("#functionalityReasonRow").hide();
-                    $("#otherReasonRow").hide();
-                }
-            });
-
-            $("#MachineFunctionalityReason").change(function () {
-                var selectedReason = $(this).val();
-                if (selectedReason === '@((int)MachineFunctionalityReason.Other)') {
-                    $("#otherReasonRow").show();
-                } else {
-                    $("#otherReasonRow").hide();
-                }
-            });
-
-            $("#Status").change(function () {
-                var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)Status.Rejected)') {
-                    $("#rejectionReasonRow").show();
-                } else {
-                    $("#rejectionReasonRow").hide();
-                }
-            });
-
-            // Add alphanumeric validation
-            function addAlphanumericValidation(elementId, errorElementId) {
-                document.getElementById(elementId).addEventListener("input", function () {
-                    var input = this.value;
-                    var alphanumericRegex = /^[A-Za-z0-9]+$/;
-                    if (!alphanumericRegex.test(input)) {
-                        this.setCustomValidity("Only alphanumeric characters are allowed.");
-                        document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
-                    } else {
-                        this.setCustomValidity("");
-                        document.getElementById(errorElementId).textContent = "";
-                    }
-                });
-            }
-
-            // Applying alphanumeric validation to various input fields
-            // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
-            // addAlphanumericValidation("OriginCountry", "OriginCountry-error");
-            // addAlphanumericValidation("OutputType", "OutputType-error");
-
-            // Function for handling dropdown value changes
-            function handleDropdownChange(selectElement, otherInputId) {
-                var otherInput = document.getElementById(otherInputId);
-                if (selectElement.value === "Other") {
-                    otherInput.style.display = "block";
-                    otherInput.setAttribute("required", "required");
-                } else {
-                    otherInput.style.display = "none";
-                    otherInput.removeAttribute("required");
-                }
-            }
-
-            document.getElementById("OutputPhase").addEventListener("change", function () {
-                handleDropdownChange(this, "OtherOutputPhase");
-            });
-        });
-   
-        $(function () {
-            $('#rejectionModal1').on('shown.bs.modal', function () {
-                $('#rejectionComment').focus();
-            });
-
-            $('#rejectionForm').submit(function (event) {
-                event.preventDefault(); 
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: $(this).attr('method'),
-
-                    data: { rejectionComment: $('#rejectionComment').val(), PCEId: $('#PCEId').val()},
-                    success: function (response) {
-                        toastr.success(' Reason for Return saved successfully');
-                        $('#rejectionModal1').modal('hide');
-                        window.location.href = '/PCECases/MyCases';
-
-                    },
-                    error: function (error) {
-                        toastr.error('Error saving rejection comment:', error);
-                    }
-                });
-            });
-        });
-    </script>
+    @{await Html.RenderPartialAsync("_ReturnModal");} 
 
     <script>
         $(document).ready(function() {
@@ -495,6 +402,106 @@
 
             renderShiftHours(); // Initial rendering on page load
         });
+
+    </script>
+    <script>
+        var shiftsInput = $("#ShiftsPerDay");
+        shiftsInput.change(function () {
+            var shiftsPerDay = $(this).val();
+            var shiftHoursContainer = $("#shiftHoursContainer");
+
+            var shiftCount = parseInt(shiftsInput.val()) || 0;
+
+            if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
+                for (var i = 0; i < shiftsPerDay; i++) {
+                    shiftHoursContainer.append(`
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
+                                <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
+                                <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                            </div>
+                        </div>
+                    `);
+                }
+            } else {
+                alert("Please enter a value between 1 and 5 (inclusive) for Shifts Per Day.");
+            }
+        });
+
+        $("#ShiftsPerDay").attr({
+            "min": 1,
+            "max": 5
+        });
+
+        $("#MachineFunctionalityStatus").change(function () {
+            var selectedStatus = $(this).val();
+            if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
+                $("#functionalityReasonRow").show();
+            } else {
+                $("#functionalityReasonRow").hide();
+                $("#otherReasonRow").hide();
+            }
+        });
+
+        $("#MachineNonFunctionalityReason").change(function () {
+            var selectedReason = $(this).val();
+            if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
+                $("#otherReasonRow").show();
+            } else {
+                $("#otherReasonRow").hide();
+            }
+        });
+
+        $("#Status").change(function () {
+            var selectedStatus = $(this).val();
+            if (selectedStatus === '@((int)Status.Returned)') {
+                $("#ReturnReasonRow").show();
+            } else {
+                $("#ReturnReasonRow").hide();
+            }
+        });
+
+        // Add alphanumeric validation
+        function addAlphanumericValidation(elementId, errorElementId) {
+            document.getElementById(elementId).addEventListener("input", function () {
+                var input = this.value;
+                var alphanumericRegex = /^[A-Za-z0-9]+$/;
+                if (!alphanumericRegex.test(input)) {
+                    this.setCustomValidity("Only alphanumeric characters are allowed.");
+                    document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
+                } else {
+                    this.setCustomValidity("");
+                    document.getElementById(errorElementId).textContent = "";
+                }
+            });
+        
+
+            // Applying alphanumeric validation to various input fields
+            // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
+            // addAlphanumericValidation("OriginCountry", "OriginCountry-error");
+            // addAlphanumericValidation("OutputType", "OutputType-error");
+
+            // Function for handling dropdown value changes
+            function handleDropdownChange(selectElement, otherInputId) {
+                var otherInput = document.getElementById(otherInputId);
+                if (selectElement.value === "Other") {
+                    otherInput.style.display = "block";
+                    otherInput.setAttribute("required", "required");
+                } else {
+                    otherInput.style.display = "none";
+                    otherInput.removeAttribute("required");
+                }
+            }
+
+            document.getElementById("OutputPhase").addEventListener("change", function () {
+                handleDropdownChange(this, "OtherOutputPhase");
+            });
+        });
+   
     </script>
 
     <script>
@@ -503,7 +510,7 @@
             if (confirm("Are you sure you want to delete this file?")) {
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("DeleteFile", "FileUpload")',
+                    url: '@Url.Action("DeleteFile", "UploadFile")',
                     data: { id: id },
                     success: function (response) {
                         if (response.success) {
@@ -522,6 +529,5 @@
             }
         }
     </script>
-
 }
 

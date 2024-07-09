@@ -18,9 +18,8 @@ using mechanical.Models.Dto.CaseTerminateDto;
 
 /////
 using mechanical.Models.PCE.Entities;
-using mechanical.Models.PCE.Enum.File;
 using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.FileUploadDto;
+using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
@@ -140,14 +139,14 @@ namespace mechanical.Mapper
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
             
             ///////
-            CreateMap<FileUpload, FileReturnDto>().ReverseMap();
-            CreateMap<FileCreateDto, FileReturnDto>()
+           
+            CreateMap<CreateFileDto, ReturnFileDto>()
                 .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType))
                 .ReverseMap();
-            CreateMap<FileCreateDto, FileUpload>()
-                .ForMember(dest => dest.Category, opt => opt.MapFrom((src, dest, destMember, context) =>
+            CreateMap<CreateFileDto, UploadFile>()
+                .ForMember(dest => dest.Catagory, opt => opt.MapFrom((src, dest, destMember, context) =>
                 {
-                    return (Category)context.Items["Category"];
+                    return context.Items["Catagory"];
                 }));
 
             CreateMap<CollateralEstimationFee, CollateralEstimationFeeDto>().ReverseMap();
@@ -160,33 +159,25 @@ namespace mechanical.Mapper
                 .ReverseMap();
 
             CreateMap<PCEEvaluation, PCEEvaluationReturnDto>()
-                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Category == Category.SupportingEvidence)))
-                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Category == Category.ProductionProcessFlowDiagram)));
-                // .ForMember(dest => dest.OtherFiles, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Category == Category.Other)));
-     
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "SupportingEvidence")))
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "ProductionProcessFlowDiagram")));
+                
             CreateMap<PCEEvaluationPostDto, PCEEvaluation>()
                 .ForMember(dest => dest.SupportingDocuments, opt => opt.Ignore());
         
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>()
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore());
-                // .ForMember(dest => dest.OtherFiles, opt => opt.Ignore());
-                // .ReverseMap();
+
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
-                // .ForMember(dest => dest.OtherFiles, opt => opt.Ignore())
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => new DateTimePeriod
                 {
                     Start = src.TimeConsumedToCheck.Start,
                     End = src.TimeConsumedToCheck.End
                 }))
                 .ReverseMap();
-                // .ForMember(dest => dest.PerShiftProduction, opt => opt.MapFrom(src => src.PerShiftProduction))
-                // .ForMember(dest => dest.PerDayProduction, opt => opt.MapFrom(src => src.PerDayProduction))
-                // .ForMember(dest => dest.PerMonthProduction, opt => opt.MapFrom(src => src.PerMonthProduction))
-                // .ForMember(dest => dest.PerYearProduction, opt => opt.MapFrom(src => src.PerYearProduction))
-                // .ReverseMap();
             ///////
         }
 

@@ -1,10 +1,12 @@
-﻿using mechanical.Models.Dto.UploadFileDto;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using mechanical.Models.Entities;
+using mechanical.Models.Dto.UploadFileDto;
 
 namespace mechanical.Services.UploadFileService
 {
     public interface IUploadFileService
     {
+        // Task<List<UploadFile>> CreateFiles(Guid UserId, ICollection<CreateFileDto> Files);
         Task<Guid> CreateUploadFile (Guid userId, CreateFileDto file);
         Task<ReturnFileDto> GetUploadFile(Guid? uploadFileId);
         Task<IEnumerable<ReturnFileDto>> GetUploadFileByCollateralId(Guid? CollateralId);

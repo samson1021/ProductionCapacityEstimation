@@ -38,7 +38,7 @@ using mechanical.Services.CaseTerminateService;
 using mechanical.Mapper;
 using mechanical.Controllers;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.FileUploadService;
+// using mechanical.Services.PCE.FileUploadService;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.CollateralEstimationFeeService;
@@ -117,7 +117,7 @@ builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 // builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+// builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
 builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
 ///////////////////////////////

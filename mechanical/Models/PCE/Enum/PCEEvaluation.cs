@@ -17,7 +17,7 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         NotFunctional
     }
 
-    public enum MachineFunctionalityReason
+    public enum MachineNonFunctionalityReason
     {
         [Display(Name = "Power Shutdown")]
         PowerShutdown,
@@ -40,20 +40,26 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "Pending")]
         Pending,
 
-        [Display(Name = "Rejected")]
-        Rejected,
+        [Display(Name = "Evaluated")]
+        Evaluated,
 
-        [Display(Name = "Validated")]
-        Validated,
+        [Display(Name = "Returned")]
+        Returned,
 
-        [Display(Name = "Committed")]
-        Committed,
+        [Display(Name = "Reevaluated")]
+        Reevaluated,
+
+        [Display(Name = "Completed")]
+        Completed,
+
+        [Display(Name = "Closed")]
+        Closed,
 
         [Display(Name = "Approved")]
         Approved,
         
-        [Display(Name = "Terminated")]
-        Terminated
+        [Display(Name = "Rework")]
+        Rework
 
     }
 

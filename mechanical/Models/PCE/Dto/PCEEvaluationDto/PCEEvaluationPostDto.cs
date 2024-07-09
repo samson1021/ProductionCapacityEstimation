@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using mechanical.Models.PCE.Entities;
-using mechanical.Models.PCE.Dto.FileUploadDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 
 
@@ -86,11 +85,11 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Machine Functionality Status")]
         public MachineFunctionalityStatus? MachineFunctionalityStatus { get; set; }
 
-        [Display(Name = "Machine Functionality Reason")]
-        public MachineFunctionalityReason? MachineFunctionalityReason { get; set; }
+        [Display(Name = "Non-Functionality Reason")]
+        public MachineNonFunctionalityReason? MachineNonFunctionalityReason { get; set; }
 
-        [Display(Name = "Other Machine Functionality Reason")]
-        public string? OtherMachineFunctionalityReason { get; set; }
+        [Display(Name = "Other Non-Functionality Reason")]
+        public string? OtherMachineNonFunctionalityReason { get; set; }
 
         [Display(Name = "Place of Inspection")]
         public string? InspectionPlace { get; set; }
@@ -113,8 +112,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Remark")]
         public string? Remark { get; set; }
 
-        [Display(Name = "Rejection Reason")]
-        public string? RejectionReason { get; set; }
+        [Display(Name = "Return Reason")]
+        public string? ReturnReason { get; set; }
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 
