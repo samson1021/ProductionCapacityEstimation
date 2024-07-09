@@ -22,13 +22,19 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+<<<<<<< HEAD
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.14" />
+=======
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.11" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
     <PackageReference Include="OpenCVSharp" Version="2.4.0.1" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.14" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="PCEUploadFile\" />
     <Folder Include="UploadFile\" />
   </ItemGroup>
 

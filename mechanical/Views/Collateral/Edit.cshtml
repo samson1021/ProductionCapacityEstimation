@@ -184,24 +184,8 @@
                             <div class="form-group col-lg-6">
                                 <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Edit</button>
                             </div>
-@*                             <div class="form-group col-lg-6">
-                                <button type="button" id="sendEvaluationButton" class="btn btn-lg bg-purple" data-toggle="modal" data-target="#sendEvaluationButtonModal1">
-                                    Send Evaluation Again <i class="fas fa-eye"></i>
-                                </button>
-                            </div> *@
+
                         </div>
-                       @*  <script>
-                            // Get the button element
-                            const sendEvaluationButton = document.getElementById('sendEvaluationButton');
-
-                            // Add an onClick event handler
-                            sendEvaluationButton.addEventListener('click', function () {
-                                // Perform the desired action, such as sending the evaluation to a specific path
-
-                                // Redirect to a specific path
-                                window.location.href = '/specific-path';
-                            });
-                        </script> *@
                     </form>
                 </div>
                 <div class="row" style="margin-top:1.2rem;margin-bottom:0.2rem;">
@@ -241,15 +225,6 @@
                                     }
                                     <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">Click to Add new Document</a></h6></td></tr>
                                 }
-                                
-                                //if (Model.BussinessLicence == null)
-                                //{
-                                //    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">There is no document related to this case (Click to Add new Document)</a></h6></td></tr>
-                                //}
-                                //else
-                                //{
-                                //    
-                                //}
                             }
                         </tbody>
                     </table>
@@ -357,6 +332,10 @@
     <script>
         $(document).ready(function () {
 
+
+
+
+// for deleting the file
             $('.delete-link').on('click', function (e) {
                 e.preventDefault();
                 var itemId = $(this).data('id');
@@ -381,6 +360,10 @@
 
                 $('#deleteConfirmationModal').modal('hide');
             });
+
+
+
+//for addatinal file upload
 
             $('#uploadLink').on('click', function (e) {
                 e.preventDefault();
@@ -417,6 +400,8 @@
                 });
                 $('#uploadModal').modal('hide');
             });
+
+
         });
     </script>
 }

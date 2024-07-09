@@ -1,0 +1,66 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var CaseId = $('#CaseId').val();
+        function initializependDataTable(data) {
+            caseCollateralsTable = $('#PendCollaterals').DataTable({
+                language: {
+                    emptyTable: "There is no collateral register for this case please click the above add button to add collaterals"
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    { data: 'PropertyOwner', width: '20%' },
+                    { data: 'Role', width: '20%' },
+                    { data: 'Category', width: '25%' },
+                    { data: 'Type', width: '25%' },
+                    {
+                        data: 'Id',
+                        width: '10%',
+                        render: function (data, type, row, meta) {
+                            return '<a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details';
+                        }
+                    }
+                ]
+            }).buttons().container().appendTo('#PendCollaterals_wrapper .col-md-6:eq(0)');
+        }
+        //to delete a collateral
+
+        function loadpendCollaterals() {
+            $.ajax({
+                url: '/Collateral/GetPendCollaterals?CaseId=' + CaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#PendCollaterals')) {
+                        var caseCollateralsTable = $('#PendCollaterals').DataTable();
+                        caseCollateralsTable.destroy();
+                    }
+                    initializependDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load collaterals");
+                    console.log(error);
+                }
+            });
+        }
+        loadpendCollaterals();
+    });
+</script>
+ 

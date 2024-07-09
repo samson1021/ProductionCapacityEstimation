@@ -1,0 +1,33 @@
+﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="caseCollaterals" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                            <th>Property Owner</th>
+                            <th>Role</th>
+                            <th>Equipment Catagory</th>
+                            <th>Equipment Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="row">
+                    <div class="col-xl-2 col-lg-4 col-sm-6">
+                        <button id="assignButton" class="col-12 btn btn-sm bg-purple">Assign</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+

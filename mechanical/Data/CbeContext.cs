@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Entities;
-using mechanical.Models.PCE.Entities;
 
 //using mechanical.Migrations;
 
@@ -68,19 +67,6 @@ namespace mechanical.Data
         public CbeContext(DbContextOptions<CbeContext> options) : base(options)
         {
         }
-
-
-        //production capacity estimation
-        public DbSet<PCECase> PCECases { get; set; }
-        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
-
-        // public virtual DbSet<FileUpload> FileUploads { get; set; }
-        public virtual DbSet<PCESchedule> PCESchedules { get; set; }
-        public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
-        public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
-        ///////
-
-
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }

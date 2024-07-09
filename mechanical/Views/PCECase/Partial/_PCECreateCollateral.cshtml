@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿@*         public Guid Id { get; set; }
         public required string CaseNo { get; set; }
         public required string ApplicantName { get; set; }
@@ -97,19 +98,46 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Mechanical Collateral</h5>
+=======
+﻿@using mechanical.Models.PCE.Dto.PCECase;
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
+@{
+    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
+
+
+}
+
+     
+<div class="modal fade" id="EstimatePlaneCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Plant Production Capacity Estimation Collateral</h5>
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+<<<<<<< HEAD
             @using (Html.BeginForm("Create", "Collateral", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
             {
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
                         <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+=======
+            @* @using (Html.BeginForm("Create", "PlantCapacityEstimation", FormMethod.Post, enctype="multipart/form-data", new { id = "EstimatePlaneCollateralForm" })) *@
+            @using (Html.BeginForm("CreatePlant", "ProductionCapcity", FormMethod.Post, new { id = "EstimatePlaneCollateralForm", enctype = "multipart/form-data" }))
+            {
+                <div class="modal-body" style="padding-top:0px;">
+                    <div class="card-body">
+                        <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" id="CaseId" />
+                       
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="PropertyOwner">Property Owner<i class="text-danger">*</i></label>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner *" required>
+<<<<<<< HEAD
                                 <span id="PropertyOwner-error" asp-validation-for="PropertyOwner" class="text-danger"></span> 
                             </div>
                             <div class="form-group col-lg-6">
@@ -135,10 +163,45 @@
                                     </select>
                                 }
                                 <span asp-validation-for="Role" class="text-danger"></span>
+=======
+                                <span id="PropertyOwner-error" asp-validation-for="PropertyOwner" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Role">Role <i class="text-danger">*</i></label>
+                                <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                                    <option value="" disabled selected>Select Role *</option>
+                                    <option value="Applicant">Applicant</option>
+                                    <option value="Guarantor">Guarantor</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                                @*  @if (myCase.Segement == "Acquired Asset Administration")
+                            {
+                            <input asp-for="Role" type="text" readonly value="CBE" class="form-control form-control-sm" />
+                            }
+                            else if (myCase.Segement == "Workout" || myCase.Segement == "Legal")
+                            {
+                            <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                            <option value="" disabled selected>Select Role *</option>
+                            <option value="Defaulter">Defaulter</option>
+                            <option value="Guarantor">Guarantor</option>
+                            </select>
+                            }
+                            else
+                            {
+                            <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                            <option value="" disabled selected>Select Role *</option>
+                            <option value="Applicant">Applicant</option>
+                            <option value="Guarantor">Guarantor</option>
+                            </select>
+                            }
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                            *@
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-6">
+<<<<<<< HEAD
                                 <label asp-for="Category">Category <i class="text-danger">*</i></label>
                                 <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(MechanicalCollateralCategory)).Cast<MechanicalCollateralCategory>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -211,6 +274,72 @@
                         <div class="card">
                             <div class="card-body" style="padding-bottom:0px;">
                                 <h5 class="text-center">Physical Address of Property </h5>
+=======
+                                <label asp-for="PlantName">Plant Name<i class="text-danger">*</i></label>
+                                <input asp-for="PlantName" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Enter Plant Name" required>
+                                <span id="PropertyOwner-error" asp-validation-for="PlantName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Type">Plant Type </label>
+                                <input asp-for="Type" type="datetime" class="form-control form-control-sm" id="OwnerOfMachinery" placeholder="Enter Plant Type">
+                                <span id="OwnerOfMachinery-error" asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="ProductionBussinessLicence"> Business License Number <i class="text-danger">*</i></label>
+                                <input asp-for="ProductionBussinessLicence" type="text" class="form-control form-control-sm" placeholder="Enter Business License Number" id="MachineName" required>
+                                    <span asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
+                                <input asp-for="LHCNumber" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter LHC Number" required>
+                                    <span asp-validation-for="LHCNumber" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="OwnerName">Owner Name in the LHC </label>
+                                    <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Owner Name in LHC ">
+                                    <span id="ModelNo-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-lg-3">
+                                    <label asp-for="ManufactureYear">Manufactuing Year</label>
+                                    <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
+                                    <span asp-validation-for="ManufactureYear" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label asp-for="Purpose">Purpose Of PCE</label>
+                                    <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="InvoiceNo" placeholder="Enter Purpose Of PCE">
+                                    <span id="InvoiceNo-error" asp-validation-for="Purpose" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label asp-for="ObsolescenceStatus">Plant Machinery Status</label>
+                                    <select asp-for="ObsolescenceStatus" class="form-control form-control-sm" required>
+                                        <option value="" disabled selected>Select Plant Machinery Status</option>
+                                        <option value="Good">Good/Functional</option>
+                                        <option value="Obsolete">Obsolete</option>
+                                        <option value="PartiallyObsolete">Partially Obsolete</option>
+                                        <option value="Outdated">Outdated</option>
+                                        <option value="EndOfLife">End-of-Life</option>
+                                    </select>
+                                    <span id="SerialNo-error" asp-validation-for="ObsolescenceStatus" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label asp-for="PlantDepreciationRate">Plant Depreciation Rate</label>
+                                    <input asp-for="PlantDepreciationRate" type="number" class="form-control form-control-sm" id="SerialNo" placeholder="Plant Depreciation Rate">
+                                    <span id="SerialNo-error" asp-validation-for="PlantDepreciationRate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        
+                        <div class="card">
+                            <div class="card-body" style="padding-bottom:0px;">
+                                @*  <h5 class="text-center">Physical Address of Property </h5> *@
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                                 <div class="row">
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Region">Region<i class="text-danger">*</i></label>
@@ -252,7 +381,11 @@
                                     </div>
                                 </div>
                                 <div class="row">
+<<<<<<< HEAD
                                     
+=======
+
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Wereda">Wereda</label>
                                         <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="Wereda" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
@@ -268,16 +401,22 @@
                                         <input asp-for="HouseNo" type="text" class="form-control form-control-sm" id="HouseNo" placeholder="Enter House Number" oninput="validateHouseNoInput(this)">
                                         <span id="HouseNo-error" asp-validation-for="HouseNo" class="text-danger"></span>
                                     </div>
+<<<<<<< HEAD
                                     <div class="form-group col-lg-3">
                                         <label asp-for="LHCNo">LHC Number</label>
                                         <input asp-for="LHCNo" type="text" class="form-control  form-control-sm" placeholder="Enter LHC Number" id="LHCNo">
                                         <span asp-validation-for="LHCNo" class="text-danger"></span>
                                     </div>
+=======
+
+
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                                 </div>
                             </div>
 
                         </div>
                         <div class="row">
+<<<<<<< HEAD
                             <div class="form-group col-lg-4">
                                 <label asp-for="TitleDeed">Title Deed<i class="text-danger">*</i></label>
                                 <input asp-for="TitleDeed" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
@@ -309,6 +448,50 @@
                                 <label asp-for="OtherDocument">Other Supportive Document</label>
                                 <input asp-for="OtherDocument" type="file" class="form-control form-control-sm" id="OtherDocument" multiple>
                                 <span asp-validation-for="OtherDocument" class="text-danger"></span>
+=======
+                            <div class="form-group col-lg-12">
+                                <label asp-for="ProductDescription"> Plant Production Capacity Description </label>
+                                <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..."> </textarea>
+                                <span asp-validation-for="ProductDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
+                            <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Necessary  Document of the Plant </h6></div>
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="CommercialInvoice">Commercial Invoice</label>
+                                    <input asp-for="CommercialInvoice" type="file" class="form-control form-control-sm" id="PackingList">
+                                    <span asp-validation-for="CommercialInvoice" class="text-danger"></span>
+
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="customDeclaration">Customs Declaration Document</label>
+                                    <input asp-for="customDeclaration" type="file" class="form-control form-control-sm" id="PackingList">
+                                    <span asp-validation-for="customDeclaration" class="text-danger"></span>
+
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="LHC">LHC Document</label>
+                                    <input asp-for="LHC" type="file" class="form-control form-control-sm" id="PackingList">
+                                    <span asp-validation-for="LHC" class="text-danger"></span>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="BussinessLicence">Bussiness License Document</label>
+                                    <input asp-for="BussinessLicence" type="file" class="form-control form-control-sm" id="PackingList">
+                                    <span asp-validation-for="BussinessLicence" class="text-danger"></span>
+
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="OtherDocument">Other supporting Document</label>
+                                    <input asp-for="OtherDocument" type="file" class="form-control form-control-sm" id="PackingList" multiple>
+                                    <span asp-validation-for="OtherDocument" class="text-danger"></span>
+
+                                </div>
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                             </div>
                         </div>
 
@@ -316,13 +499,21 @@
                             <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Add</button>
                         </div>
                     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
                 </div>
             }
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 
 <div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
+=======
+@* <div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -352,6 +543,7 @@
     </div>
 </div>
  *@
+<<<<<<< HEAD
 
 @* @section Scripts {
     @{
@@ -512,3 +704,5 @@
    
 
 </script>  *@
+=======
+>>>>>>> c817e06b5076dffc526c8104a3cc2feb6aca029a

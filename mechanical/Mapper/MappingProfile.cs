@@ -15,6 +15,13 @@ using mechanical.Models.Dto.UserDto;
 using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Models.PCE.Dto.PCEUploadFileDto;
+using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 
 /////
 using mechanical.Models.PCE.Entities;
@@ -39,6 +46,43 @@ namespace mechanical.Mapper
             CreateMap<PCENewCaseDto, PCECase>().ReverseMap();
             CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
             CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
+
+
+
+            //create the new mapping for PCE
+            CreateMap<PCECaseDto, PCECase>().ReverseMap();
+            CreateMap<PCECaseReturntDto, PCECase>();
+
+            CreateMap<PCECase, PCECaseReturntDto>()
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+                //.ForMember(dest=>dest.CollateralType, opt=>opt.MapFrom(src=>src.PCECollaterals.CollateralType))
+                //.ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.PCECollaterals.Select(c => c.CollateralType)))
+                //.ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.PCECollaterals.Count()))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c => c.ProductionType)))
+                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+
+            CreateMap<PCENewCaseDto, PCECase>();
+            CreateMap<PCECase, PCENewCaseDto>()
+                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+
+
+            CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
+            CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
+
+            CreateMap<PCEReturnFileDto, PCEUploadFile>().ReverseMap();
+            CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();           
+
+            //manufatring PCE
+            CreateMap<ProductionPostDto, ProductionCapacity>();
+            CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();
+            CreateMap<ProductionCapacity, ReturnProductionDto>()
+                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
+                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));
+
+            CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
+
+
+
 
 
             CreateMap<CollateralPostDto, Collateral>();
@@ -67,6 +111,9 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src=>src.CaseOriginator.Department))
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+
+
+
             CreateMap<Case, CaseTerminateDto>()
                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
