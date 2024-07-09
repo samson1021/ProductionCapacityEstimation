@@ -28,6 +28,11 @@ namespace mechanical.Controllers
             HttpContext.Response.Headers.Add("Content-Disposition", "inline; filename=" + uploadService.Item2);
             return new FileContentResult(uploadService.Item1, uploadService.Item3);
         }
+        public async Task<IActionResult> DeleteFile(Guid id)
+        {   
+            var result = await _uploadFileService.DeleteFile(id);
+            return Json(new { success = result });
+        }
       
     }
 }

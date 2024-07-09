@@ -438,7 +438,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     .Include(e => e.ShiftHours)
                     .Include(e => e.TimeConsumedToCheck)
                     .Include(e => e.SupportingDocuments)
-//                     .Include(e => e.PCE)
+                    // .Include(e => e.PCE)
                     .FirstOrDefaultAsync(e => e.Id == Id);
                 if (pceEntity == null)
                 {
