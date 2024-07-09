@@ -1,6 +1,6 @@
 ﻿@using mechanical.Models.PCE.Dto.PCEUploadFileDto;
 
-@model mechanical.Models.PCE.Dto.PlantCapacityEstimationDto.PCEReturnCollateralDto;
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
     var collateralFiles = ViewData["collateralFiles"] as IEnumerable<PCEReturnFileDto>;
 
@@ -34,9 +34,9 @@
 
                 <div class="row">
                     <div class="form-group col-lg-6">
-                        <label asp-for="NamePlant">Name of Plant<i class="text-danger">*</i></label>
-                        <input asp-for="NamePlant" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Name of Plant" required>
-                        <span id="PropertyOwner-error" asp-validation-for="NamePlant" class="text-danger"></span>
+                        <label asp-for="PlantName">Name of Plant<i class="text-danger">*</i></label>
+                        <input asp-for="PlantName" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Name of Plant" required>
+                        <span id="PropertyOwner-error" asp-validation-for="PlantName" class="text-danger"></span>
                     </div>
                     <div class="form-group col-lg-6">
                         <label asp-for="OwnerOfPlant">Owner of Plant </label>
@@ -50,32 +50,32 @@
 
                     <div class="row">
                         <div class="form-group col-lg-4">
-                            <label asp-for="TradeLicenseNo">Trade License No <i class="text-danger">*</i></label>
-                            <input asp-for="TradeLicenseNo" type="text" class="form-control form-control-sm" placeholder="Enter Trade License No" id="MachineName" required>
-                            <span asp-validation-for="TradeLicenseNo" class="text-danger"></span>
+                            <label asp-for="ProductionBussinessLicence">Trade License No <i class="text-danger">*</i></label>
+                            <input asp-for="ProductionBussinessLicence" type="text" class="form-control form-control-sm" placeholder="Enter Trade License No" id="MachineName" required>
+                            <span asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label asp-for="LHCNo">LHCNo <i class="text-danger">*</i></label>
-                            <input asp-for="LHCNo" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter LHCNo" required>
-                            <span asp-validation-for="LHCNo" class="text-danger"></span>
+                            <label asp-for="LHCNumber">LHCNo <i class="text-danger">*</i></label>
+                            <input asp-for="LHCNumber" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter LHCNo" required>
+                            <span asp-validation-for="LHCNumber" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label asp-for="OwnerNameLHC">OwnerNameLHC </label>
-                            <input asp-for="OwnerNameLHC" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter OwnerNameLHC ">
-                            <span id="ModelNo-error" asp-validation-for="OwnerNameLHC" class="text-danger"></span>
+                            <label asp-for="OwnerName">OwnerNameLHC </label>
+                            <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter OwnerNameLHC ">
+                            <span id="ModelNo-error" asp-validation-for="OwnerName" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="form-group col-lg-3">
-                            <label asp-for="YearOfManifacturing">Manufactuing Year</label>
-                            <input asp-for="YearOfManifacturing" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
-                            <span asp-validation-for="YearOfManifacturing" class="text-danger"></span>
+                            <label asp-for="ManufactureYear">Manufactuing Year</label>
+                            <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
+                            <span asp-validation-for="ManufactureYear" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
-                            <label asp-for="PurposeOfPCE">Purpose Of PCE</label>
-                            <input asp-for="PurposeOfPCE" type="text" class="form-control form-control-sm" id="InvoiceNo" placeholder="Enter Purpose Of PCE">
-                            <span id="InvoiceNo-error" asp-validation-for="PurposeOfPCE" class="text-danger"></span>
+                            <label asp-for="Purpose">Purpose Of PCE</label>
+                            <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="InvoiceNo" placeholder="Enter Purpose Of PCE">
+                            <span id="InvoiceNo-error" asp-validation-for="Purpose" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
                             <label asp-for="ObsolescenceStatus">Obsolescence Status</label>
@@ -98,12 +98,12 @@
                 </div>
 
 
-                <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
-                    <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Physical Address of the Plant </h6></div>
+                <div class="card-body" style="padding-bottom:0px;">
+                    @*  <h5 class="text-center">Physical Address of Property </h5> *@
                     <div class="row">
                         <div class="form-group col-lg-3">
-                            <label asp-for="PlantRegion">Region<i class="text-danger">*</i></label>
-                            <select asp-for="PlantRegion" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)" required>
+                            <label asp-for="Region">Region<i class="text-danger">*</i></label>
+                            <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)" required>
                                 <option value="">Select Region</option>
                                 <option value="Addis Ababa">Addis Ababa</option>
                                 <option value="Afar">Afar</option>
@@ -122,45 +122,52 @@
                                 <option value="Others">Others, please specify</option>
                             </select>
                             <input type="text" class="form-control form-control-sm mt-2" id="OtherRegion" name="OtherRegion" style="display: none;">
-                            <span asp-validation-for="PlantRegion" class="text-danger"></span>
+                            <span asp-validation-for="Region" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
-                            <label asp-for="PlantZone">Zone</label>
-                            <input asp-for="PlantZone" type="text" class="form-control form-control-sm" id="Zone" placeholder="Enter Zone" oninput="validateZoneInput(this)">
-                            <span id="Zone-error" asp-validation-for="PlantZone" class="text-danger"></span>
+                            <label asp-for="Zone">Zone</label>
+                            <input asp-for="Zone" type="text" class="form-control form-control-sm" id="Zone" placeholder="Enter Zone" oninput="validateZoneInput(this)">
+                            <span id="Zone-error" asp-validation-for="Zone" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
-                            <label asp-for="PlantCity">City</label>
-                            <input asp-for="PlantCity" type="text" class="form-control form-control-sm" id="City" placeholder="Enter City" oninput="validateCityInput(this)">
-                            <span id="City-error" asp-validation-for="PlantCity" class="text-danger"></span>
+                            <label asp-for="City">City</label>
+                            <input asp-for="City" type="text" class="form-control form-control-sm" id="City" placeholder="Enter City" oninput="validateCityInput(this)">
+                            <span id="City-error" asp-validation-for="City" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
-                            <label asp-for="PlantSubCity">Sub-City</label>
-                            <input asp-for="PlantSubCity" type="text" class="form-control form-control-sm" id="SubCity" placeholder="Enter Sub City" oninput="validateSubCityInput(this)">
-                            <span id="SubCity-error" asp-validation-for="PlantSubCity" class="text-danger"></span>
+                            <label asp-for="SubCity">Sub-City</label>
+                            <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="SubCity" placeholder="Enter Sub City" oninput="validateSubCityInput(this)">
+                            <span id="SubCity-error" asp-validation-for="SubCity" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
 
                         <div class="form-group col-lg-3">
-                            <label asp-for="PlantWereda">Wereda</label>
-                            <input asp-for="PlantWereda" type="text" class="form-control form-control-sm" id="Wereda" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
-                            <span id="Wereda-error" asp-validation-for="PlantWereda" class="text-danger"></span>
+                            <label asp-for="Wereda">Wereda</label>
+                            <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="Wereda" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
+                            <span id="Wereda-error" asp-validation-for="Wereda" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
-                            <label asp-for="PlantKebele">Kebele</label>
-                            <input asp-for="PlantKebele" type="text" class="form-control form-control-sm" id="Kebele" placeholder="Enter Kebele" oninput="validateKebeleInput(this)">
-                            <span id="Kebele-error" asp-validation-for="PlantKebele" class="text-danger"></span>
+                            <label asp-for="Kebele">Kebele</label>
+                            <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="Kebele" placeholder="Enter Kebele" oninput="validateKebeleInput(this)">
+                            <span id="Kebele-error" asp-validation-for="Kebele" class="text-danger"></span>
                         </div>
                         <div class="form-group col-lg-3">
-                            <label asp-for="LHCNo">LHC Number</label>
-                            <input asp-for="LHCNo" type="text" class="form-control  form-control-sm" placeholder="Enter LHC Number" id="LHCNo">
-                            <span asp-validation-for="LHCNo" class="text-danger"></span>
+                            <label asp-for="HouseNo">House Number</label>
+                            <input asp-for="HouseNo" type="text" class="form-control form-control-sm" id="HouseNo" placeholder="Enter House Number" oninput="validateHouseNoInput(this)">
+                            <span id="HouseNo-error" asp-validation-for="HouseNo" class="text-danger"></span>
                         </div>
+
+
                     </div>
-
                 </div>
-
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label asp-for="ProductDescription"> Plant Production Capacity Description </label>
+                        <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..."> </textarea>
+                        <span asp-validation-for="ProductDescription" class="text-danger"></span>
+                    </div>
+                </div>
                 <div class="row">
                     <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Edit</button>
                 </div>
@@ -241,7 +248,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="uploadModalLabel">Upload Document</h5>
-                            <input asp-for="CaseId" id="PCEcaseId" />
+                            <input asp-for="PCECaseId" id="PCEcaseId" />
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>

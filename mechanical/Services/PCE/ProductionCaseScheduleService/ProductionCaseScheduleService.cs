@@ -55,7 +55,7 @@ namespace mechanical.Services.PCE.ProductionCaseScheduleService
 
         public async Task<IEnumerable<ProductionCaseScheduleReturnDto>> GetProductionCaseSchedules(Guid caseId)
         {
-            var caseSchedules = await _cbeContext.ProductionCaseSchedules.Include(res => res.User).Where(res => res.ProductionCaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            var caseSchedules = await _cbeContext.ProductionCaseSchedules.Include(res => res.User).Where(res => res.PCECaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
             return _mapper.Map<IEnumerable<ProductionCaseScheduleReturnDto>>(caseSchedules);
         }
 

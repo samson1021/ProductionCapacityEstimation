@@ -39,7 +39,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Wereda { get; set; }
         public string? Kebele { get; set; }
          public string? HouseNo { get; set; }
-        public string ProductDescription { get; set; }
+        public string? ProductDescription { get; set; }
 
         public IFormFile? UploadLHC { get; set; }
         public IFormFile? ploadshaderentagreement { get; set; }

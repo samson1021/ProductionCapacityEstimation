@@ -59,7 +59,7 @@ namespace mechanical.Services.PCE.PCECaseService
             //var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager").ToListAsync();
             //var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             //return caseDtos;
-            var cases = await _cbeContext.PCECases.Include(x => x.PCECollaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
                 .Where(res => res.RMUserId == userId && res.CurrentStatus == "New").ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             return caseDtos;

@@ -10,7 +10,7 @@ public class ProductionCaseScheduleReturnDto
     public string? Status { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public Guid ProductionCaseId { get; set; }
+    public Guid PCECaseId { get; set; }
 
     public virtual CreateUser? User { get; set; }
 }

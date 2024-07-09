@@ -13,13 +13,14 @@ using Microsoft.CodeAnalysis.Operations;
 //using mechanical.Models.Dto.ProductionCaseTimeLineDto;
 using System.ComponentModel.DataAnnotations;
 using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
-using mechanical.Models.PCE.Dto.ProductionUploadFileDto;
+
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-using mechanical.Services.PCE.ProductionUploadFileService;
+
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCEUploadFileDto;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -175,12 +176,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             foreach (var item in userSupervised)
             {
                 var productionCaseAssignment = await _cbeContext.ProductionCaseAssignments.Include(x => x.User).Include(x => x.ProductionCapacity).Where(res => res.UserId == item.Id && res.ProductionCapacity.PCECaseId == ProductionCaseId).ToListAsync();
-                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.ProductionCapacityId).ToList();
+                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.PCECaseId).ToList();
                 foreach (var items in productionCaseAssignment)
                 {
                     var productionAssigmentDto = new ProductionAssignmentDto
                     {
-                        ProductionCapacityId = items.ProductionCapacityId,
+                        ProductionCapacityId = items.PCECaseId,
                         PCECaseId = ProductionCaseId,
                         PropertyOwner = items.ProductionCapacity.PropertyOwner,
                         ProductionCaseAssignmentId = items.Id,
@@ -202,7 +203,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 .GetCustomAttributes(typeof(DisplayAttribute), false)
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
-
+        
 
 
 
@@ -216,7 +217,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             {
                 foreach (var caseAssignment in caseAssignments)
                 {
-                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.ProductionCapacityId && ca.CurrentStatus == "Correction");
+                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.PCECaseId && ca.CurrentStatus == "Correction");
                     if (collatearal != null)
                     {
                         mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
@@ -310,7 +311,48 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return false;
         }
 
+        public async Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantCapacityEstimationPostDto createplantDto)
+        {
+            var collateral = _mapper.Map<ProductionCapacity>(createplantDto);
+            collateral.Id = Guid.NewGuid();
+            collateral.PCECaseId = caseId;
+            //try
+            //{
+            //    await this.UploadFile(userId, "Commercial Invoice", collateral, createplantDto.CommercialInvoice);
+            //    await this.UploadFile(userId, "Customs Declaration Document", collateral, createplantDto.customDeclaration);
+            //    await this.UploadFile(userId, "LHC Document", collateral, createplantDto.LHC);
+            //    await this.UploadFile(userId, "Bussiness License Document", collateral, createplantDto.BussinessLicence);
+            //    if (createplantDto.OtherDocument != null)
+            //    {
+            //        foreach (var otherDocument in createplantDto.OtherDocument)
+            //        {
+            //            await this.UploadFile(userId, "Other Supportive Document", collateral, otherDocument);
+            //        }
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    throw new Exception("unable to upload file");
+            //}
+            collateral.CreationDate = DateTime.Now;
+            collateral.EndDate = DateTime.Now;
+            collateral.CreatedById = userId;
+            collateral.CurrentStage = "Relation Manager";
+            collateral.CurrentStatus = "New";
+            collateral.ProductionType = "Plant";
+
+            await _cbeContext.ProductionCapacities.AddAsync(collateral);
+            await _cbeContext.SaveChangesAsync();
+
+            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+            {
+                CaseId = collateral.PCECaseId,
+                Activity = $" <strong>A new PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+               // Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {collateral.PlantName}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+                CurrentStage = "Relation Manager"
+            });
+            return collateral;
+        }
     }
-    
 }
     

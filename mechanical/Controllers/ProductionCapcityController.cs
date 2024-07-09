@@ -12,9 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-
-using mechanical.Services.PCE.ProductionUploadFileService;
-using mechanical.Models.PCE.Dto.ProductionUploadFileDto;
 using mechanical.Models.Dto.UploadFileDto;
 
 
@@ -60,7 +57,18 @@ namespace mechanical.Controllers
             return BadRequest();
 
         }
-
+        [HttpPost]
+       // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePlant(Guid caseId, PlantCapacityEstimationPostDto PlantCollateralDto)
+        {
+            if (ModelState.IsValid)
+            {
+                await _productionCapacityServices.CreatePlantProduction(base.GetCurrentUserId(), caseId, PlantCollateralDto);
+                var response = new { message = "Plant PCE created successfully" };
+                return Ok(response);
+            }
+            return BadRequest();
+        }
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid PCECaseId)
         {
@@ -77,15 +85,15 @@ namespace mechanical.Controllers
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
             var loanCase = await _pCECaseService.GetProductionCaseDetail(id);
 
-            //var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
-            //if (restimation != null)
-            //{
-            //    ViewData["restimation"] = restimation;
-            //}
+            var restimation = await _cbeContext.ProductionReestimations.Where(res => res.PCECaseId == id).FirstOrDefaultAsync();
+            if (restimation != null)
+            {
+                ViewData["restimation"] = restimation;
+            }
 
             if (response == null) { return RedirectToAction("PCENewCases"); }
             var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
+            var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCECaseId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
             var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
 
@@ -209,7 +217,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
         {
-            var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
+            var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.PCECaseId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
             ProductioncaseAssignment.Status = "Remark";
             _cbeContext.Update(ProductioncaseAssignment);
 
