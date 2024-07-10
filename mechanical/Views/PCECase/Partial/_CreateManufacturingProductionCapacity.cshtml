@@ -201,7 +201,7 @@
                             <div class="row">
                                 <div class="form-group col-lg-3">
                                     <label asp-for="ProductionBussinessLicence">Business License Number<i class="text-danger">*</i> </label>
-                                    <input asp-for="ProductionBussinessLicence" type="text" class="form-control form-control-sm" id="ManufactureYear" placeholder="Business License Number">
+                                    <input asp-for="ProductionBussinessLicence" type="text" required class="form-control form-control-sm" id="ManufactureYear" placeholder="Business License Number">
                                     <span asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-3">
@@ -228,7 +228,7 @@
                             <div class="form-group col-lg-4">
                                 <label asp-for="MachineryInstalledPlace"> Machinery Installed Place  <i class="text-danger">*</i></label>
                                 <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" onchange="handleMachineryInstalledPlaceChange(this)" required>
-                                    <option value="" disabled selected>Select Machinery Installed Place </option>
+                                    <option value="">Select Machinery Installed Place </option>
                                     <option value="Private Owned LHC">Private Owned LHC</option>
                                     <option value="Industrial Park">Industrial Park</option>
                                 </select>
@@ -263,8 +263,8 @@
                            <div class="row">
                             <div class="form-group col-lg-4">
                                 <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
-                                <select id="IndustrialparkDropdown" asp-for="Industrialpark"  class="form-control form-control-sm"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))" required>
+                                    <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                     <option value="" disabled selected>Select Industrial Park </option>
                                 </select>
                                 <span asp-validation-for="Industrialpark" class="text-danger"></span>
@@ -348,7 +348,7 @@
                         <div class="row">
                             <div class="form-group col-lg-12">
                                 <label asp-for="ProductDescription"> Manufacturing Production Capacity Description </label>
-                                <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..." > </textarea>
+                                <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..." required> </textarea>
                                 <span asp-validation-for="ProductDescription" class="text-danger"></span>
                             </div>
                         </div>
@@ -361,7 +361,7 @@
                             </div> 
                             <div class="form-group col-lg-6">
                                 <label asp-for="Machinespecificationdocumen">Machine specification document <i class="text-danger">*</i></label>
-                                <input asp-for="Machinespecificationdocumen" type="file" class="form-control  form-control-sm" id="businessLicenseCertificate" required>
+                                <input asp-for="Machinespecificationdocumen" type="file" class="form-control  form-control-sm" id="businessLicenseCertificate" multiple required>
                                 <span asp-validation-for="Machinespecificationdocumen" class="text-danger"></span>
                             </div>
                             </div>
@@ -369,7 +369,7 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="Machineoperationmanual"> Machine operation manual <i class="text-danger">*</i></label>
-                                <input asp-for="Machineoperationmanual" type="file" class="form-control  form-control-sm" id="ownerCertificate" required>
+                                <input asp-for="Machineoperationmanual" type="file" class="form-control  form-control-sm" id="ownerCertificate" multiple required>
                                 <span asp-validation-for="Machineoperationmanual" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
