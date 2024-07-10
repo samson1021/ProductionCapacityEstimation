@@ -222,6 +222,7 @@ namespace mechanical.Mapper
                     End = src.TimeConsumedToCheck.End
                 }))
                 .ReverseMap();
+            CreateMap<PCEReturnPostDto, Return>();
             ///////
         }
 

@@ -11,7 +11,7 @@ namespace mechanical.Models.PCE.Dto.CollateralEstimationFeeDto
         public Guid Id { get; set; }
 
         [Display(Name = "Case Id")]
-        public Guid? PCECaseId { get; set; }
+        public Guid? PCEEId { get; set; }
 
         [Display(Name = "Created By")]
         public Guid CreatedBy { get; set; }

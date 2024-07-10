@@ -67,6 +67,9 @@ namespace mechanical.Controllers
                 // }
                 // ViewData["PCE"] = PCE;
                 // ViewData["EmployeeId"] = HttpContext.Session.GetString("EmployeeId") ?? null;
+                // ViewData["PCEId"] = PCEId ?? Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                ViewData["PCEId"] = PCEId;
+                
                 return View();
             }
             catch (Exception ex)
@@ -83,10 +86,11 @@ namespace mechanical.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {Console.WriteLine("hererergdfghfghfgdhfghfg");
                     var PCEEvaluation = await _PCEEvaluationService.CreatePCEEvaluation(base.GetCurrentUserId(), Dto);
                     
                     return RedirectToAction("Detail", "PCEEvaluation", new { Id = PCEEvaluation.Id });
+                    // return View("Detail", PCEEvaluation);
                 }
                 catch (Exception ex)
                 {
@@ -408,18 +412,24 @@ namespace mechanical.Controllers
      
         
         [HttpPost]
-        public async Task<IActionResult> Return(Guid UserId, PCEEvaluationPostDto Dto)
+        public async Task<IActionResult> Return(PCEReturnPostDto Dto)
+        // public async Task<IActionResult> Return(PCEEvaluationPostDto Dto)
+        // public async Task<IActionResult> Return(PCEEvaluationPostDto Dto, string Reason)
         {
             try
             {
                 await _PCEEvaluationService.ReturnPCEEvaluation(base.GetCurrentUserId(), Dto);
+                // await _PCEEvaluationService.ReturnPCEEvaluation(base.GetCurrentUserId(), Dto, Reason);
+                
+                return Json(new { success = true });
                 return RedirectToAction("ReturnedPCEEvaluations");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Returning PCEEvaluation for user {UserId}", base.GetCurrentUserId());
                 var error = new { message = ex.Message };
-                return BadRequest(error);
+                return Json(new { success = false, error = ex.Message });
+                // return BadRequest(error);
             }
         }
 

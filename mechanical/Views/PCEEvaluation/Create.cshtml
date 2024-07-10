@@ -1,6 +1,18 @@
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
 
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
+
+@{
+    ViewData["Title"] = "PCE Evaluation Detail";
+    ViewData["PCEId"] = null;
+    var ReturnPost = new PCEReturnPostDto {
+            // PCEId = Model.PCEId, 
+            PCEId = null, 
+            Reason = "" 
+    }; 
+    ViewData["ReturnPost"] = ReturnPost; 
+}
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -34,7 +46,7 @@
                     @Html.AntiForgeryToken()
                     @Html.Partial("_DataLists")
 
-                    @* <input asp-for="PCEId" value=@Model.Id type="hidden" /> *@
+                    <input asp-for="PCEId" value=@ViewData["PCEId"] type="hidden" /> 
                     <!-- General Information -->
                     <div class="row mt-3">
                         <div class="form-group col-lg-4">
@@ -270,7 +282,7 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");}
-    @{await Html.RenderPartialAsync("_ReturnModal");} 
+    @{await Html.RenderPartialAsync("_ReturnModal", ViewData["ReturnPost"]);} 
 
     <script>
          $(document).ready(function () {
@@ -285,11 +297,11 @@
                         shiftHoursContainer.append(`
                             <div class="row">
                                 <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
+                                    <label>Shift ${i + 1} Starts At </label>
                                     <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
                                 </div>
                                 <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
+                                    <label>Shift ${i + 1} Ends At</label>
                                     <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
                                 </div>
                             </div>
@@ -327,9 +339,9 @@
             $("#Status").change(function () {
                 var selectedStatus = $(this).val();
                 if (selectedStatus === '@((int)Status.Returned)') {
-                    $("#ReturnReasonRow").show();
+                    $("#ReasonRow").show();
                 } else {
-                    $("#ReturnReasonRow").hide();
+                    $("#ReasonRow").hide();
                 }
             });
 
@@ -450,9 +462,9 @@
             $("#Status").change(function () {
                 var selectedStatus = $(this).val();
                 if (selectedStatus === '@((int)Status.Returned)') {
-                    $("#ReturnReasonRow").show();
+                    $("#ReasonRow").show();
                 } else {
-                    $("#ReturnReasonRow").hide();
+                    $("#ReasonRow").hide();
                 }
             });
 
@@ -723,7 +735,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-lg-12" id="ReturnReasonRow" style="display: none;">
+                                <div class="form-group col-lg-12" id="ReasonRow" style="display: none;">
                                     <label>@Html.DisplayNameFor(model => model.ReturnReason)</label>
                                     <textarea asp-for="ReturnReason" class="form-control form-control-sm"></textarea>
                                     <span asp-validation-for="ReturnReason" class="text-danger"></span>

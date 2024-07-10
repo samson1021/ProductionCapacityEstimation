@@ -1,4 +1,8 @@
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEReturnPostDto
+
+@{
+    ViewData["Title"] = "Return PCE Evaluation";
+}
 
 <!-- Return Modal -->
 <div class="modal fade" id="ReturnModal1" tabindex="-1" role="dialog" aria-labelledby="ReturnModalLabel" aria-hidden="true">
@@ -11,49 +15,62 @@
                 </button>
             </div>
             <div class="modal-body">
-
-            
-                @using (Html.BeginForm("Return", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
-                {
-                    <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />                       
+                <form method="post" action="@Url.Action("Return", "PCEEvaluation")" id="ReturnForm">
+                    @Html.AntiForgeryToken()
+                     @Html.HiddenFor(model => model.PCEId)
                     <div class="form-group">
-                        <label for="ReturnReason">Reason</label>
-                        <textarea class="form-control"  asp-for="ReturnReason" rows="3" required></textarea>
+                        <label for="Reason">Reason</label>
+                        <textarea class="form-control" asp-for="Reason" rows="3"></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-danger">Return</button>
                     </div>
-                }
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    $(function () {
-        $('#ReturnModal1').on('shown.bs.modal', function () {
-            $('#ReturnReason').focus();
+    document.addEventListener("DOMContentLoaded", function () {
+        var returnModal = document.getElementById('ReturnModal1');
+        var returnForm = document.getElementById('ReturnForm');
+        var reasonField = document.getElementById('Reason');
+
+        returnModal.addEventListener('shown.bs.modal', function () {
+            reasonField.focus();
         });
 
-        $('#ReturnForm').submit(function (event) {
+        returnForm.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var returnReason = $('#ReturnReason').val();
-            var pceId = $('#PCEId').val();
+            var formData = new FormData(returnForm);
+            var actionUrl = returnForm.action;
 
-            $.ajax({
-                url: $(this).attr('action'),
-                type: $(this).attr('method'),
-                data: { ReturnReason: returnReason, PCEId: pceId },
-                success: function (response) {
-                    toastr.success('Reason for Return saved successfully');
-                    $('#ReturnModal1').modal('hide');
-                    $('#form').submit();
-                },
-                error: function (error) {
-                    toastr.error('Error saving Return Reason:', error);
+            fetch(actionUrl, {
+                method: returnForm.method,
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success('Reason for Return saved successfully');
+                    $(returnModal).modal('hide');
+
+                    // Delay redirect for 2 seconds
+                    setTimeout(function() {
+                        window.location.href = '@Url.Action("ReturnedPCEEvaluations", "PCEEvaluation")';
+                    }, 2000);
+                } else {
+                    toastr.error('Error saving Return Reason: ' + data.error);
+                }
+            })
+            .catch(error => {
+                toastr.error('Error saving Return Reason: ' + error);
             });
         });
     });

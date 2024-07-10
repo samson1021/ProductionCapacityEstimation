@@ -11,14 +11,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 {
     public interface IPCEEvaluationService
     {
-        Task<PCEEvaluationPostDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto);
-        Task<PCEEvaluationReturnDto> ReturnPCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto);
-        Task<PCEEvaluationPostDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
+        Task<PCEEvaluationReturnDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto);
+        // Task<PCEEvaluationReturnDto> ReturnPCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto);
+        Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<PCEEvaluationReturnDto> PendPCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<PCEEvaluationReturnDto> EvaluatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<PCEEvaluationReturnDto> ReevaluatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<PCEEvaluationReturnDto> CompletePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id);
+        Task<bool> ReturnPCEEvaluation(Guid UserId, PCEReturnPostDto Dto);
         Task<bool> SendToRM(Guid UserId, Guid Id);    
         Task<bool> SendToMO(Guid UserId, Guid Id);    
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);

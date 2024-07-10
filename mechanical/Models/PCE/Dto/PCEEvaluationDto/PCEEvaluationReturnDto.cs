@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using mechanical.Models.PCE.Entities;
@@ -113,8 +111,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Remark")]
         public string? Remark { get; set; }
         
-        [Display(Name = "Return Reason")]
-        public string? ReturnReason { get; set; }
+        // [Display(Name = "Return Reason")]
+        // public string? ReturnReason { get; set; }
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 

@@ -1,11 +1,18 @@
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.Dto.UploadFileDto
 
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @{
     ViewData["Title"] = "Update PCE Evaluation";
-    var PCEReturn = ViewData["PCEReturn"] as PCEEvaluationReturnDto;
+    // var PCEReturn = ViewData["PCEReturn"] as PCEEvaluationReturnDto;
+    
+    var ReturnPost = new PCEReturnPostDto {
+            // PCEId = Model.PCEId, 
+            PCEId = null, 
+            Reason = "" 
+    }; 
+    ViewData["ReturnPost"] = ReturnPost; 
 }
 
 <section class="content-header">
@@ -313,19 +320,6 @@
                             <span asp-validation-for="InspectionDate" class="text-danger"></span>
                         </div>
                     </div>
-
-                    @* <div class="row">
-                        <div class="form-group col-lg-2">
-                            <label>@Html.DisplayNameFor(model => model.Status)</label>
-                            <select asp-for="Status" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<Status>()"></select>
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-lg-12" id="ReturnReasonRow" style="display: none;">
-                            <label>@Html.DisplayNameFor(model => model.ReturnReason)</label>
-                            <textarea asp-for="ReturnReason" class="form-control form-control-sm"></textarea>
-                            <span asp-validation-for="ReturnReason" class="text-danger"></span>
-                        </div>
-                    </div> *@
                     
                    <div class="form-group row justify-content-center">
                         <div class="col-xl-2">
@@ -370,7 +364,7 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");} 
-    @{await Html.RenderPartialAsync("_ReturnModal");} 
+    @{await Html.RenderPartialAsync("_ReturnModal", ViewData["ReturnPost"]);} 
 
     <script>
         $(document).ready(function() {
@@ -459,9 +453,9 @@
         $("#Status").change(function () {
             var selectedStatus = $(this).val();
             if (selectedStatus === '@((int)Status.Returned)') {
-                $("#ReturnReasonRow").show();
+                $("#ReasonRow").show();
             } else {
-                $("#ReturnReasonRow").hide();
+                $("#ReasonRow").hide();
             }
         });
 

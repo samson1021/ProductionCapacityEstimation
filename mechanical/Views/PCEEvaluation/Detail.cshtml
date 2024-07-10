@@ -1,8 +1,18 @@
+
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
+
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 
 @{
     ViewData["Title"] = "PCE Evaluation Detail";
-    @* var Model =  ViewData["PCE"]; *@
+    @* var ViewData["PCE"]. PCEEvaluationReturnDto; *@
+
+    var ReturnPost = new PCEReturnPostDto {
+            // PCEId = Model.PCEId, 
+            PCEId = null, 
+            Reason = "" 
+    }; 
+    ViewData["ReturnPost"] = ReturnPost; 
 }
 
 <section class="content-header">
@@ -339,7 +349,7 @@
   
 @section Scripts {
     @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
-    @{await Html.RenderPartialAsync("_ReturnModal");} 
+    @{await Html.RenderPartialAsync("_ReturnModal", ViewData["ReturnPost"]);} 
 
     <script>
         // formatAndDisplayValue('CollateralEstimationFee');

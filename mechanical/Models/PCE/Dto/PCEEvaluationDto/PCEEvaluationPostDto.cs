@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 
 
@@ -10,11 +7,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
     public class PCEEvaluationPostDto
     {
-        public Guid Id { get; set; }
-
-        // [Display(Name = "Evaluated By")]
-        // public Guid EvaluatorID { get; set; }
-
         // public required Guid? PCEId { get; set; } 
         public Guid? PCEId { get; set; } 
 
@@ -111,9 +103,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Remark")]
         public string? Remark { get; set; }
-
-        [Display(Name = "Return Reason")]
-        public string? ReturnReason { get; set; }
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 

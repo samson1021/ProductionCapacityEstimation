@@ -13,14 +13,12 @@ namespace mechanical.Models.PCE.Entities
         [Key]
         public Guid Id { get; set; }
         [ForeignKey("PCEId")]
-        public Guid? PCEId { get; set; } 
+        public Guid PCEId { get; set; } 
         // public required Guid PCEId { get; set; }
         public Guid EvaluatorID { get; set; }
-
-        public virtual PCECase? PCE { get; set; }
+        
+        public virtual ProductionCapacity? PCE { get; set; }
         public virtual CreateUser? Evaluator { get; set; }
-        public virtual CreateUser? Checker { get; set; }
-
         public string ProductionLineOrEquipmentName { get; set; }   
         public OutputPhase? OutputPhase { get; set; }
 
@@ -57,7 +55,7 @@ namespace mechanical.Models.PCE.Entities
         public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
 
         public Status? Status { get; set; }
-        public string? ReturnReason { get; set; }
+        // public string? ReturnReason { get; set; }
 
         public string? Remark { get; set; } = string.Empty;
         

@@ -77,6 +77,7 @@ namespace mechanical.Data
         // public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<PCESchedule> PCESchedules { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        public virtual DbSet<Return> Returns { get; set; }
         public virtual DbSet<CollateralEstimationFee> CollateralEstimationFees { get; set; }
         ///////
         public DbSet<PCEUploadFile> PCEUploadFiles { get; set; }

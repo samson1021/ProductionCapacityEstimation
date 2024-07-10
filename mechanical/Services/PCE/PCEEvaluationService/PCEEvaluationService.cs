@@ -43,17 +43,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<PCEEvaluationPostDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
+        public async Task<PCEEvaluationReturnDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
         {
             try
             {
                 var pceEntity = _mapper.Map<PCEEvaluation>(Dto);
                 pceEntity.Id = Guid.NewGuid();
-                pceEntity.EvaluatorID = UserId;
+                pceEntity.EvaluatorID = UserId; 
                 pceEntity.CreatedAt = DateTime.Now;
-                pceEntity.Status = Status.New;          
-                // pceEntity.ReevaluaterID = UserId;              
-                // pceEntity.PCEId = Dto.PCEId;
+                pceEntity.Status = Status.New;                     
+                pceEntity.PCEId = Dto.PCEId ?? Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
                 await _cbeContext.SaveChangesAsync();
@@ -65,7 +64,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 //     File = file,
                 //     Catagory = "SupportingEvidence",
                 //     CaseId = pceEntity.Id,
-                //     CollateralId = pceEntity.PCEId
+                //     PCEId = pceEntity.PCEId
                 // }).ToList();
 
                 // var productionProcessFlowDiagramFiles = Dto.ProductionProcessFlowDiagrams.Select(file => new CreateFileDto
@@ -73,7 +72,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 //     File = file,
                 //     Catagory = "ProductionProcessFlowDiagram",
                 //     CaseId = pceEntity.Id,
-                //     CollateralId = pceEntity.PCEId
+                //     PCEId = pceEntity.PCEId
                 // }).ToList();
 
                 // await _uploadFileService.CreateFiles(UserId, supportingEvidenceFiles);
@@ -125,7 +124,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 // });
 
 
-                return _mapper.Map<PCEEvaluationPostDto>(pceEntity);
+                return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
             {
@@ -134,7 +133,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<PCEEvaluationPostDto> UpdatePCEEvaluation(Guid UserId, Guid id, PCEEvaluationPostDto Dto)
+        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid id, PCEEvaluationPostDto Dto)
         {
             try
             {
@@ -184,7 +183,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 await _cbeContext.SaveChangesAsync();
             
-                return _mapper.Map<PCEEvaluationPostDto>(pceEntity);
+                return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
             {
@@ -260,81 +259,116 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while evaluating the PCEEvaluation.");
             }
         }
-
-        public async Task<PCEEvaluationReturnDto> ReturnPCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
-        {
+        public async Task<bool> ReturnPCEEvaluation(Guid UserId, PCEReturnPostDto Dto)
+        // public async Task<PCEEvaluationReturnDto> ReturnPCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
+        {  
             try
             {   
-                var pceEntity = new PCEEvaluation(); 
-                if(Dto.Id != null)
-                {
-                    pceEntity = await _cbeContext.PCEEvaluations.FindAsync(Dto.Id);
-                    pceEntity.Status = Status.Returned;
-                    pceEntity.ReturnReason = Dto.ReturnReason;                
-                    // pceEntity.PCEId = Dto.PCEId;
-                    _mapper.Map(Dto, pceEntity);
-                    _cbeContext.Update(pceEntity);
-                }
-                else
-                {
-                    pceEntity = _mapper.Map<PCEEvaluation>(Dto);
-                    pceEntity.Id = Guid.NewGuid();
-                    pceEntity.EvaluatorID = UserId;
-                    pceEntity.CreatedAt = DateTime.Now;  
-                    pceEntity.Status = Status.Returned;
-                    pceEntity.ReturnReason = Dto.ReturnReason;                
-                    // pceEntity.PCEId = Dto.PCEId;
-                    await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
-                }
+            
+                var httpContext = _httpContextAccessor.HttpContext;
 
-                await _cbeContext.SaveChangesAsync();
-
-                if (Dto.SupportingEvidences != null && Dto.SupportingEvidences.Count > 0)
+                var assignedPCECases = await _cbeContext.Collaterals.FirstOrDefaultAsync(res => res.Id == Dto.PCEId);
+                if (assignedPCECases == null)
                 {
-                    foreach (var file in Dto.SupportingEvidences)
-                    {
-                        var supportingEvidenceFile = new CreateFileDto
-                        {
-                            File = file,
-                            Catagory = "SupportingEvidence",
-                            CaseId = pceEntity.Id,
-                            CollateralId = pceEntity.PCEId
-                        };
-
-                        await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
-                    }
+                    return false;
                 }
-                if (Dto.ProductionProcessFlowDiagrams != null && Dto.ProductionProcessFlowDiagrams.Count > 0)
-                {
-                    foreach (var file in Dto.ProductionProcessFlowDiagrams)
-                    {
-                        var productionProcessFlowDiagramFile = new CreateFileDto
-                        {
-                            File = file,
-                            Catagory = "ProductionProcessFlowDiagram",
-                            CaseId = pceEntity.Id,
-                            CollateralId = pceEntity.PCEId
-                        };
-
-                        await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
-                    }
-                }
-                await _cbeContext.SaveChangesAsync();
-                
-                // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-                // PCE.CurrentStage = "Regional Manager";
-                // PCE.CurrentStatus = "Returned";
-                // _cbeContext.PCEs.Update(PCE);
-                // await _cbeContext.SaveChangesAsync();
-                
+                var returnPCE = _mapper.Map<Return>(Dto);
+                returnPCE.CreationDate = DateTime.Now;
+                returnPCE.ReturnedBy = Guid.Parse(httpContext.Session.GetString("userId"));
+                await _cbeContext.Returns.AddAsync(returnPCE);
+            
+                // assignedPCECases.CurrentStage = "Relation Manager";
+                // assignedPCECases.CurrentStatus = "Return";
+                // _cbeContext.Collaterals.Update(assignedPCECases);
                 // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
-                //     PCECaseId = PCE.PCECaseId,
-                //     Activity = $" <strong class=\"text-sucess\">PCE has been Returned and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
-                //     CurrentStage = "Regional Manager"
+                //     PCECaseId = assignedPCECases.PCECaseId,
+                //     Activity = $"<strong>Collateral is Returned.</strong> <br> <i class='text-purple'>",
+                //     CurrentStage = "Maker Manager",
                 // });
 
-                return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
+                // var PCEPCECaseAssignment = await _cbeContext.PCECaseAssignments.FirstOrDefaultAsync(res => res.PCEId == Dto.PCEId && res.UserId == Return.ReturnedBy);
+                // PCECaseAssignment.Status = "Return";
+                // _cbeContext.Update(PCECaseAssignment);
+                // await _cbeContext.SaveChangesAsync();
+                
+                return true;
+        
+            //     var pceEntity = new PCEEvaluation();
+                 
+            //     if(Dto.Id != null)
+            //     {
+            //         pceEntity = await _cbeContext.PCEEvaluations.FindAsync(Dto.Id);
+
+            //         pceEntity.Status = Status.Returned;
+            //         pceEntity.ReturnReason = Dto.ReturnReason;                
+            //         pceEntity.PCEId = Dto.PCEId;
+
+            //         _mapper.Map(Dto, pceEntity);
+            //         _cbeContext.Update(pceEntity);
+            //     }
+            //     else
+            //     {
+            //         pceEntity = _mapper.Map<PCEEvaluation>(Dto);
+            //         pceEntity.Id = Guid.NewGuid();
+            //         pceEntity.EvaluatorID = UserId;
+            //         pceEntity.CreatedAt = DateTime.Now; 
+
+            //         pceEntity.Status = Status.Returned;
+            //         pceEntity.ReturnReason = Dto.ReturnReason;                
+            //         pceEntity.PCEId = Dto.PCEId;
+
+            //         await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
+            //     }
+
+            //     await _cbeContext.SaveChangesAsync();
+
+            //     if (Dto.SupportingEvidences != null && Dto.SupportingEvidences.Count > 0)
+            //     {
+            //         foreach (var file in Dto.SupportingEvidences)
+            //         {
+            //             var supportingEvidenceFile = new CreateFileDto
+            //             {
+            //                 File = file,
+            //                 Catagory = "SupportingEvidence",
+            //                 CaseId = pceEntity.Id,
+            //                 PCEId = pceEntity.PCEId
+            //             };
+
+            //             await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
+            //         }
+            //     }
+            //     if (Dto.ProductionProcessFlowDiagrams != null && Dto.ProductionProcessFlowDiagrams.Count > 0)
+            //     {
+            //         foreach (var file in Dto.ProductionProcessFlowDiagrams)
+            //         {
+            //             var productionProcessFlowDiagramFile = new CreateFileDto
+            //             {
+            //                 File = file,
+            //                 Catagory = "ProductionProcessFlowDiagram",
+            //                 CaseId = pceEntity.Id,
+            //                 PCEId = pceEntity.PCEId
+            //             };
+
+            //             await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
+            //         }
+            //     }
+            //     await _cbeContext.SaveChangesAsync();
+                
+            //     // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
+            //     // PCE.CurrentStage = "Regional Manager";
+            //     // PCE.CurrentStatus = "Returned";
+            //     // _cbeContext.PCEs.Update(PCE);
+            //     // await _cbeContext.SaveChangesAsync();
+                
+            //     // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
+            //     // {
+            //     //     PCECaseId = PCE.PCECaseId,
+            //     //     Activity = $" <strong class=\"text-sucess\">PCE has been Returned and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
+            //     //     CurrentStage = "Regional Manager"
+            //     // });
+
+            //     return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
             {
