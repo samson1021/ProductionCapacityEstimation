@@ -20,14 +20,14 @@
                     </div>
                 </div>
             </div>          
-            <div class="card-body">       
-                <table class="table table-bordered table-striped table-hover">
+            <div class="card-body table-responsive">       
+                <table id="pceEvaluationsTable" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Production Line/Equipment Name</th>
-                            <th>Country of Origin</th>
-                            <th>Place of Inspection</th>
-                            <th>Status</th>
+                            <th onclick="sortTable(0)">Production Line or Equipment Name</th>
+                            <th onclick="sortTable(1)">Origin Country</th>
+                            <th onclick="sortTable(2)">Inspection Place</th>
+                            <th onclick="sortTable(3)">Status</th>
                             <th>Created At</th>
                             <th>Actions</th>
                         </tr>
@@ -39,4 +39,116 @@
             </div>
         </div>
     </div>
+    <div id="pagination" class="mt-3"></div>
 </section>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var table = document.getElementById("pceEvaluationsTable");
+    var rowsPerPage = 5;
+    var currentPage = 1;
+    var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+    function displayTable(page) {
+        var start = (page - 1) * rowsPerPage;
+        var end = start + rowsPerPage;
+
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].style.display = (i >= start && i < end) ? "" : "none";
+        }
+    }
+
+    function setupPagination() {
+        var pagination = document.getElementById("pagination");
+        var pageCount = Math.ceil(rows.length / rowsPerPage);
+        pagination.innerHTML = "";
+
+        for (var i = 1; i <= pageCount; i++) {
+            var pageLink = document.createElement("a");
+            pageLink.href = "#";
+            pageLink.innerText = i;
+            pageLink.classList.add("page-link");
+            if (i == currentPage) {
+                pageLink.classList.add("active");
+            }
+
+            pageLink.addEventListener("click", (function (page) {
+                return function (event) {
+                    event.preventDefault();
+                    currentPage = page;
+                    displayTable(page);
+                    setupPagination();
+                };
+            })(i));
+
+            pagination.appendChild(pageLink);
+        }
+    }
+
+    function sortTable(n) {
+        var switching = true;
+        var shouldSwitch;
+        var dir = "asc";
+        var switchCount = 0;
+
+        while (switching) {
+            switching = false;
+            var rowsArray = Array.from(rows);
+            for (var i = 0; i < rowsArray.length - 1; i++) {
+                shouldSwitch = false;
+                var x = rowsArray[i].getElementsByTagName("TD")[n];
+                var y = rowsArray[i + 1].getElementsByTagName("TD")[n];
+
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+
+            if (shouldSwitch) {
+                rowsArray[i].parentNode.insertBefore(rowsArray[i + 1], rowsArray[i]);
+                switching = true;
+                switchCount++;
+            } else {
+                if (switchCount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+
+    displayTable(currentPage);
+    setupPagination();
+});
+</script>
+
+<style>
+.table th {
+    cursor: pointer;
+}
+.page-link {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.page-link.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+.page-link:hover {
+    background-color: #0056b3;
+    color: white;
+}
+</style>
