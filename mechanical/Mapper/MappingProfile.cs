@@ -65,7 +65,7 @@ namespace mechanical.Mapper
 
             CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
 
-
+            CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
 
 
 

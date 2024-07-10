@@ -35,6 +35,19 @@ namespace mechanical.Controllers
             return BadRequest();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> PlantCreate(PlantPostDto pceDto)
+        {
+            if (ModelState.IsValid)
+            {
+                pceDto.CreatedById = base.GetCurrentUserId();
+                //await _pCECollateralService.CreatePCECollateral(pceDto);
+                var response = new { message = "Plant PCE Created Successfully" };
+                return Ok(response);
+            }
+            return BadRequest();
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetPCECollaterals(Guid CaseId)
