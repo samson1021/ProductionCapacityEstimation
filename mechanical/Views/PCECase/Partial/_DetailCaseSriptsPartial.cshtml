@@ -443,27 +443,10 @@
 
         $('#EstimatePlaneCollateralForm').submit(function (e) {
             e.preventDefault();
-            // var formDataArray = $(this).serializeArray();
-            // console.log("here");
-            // var Category = getAttributeByName(formDataArray, 'Category');
-            // if (Category == "MOV" || Category == "CMAMachinery") {
-            //     var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
-            //     var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
-            //     if (PlateName === "" || ChassisNo === "") {
-            //         toastr.error("Please fill in all required fields.");
-            //         return;
-            //     }
-            // } else if (Category == "IBFEqupment") {
-            //     var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-            //     var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
-            //     if (MachineName === "" || Purpose === "" ) {
-            //         toastr.error("Please fill in all required fields.");
-            //         return;
-            //     }
-            // }
+
             var formData = new FormData(this);
             $.ajax({
-                url: '/PlantCapacityEstimation/Create',
+                url: '/PlantCapacityEstimation/PlantCreate',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -475,7 +458,7 @@
                     loadCollaterals();
                 },
                 error: function (error) {
-                    toastr.error("Unable to create collateral");
+                    toastr.error("Unable to create collaterals");
                     console.log(error);
                 }
             });

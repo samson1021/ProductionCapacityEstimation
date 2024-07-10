@@ -59,7 +59,7 @@ namespace mechanical.Controllers
         }
         [HttpPost]
        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePlant(Guid caseId, PlantCapacityEstimationPostDto PlantCollateralDto)
+        public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
         {
             if (ModelState.IsValid)
             {
