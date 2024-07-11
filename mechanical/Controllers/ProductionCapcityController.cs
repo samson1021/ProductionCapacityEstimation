@@ -59,7 +59,7 @@ namespace mechanical.Controllers
         }
         [HttpPost]
        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePlant(Guid caseId, PlantCapacityEstimationPostDto PlantCollateralDto)
+        public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
         {
             if (ModelState.IsValid)
             {
@@ -217,7 +217,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
         {
-            var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.PCECaseId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
+            var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
             ProductioncaseAssignment.Status = "Remark";
             _cbeContext.Update(ProductioncaseAssignment);
 

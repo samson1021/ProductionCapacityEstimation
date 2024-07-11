@@ -480,29 +480,14 @@
         // Do Plant
 
        
-        $('#EstimatePlaneCollateralForm').submit(function (e) {
+        $('#EstimatePlantCollateralForm').submit(function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
-            console.log("here");
-            var Category = getAttributeByName(formDataArray, 'Category');
-            if (Category == "MOV" || Category == "CMAMachinery") {
-                var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
-                var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
-                if (PlateName === "" || ChassisNo === "") {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
-            } else if (Category == "IBFEqupment") {
-                var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-                var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
-                if (MachineName === "" || Purpose === "" ) {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
-            }
+            console.log("here planggggt");
+        
             var formData = new FormData(this);
             $.ajax({
-                url: '/ProductionCapcity/CreatePlant',
+                url: '/ProductionCapcity/PlantCreate',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -514,7 +499,7 @@
                     loadCollaterals();
                 },
                 error: function (error) {
-                    toastr.error("Unable to create Plant PCE collateral");
+                    toastr.error("Unable to create Plant PCE collateralfssssssssssss");
                     console.log(error);
                 }
             });
@@ -930,11 +915,34 @@
                     typeDropdown.append('<option value="Traditional medicine manufacturing">Traditional medicine manufacturing</option>')
                     typeDropdown.append('<option value="Herbal supplements manufacturing">Herbal supplements manufacturing</option>')
                     typeDropdown.append('<option value="Herbal skincare products manufacturing">Herbal skincare products manufacturing</option>')
+
+                    typeDropdown.append('<option value="Traditional medicine manufacturing">Traditional medicine manufacturing</option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+                    typeDropdown.append('<option value=""></option>')
+
                     typeDropdown.append('<option value="Herbal extracts and tinctures manufacturing">Herbal extracts and tinctures manufacturing</option>')
                     typeDropdown.append('<option value="Medicinal tea manufacturing">Medicinal tea manufacturing</option>')
                     typeDropdown.append('<option value="Herbal product packaging">Herbal product packaging</option>')
                     typeDropdown.append('<option value="Herbal product research and development">Herbal product research and development</option>')
                     
+
 
                     typeDropdown.append('<option value="Other">Others, please specify</option>');
                     $("#IndusteryProp").show();

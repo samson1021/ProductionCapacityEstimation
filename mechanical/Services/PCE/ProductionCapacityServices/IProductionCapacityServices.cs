@@ -10,7 +10,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
     public interface IProductionCapacityServices
     {
         Task<ProductionCapacity> CreateProductionCapacity(Guid userId, Guid caseId, ProductionPostDto createProductionDto);
-        Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantCapacityEstimationPostDto createplantDto);
+        Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantPostDto createplantDto);
         Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid CaseId);
         Task<ReturnProductionDto> GetProduction(Guid userId, Guid id);
         Task<bool> DeleteProduction(Guid userId, Guid id);
