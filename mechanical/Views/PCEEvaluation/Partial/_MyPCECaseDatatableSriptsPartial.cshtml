@@ -1,0 +1,473 @@
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+@using mechanical.Models.PCE.Dto.PCECaseDto;
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto;
+@{
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+}
+
+
+
+<script>
+    $(document).ready(function () {
+        var PCECaseId = $('#PCECaseId').val();
+
+        
+        function initializeDataTable(data) {
+            PCECaseCollateralsTable = $('#PCECaseCollaterals').DataTable({
+                language: {
+                    emptyTable: "There is no collateral register for this PCECase"
+                },
+                responsive: true,
+                pageLength: 5,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCECase - pdf' }, { extend: 'print', title: 'My PCECase - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    { data: 'PropertyOwner', width: '20%' },
+                    { data: 'Role', width: '15%' },
+                    { data: 'Category', width: '25%' },
+                    { data: 'Type', width: '25%' },
+                    {
+                        data: 'Id',
+                        width: '15%',
+                        render: function (data, type, row, meta) {
+                            var cat = row.Category;
+                            return '<a href="@Url.Action("Evaluation", "MOPCECase")?Id=' + data + '">Evaluation</a> | <a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details</a> | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>' + (cat === 'IND (Mfg) & BLDG FACILITY EQUIPMENT' ? ' | <a href="#" onclick="openAddCollateralModal()">Add</a>' : '');
+                        }
+                    }
+                ]
+            }).buttons().container().appendTo('#PCECaseCollaterals_wrapper .col-md-6:eq(0)');
+        }
+       
+        function loadCollaterals() {
+
+            $.ajax({
+                url: '/Collateral/GetMMCollaterals?PCECaseId=' + PCECaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#PCECaseCollaterals')) {
+                        var PCECaseCollateralsTable = $('#PCECaseCollaterals').DataTable();
+                        PCECaseCollateralsTable.destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load collaterals");
+                    console.log(error);
+                }
+            });
+        }
+
+        loadCollaterals();
+        function loadComments() {
+            $.ajax({
+                url: '/PCECaseComment/GetPCECaseComments?PCECaseId=' + PCECaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var PCECaseComments = data.PCECaseComments;
+                    var countComment = data.PCECaseComments.length;
+                    $(".CommentBage").text(countComment);
+                    console.log(countComment);
+                    var users = [];
+
+                    if (PCECaseComments && PCECaseComments.length > 0) {
+                        PCECaseComments.forEach(function (comment) {
+                            var chatMsg = $('<div>').addClass('direct-chat-msg');
+                            var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+                            var chatName = $('<a>');
+
+                            var chatImg = $('<a>');
+                            var chatImgInner = $('<img>').attr('src', '/img/avatar5.png').addClass('direct-chat-img');
+                            var chatText = $('<div>').addClass('direct-chat-text');
+
+                            chatName.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.append(chatImgInner);
+
+                            var createdAt = new Date(comment.CreatedAt);
+
+
+                            chatText.text(comment.Content);
+
+                            if (comment.AuthorId === currentUserID) {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp');
+                                $('<span>').addClass('direct-chat-name float-right').text(comment.AuthorName).appendTo(chatName);
+                                chatMsg.addClass('right');
+                            } else {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp float-right');
+                                $('<span>').addClass('direct-chat-name').text(comment.AuthorName).appendTo(chatName);
+                            }
+                            var formattedDate = formatDate(createdAt);
+                            chatTimestamp.text(formattedDate);
+
+                            chatInfos.append(chatName, chatTimestamp);
+                            chatMsg.append(chatInfos, chatImg, chatText);
+                            $('.direct-chat-messages').append(chatMsg);
+
+                            var existingUser = users.find(function (user) {
+                                return user.id === comment.AuthorId;
+                            });
+
+                            if (!existingUser) {
+                                var newUser = {
+                                    id: comment.AuthorId,
+                                    name: comment.AuthorName,
+                                    avatar: '/img/avatar5.png',
+                                    lastMessage: comment.Content,
+                                    date: formattedDate
+                                };
+                                users.push(newUser);
+                            }
+                        });
+                        populateContactList(users);
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this PCECase.');
+                        $('.direct-chat-messages').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving PCECase comments.');
+                }
+            });
+        }
+        function populateContactList(users) {
+            var contactList = $('.contacts-list');
+            contactList.empty();
+
+            users.forEach(function (user) {
+                var listItem = $('<li>');
+                var link = $('<a>').attr('href', '/UserManagment/Profile/' + user.id);
+                var avatarImg = $('<img>').addClass('contacts-list-img').attr('src', user.avatar);
+                var infoDiv = $('<div>').addClass('contacts-list-info');
+                var nameSpan = $('<span>').addClass('contacts-list-name').text(user.name);
+                var dateSpan = $('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date));
+                var messageSpan = $('<span>').addClass('contacts-list-msg').text(user.lastMessage);
+
+                infoDiv.append(nameSpan, dateSpan);
+                link.append(avatarImg, infoDiv, messageSpan);
+                listItem.append(link);
+                contactList.append(listItem);
+            });
+        }
+        function formatDate(date) {
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            return date.toLocaleString('en-US', options);
+        }
+
+        loadComments();
+
+        function sendMessage(message, PCECaseId) {
+            var requestData = {
+                Content: message,
+                PCECaseId: PCECaseId
+            };
+
+            $.ajax({
+                url: '/PCECaseComment/CreatePCECaseComment',
+                method: 'POST',
+                data: requestData,
+                success: function (response) {
+                    console.log(response);
+                    $('#messageinput').val('');
+                    var chatMessages = $('.direct-chat-messages');
+                    var scrollHeight = chatMessages[0].scrollHeight;
+                    chatMessages.scrollTop(scrollHeight);
+                },
+                error: function () {
+                    console.log('Error while sending the message.');
+                }
+            });
+        }
+
+        $('#SendButton').click(function (e) {
+            e.preventDefault();
+            var message = $('input[name="message"]').val();
+            if (message.trim() !== '') {
+                // Send the message
+                sendMessage(message, PCECaseId);
+                location.reload();
+                $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
+                // loadComments();
+                var chatMessages = $('.direct-chat-messages');
+                var scrollHeight = chatMessages[0].scrollHeight;
+                chatMessages.scrollTop(scrollHeight);
+            }
+        });
+    });
+
+    function openAddCollateralModal() {
+        $('#addMechanicalCollateralModal').modal('show');
+        // console.log("this is to test");
+    }
+    function openRejectionModal(collateralId) {
+        $('#CollateralId').val(collateralId);
+        $('#rejectionModal1').modal('show');
+    }
+
+        $('#rejectionModal1').on('shown.bs.modal', function () {
+            $('#rejectionComment').focus();
+        });
+
+        $('#rejectionForm').submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var rejectionComment = $('#rejectionComment').val();
+            var CollateralId = $('#CollateralId').val();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+
+                data: { rejectionComment: rejectionComment, CollateralId: CollateralId },
+                success: function (response) {
+                    // Handle the response from the controller if needed
+                    toastr.success(' Reason for Return saved successfully');
+                    $('#rejectionModal1').modal('hide');
+                    window.location.href = '/MOPCECase/MyPCECases';
+
+                },
+                error: function (error) {
+                    // Handle the error if needed
+                    toastr.error('Error saving rejection comment:', error);
+                }
+            });
+        });
+   
+
+    document.getElementById("PropertyOwner").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("PropertyOwner-error").textContent = "";
+        }
+    });
+    document.getElementById("ChassisNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("ChassisNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("ChassisNo-error").textContent = "";
+        }
+    });
+    document.getElementById("EngineMotorNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("EngineMotorNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("EngineMotorNo-error").textContent = "";
+        }
+    });
+    document.getElementById("InvoiceNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("InvoiceNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+
+    });
+    document.getElementById("ModelNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("ModelNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+    });
+    document.getElementById("SerialNo").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("SerialNo-error").textContent = "";
+        }
+
+    });
+
+    ModelNo
+    // function for the Region dropdown value
+    function handleRegionChange(selectElement) {
+        var otherRegionInput = document.getElementById("OtherRegion");
+        if (selectElement.value === "Others") {
+            otherRegionInput.style.display = "block";
+            otherRegionInput.setAttribute("required", "required");
+            otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
+        } else {
+            otherRegionInput.style.display = "none";
+            otherRegionInput.removeAttribute("required");
+            otherRegionInput.removeAttribute("name"); // Remove the name attribute
+        }
+    }
+    function handleTypeChange(selectElement) {
+        var otherTypeInput = document.getElementById("OtherType");
+        if (selectElement.value === "Other") {
+            otherTypeInput.style.display = "block";
+            otherTypeInput.setAttribute("required", "required");
+            otherTypeInput.setAttribute("name", "Type"); // Set the name attribute to "Region"
+        } else {
+            otherTypeInput.style.display = "none";
+            otherTypeInput.removeAttribute("required");
+            otherTypeInput.removeAttribute("name"); // Remove the name attribute
+        }
+    }
+
+
+    
+    //this is to validate all collateral addresses
+    function validateZoneInput(inputElement) {
+        var zoneError = document.getElementById("Zone-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Zone must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateCityInput(inputElement) {
+        var zoneError = document.getElementById("City-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "City must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateSubCityInput(inputElement) {
+        var zoneError = document.getElementById("SubCity-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "SubCity must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateWeredaInput(inputElement) {
+        var zoneError = document.getElementById("Wereda-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Wereda must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateKebeleInput(inputElement) {
+        var zoneError = document.getElementById("Kebele-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Kebele must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+    function validateHouseNoInput(inputElement) {
+        var zoneError = document.getElementById("HouseNo-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+
+</script>

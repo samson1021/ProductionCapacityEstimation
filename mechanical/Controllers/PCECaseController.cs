@@ -105,13 +105,20 @@ namespace mechanical.Controllers.PCE
 
 
         [HttpGet]
-        public async Task<IActionResult> GetDashboardPCSCaseCount()
+        public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCSCaseCount();
+            var myCase = await _PCECaseService.GetDashboardPCECaseCount();
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetMyDashboardPCECaseCount()
+        {
+            var myCase = await _PCECaseService.GetMyDashboardPCECaseCount(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
 
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)

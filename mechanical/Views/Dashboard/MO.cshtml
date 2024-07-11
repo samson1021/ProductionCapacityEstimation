@@ -108,8 +108,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pcsnewCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS New Cases</h6>
+                                        <h4 class="text-white" id="newPCECasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE New Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -130,8 +130,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pcspendingCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS Pending Cases</h6>
+                                        <h4 class="text-white" id="pendingPCECasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE Pending Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -152,8 +152,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pcscompletedCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS Completed Cases</h6>
+                                        <h4 class="text-white" id="completedPCECasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE Completed Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -174,8 +174,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pcstotalCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS Total Cases</h6>
+                                        <h4 class="text-white" id="totalPCECasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE Total Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -319,13 +319,15 @@
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCECase/GetDashboardPCSCaseCount")
+            fetch("/PCECase/GetDashboardMyPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
-                    animateCount("pcsnewCasesCount", data.PCSNewCaseCount);
-                    animateCount("pcspendingCasesCount", data.PCSPendingCaseCount);
-                    animateCount("pcscompletedCasesCount", data.PCSCompletedCaseCount);
-                    animateCount("pcstotalCasesCount", data.PCSTotalCaseCount);
+
+                    animateCountWithCollateral("newPCECasesCount", data.NewPCECaseCount, data.NewPCECollateralCount);
+                    animateCountWithCollateral("pendingPCECasesCount", data.PendingPCECaseCount, data.PendingPCECollateralCount);
+                    animateCountWithCollateral("completedPCECasesCount", data.CompletedPCECaseCount, data.CompletedPCECollateralCount);
+                    animateCount("totalPCECasesCount", data.TotalPCECaseCount, data.TotalPCECollateralCount);
+
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
