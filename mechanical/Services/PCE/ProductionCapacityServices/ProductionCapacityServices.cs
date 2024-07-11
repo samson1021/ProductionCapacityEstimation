@@ -272,13 +272,13 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             foreach (var item in userSupervised)
             {
                 var productionCaseAssignment = await _cbeContext.ProductionCaseAssignments.Include(x => x.User).Include(x => x.ProductionCapacity).Where(res => res.UserId == item.Id && res.ProductionCapacity.PCECaseId == ProductionCaseId).ToListAsync();
-                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.PCECaseId).ToList();
+                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.ProductionCapacityId).ToList();
                 foreach (var items in productionCaseAssignment)
                 {
                     var productionAssigmentDto = new ProductionAssignmentDto
                     {
-                        ProductionCapacityId = items.PCECaseId,
-                        PCECaseId = ProductionCaseId,
+                        ProductionCapacityId = items.ProductionCapacityId,
+                         PCECaseId = ProductionCaseId,
                         PropertyOwner = items.ProductionCapacity.PropertyOwner,
                         ProductionCaseAssignmentId = items.Id,
                         Role = items.ProductionCapacity.Role,
@@ -313,7 +313,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             {
                 foreach (var caseAssignment in caseAssignments)
                 {
-                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.PCECaseId && ca.CurrentStatus == "Correction");
+                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.ProductionCapacityId && ca.CurrentStatus == "Correction");
                     if (collatearal != null)
                     {
                         mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
