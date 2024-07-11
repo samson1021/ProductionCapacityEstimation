@@ -191,6 +191,32 @@ namespace mechanical.Controllers
             if (response == null) { return RedirectToAction("PCENewCases"); }
             return View(response);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> PlantEdit(Guid id)
+        {
+            var response = await _productionCapacityServices.GetPlantProduction(base.GetCurrentUserId(), id);
+            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
+            ViewData["productionFiles"] = file;
+            if (response == null) { return RedirectToAction("PCENewCases"); }
+            return View(response);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PlantEdit(Guid id, PlantEditPostDto collateralPostDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var collateral = await _productionCapacityServices.EditPlantProduction(base.GetCurrentUserId(), id, collateralPostDto);
+                return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
+            }
+            return View();
+        }
+
+
+
         [HttpPost]
         public async Task<ActionResult> DeleteProductionFile(Guid Id)
         {

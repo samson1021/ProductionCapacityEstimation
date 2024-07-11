@@ -45,13 +45,13 @@
                                 <span asp-validation-for="Role" class="text-danger"></span>
                             </div>
                         </div>
-                       
+
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <input type="hidden" id="selectedCategory" value="@Model.Category" />
                                 <label asp-for="Category"> Manufacturing Main Sector *</label>
                                 <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
-                                    asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                        asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                     <option value="" disabled selected>Select Manufacturing Main Sector</option>
                                 </select>
                                 <span asp-validation-for="Category" class="text-danger"></span>
@@ -128,36 +128,38 @@
                                         <div class="form-group col-lg-4" id="IndustrialPark">
                                             <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
                                             <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                                    asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                                 <option value="" disabled selected>Select Industrial Park </option>
                                             </select>
                                             <span asp-validation-for="Industrialpark" class="text-danger"></span>
 
                                         </div>
-                                    }else{
-                                        
-                                           
-                                                <div class="form-group col-lg-4">
-                                                    <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
-                                                    <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
-                                                    <span asp-validation-for="LHCNumber" class="text-danger"></span>
-                                                </div>
-                                                <div class="form-group col-lg-4">
-                                                    <label asp-for="OwnerName">Owner Name in the LHC <i class="text-danger">*</i></label>
-                                                    <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
-                                                    <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
-                                                </div>
-                                         
-                                       
+                                    }
+                                    else
+                                    {
+
+
+                                        <div class="form-group col-lg-4">
+                                            <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
+                                            <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
+                                            <span asp-validation-for="LHCNumber" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label asp-for="OwnerName">Owner Name in the LHC <i class="text-danger">*</i></label>
+                                            <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
+                                            <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                        </div>
+
+
                                     }
 
                                 </div>
-                           
 
-                           
-                           </div>
-                          </div>      
-                       
+
+
+                            </div>
+                        </div>
+
 
                         <div class="card">
                             <div class="card-body" style="padding-bottom:0px;">
@@ -333,7 +335,7 @@
                             <option value="PCE Shade Rent Agreement">PCE Shade Rent Agreement</option>
                             <option value="PCE Business license">PCE Business license</option>
                             <option value="PCE Machine specification document">PCE Machine specification document</option>
-                            <option value="PCE Machine operation manual">PCE Machine operation manual</option>                           
+                            <option value="PCE Machine operation manual">PCE Machine operation manual</option>
                             <option value="PCE Other Supportive Document"> PCE Other Supportive Document</option>
                         </select>
                         <span name-for="DocumentCatagory" class="text-danger"></span>
@@ -410,7 +412,7 @@
                 });
             });
         });
-        
+
 
     </script>
     <script>

@@ -13,8 +13,16 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantPostDto createplantDto);
         Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid CaseId);
         Task<ReturnProductionDto> GetProduction(Guid userId, Guid id);
+        Task<PlantEditPostDto> GetPlantProduction(Guid userId, Guid id);
+
+
         Task<bool> DeleteProduction(Guid userId, Guid id);
+
         Task<ProductionCapacity> EditProduction(Guid userId, Guid ProductionCapacityId, ProductionPostDto createProductionDto);
+
+        Task<ProductionCapacity> EditPlantProduction(Guid userId, Guid ProductionCapacityId, PlantEditPostDto createProductionDto);
+
+
         Task<IEnumerable<ReturnProductionDto>> GetRejectedProductions(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid PCECaseId);

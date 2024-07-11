@@ -60,12 +60,14 @@ namespace mechanical.Mapper
             CreateMap<ProductionPostDto, ProductionCapacity>();
             CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();
             CreateMap<ProductionCapacity, ReturnProductionDto>()
-                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
-                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));
+                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
             CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
 
             CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
+
+            CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
 
 
 
