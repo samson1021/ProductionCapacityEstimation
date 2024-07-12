@@ -935,7 +935,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         public async Task<IEnumerable<PCECaseReturntDto>> GetCompletedPCECases(Guid UserId)
         {
 
-            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).Where(Ca => Ca.UserId == UserId && Ca.Status=="Complete").ToListAsync();
+            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).Where(Ca => Ca.UserId == UserId && Ca.Status=="Completed").ToListAsync();
             var UniquePCECases = PCECaseAssignments.Select(ca => ca.ProductionCapacity.PCECase) .DistinctBy(c => c.Id).ToList();
             var ReturnDtos = _mapper.Map<IEnumerable<PCECaseReturntDto>>(UniquePCECases);
             foreach (var ReturnDto in ReturnDtos)
@@ -973,6 +973,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         public async Task<IEnumerable<PCECaseReturntDto>> GetTotalPCECases(Guid UserId)
         {
+
+            // var cases = await _cbeContext.PCECases.Where(res => res.CurrentStage == "Maker Officer").ToListAsync();
 
             var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).Where(Ca => Ca.UserId == UserId).ToListAsync();
             // var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).ThenInclude(res=>res.RMUserId).Where(Ca => Ca.UserId == UserId).ToListAsync();
