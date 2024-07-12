@@ -67,6 +67,8 @@ namespace mechanical.Mapper
 
             CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
 
+            CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
+
 
 
             CreateMap<CollateralPostDto, Collateral>();
