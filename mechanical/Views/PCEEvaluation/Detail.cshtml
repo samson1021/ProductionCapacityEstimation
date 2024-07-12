@@ -7,10 +7,10 @@
     ViewData["Title"] = "PCE Evaluation Detail";
     @* var ViewData["PCE"]. PCEEvaluationReturnDto; *@
 
-    var ReturnPost = new PCEReturnPostDto {
+    var ReturnPost = new PCERejectPostDto {
             // PCEId = Model.PCEId, 
             PCEId = null, 
-            Reason = "" 
+            RejectionComment = "" 
     }; 
     ViewData["ReturnPost"] = ReturnPost; 
 }
@@ -348,8 +348,10 @@
  
   
 @section Scripts {
-    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
-    @{await Html.RenderPartialAsync("_ReturnModal", ViewData["ReturnPost"]);} 
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
+        await Html.RenderPartialAsync("Partial/_ReturnModal", ViewData["ReturnPost"]);
+    } 
 
     <script>
         // formatAndDisplayValue('CollateralEstimationFee');

@@ -6,10 +6,10 @@
 @{
     ViewData["Title"] = "PCE Evaluation Detail";
     ViewData["PCEId"] = null;
-    var ReturnPost = new PCEReturnPostDto {
+    var ReturnPost = new PCERejectPostDto {
             // PCEId = Model.PCEId, 
             PCEId = null, 
-            Reason = "" 
+            RejectionComment = "" 
     }; 
     ViewData["ReturnPost"] = ReturnPost; 
 }
@@ -44,7 +44,7 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create" id="form">
   
                     @Html.AntiForgeryToken()
-                    @Html.Partial("_DataLists")
+                    @Html.Partial("Partial/_DataLists")
 
                     <input asp-for="PCEId" value=@ViewData["PCEId"] type="hidden" /> 
                     <!-- General Information -->
@@ -281,8 +281,10 @@
     <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
 
-    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");}
-    @{await Html.RenderPartialAsync("_ReturnModal", ViewData["ReturnPost"]);} 
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("Partial/_ReturnModal", ViewData["ReturnPost"]);
+    } 
 
     <script>
          $(document).ready(function () {

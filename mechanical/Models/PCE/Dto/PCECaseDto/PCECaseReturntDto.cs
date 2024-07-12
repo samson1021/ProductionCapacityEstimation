@@ -1,4 +1,4 @@
-﻿
+﻿using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Models.PCE.Dto.PCECaseDto
@@ -17,7 +17,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
         public DateTime CreationDate { get; set; }
         public DateTime MakerAssignmentDate { get; set; }
         public int TotalNoOfCollateral { get; set; } = 0;
-        public virtual PCEUploadFile? BussinessLicence { get; set; }
+        public virtual UploadFile? BussinessLicence { get; set; }
 
         //public Guid Id { get; set; }
         //public required string CaseNo { get; set; }

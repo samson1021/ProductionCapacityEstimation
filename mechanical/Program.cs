@@ -38,13 +38,11 @@ using mechanical.Services.CaseTerminateService;
 using mechanical.Mapper;
 using mechanical.Controllers;
 using mechanical.Models.PCE.Entities;
-// using mechanical.Services.PCE.FileUploadService;
 using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.PCE.CollateralEstimationFeeService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECollateralService;
-using mechanical.Services.PCE.UploadFileService;
+using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
@@ -95,7 +93,7 @@ builder.Services.AddDbContext<CbeContext>(options =>
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
-builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
+// builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
 builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityServices>();
 builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
@@ -134,7 +132,6 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
-builder.Services.AddScoped<ICollateralEstimationFeeService, CollateralEstimationFeeService>();
 ///////////////////////////////
 
 // Add services to the container.

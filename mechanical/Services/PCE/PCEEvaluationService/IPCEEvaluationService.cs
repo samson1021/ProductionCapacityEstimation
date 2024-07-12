@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using mechanical.Models.Dto.Correction;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
+using mechanical.Models.PCE.Dto.PCECaseDto;
+using mechanical.Models.PCE.Dto.RMDashboardDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
@@ -19,7 +22,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<PCEEvaluationReturnDto> ReevaluatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<PCEEvaluationReturnDto> CompletePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);
         Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id);
-        Task<bool> ReturnPCEEvaluation(Guid UserId, PCEReturnPostDto Dto);
+        Task<bool> ReturnPCEEvaluation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> SendToRM(Guid UserId, Guid Id);    
         Task<bool> SendToMO(Guid UserId, Guid Id);    
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);
@@ -38,7 +41,23 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task CompletePCEEvaluations(Guid UserId, IEnumerable<Guid> SelectedPCEIds, Guid CenterId);
         
         Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId);
-        Task<IEnumerable<int>> GetDashboardPCEEvaluationCount(Guid UserId);    
+        Task<IEnumerable<int>> GetDashboardPCEEvaluationCount(Guid UserId); 
+        Task<MyPCECaseCountDto> GetMyDashboardPCECaseCount(Guid userId);
 
+        Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid id);
+        Task<PCECaseReturntDto> GetPCECaseDetail(Guid UserId, Guid id);
+        Task<IEnumerable<PCECaseReturntDto>> GetNewPCECases(Guid UserId);
+        Task<IEnumerable<PCECaseReturntDto>> GetPendingPCECases(Guid UserId); 
+        Task<IEnumerable<PCECaseReturntDto>> GetCompletedPCECases(Guid UserId);
+        Task<IEnumerable<PCECaseReturntDto>> GetReturnedPCECases(Guid UserId);
+        Task<IEnumerable<PCECaseReturntDto>> GetResubmitedPCECases(Guid UserId); 
+        Task<IEnumerable<PCECaseReturntDto>> GetTotalPCECases(Guid UserId);  
+
+        Task<ReturnProductionDto> MyReturnedPCE(Guid UserId, Guid id);
+        Task<ReturnProductionDto> MyResubmitedPCE(Guid UserId, Guid id);
+        // Task<IEnumerable<ReturnProductionDto>> MyReturnedPCEs(Guid UserId);
+        // Task<IEnumerable<ReturnProductionDto>> MyResubmitedPCEs(Guid UserId);
+
+        
     }
 }

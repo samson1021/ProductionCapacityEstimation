@@ -109,7 +109,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="newPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE New Cases</h6>
+                                        <h6 class="text-white m-b-0">New PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -119,7 +119,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("PCENewCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyNewPCECases","PCEEvaluation")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -131,7 +131,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="pendingPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE Pending Cases</h6>
+                                        <h6 class="text-white m-b-0">Pending PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -141,7 +141,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("PCEPendingCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPendingPCECases","PCEEvaluation")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -153,7 +153,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="completedPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE Completed Cases</h6>
+                                        <h6 class="text-white m-b-0">Completed PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -163,7 +163,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("PCECompleteCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyCompletePCECases","PCEEvaluation")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -175,7 +175,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="totalPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE Total Cases</h6>
+                                        <h6 class="text-white m-b-0">Total PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -275,83 +275,61 @@
                     console.error("Error fetching card counts:", error);
                 });
 
-            function animateCount(elementId, targetCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(targetCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= targetCount) {
-                        clearInterval(animationInterval);
-                        currentCount = targetCount;
-                    }
-                    element.textContent = currentCount;
-                }, 20);
-            }
-
-            function animateCountWithCollateral(elementId, caseCount, collateralCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(caseCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= caseCount) {
-                        clearInterval(animationInterval);
-                        currentCount = caseCount;
-                    }
-                    element.textContent = `${currentCount} (${collateralCount})`;
-                }, 20);
-            }
         });
-
-
-
-
-
-
-
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCECase/GetDashboardMyPCECaseCount")
+            fetch("/PCEEvaluation/GetMyDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
 
                     animateCountWithCollateral("newPCECasesCount", data.NewPCECaseCount, data.NewPCECollateralCount);
                     animateCountWithCollateral("pendingPCECasesCount", data.PendingPCECaseCount, data.PendingPCECollateralCount);
                     animateCountWithCollateral("completedPCECasesCount", data.CompletedPCECaseCount, data.CompletedPCECollateralCount);
-                    animateCount("totalPCECasesCount", data.TotalPCECaseCount, data.TotalPCECollateralCount);
+                    animateCount("totalPCECasesCount", data.TotalPCECaseCount);
 
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
-
-            function animateCount(elementId, targetCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(targetCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= targetCount) {
-                        clearInterval(animationInterval);
-                        currentCount = targetCount;
-                    }
-                    element.textContent = currentCount;
-                }, 20);
-            }
         });
 
         // Production capacity estimation case end
+
+    
+        function animateCount(elementId, targetCount) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startCount = 1;
+            const step = Math.ceil(targetCount / (duration / 20));
+
+            let currentCount = startCount;
+            const animationInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= targetCount) {
+                    clearInterval(animationInterval);
+                    currentCount = targetCount;
+                }
+                element.textContent = currentCount;
+            }, 20);
+        }
+
+        function animateCountWithCollateral(elementId, caseCount, collateralCount) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startCount = 1;
+            const step = Math.ceil(caseCount / (duration / 20));
+
+            let currentCount = startCount;
+            const animationInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= caseCount) {
+                    clearInterval(animationInterval);
+                    currentCount = caseCount;
+                }
+                element.textContent = `${currentCount} (${collateralCount})`;
+            }, 20);
+        }
 
 
 

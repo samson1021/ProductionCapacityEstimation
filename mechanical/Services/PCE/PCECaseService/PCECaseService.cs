@@ -162,30 +162,6 @@ namespace mechanical.Services.PCE.PCECaseService
             };
         }
        
-        public async Task<MyPCECaseCountDto> GetMyDashboardPCECaseCount(Guid userId)
-        {
-            var  NewPCECollateral = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
-            var  PendPCECollateral = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).Where(res => res.UserId == userId && res.Status == "Pending").ToListAsync();
-            var  CompPCECollateral = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).Where(res => res.UserId == userId && res.Status == "Complete").ToListAsync();
-            var TotalPCECollateral = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == userId ).ToListAsync();
-
-            return new MyPCECaseCountDto()
-            {
-                NewPCECaseCount = NewPCECollateral.Select(res => res.ProductionCapacity.PCECaseId) .Distinct().Count(),
-                NewPCECollateralCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == userId && res.Status == "New").CountAsync(),
-
-                PendingPCECaseCount = PendPCECollateral.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                PendingPCECollateralCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == userId && res.Status == "Pending").CountAsync(),
-
-                CompletedPCECaseCount = CompPCECollateral.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                CompletedPCECollateralCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == userId && res.Status == "Complete").CountAsync(),
-
-                TotalPCECaseCount = TotalPCECollateral.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                TotalPCECollateralCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == userId).CountAsync(),
-            };
-        }
-       
-
         public async Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id)
         {
             var loanCase = await _cbeContext.PCECases

@@ -4,7 +4,7 @@ using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Services.PCE.PCECollateralService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using mechanical.Services.PCE.UploadFileService;
+using mechanical.Services.UploadFileService;
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 
@@ -14,12 +14,12 @@ namespace mechanical.Controllers
     public class PlantCapacityEstimationController : BaseController
     {
         private readonly IPCECollateralService _pCECollateralService;
-        private readonly IPCEUploadFileService _uploadFileService;
+        private readonly IUploadFileService _uploadFileService;
 
-        public PlantCapacityEstimationController(IPCECollateralService pCECollateralService, IPCEUploadFileService pCEUploadFileService)
+        public PlantCapacityEstimationController(IPCECollateralService pCECollateralService, IUploadFileService uploadFileService)
         {
             _pCECollateralService = pCECollateralService;
-            _uploadFileService= pCEUploadFileService;
+            _uploadFileService= uploadFileService;
         }
 
         [HttpPost]
@@ -29,6 +29,19 @@ namespace mechanical.Controllers
             {
                 pceDto.CreatedById = base.GetCurrentUserId();
                 await _pCECollateralService.CreatePCECollateral(pceDto);
+                var response = new { message = "Plant PCE Created Successfully" };
+                return Ok(response);
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PlantCreate(PlantPostDto pceDto)
+        {
+            if (ModelState.IsValid)
+            {
+                pceDto.CreatedById = base.GetCurrentUserId();
+                //await _pCECollateralService.CreatePCECollateral(pceDto);
                 var response = new { message = "Plant PCE Created Successfully" };
                 return Ok(response);
             }

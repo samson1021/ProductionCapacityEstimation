@@ -19,7 +19,6 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 
 using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.PCE.Dto.PCEUploadFileDto;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
@@ -89,7 +88,103 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
             return production;
         }
-     
+
+        //public async Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantPostDto createplantDto)
+        //{
+        //    var collateral = _mapper.Map<ProductionCapacity>(createplantDto);
+        //    collateral.Id = Guid.NewGuid();
+        //    collateral.PCECaseId = caseId;
+        //    //try
+        //    //{
+        //    //    await this.UploadFile(userId, "Commercial Invoice", collateral, createplantDto.CommercialInvoice);
+        //    //    await this.UploadFile(userId, "Customs Declaration Document", collateral, createplantDto.customDeclaration);
+        //    //    await this.UploadFile(userId, "LHC Document", collateral, createplantDto.LHC);
+        //    //    await this.UploadFile(userId, "Bussiness License Document", collateral, createplantDto.BussinessLicence);
+        //    //    if (createplantDto.OtherDocument != null)
+        //    //    {
+        //    //        foreach (var otherDocument in createplantDto.OtherDocument)
+        //    //        {
+        //    //            await this.UploadFile(userId, "Other Supportive Document", collateral, otherDocument);
+        //    //        }
+        //    //    }
+        //    //}
+        //    //catch (Exception)
+        //    //{
+        //    //    throw new Exception("unable to upload file");
+        //    //}
+        //    collateral.CreationDate = DateTime.Now;
+        //    collateral.EndDate = DateTime.Now;
+        //    collateral.CreatedById = userId;
+        //    collateral.CurrentStage = "Relation Manager";
+        //    collateral.CurrentStatus = "New";
+        //    collateral.ProductionType = "Plant";
+
+        //    await _cbeContext.ProductionCapacities.AddAsync(collateral);
+        //    await _cbeContext.SaveChangesAsync();
+
+        //    await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+        //    {
+        //        CaseId = collateral.PCECaseId,
+        //        Activity = $" <strong>A new PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+        //        // Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {collateral.PlantName}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
+        //        CurrentStage = "Relation Manager"
+        //    });
+        //    return collateral;
+        //}
+        //public async Task<ProductionCapacity> CreateProductionCapacity(Guid userId, Guid PCECaseId, ProductionPostDto createProductionDto)
+
+        public async Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid PCECaseId, PlantPostDto createProductionDto)
+        {
+            
+            var production = _mapper.Map<ProductionCapacity>(createProductionDto);
+            production.Id = Guid.NewGuid();
+            //production.PCECaseId = PCECaseId;
+            try
+            {
+                await this.UploadFile(userId, "Plant LHC Certificate", production, createProductionDto.LHC);
+                await this.UploadFile(userId, "Plant Commercial Invoice", production, createProductionDto.CommercialInvoice);
+                await this.UploadFile(userId, "Plant Custom Declaration", production, createProductionDto.customDeclaration);
+                await this.UploadFile(userId, "Plant Bussiness Licence", production, createProductionDto.BussinessLicence);
+                if (createProductionDto.CBEPartialFinancing != null)
+                {
+                    await this.UploadFile(userId, "CBE Partial Financing Supportive Document", production, createProductionDto.CBEPartialFinancing);
+                }
+
+                if (createProductionDto.OtherDocument != null)
+                {
+                    foreach (var otherDocument in createProductionDto.OtherDocument)
+                    {
+                        await this.UploadFile(userId, "Plant Other Supportive Document", production, otherDocument);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("unable to upload file");
+            }
+
+            production.CreationDate = DateTime.Now;
+            production.CreatedById = userId;
+            production.CurrentStage = "Relation Manager";
+            production.CurrentStatus = "New";
+            //production.ProductionType = "Plant";
+
+
+            await _cbeContext.ProductionCapacities.AddAsync(production);
+            await _cbeContext.SaveChangesAsync();
+
+            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+            {
+                CaseId = production.PCECaseId,
+                //Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {production.Type}.",
+                Activity = $" <strong>A new Plant PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}. &nbsp; <i class='text-purple'>Collateral Type: Plant</i> .",
+
+                CurrentStage = "Relation Manager"
+            });
+
+            return production;
+        }
+
 
         public async Task<bool> DeleteProduction(Guid userId, Guid id)
         {
@@ -176,13 +271,13 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             foreach (var item in userSupervised)
             {
                 var productionCaseAssignment = await _cbeContext.ProductionCaseAssignments.Include(x => x.User).Include(x => x.ProductionCapacity).Where(res => res.UserId == item.Id && res.ProductionCapacity.PCECaseId == ProductionCaseId).ToListAsync();
-                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.PCECaseId).ToList();
+                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.ProductionCapacityId).ToList();
                 foreach (var items in productionCaseAssignment)
                 {
                     var productionAssigmentDto = new ProductionAssignmentDto
                     {
-                        ProductionCapacityId = items.PCECaseId,
-                        PCECaseId = ProductionCaseId,
+                        ProductionCapacityId = items.ProductionCapacityId,
+                         PCECaseId = ProductionCaseId,
                         PropertyOwner = items.ProductionCapacity.PropertyOwner,
                         ProductionCaseAssignmentId = items.Id,
                         Role = items.ProductionCapacity.Role,
@@ -217,7 +312,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             {
                 foreach (var caseAssignment in caseAssignments)
                 {
-                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.PCECaseId && ca.CurrentStatus == "Correction");
+                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.ProductionCapacityId && ca.CurrentStatus == "Correction");
                     if (collatearal != null)
                     {
                         mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
@@ -311,48 +406,6 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return false;
         }
 
-        public async Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid caseId, PlantCapacityEstimationPostDto createplantDto)
-        {
-            var collateral = _mapper.Map<ProductionCapacity>(createplantDto);
-            collateral.Id = Guid.NewGuid();
-            collateral.PCECaseId = caseId;
-            //try
-            //{
-            //    await this.UploadFile(userId, "Commercial Invoice", collateral, createplantDto.CommercialInvoice);
-            //    await this.UploadFile(userId, "Customs Declaration Document", collateral, createplantDto.customDeclaration);
-            //    await this.UploadFile(userId, "LHC Document", collateral, createplantDto.LHC);
-            //    await this.UploadFile(userId, "Bussiness License Document", collateral, createplantDto.BussinessLicence);
-            //    if (createplantDto.OtherDocument != null)
-            //    {
-            //        foreach (var otherDocument in createplantDto.OtherDocument)
-            //        {
-            //            await this.UploadFile(userId, "Other Supportive Document", collateral, otherDocument);
-            //        }
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    throw new Exception("unable to upload file");
-            //}
-            collateral.CreationDate = DateTime.Now;
-            collateral.EndDate = DateTime.Now;
-            collateral.CreatedById = userId;
-            collateral.CurrentStage = "Relation Manager";
-            collateral.CurrentStatus = "New";
-            collateral.ProductionType = "Plant";
-
-            await _cbeContext.ProductionCapacities.AddAsync(collateral);
-            await _cbeContext.SaveChangesAsync();
-
-            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-            {
-                CaseId = collateral.PCECaseId,
-                Activity = $" <strong>A new PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
-               // Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {collateral.PlantName}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}.",
-                CurrentStage = "Relation Manager"
-            });
-            return collateral;
-        }
     }
 }
     

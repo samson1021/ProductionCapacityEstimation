@@ -9,8 +9,7 @@ using mechanical.Models.PCE.Entities;
 using Microsoft.CodeAnalysis.Operations;
 using AutoMapper;
 using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Services.PCE.UploadFileService;
-using mechanical.Models.PCE.Dto.PCEUploadFileDto;
+using mechanical.Services.UploadFileService;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -23,15 +22,15 @@ namespace mechanical.Services.PCE.PCECollateralService
     public class PCECollateralService : IPCECollateralService
     {
         private readonly IMapper _mapper;
-        private readonly IPCEUploadFileService _uploadFileService;
+        private readonly IUploadFileService _uploadFileService;
         private readonly CbeContext _cbeContext;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
 
 
-        public PCECollateralService(IMapper mapper, IPCEUploadFileService pCEUploadFileService, CbeContext cbeContext, IPCECaseTimeLineService iPCECaseTimeLineService)
+        public PCECollateralService(IMapper mapper, IUploadFileService uploadFileService, CbeContext cbeContext, IPCECaseTimeLineService iPCECaseTimeLineService)
         {
             _mapper = mapper;
-            _uploadFileService = pCEUploadFileService;
+            _uploadFileService = uploadFileService;
             _cbeContext = cbeContext;
             _IPCECaseTimeLineService = iPCECaseTimeLineService;
         }
@@ -84,11 +83,11 @@ namespace mechanical.Services.PCE.PCECollateralService
         {
             if (file != null)
             {
-                await _uploadFileService.CreateUploadFile(userId, new PCECreateFileDto()
+                await _uploadFileService.CreateUploadFile(userId, new CreateFileDto()
                 {
                     File = file,
                     CaseId = PCEcollateral.PCECaseId,
-                    PlantCapacityEstimationId = PCEcollateral.Id,
+                    CollateralId = PCEcollateral.Id,
                     Catagory = category
                 });
             }
@@ -167,7 +166,7 @@ namespace mechanical.Services.PCE.PCECollateralService
 
         public async Task<bool> DeleteCollateralFile(Guid userId, Guid Id)
         {
-            var file = await _cbeContext.PCEUploadFiles.FindAsync(Id);
+            var file = await _cbeContext.UploadFiles.FindAsync(Id);
             if (file == null)
             {
                 return false;
@@ -191,10 +190,10 @@ namespace mechanical.Services.PCE.PCECollateralService
                 return false;
             }
 
-            var CollateralFile = new PCECreateFileDto()
+            var CollateralFile = new CreateFileDto()
             {
                 File = file ?? throw new ArgumentNullException(nameof(file)),
-                PlantCapacityEstimationId = pcecaseId,
+                CollateralId = pcecaseId,
                 Catagory = DocumentCatagory,
                 CaseId = caseId
 
@@ -220,12 +219,12 @@ namespace mechanical.Services.PCE.PCECollateralService
 
         //    if (collateral != null)
         //    {
-        //        // Delete all associated PCEUploadFiles records
-        //        var uploadFiles = await _cbeContext.PCEUploadFiles
-        //            .Where(f => f.PlantCapacityEstimationId == id)
+        //        // Delete all associated UploadFiles records
+        //        var uploadFiles = await _cbeContext.UploadFiles
+        //            .Where(f => f.CollateralId == id)
         //            .ToListAsync();
 
-        //        _cbeContext.PCEUploadFiles.RemoveRange(uploadFiles);
+        //        _cbeContext.UploadFiles.RemoveRange(uploadFiles);
         //        await _cbeContext.SaveChangesAsync();
 
         //        // Delete the PlantCapacityEstimations record
@@ -256,12 +255,12 @@ namespace mechanical.Services.PCE.PCECollateralService
 
                     if (collateral != null)
                     {
-                        // Delete all associated PCEUploadFiles records
-                        var uploadFiles = await _cbeContext.PCEUploadFiles
-                            .Where(f => f.PlantCapacityEstimationId == id)
+                        // Delete all associated UploadFiles records
+                        var uploadFiles = await _cbeContext.UploadFiles
+                            .Where(f => f.CollateralId == id)
                             .ToListAsync();
 
-                        _cbeContext.PCEUploadFiles.RemoveRange(uploadFiles);
+                        _cbeContext.UploadFiles.RemoveRange(uploadFiles);
                         await _cbeContext.SaveChangesAsync();
 
                         // Delete the PlantCapacityEstimations record

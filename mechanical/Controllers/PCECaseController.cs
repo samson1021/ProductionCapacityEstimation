@@ -113,14 +113,6 @@ namespace mechanical.Controllers.PCE
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyDashboardPCECaseCount()
-        {
-            var myCase = await _PCECaseService.GetMyDashboardPCECaseCount(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
-        }
-
-        [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)
         {
             var pcecaseDto =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
@@ -195,7 +187,7 @@ namespace mechanical.Controllers.PCE
             try
             {
                 await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
-                var response = new { message = "PCe assigned successfully" };
+                var response = new { message = "PCE assigned successfully" };
                 return Ok(response);
             }
             catch (Exception ex)

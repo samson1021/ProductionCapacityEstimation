@@ -9,7 +9,6 @@ namespace mechanical.Services.PCE.PCECaseService
     {
         Task<PCECase> PCECase(Guid userId, PCECaseDto caseDto);
         Task<CreateNewCaseCountDto> GetDashboardPCECaseCount();
-        Task<MyPCECaseCountDto> GetMyDashboardPCECaseCount(Guid userId);
 
         Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCEPendingCases(Guid userId);

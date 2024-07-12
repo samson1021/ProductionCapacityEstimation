@@ -21,12 +21,9 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
-using mechanical.Models.PCE.Dto.PCEUploadFileDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
-using mechanical.Models.PCE.Dto.CollateralEstimationFeeDto;
 using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 /////
 
@@ -66,19 +63,19 @@ namespace mechanical.Mapper
             CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
             CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
 
-            CreateMap<PCEReturnFileDto, PCEUploadFile>().ReverseMap();
-            CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();           
+            // CreateMap<PCEReturnFileDto, PCEUploadFile>().ReverseMap();
+            // CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();           
 
             //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>();
             CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();
             CreateMap<ProductionCapacity, ReturnProductionDto>()
-                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
-                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));
+                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
             CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
 
-
+            CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
 
 
 
@@ -193,8 +190,6 @@ namespace mechanical.Mapper
                     return context.Items["Catagory"];
                 }));
 
-            CreateMap<CollateralEstimationFee, CollateralEstimationFeeDto>().ReverseMap();
-
             CreateMap<TimePeriod, TimePeriodDto>().ReverseMap();
             CreateMap<DatePeriod, DatePeriodDto>().ReverseMap();
             CreateMap<DateTimePeriodDto, DateTimePeriod>()
@@ -222,7 +217,7 @@ namespace mechanical.Mapper
                     End = src.TimeConsumedToCheck.End
                 }))
                 .ReverseMap();
-            CreateMap<PCEReturnPostDto, Return>();
+            CreateMap<PCERejectPostDto, ProductionReject>();
             ///////
         }
 
