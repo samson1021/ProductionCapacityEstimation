@@ -397,7 +397,7 @@ namespace mechanical.Controllers
                 {
                     return RedirectToAction("Index", "PCECase");
                 }
-                return RedirectToAction("MyPendingCases", "PCEEvaluation");
+                return RedirectToAction("MyPendingPCECases", "PCEEvaluation");
             }
             catch (Exception ex)
             {
@@ -417,7 +417,7 @@ namespace mechanical.Controllers
                 {
                     return RedirectToAction("Index", "PCECase");
                 }
-                return RedirectToAction("MyPendingCases", "PCEEvaluation");
+                return RedirectToAction("MyPendingPCECases", "PCEEvaluation");
             }
             catch (Exception ex)
             {

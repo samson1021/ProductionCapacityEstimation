@@ -129,8 +129,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
                 //     PCECaseId = PCE.PCECaseId,
-                //     Activity = $" <strong class=\"text-sucess\">PCE has been Evaluated and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
-                //     CurrentStage = "Regional Manager"
+                //     Activity = $" <strong class=\"text-sucess\">PCE has been Evaluated and sent to Relational Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
+                //     CurrentStage = "Relational Manager"
                 // });
 
 
@@ -221,7 +221,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 // {
                 //     PCECaseId = PCE.PCECaseId,
                 //     Activity = $" <strong class=\"text-sucess\">PCE has been Started. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
-                //     CurrentStage = "Regional Manager"
+                //     CurrentStage = "Relational Manager"
                 // });
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
@@ -249,7 +249,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
                 
                 // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-                // PCE.CurrentStage = "Regional Manager";
+                // PCE.CurrentStage = "Relational Manager";
                 // PCE.CurrentStatus = "Evaluated";
                 // _cbeContext.PCEs.Update(PCE);
                 // await _cbeContext.SaveChangesAsync();
@@ -257,8 +257,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
                 //     PCECaseId = PCE.PCECaseId,
-                //     Activity = $" <strong class=\"text-sucess\">PCE has been Evaluated and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
-                //     CurrentStage = "Regional Manager"
+                //     Activity = $" <strong class=\"text-sucess\">PCE has been Evaluated and sent to Relational Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
+                //     CurrentStage = "Relational Manager"
                 // });
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
@@ -284,7 +284,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
               
                 // var productionCapacity = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
-                // productionCapacity.CurrentStage = "Regional Manager";
+                // productionCapacity.CurrentStage = "Relational Manager";
                 // productionCapacity.CurrentStatus = "Rejected";
                 // _cbeContext.ProductionCapacities.Update(productionCapacity);
                 // await _cbeContext.SaveChangesAsync();
@@ -304,8 +304,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
                 //     PCECaseId = PCE.PCECaseId,
-                //     Activity = $" <strong class=\"text-sucess\">PCE has been Rejected and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
-                //     CurrentStage = "Regional Manager"
+                //     Activity = $" <strong class=\"text-sucess\">PCE has been Rejected and sent to Relational Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
+                //     CurrentStage = "Relational Manager"
                 // });
 
                 // await _cbeContext.SaveChangesAsync(); 
@@ -339,7 +339,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
 
                 // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-                // PCE.CurrentStage = "Regional Manager";
+                // PCE.CurrentStage = "Relational Manager";
                 // PCE.CurrentStatus = "Revaluated";
                 // _cbeContext.PCEs.Update(PCE);
                 // await _cbeContext.SaveChangesAsync();
@@ -369,7 +369,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
 
                 // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-                // PCE.CurrentStage = "Regional Manager";
+                // PCE.CurrentStage = "Relational Manager";
                 // PCE.CurrentStatus = "Completed";
                 // _cbeContext.PCEs.Update(PCE);
                 // await _cbeContext.SaveChangesAsync();
@@ -661,7 +661,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
 
                 // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-                // PCE.CurrentStage = "Regional Manager";
+                // PCE.CurrentStage = "Relational Manager";
                 // PCE.CurrentStatus = "Approved";
                 // _cbeContext.PCEs.Update(PCE);
                 // await _cbeContext.SaveChangesAsync();
@@ -755,31 +755,31 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.PCEEvaluations.Update(pceEntity);
                 await _cbeContext.SaveChangesAsync();
 
-                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
-                pce.CurrentStage = "Regional Manager";
-                pce.CurrentStatus = "Evaluated";
-                _cbeContext.ProductionCapacities.Update(pce);
+                // var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
+                pceEntity.PCE.CurrentStage = "Relational Manager";
+                pceEntity.PCE.CurrentStatus = "Evaluated";
+                _cbeContext.ProductionCapacities.Update(pceEntity.PCE);
                 await _cbeContext.SaveChangesAsync();
-                
-                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pce.PCECase.RMUserId).FirstOrDefaultAsync();
+
+                // var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.PCE.PCECase.RMUserId).FirstOrDefaultAsync();
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId).FirstOrDefaultAsync();
                 previousCaseAssignment.Status = "RM Evaluated";
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
                 await _cbeContext.SaveChangesAsync();
 
-
-                // await _IPCECaseTimeLineService.CreateCaseTimeLine(new PCECaseTimeLinePostDto
                 // await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
-                //     CaseId = pce.PCECaseId,
-                //     Activity = $"<strong> PCE Case Evaluation returned to Maker Officer for Rework.</strong>",
+                //     CaseId = pceEntity.PCE.PCECaseId,
+                //     Activity = $"<strong> PCE Case Evaluation sent to Relational Manager.</strong>",
                 //     CurrentStage = "Maker Manager"
                 // });
+
                 // await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
-                //     CaseId = pce.PCECaseId,
+                //     CaseId = pceEntity.PCE.PCECaseId,
                 //     Activity = $"<strong>New PCE Case has been evaluated.</strong>",
-                //     CurrentStage = "Regional Manager",
-                //     UserId = pce.PCECase.RMUserId
+                //     CurrentStage = "Relational Manager",
+                //     UserId = pceEntity.PCE.PCECase.RMUserId
                 // }); 
 
                 return true;

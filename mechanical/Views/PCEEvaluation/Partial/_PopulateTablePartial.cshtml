@@ -25,7 +25,8 @@
                 @if (item.Status == Status.New || item.Status == Status.Reevaluated)
                 {
                     <a href="@Url.Action("Update", "PCEEvaluation", new { id = item.Id })" class="btn btn-sm btn-warning">Update <i class="fas fa-pen"></i></a>
-                    <button type="button" class="btn btn-sm bg-purple" onclick="sendToRM('@item.Id')">Send To RM <i class="fas fa-paper-plane"></i></button>
+                    @* <button type="button" class="btn btn-sm bg-purple" onclick="sendToRM('@item.Id')">Send To RM <i class="fas fa-paper-plane"></i></button> *@
+                    <a href="@Url.Action("SendToRM", "PCEEvaluation", new { id = item.Id })" class="btn btn-sm bg-purple">Send To RM <i class="fas fa-paper-plane"></i></a>
                 }
                 else if (item.Status == Status.Evaluated || item.Status == Status.Pending || item.Status == Status.Rejected)
                 {
@@ -37,13 +38,12 @@
         </td>
     </tr>
 }
-
+@* 
 <script>
     function sendToRM(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
         form.setAttribute("action", "@Url.Action("SendToRM", "PCEEvaluation")");
-
         var hiddenField = document.createElement("input");
         hiddenField.setAttribute("type", "hidden");
         hiddenField.setAttribute("name", "PCEId");
@@ -53,4 +53,4 @@
         document.body.appendChild(form);
         form.submit();
     }
-</script>
+</script> *@
