@@ -2,7 +2,7 @@
 using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.PCE.Dto;
-using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseTimeLineService;
@@ -151,7 +151,7 @@ namespace mechanical.Services.PCE.PCECaseService
   
 
    
-        public async Task<CreateNewCaseCountDto> GetDashboardPCSCaseCount()
+        public async Task<CreateNewCaseCountDto> GetDashboardPCECaseCount()
         {
             var httpContext = _httpContextAccessor.HttpContext;
             return new CreateNewCaseCountDto()
@@ -161,9 +161,7 @@ namespace mechanical.Services.PCE.PCECaseService
                 PCSCompletedCaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == Guid.Parse(httpContext.Session.GetString("userId")) && res.CurrentStage == "Checker Manager" && res.CurrentStatus == "New").CountAsync()
             };
         }
-
        
-
         public async Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id)
         {
             var loanCase = await _cbeContext.PCECases

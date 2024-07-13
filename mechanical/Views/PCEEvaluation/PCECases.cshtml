@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = ViewBag.Title ?? "PCE Cases";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>@ViewData["Title"]</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="MyPCECasesDatatable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Created At</th>
+                            <th>Case No</th>
+                            <th>Applicant Name</th>
+                            <th>Customer Id</th>
+                            <th>Current Status</th>
+                            <th>New PCEs</th>
+                            <th>Total PCEs</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("Partial/_PCECasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+
+    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/jszip.min.js"></script>
+    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
+    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+}

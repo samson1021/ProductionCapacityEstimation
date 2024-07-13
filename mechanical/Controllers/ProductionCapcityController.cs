@@ -93,7 +93,7 @@ namespace mechanical.Controllers
 
             if (response == null) { return RedirectToAction("PCENewCases"); }
             var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCECaseId == id).FirstOrDefaultAsync();
+            var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
             var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
 

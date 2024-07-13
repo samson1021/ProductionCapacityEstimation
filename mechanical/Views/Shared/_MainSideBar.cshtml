@@ -541,7 +541,7 @@
             {
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <li class="nav-item">
-                        <a href="@Url.Action("MM", "Dashboard")" class="nav-link active">
+                        <a href="@Url.Action("MO", "Dashboard")" class="nav-link active">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 Dashboard
@@ -605,6 +605,72 @@
                             </li>
                         </ul>
                     </li>
+
+                    @* Start Production Capacity Estimation *@
+
+
+                  
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p>My PCE Cases<i class="fas fa-angle-left right"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyNewPCECases", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        New PCE Cases
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPendingPCECases", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Pending PCE Cases
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyCompletedPCECases", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Completed PCE Cases
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyReturnedPCEs", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Returned  PCEs
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyResubmitedPCEs", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Resubmitted  PCEs
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyTotalPCECases", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Total PCE Cases
+                                    </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+@*                     End Product Capacity Estimation
+ *@
+
                 </ul>
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 

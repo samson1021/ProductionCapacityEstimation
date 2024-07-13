@@ -1,16 +1,22 @@
-using mechanical.Data;
+using System.Web.Services.Description;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
+using mechanical;
+using mechanical.Data;
+using mechanical.Controllers;
+using mechanical.Models.Entities;
+
 using mechanical.Services.CaseServices;
 using mechanical.Services.UploadFileService;
-using mechanical.Models.Entities;
 using mechanical.Services.CollateralService;
 using mechanical.Services.AnnexService;
 using mechanical.Services.MotorVehicleService;
-using Microsoft.AspNetCore.Identity;
-using mechanical;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using mechanical.Services.SignatureService;
 using mechanical.Services.CaseAssignmentService;
 using mechanical.Services.CaseTimeLineService;
@@ -18,7 +24,6 @@ using mechanical.Services.AuthenticatioinService;
 using mechanical.Services.ConstMngAgrMachineryService;
 using mechanical.Services.CorrectionServices;
 using mechanical.Services.UserService;
-
 using mechanical.Services.MMCaseService;
 using mechanical.Services.MailService;
 using mechanical.Services.MOCaseService;
@@ -28,20 +33,21 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.IndBldgF;
 using mechanical.Services.IndBldgFacilityEquipmentService;
 using mechanical.Services.CaseTerminateService;
-using System.Web.Services.Description;
+
+/////////////
+using mechanical.Mapper;
 using mechanical.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
+using mechanical.Models.PCE.Entities;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECollateralService;
-using mechanical.Services.PCE.UploadFileService;
-using Microsoft.EntityFrameworkCore.Migrations;
+using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
-using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+/////////////
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
@@ -87,7 +93,7 @@ builder.Services.AddDbContext<CbeContext>(options =>
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
-builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
+// builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
 builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityServices>();
 builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
@@ -118,6 +124,15 @@ builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
+
+///////////////
+// Registering PCE services
+// builder.Services.AddHttpClient();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+///////////////////////////////
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

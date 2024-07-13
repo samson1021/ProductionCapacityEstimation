@@ -1,13 +1,12 @@
-﻿using mechanical.Models;
-using mechanical.Models.Entities;
+﻿﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
 using mechanical.Data;
-using Microsoft.EntityFrameworkCore;
+using mechanical.Models;
+using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
 
-//using mechanical.Models.Dto.CaseDto;
-
 //using mechanical.Migrations;
-
 
 namespace mechanical.Data
 {
@@ -32,6 +31,39 @@ namespace mechanical.Data
                     idProperty.ValueGeneratedOnAdd();
                 }
             }
+ 
+            base.OnModelCreating(modelBuilder);
+
+            // modelBuilder.Entity<PCEEvaluation>()
+            //     .HasMany(p => p.SupportingDocuments)
+            //     .WithOne(f => f.CaseId)
+            //     // .HasForeignKey(f => f.CollateralId)
+            //     .OnDelete(DeleteBehavior.Cascade);  
+                
+            var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
+                v => v.ToTimeSpan(),
+                v => TimeOnly.FromTimeSpan(v));
+
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+                v => v.ToDateTime(TimeOnly.MinValue),
+                v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<TimePeriod>(entity =>
+            {
+                entity.Property(e => e.Start).HasConversion(timeOnlyConverter);
+                entity.Property(e => e.End).HasConversion(timeOnlyConverter);
+            });
+
+            modelBuilder.Entity<DatePeriod>(entity =>
+            {
+                entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
+                entity.Property(e => e.End).HasConversion(dateOnlyConverter);
+            });
+
+            modelBuilder.Entity<PCEEvaluation>(entity =>
+            {
+                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
+            });
         }
         public CbeContext(DbContextOptions<CbeContext> options) : base(options)
         {
@@ -41,7 +73,10 @@ namespace mechanical.Data
         //production capacity estimation
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
-        public DbSet<PCEUploadFile> PCEUploadFiles { get; set; }
+
+        // public virtual DbSet<FileUpload> FileUploads { get; set; }
+        public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        ///////
         public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
 
 
@@ -54,14 +89,6 @@ namespace mechanical.Data
         public DbSet<ProductionCapcityCorrection> ProductionCapcityCorrections { get; set; }
         public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
     
-
-
-
-
-
-
-
-
 
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
@@ -76,6 +103,8 @@ namespace mechanical.Data
         public DbSet<IndBldgFacilityEquipment> IndBldgFacilityEquipment { get; set; }
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
+
+
         public virtual DbSet<CreateRole> CreateRoles { get; set; }
         public virtual DbSet<CreateUser> CreateUsers { get; set; }
         public virtual DbSet<District> Districts { get; set; }

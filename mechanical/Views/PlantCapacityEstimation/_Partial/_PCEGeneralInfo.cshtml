@@ -1,8 +1,8 @@
-﻿@using mechanical.Models.PCE.Dto.PCEUploadFileDto
+﻿@using mechanical.Models.Dto.UploadFileDto
 
 @model mechanical.Models.PCE.Dto.PlantCapacityEstimationDto.PCEReturnCollateralDto;
 @{
-    var collateralFiles = ViewData["collateralFiles"] as IEnumerable<PCEReturnFileDto>;
+    var collateralFiles = ViewData["collateralFiles"] as IEnumerable<ReturnFileDto>;
     // var rejectedCollaterals = ViewData["RejectedCollateral"] as Reject;
     // var user = ViewData["user"] as CreateUser;
 } 

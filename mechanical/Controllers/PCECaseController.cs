@@ -1,5 +1,5 @@
 ﻿using mechanical.Data;
-using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
@@ -105,13 +105,12 @@ namespace mechanical.Controllers.PCE
 
 
         [HttpGet]
-        public async Task<IActionResult> GetDashboardPCSCaseCount()
+        public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCSCaseCount();
+            var myCase = await _PCECaseService.GetDashboardPCECaseCount();
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
-
 
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)

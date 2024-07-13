@@ -2,7 +2,7 @@
 
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Entities;
-using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Entities;

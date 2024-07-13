@@ -12,6 +12,7 @@ namespace mechanical.Models.Entities
         public long Size { get; set; }
         public string Extension { get; set; } = string.Empty;
         public string Path { get; set; } = string.Empty;
+        
         public DateTime UploadDateTime { get; set; }
         public Guid userId { get; set; }
         public Guid CaseId { get; set; }
