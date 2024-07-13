@@ -14,8 +14,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Evaluated By")]
         public Guid EvaluatorID { get; set; }
 
-        // public required Guid? PCEId { get; set; } 
-        public Guid? PCEId { get; set; } 
+        public required Guid PCEId { get; set; }
         public virtual ProductionCapacity? PCE { get; set; }
 
         [Display(Name = "Production Line/Equipment Name")]

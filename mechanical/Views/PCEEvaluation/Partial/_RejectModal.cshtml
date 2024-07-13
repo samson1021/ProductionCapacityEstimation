@@ -4,22 +4,22 @@
     ViewData["Title"] = "Return PCE Evaluation";
 }
 
-<!-- Return Modal -->
-<div class="modal fade" id="ReturnModal1" tabindex="-1" role="dialog" aria-labelledby="ReturnModalLabel" aria-hidden="true">
+<!-- Return Modal --> 
+<div class="modal fade" id="rejectionModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ReturnModalLabel">Return Reason</h5>
+                <h5 class="modal-title" id="rejectionModalLabel">Return PCE</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="@Url.Action("Reject", "PCEEvaluation")" id="ReturnForm">
-                    @Html.AntiForgeryToken()
-                     @Html.HiddenFor(model => model.PCEId)
+                <form method="post" action="@Url.Action("Reject", "PCEEvaluation")" id="RejectionForm">
+                    @Html.AntiForgeryToken()                 
+                    <input asp-for="PCEId" type="hidden" />
                     <div class="form-group">
-                        <label for="Reason">Reason</label>
+                        <label for="RejectionComment">Comment:</label>
                         <textarea class="form-control" asp-for="RejectionComment" rows="3"></textarea>
                     </div>
                     <div class="modal-footer">
@@ -34,22 +34,22 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var returnModal = document.getElementById('ReturnModal1');
-        var returnForm = document.getElementById('ReturnForm');
-        var reasonField = document.getElementById('Reason');
+        var rejectionModal = document.getElementById('rejectionModal1');
+        var rejectionForm = document.getElementById('RejectionForm');
+        var commentField = document.getElementById('RejectionComment');
 
-        returnModal.addEventListener('shown.bs.modal', function () {
-            reasonField.focus();
+        rejectionModal.addEventListener('shown.bs.modal', function () {
+            commentField.focus();
         });
 
-        returnForm.addEventListener('submit', function (event) {
+        rejectionForm.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var formData = new FormData(returnForm);
-            var actionUrl = returnForm.action;
+            var formData = new FormData(rejectionForm);
+            var actionUrl = rejectionForm.action;
 
             fetch(actionUrl, {
-                method: returnForm.method,
+                method: rejectionForm.method,
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -58,19 +58,19 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    toastr.success('Reason for Return saved successfully');
-                    $(returnModal).modal('hide');
+                    toastr.success('Return Comment saved successfully');
+                    $(rejectionModal).modal('hide');
 
                     // Delay redirect for 2 seconds
                     setTimeout(function() {
-                        window.location.href = '@Url.Action("ReturnedPCEEvaluations", "PCEEvaluation")';
+                        window.location.href = '@Url.Action("AllRejected", "PCEEvaluation")';
                     }, 2000);
                 } else {
-                    toastr.error('Error saving Return Reason: ' + data.error);
+                    toastr.error('Error saving Return comment: ' + data.error);
                 }
             })
             .catch(error => {
-                toastr.error('Error saving Return Reason: ' + error);
+                toastr.error('Error saving Return comment: ' + error);
             });
         });
     });

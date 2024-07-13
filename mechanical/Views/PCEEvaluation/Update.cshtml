@@ -4,15 +4,12 @@
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @{
-    ViewData["Title"] = "Update PCE Evaluation";
-    // var PCEReturn = ViewData["PCEReturn"] as PCEEvaluationReturnDto;
-    
-    var ReturnPost = new PCERejectPostDto {
-            // PCEId = Model.PCEId, 
-            PCEId = null, 
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
+    var RejectPost = new PCERejectPostDto {
+            PCEId = Model.PCEId, 
             RejectionComment = "" 
     }; 
-    ViewData["ReturnPost"] = ReturnPost; 
+    ViewData["RejectPost"] = RejectPost; 
 }
 
 <section class="content-header">
@@ -62,7 +59,7 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Update">
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)
-                    <input type="hidden" asp-for="PCEId" />
+                    <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                     <input type="hidden" asp-for="CreatedAt" />
 
                     @Html.Partial("Partial/_DataLists")
@@ -323,14 +320,14 @@
                     
                    <div class="form-group row justify-content-center">
                         <div class="col-xl-2">
-                            <a href="@Url.Action("Index", "PCEEvaluation")" class="btn btn-secondary btn-block">
+                            <a href="@Url.Action("All", "PCEEvaluation")" class="btn btn-secondary btn-block">
                                 <i class="fas fa-times mr-2"></i> Cancel
                             </a>
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2">
-                            <button type="button" id="return-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#ReturnModal1">
-                                <i class="fas fa-undo mr-2"></i> Return
+                            <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1">
+                                 <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
                         <div class="col-xl-3"></div>
@@ -365,7 +362,7 @@
 
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("Partial/_ReturnModal", ViewData["ReturnPost"]);
+        await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
     } 
 
     <script>
@@ -454,7 +451,7 @@
 
         $("#Status").change(function () {
             var selectedStatus = $(this).val();
-            if (selectedStatus === '@((int)Status.Returned)') {
+            if (selectedStatus === '@((int)Status.Rejected)') {
                 $("#ReasonRow").show();
             } else {
                 $("#ReasonRow").hide();

@@ -23,6 +23,11 @@ using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.RMDashboardDto;
 
+
+// using mechanical.Models.Dto.CaseAssignmentDto;
+// using mechanical.Models.Dto.CaseTimeLineDto;
+using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
+
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
     public class PCEEvaluationService : IPCEEvaluationService
@@ -34,8 +39,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         private readonly IPCECaseTimeLineService _pceCaseTimeLineService;
         private readonly IMailService _mailService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
 
-        public PCEEvaluationService(CbeContext context, IMapper mapper, ILogger<PCEEvaluationService> logger, IUploadFileService uploadFileService, IPCECaseTimeLineService PCECaseTimeLineService, IMailService mailService, IHttpContextAccessor httpContextAccessor)
+        public PCEEvaluationService(CbeContext context, IMapper mapper, ILogger<PCEEvaluationService> logger, IPCECaseTimeLineService IPCECaseTimeLineService, IUploadFileService uploadFileService, IPCECaseTimeLineService PCECaseTimeLineService, IMailService mailService, IHttpContextAccessor httpContextAccessor)
         {
             _cbeContext = context;
             _mapper = mapper;
@@ -44,6 +50,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _pceCaseTimeLineService = PCECaseTimeLineService;
             _mailService = mailService;
             _httpContextAccessor = httpContextAccessor;
+            _IPCECaseTimeLineService = IPCECaseTimeLineService;
         }
 
         public async Task<PCEEvaluationReturnDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
@@ -53,9 +60,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEntity = _mapper.Map<PCEEvaluation>(Dto);
                 pceEntity.Id = Guid.NewGuid();
                 pceEntity.EvaluatorID = UserId; 
+                pceEntity.CreatedBy = UserId; 
                 pceEntity.CreatedAt = DateTime.Now;
-                pceEntity.Status = Status.New;                     
-                pceEntity.PCEId = Dto.PCEId ?? Guid.Parse("E1BBBE4A-F804-439A-A8E6-539232CCC6F0");
+                pceEntity.Status = Status.New; 
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
                 await _cbeContext.SaveChangesAsync();
@@ -89,7 +96,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         {
                             File = file,
                             Catagory = "SupportingEvidence",
-                            CaseId = pceEntity.Id,
+                            // CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -104,7 +111,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         {
                             File = file,
                             Catagory = "ProductionProcessFlowDiagram",
-                            CaseId = pceEntity.Id,
+                            // CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -159,7 +166,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         {
                             File = file,
                             Catagory = "SupportingEvidence",
-                            CaseId = pceEntity.Id,
+                            // CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -175,7 +182,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         {
                             File = file,
                             Catagory = "ProductionProcessFlowDiagram",
-                            CaseId = pceEntity.Id,
+                            // CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -262,116 +269,48 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while evaluating the PCEEvaluation.");
             }
         }
-        public async Task<bool> ReturnPCEEvaluation(Guid UserId, PCERejectPostDto Dto)
-        // public async Task<PCEEvaluationReturnDto> ReturnPCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
+        public async Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto)
         {  
             try
             {   
             
-                var httpContext = _httpContextAccessor.HttpContext;
 
                 var assignedPCECases = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(res => res.Id == Dto.PCEId);
-                if (assignedPCECases == null)
-                {
-                    return false;
-                }
+              
                 var returnPCE = _mapper.Map<ProductionReject>(Dto);
                 returnPCE.CreationDate = DateTime.Now;
-                returnPCE.RejectedBy = Guid.Parse(httpContext.Session.GetString("UserId"));
+                returnPCE.RejectedBy = UserId;
                 await _cbeContext.ProductionRejects.AddAsync(returnPCE);
-            
-                // assignedPCECases.CurrentStage = "Relation Manager";
-                // assignedPCECases.CurrentStatus = "Return";
-                // _cbeContext.ProductionCapacities.Update(assignedPCECases);
+                await _cbeContext.SaveChangesAsync();
+              
+                // var productionCapacity = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
+                // productionCapacity.CurrentStage = "Regional Manager";
+                // productionCapacity.CurrentStatus = "Rejected";
+                // _cbeContext.ProductionCapacities.Update(productionCapacity);
+                // await _cbeContext.SaveChangesAsync();
+
+                // var PCECaseAssignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.PCEId == Dto.PCEId && res.UserId == Return.RejectedBy);
+                // PCECaseAssignment.Status = "Return";
+                // _cbeContext.Update(PCECaseAssignment);            
+                // await _cbeContext.SaveChangesAsync(); 
+
                 // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
                 //     PCECaseId = assignedPCECases.PCECaseId,
-                //     Activity = $"<strong>PCE is Returned.</strong> <br> <i class='text-purple'>",
+                //     Activity = $"<strong>PCE is Rejected.</strong> <br> <i class='text-purple'>",
                 //     CurrentStage = "Maker Manager",
                 // });
 
-                // var PCEPCECaseAssignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.PCEId == Dto.PCEId && res.UserId == Return.ReturnedBy);
-                // PCECaseAssignment.Status = "Return";
-                // _cbeContext.Update(PCECaseAssignment);
-                // await _cbeContext.SaveChangesAsync();
+                // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
+                // {
+                //     PCECaseId = PCE.PCECaseId,
+                //     Activity = $" <strong class=\"text-sucess\">PCE has been Rejected and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
+                //     CurrentStage = "Regional Manager"
+                // });
+
+                // await _cbeContext.SaveChangesAsync(); 
                 
                 return true;
-        
-            //     var pceEntity = new PCEEvaluation();
-                 
-            //     if(Dto.Id != null)
-            //     {
-            //         pceEntity = await _cbeContext.PCEEvaluations.FindAsync(Dto.Id);
-
-            //         pceEntity.Status = Status.Returned;
-            //         pceEntity.ReturnReason = Dto.ReturnReason;                
-            //         pceEntity.PCEId = Dto.PCEId;
-
-            //         _mapper.Map(Dto, pceEntity);
-            //         _cbeContext.Update(pceEntity);
-            //     }
-            //     else
-            //     {
-            //         pceEntity = _mapper.Map<PCEEvaluation>(Dto);
-            //         pceEntity.Id = Guid.NewGuid();
-            //         pceEntity.EvaluatorID = UserId;
-            //         pceEntity.CreatedAt = DateTime.Now; 
-
-            //         pceEntity.Status = Status.Returned;
-            //         pceEntity.ReturnReason = Dto.ReturnReason;                
-            //         pceEntity.PCEId = Dto.PCEId;
-
-            //         await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
-            //     }
-
-            //     await _cbeContext.SaveChangesAsync();
-
-            //     if (Dto.SupportingEvidences != null && Dto.SupportingEvidences.Count > 0)
-            //     {
-            //         foreach (var file in Dto.SupportingEvidences)
-            //         {
-            //             var supportingEvidenceFile = new CreateFileDto
-            //             {
-            //                 File = file,
-            //                 Catagory = "SupportingEvidence",
-            //                 CaseId = pceEntity.Id,
-            //                 PCEId = pceEntity.PCEId
-            //             };
-
-            //             await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
-            //         }
-            //     }
-            //     if (Dto.ProductionProcessFlowDiagrams != null && Dto.ProductionProcessFlowDiagrams.Count > 0)
-            //     {
-            //         foreach (var file in Dto.ProductionProcessFlowDiagrams)
-            //         {
-            //             var productionProcessFlowDiagramFile = new CreateFileDto
-            //             {
-            //                 File = file,
-            //                 Catagory = "ProductionProcessFlowDiagram",
-            //                 CaseId = pceEntity.Id,
-            //                 PCEId = pceEntity.PCEId
-            //             };
-
-            //             await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
-            //         }
-            //     }
-            //     await _cbeContext.SaveChangesAsync();
-                
-            //     // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-            //     // PCE.CurrentStage = "Regional Manager";
-            //     // PCE.CurrentStatus = "Returned";
-            //     // _cbeContext.PCEs.Update(PCE);
-            //     // await _cbeContext.SaveChangesAsync();
-                
-            //     // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
-            //     // {
-            //     //     PCECaseId = PCE.PCECaseId,
-            //     //     Activity = $" <strong class=\"text-sucess\">PCE has been Returned and sent to Regional Manager. <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(PCE.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(PCE.Type)}.",
-            //     //     CurrentStage = "Regional Manager"
-            //     // });
-
-            //     return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
             {
@@ -608,17 +547,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         //     }
         // }
 
-        // public async Task<IEnumerable<PCEEvaluationReturnDto>> GetReturnedPCEEvaluations(Guid UserId)
+        // public async Task<IEnumerable<PCEEvaluationReturnDto>> GetRejectedPCEEvaluations(Guid UserId)
         // {
         //     try
         //     {
-        //         var pceEntities = await _cbeContext.PCEEvaluations.Where(e => e.Status == Status.Returned).ToListAsync();
+        //         var pceEntities = await _cbeContext.PCEEvaluations.Where(e => e.Status == Status.Rejected).ToListAsync();
         //         return _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(pceEntities);
         //     }
         //     catch (Exception ex)
         //     {
-        //         _logger.LogError(ex, "Error fetching returned PCEEvaluations");
-        //         throw new ApplicationException("An error occurred while fetching returned PCEEvaluations.");
+        //         _logger.LogError(ex, "Error fetching rejected PCEEvaluations");
+        //         throw new ApplicationException("An error occurred while fetching rejected PCEEvaluations.");
         //     }
         // }
 
@@ -636,7 +575,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         //     }
         // }
         
-        public async Task<PCEEvaluationPostDto> GetReturnedPCEEvaluation(Guid UserId, Guid PCEId)
+        public async Task<PCEEvaluationPostDto> GetRejectedPCEEvaluation(Guid UserId, Guid PCEId)
         {
             try
             {            
@@ -658,8 +597,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching returned PCEEvaluation");
-                throw new ApplicationException("An error occurred while fetching the returned PCEEvaluation.");
+                _logger.LogError(ex, "Error fetching rejected PCEEvaluation");
+                throw new ApplicationException("An error occurred while fetching the rejected PCEEvaluation.");
             }
         }
         public async Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId)
@@ -764,12 +703,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var newCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.New);
                 var pendingCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.Pending);
                 var evaluatedCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.Evaluated);
-                var returnedCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.Returned);
+                var rejectedCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.Rejected);
                 var reevaluatedCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.Reevaluated);
                 var completedCount = await _cbeContext.PCEEvaluations.CountAsync(e => e.Status == Status.Completed);
                 var allCount = await _cbeContext.PCEEvaluations.CountAsync();
 
-                return new[] { newCount, pendingCount, evaluatedCount, returnedCount, reevaluatedCount, completedCount, allCount };
+                return new[] { newCount, pendingCount, evaluatedCount, rejectedCount, reevaluatedCount, completedCount, allCount };
             }
             catch (Exception ex)
             {
@@ -813,29 +752,42 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 pceEntity.Status = Status.Evaluated;
+                _cbeContext.PCEEvaluations.Update(pceEntity);
                 await _cbeContext.SaveChangesAsync();
 
-                // var PCE = await _cbeContext.PCEs.FindAsync(PCEId);
-                // PCE.CurrentStage = "Regional Manager";
-                // PCE.CurrentStatus = "Evaluated";
-                // _cbeContext.PCEs.Update(PCE);
-                // await _cbeContext.SaveChangesAsync();
+                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
+                pce.CurrentStage = "Regional Manager";
+                pce.CurrentStatus = "Evaluated";
+                _cbeContext.ProductionCapacities.Update(pce);
+                await _cbeContext.SaveChangesAsync();
+                
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pce.PCECase.RMUserId).FirstOrDefaultAsync();
+                previousCaseAssignment.Status = "RM Evaluated";
+                _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
+                await _cbeContext.SaveChangesAsync();
 
-                // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
+
+                // await _IPCECaseTimeLineService.CreateCaseTimeLine(new PCECaseTimeLinePostDto
+                // await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 // {
-                //     PCECaseId = PCE.PCECaseId,
-                //     Activity = $"<strong>PCE Evaluation sent to Regional Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i>.",
-                //     // Activity = $"<strong>PCE Evaluation sent to Regional Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}.",
-                //     CurrentStage = "Regional Manager"
+                //     CaseId = pce.PCECaseId,
+                //     Activity = $"<strong> PCE Case Evaluation returned to Maker Officer for Rework.</strong>",
+                //     CurrentStage = "Maker Manager"
                 // });
-
+                // await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                // {
+                //     CaseId = pce.PCECaseId,
+                //     Activity = $"<strong>New PCE Case has been evaluated.</strong>",
+                //     CurrentStage = "Regional Manager",
+                //     UserId = pce.PCECase.RMUserId
+                // }); 
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting PCEEvaluation");
-                throw new ApplicationException("An error occurred while deleting the PCEEvaluation.");
+                _logger.LogError(ex, "Error sending PCEEvaluation to RM");
+                throw new ApplicationException("An error occurred while sending PCEEvaluation to RM.");
             }
         }
 
@@ -851,45 +803,45 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 pceEntity.Status = Status.Rework;
+                _cbeContext.PCEEvaluations.Update(pceEntity);
                 await _cbeContext.SaveChangesAsync();
 
-                // var PCE = await _cbeContext.PCEs.FindAsync(PCEId);
-                // PCE.CurrentStage = "Maker Officer";
-                // PCE.CurrentStatus = "Rework";
-                // _cbeContext.PCEs.Update(PCE);
-                // await _cbeContext.SaveChangesAsync();
-
-                // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
-                // {
-                //     PCECaseId = PCE.PCECaseId,
-                //     Activity = $"<strong>PCE Evaluation resent to Regional Manager.",
-                //     CurrentStage = "Regional Manager"
-                // });
+                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
+                pce.CurrentStage = "Maker Officer";
+                pce.CurrentStatus = "Rework";
+                _cbeContext.ProductionCapacities.Update(pce);
+                await _cbeContext.SaveChangesAsync();
+                
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.EvaluatorID).FirstOrDefaultAsync();
+                previousCaseAssignment.Status = "MO Rework";
+                _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
+                await _cbeContext.SaveChangesAsync();
 
 
+                // await _IPCECaseTimeLineService.CreateCaseTimeLine(new PCECaseTimeLinePostDto
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = pce.PCECaseId,
+                    Activity = $"<strong> PCE Case Evaluation returned to Maker Officer for rework.</strong>",
+                    CurrentStage = "Maker Manager"
+                });
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = pce.PCECaseId,
+                    Activity = $"<strong>Evaluated PCE Case has been returned for rework.</strong>",
+                    CurrentStage = "Maker Officer",
+                    UserId = pceEntity.EvaluatorID
+                });           
+            
                 return true;
+     
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting PCEEvaluation");
-                throw new ApplicationException("An error occurred while deleting the PCEEvaluation.");
+                _logger.LogError(ex, "Error sending PCEEvaluation to MO");
+                throw new ApplicationException("An error occurred while sending PCEEvaluation to MO.");
             }
         }
-
-
-            // var PCE = await _cbeContext.PCEs.FindAsync(PCEId);
-        
-            // PCE.CurrentStage = "Regional Manager";
-            // PCE.CurrentStatus = "New";
-            // _cbeContext.PCEs.Update(PCE);
-            // await _cbeContext.SaveChangesAsync();
-
-            // await _pceCaseTimeLineService.CreatePCECaseTimeLine(new PCECaseTimeLinePostDto
-            // {
-            //     PCECaseId = PCE.PCECaseId,
-            //     Activity = $"<strong>PCECase sent to Regional Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {PCE.PCECase.District.Name}.",
-            //     CurrentStage = "Regional Manager"
-            // });
 
         public async Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id)
         {
@@ -910,7 +862,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {
 
             var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).Where(Ca => Ca.UserId == UserId && Ca.Status=="New").ToListAsync();
-            var UniquePCECases = PCECaseAssignments.Select(ca => ca.ProductionCapacity.PCECase) .DistinctBy(c => c.Id).ToList();
+            var UniquePCECases = PCECaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
             var ReturnDtos = _mapper.Map<IEnumerable<PCECaseReturntDto>>(UniquePCECases);
             foreach (var ReturnDto in ReturnDtos)
             {
@@ -922,7 +874,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         public async Task<IEnumerable<PCECaseReturntDto>> GetPendingPCECases(Guid UserId)
         {
 
-            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).ThenInclude(res => res.PCECase).ThenInclude(res => res.RMUserId).Where(Ca => Ca.UserId == UserId && Ca.Status == "Pending").ToListAsync();
+            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).ThenInclude(res => res.PCECase).Where(Ca => Ca.UserId == UserId && Ca.Status == "Pending").ToListAsync();
             var UniquePCECases = PCECaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
             var ReturnDtos = _mapper.Map<IEnumerable<PCECaseReturntDto>>(UniquePCECases);
             foreach (var ReturnDto in ReturnDtos)
@@ -945,10 +897,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             return ReturnDtos;
         }
 
-        public async Task<IEnumerable<PCECaseReturntDto>> GetReturnedPCECases(Guid UserId)
+        public async Task<IEnumerable<PCECaseReturntDto>> GetRejectedPCECases(Guid UserId)
         {
 
-            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).Where(Ca => Ca.UserId == UserId && Ca.Status=="Return").ToListAsync();
+            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res=>res.ProductionCapacity).ThenInclude(res=>res.PCECase).Where(Ca => Ca.UserId == UserId && Ca.Status=="Reject").ToListAsync();
             var UniquePCECases = PCECaseAssignments.Select(ca => ca.ProductionCapacity.PCECase) .DistinctBy(c => c.Id).ToList();
             var ReturnDtos = _mapper.Map<IEnumerable<PCECaseReturntDto>>(UniquePCECases);
             foreach (var ReturnDto in ReturnDtos)
@@ -987,7 +939,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             return ReturnDtos;
         }
 
-        public async Task<ReturnProductionDto> MyReturnedPCE(Guid UserId, Guid Id)
+        public async Task<ReturnProductionDto> MyRejectedPCE(Guid UserId, Guid Id)
         {
             List<ProductionCaseAssignment> PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Where(ca => ca.UserId == UserId && ca.ProductionCapacityId == Id && ca.Status == "Correction").ToListAsync();
 
@@ -1026,7 +978,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         }
 
-        // public async Task<IEnumerable<ReturnProductionDto>> MyReturnedPCEs(Guid UserId)
+        // public async Task<IEnumerable<ReturnProductionDto>> MyRejectedPCEs(Guid UserId)
         // {
         //     List<ProductionCaseAssignment> PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Where(ca => ca.UserId == UserId && ca.Status== "Correction").ToListAsync();
         //     List<ProductionCapacity> ProductionCapacities = await _cbeContext.ProductionCapacities.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus== "Correction").ToListAsync();

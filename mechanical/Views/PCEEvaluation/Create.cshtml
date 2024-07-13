@@ -1,17 +1,17 @@
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
 
 @{
-    ViewData["Title"] = "PCE Evaluation Detail";
-    ViewData["PCEId"] = null;
-    var ReturnPost = new PCERejectPostDto {
-            // PCEId = Model.PCEId, 
-            PCEId = null, 
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
+    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var RejectPost = new PCERejectPostDto {
+            PCEId = myPCE.Id, 
             RejectionComment = "" 
     }; 
-    ViewData["ReturnPost"] = ReturnPost; 
+    ViewData["RejectPost"] = RejectPost; 
 }
 <section class="content-header">
     <div class="container-fluid">
@@ -46,7 +46,8 @@
                     @Html.AntiForgeryToken()
                     @Html.Partial("Partial/_DataLists")
 
-                    <input asp-for="PCEId" value=@ViewData["PCEId"] type="hidden" /> 
+                    <input asp-for="PCEId" value=@myPCE.Id type="hidden" /> 
+
                     <!-- General Information -->
                     <div class="row mt-3">
                         <div class="form-group col-lg-4">
@@ -251,7 +252,7 @@
                                 <button type="submit" class="btn btn-md btn-primary">
                                     <i class="fas fa-save mr-2"></i> Save
                                 </button>
-                                <button type="button" id="return-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#ReturnModal1">
+                                <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1">
                                     <i class="fas fa-undo mr-2"></i> Return
                                 </button>
                             </div>
@@ -283,7 +284,7 @@
 
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("Partial/_ReturnModal", ViewData["ReturnPost"]);
+        await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
     } 
 
     <script>
@@ -340,7 +341,7 @@
 
             $("#Status").change(function () {
                 var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)Status.Returned)') {
+                if (selectedStatus === '@((int)Status.Rejected)') {
                     $("#ReasonRow").show();
                 } else {
                     $("#ReasonRow").hide();
@@ -463,7 +464,7 @@
 
             $("#Status").change(function () {
                 var selectedStatus = $(this).val();
-                if (selectedStatus === '@((int)Status.Returned)') {
+                if (selectedStatus === '@((int)Status.Rejected)') {
                     $("#ReasonRow").show();
                 } else {
                     $("#ReasonRow").hide();
@@ -738,9 +739,9 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-lg-12" id="ReasonRow" style="display: none;">
-                                    <label>@Html.DisplayNameFor(model => model.ReturnReason)</label>
-                                    <textarea asp-for="ReturnReason" class="form-control form-control-sm"></textarea>
-                                    <span asp-validation-for="ReturnReason" class="text-danger"></span>
+                                    <label>@Html.DisplayNameFor(model => model.RejectReason)</label>
+                                    <textarea asp-for="RejectReason" class="form-control form-control-sm"></textarea>
+                                    <span asp-validation-for="RejectReason" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row mt-4">

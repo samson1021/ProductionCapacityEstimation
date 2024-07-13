@@ -43,8 +43,8 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "Evaluated")]
         Evaluated,
 
-        [Display(Name = "Returned")]
-        Returned,
+        [Display(Name = "Rejected")]
+        Rejected,
 
         [Display(Name = "Reevaluated")]
         Reevaluated,

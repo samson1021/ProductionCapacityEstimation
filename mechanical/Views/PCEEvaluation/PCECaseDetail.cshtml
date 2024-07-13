@@ -1,7 +1,14 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿@using System
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @{
     var myCase = ViewData["PCECase"] as PCECaseReturntDto;
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
+    @* var RejectPost = new PCERejectPostDto {
+            PCEId = null, 
+            RejectionComment = "" 
+    }; 
+    ViewData["RejectPost"] = RejectPost;  *@
 }
 
 <section class="content-header">
@@ -29,7 +36,7 @@
                         <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Collaterals Informations</a>
+                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> PCE Informations</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Schedule</a>
@@ -80,6 +87,8 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{
+        await Html.RenderPartialAsync("Partial/_RejectModal");
+        @* await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]); *@
         await Html.RenderPartialAsync("Partial/_PCECaseDatatableSriptsPartial");  
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     } 
