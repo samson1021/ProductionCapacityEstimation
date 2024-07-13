@@ -597,7 +597,9 @@ namespace mechanical.Controllers
             }
             ViewData["PCECase"] = loanPCECase;
             ViewData["Id"]=base.GetCurrentUserId();
-            return View();
+            // ViewBag.Url = "/PCEEvaluation/GetMyTotalPCECases";
+            ViewData["Title"] = "PCE Case Detail";
+            return View("PCECaseDetail");
         }
 
         [HttpGet]
