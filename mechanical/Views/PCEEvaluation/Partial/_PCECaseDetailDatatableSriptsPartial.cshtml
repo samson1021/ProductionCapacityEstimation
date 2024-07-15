@@ -4,55 +4,60 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
 }
 
 <script>
     $(document).ready(function () {      
 
-        console.log("herere");
-        var PCECaseId = $('#PCECaseId').val();
-        PCECaseId = "96bb8bdd-af18-4ca7-8d3d-e2eeadbc8745";
-        console.log(PCECaseId);
-        console.log("herere");
-        function initializeDataTable(data) {
+        // var PCECaseId = $('#PCECaseId').val();
+        var PCECaseId = '@myPCECase.Id';
+
+        function initializeDataTable(productions, plants) {
+            
+            var combinedData = productions.concat(plants); // Combine productions and plants data
+
             PCEsTable = $('#PCEs').DataTable({
                 language: {
-                    emptyTable: "There is no PCE register for this case please click the above add button to add PCE"
+                    emptyTable: "There is no PCE register for this case. Please click the above add button to add PCE."
                 },
                 responsive: true,
                 pageLength: 8,
                 lengthChange: false,
                 autoWidth: false,
                 buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
-                data: data,
+                data: combinedData,
                 columns: [
                     {
                         data: null,
                         render: function (data, type, row, meta) {
-                            return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
+                            return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">';
                         }
-                    },      
+                    },
                     { data: 'PropertyOwner', width: '25%' },
                     { data: 'Role', width: '25%' },
                     { data: 'ProductionType', width: '35%' },
-
                     {
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var productionType = row.ProductionType;                            
-                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '">Evaluation</a> | <a href="' + (productionType === 'Plant' ? '@Url.Action("PCEDetail", "PlantCapacityEstimation")' : '@Url.Action("Detail", "ProductionCapcity")') + '?Id=' + data + '">Details</a> | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>| <a href="#" onclick=' + (productionType === 'Plant' ? '"openAddManufacturingModal()"' : 'openAddPlantModal()') + '>Add</a>';
+                            var productionType = row.ProductionType;
+                            var detailUrl = (productionType === 'Plant') 
+                                ? '@Url.Action("PCEDetail", "PlantCapacityEstimation")'
+                                : '@Url.Action("Detail", "ProductionCapacity")';
+                            var addUrl = (productionType === 'Plant')
+                                ? 'openAddManufacturingModal()'
+                                : 'openAddPlantModal()';
+                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '">Evaluation</a> | <a href="' + detailUrl + '?Id=' + data + '">Details</a> | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a> | <a href="#" onclick="' + addUrl + '">Add</a>';
                         }
                     }
                 ]
             }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
-
         }
 
         function loadPCEs() {
             $.ajax({
-                url: '/ProductionCapcity/GetProductions?PCECaseId=' + PCECaseId,
+                url: '/PCEEvaluation/GetAllMyPCEs?PCECaseId=' + PCECaseId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -60,33 +65,27 @@
                         var PCEsTable = $('#PCEs').DataTable();
                         PCEsTable.destroy();
                     }
-                    initializeDataTable(data);
+                    
+                    // Handle data response
+                    var productions = data.productions || [];
+                    var plants = data.plants || [];
+
+                    initializeDataTable(productions, plants);
                 },
                 error: function (error) {
-                    toastr.error("Failed to load Production Capcity");
+                    toastr.error("Failed to load Production and Plant Capacities");
                     console.log(error);
                 }
-            });
-    
-            @* $.ajax({
-                url: '/PlantCapacityEstimation/GetPCECollaterals?CaseId=' + CaseId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCEs')) {
-                        var PCEsTable = $('#PCEs').DataTable();
-                        PCEsTable.destroy();
-                    }
-                    initializeDataTable(data);
-                },
-                error: function (error) {
-                    toastr.error("Failed to load collaterals");
-                    console.log(error);
-                }
-            }); *@
+            });    
         }
-        loadPCEs();  
-    
+
+        loadPCEs();
+
+
+
+
+
+
         function openRejectionModal(collateralId) {
             $('#CollateralId').val(collateralId);
             $('#rejectionModal1').modal('show');

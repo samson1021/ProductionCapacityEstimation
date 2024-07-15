@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using mechanical.Data;
 using mechanical.Models;
@@ -34,10 +35,8 @@ namespace mechanical.Controllers
         private readonly IUploadFileService _uploadFileService;
         private readonly IProductionCapacityServices _productionCapacityService;
 
-        public PCEEvaluationController(IMapper mapper, IPCEEvaluationService PCEEvaluationService, IMailService mailService, ILogger<PCEEvaluationController> logger, IUploadFileService UploadFileService, IProductionCapacityServices ProductionCapacityService) 
-            // IPCEEvaluationPCECaseService PCEEvaluationPCECaseService, IPCEEvaluationPCECaseTerminateService PCEEvaluationPCECaseTermnateService, IPCEEvaluationPCECaseScheduleService PCEEvaluationPCECaseScheduleService)
-       
-{
+        public PCEEvaluationController(IMapper mapper, IPCEEvaluationService PCEEvaluationService, IMailService mailService, ILogger<PCEEvaluationController> logger, IUploadFileService UploadFileService, IProductionCapacityServices ProductionCapacityService)        
+        {
             _PCEEvaluationService = PCEEvaluationService;
             _mapper = mapper;
             _logger = logger;
@@ -51,6 +50,14 @@ namespace mechanical.Controllers
         {
             try
             {
+
+                var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluationsByPCEId(base.GetCurrentUserId(), PCEId);
+
+                if (PCEEvaluation != null)
+                {
+                    return RedirectToAction("Detail", "PCEEvaluation", new { Id = PCEEvaluation.Id });
+                }
+
                 var productionCapacity = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEId);
 
                 if (productionCapacity == null)
@@ -121,7 +128,6 @@ namespace mechanical.Controllers
              
                     await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
                     return RedirectToAction("Detail", "PCEEvaluation", new { Id = Id });
-                    // return RedirectToAction("GetPCEEvaluation", "PCEEvaluation", new { Id = id });
                 }
                 catch (Exception ex)
                 {
@@ -211,19 +217,16 @@ namespace mechanical.Controllers
         {
             try
             {
-                // var PCEEvaluations = await _PCEEvaluationService.GetNewPCEEvaluations(base.GetCurrentUserId());
                 var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.New);
                 ViewBag.Title = "New PCE Evaluations";
                 return View("All", PCEEvaluations);
-                // return View(PCEEvaluations);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching new PCEEvaluations for user {UserId}", base.GetCurrentUserId());
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
-        }
-        
+        }     
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -250,11 +253,9 @@ namespace mechanical.Controllers
         {
             try
             {
-                // var PCEEvaluations = await _PCEEvaluationService.GetPendingPCEEvaluations(base.GetCurrentUserId());
                 var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Pending);
                 ViewBag.Title = "Pending PCE Evaluations";
                 return View("All", PCEEvaluations);
-                // return View(PCEEvaluations);
             }
             catch (Exception ex)
             {
@@ -262,27 +263,6 @@ namespace mechanical.Controllers
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
-
-        // [HttpGet]
-        // public async Task<IActionResult> PendingDetail(Guid id)
-        // {
-        //     try
-        //     {
-        //         var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluation(base.GetCurrentUserId(), id);
-        //         if (PCEEvaluation == null)
-        //         {
-        //             return RedirectToAction("NewPCEEvaluations");
-        //         }
-        //         ViewData["PCEEvaluation"] = PCEEvaluation;
-        //         ViewData["Id"] = base.GetCurrentUserId();
-        //         return View();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError(ex, "Error fetching pending details for PCEEvaluation, ID {Id}", id);
-        //         return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //     }
-        // }
         
         [HttpPost]
         public async Task<IActionResult> Reject(PCERejectPostDto Dto)
@@ -328,11 +308,9 @@ namespace mechanical.Controllers
         {
             try
             {
-                // var PCEEvaluations = await _PCEEvaluationService.GetRejectedPCEEvaluations(base.GetCurrentUserId());
                 var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Rejected);
                 ViewBag.Title = "Rejected PCE Evaluations";
                 return View("All", PCEEvaluations);
-                // return View(PCEEvaluations);
             }
             catch (Exception ex)
             {
@@ -341,13 +319,6 @@ namespace mechanical.Controllers
             }
         }
         
-        // public async Task<IActionResult>ReEvaluated(Guid Id)
-        // {
-        //     var PCE = await _PCEEvaluationService.GetPCE(base.GetCurrentUserId(), Id);
-      
-        //     string jsonData = JsonConvert.SerializeObject(PCE);
-        //     return Content(jsonData, "application/json");
-        // }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -374,11 +345,9 @@ namespace mechanical.Controllers
         {
             try
             {
-                // var PCEEvaluations = await _PCEEvaluationService.GetCompletedPCEEvaluations(base.GetCurrentUserId());
                 var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Completed);
                 ViewBag.Title = "Completed PCE Evaluations";
                 return View("All", PCEEvaluations);
-                // return View(PCEEvaluations);
             }
             catch (Exception ex)
             {
@@ -387,7 +356,88 @@ namespace mechanical.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Evaluate(Guid Id, PCEEvaluationPostDto Dto)
+        {       
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _PCEEvaluationService.EvaluatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
+                    return RedirectToAction("Evaluate", "PCEEvaluation");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error Evaluate PCEEvaluation for ID {Id}", Id);
+                    ModelState.AddModelError("", "An error occurred while Evaluate the PCEEvaluation.");
+                }
+            }
+            return View(Dto);
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> AllEvaluated()
+        {
+            try
+            {
+                var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Evaluated);
+                ViewBag.Title = "Evaluated PCE Evaluations";
+                return View("All", PCEEvaluations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Evaluated Pending PCEEvaluations for user {UserId}", base.GetCurrentUserId());
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+                
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reevaluate(Guid PCEId, PCEEvaluationPostDto Dto)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _PCEEvaluationService.ReevaluatePCEEvaluation(base.GetCurrentUserId(), PCEId, Dto);
+                    // return Content(JsonConvert.SerializeObject(PCEEvaluation), "application/json");
+                    return RedirectToAction("Reevaluate", "PCEEvaluation");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error Reevaluating PCEEvaluation for ID {PCEId}", PCEId);
+                    ModelState.AddModelError("", "An error occurred while reevaluating the PCEEvaluation.");
+                }
+            }
+            return View(Dto);
+        }
+        
+        // public async Task<IActionResult>ReEvaluated(Guid Id)
+        // {
+        //     var PCE = await _PCEEvaluationService.GetPCE(base.GetCurrentUserId(), Id);
+      
+        //     string jsonData = JsonConvert.SerializeObject(PCE);
+        //     return Content(jsonData, "application/json");
+        // }
 
+        [HttpGet]
+        public async Task<IActionResult> AllReevaluated()
+        {
+            try
+            {
+                var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Reevaluated);
+                ViewBag.Title = "Reevaluated PCE Evaluations";
+                return View("All", PCEEvaluations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Reevaluated PCEEvaluations for user {UserId}", base.GetCurrentUserId());
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+
+        ////////////////////////////// HERE
         [HttpGet]
         public async Task<IActionResult> SendToRM(Guid Id)
         {
@@ -427,96 +477,10 @@ namespace mechanical.Controllers
     
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Evaluate(Guid Id, PCEEvaluationPostDto Dto)
-        {
-    
-            // if (!await _PCEEvaluationService.Evaluate(base.GetCurrentUserId(), PCEId))
-            // {
-            //     return View();
-            //     // return RedirectToAction("Index", "PCEEvaluation");
-            // }
-            // return RedirectToAction("Evaluated", "PCEEvaluation");
-       
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _PCEEvaluationService.EvaluatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
-                    return RedirectToAction("Evaluate", "PCEEvaluation");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error Evaluate PCEEvaluation for ID {Id}", Id);
-                    ModelState.AddModelError("", "An error occurred while Evaluate the PCEEvaluation.");
-                }
-            }
-            return View(Dto);
-        }
-        
-        [HttpGet]
-        public async Task<IActionResult> AllEvaluated()
-        {
-            try
-            {
-                // var PCEEvaluations = await _PCEEvaluationService.GetEvaluatedPCEEvaluations(base.GetCurrentUserId());
-                var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Evaluated);
-                ViewBag.Title = "Evaluated PCE Evaluations";
-                return View("All", PCEEvaluations);
-                // return View(PCEEvaluations);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching Evaluated Pending PCEEvaluations for user {UserId}", base.GetCurrentUserId());
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-        }
-                
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reevaluate(Guid PCEId, PCEEvaluationPostDto Dto)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _PCEEvaluationService.ReevaluatePCEEvaluation(base.GetCurrentUserId(), PCEId, Dto);
-                    // return Content(JsonConvert.SerializeObject(PCEEvaluation), "application/json");
-                    return RedirectToAction("Reevaluate", "PCEEvaluation");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error Reevaluating PCEEvaluation for ID {PCEId}", PCEId);
-                    ModelState.AddModelError("", "An error occurred while reevaluating the PCEEvaluation.");
-                }
-            }
-            return View(Dto);
-        }
-        
-
-        [HttpGet]
-        public async Task<IActionResult> AllReevaluated()
-        {
-            try
-            {
-                // var PCEEvaluations = await _PCEEvaluationService.GetReevaluatedPCEEvaluations(base.GetCurrentUserId());
-                var PCEEvaluations = await _PCEEvaluationService.GetPCEEvaluationsWithStatus(base.GetCurrentUserId(), Status.Reevaluated);
-                ViewBag.Title = "Reevaluated PCE Evaluations";
-                return View("All", PCEEvaluations);
-                // return View(PCEEvaluations);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching Reevaluated PCEEvaluations for user {UserId}", base.GetCurrentUserId());
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetMyDashboardPCECaseCount()
         {
-            var myPCECase = await _PCEEvaluationService.GetMyDashboardPCECaseCount(base.GetCurrentUserId());
+            var myPCECase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myPCECase);
             return Content(jsonData, "application/json");
         }
@@ -557,13 +521,13 @@ namespace mechanical.Controllers
             // return View("PCECases", PCEs);
         }
 
-        public async Task<IActionResult> MyResubmitedPCEs()
+        public async Task<IActionResult> MyResubmittedPCEs()
         {
-            ViewBag.Url = "/PCEEvaluation/GetMyResubmitedPCEs";
+            ViewBag.Url = "/PCEEvaluation/GetMyResubmittedPCEs";
             ViewData["Title"] = "Resubmitted PCE Cases";
             return View("PCECases");
 
-            // var PCEs = await _PCEEvaluationService.MyResubmitedPCEs(base.GetCurrentUserId());
+            // var PCEs = await _PCEEvaluationService.MyResubmittedPCEs(base.GetCurrentUserId());
             // return View("PCECases", PCEs);
         }
 
@@ -579,14 +543,14 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> MyPCECase(Guid Id)
         {
-            var loanPCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), Id);
+            var pCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), Id);
             // var PCECaseTerminate = await _PCECaseTermnateService.GetPCECaseTerminates(Id);
             // ViewData["PCECaseTerminate"] = PCECaseTerminate;
-            if (loanPCECase == null) 
+            if (pCECase == null) 
             {
                 return RedirectToAction("MyNewPCECases"); 
             }
-            ViewData["PCECase"] = loanPCECase;
+            ViewData["PCECase"] = pCECase;
             ViewData["Id"]=base.GetCurrentUserId();
             // ViewBag.Url = "/PCEEvaluation/GetMyTotalPCECases";
             ViewData["Title"] = "PCE Case Detail";
@@ -596,12 +560,12 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> MyPCECaseDetail(Guid Id)
         {
-            var loanPCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), Id);
-            if (loanPCECase == null) 
+            var pCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), Id);
+            if (pCECase == null) 
             {
                 return RedirectToAction("MyNewPCECases"); 
             }
-            ViewData["PCECase"] = loanPCECase;
+            ViewData["PCECase"] = pCECase;
             ViewData["Id"] = base.GetCurrentUserId();
             return View();
         }
@@ -612,9 +576,9 @@ namespace mechanical.Controllers
             return View(PCEs);
         }
 
-        public async Task<IActionResult> MyResubmitedPCE(Guid PCEId)
+        public async Task<IActionResult> MyResubmittedPCE(Guid PCEId)
         {
-            var PCEs =await _PCEEvaluationService.MyResubmitedPCE( base.GetCurrentUserId(), PCEId);
+            var PCEs =await _PCEEvaluationService.MyResubmittedPCE( base.GetCurrentUserId(), PCEId);
             return View(PCEs);
         }
      
@@ -633,7 +597,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyNewPCECases()
         {
-            var myPCECase = await _PCEEvaluationService.GetNewPCECases(GetCurrentUserId());
+            var myPCECase = await _PCEEvaluationService.GetPCECasesWithStatus(GetCurrentUserId(), "New");
             if (myPCECase == null) 
             {
                 return BadRequest("Unable to load PCECase"); 
@@ -645,7 +609,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyPendingPCECases()
         {
-            var myPCECase = await _PCEEvaluationService.GetPendingPCECases(GetCurrentUserId());
+            var myPCECase = await _PCEEvaluationService.GetPCECasesWithStatus(GetCurrentUserId(), "Pending");
             if (myPCECase == null) 
             {
                 return BadRequest("Unable to load PCECase"); 
@@ -657,7 +621,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyCompletedPCECases()
         {
-            var myPCECase = await _PCEEvaluationService.GetCompletedPCECases(GetCurrentUserId());
+            var myPCECase = await _PCEEvaluationService.GetPCECasesWithStatus(GetCurrentUserId(), "Completed");
             if (myPCECase == null) 
             {
                 return BadRequest("Unable to load PCECase"); 
@@ -669,7 +633,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyRejectedPCEs()
         {
-            var myPCECase = await _PCEEvaluationService.GetRejectedPCECases(GetCurrentUserId());
+            var myPCECase = await _PCEEvaluationService.GetPCECasesWithStatus(GetCurrentUserId(), "Rejected");
             if (myPCECase == null) 
             {
                 return BadRequest("Unable to load PCECase"); 
@@ -679,9 +643,9 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyResubmitedPCEs()
+        public async Task<IActionResult> GetMyResubmittedPCEs()
         {
-            var myPCECase = await _PCEEvaluationService.GetResubmitedPCECases(GetCurrentUserId());
+            var myPCECase = await _PCEEvaluationService.GetPCECasesWithStatus(GetCurrentUserId(), "Resubmitted");
             if (myPCECase == null) 
             {
                 return BadRequest("Unable to load PCECase"); 
@@ -700,6 +664,88 @@ namespace mechanical.Controllers
             }
             string jsonData = JsonConvert.SerializeObject(myPCECase);
             return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMyPCEs(Guid PCECaseId)
+        {
+            var productions = await _PCEEvaluationService.GetProductionCapacities(PCECaseId);
+            var plants = await _PCEEvaluationService.GetPlantCapacities(PCECaseId);
+            
+            if (productions == null && plants == null) 
+            {
+                return BadRequest("Unable to load PCEs"); 
+            }
+            var jsonData = new JObject
+            {
+                { "productions", JArray.FromObject(productions) },
+                { "plants", JArray.FromObject(plants) }
+            };
+
+            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyNewPCEs(Guid PCECaseId)
+        {
+            var status = "New";
+            var productions = await _PCEEvaluationService.GetProductionCapacitiesWithStatus(PCECaseId, status);
+            var plants = await _PCEEvaluationService.GetPlantCapacitiesWithStatus(PCECaseId, status);
+            
+            if (productions == null && plants == null) 
+            {
+                return BadRequest("Unable to load {status} PCEs"); 
+            }
+            
+            var jsonData = new JObject
+            {
+                { "productions", JArray.FromObject(productions) },
+                { "plants", JArray.FromObject(plants) }
+            };
+
+            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyPendingPCEs(Guid PCECaseId)
+        {
+            var status = "Pending";
+            var productions = await _PCEEvaluationService.GetProductionCapacitiesWithStatus(PCECaseId, status);
+            var plants = await _PCEEvaluationService.GetPlantCapacitiesWithStatus(PCECaseId, status);
+            
+            if (productions == null && plants == null) 
+            {
+                return BadRequest("Unable to load {status} PCEs"); 
+            }
+            
+            var jsonData = new JObject
+            {
+                { "productions", JArray.FromObject(productions) },
+                { "plants", JArray.FromObject(plants) }
+            };
+
+            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyCompletedPCEs(Guid PCECaseId)
+        {
+            var status = "Completed";
+            var productions = await _PCEEvaluationService.GetProductionCapacitiesWithStatus(PCECaseId, status);
+            var plants = await _PCEEvaluationService.GetPlantCapacitiesWithStatus(PCECaseId, status);
+            
+            if (productions == null && plants == null) 
+            {
+                return BadRequest("Unable to load {status} PCEs"); 
+            }
+            
+            var jsonData = new JObject
+            {
+                { "productions", JArray.FromObject(productions) },
+                { "plants", JArray.FromObject(plants) }
+            };
+
+            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
         }
     }
 }

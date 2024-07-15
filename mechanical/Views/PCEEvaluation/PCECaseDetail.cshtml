@@ -1,14 +1,8 @@
-﻿@using System
+﻿@using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Dto.PCECaseDto
-@using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
-    @* var RejectPost = new PCERejectPostDto {
-            PCEId = null, 
-            RejectionComment = "" 
-    }; 
-    ViewData["RejectPost"] = RejectPost;  *@
 }
 
 <section class="content-header">
@@ -50,11 +44,13 @@
                 </ul>
             </div>
             <div class="card-body">
+                
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @await Html.PartialAsync("Partial/_PCEGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                        @* <input value="@myPCECase.Id" type="hidden" id="PCECaseId" /> *@
                         @await Html.PartialAsync("Partial/_PCECaseDetail")
                     </div>
                    
@@ -87,9 +83,7 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{
-        await Html.RenderPartialAsync("Partial/_RejectModal");
-        @* await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]); *@
-        await Html.RenderPartialAsync("Partial/_PCECaseDatatableSriptsPartial");  
+        await Html.RenderPartialAsync("Partial/_PCECaseDetailDatatableSriptsPartial");  
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     } 
     

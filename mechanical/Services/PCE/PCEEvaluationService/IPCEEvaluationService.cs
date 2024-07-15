@@ -9,6 +9,7 @@ using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.RMDashboardDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
@@ -42,22 +43,26 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         
         Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId);
         Task<IEnumerable<int>> GetDashboardPCEEvaluationCount(Guid UserId); 
-        Task<MyPCECaseCountDto> GetMyDashboardPCECaseCount(Guid userId);
+        Task<MyPCECaseCountDto> GetDashboardPCECaseCount(Guid userId);
 
         Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid id);
         Task<PCECaseReturntDto> GetPCECaseDetail(Guid UserId, Guid id);
-        Task<IEnumerable<PCECaseReturntDto>> GetNewPCECases(Guid UserId);
-        Task<IEnumerable<PCECaseReturntDto>> GetPendingPCECases(Guid UserId); 
-        Task<IEnumerable<PCECaseReturntDto>> GetCompletedPCECases(Guid UserId);
-        Task<IEnumerable<PCECaseReturntDto>> GetRejectedPCECases(Guid UserId);
-        Task<IEnumerable<PCECaseReturntDto>> GetResubmitedPCECases(Guid UserId); 
+        Task<IEnumerable<PCECaseReturntDto>> GetPCECasesWithStatus(Guid UserId, string status);
+        // Task<IEnumerable<PCECaseReturntDto>> GetNewPCECases(Guid UserId);
+        // Task<IEnumerable<PCECaseReturntDto>> GetPendingPCECases(Guid UserId); 
+        // Task<IEnumerable<PCECaseReturntDto>> GetCompletedPCECases(Guid UserId);
+        // Task<IEnumerable<PCECaseReturntDto>> GetRejectedPCECases(Guid UserId);
+        // Task<IEnumerable<PCECaseReturntDto>> GetResubmittedPCECases(Guid UserId); 
         Task<IEnumerable<PCECaseReturntDto>> GetTotalPCECases(Guid UserId);  
 
         Task<ReturnProductionDto> MyRejectedPCE(Guid UserId, Guid id);
-        Task<ReturnProductionDto> MyResubmitedPCE(Guid UserId, Guid id);
+        Task<ReturnProductionDto> MyResubmittedPCE(Guid UserId, Guid id);
         // Task<IEnumerable<ReturnProductionDto>> MyRejectedPCEs(Guid UserId);
-        // Task<IEnumerable<ReturnProductionDto>> MyResubmitedPCEs(Guid UserId);
+        // Task<IEnumerable<ReturnProductionDto>> MyResubmittedPCEs(Guid UserId);
 
-        
+        Task<IEnumerable<ReturnProductionDto>> GetProductionCapacities(Guid PCECaseId);
+        Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacities(Guid PCECaseId);
+        Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatus(Guid PCECaseId, string status);
+        Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatus(Guid PCECaseId, string status);
     }
 }
