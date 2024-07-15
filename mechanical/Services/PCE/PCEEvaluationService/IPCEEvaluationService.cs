@@ -64,5 +64,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacities(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatus(Guid PCECaseId, string status);
         Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatus(Guid PCECaseId, string status);
+        Task<IEnumerable<PCEReturnCollateralDto>> GetProductionCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role);
+        Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role);
+
     }
 }
