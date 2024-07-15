@@ -767,20 +767,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
                 await _cbeContext.SaveChangesAsync();
 
-                // await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-                // {
-                //     CaseId = pceEntity.PCE.PCECaseId,
-                //     Activity = $"<strong> PCE Case Evaluation sent to Relational Manager.</strong>",
-                //     CurrentStage = "Maker Manager"
-                // });
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = pceEntity.PCE.PCECaseId,
+                    Activity = $"<strong> PCE Case Evaluation sent to Relational Manager.</strong>",
+                    CurrentStage = "Maker Manager"
+                });
 
-                // await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-                // {
-                //     CaseId = pceEntity.PCE.PCECaseId,
-                //     Activity = $"<strong>New PCE Case has been evaluated.</strong>",
-                //     CurrentStage = "Relational Manager",
-                //     UserId = pceEntity.PCE.PCECase.RMUserId
-                // }); 
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = pceEntity.PCE.PCECaseId,
+                    Activity = $"<strong>New PCE Case has been evaluated.</strong>",
+                    CurrentStage = "Relational Manager",
+                    // UserId = pceEntity.PCE.CreatedBy
+                    // UserId = pceEntity.PCE.PCECase.RMUserId
+                }); 
 
                 return true;
             }
