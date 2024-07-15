@@ -49,14 +49,13 @@ namespace mechanical.Mapper
 
             CreateMap<PCECase, PCECaseReturntDto>()
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-                //.ForMember(dest=>dest.CollateralType, opt=>opt.MapFrom(src=>src.PCECollaterals.CollateralType))
-                //.ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.PCECollaterals.Select(c => c.CollateralType)))
-                //.ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.PCECollaterals.Count()))
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c => c.ProductionType)))
                 .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
             CreateMap<PCENewCaseDto, PCECase>();
+
             CreateMap<PCECase, PCENewCaseDto>()
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
                 .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
 

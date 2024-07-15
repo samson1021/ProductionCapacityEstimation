@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.Dto.CollateralDto;
 
 
 namespace mechanical.Controllers
@@ -63,6 +64,12 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                if (PlantCollateralDto.PlantName == "Others, please specify")
+                {
+                    PlantCollateralDto.PlantName = PlantCollateralDto.OtherPlantName;
+                }
+
                 await _productionCapacityServices.CreatePlantProduction(base.GetCurrentUserId(), caseId, PlantCollateralDto);
                 var response = new { message = "Plant PCE created successfully" };
                 return Ok(response);
@@ -209,6 +216,10 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (collateralPostDto.PlantName == "Others, please specify")
+                {
+                    collateralPostDto.PlantName = collateralPostDto.OtherPlantName;
+                }
                 var collateral = await _productionCapacityServices.EditPlantProduction(base.GetCurrentUserId(), id, collateralPostDto);
                 return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
             }

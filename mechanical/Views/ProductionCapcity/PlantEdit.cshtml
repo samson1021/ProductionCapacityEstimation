@@ -1,5 +1,6 @@
-﻿@using mechanical.Models.PCE.Dto.PCECase;
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantEditPostDto
+﻿@* @using mechanical.Models.PCE.Dto.PCECase;
+ *@
+ @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantEditPostDto
 @{
     //var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
     var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>;
@@ -38,14 +39,47 @@
                     <form method="post" enctype="multipart/form-data" asp-action="PlantEdit" onsubmit="return validateForm();">
 
                         <input asp-for="Id" hidden />
-                        <input asp-for="PCECaseId" id="CaseId" />
+                        <input asp-for="PCECaseId" id="CaseId"  hidden/>
                         <input asp-for="ProductionType" value="Plant" hidden />
                         <div class="row">
-                            <div class="form-group col-lg-4">
+@*                             <div class="form-group col-lg-4">
                                 <label asp-for="PlantName"></label><i class="text-danger">*</i>
                                 <input asp-for="PlantName" class="form-control form-control-sm" id="PlantName" placeholder="Name of Plant">
                                 <span id="PlantName-error" asp-validation-for="PlantName" class="text-danger"></span>
+                            </div> *@
+
+
+
+
+
+                            <div class="form-group col-lg-4">
+                                <label asp-for="PlantName">Type of Farming <i class="text-danger">*</i></label>
+                                <select asp-for="PlantName" class="form-control form-control-sm" id="PlantName" required>
+                                    <option value="" disabled selected>Select Type of Farming *</option>
+                                    <option value="Coffee">Coffee</option>
+                                    <option value="Fruit">Fruit</option>
+                                    <option value="Citrus">Citrus</option>
+                                    <option value="Mango">Mango</option>
+                                    <option value="Grapevine">Grapevine</option>
+                                    <option value="Papaya">Papaya</option>
+                                    <option value="Banana">Banana</option>
+                                    <option value="Avocado">Avocado</option>
+                                    <option value="Others, please specify">Others, please specify</option>
+                                </select>
+                                <span id="PlantName-error" asp-validation-for="PlantName" class="text-danger"></span>
                             </div>
+
+                            <div class="form-group col-lg-4 d-none" id="OtherPlantNameInput">
+                                <label >Please enter the Farming Type <i class="text-danger">*</i></label>
+                                <input asp-for="OtherPlantName" class="form-control form-control-sm" id="OtherPlantName" placeholder="Other Type of Farming" required>
+                                <span id="OtherPlantName-error" asp-validation-for="OtherPlantName" class="text-danger"></span>
+                            </div>
+
+
+
+
+
+
                             <div class="form-group col-lg-4">
                                 <label asp-for="PropertyOwner"></label><i class="text-danger">*</i>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner">
@@ -368,6 +402,28 @@
 
 
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var otherPlantNameInput = document.getElementById('OtherPlantNameInput');
+        otherPlantNameInput.classList.add('d-none');
+    });
+
+    document.getElementById('PlantName').addEventListener('change', function () {
+        var otherPlantNameInput = document.getElementById('OtherPlantNameInput');
+        if (this.value === 'Others, please specify') {
+            otherPlantNameInput.classList.remove('d-none');
+        } else {
+            otherPlantNameInput.classList.add('d-none');
+        }
+    });
+
+    // document.getElementById('OtherPlantName').addEventListener('input', function () {
+    //     document.getElementById('PlantName').value = this.value;
+    // });
+
+</script>
+
+
 
 @section Scripts {
     @{
@@ -377,6 +433,27 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script>
+
+        document.getElementById('PlantMachinePurchased').addEventListener('change', function () {
+            var supportDocumentRow = document.getElementById('SupportDocumentUpload');
+            if (this.checked) {
+                supportDocumentRow.style.display = 'block';
+            } else {
+                supportDocumentRow.style.display = 'none';
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            var otherPlantNameInput = document.getElementById('OtherPlantNameInput');
+            otherPlantNameInput.classList.add('d-none');
+        });
+
+
+
+   
+
+
+
+
 
         $(function () {
             $('#sendEvaluationButtonModal1').on('shown.bs.modal', function () {

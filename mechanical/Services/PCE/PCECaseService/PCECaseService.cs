@@ -28,6 +28,7 @@ namespace mechanical.Services.PCE.PCECaseService
             _logger = logger;
         }
 
+
         async Task<PCECase> IPCECaseService.PCECase(Guid userId, PCECaseDto pCECaseDto)
         {
             var user = _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == userId);
@@ -59,20 +60,29 @@ namespace mechanical.Services.PCE.PCECaseService
             //var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager").ToListAsync();
             //var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             //return caseDtos;
+            //var casess = await _cbeContext.PCECases.ToListAsync();
+
+
             var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
                 .Where(res => res.RMUserId == userId && res.CurrentStatus == "New").ToListAsync();
+
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             return caseDtos;
 
-           // var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
-           //.Where(res => res.CaseOriginatorId == userId && res.Status == "New")
-           //.ToListAsync();
-           // var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-           // foreach (var caseDto in caseDtos)
-           // {
-           //     caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-           // }
-           // return caseDtos;
+
+            //copy from case service
+            //public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
+            //{
+            //    var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+            //               .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+            //               .ToListAsync();
+            //    var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+            //    foreach (var caseDto in caseDtos)
+            //    {
+            //        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+            //    }
+            //    return caseDtos;
+            //}
 
         }
 

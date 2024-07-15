@@ -193,12 +193,15 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             {
                 _cbeContext.Remove(production);
                 await _cbeContext.SaveChangesAsync();
+                var Filrproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
+                if( Filrproduction != null)
+                {
+                    _cbeContext.Remove(Filrproduction);
+                    await _cbeContext.SaveChangesAsync();
+                }
                 return true;
             }
-            else
-            {
                 return false;
-            }
         }
 
     
