@@ -390,11 +390,13 @@
                     success: function (result) {
                         toastr.success('PCE deleted successfully.');
                         // setTimeout(function () {
+                       // location.reload();
                         loadCollaterals();
-                        // }, 2000);
+
+                        // }, 5000);
                     },
                     error: function (xhr, status, error) {
-                        toastr.error('unable to delete PCE.');
+                        toastr.error('unable to delete PCE collateral.');
                     }
                 });
 

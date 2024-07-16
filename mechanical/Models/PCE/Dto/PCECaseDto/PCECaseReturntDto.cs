@@ -10,8 +10,10 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
         public required string ApplicantName { get; set; }
         public string CustomerUserId { get; set; } = string.Empty; 
         public string CustomerEmail { get; set; } = string.Empty;
-        public required string District { get; set; }
-        public required string Type { get; set; }
+        //public required string District { get; set; }
+        public  string? District { get; set; }
+        //public required string Type { get; set; }
+        public  string? Type { get; set; }
         public string CurrentStage { get; set; } = string.Empty;
         public string CurrentStatus { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
