@@ -1,18 +1,15 @@
-
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 
 @{
-    ViewData["Title"] = "PCE Evaluation Detail";
-    @* var ViewData["PCE"]. PCEEvaluationReturnDto; *@
-
-    var ReturnPost = new PCERejectPostDto {
-            // PCEId = Model.PCEId, 
-            PCEId = null, 
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
+    var RejectPost = new PCERejectPostDto {
+            PCEId = Model.PCEId, 
             RejectionComment = "" 
     }; 
-    ViewData["ReturnPost"] = ReturnPost; 
+    ViewData["RejectPost"] = RejectPost; 
 }
 
 <section class="content-header">
@@ -310,9 +307,9 @@
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;margin-left:1.25rem;" class="col-2">
                 @using (Html.BeginForm("Update", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
                 {
-                <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
+                <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                 <div class="row">
-                    <button id="update-btn" type="submit" class="col-xl-12 btn btn-sm btn-info">Update <i class="fas fa-pen"></i></button>
+                    <button id="update-btn" type="submit" class="col-xl-12 btn btn-sm btn-info"><i class="fas fa-pen"></i>Update </button>
                 </div>
                 }
             </div>
@@ -320,25 +317,25 @@
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2">
                 @using (Html.BeginForm("Delete", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
                 {
-                <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
+                <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                 <div class="row">
-                    <button id="delete-btn" type="submit" class="col-xl-12 btn btn-sm btn-dark">Delete <i class="fas fa-trash"></i></button>
+                    <button id="delete-btn" type="submit" class="col-xl-12 btn btn-sm btn-dark"><i class="fas fa-trash"></i>Delete </button>
                 </div>
                 }
             </div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2">
                 <div class="row">
-                    <button id="return-btn"  type="button" class="col-xl-12 btn btn-sm btn-danger" data-toggle="modal" data-target="#ReturnModal1">Return <i class="fas fa-undo"></i></button>
+                    <button id="reject-btn"  type="button" class="col-xl-12 btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectionModal1">  <i class="fas fa-undo"></i>Return</button>
                 </div>  
             </div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem; margin-left:2.5rem;" class="col-2">
                 @using (Html.BeginForm("SendToRM", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
                 {
-                <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
+                <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                 <div class="row">
-                    <button id="send-to-rm-btn" type="submit" class="col-xl-12 btn btn-sm btn-success">Send To RM <i class="fas fa-paper-plane"></i></button>
+                    <button id="send-to-rm-btn" type="submit" class="col-xl-12 btn btn-sm btn-success"><i class="fas fa-paper-plane"></i>Send To RM </button>
                 </div>
                 }
             </div>            
@@ -350,7 +347,7 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
-        await Html.RenderPartialAsync("Partial/_ReturnModal", ViewData["ReturnPost"]);
+        await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
     } 
 
     <script>
@@ -380,7 +377,7 @@
                         return "badge-warning";
                     case "Reevaluated":
                         return "badge-info";
-                    case "Returned":
+                    case "Rejected":
                         return "badge-danger";
                     case "Closed":
                         return "badge-dark";
@@ -392,50 +389,50 @@
             function updateButtons(status) {
                 var updateBtn = document.getElementById("update-btn");
                 var deteleBtn = document.getElementById("delete-btn");
-                var returnBtn = document.getElementById("return-btn");
+                var rejectBtn = document.getElementById("reject-btn");
                 var sendToRMBtn = document.getElementById("send-to-rm-btn");
 
                 switch (status) {
                     case "New":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "inline-block";
-                        returnBtn.style.display = "inline-block";
+                        rejectBtn.style.display = "inline-block";
                         sendToRMBtn.style.display = "inline-block";
                         break;
                     case "Evaluated":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "none";
-                        returnBtn.style.display = "none";
+                        rejectBtn.style.display = "none";
                         sendToRMBtn.style.display = "inline-block";
                         break;
                     case "Pending":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "inline-block";
-                        returnBtn.style.display = "inline-block";
+                        rejectBtn.style.display = "inline-block";
                         sendToRMBtn.style.display = "none";
                         break;
                     case "Reevaluated":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "none";
-                        returnBtn.style.display = "none";
+                        rejectBtn.style.display = "none";
                         sendToRMBtn.style.display = "inline-block";
                         break;
-                    case "Returned":
+                    case "Rejected":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "inline-block";
-                        returnBtn.style.display = "none";
+                        rejectBtn.style.display = "none";
                         sendToRMBtn.style.display = "none";
                         break;
                     case "Closed":
                         updateBtn.style.display = "none";
                         deteleBtn.style.display = "inline-block";
-                        returnBtn.style.display = "inline-block";
+                        rejectBtn.style.display = "inline-block";
                         sendToRMBtn.style.display = "none";
                         break;
                     default:
                         updateBtn.style.display = "none";
                         deteleBtn.style.display = "inline-block";
-                        returnBtn.style.display = "inline-block";
+                        rejectBtn.style.display = "inline-block";
                         sendToRMBtn.style.display = "none";
                         break;
                 }

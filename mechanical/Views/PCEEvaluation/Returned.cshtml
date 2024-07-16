@@ -335,7 +335,7 @@
                 <div class="row col-12">
                     <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
                     <div style="margin-top:1.25rem;" class="col-2">
-                        <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
+                        <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                         <div class="row">
                             <a id="update-btn" href="@Url.Action("Update", "PCEEvaluation")?id=@Model.Id" class="col-xl-12 btn btn-sm btn-info">Update <i class="fas fa-pen"></i></a>
                         </div>
@@ -344,7 +344,7 @@
                     <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-2">
                         @using (Html.BeginForm("SendToRM", "PCEEvaluation", FormMethod.Post))
                         {
-                            <input asp-for="PCEId" value=@Model.PCEId type="hidden" id="PCEId" />
+                            <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                             <div class="row">
                                 <button id="send-to-rm-btn" type="submit" class="col-xl-11 btn btn-sm bg-purple">Send To RM <i class="fas fa-paper-plane"></i></button>
                             </div>

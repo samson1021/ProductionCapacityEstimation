@@ -11,10 +11,10 @@
             <span class="badge 
                 @(item.Status == null ? "badge-secondary" :
                 item.Status == Status.New ? "badge-primary" :
-                item.Status == Status.Evaluated ? "badge-purple" :
+                item.Status == Status.Evaluated ? "bg-purple" :
                 item.Status == Status.Pending ? "badge-warning" :
                 item.Status == Status.Reevaluated ? "badge-info" :
-                item.Status == Status.Returned ? "badge-danger" :
+                item.Status == Status.Rejected ? "badge-danger" :
                 item.Status == Status.Completed ? "badge-success" : "badge-dark")">
                 @(item.Status.HasValue ? item.Status.Value.ToString() : "Unknown")
             </span>
@@ -25,9 +25,10 @@
                 @if (item.Status == Status.New || item.Status == Status.Reevaluated)
                 {
                     <a href="@Url.Action("Update", "PCEEvaluation", new { id = item.Id })" class="btn btn-sm btn-warning">Update <i class="fas fa-pen"></i></a>
-                    <button type="button" class="btn btn-sm bg-purple" onclick="sendToRM('@item.Id')">Send To RM <i class="fas fa-paper-plane"></i></button>
+                    @* <button type="button" class="btn btn-sm bg-purple" onclick="sendToRM('@item.Id')">Send To RM <i class="fas fa-paper-plane"></i></button> *@
+                    <a href="@Url.Action("SendToRM", "PCEEvaluation", new { id = item.Id })" class="btn btn-sm bg-purple">Send To RM <i class="fas fa-paper-plane"></i></a>
                 }
-                else if (item.Status == Status.Evaluated || item.Status == Status.Pending || item.Status == Status.Returned)
+                else if (item.Status == Status.Evaluated || item.Status == Status.Pending || item.Status == Status.Rejected)
                 {
                     <a href="@Url.Action("Update", "PCEEvaluation", new { id = item.Id })" class="btn btn-sm btn-warning">Update <i class="fas fa-pen"></i></a>
                 }
@@ -37,13 +38,12 @@
         </td>
     </tr>
 }
-
+@* 
 <script>
     function sendToRM(id) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
         form.setAttribute("action", "@Url.Action("SendToRM", "PCEEvaluation")");
-
         var hiddenField = document.createElement("input");
         hiddenField.setAttribute("type", "hidden");
         hiddenField.setAttribute("name", "PCEId");
@@ -53,4 +53,4 @@
         document.body.appendChild(form);
         form.submit();
     }
-</script>
+</script> *@

@@ -7,12 +7,10 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
     public class PCEEvaluationPostDto
     {
-        // public required Guid? PCEId { get; set; } 
-        public Guid? PCEId { get; set; } 
+        public required Guid PCEId { get; set; } 
 
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
-
 
         [Display(Name = "Phase of Output")]
         public OutputPhase? OutputPhase { get; set; }
