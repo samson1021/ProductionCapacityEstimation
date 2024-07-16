@@ -73,8 +73,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         var supportingEvidenceFile = new CreateFileDto
                         {
                             File = file,
-                            Catagory = "SupportingEvidence",
-                            // CaseId = pceEntity.PCE.PCECaseId,
+                            Catagory = "Supporting Evidence",
+                            CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -88,8 +88,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         var productionProcessFlowDiagramFile = new CreateFileDto
                         {
                             File = file,
-                            Catagory = "ProductionProcessFlowDiagram",
-                            // CaseId = pceEntity.PCE.PCECaseId,
+                            Catagory = "Production Process Flow Diagram",
+                            CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -143,8 +143,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         var supportingEvidenceFile = new CreateFileDto
                         {
                             File = file,
-                            Catagory = "SupportingEvidence",
-                            // CaseId = pceEntity.PCE.PCECaseId,
+                            Catagory = "Supporting Evidence",
+                            CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 
@@ -158,8 +158,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         var productionProcessFlowDiagramFile = new CreateFileDto
                         {
                             File = file,
-                            Catagory = "ProductionProcessFlowDiagram",
-                            // CaseId = pceEntity.PCE.PCECaseId,
+                            Catagory = "Production Process Flow Diagram",
+                            CaseId = pceEntity.PCE.PCECaseId,
                             CollateralId = pceEntity.PCEId
                         };
 

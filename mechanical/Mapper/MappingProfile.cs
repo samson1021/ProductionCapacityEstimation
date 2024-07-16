@@ -174,13 +174,13 @@ namespace mechanical.Mapper
              .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentPostDto>();
 
-            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
             CreateMap<CreateUser, UserReturnDto>()
                     .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
             
             ///////
            
+            CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
             CreateMap<CreateFileDto, ReturnFileDto>()
                 .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType))
                 .ReverseMap();
@@ -198,8 +198,8 @@ namespace mechanical.Mapper
                 .ReverseMap();
 
             CreateMap<PCEEvaluation, PCEEvaluationReturnDto>()
-                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "SupportingEvidence")))
-                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "ProductionProcessFlowDiagram")));
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "Supporting Evidence")))
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "Production Process Flow Diagram")));
                 
             CreateMap<PCEEvaluationPostDto, PCEEvaluation>()
                 .ForMember(dest => dest.SupportingDocuments, opt => opt.Ignore());
