@@ -1,10 +1,12 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.Dto.UploadFileDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
     var RejectPost = new PCERejectPostDto {
             PCEId = Model.PCEId, 
             RejectionComment = "" 
@@ -101,13 +103,29 @@
                                 <span asp-validation-for="EffectiveProductionHourType" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="row">
+                       <div class="row">
                             <div class="form-group col-sm-4">
                                 <label>@Html.DisplayNameFor(model => model.ShiftsPerDay) <i class="text-danger">*</i></label>
                                 <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
                                 <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-lg-8" id="shiftHoursContainer"></div>
+                            <div class="form-group col-sm-8" id="shiftHoursContainer">
+                                @for (int i = 0; i < Model.ShiftHours.Count; i++)
+                                {
+                                    <div class="row shift-hour col-sm-12" data-index="@i">
+                                        <div class="form-group col-sm-6">
+                                            <label>Shift @i Start</label>                                            
+                                            <input asp-for="ShiftHours[@i].Start" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].Start.ToString("HH:mm:ss")" />
+                                            <span asp-validation-for="ShiftHours[@i].Start" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label>Shift @i End</label>
+                                            <input asp-for="ShiftHours[@i].End" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].End.ToString("HH:mm:ss")" />
+                                            <span asp-validation-for="ShiftHours[@i].End" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
 
@@ -209,12 +227,12 @@
                             </div>
                             <div class="form-group col-lg-4">
                                 <label>Checking Started At</label>
-                                <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" />
+                                <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" value="@(Model.TimeConsumedToCheck?.Start.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"))" />
                                 <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label>Checking Ended At</label>
-                                <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" />
+                                <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@(Model.TimeConsumedToCheck?.End.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"))" />
                                 <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
                             </div>
                         </div>  
@@ -324,8 +342,7 @@
                             <div class="form-group col-lg-3"></div>
                             <div class="form-group col-lg-3">
                                 <label>@Html.DisplayNameFor(model => model.InspectionDate)</label>
-                                @* <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" /> *@
-                                @Html.EditorFor(m => m.InspectionDate, new { htmlAttributes = new { @class = "form-control", value = DateTime.Now.ToString("yyyy-MM-dd") } })
+                                <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" value="@(Model.InspectionDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" />
                                 @Html.ValidationMessageFor(m => m.InspectionDate)
                                 <span asp-validation-for="InspectionDate" class="text-danger"></span>
                             </div>
@@ -380,69 +397,68 @@
     } 
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var shiftsInput = $('#ShiftsPerDay');
             var shiftHoursContainer = $('#shiftHoursContainer');
-
+            
             function renderShiftHours() {
                 var shiftCount = parseInt(shiftsInput.val()) || 0;
-                shiftHoursContainer.empty();
+                shiftCount = Math.max(1, Math.min(5, shiftCount)); // Ensure shift count is between 1 and 5
+                var existingShiftCount = shiftHoursContainer.children('.shift-hour').length;
 
-                for (var i = 0; i < shiftCount; i++) {
-
-                    var shiftHoursInput = $(`
-                            <div class="row">
-                                <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
-                                    <input asp-for="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="(model => model.ShiftHours[${i}].Start.ToString("HH:mm:ss"))" />
+                // Add new shifts if needed
+                if (shiftCount > existingShiftCount) {
+                    for (var i = existingShiftCount; i < shiftCount; i++) {
+                        var shiftHourInput = $(`
+                            <div class="row shift-hour col-sm-12" data-index="${i}">
+                                <div class="form-group col-sm-6">
+                                    <label>Shift ${i + 1} Start</label>
+                                    <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                                    <span class="text-danger"></span>
                                 </div>
-                                <div class="form-group col-lg-6">
-                                    <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
-                                    <input asp-for="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="(model => model.ShiftHours[${i}].End.ToString("HH:mm:ss"))" />
+                                <div class="form-group col-sm-6">
+                                    <label>Shift ${i + 1} End</label>
+                                    <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                                    <span class="text-danger"></span>
                                 </div>
                             </div>
                         `);
-                    shiftHoursContainer.append(shiftHoursInput);
-                }                
-            }           
-            shiftsInput.change(renderShiftHours);
-
-            renderShiftHours(); // Initial rendering on page load
-        });
-
-    </script>
-    <script>
-        var shiftsInput = $("#ShiftsPerDay");
-        shiftsInput.change(function () {
-            var shiftsPerDay = $(this).val();
-            var shiftHoursContainer = $("#shiftHoursContainer");
-
-            var shiftCount = parseInt(shiftsInput.val()) || 0;
-
-            if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
-                for (var i = 0; i < shiftsPerDay; i++) {
-                    shiftHoursContainer.append(`
-                        <div class="row">
-                            <div class="form-group col-lg-6">
-                                <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].Start)</label>
-                                <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
-                            </div>
-                            <div class="form-group col-lg-6">
-                                <label>Shift ${i + 1} @Html.DisplayNameFor(model => model.ShiftHours[0].End)</label>
-                                <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
-                            </div>
-                        </div>
-                    `);
+                        shiftHoursContainer.append(shiftHourInput);
+                    }
                 }
-            } else {
-                alert("Please enter a value between 1 and 5 (inclusive) for Shifts Per Day.");
-            }
-        });
 
-        $("#ShiftsPerDay").attr({
-            "min": 1,
-            "max": 5
+                // Remove excess shifts if needed
+                if (shiftCount < existingShiftCount) {
+                    shiftHoursContainer.children('.shift-hour').slice(shiftCount).remove();
+                }
+
+                // Reindex shift hours
+                reindexShiftHours();
+            }
+
+            function reindexShiftHours() {
+                $('#shiftHoursContainer .shift-hour').each(function (index) {
+                    $(this).attr('data-index', index);
+                    $(this).find('label').each(function () {
+                        $(this).text($(this).text().replace(/Shift \d+/, `Shift ${index + 1}`));
+                    });
+                    $(this).find('input').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/\d+/, index));
+                    });
+                });
+            }
+
+            shiftsInput.on('input', renderShiftHours); // Handle input change
+            renderShiftHours(); // Initial rendering on page load
+
+            // Optionally handle input changes to keep data consistent
+            shiftHoursContainer.on('change', 'input', function () {
+                // Handle changes in shift hour inputs if needed
+            });
         });
+    </script>
+
+    <script>
 
         $("#MachineFunctionalityStatus").change(function () {
             var selectedStatus = $(this).val();

@@ -1,12 +1,14 @@
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
 
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
     var RejectPost = new PCERejectPostDto {
             PCEId = myPCE.Id, 
             RejectionComment = "" 

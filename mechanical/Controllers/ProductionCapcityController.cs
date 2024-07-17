@@ -81,7 +81,7 @@ namespace mechanical.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Detail(Guid id)
-        {
+        {Console.WriteLine("abduuuuu");
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
             var loanCase = await _pCECaseService.GetProductionCaseDetail(id);
 

@@ -22,7 +22,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-        public List<TimePeriodDto>? ShiftHours { get; set; } = new List<TimePeriodDto>();
+        public List<TimeRangeDto>? ShiftHours { get; set; }
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -43,7 +43,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? OverallActualCurrentPlantCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
-        public DateTimePeriodDto? TimeConsumedToCheck { get; set; }
+        public DateTimeRangeDto? TimeConsumedToCheck { get; set; }
 
         [Display(Name = "Technical Obsolescence Status")]
         public string? TechnicalObsolescenceStatus { get; set; }
@@ -106,7 +106,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public DateTime CreatedAt { get; set; } 
     }
 
-    public class TimePeriodDto
+    public class TimeRangeDto
     {
         public int Id { get; set; }
 
@@ -117,18 +117,18 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public TimeOnly End { get; set; }
     }
 
-    public class DatePeriodDto
-    {
-        public int Id { get; set; }
+    // public class DateRangeDto
+    // {
+    //     public int Id { get; set; }
 
-        [Display(Name = "Start Date")]
-        public DateOnly Start { get; set; }
+    //     [Display(Name = "Start Date")]
+    //     public DateOnly Start { get; set; }
 
-        [Display(Name = "End Date")]
-        public DateOnly End { get; set; }
-    }
+    //     [Display(Name = "End Date")]
+    //     public DateOnly End { get; set; }
+    // }
 
-    public class DateTimePeriodDto
+    public class DateTimeRangeDto
     {
         public int Id { get; set; }
 

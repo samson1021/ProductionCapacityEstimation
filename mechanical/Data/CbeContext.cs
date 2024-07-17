@@ -48,17 +48,17 @@ namespace mechanical.Data
                 v => v.ToDateTime(TimeOnly.MinValue),
                 v => DateOnly.FromDateTime(v));
 
-            modelBuilder.Entity<TimePeriod>(entity =>
+            modelBuilder.Entity<TimeRange>(entity =>
             {
                 entity.Property(e => e.Start).HasConversion(timeOnlyConverter);
                 entity.Property(e => e.End).HasConversion(timeOnlyConverter);
             });
 
-            modelBuilder.Entity<DatePeriod>(entity =>
-            {
-                entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
-                entity.Property(e => e.End).HasConversion(dateOnlyConverter);
-            });
+            // modelBuilder.Entity<DateRange>(entity =>
+            // {
+            //     entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
+            //     entity.Property(e => e.End).HasConversion(dateOnlyConverter);
+            // });
 
             modelBuilder.Entity<PCEEvaluation>(entity =>
             {

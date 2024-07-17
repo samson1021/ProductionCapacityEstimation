@@ -1,9 +1,10 @@
-﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@* @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 @using mechanical.Models.Enum.ProductionCapcityEstimation
-@using mechanical.Models.PCE.Dto.PCECaseDto
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto *@
 
 @{
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
     var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
 }
 
@@ -13,10 +14,8 @@
         // var PCECaseId = $('#PCECaseId').val();
         var PCECaseId = '@myPCECase.Id';
 
-        function initializeDataTable(productions, plants) {
-            
-            var combinedData = productions.concat(plants); // Combine productions and plants data
-
+        function initializeDataTable(data) {
+           
             PCEsTable = $('#PCEs').DataTable({
                 language: {
                     emptyTable: "There is no PCE register for this case. Please click the above add button to add PCE."
@@ -25,8 +24,8 @@
                 pageLength: 8,
                 lengthChange: false,
                 autoWidth: false,
-                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
-                data: combinedData,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"],
+                data: data,
                 columns: [
                     {
                         data: null,
@@ -42,13 +41,16 @@
                         width: '10%',
                         render: function (data, type, row, meta) {
                             var productionType = row.ProductionType;
-                            var detailUrl = (productionType === 'Plant') 
-                                ? '@Url.Action("PCEDetail", "PlantCapacityEstimation")'
-                                : '@Url.Action("Detail", "ProductionCapacity")';
+                            var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
+                            // var detailUrl = '@Url.Action("Detail", "ProductionCapacity")';
                             var addUrl = (productionType === 'Plant')
                                 ? 'openAddManufacturingModal()'
                                 : 'openAddPlantModal()';
-                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '">Evaluation</a> | <a href="' + detailUrl + '?Id=' + data + '">Details</a> | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a> | <a href="#" onclick="' + addUrl + '">Add</a>';
+                            return  '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + 
+                                    '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data + 
+                                    '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data + 
+                                    '\')">Return</a> | ' + '<a href="#" onclick="' + addUrl + '">Add</a>';
+
                         }
                     }
                 ]
@@ -65,60 +67,23 @@
                         var PCEsTable = $('#PCEs').DataTable();
                         PCEsTable.destroy();
                     }
-                    
-                    // Handle data response
-                    var productions = data.productions || [];
-                    var plants = data.plants || [];
-
-                    initializeDataTable(productions, plants);
+                    initializeDataTable(data);
                 },
                 error: function (error) {
-                    toastr.error("Failed to load Production and Plant Capacities");
+                    toastr.error("Failed to load Production Capacities");
                     console.log(error);
                 }
             });    
-        }
-
-        loadPCEs();
-
-
-
-
-
-
-        function openRejectionModal(collateralId) {
-            $('#CollateralId').val(collateralId);
-            $('#rejectionModal1').modal('show');
-        }
-
-        $('#rejectionModal1').on('shown.bs.modal', function () {
-            $('#rejectionComment').focus();
-        });
-
-        $('#rejectionForm').submit(function (event) {
-            event.preventDefault(); // Prevent default form submission
-
-            var rejectionComment = $('#rejectionComment').val();
-            var CollateralId = $('#CollateralId').val();
-
-            $.ajax({
-                url: $(this).attr('action'),
-                type: $(this).attr('method'),
-
-                data: { rejectionComment: rejectionComment, CollateralId: CollateralId },
-                success: function (response) {
-                    // Handle the response from the controller if needed
-                    toastr.success(' Reason for Return saved successfully');
-                    $('#rejectionModal1').modal('hide');
-                    window.location.href = '/MOPCECase/MyPCECases';
-
-                },
-                error: function (error) {
-                    // Handle the error if needed
-                    toastr.error('Error saving rejection comment:', error);
-                }
-            });
-        });
-          
+        }   
+        loadPCEs();         
     }); 
+    
+    function openRejectionModal(PCEId) {
+        var rejectionModal = document.getElementById('rejectionModal1');
+        var PCEIdField = document.querySelector('#rejectionModal1 input[name="PCEId"]');
+
+        // Set the PCEId value
+        PCEIdField.value = PCEId;
+        $('#rejectionModal1').modal('show');
+    } 
 </script>

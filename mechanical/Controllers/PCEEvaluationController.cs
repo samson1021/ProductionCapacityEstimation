@@ -58,13 +58,17 @@ namespace mechanical.Controllers
                     return RedirectToAction("Detail", "PCEEvaluation", new { Id = PCEEvaluation.Id });
                 }
 
-                var productionCapacity = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEId);
+                var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEId);
 
-                if (productionCapacity == null)
+                if (pce == null)
                 {
                     return RedirectToAction("MyNewPCECases", "PCEEvaluation");
                 }
-                ViewData["PCE"] = productionCapacity;
+
+                var pCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), pce.PCECaseId);
+                ViewData["PCECase"] = pCECase;
+                // ViewData["PCECase"] = pce.PCECase;
+                ViewData["PCE"] = pce;
                 
                 return View();
             }
@@ -107,7 +111,13 @@ namespace mechanical.Controllers
                 {
                     return RedirectToAction("NewPCEEvaluations");
                 }
-                        
+                
+                var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
+                var pCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), pce.PCECaseId);
+                ViewData["PCECase"] = pCECase;
+                // ViewData["PCECase"] = pce.PCECase;
+                ViewData["PCE"] = pce;
+                
                 return View(PCEEvaluation);
             }
             catch (Exception ex)
@@ -186,8 +196,13 @@ namespace mechanical.Controllers
                 if (PCEEvaluation == null)
                 {
                     return RedirectToAction("NewPCEEvaluations");
-                }
-            
+                }            
+                var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
+                var pCECase = await _PCEEvaluationService.GetPCECaseDetail(GetCurrentUserId(), pce.PCECaseId);
+                ViewData["PCECase"] = pCECase;
+                // ViewData["PCECase"] = pce.PCECase;
+                ViewData["PCE"] = pce;
+
                 return View(PCEEvaluation);
             }
             catch (Exception ex)
@@ -551,7 +566,7 @@ namespace mechanical.Controllers
                 return RedirectToAction("MyNewPCECases"); 
             }
             ViewData["PCECase"] = pCECase;
-            ViewData["Id"]=base.GetCurrentUserId();
+            // ViewData["Id"]=base.GetCurrentUserId();
             // ViewBag.Url = "/PCEEvaluation/GetMyTotalPCECases";
             ViewData["Title"] = "PCE Case Detail";
             return View("PCECaseDetail");
@@ -670,19 +685,15 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetAllMyPCEs(Guid PCECaseId)
         {
             var productions = await _PCEEvaluationService.GetProductionCapacities(PCECaseId);
-            var plants = await _PCEEvaluationService.GetPlantCapacities(PCECaseId);
             
-            if (productions == null && plants == null) 
+            if (productions == null) 
             {
                 return BadRequest("Unable to load PCEs"); 
             }
-            var jsonData = new JObject
-            {
-                { "productions", JArray.FromObject(productions) },
-                { "plants", JArray.FromObject(plants) }
-            };
 
-            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+            string jsonData = JsonConvert.SerializeObject(productions);
+
+            return Content(jsonData, "application/json");
         }
 
         [HttpGet]
@@ -690,20 +701,15 @@ namespace mechanical.Controllers
         {
             var status = "New";
             var productions = await _PCEEvaluationService.GetProductionCapacitiesWithStatus(PCECaseId, status);
-            var plants = await _PCEEvaluationService.GetPlantCapacitiesWithStatus(PCECaseId, status);
             
-            if (productions == null && plants == null) 
+            if (productions == null) 
             {
                 return BadRequest("Unable to load {status} PCEs"); 
             }
             
-            var jsonData = new JObject
-            {
-                { "productions", JArray.FromObject(productions) },
-                { "plants", JArray.FromObject(plants) }
-            };
+            string jsonData = JsonConvert.SerializeObject(productions);
 
-            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+            return Content(jsonData, "application/json");
         }
 
         [HttpGet]
@@ -711,20 +717,15 @@ namespace mechanical.Controllers
         {
             var status = "Pending";
             var productions = await _PCEEvaluationService.GetProductionCapacitiesWithStatus(PCECaseId, status);
-            var plants = await _PCEEvaluationService.GetPlantCapacitiesWithStatus(PCECaseId, status);
             
-            if (productions == null && plants == null) 
+            if (productions == null) 
             {
                 return BadRequest("Unable to load {status} PCEs"); 
             }
             
-            var jsonData = new JObject
-            {
-                { "productions", JArray.FromObject(productions) },
-                { "plants", JArray.FromObject(plants) }
-            };
+            string jsonData = JsonConvert.SerializeObject(productions);
 
-            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+            return Content(jsonData, "application/json");
         }
 
         [HttpGet]
@@ -732,20 +733,15 @@ namespace mechanical.Controllers
         {
             var status = "Completed";
             var productions = await _PCEEvaluationService.GetProductionCapacitiesWithStatus(PCECaseId, status);
-            var plants = await _PCEEvaluationService.GetPlantCapacitiesWithStatus(PCECaseId, status);
             
-            if (productions == null && plants == null) 
+            if (productions == null) 
             {
                 return BadRequest("Unable to load {status} PCEs"); 
             }
             
-            var jsonData = new JObject
-            {
-                { "productions", JArray.FromObject(productions) },
-                { "plants", JArray.FromObject(plants) }
-            };
+            string jsonData = JsonConvert.SerializeObject(productions);
 
-            return Content(JsonConvert.SerializeObject(jsonData), "application/json");
+            return Content(jsonData, "application/json");
         }
     }
 }

@@ -61,11 +61,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         // Task<IEnumerable<ReturnProductionDto>> MyResubmittedPCEs(Guid UserId);
 
         Task<IEnumerable<ReturnProductionDto>> GetProductionCapacities(Guid PCECaseId);
-        Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacities(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatus(Guid PCECaseId, string status);
-        Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatus(Guid PCECaseId, string status);
         Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role);
-        Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role);
 
     }
 }

@@ -1,10 +1,12 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 
 @{
-    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";    
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
     var RejectPost = new PCERejectPostDto {
             PCEId = Model.PCEId, 
             RejectionComment = "" 
