@@ -20,6 +20,7 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 
 using mechanical.Models.Dto.UploadFileDto;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -138,7 +139,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             
             var production = _mapper.Map<ProductionCapacity>(createProductionDto);
             production.Id = Guid.NewGuid();
-            //production.PCECaseId = PCECaseId;
+            var produId= production.Id;
             try
             {
                 await this.UploadFile(userId, "Plant LHC Certificate", production, createProductionDto.LHC);
@@ -168,9 +169,22 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             production.CurrentStage = "Relation Manager";
             production.CurrentStatus = "New";
             //production.ProductionType = "Plant";
-
-
             await _cbeContext.ProductionCapacities.AddAsync(production);
+            await _cbeContext.SaveChangesAsync();
+
+
+
+            // Create sample ProductionCaseAssignment instances
+            var productionCaseAssignment1 = new ProductionCaseAssignment
+            {
+                Id = Guid.NewGuid(),
+                ProductionCapacityId = production.Id,
+                UserId = userId,
+                AssignmentDate = new DateTime(2023, 6, 1),
+                CompletionDate = null,
+                Status = "New"
+            };
+            await _cbeContext.ProductionCaseAssignments.AddAsync(productionCaseAssignment1);
             await _cbeContext.SaveChangesAsync();
 
             await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto

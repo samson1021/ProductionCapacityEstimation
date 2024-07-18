@@ -885,14 +885,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         public async Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacities(Guid PCECaseId)
         {
-            var plants = await _cbeContext.PlantCapacityEstimations.Where(res => res.CaseId == PCECaseId && res.CurrentStage == "Maker Officer").ToListAsync();
+            var plants = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Maker Officer").ToListAsync();
             return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(plants);
         }
 
 
         public async Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatus(Guid PCECaseId, string status)
         {
-            var plants = await _cbeContext.PlantCapacityEstimations.Where(res => res.CaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == "Maker Officer")).ToListAsync();
+            var plants = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == "Maker Officer")).ToListAsync();
             return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(plants);
         }
 
@@ -904,7 +904,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         public async Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role)
         {
-            var plants = await _cbeContext.PlantCapacityEstimations.Where(res => res.CaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == role)).ToListAsync();
+            var plants = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == role)).ToListAsync();
             return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(plants);
         }
 

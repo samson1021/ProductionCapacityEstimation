@@ -107,7 +107,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCECaseCount();
+            var myCase = await _PCECaseService.GetDashboardPCECaseCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
@@ -186,6 +186,8 @@ namespace mechanical.Controllers.PCE
         [HttpPost]
         public async Task<IActionResult> SendForValuation(string selectedCollateralIds, string CenterId)
         {
+
+            var userId = base.GetCurrentUserId();
             try
             {
                 await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
