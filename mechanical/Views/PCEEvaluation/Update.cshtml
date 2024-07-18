@@ -1,12 +1,12 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
-@using mechanical.Models.PCE.Dto.PCECaseDto
+@* @using mechanical.Models.PCE.Dto.PCECaseDto *@
 @using mechanical.Models.Dto.UploadFileDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    @* var myPCECase = ViewData["PCECase"] as PCECaseReturntDto; *@
     var RejectPost = new PCERejectPostDto {
             PCEId = Model.PCEId, 
             RejectionComment = "" 
@@ -19,19 +19,6 @@
         <div class="row mb-2">
             <div class="col-sm-6 col-xl-4">
                 <div class="row align-items-center">
-                   
-                    <div class="col-auto">
-                        <h5>
-                            @if (Model.Status != null)
-                            {
-                                <span id="status-badge" class="badge badge-lg badge-pill badge-primary">@Model.Status</span>
-                            }
-                            else
-                            {
-                                <span id="status-badge" class="badge badge-lg badge-pill badge-secondary">Unknown</span>
-                            }
-                        </h5>
-                    </div>
                 </div>
             </div>
             <div class="col-sm-6 col-xl-6 offset-xl-1">
@@ -267,9 +254,8 @@
                                                 <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
                                                     <td>@file.Name</td>
                                                     <td>
-                                                        <a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-primary">Download</a>
-                                                        <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-info" target="_blank">View</a>
-                                                        <a href="#" class="btn btn-sm btn-danger delete-file" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)">Delete</a>
+                                                        <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank">View <i class="fas fa-eye"></i></a> |
+                                                        <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;">Delete <i class="fas fa-trash"></i></a>
                                                     </td>
                                                 </tr>
                                             }
@@ -306,9 +292,8 @@
                                                 <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
                                                     <td>@file.Name</td>
                                                     <td>
-                                                        <a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-primary">Download</a>
-                                                        <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-info" target="_blank">View</a>
-                                                        <a href="#" class="btn btn-sm btn-danger delete-file" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)">Delete</a>
+                                                        <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank">View <i class="fas fa-eye"></i></a> |
+                                                        <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;">Delete <i class="fas fa-trash"></i></a>
                                                     </td>
                                                 </tr>
                                             }
@@ -377,23 +362,10 @@
 
 @section Scripts {
 
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
-
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     } 
 
     <script>
@@ -476,15 +448,6 @@
                 $("#otherReasonRow").show();
             } else {
                 $("#otherReasonRow").hide();
-            }
-        });
-
-        $("#Status").change(function () {
-            var selectedStatus = $(this).val();
-            if (selectedStatus === '@((int)Status.Rejected)') {
-                $("#ReasonRow").show();
-            } else {
-                $("#ReasonRow").hide();
             }
         });
 

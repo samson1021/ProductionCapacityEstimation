@@ -32,36 +32,36 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         Other
     }
 
-    public enum Status
-    {
-        [Display(Name = "New")]
-        New,
+    // public enum Status
+    // {
+    //     [Display(Name = "New")]
+    //     New,
 
-        [Display(Name = "Pending")]
-        Pending,
+    //     [Display(Name = "Pending")]
+    //     Pending,
 
-        [Display(Name = "Evaluated")]
-        Evaluated,
+    //     [Display(Name = "Evaluated")]
+    //     Evaluated,
 
-        [Display(Name = "Rejected")]
-        Rejected,
+    //     [Display(Name = "Rejected")]
+    //     Rejected,
 
-        [Display(Name = "Reevaluated")]
-        Reevaluated,
+    //     [Display(Name = "Reevaluated")]
+    //     Reevaluated,
 
-        [Display(Name = "Completed")]
-        Completed,
+    //     [Display(Name = "Completed")]
+    //     Completed,
 
-        [Display(Name = "Closed")]
-        Closed,
+    //     [Display(Name = "Closed")]
+    //     Closed,
 
-        [Display(Name = "Approved")]
-        Approved,
+    //     [Display(Name = "Approved")]
+    //     Approved,
         
-        [Display(Name = "Rework")]
-        Rework
+    //     [Display(Name = "Rework")]
+    //     Rework
 
-    }
+    // }
 
     public enum ProductionHourType
     {

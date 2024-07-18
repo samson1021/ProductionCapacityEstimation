@@ -67,8 +67,8 @@
 
                     // Delay redirect for 2 seconds
                     setTimeout(function() {
-                        window.location.href = '@Url.Action("MyPCECase", "PCEEvaluation")?Id=' + PCECaseId;
-                    }, 2000);
+                        window.location.href = '@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + PCECaseId;
+                    }, 1000);
                 } else {
                     toastr.error('Error saving Return comment: ' + data.error);
                 }
@@ -77,44 +77,5 @@
                 toastr.error('Error saving Return comment: ' + error);
             });
         });
-    });
-
-
-
-    
-        // function openRejectionModal(PCEId) {
-        //     $('#PCEId').val(PCEId);
-        //     $('#rejectionModal1').modal('show');
-        // }
-
-        // $('#rejectionModal1').on('shown.bs.modal', function () {
-        //     $('#rejectionComment').focus();
-        // });
-
-        // $('#rejectionForm').submit(function (event) {
-        //     event.preventDefault(); // Prevent default form submission
-
-        //     var rejectionComment = $('#rejectionComment').val();
-        //     var PCEId = $('#PCEId').val();
-
-        //     $.ajax({
-        //         url: $(this).attr('action'),
-        //         type: $(this).attr('method'),
-
-        //         data: { rejectionComment: rejectionComment, PCEId: PCEId },
-        //         success: function (response) {
-        //             // Handle the response from the controller if needed
-        //             toastr.success(' Reason for Return saved successfully');
-        //             $('#rejectionModal1').modal('hide');
-        //             window.location.href = '/PCECase/MyPCECases';
-
-        //         },
-        //         error: function (error) {
-        //             // Handle the error if needed
-        //             toastr.error('Error saving rejection comment:', error);
-        //         }
-        //     });
-        // });
-
-        
+    }); 
 </script>

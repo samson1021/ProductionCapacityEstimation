@@ -95,9 +95,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Production Process Flow Diagrams")] 
         public ICollection<IFormFile>? ProductionProcessFlowDiagrams { get; set; }  
-     
-        [Display(Name = "Status")]
-        public Status? Status { get; set; }
 
         [Display(Name = "Remark")]
         public string? Remark { get; set; }

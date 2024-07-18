@@ -54,9 +54,6 @@ namespace mechanical.Models.PCE.Entities
     
         // public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
 
-        public Status? Status { get; set; }
-        // public string? ReturnReason { get; set; }
-
         public string? Remark { get; set; } = string.Empty;
         
         public Guid CreatedBy { get; set; }
