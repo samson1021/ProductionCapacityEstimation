@@ -39,7 +39,6 @@
         var rejectionModal = document.getElementById('rejectionModal1');
         var rejectionForm = document.getElementById('RejectionForm');
         var commentField = document.getElementById('RejectionComment');
-        var PCECaseId = '@myPCECase.Id';
 
         rejectionModal.addEventListener('shown.bs.modal', function () {
             commentField.focus();
@@ -67,7 +66,7 @@
 
                     // Delay redirect for 2 seconds
                     setTimeout(function() {
-                        window.location.href = '@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + PCECaseId;
+                        window.location.href = '@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + '@myPCECase.Id';
                     }, 1000);
                 } else {
                     toastr.error('Error saving Return comment: ' + data.error);

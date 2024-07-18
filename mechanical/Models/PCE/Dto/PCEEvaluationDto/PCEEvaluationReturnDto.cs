@@ -23,9 +23,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Phase of Output")]
         public OutputPhase? OutputPhase { get; set; }
 
-        [Display(Name = "Country of Origin")]
-        public string? OriginCountry { get; set; }
-
         [Display(Name = "Shifts Per Day")]
         public int? ShiftsPerDay { get; set; }
 
@@ -112,6 +109,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 
+        [Display(Name = "Updated At")]
+        public DateTime UpdatedAt { get; set; } 
 
     }
 }

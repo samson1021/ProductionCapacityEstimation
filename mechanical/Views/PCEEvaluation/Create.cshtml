@@ -1,14 +1,12 @@
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
-@* @using mechanical.Models.PCE.Dto.PCECaseDto *@
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
 
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
-    @* var myPCECase = ViewData["PCECase"] as PCECaseReturntDto; *@
     var RejectPost = new PCERejectPostDto {
             PCEId = myPCE.Id, 
             RejectionComment = "" 
@@ -46,7 +44,6 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create" id="form">
   
                     @Html.AntiForgeryToken()
-                    @Html.Partial("Partial/_DataLists")
 
                     <input asp-for="PCEId" value=@myPCE.Id type="hidden" /> 
 
@@ -60,16 +57,15 @@
                                 <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger" id="ProductionLineOrEquipmentName-error"></span>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.OriginCountry) <i class="text-danger">*</i></label>                           
-                                <input asp-for="OriginCountry" type="text" class="form-control form-control-sm" placeholder="Select Country of Origin" list="country" required>
-                                <span asp-validation-for="OriginCountry" class="text-danger" id="OriginCountry-error"></span>
+                                <label>Country of Origin</label>                           
+                                <input if="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
                                 <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" >
                                     <option value="" disabled selected>Select Phase of Output</option>
                                 </select>
-                                <span asp-validation-for="OutputPhase" class="text-danger"></span>
+                                <span asp-validation-for="OutputPhase" class="text-danger" id="OutputPhase-error"></span>
                             </div>
                         </div>
                         <div class="row">

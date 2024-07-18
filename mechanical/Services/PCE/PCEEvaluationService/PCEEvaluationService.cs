@@ -120,15 +120,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto)
+        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationReturnDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 var pceEntity = await _cbeContext.PCEEvaluations
-                    .Include(e => e.ShiftHours)
+                    // .Include(e => e.ShiftHours)
+                    // .Include(e => e.TimeConsumedToCheck)
+                    // .Include(e => e.PCE)
                     .FirstOrDefaultAsync(e => e.Id == Id);
-
+                
                 if (pceEntity == null)
                 {
                     _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
@@ -136,6 +138,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 _mapper.Map(Dto, pceEntity);
+                pceEntity.EvaluatorID = UserId; 
+                pceEntity.UpdatedBy = UserId; 
+                pceEntity.UpdatedAt = DateTime.Now;
                 // _mapper.Map(Dto.ShiftHours, pceEntity.ShiftHours);
 
                 // pceEntity.ShiftHours.Clear();
@@ -153,40 +158,40 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.Update(pceEntity);
                 await _cbeContext.SaveChangesAsync();
 
-                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
+                // var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
 
-                if (Dto.SupportingEvidences != null && Dto.SupportingEvidences.Count > 0)
-                {
-                    foreach (var file in Dto.SupportingEvidences)
-                    {
-                        var supportingEvidenceFile = new CreateFileDto
-                        {
-                            File = file,
-                            Catagory = "Supporting Evidence",
-                            CaseId = pce.PCECaseId,
-                            CollateralId = pceEntity.Id,
-                        };
+                // if (Dto.SupportingEvidences != null && Dto.SupportingEvidences.Count > 0)
+                // {
+                //     foreach (var file in Dto.SupportingEvidences)
+                //     {
+                //         var supportingEvidenceFile = new CreateFileDto
+                //         {
+                //             File = file,
+                //             Catagory = "Supporting Evidence",
+                //             CaseId = pce.PCECaseId,
+                //             CollateralId = pceEntity.Id,
+                //         };
 
-                        await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
-                    }
-                }
-                if (Dto.ProductionProcessFlowDiagrams != null && Dto.ProductionProcessFlowDiagrams.Count > 0)
-                {
-                    foreach (var file in Dto.ProductionProcessFlowDiagrams)
-                    {
-                        var productionProcessFlowDiagramFile = new CreateFileDto
-                        {
-                            File = file,
-                            Catagory = "Production Process Flow Diagram",
-                            CaseId = pce.PCECaseId,
-                            CollateralId = pceEntity.Id,
-                        };
+                //         await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
+                //     }
+                // }
+                // if (Dto.ProductionProcessFlowDiagrams != null && Dto.ProductionProcessFlowDiagrams.Count > 0)
+                // {
+                //     foreach (var file in Dto.ProductionProcessFlowDiagrams)
+                //     {
+                //         var productionProcessFlowDiagramFile = new CreateFileDto
+                //         {
+                //             File = file,
+                //             Catagory = "Production Process Flow Diagram",
+                //             CaseId = pce.PCECaseId,
+                //             CollateralId = pceEntity.Id,
+                //         };
 
-                        await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
-                    }
-                }
+                //         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
+                //     }
+                // }
 
-                await _cbeContext.SaveChangesAsync();
+                // await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
             
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
@@ -494,7 +499,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     .Include(e => e.TimeConsumedToCheck)
                     .Include(e => e.PCE)
                     .FirstOrDefaultAsync(e => e.PCEId == PCEId);
-            
+
+                if (pceEntity == null)
+                {
+                    return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
+                }
                 var uploadFiles = await _cbeContext.UploadFiles
                     .Where(uf => uf.CollateralId == pceEntity.Id)
                     .ToListAsync();

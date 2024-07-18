@@ -1,12 +1,12 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
-@* @using mechanical.Models.PCE.Dto.PCECaseDto *@
 @using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
-    @* var myPCECase = ViewData["PCECase"] as PCECaseReturntDto; *@
+    var myPCE = ViewData["PCE"] as ReturnProductionDto;
     var RejectPost = new PCERejectPostDto {
             PCEId = Model.PCEId, 
             RejectionComment = "" 
@@ -51,26 +51,23 @@
                     <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
                     <input type="hidden" asp-for="CreatedAt" />
 
-                    @Html.Partial("Partial/_DataLists")
-
                     <!-- General Information -->
                     <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
                         <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>General Information </h6></div>
                         <div class="row mt-3">
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
-                                <input asp-for="ProductionLineOrEquipmentName" class="form-control form-control-sm" required />
+                                <input asp-for="ProductionLineOrEquipmentName" class="form-control form-control-sm" />
                                 <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger" id="ProductionLineOrEquipmentName-error"></span>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.OriginCountry) <i class="text-danger">*</i></label>
-                                <input asp-for="OriginCountry" class="form-control form-control-sm" />
-                                <span asp-validation-for="OriginCountry" class="text-danger" id="OriginCountry-error"></span>
+                                <label>Country of Origin</label>
+                                <input id="OriginCountry" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly />
                             </div>
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
                                 <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" ></select>
-                                <span asp-validation-for="OutputPhase" class="text-danger"></span>
+                                <span asp-validation-for="OutputPhase" class="text-danger" id="OutputPhase-error"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -468,8 +465,6 @@
 
             // Applying alphanumeric validation to various input fields
             // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
-            // addAlphanumericValidation("OriginCountry", "OriginCountry-error");
-            // addAlphanumericValidation("OutputType", "OutputType-error");
 
             // Function for handling dropdown value changes
             function handleDropdownChange(selectElement, otherInputId) {

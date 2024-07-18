@@ -1,13 +1,9 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@* @using mechanical.Models.PCE.Enum.PCEEvaluation *@
-@* @using mechanical.Models.PCE.Dto.PCECaseDto *@
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";    
-    @* var myPCECase = ViewData["PCECase"] as PCECaseReturntDto; *@
-    var PCEFiles = ViewData["PCEFiles"] as ReturnFileDto;
     var RejectPost = new PCERejectPostDto {
             PCEId = Model.PCEId, 
             RejectionComment = "" 
@@ -53,9 +49,6 @@
 
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputPhase)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OutputPhase)</h6></dd>
-
-                            <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OriginCountry)</dt>
-                            <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OriginCountry)</h6></dd>
 
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.WorkingDaysPerMonth)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.WorkingDaysPerMonth)</h6></dd>

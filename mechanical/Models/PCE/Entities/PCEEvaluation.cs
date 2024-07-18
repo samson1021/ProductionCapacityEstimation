@@ -19,10 +19,11 @@ namespace mechanical.Models.PCE.Entities
         
         public virtual ProductionCapacity? PCE { get; set; }
         public virtual CreateUser? Evaluator { get; set; }
-        public string ProductionLineOrEquipmentName { get; set; }   
+
+        public string ProductionLineOrEquipmentName { get; set; }  
+
         public OutputPhase? OutputPhase { get; set; }
 
-        public string? OriginCountry { get; set; }
         public ProductionUnit? ProductionUnit { get; set; }
         public int? WorkingDaysPerMonth { get; set; }
         public int? ShiftsPerDay { get; set; }
@@ -58,6 +59,8 @@ namespace mechanical.Models.PCE.Entities
         
         public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid? UpdatedBy { get; set; } = null;
+        public DateTime? UpdatedAt { get; set; } = null;
     }
 
     public class TimeRange

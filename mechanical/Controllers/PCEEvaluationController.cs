@@ -114,11 +114,9 @@ namespace mechanical.Controllers
                 
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
                 var pCECase = await _PCEEvaluationService.GetPCECase(GetCurrentUserId(), pce.PCECaseId);
-                var PCEFiles = await _uploadFileService.GetUploadFileByCollateralId(Id);
 
                 ViewData["PCE"] = pce;
                 ViewData["PCECase"] = pCECase;
-                ViewData["PCEFiles"] = PCEFiles;
 
                 return View(PCEEvaluation);
             }
@@ -131,7 +129,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Guid Id, PCEEvaluationPostDto Dto)
+        public async Task<IActionResult> Update(Guid Id, PCEEvaluationReturnDto Dto)
         {
             if (ModelState.IsValid)
             {
@@ -200,11 +198,9 @@ namespace mechanical.Controllers
                 }            
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
                 var pCECase = await _PCEEvaluationService.GetPCECase(GetCurrentUserId(), pce.PCECaseId);
-                var PCEFiles = await _uploadFileService.GetUploadFileByCollateralId(Id);
 
                 ViewData["PCE"] = pce;
                 ViewData["PCECase"] = pCECase;
-                ViewData["PCEFiles"] = PCEFiles;
 
                 return View(PCEEvaluation);
             }
