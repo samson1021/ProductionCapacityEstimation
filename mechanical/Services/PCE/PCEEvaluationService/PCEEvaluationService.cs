@@ -225,6 +225,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.UploadFiles.RemoveRange(relatedFiles);
                 _cbeContext.PCEEvaluations.Remove(pceEntity);
 
+                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
+                pce.CurrentStage = "Maker Officer";
+                pce.CurrentStatus = "New";
+                _cbeContext.ProductionCapacities.Update(pce);
+                await _cbeContext.SaveChangesAsync();
+
+                await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = pce.PCECaseId,
+                    Activity = $"<strong> PCE Case Evaluation is retracted.</strong>",
+                    CurrentStage = "Maker Officer",
+                    // UserId = pce.CreatedBy
+                });
+
+
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
