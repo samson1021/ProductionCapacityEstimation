@@ -1,5 +1,6 @@
 ﻿using mechanical.Data;
-using mechanical.Models.PCE.Dto.PCECase;
+using mechanical.Models.Entities;
+using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
@@ -79,17 +80,8 @@ namespace mechanical.Controllers.PCE
         {
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> GetPCECompleteCases()
-        {
-            var newCases = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
-            return Content(JsonConvert.SerializeObject(newCases), "application/json");
-        }
 
-
-
-
-
+        
         [HttpGet]
         public IActionResult PCETotalCases()
         {
@@ -105,13 +97,19 @@ namespace mechanical.Controllers.PCE
 
 
         [HttpGet]
-        public async Task<IActionResult> GetDashboardPCSCaseCount()
+        public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCSCaseCount();
+            var myCase = await _PCECaseService.GetDashboardPCECaseCount();
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetMyDashboardPCECaseCount()
+        {
+            var myCase = await _PCECaseService.GetMyDashboardCaseCount();
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
 
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)
@@ -132,6 +130,8 @@ namespace mechanical.Controllers.PCE
         [HttpPost]
         public async Task<IActionResult> PCEEdit(PCECaseReturntDto caseDto)
         {
+
+
             if (ModelState.IsValid)
             {
                 var cases = await _PCECaseService.PCEEdit(caseDto.Id, caseDto);
@@ -180,8 +180,69 @@ namespace mechanical.Controllers.PCE
             }
                 
         }
+        // abdu start 
+        [HttpGet]
+        public async Task<IActionResult> GetPCECompleteCases()
+        {
+            //var newCases = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
+            //return Content(JsonConvert.SerializeObject(newCases), "application/json");
 
-        // Newly Added
+            var myCase = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PCECompleteCase(Guid id)
+        {
+
+            var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
+            //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            var production = await _cbeContext.ProductionCapacities.ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            ViewData["case"] = loanCase;
+          //  ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            List<ProductionCapacity> productions = null;
+            try
+            {
+                productions = await _cbeContext.ProductionCapacities.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log the error, display a message, etc.)
+                Console.WriteLine($"An error occurred while retrieving productions vehicles: {ex.Message}");
+            }
+           
+            ViewData["production"] = production;
+            //ViewData["indBldgFacEq"] = indBldgFacEq;
+            //ViewData["conMngAgr"] = conMngAgr;
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MOVSummary(Guid CaseId)
+        {
+            var cases = await _cbeContext.PCECases.FindAsync(CaseId);
+            ViewData["cases"] = cases;
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            ViewData["collaterals"] = collaterals;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> MOVReport(Guid CaseId)
+        {
+            var cases = await _cbeContext.PCECases.FindAsync(CaseId);
+            var MotorVehicles = await _cbeContext.ProductionCapacities.Include(res => res.EvaluatorUserID).Include(res => res.CheckerUserID).ToListAsync();
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var caseSchedule = await _cbeContext.ProductionCaseSchedules.Where(res => res.PCECaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
+            ViewData["cases"] = cases;
+            ViewData["collaterals"] = collaterals;
+            ViewData["MotorVehicles"] = MotorVehicles;
+            ViewData["caseSchedule"] = caseSchedule;
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SendForValuation(string selectedCollateralIds, string CenterId)
         {
@@ -197,6 +258,6 @@ namespace mechanical.Controllers.PCE
                 return BadRequest(error);
             }
         }
-
+        // abdu end
     }
 }

@@ -354,8 +354,19 @@
                     {
                         data: 'Id',
                         width: '10%',
+                        // render: function (data, type, row, meta) {
+                        //     return '<a href="Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                        // }
                         render: function (data, type, row, meta) {
-                            return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+
+                            console.log(row.ProductionType);
+                            console.log("welcome ");;
+                            if (row.ProductionType === 'Plant') {
+                                console.log(data.ProductionType);
+                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("PlantEdit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                            } else {
+                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                            }
                         }
                     }
                 ]
@@ -379,11 +390,13 @@
                     success: function (result) {
                         toastr.success('PCE deleted successfully.');
                         // setTimeout(function () {
+                       // location.reload();
                         loadCollaterals();
-                        // }, 2000);
+
+                        // }, 5000);
                     },
                     error: function (xhr, status, error) {
-                        toastr.error('unable to delete PCE.');
+                        toastr.error('unable to delete PCE collateral.');
                     }
                 });
 

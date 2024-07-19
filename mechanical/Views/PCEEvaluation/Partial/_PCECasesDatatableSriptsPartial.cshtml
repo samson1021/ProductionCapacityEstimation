@@ -1,0 +1,44 @@
+﻿
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '@ViewBag.Url',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#MyPCECasesDatatable').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: 'CreationDate',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        { data: 'CaseNo', width: '10%' },
+                        { data: 'ApplicantName', width: '15%' },
+                        { data: 'CustomerUserId', width: '15%' },
+                        { data: 'CurrentStatus', width: '10%' },
+                        { data: 'TotalNoOfCollateral', width: '10%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("MyPCECase", "PCEEvaluation")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                            }
+                        }
+
+                    ],
+                    order: [[1, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCECase - pdf' }, { extend: 'print', title: 'My PCECase - Print' }, "colvis"]
+                }).buttons().container().appendTo('#MyPCECasesDatatable_wrapper .col-md-6:eq(0)');
+            }
+        });
+    });
+
+</script>

@@ -15,6 +15,7 @@ namespace mechanical.Services.CaseServices
         Task<Case> EditCase(Guid userId, Guid id, CasePostDto createCaseDto);
         Task<IEnumerable<CaseDto>> GetRmLatestCases(Guid userId);
         Task<IEnumerable<CaseDto>> GetMmLatestCases(Guid userId);
+        Task<IEnumerable<CaseDto>> GetMoLatestCases(Guid userId);
         Task<CaseCountDto> GetDashboardCaseCount(Guid userId);
         Task<CaseCountDto> GetMyDashboardCaseCount(Guid userId);
         Task<bool> SendRejection(MoRejectCaseDto moRejectCaseDto);

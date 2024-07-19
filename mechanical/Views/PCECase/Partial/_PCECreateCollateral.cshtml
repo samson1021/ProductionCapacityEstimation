@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.PCE.Dto.PCECase;
+@using mechanical.Models.PCE.Dto.PCECaseDto;
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantPostDto
 @{
     var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
@@ -27,11 +27,38 @@
                         <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" id="CaseId" />
                         <input asp-for="ProductionType" value="Plant" hidden />
                         <div class="row">
-                            <div class="form-group col-lg-4">
-                                <label asp-for="PlantName"></label><i class="text-danger">*</i>
-                                <input asp-for="PlantName" class="form-control form-control-sm" id="PlantName" placeholder="Name of Plant">
-                                <span id="PlantName-error" asp-validation-for="PlantName" class="text-danger"></span>
+                           <div class="form-group col-lg-4">
+                                <label asp-for="PlantName">Type of Farming <i class="text-danger">*</i></label>
+                                <select asp-for="PlantName" class="form-control form-control-sm" id="PlantName" required>
+                                    <option value="" disabled selected>Select Type of Farming *</option>
+                                    <option value="Coffee">Coffee</option>
+                                    <option value="Fruit">Fruit</option>
+                                    <option value="Citrus">Citrus</option>
+                                    <option value="Mango">Mango</option>
+                                    <option value="Grapevine">Grapevine</option>
+                                    <option value="Papaya">Papaya</option>
+                                    <option value="Banana">Banana</option>
+                                    <option value="Avocado">Avocado</option>
+                                    <option value="Others, please specify">Others, please specify</option>
+                                </select>
+@*                                 <span id="PlantName-error" asp-validation-for="PlantName" class="text-danger"></span>
+ *@                         </div>
+                            <div class="form-group col-lg-4 d-none" id="OtherPlantNameInput">
+                                <label asp-for="OtherPlantName">Please enter the Farming Type</label><i class="text-danger">*</i>
+                                <input asp-for="OtherPlantName" class="form-control form-control-sm" id="OtherPlantName" placeholder="Other Type of Farming">
+                                @* <span id="OtherPlantName-error" asp-validation-for="PlantName" class="text-danger"></span> *@
                             </div>
+
+
+
+
+
+
+
+
+
+
+
                             <div class="form-group col-lg-4">
                                 <label asp-for="PropertyOwner"></label><i class="text-danger">*</i>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner">
@@ -151,7 +178,9 @@
                                     <label asp-for="Region"></label><i class="text-danger">*</i>
                                     <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)">
                                         <option value="">Select Region</option>
-                                        <option value="Addis Ababa">Addis Ababa</option>
+                                        <option value="Addis Ababa">Addis Ababa</option>3
+
+                                        
                                         <option value="Afar">Afar</option>
                                         <option value="Amhara">Amhara</option>
                                         <option value="Benshangul">Benshangul</option>
@@ -279,19 +308,51 @@
             supportDocumentRow.style.display = 'none';
         }
     });
+   // document.addEventListener('DOMContentLoaded', function () {
+   //      var otherPlantNameInput = document.getElementById('OtherPlantNameInput');
+   //      otherPlantNameInput.classList.add('d-none');
+   //  });
+
+    // document.getElementById('PlantName').addEventListener('change', function () {
+    //     var OtherPlantName = document.getElementById('OtherPlantNameInput');
+    //     if (this.value === 'Others, please specify') {
+    //         OtherPlantName.style.display = 'block';
+
+    //     } else {
+    //         OtherPlantName.style.display = 'none';
+
+    //     }
+    // }
+ 
+
+    document.getElementById('PlantName').addEventListener('change', function () {
+        var otherPlantNameInput = document.getElementById('OtherPlantNameInput');
+        if (this.value === 'Others, please specify') {
+            otherPlantNameInput.classList.remove('d-none');
+        } else {
+            otherPlantNameInput.classList.add('d-none');
+        }
+    });
+    // document.getElementById('OtherPlantName').addEventListener('input', function () {
+    //     document.getElementById('PlantName').value = this.value;
+    // });
+
+
+
+
     function validateForm() {
         var isValid = true;
 
         // Validate the required fields
-        if (document.getElementById("PlantName").value.trim() === "") {
-            document.getElementById("PlantName-error").textContent = "Name of Plant is required.";
-            document.getElementById("PlantName").style.borderColor = "red";
+        // if (document.getElementById("PlantName").value.trim() === "") {
+        //     document.getElementById("PlantName-error").textContent = "Name of Plant is required.";
+        //     document.getElementById("PlantName").style.borderColor = "red";
 
-            isValid = false;
-        } else {
-            document.getElementById("PlantName").style.borderColor = "";
-            document.getElementById("PlantName-error").textContent = "";
-        }
+        //     isValid = false;
+        // } else {
+        //     document.getElementById("PlantName").style.borderColor = "";
+        //     document.getElementById("PlantName-error").textContent = "";
+        // }
         if (document.getElementById("PropertyOwner").value.trim() === "") {
             document.getElementById("PropertyOwner-error").textContent = "Property Ownert is required.";
             document.getElementById("PropertyOwner").style.borderColor = "red";

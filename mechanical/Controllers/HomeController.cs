@@ -132,7 +132,7 @@ namespace mechanical.Controllers
                     }
                     else if ( usersWithRoles.Role.Name == "Maker Officer")
                     {
-                        return RedirectToAction("MM", "Dashboard", userRole);
+                        return RedirectToAction("MO", "Dashboard", userRole);
                     }
                     else if (usersWithRoles.Role.Name == "Maker Manager" )
                     {

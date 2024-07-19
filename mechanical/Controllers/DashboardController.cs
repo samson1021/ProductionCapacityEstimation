@@ -20,6 +20,11 @@ namespace mechanical.Controllers
             var latestCase = await _caseService.GetRmLatestCases(base.GetCurrentUserId());
             return View(latestCase);
         }
+        public async Task<IActionResult> MO()
+        {
+            var latestCase = await _caseService.GetMoLatestCases(base.GetCurrentUserId());
+            return View(latestCase);
+        }
         public async Task<IActionResult> MM()
         {
            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());

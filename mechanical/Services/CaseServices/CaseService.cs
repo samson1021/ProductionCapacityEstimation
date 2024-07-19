@@ -165,6 +165,13 @@ namespace mechanical.Services.CaseServices
             var cases = NewCollateral.Select(res => res.Collateral.Case).Distinct().OrderByDescending(res => res.CreationAt).Take(7);
             return _mapper.Map<IEnumerable<CaseDto>>(cases);
         }
+        public async Task<IEnumerable<CaseDto>> GetMoLatestCases(Guid userId)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res=>res.Case).ThenInclude(res=>res.CaseOriginator).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
+            var cases = NewCollateral.Select(res => res.Collateral.Case).Distinct().OrderByDescending(res => res.CreationAt).Take(7);
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
         public async Task<IEnumerable<CaseDto>> GetRmLatestCases(Guid userId)
         {
             var httpContext = _httpContextAccessor.HttpContext;

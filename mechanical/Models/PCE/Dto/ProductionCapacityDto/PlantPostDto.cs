@@ -23,6 +23,8 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public required string OwnerNameLHC { get; set; }
         [Display(Name = "Name of the Plant")]
         public required string PlantName { get; set; }
+        public string? OtherPlantName { get; set; }
+
         // [Range(1900,DateTime())]
         [Display(Name = "Year of manufacturing")]
         public int YearOfManifacturing { get; set; }

@@ -319,7 +319,7 @@
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCECase/GetDashboardPCSCaseCount")
+            fetch("/PCECase/GetDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
                     animateCount("pcsnewCasesCount", data.PCSNewCaseCount);
