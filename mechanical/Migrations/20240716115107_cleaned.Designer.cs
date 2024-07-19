@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 
@@ -11,9 +12,11 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    partial class CbeContextModelSnapshot : ModelSnapshot
+    [Migration("20240716115107_cleaned")]
+    partial class cleaned
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1068,6 +1071,9 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("PCEEvaluationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1082,6 +1088,8 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PCEEvaluationId");
 
                     b.ToTable("UploadFiles");
                 });
@@ -1259,14 +1267,14 @@ namespace mechanical.Migrations
                     b.Property<int?>("MachineNonFunctionalityReason")
                         .HasColumnType("int");
 
+                    b.Property<string>("OriginCountry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherMachineNonFunctionalityReason")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OutputPhase")
                         .HasColumnType("int");
-
-                    b.Property<string>("OutputType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OverallActualCurrentPlantCapacity")
                         .HasColumnType("nvarchar(max)");
@@ -1290,6 +1298,9 @@ namespace mechanical.Migrations
                     b.Property<int?>("ShiftsPerDay")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("SurveyRemark")
                         .HasColumnType("nvarchar(max)");
 
@@ -1298,12 +1309,6 @@ namespace mechanical.Migrations
 
                     b.Property<int?>("TimeConsumedToCheckId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("WorkingDaysPerMonth")
                         .HasColumnType("int");
@@ -2063,6 +2068,13 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.UploadFile", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
+                        .WithMany("SupportingDocuments")
+                        .HasForeignKey("PCEEvaluationId");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -2253,6 +2265,8 @@ namespace mechanical.Migrations
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEEvaluation", b =>
                 {
                     b.Navigation("ShiftHours");
+
+                    b.Navigation("SupportingDocuments");
                 });
 #pragma warning restore 612, 618
         }

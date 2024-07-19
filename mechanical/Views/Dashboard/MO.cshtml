@@ -283,9 +283,9 @@
                 .then(response => response.json())
                 .then(data => {
 
-                    animateCountWithCollateral("newPCECasesCount", data.NewPCECaseCount, data.NewPCECollateralCount);
-                    animateCountWithCollateral("pendingPCECasesCount", data.PendingPCECaseCount, data.PendingPCECollateralCount);
-                    animateCountWithCollateral("completedPCECasesCount", data.CompletedPCECaseCount, data.CompletedPCECollateralCount);
+                    animateCountWithCollateral("newPCECasesCount", data.NewPCECaseCount, data.NewPCEsCount);
+                    animateCountWithCollateral("pendingPCECasesCount", data.PendingPCECaseCount, data.PendingPCEsCount);
+                    animateCountWithCollateral("completedPCECasesCount", data.CompletedPCECaseCount, data.CompletedPCEsCount);
                     animateCount("totalPCECasesCount", data.TotalPCECaseCount);
 
                 })

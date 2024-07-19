@@ -1,7 +1,9 @@
+@using mechanical.Models.PCE.Dto.PCECaseDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCERejectPostDto
 
 @{
     ViewData["Title"] = "Return PCE Evaluation";
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
 }
 
 <!-- Return Modal --> 
@@ -42,6 +44,7 @@
             commentField.focus();
         });
 
+
         rejectionForm.addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -63,8 +66,8 @@
 
                     // Delay redirect for 2 seconds
                     setTimeout(function() {
-                        window.location.href = '@Url.Action("AllRejected", "PCEEvaluation")';
-                    }, 2000);
+                        window.location.href = '@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + '@myPCECase.Id';
+                    }, 1000);
                 } else {
                     toastr.error('Error saving Return comment: ' + data.error);
                 }
@@ -73,5 +76,5 @@
                 toastr.error('Error saving Return comment: ' + error);
             });
         });
-    });
+    }); 
 </script>

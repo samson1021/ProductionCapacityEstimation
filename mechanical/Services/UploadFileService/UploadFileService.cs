@@ -20,53 +20,6 @@ namespace mechanical.Services.UploadFileService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        
-        // public async Task<List<UploadFile>> CreateFiles(Guid UserId, ICollection<CreateFileDto> Files)
-        // {
-        //     var savedFiles = new List<UploadFile>();
-         
-        
-        //     if (Files != null && Files.Count > 0)
-        //     {
-        //         // string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "UploadFile", Catagory);
-
-        //         foreach (var fileDto in Files)
-        //         {
-        //             if (fileDto.File.Length > 0)
-        //             {
-        //                 var fileId = Guid.NewGuid();
-        //                 string filePath = Path.Combine("UploadFile", fileId.ToString() + "_" + fileDto.File.FileName);
-
-        //                 using (var stream = new FileStream(filePath, FileMode.Create))
-        //                 {
-        //                     await fileDto.File.CopyToAsync(stream);
-        //                 }
-
-        //                 var file = new UploadFile
-        //                 {
-        //                     Id = fileId,
-        //                     Name = fileDto.File.FileName,
-        //                     Catagory = fileDto.Catagory,
-        //                     ContentType = fileDto.File.ContentType,
-        //                     Extension = Path.GetExtension(fileDto.File.FileName),
-        //                     Size = fileDto.File.Length,
-        //                     CaseId = fileDto.CaseId,
-        //                     CollateralId = fileDto.CollateralId,
-        //                     UploadDateTime = DateTime.UtcNow, 
-        //                     userId = UserId,
-        //                     Path = filePath
-        //                 };
-        //                 savedFiles.Add(file);
-        //             }
-        //         }
-
-        //         await _cbeContext.UploadFiles.AddRangeAsync(savedFiles);
-        //         // await _cbeContext.AddRangeAsync(savedFiles);
-        //         await _cbeContext.SaveChangesAsync();
-        //     }
-        //     return savedFiles;
-        // }
-
         public async Task<Guid> CreateUploadFile(Guid userId, CreateFileDto file)
         {
             var uploadFile = new UploadFile();
