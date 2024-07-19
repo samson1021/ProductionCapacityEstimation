@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 
@@ -11,9 +12,11 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    partial class CbeContextModelSnapshot : ModelSnapshot
+    [Migration("20240719071035_AddedOptional")]
+    partial class AddedOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1216,6 +1219,7 @@ namespace mechanical.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BottleneckProductionLineCapacity")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1231,6 +1235,7 @@ namespace mechanical.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discrepancies")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("EffectiveProductionHour")
@@ -1260,10 +1265,11 @@ namespace mechanical.Migrations
                     b.Property<int>("MachineFunctionalityStatus")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MachineNonFunctionalityReason")
+                    b.Property<int>("MachineNonFunctionalityReason")
                         .HasColumnType("int");
 
                     b.Property<string>("OtherMachineNonFunctionalityReason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OutputPhase")

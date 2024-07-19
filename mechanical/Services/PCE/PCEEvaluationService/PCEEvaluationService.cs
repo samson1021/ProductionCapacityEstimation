@@ -54,7 +54,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var pceEntity = _mapper.Map<PCEEvaluation>(Dto);
                 pceEntity.Id = Guid.NewGuid();
-                pceEntity.EvaluatorID = UserId; 
+                pceEntity.EvaluatorId = UserId; 
                 pceEntity.CreatedBy = UserId; 
                 pceEntity.CreatedAt = DateTime.Now;
 
@@ -385,7 +385,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pce.CurrentStatus = "Rework";
                 _cbeContext.ProductionCapacities.Update(pce);
                 
-                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.EvaluatorID).FirstOrDefaultAsync();
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.EvaluatorId).FirstOrDefaultAsync();
                 previousCaseAssignment.Status = "Rework";
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
 
@@ -401,7 +401,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     CaseId = pce.PCECaseId,
                     Activity = $"<strong>Evaluated PCE Case has been returned for rework.</strong>",
                     CurrentStage = "Maker Officer",
-                    UserId = pceEntity.EvaluatorID
+                    UserId = pceEntity.EvaluatorId
                 });
                 
                 await _cbeContext.SaveChangesAsync(); 
