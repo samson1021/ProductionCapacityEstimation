@@ -19,20 +19,22 @@ namespace mechanical.Models.PCE.Entities
         
         public virtual ProductionCapacity? PCE { get; set; }
         public virtual CreateUser? Evaluator { get; set; }
-        public string ProductionLineOrEquipmentName { get; set; }   
+
+        public string ProductionLineOrEquipmentName { get; set; }  
+        public string? OutputType { get; set; }
+
         public OutputPhase? OutputPhase { get; set; }
 
-        public string? OriginCountry { get; set; }
         public ProductionUnit? ProductionUnit { get; set; }
         public int? WorkingDaysPerMonth { get; set; }
         public int? ShiftsPerDay { get; set; }
-        public List<TimePeriod>? ShiftHours { get; set; } = new List<TimePeriod>();
+        public List<TimeRange>? ShiftHours { get; set; }
 
         public ProductionMeasurement? ProductionMeasurement { get; set; }
         public string? EstimatedProductionCapacity { get; set; }
         public string? BottleneckProductionLineCapacity { get; set; }
         public string? OverallActualCurrentPlantCapacity { get; set; }
-        public DateTimePeriod? TimeConsumedToCheck { get; set; } = new DateTimePeriod();
+        public DateTimeRange? TimeConsumedToCheck { get; set; }
 
         public string? TechnicalObsolescenceStatus { get; set; }
         public decimal? DepreciationRateApplied { get; set; }
@@ -52,18 +54,17 @@ namespace mechanical.Models.PCE.Entities
         public DateOnly? InspectionDate { get; set; } //Schedule
         public string? SurveyRemark { get; set; }
     
-        public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
-
-        public Status? Status { get; set; }
-        // public string? ReturnReason { get; set; }
+        // public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
 
         public string? Remark { get; set; } = string.Empty;
         
         public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid? UpdatedBy { get; set; } = null;
+        public DateTime? UpdatedAt { get; set; } = null;
     }
 
-    public class TimePeriod
+    public class TimeRange
     {
         [Key]
         public int Id { get; set; }
@@ -71,15 +72,15 @@ namespace mechanical.Models.PCE.Entities
         public TimeOnly End { get; set; }
     }
 
-    public class DatePeriod
-    {
-        [Key]
-        public int Id { get; set; }
-        public DateOnly Start { get; set; }
-        public DateOnly End { get; set; }
-    }
+    // public class DateRange
+    // {
+    //     [Key]
+    //     public int Id { get; set; }
+    //     public DateOnly Start { get; set; }
+    //     public DateOnly End { get; set; }
+    // }
 
-    public class DateTimePeriod
+    public class DateTimeRange
     {
         [Key]
         public int Id { get; set; }

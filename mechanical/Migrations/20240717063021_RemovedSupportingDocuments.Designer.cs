@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 
@@ -11,9 +12,11 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    partial class CbeContextModelSnapshot : ModelSnapshot
+    [Migration("20240717063021_RemovedSupportingDocuments")]
+    partial class RemovedSupportingDocuments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1259,14 +1262,14 @@ namespace mechanical.Migrations
                     b.Property<int?>("MachineNonFunctionalityReason")
                         .HasColumnType("int");
 
+                    b.Property<string>("OriginCountry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherMachineNonFunctionalityReason")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OutputPhase")
                         .HasColumnType("int");
-
-                    b.Property<string>("OutputType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OverallActualCurrentPlantCapacity")
                         .HasColumnType("nvarchar(max)");
@@ -1290,6 +1293,9 @@ namespace mechanical.Migrations
                     b.Property<int?>("ShiftsPerDay")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("SurveyRemark")
                         .HasColumnType("nvarchar(max)");
 
@@ -1298,12 +1304,6 @@ namespace mechanical.Migrations
 
                     b.Property<int?>("TimeConsumedToCheckId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("WorkingDaysPerMonth")
                         .HasColumnType("int");
@@ -1653,10 +1653,10 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("AssignmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("CompletionDate")
+                    b.Property<DateTime>("CompletionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ProductionCapacityId")
+                    b.Property<Guid?>("ProductionCapacityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -2190,9 +2190,7 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
                         .WithMany()
-                        .HasForeignKey("ProductionCapacityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductionCapacityId");
 
                     b.HasOne("mechanical.Models.Entities.CreateUser", "User")
                         .WithMany()
