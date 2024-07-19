@@ -51,16 +51,20 @@
                     <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
                         <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>General Information </h6></div>
                         <div class="row mt-3">
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-3">
+                                <label>Machine/Plant Name</label>                           
+                                <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.MachineName?? myPCE.PlantName)" readonly required>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label>Country of Origin</label>                           
+                                <input id="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required>
+                            </div>
+                            <div class="form-group col-lg-3">
                                 <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
                                 <input asp-for="ProductionLineOrEquipmentName" class="form-control form-control-sm" required />
                                 <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger" id="ProductionLineOrEquipmentName-error"></span>
                             </div>
-                            <div class="form-group col-lg-4">
-                                <label>Country of Origin</label>                           
-                                <input if="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required>
-                            </div>
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-3">
                                 <label>@Html.DisplayNameFor(model => model.OutputType) <i class="text-danger">*</i></label>
                                 <input asp-for="OutputType" class="form-control form-control-sm" required />
                                 <span asp-validation-for="OutputType" class="text-danger" id="OutputType-error"></span>
@@ -148,7 +152,7 @@
                                 <span asp-validation-for="ProductionUnit" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.ProductionMeasurement)</label>
+                                <label>@Html.DisplayNameFor(model => model.ProductionMeasurement) <i class="text-danger">*</i></label>
                                 <select asp-for="ProductionMeasurement" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionMeasurement>()">
                                     <option value="" disabled selected>Select Production Measurement</option>
                                 </select>

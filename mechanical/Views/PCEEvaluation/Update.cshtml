@@ -1,7 +1,6 @@
-@using System
-@using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
@@ -56,19 +55,23 @@
                     <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
                         <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>General Information </h6></div>
                         <div class="row mt-3">
-                            <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
-                                <input asp-for="ProductionLineOrEquipmentName" class="form-control form-control-sm" required />
-                                <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger" id="ProductionLineOrEquipmentName-error"></span>
+                            <div class="form-group col-lg-3">
+                                <label>Machine/Plant Name</label>                           
+                                <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.MachineName?? myPCE.PlantName)" readonly required>
                             </div>
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-3">
                                 <label>Country of Origin</label>
-                                <input id="OriginCountry" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly />
+                                <input id="OriginCountry" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required />
                             </div>
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-3">
                                 <label>@Html.DisplayNameFor(model => model.OutputType) <i class="text-danger">*</i></label>
                                 <input asp-for="OutputType" class="form-control form-control-sm" required />
                                 <span asp-validation-for="OutputType" class="text-danger" id="OutputType-error"></span>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
+                                <input asp-for="ProductionLineOrEquipmentName" class="form-control form-control-sm" required />
+                                <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger" id="ProductionLineOrEquipmentName-error"></span>
                             </div>
                         </div>
                         <div class="row">

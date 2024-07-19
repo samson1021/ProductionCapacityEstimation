@@ -8,8 +8,6 @@
 <script>
     $(document).ready(function () {      
 
-        var PCECaseId = '@myPCECase.Id';
-
         function initializeDataTable(data) {
            
             PCEsTable = $('#PCEs').DataTable({
@@ -55,7 +53,7 @@
 
         function loadPCEs() {
             $.ajax({
-                url: '/PCEEvaluation/GetAllMyPCEs?PCECaseId=' + PCECaseId,
+                url: '/PCEEvaluation/GetAllMyPCEs?PCECaseId=' + '@myPCECase.Id',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

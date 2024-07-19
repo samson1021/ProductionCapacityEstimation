@@ -151,40 +151,21 @@ namespace mechanical.Controllers
         {
             try
             {
-                var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluation(base.GetCurrentUserId(), Id);
-                if (PCEEvaluation == null)
-                {
-                    return NotFound();
-                }
-                
-                return View(PCEEvaluation);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching PCEEvaluation for deletion, ID {Id}", Id);
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(Guid Id, IFormCollection collection)
-        {
-            try
-            {
                 var result = await _PCEEvaluationService.DeletePCEEvaluation(base.GetCurrentUserId(), Id);
                 if (!result)
                 {
                     return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting PCEEvaluation for ID {Id}", Id);
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                _logger.LogError(ex, "Error deleting PCEEvaluation for ID {Id}; User: {UserId}", Id, base.GetCurrentUserId());
+                // var error = new { message = ex.Message };
+                return Json(new { success = false, error = ex.Message });
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Detail(Guid Id)
         {
@@ -200,6 +181,7 @@ namespace mechanical.Controllers
 
                 ViewData["PCE"] = pce;
                 ViewData["PCECase"] = pCECase;
+                ViewData["CurrentStatus"] = pce.CurrentStatus;
 
                 return View(PCEEvaluation);
             }
@@ -221,8 +203,9 @@ namespace mechanical.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Sending PCE Evaluation of ID: {Id} to RM for review; User: {UserId}", Id, base.GetCurrentUserId());
-                var error = new { message = ex.Message };
+                // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
+                // return Json(new { success = false, message = ex.Message });
             }
         }
         
@@ -237,7 +220,7 @@ namespace mechanical.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Resending PCE Evaluation of ID: {Id} to RM for review; User: {UserId}", Id, base.GetCurrentUserId());
-                var error = new { message = ex.Message };
+                // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }
         }
@@ -253,7 +236,7 @@ namespace mechanical.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Returning PCE Evaluation of ID: {Id} back to MO for rework; User: {UserId}", Id, base.GetCurrentUserId());
-                var error = new { message = ex.Message };
+                // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }
         }
@@ -270,7 +253,7 @@ namespace mechanical.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Rejecting PCE Evaluation for user {UserId}", base.GetCurrentUserId());
-                var error = new { message = ex.Message };
+                // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }
         }

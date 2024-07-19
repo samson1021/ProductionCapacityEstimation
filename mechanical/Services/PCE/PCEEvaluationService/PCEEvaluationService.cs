@@ -220,15 +220,18 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 var relatedFiles = await _cbeContext.UploadFiles
-                    .Where(file => file.CollateralId == Id)
-                    // .Where(file => file.CollateralId == pceEntity.Id)
+                    .Where(file => file.CollateralId == pceEntity.Id)
                     .ToListAsync();
 
                 // Delete physical files
                 foreach (var file in relatedFiles)
                 {
-                    await _uploadFileService.DeleteFile(file.Id);
+                    if (File.Exists(file.Path))
+                    {
+                        File.Delete(file.Path);
+                    }
                 }
+
                 // Remove Evaluations and related files from database
                 _cbeContext.UploadFiles.RemoveRange(relatedFiles);
                 _cbeContext.PCEEvaluations.Remove(pceEntity);
@@ -238,6 +241,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pce.CurrentStatus = "New";
                 _cbeContext.ProductionCapacities.Update(pce);
 
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pce.Id && res.UserId == pceEntity.EvaluatorId).FirstOrDefaultAsync();
+                previousCaseAssignment.Status = "New";
+                _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
+
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     CaseId = pce.PCECaseId,
@@ -246,10 +253,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     // UserId = pce.CreatedBy
                 });
 
-
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-
+                
                 return true;
             }
             catch (Exception ex)
@@ -449,6 +455,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     .Include(e => e.ShiftHours)
                     .Include(e => e.TimeConsumedToCheck)
                     .Include(e => e.PCE)
+                    .ThenInclude(e => e.PCECase)
                     // .Include(pe => pe.UploadFiles)
                     .FirstOrDefaultAsync(e => e.Id == Id);
                 
