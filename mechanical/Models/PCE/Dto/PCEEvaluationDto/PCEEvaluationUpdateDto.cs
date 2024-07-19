@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 using mechanical.Models.PCE.Entities;
@@ -7,15 +8,10 @@ using mechanical.Models.PCE.Enum.PCEEvaluation;
 
 namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
-    public class PCEEvaluationReturnDto
+    public class PCEEvaluationUpdateDto
     {
         public Guid Id { get; set; }
-
-        [Display(Name = "Evaluated By")]
-        public Guid EvaluatorID { get; set; }
-
         public required Guid PCEId { get; set; }
-        public virtual ProductionCapacity? PCE { get; set; }
 
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
@@ -104,14 +100,14 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Production Process Flow Diagrams")]  
         public ICollection<ReturnFileDto>? ProductionProcessFlowDiagrams { get; set; }  
 
+        public ICollection<IFormFile>? NewSupportingEvidences { get; set; }
+        public ICollection<IFormFile>? NewProductionProcessFlowDiagrams { get; set; }
+
+        public string? DeletedFileIds { get; set; } 
+        // public ICollection<string>? DeletedFileIds { get; set; } = new List<string>();
+        // public ICollection<Guid>? DeletedFileIds { get; set; } 
+        
         [Display(Name = "Remark")]
         public string? Remark { get; set; }
-        
-        // [Display(Name = "Return Reason")]
-        // public string? ReturnReason { get; set; }
-
-        [Display(Name = "Created At")]
-        public DateTime CreatedAt { get; set; } 
-
     }
 }

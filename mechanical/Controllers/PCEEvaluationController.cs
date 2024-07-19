@@ -50,7 +50,6 @@ namespace mechanical.Controllers
         {
             try
             {
-
                 var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluationsByPCEId(base.GetCurrentUserId(), PCEId);
 
                 if (PCEEvaluation != null)
@@ -118,7 +117,7 @@ namespace mechanical.Controllers
                 ViewData["PCE"] = pce;
                 ViewData["PCECase"] = pCECase;
 
-                return View(PCEEvaluation);
+                return View(_mapper.Map<PCEEvaluationUpdateDto>(PCEEvaluation));
             }
             catch (Exception ex)
             {
@@ -129,7 +128,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Guid Id, PCEEvaluationReturnDto Dto)
+        public async Task<IActionResult> Update(Guid Id, PCEEvaluationUpdateDto Dto)
         {
             if (ModelState.IsValid)
             {

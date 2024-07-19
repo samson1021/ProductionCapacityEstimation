@@ -12,6 +12,9 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
 
+        [Display(Name = "Type of Output")]
+        public string? OutputType { get; set; }
+        
         [Display(Name = "Phase of Output")]
         public OutputPhase? OutputPhase { get; set; }
 

@@ -47,6 +47,9 @@
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</h6></dd>
 
+                            <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputType)</dt>
+                            <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OutputType)</h6></dd>
+
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputPhase)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OutputPhase)</h6></dd>
 
@@ -295,7 +298,7 @@
                 {
                     <input asp-for="PCEId" value="@Model.PCEId" type="hidden" />
                     <div class="row">
-                        <button id="evaluate-btn" type="button" class="col-xl-12 btn btn-sm btn-success"><i class="fas fa-paper-plane"></i> Evaluate</button>
+                        <button id="evaluate-btn" type="button" class="col-xl-12 btn btn-sm btn-success"><i class="fas fa-paper-plane"></i> Complete</button>
                     </div>
                 }
             </div>       

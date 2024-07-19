@@ -1,9 +1,10 @@
+@using System
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
@@ -48,8 +49,8 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Update">
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)
-                    <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
-                    <input type="hidden" asp-for="CreatedAt" />
+                    <input asp-for="PCEId" value='@Model.PCEId' type="hidden" />
+                    <input asp-for="DeletedFileIds" id="DeletedFileIds" type="hidden" />
 
                     <!-- General Information -->
                     <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
@@ -65,16 +66,16 @@
                                 <input id="OriginCountry" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly />
                             </div>
                             <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
-                                <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" ></select>
-                                <span asp-validation-for="OutputPhase" class="text-danger" id="OutputPhase-error"></span>
+                                <label>@Html.DisplayNameFor(model => model.OutputType) <i class="text-danger">*</i></label>
+                                <input asp-for="OutputType" class="form-control form-control-sm" />
+                                <span asp-validation-for="OutputType" class="text-danger" id="OutputType-error"></span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
-                                <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
-                                <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
+                                <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
+                                <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" ></select>
+                                <span asp-validation-for="OutputPhase" class="text-danger" id="OutputPhase-error"></span>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour) <i class="text-danger">*</i></label>
@@ -88,12 +89,17 @@
                             </div>
                         </div>
                        <div class="row">
-                            <div class="form-group col-sm-4">
+                            <div class="form-group col-lg-4">
+                                <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
+                                <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
+                                <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-sm-2">
                                 <label>@Html.DisplayNameFor(model => model.ShiftsPerDay) <i class="text-danger">*</i></label>
                                 <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
                                 <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-sm-8" id="shiftHoursContainer">
+                            <div class="form-group col-sm-6" id="shiftHoursContainer">
                                 @for (int i = 0; i < Model.ShiftHours.Count; i++)
                                 {
                                     <div class="row shift-hour col-sm-12" data-index="@i">
@@ -223,6 +229,7 @@
                     </div>  
 
                     <!-- Update Documents -->
+                    
                     <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
                         <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Update Documents </h6></div>
                         <div class="row">
@@ -259,8 +266,8 @@
                                         }
                                     </tbody>
                                 </table>
-                                <input asp-for="SupportingEvidences" type="file" class="form-control" multiple />
-                                <span asp-validation-for="SupportingEvidences" class="text-danger"></span>
+                                <input asp-for="NewSupportingEvidences" type="file" class="form-control" multiple />
+                                <span asp-validation-for="NewSupportingEvidences" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -297,8 +304,8 @@
                                         }
                                     </tbody>                                 
                                 </table>
-                                <input asp-for="ProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
-                                <span asp-validation-for="ProductionProcessFlowDiagrams" class="text-danger"></span>
+                                <input asp-for="NewProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
+                                <span asp-validation-for="NewProductionProcessFlowDiagrams" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -331,16 +338,17 @@
                         </div>
                     </div>
                     
-                   <div class="form-group row justify-content-center">
-                        <div class="col-xl-2">
-                            <a href="@Url.Action("All", "PCEEvaluation")" class="btn btn-secondary btn-block">
+
+                    <div class="form-group row justify-content-center">
+                        <div class="col-xl-2">                        
+                            <a href="@Url.Action("Detail", "PCEEvaluation", new { Id = @Model.Id })" class="btn btn-secondary btn-block">
                                 <i class="fas fa-times mr-2"></i> Cancel
                             </a>
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2">
                             <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1">
-                                 <i class="fas fa-undo mr-2"></i> Return
+                                <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
                         <div class="col-xl-3"></div>
@@ -349,7 +357,7 @@
                                 <i class="fas fa-save mr-2"></i> Update
                             </button>
                         </div>
-                    </div>          
+                    </div>                              
                 </form>
             </div>
         </div>
@@ -367,6 +375,7 @@
 
     <script>
         $(document).ready(function () {
+
             var shiftsInput = $('#ShiftsPerDay');
             var shiftHoursContainer = $('#shiftHoursContainer');
             
@@ -424,44 +433,42 @@
             shiftHoursContainer.on('change', 'input', function () {
                 // Handle changes in shift hour inputs if needed
             });
-        });
-    </script>
+    
 
-    <script>
-
-        $("#MachineFunctionalityStatus").change(function () {
-            var selectedStatus = $(this).val();
-            if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
-                $("#functionalityReasonRow").show();
-            } else {
-                $("#functionalityReasonRow").hide();
-                $("#otherReasonRow").hide();
-            }
-        });
-
-        $("#MachineNonFunctionalityReason").change(function () {
-            var selectedReason = $(this).val();
-            if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
-                $("#otherReasonRow").show();
-            } else {
-                $("#otherReasonRow").hide();
-            }
-        });
-
-        // Add alphanumeric validation
-        function addAlphanumericValidation(elementId, errorElementId) {
-            document.getElementById(elementId).addEventListener("input", function () {
-                var input = this.value;
-                var alphanumericRegex = /^[A-Za-z0-9]+$/;
-                if (!alphanumericRegex.test(input)) {
-                    this.setCustomValidity("Only alphanumeric characters are allowed.");
-                    document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
+            $("#MachineFunctionalityStatus").change(function () {
+                var selectedStatus = $(this).val();
+                if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
+                    $("#functionalityReasonRow").show();
                 } else {
-                    this.setCustomValidity("");
-                    document.getElementById(errorElementId).textContent = "";
+                    $("#functionalityReasonRow").hide();
+                    $("#otherReasonRow").hide();
                 }
             });
-        
+
+            $("#MachineNonFunctionalityReason").change(function () {
+                var selectedReason = $(this).val();
+                if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
+                    $("#otherReasonRow").show();
+                } else {
+                    $("#otherReasonRow").hide();
+                }
+            });
+
+            // Add alphanumeric validation
+            function addAlphanumericValidation(elementId, errorElementId) {
+                document.getElementById(elementId).addEventListener("input", function () {
+                    var input = this.value;
+                    var alphanumericRegex = /^[A-Za-z0-9]+$/;
+                    if (!alphanumericRegex.test(input)) {
+                        this.setCustomValidity("Only alphanumeric characters are allowed.");
+                        document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
+                    } else {
+                        this.setCustomValidity("");
+                        document.getElementById(errorElementId).textContent = "";
+                    }
+                });
+            }
+            
 
             // Applying alphanumeric validation to various input fields
             // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
@@ -484,29 +491,27 @@
         });
    
     </script>
-
     <script>
-        function deleteFile(id, event) {
-            event.preventDefault(); 
+        function deleteFile(fileId, event) {
+            event.preventDefault();
+
             if (confirm("Are you sure you want to delete this file?")) {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("DeleteFile", "UploadFile")',
-                    data: { id: id },
-                    success: function (response) {
-                        if (response.success) {
-                            $(`#file-${id}`).remove();
-                            if ($("#file-list1 .file-row").length == 0) {
-                                $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
-                            }
-                            if ($("#file-list2 .file-row").length == 0) {
-                                $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
-                            }
-                        } else {
-                            alert("Error deleting file.");
-                        }
-                    }
-                });
+                // Add the fileId to the hidden input for deleted files
+                var deletedFileIdsInput = document.getElementById('DeletedFileIds');
+                var deletedFileIds = deletedFileIdsInput.value ? deletedFileIdsInput.value.split(',') : [];
+                deletedFileIds.push(fileId);
+                deletedFileIdsInput.value = deletedFileIds.join(',');
+
+                // Remove the file row from the view
+                $(`#file-${fileId}`).remove();
+
+                // Check if there are no more files and add the appropriate message
+                if ($("#file-list1 .file-row").length == 0) {
+                    $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
+                }
+                if ($("#file-list2 .file-row").length == 0) {
+                    $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
+                }
             }
         }
     </script>

@@ -21,6 +21,7 @@ namespace mechanical.Models.PCE.Entities
         public virtual CreateUser? Evaluator { get; set; }
 
         public string ProductionLineOrEquipmentName { get; set; }  
+        public string? OutputType { get; set; }
 
         public OutputPhase? OutputPhase { get; set; }
 

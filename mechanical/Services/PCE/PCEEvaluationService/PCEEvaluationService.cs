@@ -59,7 +59,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEntity.CreatedAt = DateTime.Now;
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
-                await _cbeContext.SaveChangesAsync();
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
 
@@ -93,12 +92,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
-                await _cbeContext.SaveChangesAsync();
 
                 pce.CurrentStage = "Maker Officer";
                 pce.CurrentStatus = "Pending";
                 _cbeContext.ProductionCapacities.Update(pce);
-                await _cbeContext.SaveChangesAsync();
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
@@ -119,81 +116,87 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while creating the PCEEvaluation.");
             }
         }
-
-        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationReturnDto Dto)
+        
+        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 var pceEntity = await _cbeContext.PCEEvaluations
-                    // .Include(e => e.ShiftHours)
-                    // .Include(e => e.TimeConsumedToCheck)
-                    // .Include(e => e.PCE)
+                    .Include(e => e.ShiftHours)
                     .FirstOrDefaultAsync(e => e.Id == Id);
-                
+
                 if (pceEntity == null)
                 {
                     _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
                     throw new KeyNotFoundException("PCEEvaluation not found");
                 }
-
                 _mapper.Map(Dto, pceEntity);
-                pceEntity.EvaluatorID = UserId; 
-                pceEntity.UpdatedBy = UserId; 
-                pceEntity.UpdatedAt = DateTime.Now;
-                // _mapper.Map(Dto.ShiftHours, pceEntity.ShiftHours);
 
+                pceEntity.UpdatedBy = UserId;
+                pceEntity.UpdatedAt = DateTime.Now;
+                
                 // pceEntity.ShiftHours.Clear();
                 // foreach (var shiftHours in Dto.ShiftHours)
-                // {                       
-                //         // pceEntity.ShiftHours 
-                //         pceEntity.ShiftHours.Add(_mapper.Map<TimeRange>(shiftHours));            
-                //         // pceEntity.ShiftHours.Add(new TimeRange
-                //         // {
-                //         //     Start = shiftHours.Start,
-                //         //     End = shiftHours.End
-                //         // });
+                // {          
+                //     pceEntity.ShiftHours.Add(new TimeRange
+                //     {
+                //         Start = shiftHours.Start,
+                //         End = shiftHours.End
+                //     });
                 // }
+             
+                // Handle deleted files
+                // if (Dto.DeletedFileIds != null && Dto.DeletedFileIds.Count > 0)
+                if (!string.IsNullOrEmpty(Dto.DeletedFileIds))
+                {
+                    var deletedFileGuids = Dto.DeletedFileIds.Split(',').Select(id => Guid.Parse(id)).ToList();
+ 
+                    var filesToDelete = await _cbeContext.UploadFiles
+                        .Where(file => deletedFileGuids.Contains(file.Id))
+                        // .Where(file => Dto.DeletedFileIds.Contains(file.Id))
+                        .ToListAsync();
 
-                _cbeContext.Update(pceEntity);
+                    _cbeContext.UploadFiles.RemoveRange(filesToDelete);
+                }
+
+                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
+
+                // Handle new file uploads
+                if (Dto.NewSupportingEvidences != null && Dto.NewSupportingEvidences.Count > 0)
+                {
+                    foreach (var file in Dto.NewSupportingEvidences)
+                    {
+                        var supportingEvidenceFile = new CreateFileDto
+                        {
+                            File = file,
+                            Catagory = "Supporting Evidence",
+                            CaseId = pce.PCECaseId,
+                            CollateralId = pceEntity.Id,
+                        };
+
+                        await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
+                    }
+                }
+
+                if (Dto.NewProductionProcessFlowDiagrams != null && Dto.NewProductionProcessFlowDiagrams.Count > 0)
+                {
+                    foreach (var file in Dto.NewProductionProcessFlowDiagrams)
+                    {
+                        var productionProcessFlowDiagramFile = new CreateFileDto
+                        {
+                            File = file,
+                            Catagory = "Production Process Flow Diagram",
+                            CaseId = pce.PCECaseId,
+                            CollateralId = pceEntity.Id,
+                        };
+
+                        await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
+                    }
+                }
                 await _cbeContext.SaveChangesAsync();
-
-                // var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
-
-                // if (Dto.SupportingEvidences != null && Dto.SupportingEvidences.Count > 0)
-                // {
-                //     foreach (var file in Dto.SupportingEvidences)
-                //     {
-                //         var supportingEvidenceFile = new CreateFileDto
-                //         {
-                //             File = file,
-                //             Catagory = "Supporting Evidence",
-                //             CaseId = pce.PCECaseId,
-                //             CollateralId = pceEntity.Id,
-                //         };
-
-                //         await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
-                //     }
-                // }
-                // if (Dto.ProductionProcessFlowDiagrams != null && Dto.ProductionProcessFlowDiagrams.Count > 0)
-                // {
-                //     foreach (var file in Dto.ProductionProcessFlowDiagrams)
-                //     {
-                //         var productionProcessFlowDiagramFile = new CreateFileDto
-                //         {
-                //             File = file,
-                //             Catagory = "Production Process Flow Diagram",
-                //             CaseId = pce.PCECaseId,
-                //             CollateralId = pceEntity.Id,
-                //         };
-
-                //         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
-                //     }
-                // }
-
-                // await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-            
+
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
@@ -202,7 +205,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await transaction.RollbackAsync();
                 throw new ApplicationException("An error occurred while updating the PCEEvaluation.");
             }
-        } 
+        }
 
         public async Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id)
         { 
@@ -234,7 +237,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pce.CurrentStage = "Maker Officer";
                 pce.CurrentStatus = "New";
                 _cbeContext.ProductionCapacities.Update(pce);
-                await _cbeContext.SaveChangesAsync();
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
@@ -271,19 +273,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 _cbeContext.PCEEvaluations.Update(pceEntity);
-                await _cbeContext.SaveChangesAsync();
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
                 pce.CurrentStage = "Relational Manager";
                 pce.CurrentStatus = "Evaluated";
                 _cbeContext.ProductionCapacities.Update(pce);
-                await _cbeContext.SaveChangesAsync();
 
                 // var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.PCE.PCECase.RMUserId).FirstOrDefaultAsync();
                 var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId).FirstOrDefaultAsync();
                 previousCaseAssignment.Status = "Evaluated";
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
-                await _cbeContext.SaveChangesAsync();
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
@@ -326,18 +325,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 returnPCE.CreationDate = DateTime.Now;
                 returnPCE.RejectedBy = UserId;
                 await _cbeContext.ProductionRejects.AddAsync(returnPCE);
-                await _cbeContext.SaveChangesAsync();
               
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 pce.CurrentStage = "Relational Manager";
                 pce.CurrentStatus = "Rejected";
                 _cbeContext.ProductionCapacities.Update(pce);
-                await _cbeContext.SaveChangesAsync();
 
                 var previousPCECaseAssignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == Dto.PCEId && res.UserId == UserId);
                 previousPCECaseAssignment.Status = "Rejected";
-                _cbeContext.Update(previousPCECaseAssignment);            
-                await _cbeContext.SaveChangesAsync(); 
+                _cbeContext.Update(previousPCECaseAssignment);   
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
@@ -383,18 +379,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 _cbeContext.PCEEvaluations.Update(pceEntity);
-                await _cbeContext.SaveChangesAsync();
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
                 pce.CurrentStage = "Maker Officer";
                 pce.CurrentStatus = "Rework";
                 _cbeContext.ProductionCapacities.Update(pce);
-                await _cbeContext.SaveChangesAsync();
                 
                 var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.EvaluatorID).FirstOrDefaultAsync();
                 previousCaseAssignment.Status = "Rework";
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
-                await _cbeContext.SaveChangesAsync();
 
                 // await _pceCaseTimeLineService.CreateCaseTimeLine(new PCECaseTimeLinePostDto
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto

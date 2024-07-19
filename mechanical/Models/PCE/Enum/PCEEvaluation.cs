@@ -4,7 +4,10 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
 {
     public enum OutputPhase
     {
+        [Display(Name = "Finished Product")]
         FinishedProduct,
+        
+        [Display(Name = "Raw Material For Next Line")]
         RawMaterialForNextLine
     }
 
