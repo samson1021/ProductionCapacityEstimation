@@ -1,4 +1,6 @@
 ﻿
+using mechanical.Models.Dto.CaseDto;
+using mechanical.Models.Dto.DashboardDto;
 using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
@@ -8,7 +10,8 @@ namespace mechanical.Services.PCE.PCECaseService
     public interface IPCECaseService
     {
         Task<PCECase> PCECase(Guid userId, PCECaseDto caseDto);
-        Task<CreateNewCaseCountDto> GetDashboardPCECaseCount(Guid userId);
+        Task<CreateNewCaseCountDto> GetDashboardPCECaseCount();
+        Task<CreateNewCaseCountDto> GetMyDashboardCaseCount();
 
         Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCEPendingCases(Guid userId);
@@ -24,8 +27,7 @@ namespace mechanical.Services.PCE.PCECaseService
         ////manufuctuer
         Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id);
 
-        //Task<PCECase> CreateProductionCase(Guid userId, PCECaseDto createCaseDto);
-        //Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id);
+        Task<PCECaseReturntDto> GetCase(Guid userId, Guid id);
 
 
     }

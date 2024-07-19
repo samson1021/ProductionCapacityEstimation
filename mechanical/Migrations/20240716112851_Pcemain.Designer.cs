@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240718101025_RemovedCountryOrigin")]
-    partial class RemovedCountryOrigin
+    [Migration("20240716112851_Pcemain")]
+    partial class Pcemain
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1071,6 +1071,9 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("PCEEvaluationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1086,10 +1089,12 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PCEEvaluationId");
+
                     b.ToTable("UploadFiles");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.DateTimeRange", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.DatePeriod", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1105,7 +1110,26 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DateTimeRange");
+                    b.ToTable("DatePeriod");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.DateTimePeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DateTimePeriod");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
@@ -1262,6 +1286,9 @@ namespace mechanical.Migrations
                     b.Property<int?>("MachineNonFunctionalityReason")
                         .HasColumnType("int");
 
+                    b.Property<string>("OriginCountry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherMachineNonFunctionalityReason")
                         .HasColumnType("nvarchar(max)");
 
@@ -1288,6 +1315,9 @@ namespace mechanical.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ShiftsPerDay")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("SurveyRemark")
@@ -1754,7 +1784,7 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionRejects");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeRange", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimePeriod", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1775,7 +1805,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("PCEEvaluationId");
 
-                    b.ToTable("TimeRange");
+                    b.ToTable("TimePeriod");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
@@ -2057,6 +2087,13 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.UploadFile", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
+                        .WithMany("SupportingDocuments")
+                        .HasForeignKey("PCEEvaluationId");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -2113,7 +2150,7 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mechanical.Models.PCE.Entities.DateTimeRange", "TimeConsumedToCheck")
+                    b.HasOne("mechanical.Models.PCE.Entities.DateTimePeriod", "TimeConsumedToCheck")
                         .WithMany()
                         .HasForeignKey("TimeConsumedToCheckId");
 
@@ -2225,7 +2262,7 @@ namespace mechanical.Migrations
                     b.Navigation("ProductionCapacity");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeRange", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimePeriod", b =>
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
                         .WithMany("ShiftHours")
@@ -2247,6 +2284,8 @@ namespace mechanical.Migrations
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEEvaluation", b =>
                 {
                     b.Navigation("ShiftHours");
+
+                    b.Navigation("SupportingDocuments");
                 });
 #pragma warning restore 612, 618
         }

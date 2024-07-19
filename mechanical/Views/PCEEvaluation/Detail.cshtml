@@ -1,9 +1,10 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
 
 @{
-    ViewData["Title"] = ViewBag.Title ?? "PCE Case";    
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
     var RejectPost = new PCERejectPostDto {
             PCEId = Model.PCEId, 
             RejectionComment = "" 
@@ -15,7 +16,20 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6 col-xl-4">
-                <div class="row align-items-center">        
+                <div class="row align-items-center">
+                   
+                    <div class="col-auto">
+                        <h5>
+                            @if (Model.Status != null)
+                            {
+                                <span id="status-badge" class="badge badge-lg badge-pill badge-primary">@Model.Status</span>
+                            }
+                            else
+                            {
+                                <span id="status-badge" class="badge badge-lg badge-pill badge-secondary">Unknown</span>
+                            }
+                        </h5>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-6 col-xl-4">
@@ -52,6 +66,9 @@
 
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputPhase)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OutputPhase)</h6></dd>
+
+                            <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OriginCountry)</dt>
+                            <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OriginCountry)</h6></dd>
 
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.WorkingDaysPerMonth)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.WorkingDaysPerMonth)</h6></dd>
@@ -106,6 +123,9 @@
                     </div>
                     <div class="card-body">
                         <dl class="row">
+                            <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Status)</dt>
+                            <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.Status)</h6></dd>
+
                             <dt class="col-sm-6">Inspection Started At</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.TimeConsumedToCheck.Start, new { @class = "datetime-format" })</h6></dd>
 
@@ -238,7 +258,7 @@
                                 <th>File Name</th>
                                 <th>Actions</th>
                             </tr>
-                        </thead>                         
+                        </thead>
                         <tbody>
                         
                             @{
@@ -266,6 +286,32 @@
                     </table>
                 </div>
             </div>
+            <div class="row my-4">
+                <div class="col-3 col-md-4 offset-md-1">
+                    <div class="card bg-light shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    <h6 class="mb-0 font-weight-bold">Status:</h6>
+                                </div>
+                                <div class="col-8 text-right">
+                                    <h5 class="mb-0">
+                                        @if (Model.Status != null)
+                                        {
+                                            <span id="status-badge" class="badge badge-pill badge-primary">@Model.Status</span>
+                                        }
+                                        else
+                                        {
+                                            <span id="status-badge" class="badge badge-pill badge-secondary">Unknown</span>
+                                        }
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row col-12">
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;margin-left:1.25rem;" class="col-2">
                 @using (Html.BeginForm("Update", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
@@ -292,16 +338,16 @@
                     <button id="reject-btn"  type="button" class="col-xl-12 btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectionModal1">  <i class="fas fa-undo"></i>Return</button>
                 </div>  
             </div>
-            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>    
+            <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem; margin-left:2.5rem;" class="col-2">
                 @using (Html.BeginForm("Evaluate", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get, false, new { id = "evaluateForm" }))
                 {
                     <input asp-for="PCEId" value="@Model.PCEId" type="hidden" />
-                    <div class="row">
+                <div class="row">
                         <button id="evaluate-btn" type="button" class="col-xl-12 btn btn-sm btn-success"><i class="fas fa-paper-plane"></i> Complete</button>
-                    </div>
+                </div>
                 }
-            </div>       
+            </div>            
         </div>      
     </div>              
 </section>
@@ -340,13 +386,14 @@
                     }, 1000);
                 } else {
                     toastr.error('Error sending the Evaluation: ' + data.error);
-                }
+        }
             })
             .catch(error => {
                 toastr.error('Error sending the Evaluation: ' + error);
             });
         });
     </script>
+ 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var statusBadge = document.getElementById("status-badge");
@@ -359,6 +406,12 @@
                 var evaluateBtn = document.getElementById("evaluate-btn");
 
                 switch (status) {
+                    case "New":
+                        updateBtn.style.display = "inline-block";
+                        deteleBtn.style.display = "inline-block";
+                        rejectBtn.style.display = "inline-block";
+                        sendToRMBtn.style.display = "inline-block";
+                        break;
                     case "Evaluated":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "none";

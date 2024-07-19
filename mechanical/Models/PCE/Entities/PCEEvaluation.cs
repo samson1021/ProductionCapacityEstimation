@@ -20,7 +20,7 @@ namespace mechanical.Models.PCE.Entities
         public virtual ProductionCapacity? PCE { get; set; }
         public virtual CreateUser? Evaluator { get; set; }
 
-        public string ProductionLineOrEquipmentName { get; set; }  
+        public string ProductionLineOrEquipmentName { get; set; }   
         public string? OutputType { get; set; }
 
         public OutputPhase? OutputPhase { get; set; }
@@ -54,7 +54,10 @@ namespace mechanical.Models.PCE.Entities
         public DateOnly? InspectionDate { get; set; } //Schedule
         public string? SurveyRemark { get; set; }
     
-        // public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
+       // public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
+
+        public Status? Status { get; set; }
+        // public string? ReturnReason { get; set; }
 
         public string? Remark { get; set; } = string.Empty;
         

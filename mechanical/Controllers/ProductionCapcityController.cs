@@ -299,7 +299,13 @@ namespace mechanical.Controllers
         }
 
 
-
+        [HttpGet]
+        public async Task<IActionResult> GetRMCompleteCollaterals(Guid CaseId)
+        {
+            var collaterals = await _productionCapacityServices.GetRmComCollaterals(CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
 
     }
 }

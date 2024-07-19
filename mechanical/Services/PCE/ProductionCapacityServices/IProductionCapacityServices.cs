@@ -36,6 +36,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<bool> DeleteProductionFile(Guid userId, Guid Id);
         Task<bool> UploadProductionFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory);
 
+        Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid CaseId);
 
 
     }

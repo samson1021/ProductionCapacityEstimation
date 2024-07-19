@@ -474,7 +474,11 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             }
             return false;
         }
-
+        public async Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid CaseId)
+        {
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && res.CurrentStage == "Checker officer" && res.CurrentStatus == "Complete").ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnProductionDto>>(collaterals);
+        }
     }
 }
     

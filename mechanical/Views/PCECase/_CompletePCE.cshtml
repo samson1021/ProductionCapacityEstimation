@@ -1,0 +1,72 @@
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Entities
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto;
+@{
+    var myCase = ViewData["case"] as PCECaseReturntDto;
+   // var myCase = ViewData["case"] as CaseReturntDto;
+    var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
+   // var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;
+   // var conMngAgr = ViewData["conMngAgr"] as List<ConstMngAgrMachinery>;
+}
+
+<div class="card">
+    <div class="Card-header">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-sm-6">
+                    <div class="btn-group">
+                        @{
+                            // if (motorVehicle != null && motorVehicle.Count > 0)
+                            // {
+                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVReport", "PCECase", new { CaseId = myCase.Id })">
+                            //         MOV Report <i class="nav-icon fas fa-sitemap"></i>
+                            //     </a>
+                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVSummary", "PCECase", new { CaseId = myCase.Id })">
+                            //         MOV Summary <i class="nav-icon fas fa-report"></i>
+                            //     </a>
+                            // }
+                            // // if (conMngAgr != null && conMngAgr.Count > 0)
+                            // {
+                            //     // <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachineryReport", "Case", new { CaseId = myCase.Id })">
+                            //     //     CAM Report <i class="nav-icon fas fa-sitemap"></i>
+                            //     // </a>
+                            //     // <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachinerySummary", "Case", new { CaseId = myCase.Id })">
+                            //     //     CAM Summary <i class="nav-icon fas fa-report"></i>
+                            //     // </a>
+
+                            // }
+                            // if (indBldgFacEq != null && indBldgFacEq.Count > 0)
+                            // {
+                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentReport", "Case", new { CaseId = myCase.Id })">
+                            //         IBFE Report <i class="nav-icon fas fa-sitemap"></i>
+                            //     </a>
+                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentSummary", "Case", new { CaseId = myCase.Id })">
+                            //         IBFE Summary <i class="nav-icon fas fa-report"></i>
+                            //     </a>
+                            // }
+                        }
+                        <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
+                    </div>
+
+
+                </div>
+                <div class="col-12 col-sm-4">
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" />
+    <div class="card-body">
+        <table id="caseCollaterals" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Property Owner</th>
+                    <th>Role</th>
+                    <th>Equipment Catagory</th>
+                    <th>Equipment Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

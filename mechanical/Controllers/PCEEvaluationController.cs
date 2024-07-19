@@ -57,13 +57,11 @@ namespace mechanical.Controllers
                     return RedirectToAction("Detail", "PCEEvaluation", new { Id = PCEEvaluation.Id });
                 }
 
-                var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEId);
 
-                if (pce == null)
                 {
                     return RedirectToAction("MyNewPCECases", "PCEEvaluation");
                 }
-
+                
                 var pCECase = await _PCEEvaluationService.GetPCECase(GetCurrentUserId(), pce.PCECaseId);
                 ViewData["PCECase"] = pCECase;
                 // ViewData["PCECase"] = pce.PCECase;
@@ -110,7 +108,7 @@ namespace mechanical.Controllers
                 {
                     return RedirectToAction("NewPCEEvaluations");
                 }
-                
+                        
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
                 var pCECase = await _PCEEvaluationService.GetPCECase(GetCurrentUserId(), pce.PCECaseId);
 
@@ -133,7 +131,7 @@ namespace mechanical.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {             
+                {
                     await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
                     return RedirectToAction("Detail", "PCEEvaluation", new { Id = Id });
                 }
@@ -194,10 +192,10 @@ namespace mechanical.Controllers
                 if (PCEEvaluation == null)
                 {
                     return RedirectToAction("NewPCEEvaluations");
-                }            
+                }
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
                 var pCECase = await _PCEEvaluationService.GetPCECase(GetCurrentUserId(), pce.PCECaseId);
-
+            
                 ViewData["PCE"] = pce;
                 ViewData["PCECase"] = pCECase;
 
@@ -209,7 +207,7 @@ namespace mechanical.Controllers
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> Evaluate(Guid Id)
         {
@@ -225,7 +223,7 @@ namespace mechanical.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> Reevaluate(Guid Id)
         {
@@ -240,7 +238,7 @@ namespace mechanical.Controllers
                 var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }
-        }
+        }     
         
         [HttpGet]
         public async Task<IActionResult> Rework(Guid Id)
@@ -257,7 +255,7 @@ namespace mechanical.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Reject(PCERejectPostDto Dto)
         {
@@ -283,12 +281,12 @@ namespace mechanical.Controllers
             if (pCECase == null) 
             {
                 return RedirectToAction("MyNewPCECases"); 
-            }
+                }
             ViewData["PCECase"] = pCECase;
             ViewData["Title"] = "PCE Case Detail";
             return View();
-        }
-        
+                }
+    
         [HttpGet]
         public IActionResult MyNewPCECases()
         {
@@ -321,7 +319,7 @@ namespace mechanical.Controllers
             ViewData["Title"] = "Total PCE Cases";
             return View("PCECases");
         }
-     
+
         [HttpGet]
         public async Task<IActionResult> GetMyPCECase(Guid Id)
         {
@@ -387,7 +385,7 @@ namespace mechanical.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetMyDashboardPCECaseCount()
-        {
+            {
             var myPCECase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myPCECase);
             return Content(jsonData, "application/json");
@@ -458,7 +456,7 @@ namespace mechanical.Controllers
 
             return Content(jsonData, "application/json");
         }
-
+            
         [HttpGet]
         public async Task<IActionResult> GetAllMyPCEs(Guid PCECaseId)
         {
@@ -481,7 +479,7 @@ namespace mechanical.Controllers
             ViewData["Title"] = "Returned PCE Cases";
             return View("PCECases");
         }
-
+            
         public async Task<IActionResult> MyResubmittedPCEs()
         {
             ViewBag.Url = "/PCEEvaluation/GetMyResubmittedPCEs";
@@ -499,8 +497,8 @@ namespace mechanical.Controllers
             }
             string jsonData = JsonConvert.SerializeObject(myPCECase);
             return Content(jsonData, "application/json");
-        }
-
+            }
+            
         [HttpGet]
         public async Task<IActionResult> GetMyResubmittedPCEs()
         {

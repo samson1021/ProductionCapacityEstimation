@@ -20,17 +20,30 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
 
+<<<<<<< HEAD
         [Display(Name = "Type of Output")]
         public string? OutputType { get; set; }
         
         [Display(Name = "Phase of Output")]
         public OutputPhase? OutputPhase { get; set; }
 
+=======
+        [Display(Name = "Phase of Output")]
+        public OutputPhase? OutputPhase { get; set; }
+
+        [Display(Name = "Country of Origin")]
+        public string? OriginCountry { get; set; }
+
+>>>>>>> Abdu
         [Display(Name = "Shifts Per Day")]
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
+<<<<<<< HEAD
         public List<TimeRangeDto>? ShiftHours { get; set; }
+=======
+        public List<TimePeriodDto>? ShiftHours { get; set; } = new List<TimePeriodDto>();
+>>>>>>> Abdu
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -51,7 +64,11 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? OverallActualCurrentPlantCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
+<<<<<<< HEAD
         public DateTimeRangeDto? TimeConsumedToCheck { get; set; }
+=======
+        public DateTimePeriodDto? TimeConsumedToCheck { get; set; }
+>>>>>>> Abdu
 
         [Display(Name = "Technical Obsolescence Status")]
         public string? TechnicalObsolescenceStatus { get; set; }
@@ -103,6 +120,12 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Production Process Flow Diagrams")]  
         public ICollection<ReturnFileDto>? ProductionProcessFlowDiagrams { get; set; }  
+<<<<<<< HEAD
+=======
+     
+        [Display(Name = "Status")]
+        public Status? Status { get; set; }
+>>>>>>> Abdu
 
         [Display(Name = "Remark")]
         public string? Remark { get; set; }

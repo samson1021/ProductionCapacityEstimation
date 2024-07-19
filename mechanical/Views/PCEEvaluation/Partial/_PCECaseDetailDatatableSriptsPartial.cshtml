@@ -1,4 +1,7 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+@using mechanical.Models.Enum.ProductionCapcityEstimation
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 
 @{
     ViewData["Title"] = ViewBag.Title ?? "PCE Case";
@@ -8,10 +11,13 @@
 <script>
     $(document).ready(function () {      
 
+        // var PCECaseId = $('#PCECaseId').val();
         var PCECaseId = '@myPCECase.Id';
 
         function initializeDataTable(data) {
-           
+            
+            var combinedData = productions.concat(plants); // Combine productions and plants data
+
             PCEsTable = $('#PCEs').DataTable({
                 language: {
                     emptyTable: "There is no PCE register for this case. Please click the above add button to add PCE."
@@ -70,16 +76,48 @@
                     console.log(error);
                 }
             });    
-        }   
-        loadPCEs();         
+        }
+
+        loadPCEs();
     }); 
-    
+
     function openRejectionModal(PCEId) {
         var rejectionModal = document.getElementById('rejectionModal1');
         var PCEIdField = document.querySelector('#rejectionModal1 input[name="PCEId"]');
 
         // Set the PCEId value
         PCEIdField.value = PCEId;
-        $('#rejectionModal1').modal('show');
-    } 
+            $('#rejectionModal1').modal('show');
+        }
+
+        $('#rejectionModal1').on('shown.bs.modal', function () {
+            $('#rejectionComment').focus();
+        });
+
+        $('#rejectionForm').submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var rejectionComment = $('#rejectionComment').val();
+            var CollateralId = $('#CollateralId').val();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+
+                data: { rejectionComment: rejectionComment, CollateralId: CollateralId },
+                success: function (response) {
+                    // Handle the response from the controller if needed
+                    toastr.success(' Reason for Return saved successfully');
+                    $('#rejectionModal1').modal('hide');
+                    window.location.href = '/MOPCECase/MyPCECases';
+
+                },
+                error: function (error) {
+                    // Handle the error if needed
+                    toastr.error('Error saving rejection comment:', error);
+                }
+            });
+        });
+          
+    }); 
 </script>
