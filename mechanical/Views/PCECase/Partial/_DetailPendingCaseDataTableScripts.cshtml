@@ -1,0 +1,408 @@
+﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+    console.log("debug");
+    $(document).ready(function () {
+        $('#UpdateSchedule').on('click', function (event) {
+            event.preventDefault();
+            $('#datetimepicker-modal').modal('show');
+        });
+        $('#datetimepicker-form').submit(function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var Id = $('#CaseSchedulleId').val();
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/MOCase/UpdateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
+            });
+        });
+        $('#AcceptButton').click(function (event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var Id = $('#CaseScheduleId').val();
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/MOCase/ApproveSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
+            });
+        });
+
+        $('#PlateName').on('input', function () {
+            let value = $(this).val().replace(/[^0-9a-zA-Z]/g, '').substr(0, 10);
+            let formattedValue = '';
+            if (value.length >= 2) {
+                formattedValue += value.substr(0, 2);
+            } else {
+                formattedValue += value;
+            }
+            if (value.length >= 2) {
+                formattedValue += '-';
+            }
+            if (value.length >= 3 && /[a-zA-Z]/.test(value[2])) {
+                formattedValue += value[2].toUpperCase();
+            }
+            if (value.length >= 4) {
+                if (/[a-zA-Z]/.test(value[3])) {
+                    formattedValue += value[3].toUpperCase();
+                } else {
+                    formattedValue += 'X';
+                }
+            }
+            if (value.length >= 4) {
+                formattedValue += '-';
+            }
+            if (value.length >= 5) {
+                if (/[a-zA-Z]/.test(value[4])) {
+                    formattedValue += value[4].toUpperCase();
+                } else {
+                    formattedValue += value[4];
+                }
+            }
+            if (value.length >= 6) {
+                formattedValue += value.substr(5);
+            }
+            $(this).val(formattedValue);
+        });
+
+        fetch('/UserManagment/GetDistrict')
+            .then(response => response.json())
+            .then(data => {
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Valuation Center');
+                $('#CenterDropdown').append(selectOption);
+                data.forEach(function (district) {
+                    var option = $('<option></option>').attr('value', district.Id).text(district.Name);
+                    $('#CenterDropdown').append(option);
+                });
+            })
+            .catch(error => {
+                console.log('Error fetching District data:', error);
+            });
+
+        var CaseId = $('#CaseId').val();
+        $('#addCollateralButton').click(function () {
+            $('#addCollateralModal').modal('show');
+        });
+        $('#proposeNewScheduleButton').click(function () {
+            $('#proposeNewSchedule-modal').modal('show');
+        });
+        var caseCollateralsTable;
+
+        $('#assignButton').on('click', function () {
+
+            var checkedCollaterals = $('.purple-checkbox:checked');
+            var selectedCollateralIds = [];
+
+            checkedCollaterals.each(function () {
+                var collateralId = $(this).val();
+                selectedCollateralIds.push(collateralId);
+            });
+            if (selectedCollateralIds.length === 0) {
+                toastr.error('Please select at least one PCE');
+            } else {
+                $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+
+                $('#SendForEvaluationModal').modal('show');
+            }
+        });
+        $('#sendEvaluationButton').on('click', function () {
+
+            var checkedCollaterals = $('.purple-checkbox:checked');
+            var selectedCollateralIds = [];
+
+            checkedCollaterals.each(function () {
+                var collateralId = $(this).val();
+                selectedCollateralIds.push(collateralId);
+            });
+            if (selectedCollateralIds.length === 0) {
+                toastr.error('Please select at least one collateral');
+            } else {
+                $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+
+                $('#SendForEvaluationModal').modal('show');
+            }
+        });
+
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#caseCollaterals tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+        $('#assignForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/PCECase/SendForValuation',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    loadCollaterals();
+                    $('#SendForEvaluationModal').modal('hide');
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
+                }
+            });
+        });
+
+
+        function loadComments() {
+            $.ajax({
+                url: '/CaseComment/GetCaseComments?CaseId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseComments = data.caseComments;
+                    var countComment = data.caseComments.length;
+                    $(".CommentBage").text(countComment);
+                    console.log(countComment);
+                    var users = [];
+
+                    if (caseComments && caseComments.length > 0) {
+                        caseComments.forEach(function (comment) {
+                            var chatMsg = $('<div>').addClass('direct-chat-msg');
+                            var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+                            var chatName = $('<a>');
+
+                            var chatImg = $('<a>');
+                            var chatImgInner = $('<img>').attr('src', '/img/avatar5.png').addClass('direct-chat-img');
+                            var chatText = $('<div>').addClass('direct-chat-text');
+
+                            chatName.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
+                            chatImg.append(chatImgInner);
+
+                            var createdAt = new Date(comment.CreatedAt);
+
+
+                            chatText.text(comment.Content);
+
+                            if (comment.AuthorId === currentUserID) {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp');
+                                $('<span>').addClass('direct-chat-name float-right').text(comment.AuthorName).appendTo(chatName);
+                                chatMsg.addClass('right');
+                            } else {
+                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp float-right');
+                                $('<span>').addClass('direct-chat-name').text(comment.AuthorName).appendTo(chatName);
+                            }
+                            var formattedDate = formatDate(createdAt);
+                            chatTimestamp.text(formattedDate);
+
+                            chatInfos.append(chatName, chatTimestamp);
+                            chatMsg.append(chatInfos, chatImg, chatText);
+                            $('.direct-chat-messages').append(chatMsg);
+
+                            var existingUser = users.find(function (user) {
+                                return user.id === comment.AuthorId;
+                            });
+
+                            if (!existingUser) {
+                                var newUser = {
+                                    id: comment.AuthorId,
+                                    name: comment.AuthorName,
+                                    avatar: '/img/avatar5.png',
+                                    lastMessage: comment.Content,
+                                    date: formattedDate
+                                };
+                                users.push(newUser);
+                            }
+                        });
+                        populateContactList(users);
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('.direct-chat-messages').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+        function populateContactList(users) {
+            var contactList = $('.contacts-list');
+            contactList.empty();
+
+            users.forEach(function (user) {
+                var listItem = $('<li>');
+                var link = $('<a>').attr('href', '/UserManagment/Profile/' + user.id);
+                var avatarImg = $('<img>').addClass('contacts-list-img').attr('src', user.avatar);
+                var infoDiv = $('<div>').addClass('contacts-list-info');
+                var nameSpan = $('<span>').addClass('contacts-list-name').text(user.name);
+                var dateSpan = $('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date));
+                var messageSpan = $('<span>').addClass('contacts-list-msg').text(user.lastMessage);
+
+                infoDiv.append(nameSpan, dateSpan);
+                link.append(avatarImg, infoDiv, messageSpan);
+                listItem.append(link);
+                contactList.append(listItem);
+            });
+        }
+        function formatDate(date) {
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            return date.toLocaleString('en-US', options);
+        }
+
+        loadComments();
+
+
+
+      
+
+        // do Manufactirung
+
+
+
+        var CaseId = $('#CaseId').val();
+        function initializeDataTable(data) {
+            caseCollateralsTable = $('#caseCollaterals').DataTable({
+                language: {
+                    emptyTable: "There is no PCE register for this case please click the above add button to add PCE"
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
+                        }
+                    },
+                    { data: 'PropertyOwner', width: '25%' },
+                    { data: 'Role', width: '25%' },
+                    { data: 'ProductionType', width: '35%' },
+
+                    {
+                        data: 'Id',
+                        width: '10%',
+                        // render: function (data, type, row, meta) {
+                        //     return '<a href="Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                        // }
+                        render: function (data, type, row, meta) {
+
+                            console.log(row.ProductionType);
+                            console.log("welcome ");;
+                            if (row.ProductionType === 'Plant') {
+                                console.log(data.ProductionType);
+                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details </a>';
+                            } else {
+                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details </a>';
+                            }
+                        }
+                    }
+                ]
+            }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
+
+        }
+
+        function loadCollaterals() {
+            $.ajax({
+                url: '/ProductionCapcity/GetPendingProductions?PCECaseId=' + CaseId,
+                //url: '/ProductionCapcity/GetProductions?CaseId' + CaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
+                        var caseCollateralsTable = $('#caseCollaterals').DataTable();
+                        caseCollateralsTable.destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load Production Capcity");
+                    console.log(error);
+                }
+            });
+        }
+
+        loadCollaterals();
+
+
+
+
+        var chatMessages = $('.direct-chat-messages');
+        var scrollHeight = chatMessages[0].scrollHeight;
+        chatMessages.scrollTop(scrollHeight);
+
+
+
+
+        $("#categoryDropdown").change(function () {
+            typeDropdown.prop("disabled", false);
+            populateTypeDropdown();
+        });
+
+        populateTypeDropdown();
+        var chatMessages = $('.direct-chat-messages');
+        var scrollHeight = chatMessages[0].scrollHeight;
+        chatMessages.scrollTop(scrollHeight);
+
+        $('#proposeNewSchedule-form').submit(function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var Id = $('#CaseScheduleId').val();
+            formData.append('id', Id);
+
+            $.ajax({
+                url: '/Case/CreateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                    // Handle success response
+                },
+                error: function () {
+                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                }
+            });
+        });
+
+    });
+</script>

@@ -283,6 +283,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
     }
 
+        public async Task<IEnumerable<ReturnProductionDto>> GetPendingProductions(Guid PCECaseId)
+        {
+            //  var ProductinCaseId = Guid.Parse("2cd32d1a-89bb-42c6-8a1d-7c631558ba47");
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+        }
         public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
     {
         var product = await _cbeContext.ProductionCapacities
