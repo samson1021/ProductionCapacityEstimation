@@ -85,6 +85,15 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetPendingProductions(Guid PCECaseId)
+        {
+            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
+            var products = await _productionCapacityServices.GetPendingProductions(PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(products);
+            return Content(jsonData, "application/json");
+
+        }
 
         [HttpGet]
         public async Task<IActionResult> Detail(Guid id)

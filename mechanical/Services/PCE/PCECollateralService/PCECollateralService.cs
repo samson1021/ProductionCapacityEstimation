@@ -95,7 +95,7 @@ namespace mechanical.Services.PCE.PCECollateralService
 
         public async Task<IEnumerable<PCEReturnCollateralDto>> GetCollaterals(Guid CaseId)
         {
-            var collaterals = await _cbeContext.PlantCapacityEstimations.Where(res => res.CaseId == CaseId && (res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager")).ToListAsync();
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && (res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager")).ToListAsync();
             return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(collaterals);
         }
 
@@ -249,7 +249,7 @@ namespace mechanical.Services.PCE.PCECollateralService
                 try
                 {
                     // Find the PlantCapacityEstimations record
-                    var collateral = await _cbeContext.PlantCapacityEstimations
+                    var collateral = await _cbeContext.ProductionCapacities
                         .Where(c => c.Id == id && c.CreatedById == userId && c.CurrentStage == "Relation Manager")
                         .FirstOrDefaultAsync();
 
@@ -264,7 +264,7 @@ namespace mechanical.Services.PCE.PCECollateralService
                         await _cbeContext.SaveChangesAsync();
 
                         // Delete the PlantCapacityEstimations record
-                        _cbeContext.PlantCapacityEstimations.Remove(collateral);
+                        _cbeContext.ProductionCapacities.Remove(collateral);
                         await _cbeContext.SaveChangesAsync();
 
                         await transaction.CommitAsync();

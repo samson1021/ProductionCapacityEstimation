@@ -577,13 +577,38 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
+        public async Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacities(Guid PCECaseId)
+        {
+            var plants = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Maker Officer").ToListAsync();
+            return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(plants);
+        }
+
+
+        public async Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatus(Guid PCECaseId, string status)
+        {
+            var plants = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == "Maker Officer")).ToListAsync();
+            return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(plants);
+        }
+
+
+
         public async Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role)
         {
             var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == role)).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
+
+        public async Task<IEnumerable<PCEReturnCollateralDto>> GetPlantCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role)
+        {
+            var plants = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == status && res.CurrentStage == role)).ToListAsync();
+            return _mapper.Map<IEnumerable<PCEReturnCollateralDto>>(plants);
+        }
+
+        // public async Task<IEnumerable<ReturnProductionDto>> MyRejectedPCEs(Guid UserId)
+
         // public async Task<IEnumerable<ReturnProductionDto>> RejectedPCEs(Guid UserId)
+
         // {
         //     List<ProductionCaseAssignment> PCECaseAssignments = await _cbeContext.ProductionCaseAssignments.Where(ca => ca.UserId == UserId && ca.Status== "Correction").ToListAsync();
         //     List<ProductionCapacity> ProductionCapacities = await _cbeContext.ProductionCapacities.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus== "Correction").ToListAsync();

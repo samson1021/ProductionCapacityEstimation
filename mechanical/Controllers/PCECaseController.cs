@@ -107,7 +107,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCECaseCount();
+            var myCase = await _PCECaseService.GetDashboardPCECaseCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
@@ -186,6 +186,8 @@ namespace mechanical.Controllers.PCE
         [HttpPost]
         public async Task<IActionResult> SendForValuation(string selectedCollateralIds, string CenterId)
         {
+
+            var userId = base.GetCurrentUserId();
             try
             {
                 await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
@@ -198,6 +200,27 @@ namespace mechanical.Controllers.PCE
                 return BadRequest(error);
             }
         }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> PCEPendingDetail(Guid id)
+        {
+            //var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
+            //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            //var caseTerminate = await _caseTermnateService.GetCaseTerminates(id);
+            //if (loanCase == null) { return RedirectToAction("NewCases"); }
+            //ViewData["case"] = loanCase;
+            //ViewData["CaseSchedule"] = caseSchedule;
+            //ViewData["caseTerminate"] = caseTerminate;
+            //ViewData["Id"] = base.GetCurrentUserId();
+            //return View();
+
+            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            ViewData["pcecaseDtos"] = pcecaseDto;
+            return View();
+        }
+
 
     }
 }
