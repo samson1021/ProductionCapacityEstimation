@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.Dto.CollateralDto;
 
 
 namespace mechanical.Controllers
@@ -63,6 +64,12 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                if (PlantCollateralDto.PlantName == "Others, please specify")
+                {
+                    PlantCollateralDto.PlantName = PlantCollateralDto.OtherPlantName;
+                }
+
                 await _productionCapacityServices.CreatePlantProduction(base.GetCurrentUserId(), caseId, PlantCollateralDto);
                 var response = new { message = "Plant PCE created successfully" };
                 return Ok(response);
@@ -74,6 +81,15 @@ namespace mechanical.Controllers
         {
             //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
             var products = await _productionCapacityServices.GetProductions(PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(products);
+            return Content(jsonData, "application/json");
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPendingProductions(Guid PCECaseId)
+        {
+            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
+            var products = await _productionCapacityServices.GetPendingProductions(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(products);
             return Content(jsonData, "application/json");
 
@@ -191,6 +207,36 @@ namespace mechanical.Controllers
             if (response == null) { return RedirectToAction("PCENewCases"); }
             return View(response);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> PlantEdit(Guid id)
+        {
+            var response = await _productionCapacityServices.GetPlantProduction(base.GetCurrentUserId(), id);
+            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
+            ViewData["productionFiles"] = file;
+            if (response == null) { return RedirectToAction("PCENewCases"); }
+            return View(response);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PlantEdit(Guid id, PlantEditPostDto collateralPostDto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (collateralPostDto.PlantName == "Others, please specify")
+                {
+                    collateralPostDto.PlantName = collateralPostDto.OtherPlantName;
+                }
+                var collateral = await _productionCapacityServices.EditPlantProduction(base.GetCurrentUserId(), id, collateralPostDto);
+                return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
+            }
+            return View();
+        }
+
+
+
         [HttpPost]
         public async Task<ActionResult> DeleteProductionFile(Guid Id)
         {

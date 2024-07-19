@@ -2,8 +2,11 @@
 
 namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
 {
-    public class PlantPostDto
+    public class PlantEditPostDto
     {
+
+        public Guid Id { get; set; }
+
         public required Guid PCECaseId { get; set; }
         [Display(Name = "Collateral type")]
 
@@ -21,10 +24,9 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
 
         [Display(Name = "Owner Name of LHC")]
         public required string OwnerNameLHC { get; set; }
-        [Display(Name = "Name of the Plant")]
+        [Display(Name = "Name of the Plant")] 
         public required string PlantName { get; set; }
         public string? OtherPlantName { get; set; }
-
         // [Range(1900,DateTime())]
         [Display(Name = "Year of manufacturing")]
         public int YearOfManifacturing { get; set; }
@@ -55,21 +57,6 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         [Display(Name = "Date of Inspection")]
         public DateTime? DateOfInspection { get; set; }
         public DateTime? CreationDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public string? CurrentStage { get; set; }
-        public string? CurrentStatus { get; set; }
-        public Guid CreatedById { get; set; }
-
-
-        public required IFormFile CommercialInvoice { get; set; }
-        public required IFormFile customDeclaration { get; set; }
-        public required IFormFile LHC { get; set; }
-        public required IFormFile BussinessLicence { get; set; }
-        public IEnumerable<IFormFile>? OtherDocument { get; set; }
-        [Display(Name = "Supportive document")]
-        public IFormFile? CBEPartialFinancing { get; set; }
-
-
 
 
     }

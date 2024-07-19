@@ -20,6 +20,7 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 
 using mechanical.Models.Dto.UploadFileDto;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -138,7 +139,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             
             var production = _mapper.Map<ProductionCapacity>(createProductionDto);
             production.Id = Guid.NewGuid();
-            //production.PCECaseId = PCECaseId;
+            var produId= production.Id;
             try
             {
                 await this.UploadFile(userId, "Plant LHC Certificate", production, createProductionDto.LHC);
@@ -168,9 +169,22 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             production.CurrentStage = "Relation Manager";
             production.CurrentStatus = "New";
             //production.ProductionType = "Plant";
-
-
             await _cbeContext.ProductionCapacities.AddAsync(production);
+            await _cbeContext.SaveChangesAsync();
+
+
+
+            // Create sample ProductionCaseAssignment instances
+            var productionCaseAssignment1 = new ProductionCaseAssignment
+            {
+                Id = Guid.NewGuid(),
+                ProductionCapacityId = production.Id,
+                UserId = userId,
+                AssignmentDate = new DateTime(2023, 6, 1),
+                CompletionDate = null,
+                Status = "New"
+            };
+            await _cbeContext.ProductionCaseAssignments.AddAsync(productionCaseAssignment1);
             await _cbeContext.SaveChangesAsync();
 
             await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
@@ -193,12 +207,15 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             {
                 _cbeContext.Remove(production);
                 await _cbeContext.SaveChangesAsync();
+                var Filrproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
+                if( Filrproduction != null)
+                {
+                    _cbeContext.Remove(Filrproduction);
+                    await _cbeContext.SaveChangesAsync();
+                }
                 return true;
             }
-            else
-            {
                 return false;
-            }
         }
 
     
@@ -228,19 +245,68 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
 
 
-    public async Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid PCECaseId)
+
+        public async Task<ProductionCapacity> EditPlantProduction(Guid userId, Guid ProductionCapacityId, PlantEditPostDto createProductionDto)
+        {
+            var Production = await _cbeContext.ProductionCapacities.FindAsync(ProductionCapacityId);
+            if (Production == null)
+            {
+                throw new Exception("PCE not Found");
+            }
+            if (Production.CreatedById != userId)
+            {
+                throw new Exception("you don't have permission");
+            }
+            if (Production.CurrentStage == "Relation Manager")
+            {
+                createProductionDto.PCECaseId = Production.PCECaseId;
+                createProductionDto.ProductionType = Production.ProductionType;
+                _mapper.Map(createProductionDto, Production);
+                _cbeContext.ProductionCapacities.Update(Production);
+                await _cbeContext.SaveChangesAsync();
+                return Production;
+            }
+            throw new Exception("unable to Edit PCE");
+        }
+
+
+
+
+
+
+
+
+        public async Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid PCECaseId)
     {
           //  var ProductinCaseId = Guid.Parse("2cd32d1a-89bb-42c6-8a1d-7c631558ba47");
         var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager")).ToListAsync();
         return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
     }
 
-    public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
+        public async Task<IEnumerable<ReturnProductionDto>> GetPendingProductions(Guid PCECaseId)
+        {
+            //  var ProductinCaseId = Guid.Parse("2cd32d1a-89bb-42c6-8a1d-7c631558ba47");
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+        }
+        public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
     {
         var product = await _cbeContext.ProductionCapacities
                         .FirstOrDefaultAsync(c => c.Id == id);
         return _mapper.Map<ReturnProductionDto>(product);
     }
+    public async Task<PlantEditPostDto> GetPlantProduction(Guid userId, Guid id)
+    {
+        var product = await _cbeContext.ProductionCapacities
+                        .FirstOrDefaultAsync(c => c.Id == id);
+        return _mapper.Map<PlantEditPostDto>(product);
+    }
+
+
+
+
+
+
 
         public async Task<IEnumerable<ReturnProductionDto>> GetRejectedProductions(Guid ProductionCaseId)
         {
@@ -387,6 +453,8 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         public async Task<bool> UploadProductionFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory)
         {
             var collateral = await _cbeContext.ProductionCapacities.FindAsync(caseId);
+            //var collateral = await _cbeContext.ProductionCapacities
+            //        .FirstOrDefaultAsync(pc => pc.PCECaseId == caseId);
             if (collateral == null)
             {
                 return false;
@@ -397,6 +465,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 File = file ?? throw new ArgumentNullException(nameof(file)),
                 CollateralId = caseId,
                 Catagory = DocumentCatagory,
+                CaseId =collateral.PCECaseId,
 
             };
             if (await _uploadFileService.CreateUploadFile(userId, CollateralFile) != Guid.Empty)
