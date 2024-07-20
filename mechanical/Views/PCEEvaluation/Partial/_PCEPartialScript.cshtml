@@ -1,0 +1,278 @@
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+
+@{ 
+    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+}
+<script>
+
+    var shiftsInput = $('#ShiftsPerDay');
+    var shiftHoursContainer = $('#shiftHoursContainer');
+
+    $(document).ready(function () {
+
+        shiftsInput.on('input', renderShiftHours); 
+        renderShiftHours(); 
+        shiftHoursContainer.on('change', 'input', function () {});
+
+        $("#ShiftsPerDay").change(function () {
+            var shiftsPerDay = $(this).val();
+            var shiftHoursContainer = $("#shiftHoursContainer");
+
+            shiftHoursContainer.empty();
+
+            if (shiftsPerDay >= 1 && shiftsPerDay <= 5) {
+                for (var i = 0; i < shiftsPerDay; i++) {
+                    shiftHoursContainer.append(`
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label>Shift ${i + 1} Starts At </label>
+                                <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Shift ${i + 1} Ends At</label>
+                                <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                            </div>
+                        </div>
+                    `);
+                }
+            } else {
+                alert("Please enter a value between 1 and 5 (inclusive) for Shifts Per Day.");
+            }
+        });
+
+        $("#ShiftsPerDay").attr({
+            "min": 1,
+            "max": 5
+        });
+
+        $("#MachineFunctionalityStatus").change(function () {
+            var selectedStatus = $(this).val();
+            if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
+                $("#functionalityReasonRow").show();
+            } else {
+                $("#functionalityReasonRow").hide();
+                $("#otherReasonRow").hide();
+            }
+        });
+
+        $("#MachineNonFunctionalityReason").change(function () {
+            var selectedReason = $(this).val();
+            if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
+                $("#otherReasonRow").show();
+            } else {
+                $("#otherReasonRow").hide();
+            }
+        });
+
+        document.getElementById("OutputPhase").addEventListener("change", function () {
+            handleDropdownChange(this, "OtherOutputPhase");
+        });
+    });
+
+    function handleButtonClick(buttonId, confirmMessage, successMessage, redirectUrl) {
+        document.getElementById(buttonId).addEventListener("click", function(event) {
+            event.preventDefault();
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            fetch(this.href, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success(successMessage);
+                    setTimeout(function() {
+                        window.location.href = redirectUrl;
+                    }, 1000);
+                } else {
+                    toastr.error('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                toastr.error('Error: ' + error);
+            });
+        });
+    }
+
+    // Alphanumeric validation
+    function addAlphanumericValidation(elementId, errorElementId) {
+        document.getElementById(elementId).addEventListener("input", function () {
+            var input = this.value;
+            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            if (!alphanumericRegex.test(input)) {
+                this.setCustomValidity("Only alphanumeric characters are allowed.");
+                document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
+            } else {
+                this.setCustomValidity("");
+                document.getElementById(errorElementId).textContent = "";
+            }
+        });
+    }
+    // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
+    // addAlphanumericValidation("OutputType", "OutputType-error");
+
+    // Function for handling dropdown value changes
+    function handleDropdownChange(selectElement, otherInputId) {
+        var otherInput = document.getElementById(otherInputId);
+        if (selectElement.value === "Other") {
+            otherInput.style.display = "block";
+            otherInput.setAttribute("required", "required");
+        } else {
+            otherInput.style.display = "none";
+            otherInput.removeAttribute("required");
+        }
+    }    
+
+    function reindexShiftHours() {
+        $('#shiftHoursContainer .shift-hour').each(function (index) {
+            $(this).attr('data-index', index);
+            $(this).find('label').each(function () {
+                $(this).text($(this).text().replace(/Shift \d+/, `Shift ${index + 1}`));
+            });
+            $(this).find('input').each(function () {
+                $(this).attr('name', $(this).attr('name').replace(/\d+/, index));
+            });
+        });
+    }
+    function renderShiftHours() {
+        var shiftCount = parseInt(shiftsInput.val()) || 0;
+        shiftCount = Math.max(1, Math.min(5, shiftCount)); // Ensure shift count is between 1 and 5
+        var existingShiftCount = shiftHoursContainer.children('.shift-hour').length;
+
+        // Add new shifts if needed
+        if (shiftCount > existingShiftCount) {
+            for (var i = existingShiftCount; i < shiftCount; i++) {
+                var shiftHourInput = $(`
+                    <div class="row shift-hour col-sm-12" data-index="${i}">
+                        <div class="form-group col-sm-6">
+                            <label>Shift ${i + 1} Start</label>
+                            <input name="ShiftHours[${i}].Start" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label>Shift ${i + 1} End</label>
+                            <input name="ShiftHours[${i}].End" class="form-control form-control-sm" type="time" value="@DateTime.Now.ToString("HH:mm:ss")" />
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                `);
+                shiftHoursContainer.append(shiftHourInput);
+            }
+        }
+
+        // Remove excess shifts if needed
+        if (shiftCount < existingShiftCount) {
+            shiftHoursContainer.children('.shift-hour').slice(shiftCount).remove();
+        }
+
+        // Reindex shift hours
+        reindexShiftHours();
+    }
+
+    function deleteFile(fileId, event) {
+        event.preventDefault();
+
+        if (confirm("Are you sure you want to delete this file?")) {
+            // Add the fileId to the hidden input for deleted files
+            var deletedFileIdsInput = document.getElementById('DeletedFileIds');
+            var deletedFileIds = deletedFileIdsInput.value ? deletedFileIdsInput.value.split(',') : [];
+            deletedFileIds.push(fileId);
+            deletedFileIdsInput.value = deletedFileIds.join(',');
+
+            // Remove the file row from the view
+            $(`#file-${fileId}`).remove();
+
+            // Check if there are no more files and add the appropriate message
+            if ($("#file-list1 .file-row").length == 0) {
+                $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
+            }
+            if ($("#file-list2 .file-row").length == 0) {
+                $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
+            }
+        }
+    }
+
+    function adjustButtonPositions() {
+        var buttons = document.querySelectorAll('.action-btn');
+        var visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
+
+        if (visibleButtons.length === 2) {
+            visibleButtons[0].classList.add('align-left');
+            visibleButtons[1].classList.add('align-right');
+        } else if (visibleButtons.length === 3) {
+            visibleButtons[0].classList.add('align-left');
+            visibleButtons[1].classList.add('align-center');
+            visibleButtons[2].classList.add('align-right');
+        } else {
+            visibleButtons.forEach(btn => {
+                btn.classList.remove('align-left', 'align-center', 'align-right');
+            });
+        }
+    }
+
+    function updateButtons(status) {
+        var updateBtn = document.getElementById("update-btn");
+        var deleteBtn = document.getElementById("delete-btn");
+        var rejectBtn = document.getElementById("reject-btn");
+        var evaluateBtn = document.getElementById("evaluate-btn");
+
+        switch (status) {
+            case "Pending":
+                updateBtn.style.display = "inline-block";
+                deleteBtn.style.display = "inline-block";
+                rejectBtn.style.display = "inline-block";
+                evaluateBtn.style.display = "inline-block";
+                break;
+            case "Evaluated":
+                updateBtn.style.display = "none";
+                deleteBtn.style.display = "none";
+                rejectBtn.style.display = "none";
+                evaluateBtn.style.display = "none";
+                break;
+            case "Reevaluated":
+                updateBtn.style.display = "none";
+                deleteBtn.style.display = "none";
+                rejectBtn.style.display = "none";
+                evaluateBtn.style.display = "none";
+                break;
+            case "Rejected":
+                updateBtn.style.display = "inline-block";
+                deleteBtn.style.display = "inline-block";
+                rejectBtn.style.display = "none";
+                evaluateBtn.style.display = "none";
+                break;
+            case "Rework":
+                updateBtn.style.display = "inline-block";
+                deleteBtn.style.display = "inline-block";
+                rejectBtn.style.display = "inline-block";
+                evaluateBtn.style.display = "inline-block";
+                break;
+            default:
+                updateBtn.style.display = "none";
+                deleteBtn.style.display = "none";
+                rejectBtn.style.display = "none";
+                evaluateBtn.style.display = "none";
+                break;
+        }
+        adjustButtonPositions();
+    }
+</script>
+
+<style>
+    .align-left {
+        float: left;
+    }
+    .align-center {
+        margin: 0 auto;
+    }
+    .align-right {
+        float: right;
+    }
+</style>

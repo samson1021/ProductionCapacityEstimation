@@ -7,7 +7,6 @@ using mechanical.Models.Dto.Correction;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.RMDashboardDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 
@@ -21,22 +20,23 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id);
         // Task<bool> ReevaluatePCEEvaluation(Guid UserId, Guid Id);    
-        Task<bool> ReworkPCEEvaluation(Guid UserId, Guid Id);     
-        // Task<bool> ReworkPCEEvaluation(Guid UserId, Guid Id, PCEEvaluationPostDto Dto);     
+        // Task<bool> ReworkPCEEvaluation(Guid UserId, Guid Id); 
+
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);
         Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId);
-        
-        Task<MyPCECaseCountDto> GetDashboardPCECaseCount(Guid userId);
-        Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id);
-        Task<IEnumerable<PCECaseReturntDto>> GetPCECasesWithStatus(Guid UserId, string status); 
-        Task<IEnumerable<PCECaseReturntDto>> GetTotalPCECases(Guid UserId);  
 
-        Task<IEnumerable<ReturnProductionDto>> GetProductionCapacities(Guid PCECaseId);
-        Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatus(Guid PCECaseId, string status);
-        Task<IEnumerable<ReturnProductionDto>> GetProductionCapacitiesWithStatusAndRole(Guid PCECaseId, string status, string role);
+        Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id);
+        Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId); 
+        Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status); 
+
+        Task<int> GetPCEsCount(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
+        Task<int> GetPCEsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
+        Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);
+        Task<IEnumerable<ReturnProductionDto>> GetPCEs(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
+        Task<IEnumerable<ReturnProductionDto>> GetRejectedPCEs(Guid UserId);
 
         // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId);
-        // // Task<IEnumerable<ReturnProductionDto>> RejectedPCEs(Guid UserId);
-        // // Task<IEnumerable<ReturnProductionDto>> ResubmittedPCEs(Guid UserId);
+        // Task<IEnumerable<ReturnProductionDto>> RejectedPCEs(Guid UserId);
+        // Task<IEnumerable<ReturnProductionDto>> ResubmittedPCEs(Guid UserId);
     }
 }

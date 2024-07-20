@@ -1,8 +1,18 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿@{
+    var Status = ViewBag.Status as string;      
+    var EmptyMessage = "There are no PCEs found";
+    var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status; 
+    var PCECaseId = ViewData["PCECaseId"] as Guid?;
 
-@{
-    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        EmptyMessage = "There are no " + Status + " PCEs found";
+    }
+    if (PCECaseId.HasValue)
+    {
+        FetchUrl = "/PCEEvaluation/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
+        EmptyMessage = EmptyMessage + " for this  PCE Case";
+    }
 }
 
 <script>
@@ -12,7 +22,7 @@
            
             PCEsTable = $('#PCEs').DataTable({
                 language: {
-                    emptyTable: "There is no PCE register for this case. Please click the above add button to add PCE."
+                    emptyTable: '@EmptyMessage'
                 },
                 responsive: true,
                 pageLength: 8,
@@ -36,7 +46,6 @@
                         render: function (data, type, row, meta) {
                             var productionType = row.ProductionType;
                             var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
-                            // var detailUrl = '@Url.Action("Detail", "ProductionCapacity")';
                             var addUrl = (productionType === 'Plant')
                                 ? 'openAddManufacturingModal()'
                                 : 'openAddPlantModal()';
@@ -50,10 +59,9 @@
                 ]
             }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
         }
-
         function loadPCEs() {
             $.ajax({
-                url: '/PCEEvaluation/GetAllMyPCEs?PCECaseId=' + '@myPCECase.Id',
+                url: '@FetchUrl',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -73,11 +81,7 @@
     }); 
     
     function openRejectionModal(PCEId) {
-        var rejectionModal = document.getElementById('rejectionModal1');
-        var PCEIdField = document.querySelector('#rejectionModal1 input[name="PCEId"]');
-
-        // Set the PCEId value
-        PCEIdField.value = PCEId;
+        document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
         $('#rejectionModal1').modal('show');
     } 
 </script>

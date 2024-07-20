@@ -6,10 +6,7 @@
         //public int PCSPendingCaseCount { get; set; }
         //public int PCSCompletedCaseCount { get; set; }
         //public int PCSTotalCaseCount => PCSNewCaseCount + PCSPendingCaseCount + PCSCompletedCaseCount;
-    //}
     
-    //public class MyPCECaseCountDto
-    //{
         public int NewPCECaseCount { get; set; }
         public int NewPCECollateralCount { get; set; }
         public int PendingPCECaseCount { get; set; }
