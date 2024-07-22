@@ -560,7 +560,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             foreach (var returnDto in ReturnDtos)
             {
-                returnDto.NoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == returnDto.Id && pc.CurrentStatus == "New");
+                // returnDto.NoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == returnDto.Id && pc.CurrentStatus == "New");
+                returnDto.NoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == returnDto.Id && pc.CurrentStatus == Status);
                 returnDto.TotalNoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == returnDto.Id);
             }
 

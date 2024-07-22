@@ -86,7 +86,27 @@ namespace mechanical.Controllers.PCE
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
 
+        ////////
+        [HttpGet]
+        public IActionResult PCERejectedCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPCERejectedCases()
+        {
+            var newCases = await _PCECaseService.GetPCERejectedCases(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> PCERejectedDetail(Guid id)
+        {
+            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);      
+            ViewData["pcecaseDtos"] = pcecaseDto;
+            return View();
+        }
+        /////
 
 
 
