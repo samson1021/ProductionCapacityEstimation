@@ -1088,14 +1088,16 @@ namespace mechanical.Migrations
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.DateTimeRange", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCEEId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
@@ -1300,8 +1302,8 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TimeConsumedToCheckId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TimeConsumedToCheckId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1650,18 +1652,17 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionRejects");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeRange", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeInterval", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<TimeSpan>("End")
                         .HasColumnType("time");
 
-                    b.Property<Guid?>("PCEEvaluationId")
+                    b.Property<Guid>("PCEEId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan>("Start")
@@ -1669,9 +1670,9 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PCEEvaluationId");
+                    b.HasIndex("PCEEId");
 
-                    b.ToTable("TimeRange");
+                    b.ToTable("TimeInterval");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
@@ -2106,11 +2107,13 @@ namespace mechanical.Migrations
                     b.Navigation("ProductionCapacity");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeRange", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeInterval", b =>
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
                         .WithMany("ShiftHours")
-                        .HasForeignKey("PCEEvaluationId");
+                        .HasForeignKey("PCEEId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>

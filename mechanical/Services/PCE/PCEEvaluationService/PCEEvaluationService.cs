@@ -116,35 +116,55 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
         
-        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
+        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, PCEEvaluationUpdateDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {
-                var pceEntity = await _cbeContext.PCEEvaluations
-                    .Include(e => e.ShiftHours)
-                    .FirstOrDefaultAsync(e => e.Id == Id);
+            {                
+                var pceEntity = await _cbeContext.PCEEvaluations.Include(e => e.ShiftHours).FirstOrDefaultAsync(e => e.Id == Dto.Id);
 
                 if (pceEntity == null)
                 {
-                    _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
+                    _logger.LogWarning("PCEEvaluation with id {Id} not found", Dto.Id);
                     throw new KeyNotFoundException("PCEEvaluation not found");
                 }
-                pceEntity.ShiftHours.Clear();
-                _mapper.Map(Dto, pceEntity);
+
+                // Extract IDs from DTO and use HashSet for faster lookup
+                var dtoShiftIds = new HashSet<Guid>(Dto.ShiftHours.Select(sh => sh.Id));
+
+                // Remove shift hours not present in the DTO
+                var shiftHoursToRemove = pceEntity.ShiftHours.Where(sh => !dtoShiftIds.Contains(sh.Id)).ToList();
+                foreach (var shiftHour in shiftHoursToRemove)
+                {
+                    _cbeContext.TimeIntervals.Remove(shiftHour); // Remove from the database context
+                    pceEntity.ShiftHours.Remove(shiftHour); // Remove from the in-memory list
+                }
+
+                // Update existing shift hours and add new ones
+                // pceEntity.ShiftHours.Clear(); 
+                foreach (var shiftHourDto in Dto.ShiftHours)
+                {
+                    var existingShiftHour = pceEntity.ShiftHours.FirstOrDefault(sh => sh.Id == shiftHourDto.Id);
+
+                    if (existingShiftHour != null)
+                    {
+                        // Update existing shift hour
+                        _mapper.Map(shiftHourDto, existingShiftHour);
+                    }
+                    else
+                    {
+                        // Add new shift hour
+                        var newShiftHour = _mapper.Map<TimeInterval>(shiftHourDto);
+                        pceEntity.ShiftHours.Add(newShiftHour);
+                    }
+                }
+
+                // pceEntity.ShiftHours.Clear(); 
+                _mapper.Map(Dto, pceEntity); 
 
                 pceEntity.UpdatedBy = UserId;
                 pceEntity.UpdatedAt = DateTime.Now;
-                
-                // foreach (var shiftHours in Dto.ShiftHours)
-                // {          
-                //     pceEntity.ShiftHours.Add(new TimeRange
-                //     {
-                //         Start = shiftHours.Start,
-                //         End = shiftHours.End
-                //     });
-                // }
-             
+
                 // Handle deleted files
                 // if (Dto.DeletedFileIds != null && Dto.DeletedFileIds.Count > 0)
                 if (!string.IsNullOrEmpty(Dto.DeletedFileIds))
@@ -193,6 +213,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -429,13 +450,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEntity = await _cbeContext.PCEEvaluations
-                    .Include(e => e.ShiftHours)
-                    .Include(e => e.TimeConsumedToCheck)
-                    .Include(e => e.PCE)
-                    .ThenInclude(e => e.PCECase)
-                    // .Include(pe => pe.UploadFiles)
-                    .FirstOrDefaultAsync(e => e.Id == Id);
-                
+                                        .Include(e => e.ShiftHours)
+                                        .Include(e => e.TimeConsumedToCheck)
+                                        .Include(e => e.PCE)
+                                        .ThenInclude(e => e.PCECase)
+                                        // .Include(pe => pe.UploadFiles)
+                                        .FirstOrDefaultAsync(e => e.Id == Id);
+            
                 if (pceEntity == null)
                 {
                     _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
@@ -472,11 +493,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEntity = await _cbeContext.PCEEvaluations
-                    .Include(e => e.ShiftHours)
-                    .Include(e => e.TimeConsumedToCheck)
-                    .Include(e => e.PCE)
-                    .ThenInclude(e => e.PCECase)
-                    .FirstOrDefaultAsync(e => e.PCEId == PCEId);
+                                        .Include(e => e.ShiftHours)
+                                        .Include(e => e.TimeConsumedToCheck)
+                                        .Include(e => e.PCE)
+                                        .ThenInclude(e => e.PCECase)
+                                        .FirstOrDefaultAsync(e => e.PCEId == PCEId);
 
                 if (pceEntity == null)
                 {
@@ -656,7 +677,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var ReturnedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Returned");
             var ReevaluatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Reevaluated");
             var RejectedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Rejected");
-            var TotalPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "New");
+            var TotalPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage);
 
             return new PCEsCountDto()
             {

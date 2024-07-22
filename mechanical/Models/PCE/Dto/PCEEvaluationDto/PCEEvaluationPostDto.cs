@@ -22,7 +22,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-        public List<TimeRangeDto>? ShiftHours { get; set; }
+        public List<TimeIntervalDto>? ShiftHours { get; set; } = new List<TimeIntervalDto>();
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -97,20 +97,39 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public ICollection<IFormFile> ProductionProcessFlowDiagrams { get; set; }  
     }
 
-    public class TimeRangeDto
+    public class TimeIntervalDto
     {
-        public int Id { get; set; }
+        [Key]
+        public Guid Id { get; set; }
+        public Guid PCEEId { get; set; } 
 
         [Display(Name = "Start Time")]
-        public TimeOnly Start { get; set; }
+        public TimeSpan Start { get; set; }
 
         [Display(Name = "End Time")]
-        public TimeOnly End { get; set; }
+        public TimeSpan End { get; set; }
+    }
+
+    public class DateTimeRangeDto
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public Guid PCEEId { get; set; }
+
+        [Display(Name = "Start DateTime")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
+        public DateTime Start { get; set; }
+
+        [Display(Name = "End DateTime")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
+        public DateTime End { get; set; }
     }
 
     // public class DateRangeDto
     // {
-    //     public int Id { get; set; }
+    //     [Key]
+    //     public Guid Id { get; set; }
+    //     public Guid PCEEId { get; set; }
 
     //     [Display(Name = "Start Date")]
     //     public DateOnly Start { get; set; }
@@ -118,17 +137,4 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
     //     [Display(Name = "End Date")]
     //     public DateOnly End { get; set; }
     // }
-
-    public class DateTimeRangeDto
-    {
-        public int Id { get; set; }
-
-        [Display(Name = "Start Date & Time")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
-        public DateTime Start { get; set; }
-
-        [Display(Name = "End Date & Time")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
-        public DateTime End { get; set; }
-    }
 }

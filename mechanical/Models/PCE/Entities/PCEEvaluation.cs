@@ -13,8 +13,7 @@ namespace mechanical.Models.PCE.Entities
         [Key]
         public Guid Id { get; set; }
         [ForeignKey("PCEId")]
-        public Guid PCEId { get; set; } 
-        // public required Guid PCEId { get; set; }
+        public required Guid PCEId { get; set; }
         public Guid EvaluatorId { get; set; }
         
         public virtual ProductionCapacity PCE { get; set; }
@@ -25,7 +24,7 @@ namespace mechanical.Models.PCE.Entities
         public OutputPhase OutputPhase { get; set; }
 
         public int? ShiftsPerDay { get; set; }
-        public List<TimeRange>? ShiftHours { get; set; }
+        public List<TimeInterval>? ShiftHours { get; set; } = new List<TimeInterval>();
         public int? WorkingDaysPerMonth { get; set; }
         public ProductionHourType? EffectiveProductionHourType { get; set; }
         public decimal? EffectiveProductionHour { get; set; }
@@ -60,27 +59,36 @@ namespace mechanical.Models.PCE.Entities
         public DateTime? UpdatedAt { get; set; } = null;
     }
 
-    public class TimeRange
+    public class TimeInterval
     {
         [Key]
-        public int Id { get; set; }
-        public TimeOnly Start { get; set; }
-        public TimeOnly End { get; set; }
+        public Guid Id { get; set; }
+
+        [ForeignKey("PCEEId")]
+        public Guid PCEEId { get; set; } 
+
+        public TimeSpan Start { get; set; }
+        public TimeSpan End { get; set; }
+    }
+
+    public class DateTimeRange
+    {
+        [Key]
+        public Guid Id { get; set; }
+
+        [ForeignKey("PCEEId")]
+        public Guid PCEEId { get; set; }
+
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
     }
 
     // public class DateRange
     // {
     //     [Key]
-    //     public int Id { get; set; }
+    //     public Guid Id { get; set; }
+    //     public Guid PCEEId { get; set; }
     //     public DateOnly Start { get; set; }
     //     public DateOnly End { get; set; }
     // }
-
-    public class DateTimeRange
-    {
-        [Key]
-        public int Id { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-    }
 }

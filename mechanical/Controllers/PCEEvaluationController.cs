@@ -132,18 +132,23 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (Id != Dto.Id)
+                {
+                    return BadRequest();
+                }
                 try
                 {             
-                    await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
-                    return RedirectToAction("Detail", "PCEEvaluation", new { Id = Id });
+                    await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Dto);
+                    return RedirectToAction("Detail", "PCEEvaluation", new { Id = Dto.Id });
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error updating PCEEvaluation for ID {Id}", Id);
+                    _logger.LogError(ex, "Error updating PCEEvaluation for ID {Dto.Id}", Dto.Id);
                     ModelState.AddModelError("", "An error occurred while updating the PCEEvaluation.");
                 }
             }
             return View(Dto);
+            // return NoContent();
         }
  
         [HttpGet]
@@ -166,6 +171,7 @@ namespace mechanical.Controllers
             }
         }
 
+        // [HttpGet("{Id}")]
         [HttpGet]
         public async Task<IActionResult> Detail(Guid Id)
         {

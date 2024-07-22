@@ -109,12 +109,12 @@
                                     <div class="row shift-hour col-sm-12" data-index="@i">
                                         <div class="form-group col-sm-6">
                                             <label>Shift @i Start</label>                                            
-                                            <input asp-for="ShiftHours[@i].Start" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].Start.ToString("HH:mm:ss")" />
+                                            <input asp-for="ShiftHours[@i].Start" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].Start.ToString("h\\:mm")" />
                                             <span asp-validation-for="ShiftHours[@i].Start" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm-6">
                                             <label>Shift @i End</label>
-                                            <input asp-for="ShiftHours[@i].End" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].End.ToString("HH:mm:ss")" />
+                                            <input asp-for="ShiftHours[@i].End" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].End.ToString("h\\:mm")" />
                                             <span asp-validation-for="ShiftHours[@i].End" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -202,12 +202,12 @@
                                 <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4" id="functionalityReasonRow" @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NotFunctional ? "" : "style=\"display: none;\"")>
-                                <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason)</label>
+                                <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <i class="text-danger">*</i></label>
                                 <select asp-for="MachineNonFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()"></select>
                                 <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4" id="otherReasonRow" @(Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other ? "" : "style=\"display: none;\"")>
-                                <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason)</label>
+                                <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <i class="text-danger">*</i></label>
                                 <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control form-control-sm"></textarea>
                                 <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger"></span>
                             </div>
@@ -345,19 +345,19 @@
 
                     <div class="form-group row justify-content-center">
                         <div class="col-xl-2">                        
-                            <a href="@Url.Action("Detail", "PCEEvaluation", new { Id = @Model.Id })" class="btn btn-secondary btn-block">
+                            <a href="@Url.Action("Detail", "PCEEvaluation", new { Id = @Model.Id })" class="btn btn-secondary btn-block" style="margin-top:2rem;margin-bottom:1rem;">
                                 <i class="fas fa-times mr-2"></i> Cancel
                             </a>
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2">
-                            <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1">
+                            <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1" style="margin-top:2rem;margin-bottom:1rem;">
                                 <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2">
-                            <button type="submit" class="btn btn-primary btn-block">
+                            <button type="submit" class="btn btn-primary btn-block" style="margin-top:2rem;margin-bottom:1rem;">
                                 <i class="fas fa-save mr-2"></i> Update
                             </button>
                         </div>

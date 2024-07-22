@@ -126,7 +126,7 @@
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-pink update-card">
+                        <div class="card bg-c-yellow update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
@@ -135,7 +135,7 @@
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
-                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                            <h1><i class="fas fa-check"></i></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +148,7 @@
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-yellow update-card">
+                        <div class="card bg-c-pink update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
@@ -157,7 +157,7 @@
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
-                                            <h1><i class="fas fa-spinner"></i></h1>
+                                            <h1> <i class="fas fas-solid fa-undo"></i></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -192,6 +192,143 @@
                         </div>
                     </div>
                 </div>
+
+
+                <div class="row">
+                    <div class="col-xl-2 col-md-6">
+                        <div class="card bg-c-green update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="newPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">New PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2><i class="fas fa-plus"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info<i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6">
+                        <div class="card bg-c-yellow update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pendingPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Pending PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2><i class="fas fa-spinner"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6">
+                        <div class="card bg-success update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="evaluatedPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Evaluated PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2><i class="fas fa-check"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Evaluated" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="returnedPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Returned PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2> <i class="fas fas-solid fa-undo"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Returned" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6">
+                        <div class="card bg-danger update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="rejectedPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Rejected PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2> <i class="fas fas-solid fa-times"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Rejected" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6">
+                        <div class="card bg-c-blue update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="totalPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Total PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2> <i class="fas fa-grip-lines"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
 @* @* Production Estimation Capacity Estimation *@ 
 
@@ -287,6 +424,26 @@
                     animateCountWithCollateral("evaluatedPCECasesCount", data.EvaluatedPCECasesCount, data.EvaluatedPCEsCount);
                     animateCountWithCollateral("returnedPCECasesCount", data.ReturnedPCECasesCount, data.ReturnedPCEsCount);
                     animateCount("totalPCECasesCount", data.TotalPCECasesCount);
+
+                })
+                .catch(error => {
+                    console.error("Error fetching card counts:", error);
+                });
+        });
+
+        
+        // production capacity estimation start
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/PCEEvaluation/GetMyDashboardPCECount")
+                .then(response => response.json())
+                .then(data => {
+
+                    animateCount("newPCEsCount", data.NewPCEsCount);
+                    animateCount("pendingPCEsCount", data.PendingPCEsCount);
+                    animateCount("evaluatedPCEsCount", data.EvaluatedPCEsCount);
+                    animateCount("returnedPCEsCount", data.ReturnedPCEsCount);
+                    animateCount("rejectedPCEsCount", data.RejectedPCEsCount);
+                    animateCount("totalPCEsCount", data.TotalPCEsCount);
 
                 })
                 .catch(error => {

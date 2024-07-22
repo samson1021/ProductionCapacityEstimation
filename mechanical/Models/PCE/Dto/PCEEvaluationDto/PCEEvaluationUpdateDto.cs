@@ -26,7 +26,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-        public List<TimeRangeDto>? ShiftHours { get; set; }
+        public List<TimeIntervalDto>? ShiftHours { get; set; } = new List<TimeIntervalDto>();
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }

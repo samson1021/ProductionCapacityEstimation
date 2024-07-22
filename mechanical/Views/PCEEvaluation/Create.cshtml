@@ -190,14 +190,14 @@
                                 <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4" id="functionalityReasonRow" style="display: none;">
-                                <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason)</label>
+                                <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <i class="text-danger">*</i></label>
                                 <select asp-for="MachineNonFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()">
                                     <option value="" disabled selected>Select Reason of Unfunctionality </option>
                                 </select>
                                 <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4" id="otherReasonRow" style="display: none;">
-                                <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason)</label>
+                                <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <i class="text-danger">*</i></label>
                                 <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control form-control-sm"></textarea>
                                 <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger"></span>
                             </div>
@@ -263,10 +263,10 @@
                         <div class="col-md-1"></div>
                         <div class="col-md-10">
                             <div class="d-flex justify-content-between">
-                                <button type="submit" class="btn btn-md btn-primary">
+                                <button type="submit" class="btn btn-md btn-primary" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-save mr-2"></i> Save
                                 </button>
-                                <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1">
+                                <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-undo mr-2"></i> Return
                                 </button>
                             </div>

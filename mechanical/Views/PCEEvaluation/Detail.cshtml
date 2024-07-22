@@ -86,10 +86,18 @@
                                 <tbody>
                                     @foreach (var shift in Model.ShiftHours)
                                     {
+                                        
+                                        var startTime = new DateTime(1, 1, 1, shift.Start.Hours, shift.Start.Minutes, shift.Start.Seconds);
+                                        var endTime = new DateTime(1, 1, 1, shift.End.Hours, shift.End.Minutes, shift.End.Seconds);
+                                    
                                         <tr>
-                                            <td>@shift.Start.ToString("hh:mm tt")</td>
-                                            <td>@shift.End.ToString("hh:mm tt")</td>
+                                            <td>@startTime.ToString("hh:mm tt")</td>
+                                            <td>@endTime.ToString("hh:mm tt")</td>
                                         </tr>
+                                        @* <tr>
+                                            <td>@shift.Start.ToString(@"h\:mm")</td>
+                                            <td>@shift.End.ToString(@"h\:mm")</td>
+                                        </tr> *@
                                     }
                                 </tbody>
                             </table>
@@ -269,7 +277,7 @@
                 </div>
             </div>
             <div class="row col-12">
-                <div class="col-2 action-btn" id="update-btn-container" style="margin-top:1.25rem;margin-bottom:1.25rem;margin-left:1.25rem;">  
+                <div class="col-2 action-btn" id="update-btn-container" style="margin-top:2rem;margin-bottom:1rem;margin-left:3rem;">  
                     <div class="row">     
                         <a href="@Url.Action("Update", "PCEEvaluation", new { Id = @Model.Id })" id="update-btn" class="col-xl-12 btn btn-sm btn-info">
                             <i class="fas fa-pen mr-2"></i> Update
@@ -277,7 +285,7 @@
                     </div>  
                 </div>
                 <div class="col-1"></div>
-                <div class="col-2 action-btn" id="delete-btn-container" style="margin-top:1.25rem;margin-bottom:1.25rem;margin-left:1.25rem;">
+                <div class="col-2 action-btn" id="delete-btn-container" style="margin-top:2rem;margin-bottom:1rem;">
                     <div class="row"> 
                         <a href="@Url.Action("Delete", "PCEEvaluation", new { Id = @Model.Id })" id="delete-btn" class="col-xl-12 btn btn-sm btn-dark">
                             <i class="fas fa-trash-alt mr-2"></i> Delete
@@ -285,7 +293,7 @@
                     </div>    
                 </div>
                 <div class="col-1"></div>
-                <div class="col-2 action-btn" id="reject-btn-container" style="margin-top:1.25rem;margin-bottom:1.25rem;margin-left:1.25rem;">
+                <div class="col-2 action-btn" id="reject-btn-container" style="margin-top:2rem;margin-bottom:1rem;">
                     <div class="row">
                         <button id="reject-btn" type="button" class="col-xl-12 btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectionModal1">
                             <i class="fas fa-undo mr-2"></i> Return
@@ -293,7 +301,7 @@
                     </div>  
                 </div>
                 <div class="col-1"></div>    
-                <div class="col-2 action-btn" id="evaluate-btn-container" style="margin-top:1.25rem;margin-bottom:1.25rem;margin-left:1.25rem;">
+                <div class="col-2 action-btn" id="evaluate-btn-container" style="margin-top:2rem;margin-bottom:1rem;">
                     <div class="row">     
                         <a href="@Url.Action("Evaluate", "PCEEvaluation", new { Id = @Model.Id })" id="evaluate-btn" class="col-xl-12 btn btn-sm btn-success">
                             <i class="fas fa-paper-plane mr-2"></i> Complete
