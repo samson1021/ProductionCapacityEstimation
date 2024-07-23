@@ -64,7 +64,9 @@
                 $(this).text($(this).text().replace(/Shift \d+/, `Shift ${index + 1}`));
             });
             $(this).find('input').each(function () {
-                $(this).attr('name', $(this).attr('name').replace(/\d+/, index));
+                let name = $(this).attr('name');
+                let newName = name.replace(/\d+/, index);
+                $(this).attr('name', newName);
             });
         });
     }
@@ -87,7 +89,7 @@
         reindexShiftHours();
         setDefaultTime();
     }
-
+    
     function createShiftHourRow(index) {
         return `
             <div class="row shift-hour col-sm-12" data-index="${index}">

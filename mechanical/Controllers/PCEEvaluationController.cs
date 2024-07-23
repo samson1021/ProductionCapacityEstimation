@@ -137,8 +137,8 @@ namespace mechanical.Controllers
                     return BadRequest();
                 }
                 try
-                {             
-                    await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Dto);
+                {         
+                    await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
                     return RedirectToAction("Detail", "PCEEvaluation", new { Id = Dto.Id });
                 }
                 catch (Exception ex)

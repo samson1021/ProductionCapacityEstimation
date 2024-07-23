@@ -116,65 +116,34 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
         
-        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, PCEEvaluationUpdateDto Dto)
+        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
         {
+            
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {                
-                var pceEntity = await _cbeContext.PCEEvaluations.Include(e => e.ShiftHours).FirstOrDefaultAsync(e => e.Id == Dto.Id);
+            {    
+
+                var pceEntity = await _cbeContext.PCEEvaluations.Include(e => e.ShiftHours).FirstOrDefaultAsync(e => e.Id == Id);
 
                 if (pceEntity == null)
                 {
-                    _logger.LogWarning("PCEEvaluation with id {Id} not found", Dto.Id);
+                    _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
                     throw new KeyNotFoundException("PCEEvaluation not found");
-                }
-
-                // Extract IDs from DTO and use HashSet for faster lookup
-                var dtoShiftIds = new HashSet<Guid>(Dto.ShiftHours.Select(sh => sh.Id));
-
-                // Remove shift hours not present in the DTO
-                var shiftHoursToRemove = pceEntity.ShiftHours.Where(sh => !dtoShiftIds.Contains(sh.Id)).ToList();
-                foreach (var shiftHour in shiftHoursToRemove)
-                {
-                    _cbeContext.TimeIntervals.Remove(shiftHour); // Remove from the database context
-                    pceEntity.ShiftHours.Remove(shiftHour); // Remove from the in-memory list
-                }
-
-                // Update existing shift hours and add new ones
-                // pceEntity.ShiftHours.Clear(); 
-                foreach (var shiftHourDto in Dto.ShiftHours)
-                {
-                    var existingShiftHour = pceEntity.ShiftHours.FirstOrDefault(sh => sh.Id == shiftHourDto.Id);
-
-                    if (existingShiftHour != null)
-                    {
-                        // Update existing shift hour
-                        _mapper.Map(shiftHourDto, existingShiftHour);
-                    }
-                    else
-                    {
-                        // Add new shift hour
-                        var newShiftHour = _mapper.Map<TimeInterval>(shiftHourDto);
-                        pceEntity.ShiftHours.Add(newShiftHour);
-                    }
                 }
 
                 // pceEntity.ShiftHours.Clear(); 
                 _mapper.Map(Dto, pceEntity); 
 
                 pceEntity.UpdatedBy = UserId;
-                pceEntity.UpdatedAt = DateTime.Now;
+                pceEntity.UpdatedAt = DateTime.Now;                
+                _cbeContext.PCEEvaluations.Update(pceEntity);
 
                 // Handle deleted files
-                // if (Dto.DeletedFileIds != null && Dto.DeletedFileIds.Count > 0)
                 if (!string.IsNullOrEmpty(Dto.DeletedFileIds))
                 {
                     var deletedFileGuids = Dto.DeletedFileIds.Split(',').Select(id => Guid.Parse(id)).ToList();
  
-                    var filesToDelete = await _cbeContext.UploadFiles
-                        .Where(file => deletedFileGuids.Contains(file.Id))
-                        // .Where(file => Dto.DeletedFileIds.Contains(file.Id))
-                        .ToListAsync();
+                    var filesToDelete = await _cbeContext.UploadFiles.Where(file => deletedFileGuids.Contains(file.Id)).ToListAsync();
 
                     _cbeContext.UploadFiles.RemoveRange(filesToDelete);
                 }
@@ -239,9 +208,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     throw new KeyNotFoundException("PCEEvaluation not found");
                 }
 
-                var relatedFiles = await _cbeContext.UploadFiles
-                    .Where(file => file.CollateralId == pceEntity.Id)
-                    .ToListAsync();
+                var relatedFiles = await _cbeContext.UploadFiles.Where(file => file.CollateralId == pceEntity.Id).ToListAsync();
 
                 // Delete physical files
                 foreach (var file in relatedFiles)
