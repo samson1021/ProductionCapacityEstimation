@@ -196,6 +196,12 @@ namespace mechanical.Services.PCE.PCECaseService
             return caseDtos;
         }
 
+        public async Task<IEnumerable<PCENewCaseDto>> GetPCERejectedCases(Guid userId)
+        {
+            var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "Rejected" && res.CurrentStage == "Relation Manager").ToListAsync();
+            var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
+            return caseDtos;
+        }
 
 
         public async Task<IEnumerable<PCENewCaseDto>> GetPCETotalCases(Guid userId)

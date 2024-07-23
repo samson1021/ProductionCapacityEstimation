@@ -167,6 +167,16 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
+        //////////
+        [HttpGet]
+        public async Task<IActionResult> GetRmRejectedProductions(Guid PCECaseId)
+        {
+            var production = await _productionCapacityServices.GetRmRejectedProductions(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(production);
+            return Content(jsonData, "application/json");
+        }        
+        ///////////
+
         [HttpGet]
         public async Task<IActionResult> CheckCategory(Guid CaseId)
         {

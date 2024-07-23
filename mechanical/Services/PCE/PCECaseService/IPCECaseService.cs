@@ -16,6 +16,7 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCEPendingCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCECompleteCases(Guid userId);
+        Task<IEnumerable<PCENewCaseDto>> GetPCERejectedCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCETotalCases(Guid userId);
 
 

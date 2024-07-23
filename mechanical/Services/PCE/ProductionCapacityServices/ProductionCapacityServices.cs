@@ -315,6 +315,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
 
 
+        public async Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid userId, Guid PCECaseId)
+        {
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStatus == "Rejected" && res.CurrentStage == "Relation Manager").ToListAsync();
+            var productionDtos = _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+            return productionDtos;
+        }
 
 
         public async Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid ProductionCaseId)

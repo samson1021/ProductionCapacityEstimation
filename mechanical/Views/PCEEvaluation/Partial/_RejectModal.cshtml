@@ -1,9 +1,14 @@
-@using mechanical.Models.PCE.Dto.PCECaseDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCERejectPostDto
 
 @{
-    ViewData["Title"] = "Return PCE Evaluation";
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    var Status = ViewBag.Status as string;    
+    var PCECaseId = ViewData["PCECaseId"] as Guid?;
+    var RedirectUrl = Url.Action("MyPCEs", "PCEEvaluation", new { Status = "Rejected" });
+    
+    if (PCECaseId.HasValue)
+    {
+        RedirectUrl = Url.Action("PCECaseDetail", "PCEEvaluation", new { PCECaseId = PCECaseId.Value });
+    }
 }
 
 <!-- Return Modal --> 
@@ -64,9 +69,8 @@
                     toastr.success('Return Comment saved successfully');
                     $(rejectionModal).modal('hide');
 
-                    // Delay redirect for 2 seconds
                     setTimeout(function() {
-                        window.location.href = '@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + '@myPCECase.Id';
+                        window.location.href = '@RedirectUrl';
                     }, 1000);
                 } else {
                     toastr.error('Error saving Return comment: ' + data.error);
