@@ -15,7 +15,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
     public interface IPCEEvaluationService
     {
         Task<PCEEvaluationReturnDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto);
-        Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, PCEEvaluationUpdateDto Dto);
+        Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto);
         Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id);
         Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id);
