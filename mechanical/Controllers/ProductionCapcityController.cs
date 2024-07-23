@@ -310,9 +310,9 @@ namespace mechanical.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetRMCompleteCollaterals(Guid CaseId)
+        public async Task<IActionResult> GetRMCompleteCollaterals(Guid PCECaseId)
         {
-            var collaterals = await _productionCapacityServices.GetRmComCollaterals(CaseId);
+            var collaterals = await _productionCapacityServices.GetRmComCollaterals(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }

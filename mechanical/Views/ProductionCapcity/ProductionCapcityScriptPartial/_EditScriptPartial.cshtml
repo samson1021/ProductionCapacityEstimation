@@ -30,11 +30,6 @@
             typeDropdown.append('<option value = "" disabled selected > Select manufacturing sub sector </option>');
                 switch (category) {
                 case "Aerospace":
-
-                    // Append the enum values to the dropdown
-                    // typeDropdown.append(Enum.GetValues(typeof(Aerospace))
-                    //     .Cast<Aerospace>()
-                    //     .Select(0 => $('<option></option>').val(0.ToString()).html(o.ToString())));
                     typeDropdown.append('<option value="Aircraft manufacturing">Aircraft manufacturing</option>');
                     typeDropdown.append('<option value="Spacecraft manufacturing">Spacecraft manufacturing</option>');
                     typeDropdown.append('<option value="Satellite manufacturing">Satellite manufacturing</option>');

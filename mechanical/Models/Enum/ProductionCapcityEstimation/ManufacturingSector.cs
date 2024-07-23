@@ -86,7 +86,7 @@ namespace mechanical.Models.Enum.ProductionCapcityEstimation
         [Display(Name = "Metal Work")]
         MetalWork,
         [Display(Name = "Mining and Quarrying")]
-        MetalWorkMiningandQuarrying,
+        MiningandQuarrying,
         [Display(Name = "Motor vehicle")]
         Motorvehicle,
         [Display(Name = "Non-alcoholic beverage")]
