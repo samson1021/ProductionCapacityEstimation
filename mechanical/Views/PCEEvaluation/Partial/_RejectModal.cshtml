@@ -1,17 +1,17 @@
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCERejectPostDto
 
 @{
-    var Status = ViewBag.Status as string;    
+    var Status = ViewBag.Status as string;
     var PCECaseId = ViewData["PCECaseId"] as Guid?;
     var RedirectUrl = Url.Action("MyPCEs", "PCEEvaluation", new { Status = "Rejected" });
-    
+
     if (PCECaseId.HasValue)
     {
         RedirectUrl = Url.Action("PCECaseDetail", "PCEEvaluation", new { PCECaseId = PCECaseId.Value });
     }
 }
 
-<!-- Return Modal --> 
+<!-- Return Modal -->
 <div class="modal fade" id="rejectionModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -23,7 +23,7 @@
             </div>
             <div class="modal-body">
                 <form method="post" action="@Url.Action("Reject", "PCEEvaluation")" id="RejectionForm">
-                    @Html.AntiForgeryToken()                 
+                    @Html.AntiForgeryToken()
                     <input asp-for="PCEId" type="hidden" />
                     <div class="form-group">
                         <label for="RejectionComment">Comment:</label>
@@ -63,22 +63,22 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success('Return Comment saved successfully');
-                    $(rejectionModal).modal('hide');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success('Return Comment saved successfully');
+                        $(rejectionModal).modal('hide');
 
-                    setTimeout(function() {
-                        window.location.href = '@RedirectUrl';
-                    }, 1000);
-                } else {
-                    toastr.error('Error saving Return comment: ' + data.error);
-                }
-            })
-            .catch(error => {
-                toastr.error('Error saving Return comment: ' + error);
-            });
+                        setTimeout(function () {
+                            window.location.href = '@RedirectUrl';
+                        }, 1000);
+                    } else {
+                        toastr.error('Error saving Return comment: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error saving Return comment: ' + error);
+                });
         });
     });
 </script>

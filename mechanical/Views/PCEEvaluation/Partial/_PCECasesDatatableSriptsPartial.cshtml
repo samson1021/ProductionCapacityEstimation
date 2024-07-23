@@ -1,7 +1,7 @@
-﻿@{    
+﻿﻿@{
     var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCE Cases";
-    var FetchUrl = "/PCEEvaluation/GetMyPCECases?Status=" + Status;  
+    var FetchUrl = "/PCEEvaluation/GetMyPCECases?Status=" + Status;
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
         EmptyMessage = "There are no " + Status + " PCE Cases";

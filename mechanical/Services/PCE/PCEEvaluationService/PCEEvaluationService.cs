@@ -20,7 +20,6 @@ using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Models.Dto.Correction;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 
@@ -54,13 +53,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var pceEntity = _mapper.Map<PCEEvaluation>(Dto);
                 pceEntity.Id = Guid.NewGuid();
-                pceEntity.EvaluatorId = UserId; 
-                pceEntity.CreatedBy = UserId; 
+                pceEntity.EvaluatorId = UserId;
+                pceEntity.CreatedBy = UserId;
                 pceEntity.CreatedAt = DateTime.Now;
-                pceEntity.Status = Status.New; 
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEntity);
-                await _cbeContext.SaveChangesAsync();
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
 
@@ -94,7 +91,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
-                await _cbeContext.SaveChangesAsync();
 
                 pce.CurrentStage = "Maker Officer";
                 pce.CurrentStatus = "Pending";
@@ -110,7 +106,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
@@ -120,13 +115,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while creating the PCEEvaluation.");
             }
         }
-        
+
         public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
         {
-            
+
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {    
+            {
 
                 var pceEntity = await _cbeContext.PCEEvaluations.Include(e => e.ShiftHours).FirstOrDefaultAsync(e => e.Id == Id);
 
@@ -137,17 +132,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 // pceEntity.ShiftHours.Clear(); 
-                _mapper.Map(Dto, pceEntity); 
+                _mapper.Map(Dto, pceEntity);
 
                 pceEntity.UpdatedBy = UserId;
-                pceEntity.UpdatedAt = DateTime.Now;                
+                pceEntity.UpdatedAt = DateTime.Now;
                 _cbeContext.PCEEvaluations.Update(pceEntity);
 
                 // Handle deleted files
                 if (!string.IsNullOrEmpty(Dto.DeletedFileIds))
                 {
                     var deletedFileGuids = Dto.DeletedFileIds.Split(',').Select(id => Guid.Parse(id)).ToList();
- 
+
                     var filesToDelete = await _cbeContext.UploadFiles.Where(file => deletedFileGuids.Contains(file.Id)).ToListAsync();
 
                     _cbeContext.UploadFiles.RemoveRange(filesToDelete);
@@ -157,7 +152,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 // Handle new file uploads
                 if (Dto.NewSupportingEvidences != null && Dto.NewSupportingEvidences.Count > 0)
-                    {
+                {
                     foreach (var file in Dto.NewSupportingEvidences)
                     {
                         var supportingEvidenceFile = new CreateFileDto
@@ -187,10 +182,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
-                
+
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-            
+
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
             catch (Exception ex)
@@ -199,7 +194,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await transaction.RollbackAsync();
                 throw new ApplicationException("An error occurred while updating the PCEEvaluation.");
             }
-        }        
+        }
 
         public async Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id)
         {
@@ -238,7 +233,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-            {
+                {
                     CaseId = pce.PCECaseId,
                     Activity = $"<strong> PCE Case Evaluation is retracted.</strong>",
                     CurrentStage = "Maker Officer",
@@ -247,7 +242,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -257,7 +252,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while deleting the PCEEvaluation.");
             }
         }
-    
+
         public async Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -283,7 +278,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-            {
+                {
                     CaseId = pce.PCECaseId,
                     Activity = $"<strong> PCE Case Evaluation sent to Relational Manager.</strong>",
                     CurrentStage = "Maker Manager",
@@ -291,47 +286,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 });
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-        {
+                {
                     CaseId = pce.PCECaseId,
                     Activity = $"<strong>New PCE Case has been evaluated.</strong>",
                     CurrentStage = "Relational Manager",
                     // UserId = pce.PCECase.CreatedBy
                     // UserId = pce.PCECase.RMUserId
-                }); 
+                });
 
-                _mapper.Map(Dto, pceEntity);
-                pceEntity.Status = Status.Completed;
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-
-                // var PCE = await _cbeContext.PCEs.FindAsync(pceentity.PCEId);
-                // PCE.CurrentStage = "Relational Manager";
-                // PCE.CurrentStatus = "Completed";
-                // _cbeContext.PCEs.Update(PCE);
-                // await _cbeContext.SaveChangesAsync();
-
-                return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error completing PCEEvaluation");
-                throw new ApplicationException("An error occurred while completing the PCEEvaluation.");
-            }
-        }
-
-        public async Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id)
-        {
-            try
-            {
-                var pceEntity = await _cbeContext.PCEEvaluations.FindAsync(Id);
-                if (pceEntity == null)
-                {
-                    _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
-                    throw new KeyNotFoundException("PCEEvaluation not found");
-                }
-
-                _cbeContext.PCEEvaluations.Remove(pceEntity);
-                await _cbeContext.SaveChangesAsync();
 
                 return true;
             }
@@ -354,7 +318,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 returnPCE.CreationDate = DateTime.Now;
                 returnPCE.RejectedBy = UserId;
                 await _cbeContext.ProductionRejects.AddAsync(returnPCE);
-        
+
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 pce.CurrentStage = "Relational Manager";
                 pce.CurrentStatus = "Rejected";
@@ -362,10 +326,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var previousPCECaseAssignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == Dto.PCEId && res.UserId == UserId);
                 previousPCECaseAssignment.Status = "Rejected";
-                _cbeContext.Update(previousPCECaseAssignment);   
-        
+                _cbeContext.Update(previousPCECaseAssignment);
+
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-        {
+                {
                     CaseId = pce.PCECaseId,
                     Activity = $"<strong>PCE is Rejected.</strong> <br> <i class='text-purple'>",
                     CurrentStage = "Maker Manager",
@@ -381,8 +345,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     // UserId = pce.PCECase.RMUserId
                 });
 
-                _mapper.Map(Dto, pceEntity);
-                pceEntity.Status = Status.Rework;
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -415,7 +377,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         //         pce.CurrentStage = "Maker Officer";
         //         pce.CurrentStatus = "Rework";
         //         _cbeContext.ProductionCapacities.Update(pce);
-                
+
         //         var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == pceEntity.EvaluatorId).FirstOrDefaultAsync();
         //         previousCaseAssignment.Status = "Rework";
         //         _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
@@ -434,12 +396,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         //             CurrentStage = "Maker Officer",
         //             UserId = pceEntity.EvaluatorId
         //         });
-                
+
         //         await _cbeContext.SaveChangesAsync(); 
         //         await transaction.CommitAsync();           
-            
+
         //         return true;
-     
+
         //     }
         //     catch (Exception ex)
         //     {
@@ -461,7 +423,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                         .ThenInclude(e => e.PCECase)
                                         // .Include(pe => pe.UploadFiles)
                                         .FirstOrDefaultAsync(e => e.Id == Id);
-            
+
                 if (pceEntity == null)
                 {
                     _logger.LogWarning("PCEEvaluation with id {Id} not found", Id);
@@ -519,11 +481,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var productionProcessFlowDiagrams = uploadFiles
                     .Where(uf => uf.Catagory == "Production Process Flow Diagram")
                     .ToList();
-            
+
                 var pceEntityDto = _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
                 pceEntityDto.SupportingEvidences = _mapper.Map<ICollection<ReturnFileDto>>(supportingEvidences);
                 pceEntityDto.ProductionProcessFlowDiagrams = _mapper.Map<ICollection<ReturnFileDto>>(productionProcessFlowDiagrams);
-     
+
                 return pceEntityDto;
             }
             catch (Exception ex)
@@ -532,7 +494,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEID {PCEId}.");
             }
         }
-        
+
         ///////// PCE Case //////////////
         public async Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id)
         {
@@ -559,7 +521,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var PCECaseAssignments = await PCECaseAssignmentsQuery.ToListAsync();
             var UniquePCECases = PCECaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
             var ReturnDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(UniquePCECases);
-           
+
             var pceCaseIds = UniquePCECases.Select(pc => pc.Id).ToList();
             var productionCapacities = await _cbeContext.ProductionCapacities.Where(pc => pceCaseIds.Contains(pc.PCECaseId)).ToListAsync();
 
@@ -581,7 +543,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var ReturnedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Returned").ToListAsync();
             var ReevaluatedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reevaluated").ToListAsync();
             var RejectedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Rejected").ToListAsync();
-            var TotalPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId ).ToListAsync();
+            var TotalPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId).ToListAsync();
 
             return new PCECasesCountDto()
             {
@@ -617,10 +579,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                             pca => pca.ProductionCapacityId,
                                                             (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca })
                                                         .Where(x => x.ProductionCaseAssignment.UserId == UserId
-                                                                || x.ProductionCapacity.EvaluatorUserID == UserId    
+                                                                || x.ProductionCapacity.EvaluatorUserID == UserId
                                                                 // && x.ProductionCapacity.CurrentStage == Stage
-                                                                );     
-        
+                                                                );
+
             if (PCECaseId.HasValue)
             {
                 query = query.Where(x => x.ProductionCapacity.PCECaseId == PCECaseId.Value);
@@ -640,7 +602,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
-       
+
         public async Task<int> GetPCEsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
             var query = _cbeContext.ProductionCapacities.Join(_cbeContext.ProductionCaseAssignments,
@@ -661,14 +623,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 query = query.Where(x => x.ProductionCapacity.CurrentStatus == Status);
             }
-            
+
             if (!string.IsNullOrEmpty(Stage))
             {
                 query = query.Where(x => x.ProductionCapacity.CurrentStage == Stage);
             }
 
             return await query.CountAsync();
-        }        
+        }
 
         public async Task<int> GetPCEsCount(Guid UserId, Guid? PCECaseId, string Stage = null, string Status = null)
         {
@@ -676,7 +638,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
         public async Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null)
-        {        
+        {
             var NewPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "New");
             var PendingPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Pending");
             var EvaluatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Evaluated");
@@ -695,19 +657,24 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 RejectedPCEsCount = RejectedPCEsCount,
                 TotalPCEsCount = TotalPCEsCount
             };
-        }    
+        }
         public async Task<IEnumerable<ReturnProductionDto>> GetRejectedPCEs(Guid UserId)
         {
             var rejectedCapacitiesQuery = from reject in _cbeContext.ProductionRejects
-                                        join capacity in _cbeContext.ProductionCapacities
-                                        on reject.PCEId equals capacity.Id
-                                        where reject.RejectedBy == UserId
-                                        select capacity;
+                                          join capacity in _cbeContext.ProductionCapacities
+                                          on reject.PCEId equals capacity.Id
+                                          where reject.RejectedBy == UserId
+                                          select capacity;
 
             var rejectedCapacities = await rejectedCapacitiesQuery.ToListAsync();
 
 
-            return _mapper.Map<IEnumerable<ReturnProductionDto>>(rejectedCapacities);;
+            return _mapper.Map<IEnumerable<ReturnProductionDto>>(rejectedCapacities); ;
+        }
+
+        public Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, PCEEvaluationUpdateDto Dto)
+        {
+            throw new NotImplementedException();
         }
     }
 }

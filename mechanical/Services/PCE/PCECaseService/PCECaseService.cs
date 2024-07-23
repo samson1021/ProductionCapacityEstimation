@@ -273,6 +273,9 @@ namespace mechanical.Services.PCE.PCECaseService
             return _mapper.Map<PCECaseReturntDto>(loanCase);
         }
 
-       
+        public Task<CreateNewCaseCountDto> GetDashboardPCECaseCount()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

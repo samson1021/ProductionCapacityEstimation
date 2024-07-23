@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Dto.UploadFileDto
+﻿﻿@using mechanical.Models.Dto.UploadFileDto
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
@@ -43,7 +43,7 @@
                 </ul>
             </div>
             <div class="card-body">
-                
+
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @await Html.PartialAsync("Partial/_PCEGeneralInfo")
@@ -51,7 +51,7 @@
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @await Html.PartialAsync("Partial/_PCEsTable")
                     </div>
-                   
+
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("Partial/_PCECaseSchedule")
                     </div>
@@ -66,27 +66,11 @@
 </section>
 
 @section Scripts {
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{
         await Html.RenderPartialAsync("Partial/_RejectModal");
-        await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial"); 
-        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial"); 
+        await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-    } 
-    
-
-} 
- 
+    }
+}
