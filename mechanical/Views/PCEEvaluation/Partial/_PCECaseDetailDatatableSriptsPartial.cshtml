@@ -4,6 +4,7 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 
 @{
+    ViewData["Title"] = ViewBag.Title ?? "PCE Case";
     var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
 }
 
@@ -13,7 +14,7 @@
         // var PCECaseId = $('#PCECaseId').val();
         var PCECaseId = '@myPCECase.Id';
 
-        function initializeDataTable(productions, plants) {
+        function initializeDataTable(data) {
             
             var combinedData = productions.concat(plants); // Combine productions and plants data
 
@@ -25,8 +26,8 @@
                 pageLength: 8,
                 lengthChange: false,
                 autoWidth: false,
-                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
-                data: combinedData,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"],
+                data: data,
                 columns: [
                     {
                         data: null,
@@ -42,13 +43,16 @@
                         width: '10%',
                         render: function (data, type, row, meta) {
                             var productionType = row.ProductionType;
-                            var detailUrl = (productionType === 'Plant') 
-                                ? '@Url.Action("PCEDetail", "PlantCapacityEstimation")'
-                                : '@Url.Action("Detail", "ProductionCapacity")';
+                            var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
+                            // var detailUrl = '@Url.Action("Detail", "ProductionCapacity")';
                             var addUrl = (productionType === 'Plant')
                                 ? 'openAddManufacturingModal()'
                                 : 'openAddPlantModal()';
-                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '">Evaluation</a> | <a href="' + detailUrl + '?Id=' + data + '">Details</a> | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a> | <a href="#" onclick="' + addUrl + '">Add</a>';
+                            return  '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + 
+                                    '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data + 
+                                    '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data + 
+                                    '\')">Return</a> | ' + '<a href="#" onclick="' + addUrl + '">Add</a>';
+
                         }
                     }
                 ]
@@ -65,29 +69,24 @@
                         var PCEsTable = $('#PCEs').DataTable();
                         PCEsTable.destroy();
                     }
-                    
-                    // Handle data response
-                    var productions = data.productions || [];
-                    var plants = data.plants || [];
-
-                    initializeDataTable(productions, plants);
+                    initializeDataTable(data);
                 },
                 error: function (error) {
-                    toastr.error("Failed to load Production and Plant Capacities");
+                    toastr.error("Failed to load Production Capacities");
                     console.log(error);
                 }
             });    
         }
 
         loadPCEs();
+    }); 
 
+    function openRejectionModal(PCEId) {
+        var rejectionModal = document.getElementById('rejectionModal1');
+        var PCEIdField = document.querySelector('#rejectionModal1 input[name="PCEId"]');
 
-
-
-
-
-        function openRejectionModal(collateralId) {
-            $('#CollateralId').val(collateralId);
+        // Set the PCEId value
+        PCEIdField.value = PCEId;
             $('#rejectionModal1').modal('show');
         }
 

@@ -61,6 +61,9 @@
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</h6></dd>
 
+                            <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputType)</dt>
+                            <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OutputType)</h6></dd>
+
                             <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OutputPhase)</dt>
                             <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OutputPhase)</h6></dd>
 
@@ -223,7 +226,7 @@
                                 if (Model.SupportingEvidences == null || !Model.SupportingEvidences.Any())
                                 {
                                     <tr>
-                                        <td colspan="2">There is no Supporting Evidence related to this PCE Evaluation</td>
+                                        <td colspan="2">No Supporting Evidence related to this PCE Evaluation</td>
                                     </tr>
                                 }
                                 else
@@ -232,8 +235,10 @@
                                     {
                                         <tr>
                                             <td>@file.Name</td>
-                                            <td>@file.Name</td><a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-info">View</a>
-                                            <td><a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                            <td>
+                                                <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank">View <i class="fas fa-eye"></i></a> |
+                                                <a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })">Download <i class="fas fa-download"></i></a>
+                                            </td>
                                         </tr>
                                     }
                                 }
@@ -255,11 +260,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                        
                             @{
                                 if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
                                 {
                                     <tr>
-                                        <td colspan="2">There is no Production Process Flow Diagram related to this PCE Evaluation</td>
+                                        <td colspan="2">No Production Process Flow Diagram related to this PCE Evaluation</td>
                                     </tr>
                                 }
                                 else
@@ -267,8 +273,11 @@
                                     foreach (var file in Model.ProductionProcessFlowDiagrams)
                                     {
                                         <tr>
-                                            <td>@file.Name</td><a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" class="btn btn-sm btn-info">View</a>
-                                            <td><a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                            <td>@file.Name</td>
+                                            <td>
+                                                <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank">View <i class="fas fa-eye"></i></a> |
+                                                <a href="@Url.Action("DownloadFile", "UploadFile", new { id = file.Id })">Download <i class="fas fa-download"></i></a>
+                                            </td>
                                         </tr>
                                     }
                                 }
@@ -331,11 +340,11 @@
             </div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem;" class="col-1"></div>
             <div style="margin-top:1.25rem;margin-bottom:1.25rem; margin-left:2.5rem;" class="col-2">
-                @using (Html.BeginForm("SendToRM", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get))
+                @using (Html.BeginForm("Evaluate", "PCEEvaluation", new {Id = Model.Id}, FormMethod.Get, false, new { id = "evaluateForm" }))
                 {
-                <input asp-for="PCEId" value=@Model.PCEId type="hidden" />
+                    <input asp-for="PCEId" value="@Model.PCEId" type="hidden" />
                 <div class="row">
-                    <button id="send-to-rm-btn" type="submit" class="col-xl-12 btn btn-sm btn-success"><i class="fas fa-paper-plane"></i>Send To RM </button>
+                        <button id="evaluate-btn" type="button" class="col-xl-12 btn btn-sm btn-success"><i class="fas fa-paper-plane"></i> Complete</button>
                 </div>
                 }
             </div>            
@@ -347,50 +356,54 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
     } 
 
     <script>
-        // formatAndDisplayValue('CollateralEstimationFee');
-    </script>
-    <script>
-        function formatAndDisplayValue(elementId) {
-            var element = document.getElementById(elementId);
-            var value = parseFloat(element.textContent);
-            var formattedValue = formatNumber(value);
-            element.textContent = formattedValue;
+        document.getElementById("evaluate-btn").addEventListener("click", function(event) {
+            event.preventDefault(); 
+
+            var rejectionForm = document.getElementById("evaluateForm");
+            // var formData = new FormData(rejectionForm);
+            var actionUrl = rejectionForm.action;
+
+            fetch(actionUrl, {
+                method: rejectionForm.method,
+                // body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success('Evaluation sent to RM successfully. Redirecting...');
+
+                    // Delay redirect for 2 seconds
+                    setTimeout(function() {
+                        window.location.href = '@Url.Action("MyPendingPCECases", "PCEEvaluation")';
+                    }, 1000);
+                } else {
+                    toastr.error('Error sending the Evaluation: ' + data.error);
         }
+            })
+            .catch(error => {
+                toastr.error('Error sending the Evaluation: ' + error);
+            });
+        });
     </script>
  
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var statusBadge = document.getElementById("status-badge");
-            var status = "@Model.Status";
-
-            function getStatusClass(status) {
-                switch (status) {
-                    case "New":
-                        return "badge-primary";
-                    case "Evaluated":
-                        return "badge-success";
-                    case "Pending":
-                        return "badge-warning";
-                    case "Reevaluated":
-                        return "badge-info";
-                    case "Rejected":
-                        return "badge-danger";
-                    case "Closed":
-                        return "badge-dark";
-                    default:
-                        return "badge-secondary";
-                }
-            }
+            var status = "Status";
 
             function updateButtons(status) {
                 var updateBtn = document.getElementById("update-btn");
                 var deteleBtn = document.getElementById("delete-btn");
                 var rejectBtn = document.getElementById("reject-btn");
-                var sendToRMBtn = document.getElementById("send-to-rm-btn");
+                var evaluateBtn = document.getElementById("evaluate-btn");
 
                 switch (status) {
                     case "New":
@@ -403,37 +416,31 @@
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "none";
                         rejectBtn.style.display = "none";
-                        sendToRMBtn.style.display = "inline-block";
+                        evaluateBtn.style.display = "inline-block";
                         break;
                     case "Pending":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "inline-block";
                         rejectBtn.style.display = "inline-block";
-                        sendToRMBtn.style.display = "none";
+                        evaluateBtn.style.display = "none";
                         break;
                     case "Reevaluated":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "none";
                         rejectBtn.style.display = "none";
-                        sendToRMBtn.style.display = "inline-block";
+                        evaluateBtn.style.display = "inline-block";
                         break;
                     case "Rejected":
                         updateBtn.style.display = "inline-block";
                         deteleBtn.style.display = "inline-block";
                         rejectBtn.style.display = "none";
-                        sendToRMBtn.style.display = "none";
-                        break;
-                    case "Closed":
-                        updateBtn.style.display = "none";
-                        deteleBtn.style.display = "inline-block";
-                        rejectBtn.style.display = "inline-block";
-                        sendToRMBtn.style.display = "none";
+                        evaluateBtn.style.display = "none";
                         break;
                     default:
                         updateBtn.style.display = "none";
                         deteleBtn.style.display = "inline-block";
                         rejectBtn.style.display = "inline-block";
-                        sendToRMBtn.style.display = "none";
+                        evaluateBtn.style.display = "none";
                         break;
                 }
             }

@@ -20,6 +20,7 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 
 using mechanical.Models.Dto.UploadFileDto;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -138,7 +139,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             
             var production = _mapper.Map<ProductionCapacity>(createProductionDto);
             production.Id = Guid.NewGuid();
-            //production.PCECaseId = PCECaseId;
+            var produId= production.Id;
             try
             {
                 await this.UploadFile(userId, "Plant LHC Certificate", production, createProductionDto.LHC);
@@ -168,9 +169,22 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             production.CurrentStage = "Relation Manager";
             production.CurrentStatus = "New";
             //production.ProductionType = "Plant";
-
-
             await _cbeContext.ProductionCapacities.AddAsync(production);
+            await _cbeContext.SaveChangesAsync();
+
+
+
+            // Create sample ProductionCaseAssignment instances
+            var productionCaseAssignment1 = new ProductionCaseAssignment
+            {
+                Id = Guid.NewGuid(),
+                ProductionCapacityId = production.Id,
+                UserId = userId,
+                AssignmentDate = new DateTime(2023, 6, 1),
+                CompletionDate = null,
+                Status = "New"
+            };
+            await _cbeContext.ProductionCaseAssignments.AddAsync(productionCaseAssignment1);
             await _cbeContext.SaveChangesAsync();
 
             await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
@@ -269,6 +283,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
     }
 
+        public async Task<IEnumerable<ReturnProductionDto>> GetPendingProductions(Guid PCECaseId)
+        {
+            //  var ProductinCaseId = Guid.Parse("2cd32d1a-89bb-42c6-8a1d-7c631558ba47");
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+        }
         public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
     {
         var product = await _cbeContext.ProductionCapacities

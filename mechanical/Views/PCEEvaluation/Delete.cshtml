@@ -43,8 +43,8 @@
                                     <td>@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</td>
                                 </tr>
                                 <tr>
-                                    <th>@Html.DisplayNameFor(model => model.OriginCountry)</th>
-                                    <td>@Html.DisplayFor(model => model.OriginCountry)</td>
+                                    <th>@Html.DisplayNameFor(model => model.OutputType)</th>
+                                    <td>@Html.DisplayFor(model => model.OutputType)</td>
                                 </tr>
                                 <tr>
                                     <th>@Html.DisplayNameFor(model => model.EffectiveProductionHourType)</th>
@@ -97,5 +97,8 @@
 </section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); }
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");    
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
+    }
 }

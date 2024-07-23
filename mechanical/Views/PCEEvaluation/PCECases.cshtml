@@ -29,7 +29,7 @@
                             <th>Case No</th>
                             <th>Applicant Name</th>
                             <th>Customer Id</th>
-                            <th>Current Status</th>
+                            @* <th>New PCEs</th> *@
                             <th>Total PCEs</th>
                             <th>Action</th>
                         </tr>
@@ -44,6 +44,7 @@
     @{
         await Html.RenderPartialAsync("Partial/_PCECasesDatatableSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
 
     <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>

@@ -319,13 +319,26 @@
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
+            // fetch("/PCECase/GetDashboardPCECaseCount")
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         animateCount("pcsnewCasesCount", data.PCSNewCaseCount);
+            //         animateCount("pcspendingCasesCount", data.PCSPendingCaseCount);
+            //         animateCount("pcscompletedCasesCount", data.PCSCompletedCaseCount);
+            //         animateCount("pcstotalCasesCount", data.PCSTotalCaseCount);
+            //     })
+            //     .catch(error => {
+            //         console.error("Error fetching card counts:", error);
+            //     });
+
+
             fetch("/PCECase/GetDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
-                    animateCount("pcsnewCasesCount", data.PCSNewCaseCount);
-                    animateCount("pcspendingCasesCount", data.PCSPendingCaseCount);
-                    animateCount("pcscompletedCasesCount", data.PCSCompletedCaseCount);
-                    animateCount("pcstotalCasesCount", data.PCSTotalCaseCount);
+                    animateCountWithCollaterals("pcsnewCasesCount", data.NewPCECaseCount, data.NewPCECollateralCount);
+                    animateCountWithCollaterals("pcspendingCasesCount", data.PendingPCECaseCount, data.PendingPCECollateralCount);
+                    animateCountWithCollaterals("pcscompletedCasesCount", data.CompletedPCECaseCount, data.CompletedPCECollateralCount);
+                    animateCount("pcstotalCasesCount", data.TotalPCECaseCount, data.TotalPCECollateralCount);
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
@@ -347,6 +360,25 @@
                     element.textContent = currentCount;
                 }, 20);
             }
+
+
+            function animateCountWithCollaterals(elementId, caseCount, collateralCount) {
+                const element = document.getElementById(elementId);
+                const duration = 2000;
+                const startCount = 1;
+                const step = Math.ceil(caseCount / (duration / 20));
+
+                let currentCount = startCount;
+                const animationInterval = setInterval(() => {
+                    currentCount += step;
+                    if (currentCount >= caseCount) {
+                        clearInterval(animationInterval);
+                        currentCount = caseCount;
+                    }
+                    element.textContent = `${currentCount} (${collateralCount})`;
+                }, 20);
+            }
+
         });
 
         // Production capacity estimation case end

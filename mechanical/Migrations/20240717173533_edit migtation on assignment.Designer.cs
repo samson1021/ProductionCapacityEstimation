@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240719065730_evaluationId")]
-    partial class evaluationId
+    [Migration("20240717173533_edit migtation on assignment")]
+    partial class editmigtationonassignment
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1071,6 +1071,9 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("PCEEvaluationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1085,6 +1088,8 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PCEEvaluationId");
 
                     b.ToTable("UploadFiles");
                 });
@@ -1672,10 +1677,10 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("AssignmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CompletionDate")
+                    b.Property<DateTime?>("CompletionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("ProductionCapacityId")
+                    b.Property<Guid>("ProductionCapacityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -2082,6 +2087,13 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.UploadFile", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
+                        .WithMany("SupportingDocuments")
+                        .HasForeignKey("PCEEvaluationId");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -2209,7 +2221,9 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
                         .WithMany()
-                        .HasForeignKey("ProductionCapacityId");
+                        .HasForeignKey("ProductionCapacityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("mechanical.Models.Entities.CreateUser", "User")
                         .WithMany()
@@ -2272,6 +2286,8 @@ namespace mechanical.Migrations
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEEvaluation", b =>
                 {
                     b.Navigation("ShiftHours");
+
+                    b.Navigation("SupportingDocuments");
                 });
 #pragma warning restore 612, 618
         }

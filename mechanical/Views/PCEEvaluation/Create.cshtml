@@ -58,16 +58,22 @@
                                 <span asp-validation-for="ProductionLineOrEquipmentName" class="text-danger" id="ProductionLineOrEquipmentName-error"></span>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label>@Html.DisplayNameFor(model => model.OriginCountry) <i class="text-danger">*</i></label>                           
-                                <input asp-for="OriginCountry" type="text" class="form-control form-control-sm" placeholder="Select Country of Origin" list="country" required>
-                                <span asp-validation-for="OriginCountry" class="text-danger" id="OriginCountry-error"></span>
+                                <label>Country of Origin</label>                           
+                                <input if="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly>
                             </div>
+                            <div class="form-group col-lg-4">
+                                <label>@Html.DisplayNameFor(model => model.OutputType) <i class="text-danger">*</i></label>
+                                <input asp-for="OutputType" class="form-control form-control-sm" />
+                                <span asp-validation-for="OutputType" class="text-danger" id="OutputType-error"></span>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
                                 <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" >
                                     <option value="" disabled selected>Select Phase of Output</option>
                                 </select>
-                                <span asp-validation-for="OutputPhase" class="text-danger"></span>
+                                <span asp-validation-for="OutputPhase" class="text-danger" id="OutputPhase-error"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -90,12 +96,17 @@
                             </div>              
                         </div>
                         <div class="row">
-                            <div class="form-group col-sm-4">
+                            <div class="form-group col-lg-4">
+                                <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth) <i class="text-danger">*</i></label>
+                                <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
+                                <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
+                            </div>  
+                            <div class="form-group col-sm-2">
                                 <label>@Html.DisplayNameFor(model => model.ShiftsPerDay) <i class="text-danger">*</i></label>
                                 <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
                                 <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-lg-8" id="shiftHoursContainer"></div>
+                            <div class="form-group col-lg-6" id="shiftHoursContainer"></div>
                         </div>
                     </div>
 
@@ -297,6 +308,8 @@
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     } 
 
     <script>

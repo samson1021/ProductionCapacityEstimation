@@ -48,17 +48,17 @@ namespace mechanical.Data
                 v => v.ToDateTime(TimeOnly.MinValue),
                 v => DateOnly.FromDateTime(v));
 
-            modelBuilder.Entity<TimePeriod>(entity =>
+            modelBuilder.Entity<TimeRange>(entity =>
             {
                 entity.Property(e => e.Start).HasConversion(timeOnlyConverter);
                 entity.Property(e => e.End).HasConversion(timeOnlyConverter);
             });
 
-            modelBuilder.Entity<DatePeriod>(entity =>
-            {
-                entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
-                entity.Property(e => e.End).HasConversion(dateOnlyConverter);
-            });
+            // modelBuilder.Entity<DateRange>(entity =>
+            // {
+            //     entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
+            //     entity.Property(e => e.End).HasConversion(dateOnlyConverter);
+            // });
 
             modelBuilder.Entity<PCEEvaluation>(entity =>
             {
@@ -77,7 +77,7 @@ namespace mechanical.Data
         // public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
         ///////
-        public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
+       // public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
 
 
         // Manufacture
@@ -91,7 +91,9 @@ namespace mechanical.Data
     
 
         public DbSet<Case> Cases { get; set; }
+
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
+
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }
         public DbSet<CaseTimeLine> CaseTimeLines { get; set; }
         public DbSet<CaseComment> CaseComments { get; set; }

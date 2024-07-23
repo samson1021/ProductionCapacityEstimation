@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 using mechanical.Models.PCE.Entities;
@@ -7,43 +8,25 @@ using mechanical.Models.PCE.Enum.PCEEvaluation;
 
 namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
-    public class PCEEvaluationReturnDto
+    public class PCEEvaluationUpdateDto
     {
         public Guid Id { get; set; }
-
-        [Display(Name = "Evaluated By")]
-        public Guid EvaluatorID { get; set; }
-
         public required Guid PCEId { get; set; }
-        public virtual ProductionCapacity? PCE { get; set; }
 
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
 
-<<<<<<< HEAD
         [Display(Name = "Type of Output")]
         public string? OutputType { get; set; }
         
         [Display(Name = "Phase of Output")]
         public OutputPhase? OutputPhase { get; set; }
 
-=======
-        [Display(Name = "Phase of Output")]
-        public OutputPhase? OutputPhase { get; set; }
-
-        [Display(Name = "Country of Origin")]
-        public string? OriginCountry { get; set; }
-
->>>>>>> Abdu
         [Display(Name = "Shifts Per Day")]
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-<<<<<<< HEAD
         public List<TimeRangeDto>? ShiftHours { get; set; }
-=======
-        public List<TimePeriodDto>? ShiftHours { get; set; } = new List<TimePeriodDto>();
->>>>>>> Abdu
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -64,11 +47,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? OverallActualCurrentPlantCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
-<<<<<<< HEAD
         public DateTimeRangeDto? TimeConsumedToCheck { get; set; }
-=======
-        public DateTimePeriodDto? TimeConsumedToCheck { get; set; }
->>>>>>> Abdu
 
         [Display(Name = "Technical Obsolescence Status")]
         public string? TechnicalObsolescenceStatus { get; set; }
@@ -120,21 +99,15 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Production Process Flow Diagrams")]  
         public ICollection<ReturnFileDto>? ProductionProcessFlowDiagrams { get; set; }  
-<<<<<<< HEAD
-=======
-     
-        [Display(Name = "Status")]
-        public Status? Status { get; set; }
->>>>>>> Abdu
 
+        public ICollection<IFormFile>? NewSupportingEvidences { get; set; }
+        public ICollection<IFormFile>? NewProductionProcessFlowDiagrams { get; set; }
+
+        public string? DeletedFileIds { get; set; } 
+        // public ICollection<string>? DeletedFileIds { get; set; } = new List<string>();
+        // public ICollection<Guid>? DeletedFileIds { get; set; } 
+        
         [Display(Name = "Remark")]
         public string? Remark { get; set; }
-        
-        // [Display(Name = "Return Reason")]
-        // public string? ReturnReason { get; set; }
-
-        [Display(Name = "Created At")]
-        public DateTime CreatedAt { get; set; } 
-
     }
 }
