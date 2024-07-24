@@ -17,7 +17,8 @@
 
 <script>
     $(document).ready(function () {
-
+        
+        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
             PCEsTable = $('#PCEs').DataTable({
@@ -61,7 +62,7 @@
         }
         function loadPCEs() {
             $.ajax({
-                url: '@FetchUrl',
+                url: fetchUrl,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

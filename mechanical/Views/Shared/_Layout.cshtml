@@ -39,7 +39,7 @@
             <strong>&copy; 2023 - mechanical - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></strong>
         </footer>
     </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
     <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -47,6 +47,27 @@
     <script src="~/js/adminlte.min.js"></script>
     <script src="~/js/dashboard.js"></script>
     <script src="~/lib/chart.js/chart.min.js"></script>
+
+    <!---->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.nav-treeview').hide();
+
+            $('.nav-link').on('click', function (e) {
+                var $parent = $(this).parent();
+                if ($parent.children('.nav-treeview').length > 0) {
+                    e.preventDefault();
+                    $('.nav-item').not($parent).removeClass('active').find('.nav-treeview').slideUp();
+                    $parent.toggleClass('active');
+                    $parent.children('.nav-treeview').slideToggle();
+                }
+            });
+        });
+    </script>
+    <!----> 
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

@@ -342,7 +342,13 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPCEs(Guid PCECaseId, string Status)
         {
-            var Stage = "Relational Manager";
+            var Stage = string.Empty;
+            // var Stage = "Maker Officer";
+
+            // if (Status == "Evaluated" || Status == "Reevaluated")
+            // {
+            //     Stage = "Relational Manager";
+            // }
             var productions = await _PCEEvaluationService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Stage, Status);
 
             if (productions == null)
@@ -368,7 +374,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetMyPCEs(string Status)
         {
             Guid? PCECaseId = null;
-            var Stage = "Maker Officer";
+            var Stage = string.Empty;
 
             var myPCEs = await _PCEEvaluationService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Stage, Status);
             if (myPCEs == null)
@@ -384,7 +390,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetMyDashboardPCECount()
         {
             Guid? PCECaseId = null;
-            var Stage = "Maker Officer";
+            var Stage = string.Empty;
             var myPCEs = await _PCEEvaluationService.GetDashboardPCECount(base.GetCurrentUserId(), PCECaseId, Stage);
             string jsonData = JsonConvert.SerializeObject(myPCEs);
             return Content(jsonData, "application/json");

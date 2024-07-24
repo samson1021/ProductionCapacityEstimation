@@ -31,7 +31,9 @@
                             <th>Case No</th>
                             <th>Applicant Name</th>
                             <th>Customer Id</th>
-                            <th>@Status PCEs</th>
+                            @if (Status != "All"){
+                                <th>@Status PCEs</th>
+                            }
                             <th>Total PCEs</th>
                             <th>Action</th>
                         </tr>

@@ -19,8 +19,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id);
         Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id);
-        // Task<bool> ReevaluatePCEEvaluation(Guid UserId, Guid Id);    
-        // Task<bool> ReworkPCEEvaluation(Guid UserId, Guid Id); 
 
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);
         Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId);
