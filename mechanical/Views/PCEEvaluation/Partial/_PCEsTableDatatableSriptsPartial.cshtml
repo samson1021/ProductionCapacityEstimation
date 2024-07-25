@@ -45,15 +45,11 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var productionType = row.ProductionType;
                             var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
-                            var addUrl = (productionType === 'Plant')
-                                ? 'openAddManufacturingModal()'
-                                : 'openAddPlantModal()';
                             return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data +
                                 '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data +
                                 '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
-                                '\')">Return</a> | ' + '<a href="#" onclick="' + addUrl + '">Add</a>';
+                                '\')">Return</a>';
 
                         }
                     }

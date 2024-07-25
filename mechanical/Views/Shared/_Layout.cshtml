@@ -4,17 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - mechanical</title>
-    <link href="~/css/style.css" rel="stylesheet" />
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/mechanical.styles.css" asp-append-version="true" />
+    
+    <link href="~/css/style.css" rel="stylesheet" />
     <link href="~/css/adminlte.min.css" rel="stylesheet" />
     <link href="~/css/all.min.css" rel="stylesheet" />
     <link href="~/css/icheck-bootstrap.min.css" rel="stylesheet" />
     
     <link href="~/lib/fontawesome-free/css/all.min.css" rel="stylesheet" />
     <link href="~/lib/overlayscrollbars/css/overlayscrollbars.min.css" rel="stylesheet" />
-
     <link href="~/lib/datatable/css/datatables.bootstrap4.min.css" rel="stylesheet" />
     <link href="~/lib/datatable/css/buttons.bootstrap4.min.css" rel="stylesheet" />
     <link href="~/lib/datatable/css/responsive.bootstrap4.min.css" rel="stylesheet" />
@@ -29,42 +30,51 @@
         <div class="content-wrapper">
             @RenderBody()
             <aside class="control-sidebar control-sidebar-dark">
-            </aside>
-            
+            </aside>            
         </div>
         <footer class="main-footer">
-            <div class="float-right d-none d-sm-block">
+            <div class="float-left d-none d-sm-block">
                 <b>Version</b> 3.2.0
             </div>
             <strong>&copy; 2023 - mechanical - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></strong>
         </footer>
     </div>
-    @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
-    <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
-    <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="~/js/adminlte.min.js"></script>
+    
     <script src="~/js/dashboard.js"></script>
+    <script src="~/js/adminlte.min.js"></script>-
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="~/lib/chart.js/chart.min.js"></script>
-
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    
     <!---->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
-        $(document).ready(function () {
+       $(document).ready(function () {
             $('.nav-treeview').hide();
 
             $('.nav-link').on('click', function (e) {
                 var $parent = $(this).parent();
+                var $icon = $(this).find('.right');
+
                 if ($parent.children('.nav-treeview').length > 0) {
                     e.preventDefault();
+
                     $('.nav-item').not($parent).removeClass('active').find('.nav-treeview').slideUp();
+                    $('.nav-item').not($parent).find('.right').removeClass('fa-angle-down').addClass('fa-angle-left');
+
                     $parent.toggleClass('active');
                     $parent.children('.nav-treeview').slideToggle();
+
+                    if ($parent.hasClass('active')) {
+                        $icon.removeClass('fa-angle-left').addClass('fa-angle-down');
+                    } else {
+                        $icon.removeClass('fa-angle-down').addClass('fa-angle-left');
+                    }
                 }
             });
-        });
+        });        
     </script>
     <!----> 
 

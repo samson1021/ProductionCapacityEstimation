@@ -272,7 +272,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var Status = "Evaluated";
                 var MMActivity = $"<strong>New PCE Case has been evaluated.</strong>";
                 var RMActivity = $"<strong> PCE Case Evaluation is submitted to Relational Manager.</strong>";
-                if (pce.CurrentStatus == "Reevaluate")
+                if (pce.CurrentStatus == "Returned")
                 {
                     Status = "Reevaluated";
                     MMActivity = $"<strong>New PCE Case has been reevaluated.</strong>";
@@ -332,13 +332,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 
-                var Status = "Rejected";
+                var Status = "Returned";
                 var Stage = "Relational Manager";
                 var MMActivity = $"<strong>PCE is rejected as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
                 var Activity = $"<strong>PCE is rejected by MO as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
                 if (pce.CurrentStage == "Relational Manager")
                 {
-                    Status = "Reevaluate";
+                    Status = "Returned";
                     Stage = "Maker Officer";
                     MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reevaluation.</strong>";
                     Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reevaluation by Relational Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
@@ -518,9 +518,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var NewPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "New").ToListAsync();
             var PendingPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Pending").ToListAsync();
             var EvaluatedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Evaluated").ToListAsync();
-            var ReturnedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Returned").ToListAsync();
             var ReevaluatedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reevaluated").ToListAsync();
-            var RejectedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Rejected").ToListAsync();
+            var ReturnedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Returned").ToListAsync();
             var TotalPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId).ToListAsync();
 
             return new PCECasesCountDto()
@@ -534,14 +533,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 EvaluatedPCECasesCount = EvaluatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
                 EvaluatedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Evaluated").CountAsync(),
 
-                ReturnedPCECasesCount = ReturnedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                ReturnedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Returned").CountAsync(),
-
                 ReevaluatedPCECasesCount = ReevaluatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
                 ReevaluatedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Reevaluated").CountAsync(),
 
-                RejectedPCECasesCount = RejectedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                RejectedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Rejected").CountAsync(),
+                ReturnedPCECasesCount = ReturnedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                ReturnedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Returned").CountAsync(),
 
                 TotalPCECasesCount = TotalPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
                 TotalPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId).CountAsync(),
@@ -629,9 +625,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var NewPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "New");
             var PendingPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Pending");
             var EvaluatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Evaluated");
-            var ReturnedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Returned");
             var ReevaluatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Reevaluated");
-            var RejectedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Rejected");
+            var ReturnedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Returned");
             var TotalPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage);
 
             return new PCEsCountDto()
@@ -639,29 +634,23 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 NewPCEsCount = NewPCEsCount,
                 PendingPCEsCount = PendingPCEsCount,
                 EvaluatedPCEsCount = EvaluatedPCEsCount,
-                ReturnedPCEsCount = ReturnedPCEsCount,
                 ReevaluatedPCEsCount = ReevaluatedPCEsCount,
-                RejectedPCEsCount = RejectedPCEsCount,
+                ReturnedPCEsCount = ReturnedPCEsCount,
                 TotalPCEsCount = TotalPCEsCount
             };
         }
-        public async Task<IEnumerable<ReturnProductionDto>> GetRejectedPCEs(Guid UserId)
-        {
-            var rejectedCapacitiesQuery = from reject in _cbeContext.ProductionRejects
-                                          join capacity in _cbeContext.ProductionCapacities
-                                          on reject.PCEId equals capacity.Id
-                                          where reject.RejectedBy == UserId
-                                          select capacity;
+        // public async Task<IEnumerable<ReturnProductionDto>> GetReturnedPCEs(Guid UserId)
+        // {
+        //     var rejectedCapacitiesQuery = from reject in _cbeContext.ProductionRejects
+        //                                   join capacity in _cbeContext.ProductionCapacities
+        //                                   on reject.PCEId equals capacity.Id
+        //                                   where reject.RejectedBy == UserId
+        //                                   select capacity;
 
-            var rejectedCapacities = await rejectedCapacitiesQuery.ToListAsync();
+        //     var rejectedCapacities = await rejectedCapacitiesQuery.ToListAsync();
 
 
-            return _mapper.Map<IEnumerable<ReturnProductionDto>>(rejectedCapacities); ;
-        }
-
-        public Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, PCEEvaluationUpdateDto Dto)
-        {
-            throw new NotImplementedException();
-        }
+        //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(rejectedCapacities); ;
+        // }
     }
 }

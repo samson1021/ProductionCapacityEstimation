@@ -31,10 +31,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<int> GetPCEsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
         Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);
         Task<IEnumerable<ReturnProductionDto>> GetPCEs(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
-        Task<IEnumerable<ReturnProductionDto>> GetRejectedPCEs(Guid UserId);
-
+        
+        // Task<IEnumerable<ReturnProductionDto>> GetReturnedPCEs(Guid UserId);
         // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId);
-        // Task<IEnumerable<ReturnProductionDto>> RejectedPCEs(Guid UserId);
-        // Task<IEnumerable<ReturnProductionDto>> ResubmittedPCEs(Guid UserId);
     }
 }

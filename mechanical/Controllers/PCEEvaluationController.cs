@@ -61,7 +61,7 @@ namespace mechanical.Controllers
 
                 if (pce == null)
                 {
-                    return RedirectToAction("MyPCECases", "PCEEvaluation");
+                    return RedirectToAction("MyPCEs");
                 }
 
                 var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), pce.PCECaseId);
@@ -108,7 +108,7 @@ namespace mechanical.Controllers
 
                 if (PCEEvaluation == null)
                 {
-                    return RedirectToAction("NewPCEEvaluations");
+                    return RedirectToAction("MyPCEs");
                 }
 
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
@@ -180,7 +180,7 @@ namespace mechanical.Controllers
                 var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluation(base.GetCurrentUserId(), Id);
                 if (PCEEvaluation == null)
                 {
-                    return RedirectToAction("NewPCEEvaluations");
+                    return RedirectToAction("MyPCEs");
                 }
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
                 var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), pce.PCECaseId);
@@ -293,14 +293,6 @@ namespace mechanical.Controllers
             return View();
         }
 
-        // [HttpGet]
-        // public IActionResult PCECases(string Status)
-        // {
-        //     ViewData["Title"] = Status + " PCE Cases";
-        //     ViewBag.Status = Status;
-        //     return View("PCECases");
-        // }
-
         [HttpGet]
         public IActionResult MyPCECases(string Status = "New")
         {
@@ -396,20 +388,21 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-        //// Rejected 
-        [HttpGet]
-        public IActionResult MyRejectedPCEs()
-        {
-            ViewData["Title"] = "All My Rejected PCEs";
-            return View("RejectedPCEs");
-        }
+    //    //// Returned 
+    //     [HttpGet]
+    //     public IActionResult MyReturnedPCEs()
+    //     {
+    //         ViewData["Title"] = "All My Returned PCEs";
+    //         return View("ReturnedPCEs");
+    //     }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMyRejectedPCEs()
-        {
-            var myPCEs = await _PCEEvaluationService.GetRejectedPCEs(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(myPCEs);
-            return Content(jsonData, "application/json");
-        }
+    //     [HttpGet]
+    //     public async Task<IActionResult> GetMyReturnedPCEs()
+    //     {
+    //         var myPCEs = await _PCEEvaluationService.GetReturnedPCEs(base.GetCurrentUserId());
+    //         string jsonData = JsonConvert.SerializeObject(myPCEs);
+    //         return Content(jsonData, "application/json");
+    //     }
+    
     }
 }
