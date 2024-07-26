@@ -341,6 +341,7 @@ namespace mechanical.Services.PCE.PCECaseService
                 return memoryStream.ToArray();           
             }
         }
+        
 
         public async Task<byte[]> GeneratePDF(PCEReportDataDto pceReportData)
         {
