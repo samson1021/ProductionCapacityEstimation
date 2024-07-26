@@ -125,14 +125,15 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 
-///////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 // Registering PCE services
 // builder.Services.AddHttpClient();
+// builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-// builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
-///////////////////////////////
+// builder.Services.AddTransient<IReportService, ReportService>();
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

@@ -363,9 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 /mechanical/Services/SignatureService/SignatureService.cs
 /Signature management/Service/AcknowledgementService/AcknowledgementService.cs
-/mechanical/UploadFile
-/mechanical/appsettings.json
-/mechanical/appsettings.Development.json
+mechanical/UploadFile/
+mechanical/appsettings.json
+mechanical/appsettings.Development.json
 .vscode/
 .gitignore
 .gitattributes

@@ -4,9 +4,11 @@ using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace mechanical.Controllers.PCE
 {
@@ -122,7 +124,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCECaseCount();
+            var myCase = await _PCECaseService.GetDashboardPCECaseCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
@@ -304,6 +306,38 @@ namespace mechanical.Controllers.PCE
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> PCEReport(Guid Id)
+        {
+            var pceReportData = await _PCECaseService.GetPCEReportData(Id);
 
+            ViewData["pceCase"] = pceReportData.PCESCase;
+            ViewData["productions"] = pceReportData.Productions;
+            ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;
+            ViewData["pceCaseSchedule"] = pceReportData.PCECaseSchedule;
+
+            return View();
+        }
+
+        public async Task<IActionResult> Download(Guid Id, string Type)
+        {
+            
+            var pceReportData = await _PCECaseService.GetPCEReportData(Id);
+
+            byte[] fileContents;
+
+            if (Type == "DOCX")
+            {
+                fileContents = await _PCECaseService.GenerateDOCX(pceReportData);
+                return File(fileContents, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Report.docx");
+            }
+            else if (Type == "PDF")
+            {
+                fileContents = await _PCECaseService.GeneratePDF(pceReportData);
+                return File(fileContents, "application/pdf", "Report.pdf");
+            }
+
+            return BadRequest("Invalid file Type.");
+        }
     }
 }

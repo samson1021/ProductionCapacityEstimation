@@ -10,7 +10,7 @@ namespace mechanical.Services.PCE.PCECaseService
     public interface IPCECaseService
     {
         Task<PCECase> PCECase(Guid userId, PCECaseDto caseDto);
-        Task<CreateNewCaseCountDto> GetDashboardPCECaseCount();
+        Task<CreateNewCaseCountDto> GetDashboardPCECaseCount(Guid userId);
         Task<CreateNewCaseCountDto> GetMyDashboardCaseCount();
 
         Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId);
@@ -31,5 +31,8 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<PCECaseReturntDto> GetCase(Guid userId, Guid id);
 
 
+        Task<PCEReportDataDto> GetPCEReportData(Guid Id);
+        Task<byte[]> GenerateDOCX(PCEReportDataDto pceReportData);
+        Task<byte[]> GeneratePDF(PCEReportDataDto pceReportData);
     }
 }

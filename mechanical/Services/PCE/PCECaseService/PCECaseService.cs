@@ -1,6 +1,4 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.DashboardDto;
@@ -9,8 +7,29 @@ using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using OpenXmlDocument = DocumentFormat.OpenXml.Wordprocessing.Document;
+using OpenXmlParagraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using OpenXmlText = DocumentFormat.OpenXml.Wordprocessing.Text;
+using OpenXmlTable = DocumentFormat.OpenXml.Wordprocessing.Table;
+using OpenXmlTableRow = DocumentFormat.OpenXml.Wordprocessing.TableRow;
+using OpenXmlTableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
+  
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iTextDocument = iText.Layout.Document;
+using iTextParagraph = iText.Layout.Element.Paragraph;
+using iTextTable = iText.Layout.Element.Table;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
@@ -272,10 +291,80 @@ namespace mechanical.Services.PCE.PCECaseService
                            .FirstOrDefaultAsync(c => c.Id == id && c.RMUserId == userId);
             return _mapper.Map<PCECaseReturntDto>(loanCase);
         }
-
-        public Task<CreateNewCaseCountDto> GetDashboardPCECaseCount()
+        
+        public async Task<PCEReportDataDto> GetPCEReportData(Guid Id)
         {
-            throw new NotImplementedException();
+
+            // var pceCase = await _cbeContext.PCECases.FindAsync(Id);
+            var pceCase = _cbeContext.PCECases.Include(res => res.District).Include(res=>res.ProductionCapacities).Include(res=>res.BussinessLicence).Where(c => c.Id == Id).FirstOrDefault();
+            var pceEvaluations = await _cbeContext.PCEEvaluations.Include(res => res.Evaluator).Where(res => res.PCE.PCECaseId == Id).ToListAsync();
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == Id && res.CurrentStatus == "Completed" && res.CurrentStage == "Relationa Manager").ToListAsync();
+            var pceCaseSchedule = await _cbeContext.ProductionCaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
+
+            return new PCEReportDataDto
+            {
+                PCESCase = pceCase,
+                Productions = productions,
+                PCEEvaluations = pceEvaluations,
+                PCECaseSchedule = pceCaseSchedule
+            };
         }
+
+        public async Task<byte[]> GenerateDOCX(PCEReportDataDto pceReportData)
+        {
+            var pceCase = pceReportData.PCESCase;
+            var productions = pceReportData.Productions;
+            var pceEvaluations = pceReportData.PCEEvaluations;
+            var pceCaseSchedule = pceReportData.PCECaseSchedule;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var wordDocument = WordprocessingDocument.Create(memoryStream, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
+                {
+                    var mainPart = wordDocument.MainDocumentPart;
+                    if (mainPart == null)
+                    {
+                        mainPart = wordDocument.AddMainDocumentPart();
+                        mainPart.Document = new OpenXmlDocument(new Body());
+                    }
+
+                    var body = mainPart.Document.Body;
+                    body.Append(new OpenXmlParagraph(new Run(new OpenXmlText($"PCECase Ref. No.: {pceCase.CaseNo}"))));
+
+                    var table = new OpenXmlTable();
+                    var row = new OpenXmlTableRow(new OpenXmlTableCell(new OpenXmlParagraph(new Run(new OpenXmlText("Header")))));
+                    table.Append(row);
+                    body.Append(table);
+
+                    mainPart.Document.Save();
+                }
+                return memoryStream.ToArray();           
+            }
+        }
+
+        public async Task<byte[]> GeneratePDF(PCEReportDataDto pceReportData)
+        {
+            var pceCase = pceReportData.PCESCase;
+            var productions = pceReportData.Productions;
+            var pceEvaluations = pceReportData.PCEEvaluations;
+            var pceCaseSchedule = pceReportData.PCECaseSchedule;
+           
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var writer = new PdfWriter(memoryStream))
+                {
+                    using (var pdfDocument = new PdfDocument(writer))
+                    {
+                        var document = new iTextDocument(pdfDocument);
+                        document.Add(new iTextParagraph($"PCECase Ref. No.: {pceCase.CaseNo}"));
+                        var table = new iTextTable(UnitValue.CreatePercentArray(1));
+                        table.AddHeaderCell("Header");
+                        table.AddCell("Content");
+                        document.Add(table);
+                    }
+                }
+                return memoryStream.ToArray();
+            }            
+        }       
     }
 }
