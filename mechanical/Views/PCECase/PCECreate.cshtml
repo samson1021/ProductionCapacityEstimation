@@ -150,17 +150,17 @@
         });
 
         //this is the input validation for application name
-        document.getElementById("applicantName").addEventListener("input", function () {
-            var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        document.getElementById("applicantName").addEventListener("input", function() {
+        var input = this.value;
+        var nameRegex = /^[A-Za-z\s]+$/;
 
-            if (!alphanumericRegex.test(input)) {
-                this.setCustomValidity("Only alphanumeric characters are allowed.");
-                document.getElementById("applicantName-error").textContent = "Only alphanumeric characters are allowed.";
-            } else {
-                this.setCustomValidity("");
-                document.getElementById("applicantName-error").textContent = "";
-            }
+        if (!nameRegex.test(input)) {
+            this.setCustomValidity("Only letters and spaces are allowed.");
+            document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("applicantName-error").textContent = "";
+        }
         });
         //validate the customer Id length
         document.getElementById("CustomerId").addEventListener("input", function () {

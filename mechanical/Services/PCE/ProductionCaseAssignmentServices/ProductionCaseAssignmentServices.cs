@@ -334,130 +334,123 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
         }
     
 
-        public async Task<List<ProductionCaseAssignmentDto>> SendProductionForValuation(string selectedProductionIds, string CenterId)
-        {
-            //var userId = base.GetCurrentUserId();
 
-            var centerId = Guid.Parse(CenterId);
-            var districtName = await _cbeContext.Districts.Where(c => c.Id == centerId).Select(c => c.Name).FirstOrDefaultAsync();
-            var CivilUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Civil" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
-            var MechanicalUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
-            var AgricultureUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
-
-            List<ProductionCaseAssignmentDto> caseAssignments = new List<ProductionCaseAssignmentDto>();
-            List<Guid> collateralIdList = selectedProductionIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
-            PCECaseTimeLinePostDto caseTimeLinePostDto = null;
-
-            foreach (Guid collateralId in collateralIdList)
-            {
-
-                var collateral = await _cbeContext.ProductionCapacities.FindAsync(collateralId);
-                if (collateral != null)
-                {
-
-                    if (districtName != null && districtName == "Head Office")
-                    {
-                        collateral.CurrentStage = "Maker Manager";
-                    }
+        public async Task<List<ProductionCaseAssignmentDto>> SendProductionForValuation(string selectedProductionIds, string CenterId) 
+        { 
+            //var userId = base.GetCurrentUserId(); 
+    
+            var centerId = Guid.Parse(CenterId); 
+            var districtName = await _cbeContext.Districts.Where(c => c.Id == centerId).Select(c => c.Name).FirstOrDefaultAsync(); 
+            var CivilUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Civil" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
+            var MechanicalUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
+            var AgricultureUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
+    
+            List<ProductionCaseAssignmentDto> caseAssignments = new List<ProductionCaseAssignmentDto>(); 
+            List<Guid> collateralIdList = selectedProductionIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList(); 
+            PCECaseTimeLinePostDto caseTimeLinePostDto = null; 
+    
+            foreach (Guid collateralId in collateralIdList) 
+            { 
+    
+                var collateral = await _cbeContext.ProductionCapacities.FindAsync(collateralId); 
+                if (collateral != null) 
+                { 
+    
+                    if (districtName != null && districtName == "Head Office") 
+                    { 
+                        collateral.CurrentStage = "Maker Manager"; 
+                    } 
+                    else 
+                    { 
+                        collateral.CurrentStage = "District Valuation Manager"; 
+                    } 
+                    collateral.CurrentStatus = "New"; 
+                    var UserID = Guid.Empty; 
+                    string UserName = ""; 
+                    string District = ""; 
+    
+                    if (collateral.ProductionType == "Manufacturing") 
+                    { 
+                        if (MechanicalUser == null) 
+                        { 
+                            throw new Exception("sorry the Mechanical Evaluation center is not ready."); 
+                        } 
+                        else 
+                        { 
+                            UserID = MechanicalUser.Id; 
+                            UserName = MechanicalUser.Name; 
+                        } 
+                    } 
                     else
                     {
-                        collateral.CurrentStage = "District Valuation Manager";
+                        if (collateral.ProductionType == "Plant") 
+                        { 
+                            if (MechanicalUser == null) 
+                            { 
+                                throw new Exception("sorry the Plant Evaluation center is not ready."); 
+                            } 
+                            else 
+                            { 
+                                UserID = MechanicalUser.Id; 
+                                UserName = MechanicalUser.Name; 
+                            } 
+                        } 
                     }
-                    collateral.CurrentStatus = "New";
-                    var UserID = Guid.Empty;
-                    string UserName = "";
-                    string District = "";
-
-                    //if ((collateral.ProductionType == "Manufacturing")||(collateral.ProductionType == "Plant"))
-                    //{
-                    //    if (MechanicalUser == null)
-                    //    {
-                    //        throw new Exception("sorry the PCE  Evaluation center is not ready.");
-                    //    }
-                    //    else
-                    //    {
-                    //        UserID = MechanicalUser.Id;
-                    //        UserName = MechanicalUser.Name;
-                    //        District = MechanicalUser.District.Name;
-                    //    }
-                    //}
-                      if (collateral.ProductionType == "Manufacturing")
-                    {
-                        if (MechanicalUser == null)
-                        {
-                            throw new Exception("sorry the Mechanical Evaluation center is not ready.");
-                        }
-                        else
-                        {
-                            UserID = MechanicalUser.Id;
-                            UserName = MechanicalUser.Name;
-                        }
-                    }
-                    if (collateral.ProductionType == "Plant")
-                    {
-                        if (AgricultureUser == null)
-                        {
-                            throw new Exception("sorry the Plant Evaluation center is not ready.");
-                        }
-                        else
-                        {
-                            UserID = AgricultureUser.Id;
-                            UserName = AgricultureUser.Name;
-                        }
-                    }
-
-
-                    var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateralId && res.UserId == UserID).FirstOrDefaultAsync();
-                    if (previousCaseAssignment != null)
-                    {
-                        previousCaseAssignment.Status = "New";
-                        _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
-                        await _cbeContext.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        var caseAssignment = new ProductionCaseAssignment()
-                        {
-                            ProductionCapacityId = collateralId,
-                            UserId = UserID,
-                            Status = "New",
-                            AssignmentDate = DateTime.Now
-                        };
+    
+    
+                    var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateralId && res.UserId == UserID).FirstOrDefaultAsync(); 
+                    if (previousCaseAssignment != null) 
+                    { 
+                        previousCaseAssignment.Status = "New"; 
+                        _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment); 
+                        await _cbeContext.SaveChangesAsync(); 
+                    } 
+                    else 
+                    { 
+                        var caseAssignment = new ProductionCaseAssignment() 
+                        { 
+                            ProductionCapacityId = collateralId, 
+                            UserId = UserID, 
+                            Status = "New", 
+                            AssignmentDate = DateTime.Now 
+                        }; 
                         await _cbeContext.ProductionCaseAssignments.AddAsync(caseAssignment);
-                        _cbeContext.ProductionCapacities.Update(collateral);
-                        await _cbeContext.SaveChangesAsync();
-                        caseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(caseAssignment));
-                    }
-                    ///#######################################################################################################################################################
-                    ///edit the relatinal manager status to pending 
+                        _cbeContext.ProductionCapacities.Update(collateral); 
+                        await _cbeContext.SaveChangesAsync(); 
+                        caseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(caseAssignment)); 
+                    } 
+                    ///####################################################################################################################################################### 
+                    ///edit the relatinal manager status to pending  
+    
+                    var previousRM= await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateralId && res.UserId == collateral.CreatedById).FirstOrDefaultAsync(); 
+                    if (previousRM != null) 
+                    { 
+                        previousRM.Status = "Pending"; 
+                        _cbeContext.ProductionCaseAssignments.Update(previousRM); 
+                        await _cbeContext.SaveChangesAsync(); 
+                    } 
+                    ///####################################################################################################################################################### 
+    
+        
+    
+                    if (caseTimeLinePostDto == null) 
+                    { 
+                        caseTimeLinePostDto = new PCECaseTimeLinePostDto() 
+                        { 
+                            CaseId = collateral.PCECaseId, 
+                            Activity = $"<strong>PCE assigned for evaluation for <a href='/UserManagment/Profile?id={UserID}'>{UserName}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {districtName}.", 
+                            CurrentStage = "Maker Manager" 
+                        }; 
+                    } 
+                //  caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}. <br>"; 
+    
+                } 
+            } 
+            if (caseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(caseTimeLinePostDto); 
+            return caseAssignments; 
+        } 
+    
 
-                    var previousRM= await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateralId && res.UserId == collateral.CreatedById).FirstOrDefaultAsync();
-                    if (previousRM != null)
-                    {
-                        previousRM.Status = "Pending";
-                        _cbeContext.ProductionCaseAssignments.Update(previousRM);
-                        await _cbeContext.SaveChangesAsync();
-                    }
-                    ///#######################################################################################################################################################
-
-         
-
-                    if (caseTimeLinePostDto == null)
-                    {
-                        caseTimeLinePostDto = new PCECaseTimeLinePostDto()
-                        {
-                            CaseId = collateral.PCECaseId,
-                            Activity = $"<strong>PCE assigned for evaluation for <a href='/UserManagment/Profile?id={UserID}'>{UserName}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {districtName}.",
-                            CurrentStage = "Maker Manager"
-                        };
-                    }
-                  //  caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}. <br>";
-
-                }
-            }
-            if (caseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(caseTimeLinePostDto);
-            return caseAssignments;
-        }
 
     }
 }

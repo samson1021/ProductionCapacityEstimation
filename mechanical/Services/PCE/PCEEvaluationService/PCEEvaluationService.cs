@@ -332,13 +332,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 
-                var Status = "Returned";
+                var Status = "Rejected";
                 var Stage = "Relational Manager";
                 var MMActivity = $"<strong>PCE is rejected as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
                 var Activity = $"<strong>PCE is rejected by MO as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
                 if (pce.CurrentStage == "Relational Manager")
                 {
-                    Status = "Returned";
+                    Status = "Rejected";
                     Stage = "Maker Officer";
                     MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reevaluation.</strong>";
                     Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reevaluation by Relational Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",

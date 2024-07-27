@@ -41,7 +41,6 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.PCECollateralService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
@@ -92,7 +91,6 @@ builder.Services.AddDbContext<CbeContext>(options =>
 //production capacity estimation
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
-builder.Services.AddScoped<IPCECollateralService, PCECollateralService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
 builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityServices>();

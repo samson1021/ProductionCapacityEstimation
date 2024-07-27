@@ -395,12 +395,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
         }
 
-        public async Task<IEnumerable<ProductionCapcityCorrectionReturnDto1>> GetComments(Guid CollateralId)
+        public async Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid CollateralId)
         {
             var comments = await _cbeContext.ProductionCapcityCorrections.Where(ca => ca.ProductionCapacityId == CollateralId).ToListAsync();
             if (comments != null)
             {
-                return _mapper.Map<IEnumerable<ProductionCapcityCorrectionReturnDto1>>(comments);
+                return _mapper.Map<IEnumerable<ProductionCapcityCorrectionReturnDto>>(comments);
             }
 
 
