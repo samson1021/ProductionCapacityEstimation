@@ -368,19 +368,6 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                     string UserName = "";
                     string District = "";
 
-                    //if ((collateral.ProductionType == "Manufacturing")||(collateral.ProductionType == "Plant"))
-                    //{
-                    //    if (MechanicalUser == null)
-                    //    {
-                    //        throw new Exception("sorry the PCE  Evaluation center is not ready.");
-                    //    }
-                    //    else
-                    //    {
-                    //        UserID = MechanicalUser.Id;
-                    //        UserName = MechanicalUser.Name;
-                    //        District = MechanicalUser.District.Name;
-                    //    }
-                    //}
                       if (collateral.ProductionType == "Manufacturing")
                     {
                         if (MechanicalUser == null)
@@ -395,14 +382,14 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                     }
                     if (collateral.ProductionType == "Plant")
                     {
-                        if (AgricultureUser == null)
+                        if (MechanicalUser == null)
                         {
                             throw new Exception("sorry the Plant Evaluation center is not ready.");
                         }
                         else
                         {
-                            UserID = AgricultureUser.Id;
-                            UserName = AgricultureUser.Name;
+                            UserID = MechanicalUser.Id;
+                            UserName = MechanicalUser.Name;
                         }
                     }
 
@@ -458,6 +445,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
             if (caseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(caseTimeLinePostDto);
             return caseAssignments;
         }
+
 
     }
 }
