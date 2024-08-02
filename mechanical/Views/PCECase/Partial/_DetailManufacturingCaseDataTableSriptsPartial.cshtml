@@ -521,9 +521,9 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    toastr.success(response.message);
-
+                    toastr.success(response.message);                   
                     $('#addMechanicalCollateralModal').modal('hide');
+                    $('#addMechanicalCollateralForm')[0].reset();
                     loadCollaterals();
                 },
                 error: function (error) {
@@ -550,8 +550,8 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-
                     $('#EstimatePlaneCollateralModal').modal('hide');
+                    $('#EstimatePlantCollateralForm')[0].reset();
                     loadCollaterals();
                 },
                 error: function (error) {

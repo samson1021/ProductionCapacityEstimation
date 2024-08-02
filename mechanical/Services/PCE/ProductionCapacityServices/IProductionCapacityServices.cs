@@ -27,11 +27,14 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<IEnumerable<ReturnProductionDto>> GetRejectedProductions(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid PCECaseId);
+        Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid userId, Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetRemarkProducts(Guid userId, Guid PCECaseId);
         Task<ReturnProductionDto> GetProductionCapacityById(Guid productionid);
+        Task<ReturnProductionDto> GetProductionCapacityEvalutionById(Guid productionid);
+        
 
         Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid PCECaseId);
-        Task<IEnumerable<ProductionCapcityCorrectionReturnDto1>> GetComments(Guid ProductionCapacityId);
+        Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid ProductionCapacityId);
 
         Task<bool> DeleteProductionFile(Guid userId, Guid Id);
         Task<bool> UploadProductionFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory);

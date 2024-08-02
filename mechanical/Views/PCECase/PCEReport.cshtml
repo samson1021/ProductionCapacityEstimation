@@ -1,0 +1,219 @@
+@using mechanical.Models.PCE.Entities;
+@{
+    var PCECase = ViewData["PCECase"] as PCECase;
+    var productions = ViewData["productions"] as List<ProductionCapacity>;
+    var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
+    var PCECaseSchedule = ViewData["PCECaseSchedule"] as ProductionCaseSchedule;
+    var commaSeparatedRegions = "";
+    var commaSeparatedPropertyof = "";
+    var commaSeparatedType = "";
+
+    if (productions != null)
+    {
+        var uniqueRegions = productions.Select(m => m.Region).Distinct();
+        commaSeparatedRegions = string.Join(", ", uniqueRegions);
+        var ProportyOF = productions.Select(m => m.PropertyOwner).Distinct();
+        commaSeparatedPropertyof = string.Join(", ", ProportyOF);
+        var Type = productions.Select(m => m.Type).Distinct();
+        commaSeparatedType = string.Join(", ", Type);
+    }
+
+    var makers = PCEEvaluations.Select(m => m.Evaluator).Distinct();
+
+    var PCECaseScheduleDate = DateTime.Now;
+    if (PCECaseSchedule != null)
+    {
+        PCECaseScheduleDate = PCECaseSchedule.ScheduleDate;
+    }
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>PCE Case Detail</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCECases", "PCECase")">PCE Reports</a></li>
+                    <li class="breadcrumb-item active">PCE Case Report</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <input value="@PCECase.Id" type="hidden" id="PCECaseId" />
+                <h2 class="text-center mb-4">Commercial Bank of Ethiopia</h2>
+                <table id="PCEcaseproductions" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="text-center">Production Capacity Estimation Report</th>
+                        </tr>
+                        <tr>
+                            <th class="text-right" colspan="4">PCE Case Ref. No.: @PCECase.CaseNo</th>
+                        </tr>
+                        <tr>
+                            <th class="text-right" colspan="4">Date: @PCECaseScheduleDate.ToString("MMMM dd, yyyy")</th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="text-center">PART I: EXECUTIVE SUMMARY</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">This report, requested by @PCECase.ApplicantName, documents the visit to the production/plant capacity estimation located in the following regions: @commaSeparatedRegions on @PCECaseScheduleDate for the purpose of valuing the motor vehicle present.</td>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">General Description</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Property of:</th>
+                            <td colspan="2">(@commaSeparatedPropertyof)</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Machinery and Equipment Location:</th>
+                            <td colspan="2">(@commaSeparatedRegions)</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Type of Production:</th>
+                            <td colspan="2">(@commaSeparatedType)</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Date of Valuation:</th>
+                            <td colspan="2">@PCECaseScheduleDate.ToString("MMMM dd, yyyy")</td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">Additional Information:</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">District:</th>
+                            <td colspan="2">@PCECase.District?.Name</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Creator:</th>
+                            <td colspan="2">@PCECase.RMUser?.Name</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Business License:</th>
+                            @if (PCECase.BussinessLicence != null)
+                            {
+                                <td colspan="2"><a href="@Url.Action("Download", "File", new { id = PCECase.BussinessLicence.Id })">Download License</a></td>
+                            }
+                            else
+                            {                                   
+                                <td colspan="2">Not Available</td>                                    
+                            }
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="text-center">PART II: ASSESSMENT AND REMARKS</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">Our survey assessment and remarks are as follows:</td>
+                        </tr>
+                        @if (PCEEvaluations != null && PCEEvaluations.Any())
+                        {
+                            foreach (var item in PCEEvaluations)
+                            {
+                                if (!string.IsNullOrEmpty(item.SurveyRemark))
+                                {
+                                    <tr>
+                                        <td colspan="4">@item.SurveyRemark</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">No survey remarks available.</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th colspan="2">Maker’s Name:</th>
+                            <th colspan="1">Signature:</th>
+                            <th colspan="1">Date:</th>
+                        </tr>
+                        @if (makers != null && makers.Any())
+                        {
+                            foreach (var item in makers)
+                            {
+                                <tr>
+                                    <td colspan="2">@item.Name</td>
+                                    <td>Signature Placeholder</td>
+                                    <td>@PCECaseScheduleDate.ToString("MMMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">No makers available.</td>
+                            </tr>
+                        }                        
+                        <tr>
+                            <th colspan="4" class="text-center">PART III: COST SUMMARY</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">RC, Total Cost (new):</th>
+                            <td colspan="2">
+                                <!-- Implement logic to display total replacement cost -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>Min:</th>
+                            <th>Max:</th>
+                            <th>Average:</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Total Estimation/Market Value:</th>
+                            <td colspan="2">
+                                <!-- Implement logic to display total estimation/market value -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4" class="text-center">Based on the above, we certify that the total present market value of the motor vehicle as of @PCECaseScheduleDate.ToString("MMMM dd, yyyy") is [Placeholder for value] Birr</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Maker’s Name:</th>
+                            <th colspan="1">Signature:</th>
+                            <th colspan="1">Date:</th>
+                        </tr>
+                        @if (makers != null && makers.Any())
+                        {
+                            foreach (var item in makers)
+                            {
+                                <tr>
+                                    <td colspan="2">@item.Name</td>
+                                    <td>Signature Placeholder</td>
+                                    <td>@PCECaseScheduleDate.ToString("MMMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">No makers available.</td>
+                            </tr>
+                        }
+                    </thead>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;margin-left:3rem;">
+                    <a href="@Url.Action("Download", "PCECase", new { Id = PCECase.Id, Type = "PDF" })" id="download-pdf-btn" class="col-xl-12 btn btn-primary btn-block">
+                        <i class="fas fa-file-pdf mr-2"></i> Download (PDF)
+                    </a>
+                </div>
+                <div class="col-xl-7"></div>
+                <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;margin-right:3rem;">
+                    <a href="@Url.Action("Download", "PCECase", new { Id = PCECase.Id, Type = "DOCX" })" id="download-docx-btn" class="col-xl-12 btn btn-primary btn-block">
+                        <i class="fas fa-file-word mr-2"></i> Download (DOCX)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

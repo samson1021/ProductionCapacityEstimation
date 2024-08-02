@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace mechanical.Migrations
 {
     /// <inheritdoc />
-    public partial class clean : Migration
+    public partial class ProductionReestimation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,31 +24,17 @@ namespace mechanical.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DatePeriod",
+                name: "DateTimeRange",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    PCEEId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DatePeriod", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DateTimePeriod",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    End = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DateTimePeriod", x => x.Id);
+                    table.PrimaryKey("PK_DateTimeRange", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,6 +100,27 @@ namespace mechanical.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UploadFiles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Catagory = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Size = table.Column<long>(type: "bigint", nullable: false),
+                    Extension = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UploadDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CollateralId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UploadFiles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CreateUsers",
                 columns: table => new
                 {
@@ -150,6 +157,66 @@ namespace mechanical.Migrations
                         principalTable: "Districts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Signatures",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    Emp_Id = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SignatureBase64String = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SignatureFileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Signatures", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Signatures_UploadFiles_SignatureFileId",
+                        column: x => x.SignatureFileId,
+                        principalTable: "UploadFiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cases",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    CaseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BussinessLicenceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Segement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CaseOriginatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreationAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cases_CreateUsers_CaseOriginatorId",
+                        column: x => x.CaseOriginatorId,
+                        principalTable: "CreateUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Cases_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Cases_UploadFiles_BussinessLicenceId",
+                        column: x => x.BussinessLicenceId,
+                        principalTable: "UploadFiles",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -196,6 +263,46 @@ namespace mechanical.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PCECases",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    CaseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MakerAssignmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RMUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BussinessLicenceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PCECases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PCECases_CreateUsers_RMUserId",
+                        column: x => x.RMUserId,
+                        principalTable: "CreateUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PCECases_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PCECases_UploadFiles_BussinessLicenceId",
+                        column: x => x.BussinessLicenceId,
+                        principalTable: "UploadFiles",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductionCapcityCorrections",
                 columns: table => new
                 {
@@ -220,28 +327,6 @@ namespace mechanical.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CaseAssignments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CollateralId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AssignmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CaseAssignments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CaseAssignments_CreateUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CaseComments",
                 columns: table => new
                 {
@@ -255,42 +340,15 @@ namespace mechanical.Migrations
                 {
                     table.PrimaryKey("PK_CaseComments", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_CaseComments_Cases_CaseId",
+                        column: x => x.CaseId,
+                        principalTable: "Cases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_CaseComments_CreateUsers_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cases",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CaseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BussinessLicenceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Segement = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CaseOriginatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreationAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Cases_CreateUsers_CaseOriginatorId",
-                        column: x => x.CaseOriginatorId,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Cases_Districts_DistrictId",
-                        column: x => x.DistrictId,
-                        principalTable: "Districts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -433,6 +491,155 @@ namespace mechanical.Migrations
                     table.ForeignKey(
                         name: "FK_Collaterals_CreateUsers_CreatedById",
                         column: x => x.CreatedById,
+                        principalTable: "CreateUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PCECaseTimeLines",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    CaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Activity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NewCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PCECaseTimeLines", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PCECaseTimeLines_CreateUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "CreateUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PCECaseTimeLines_PCECases_NewCaseId",
+                        column: x => x.NewCaseId,
+                        principalTable: "PCECases",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductionCapacities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    PCECaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PropertyOwner = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MachineName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Purpose = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModelNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductionBussinessLicence = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ManufactureYear = table.Column<int>(type: "int", nullable: true),
+                    InvoiceNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductionType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SerialNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MachineryInstalledPlace = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LHCNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Industrialpark = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Region = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Zone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Wereda = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Kebele = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HouseNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlantName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ObsolescenceStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlantDepreciationRate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateOfInspection = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TradeLicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerOfMachinery = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CountryOfOrgin = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlaceOfInspection = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    YearOfManifacturing = table.Column<int>(type: "int", nullable: true),
+                    PurposeOfCollateral = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CurrentStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remark = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EvaluatorUserID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CheckerUserID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductionCapacities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductionCapacities_CreateUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "CreateUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProductionCapacities_PCECases_PCECaseId",
+                        column: x => x.PCECaseId,
+                        principalTable: "PCECases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductionCaseSchedules",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    ScheduleDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PCECaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductionCaseSchedules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductionCaseSchedules_CreateUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "CreateUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductionCaseSchedules_PCECases_PCECaseId",
+                        column: x => x.PCECaseId,
+                        principalTable: "PCECases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CaseAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    CollateralId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AssignmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseAssignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CaseAssignments_Collaterals_CollateralId",
+                        column: x => x.CollateralId,
+                        principalTable: "Collaterals",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CaseAssignments_CreateUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -647,290 +854,61 @@ namespace mechanical.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PCECases",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CaseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MakerAssignmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RMUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BussinessLicenceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PCECases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PCECases_CreateUsers_RMUserId",
-                        column: x => x.RMUserId,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PCECases_Districts_DistrictId",
-                        column: x => x.DistrictId,
-                        principalTable: "Districts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PCECaseTimeLines",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Activity = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NewCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PCECaseTimeLines", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PCECaseTimeLines_CreateUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PCECaseTimeLines_PCECases_NewCaseId",
-                        column: x => x.NewCaseId,
-                        principalTable: "PCECases",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PlantCapacityEstimations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CollateralType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Region = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Zone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Wereda = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Kebele = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HouseNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OwnerOfPlant = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TradeLicenseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LHCNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OwnerNameLHC = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NamePlant = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    YearOfManifacturing = table.Column<int>(type: "int", nullable: false),
-                    PurposeOfPCE = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ObsolescenceStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PlantDepreciationRate = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PlantRegion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PlantCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlantZone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlantSubCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlantWereda = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlantKebele = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateOfInspection = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CurrentStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlantCapacityEstimations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PlantCapacityEstimations_CreateUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PlantCapacityEstimations_PCECases_CaseId",
-                        column: x => x.CaseId,
-                        principalTable: "PCECases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductionCapacities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    PCECaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PropertyOwner = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Category = table.Column<int>(type: "int", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MachineName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Purpose = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModelNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductionBussinessLicence = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ManufactureYear = table.Column<int>(type: "int", nullable: true),
-                    InvoiceNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductionType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SerialNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MachineryInstalledPlace = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LHCNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OwnerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Industrialpark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Region = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Zone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Wereda = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Kebele = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HouseNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlantName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ObsolescenceStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlantDepreciationRate = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateOfInspection = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TradeLicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OwnerOfMachinery = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CountryOfOrgin = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlaceOfInspection = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    YearOfManifacturing = table.Column<int>(type: "int", nullable: true),
-                    PurposeOfCollateral = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CurrentStage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CurrentStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Remark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EvaluatorUserID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CheckerUserID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductionCapacities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductionCapacities_CreateUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ProductionCapacities_PCECases_PCECaseId",
-                        column: x => x.PCECaseId,
-                        principalTable: "PCECases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductionCaseSchedules",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    ScheduleDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PCECaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductionCaseSchedules", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductionCaseSchedules_CreateUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "CreateUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductionCaseSchedules_PCECases_PCECaseId",
-                        column: x => x.PCECaseId,
-                        principalTable: "PCECases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PCEEvaluations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     PCEId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EvaluatorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EvaluatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductionLineOrEquipmentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OutputPhase = table.Column<int>(type: "int", nullable: true),
-                    OriginCountry = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductionUnit = table.Column<int>(type: "int", nullable: true),
-                    WorkingDaysPerMonth = table.Column<int>(type: "int", nullable: true),
+                    OutputType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OutputPhase = table.Column<int>(type: "int", nullable: false),
                     ShiftsPerDay = table.Column<int>(type: "int", nullable: true),
-                    ProductionMeasurement = table.Column<int>(type: "int", nullable: true),
-                    EstimatedProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BottleneckProductionLineCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OverallActualCurrentPlantCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TimeConsumedToCheckId = table.Column<int>(type: "int", nullable: true),
-                    TechnicalObsolescenceStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DepreciationRateApplied = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Discrepancies = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WorkingDaysPerMonth = table.Column<int>(type: "int", nullable: true),
                     EffectiveProductionHourType = table.Column<int>(type: "int", nullable: true),
                     EffectiveProductionHour = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ProductionUnit = table.Column<int>(type: "int", nullable: false),
+                    ProductionMeasurement = table.Column<int>(type: "int", nullable: false),
+                    EstimatedProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BottleneckProductionLineCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OverallActualCurrentPlantCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeConsumedToCheckId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TechnicalObsolescenceStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DepreciationRateApplied = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discrepancies = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ActualProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DesignProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AttainableProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ActualProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FactorsAffectingProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MachineFunctionalityStatus = table.Column<int>(type: "int", nullable: true),
+                    FactorsAffectingProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MachineFunctionalityStatus = table.Column<int>(type: "int", nullable: false),
                     MachineNonFunctionalityReason = table.Column<int>(type: "int", nullable: true),
                     OtherMachineNonFunctionalityReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    InspectionPlace = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    InspectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    InspectionPlace = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InspectionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SurveyRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    Remark = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PCEEvaluations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PCEEvaluations_CreateUsers_EvaluatorID",
-                        column: x => x.EvaluatorID,
+                        name: "FK_PCEEvaluations_CreateUsers_EvaluatorId",
+                        column: x => x.EvaluatorId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PCEEvaluations_DateTimePeriod_TimeConsumedToCheckId",
+                        name: "FK_PCEEvaluations_DateTimeRange_TimeConsumedToCheckId",
                         column: x => x.TimeConsumedToCheckId,
-                        principalTable: "DateTimePeriod",
-                        principalColumn: "Id");
+                        principalTable: "DateTimeRange",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PCEEvaluations_ProductionCapacities_PCEId",
                         column: x => x.PCEId,
-                        principalTable: "ProductionCapacities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductionCapacityReestimations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductionCapacityReestimations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductionCapacityReestimations_ProductionCapacities_ProductionCapacityId",
-                        column: x => x.ProductionCapacityId,
                         principalTable: "ProductionCapacities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -941,10 +919,10 @@ namespace mechanical.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AssignmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -960,7 +938,8 @@ namespace mechanical.Migrations
                         name: "FK_ProductionCaseAssignments_ProductionCapacities_ProductionCapacityId",
                         column: x => x.ProductionCapacityId,
                         principalTable: "ProductionCapacities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -968,10 +947,9 @@ namespace mechanical.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    PCECaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -980,74 +958,26 @@ namespace mechanical.Migrations
                         name: "FK_ProductionReestimations_ProductionCapacities_ProductionCapacityId",
                         column: x => x.ProductionCapacityId,
                         principalTable: "ProductionCapacities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TimePeriod",
+                name: "TimeInterval",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    PCEEId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Start = table.Column<TimeSpan>(type: "time", nullable: false),
-                    End = table.Column<TimeSpan>(type: "time", nullable: false),
-                    PCEEvaluationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    End = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TimePeriod", x => x.Id);
+                    table.PrimaryKey("PK_TimeInterval", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TimePeriod_PCEEvaluations_PCEEvaluationId",
-                        column: x => x.PCEEvaluationId,
+                        name: "FK_TimeInterval_PCEEvaluations_PCEEId",
+                        column: x => x.PCEEId,
                         principalTable: "PCEEvaluations",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UploadFiles",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Catagory = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Size = table.Column<long>(type: "bigint", nullable: false),
-                    Extension = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UploadDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CollateralId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PCEEvaluationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UploadFiles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UploadFiles_PCEEvaluations_PCEEvaluationId",
-                        column: x => x.PCEEvaluationId,
-                        principalTable: "PCEEvaluations",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Signatures",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    Emp_Id = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SignatureBase64String = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SignatureFileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Signatures", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Signatures_UploadFiles_SignatureFileId",
-                        column: x => x.SignatureFileId,
-                        principalTable: "UploadFiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1228,9 +1158,9 @@ namespace mechanical.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PCEEvaluations_EvaluatorID",
+                name: "IX_PCEEvaluations_EvaluatorId",
                 table: "PCEEvaluations",
-                column: "EvaluatorID");
+                column: "EvaluatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PCEEvaluations_PCEId",
@@ -1243,16 +1173,6 @@ namespace mechanical.Migrations
                 column: "TimeConsumedToCheckId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlantCapacityEstimations_CaseId",
-                table: "PlantCapacityEstimations",
-                column: "CaseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlantCapacityEstimations_CreatedById",
-                table: "PlantCapacityEstimations",
-                column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductionCapacities_CreatedById",
                 table: "ProductionCapacities",
                 column: "CreatedById");
@@ -1261,11 +1181,6 @@ namespace mechanical.Migrations
                 name: "IX_ProductionCapacities_PCECaseId",
                 table: "ProductionCapacities",
                 column: "PCECaseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductionCapacityReestimations_ProductionCapacityId",
-                table: "ProductionCapacityReestimations",
-                column: "ProductionCapacityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductionCapcityCorrections_CommentedByUserIdsId",
@@ -1304,68 +1219,14 @@ namespace mechanical.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TimePeriod_PCEEvaluationId",
-                table: "TimePeriod",
-                column: "PCEEvaluationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UploadFiles_PCEEvaluationId",
-                table: "UploadFiles",
-                column: "PCEEvaluationId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_CaseAssignments_Collaterals_CollateralId",
-                table: "CaseAssignments",
-                column: "CollateralId",
-                principalTable: "Collaterals",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_CaseComments_Cases_CaseId",
-                table: "CaseComments",
-                column: "CaseId",
-                principalTable: "Cases",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cases_UploadFiles_BussinessLicenceId",
-                table: "Cases",
-                column: "BussinessLicenceId",
-                principalTable: "UploadFiles",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_PCECases_UploadFiles_BussinessLicenceId",
-                table: "PCECases",
-                column: "BussinessLicenceId",
-                principalTable: "UploadFiles",
-                principalColumn: "Id");
+                name: "IX_TimeInterval_PCEEId",
+                table: "TimeInterval",
+                column: "PCEEId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_PCECases_CreateUsers_RMUserId",
-                table: "PCECases");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_PCEEvaluations_CreateUsers_EvaluatorID",
-                table: "PCEEvaluations");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductionCapacities_CreateUsers_CreatedById",
-                table: "ProductionCapacities");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_PCECases_Districts_DistrictId",
-                table: "PCECases");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_PCECases_UploadFiles_BussinessLicenceId",
-                table: "PCECases");
-
             migrationBuilder.DropTable(
                 name: "CaseAssignments");
 
@@ -1394,9 +1255,6 @@ namespace mechanical.Migrations
                 name: "Corrections");
 
             migrationBuilder.DropTable(
-                name: "DatePeriod");
-
-            migrationBuilder.DropTable(
                 name: "Employees");
 
             migrationBuilder.DropTable(
@@ -1407,12 +1265,6 @@ namespace mechanical.Migrations
 
             migrationBuilder.DropTable(
                 name: "PCECaseTimeLines");
-
-            migrationBuilder.DropTable(
-                name: "PlantCapacityEstimations");
-
-            migrationBuilder.DropTable(
-                name: "ProductionCapacityReestimations");
 
             migrationBuilder.DropTable(
                 name: "ProductionCapcityCorrections");
@@ -1436,37 +1288,37 @@ namespace mechanical.Migrations
                 name: "Signatures");
 
             migrationBuilder.DropTable(
-                name: "TimePeriod");
+                name: "TimeInterval");
 
             migrationBuilder.DropTable(
                 name: "Collaterals");
 
             migrationBuilder.DropTable(
-                name: "Cases");
-
-            migrationBuilder.DropTable(
-                name: "CreateUsers");
-
-            migrationBuilder.DropTable(
-                name: "CreateRoles");
-
-            migrationBuilder.DropTable(
-                name: "Districts");
-
-            migrationBuilder.DropTable(
-                name: "UploadFiles");
-
-            migrationBuilder.DropTable(
                 name: "PCEEvaluations");
 
             migrationBuilder.DropTable(
-                name: "DateTimePeriod");
+                name: "Cases");
+
+            migrationBuilder.DropTable(
+                name: "DateTimeRange");
 
             migrationBuilder.DropTable(
                 name: "ProductionCapacities");
 
             migrationBuilder.DropTable(
                 name: "PCECases");
+
+            migrationBuilder.DropTable(
+                name: "CreateUsers");
+
+            migrationBuilder.DropTable(
+                name: "UploadFiles");
+
+            migrationBuilder.DropTable(
+                name: "CreateRoles");
+
+            migrationBuilder.DropTable(
+                name: "Districts");
         }
     }
 }

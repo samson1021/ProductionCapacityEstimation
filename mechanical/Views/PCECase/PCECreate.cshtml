@@ -87,8 +87,7 @@
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("Partial/_DetailCaseDataTableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");    
         await Html.RenderPartialAsync("Partial/_PCECaseModal");
 
     }
@@ -96,32 +95,6 @@
     <script>
         $(document).ready(function () {
 
-        
-
-            // $("#GenerateCaseNo").on('click', function () {
-            //     var employeeId = empId;
-            //     console.log(employeeId);
-            //     var currentDate = new Date();
-            //     var year = currentDate.getFullYear();
-            //     var month = currentDate.getMonth() + 1;
-            //     var formattedMonth = month.toString().padStart(2, '0');
-
-            //     $.ajax({
-            //         url: '/Case/GetNextCaseNumber',
-            //         method: "GET",
-            //         success: function (data) {
-            //             var consecutiveNumber = data.nextNumber.toString().padStart(4, '0');
-            //             var caseNumber = employeeId + '/' + consecutiveNumber + '/' + formattedMonth + '/' + year;
-
-            //             $("#caseNumber").val(caseNumber);
-            //         },
-            //         error: function (error) {
-            //             console.error('Error:', error);
-            //         }
-            //     });
-            //     $('#GenerateCaseNo').prop('disabled', true);
-
-            // });
                 $("#GenerateCaseNo").on('click', function () {
                 var employeeId = @empId;
                 console.log(employeeId);
@@ -150,17 +123,17 @@
         });
 
         //this is the input validation for application name
-        document.getElementById("applicantName").addEventListener("input", function () {
-            var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        document.getElementById("applicantName").addEventListener("input", function() {
+        var input = this.value;
+        var nameRegex = /^[A-Za-z\s]+$/;
 
-            if (!alphanumericRegex.test(input)) {
-                this.setCustomValidity("Only alphanumeric characters are allowed.");
-                document.getElementById("applicantName-error").textContent = "Only alphanumeric characters are allowed.";
-            } else {
-                this.setCustomValidity("");
-                document.getElementById("applicantName-error").textContent = "";
-            }
+        if (!nameRegex.test(input)) {
+            this.setCustomValidity("Only letters and spaces are allowed.");
+            document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("applicantName-error").textContent = "";
+        }
         });
         //validate the customer Id length
         document.getElementById("CustomerId").addEventListener("input", function () {

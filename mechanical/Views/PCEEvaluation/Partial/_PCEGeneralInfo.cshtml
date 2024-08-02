@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
 
@@ -46,14 +46,15 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                                                <tbody>
+                            <tbody>
                                 @{
-                                    if(myPCECase.BussinessLicence == null)
+                                    if (myPCECase.BussinessLicence == null)
                                     {
                                         <tr>
                                             <td colspan="3">There is no document related to this case</td>
                                         </tr>
-                                    }else
+                                    }
+                                    else
                                     {
                                         <tr>
 
@@ -63,7 +64,7 @@
                                         </tr>
                                     }
                                 }
-                             
+
                             </tbody>
                         </table>
                     </div>

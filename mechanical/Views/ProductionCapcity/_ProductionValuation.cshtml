@@ -2,7 +2,7 @@
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
-    var ProductionCavaluation = ViewData["Prvaluation"] as ReturnProductionDto;
+    var ProductionCavaluation = ViewData["PCEavaluation"] as ReturnProductionDto;
     var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
     var currentStage = Model.CurrentStage;
 }
@@ -41,30 +41,56 @@
                                 <div class="row" style="margin-top:1.25rem;">
                                     <div class="row col-lg-4">
                                         <div class="col-lg-6">
-                                            <label>Manufacturing Catagory:</label>
+                                            <label>Manufacturing Main Sector:</label>
                                         </div>
                                         <div class="col-lg-6">
                                             <div>@ProductionCavaluation.Category</div>
                                         </div>
                                     </div>
-
                                     <div class="row col-lg-4">
                                         <div class="col-lg-6">
-                                            <label> Manufacture Year:</label>
+                                            <label>Manufacturing sector:</label>
                                         </div>
                                         <div class="col-lg-6">
-                                            <div>@ProductionCavaluation.ManufactureYear</div>
+                                            <div>@ProductionCavaluation.Type</div>
                                         </div>
                                     </div>
                                     <div class="row col-lg-4">
                                         <div class="col-lg-6">
-                                            <label>Region:</label>
+                                            <label>Machine Name:</label>
                                         </div>
                                         <div class="col-lg-6">
-                                            <div>@ProductionCavaluation.Region</div>
+                                            <div>@ProductionCavaluation.MachineName</div>
                                         </div>
                                     </div>
+                                   
 
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                <div class="row col-lg-4">
+                                    <div class="col-lg-6">
+                                        <label>Purpose:</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>@ProductionCavaluation.Purpose</div>
+                                    </div>
+                                </div>
+                                <div class="row col-lg-4">
+                                    <div class="col-lg-6">
+                                        <label> Manufacture Year:</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>@ProductionCavaluation.ManufactureYear</div>
+                                    </div>
+                                </div>
+                                <div class="row col-lg-4">
+                                    <div class="col-lg-6">
+                                            <label>Property Address:</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>@ProductionCavaluation.Region</div>
+                                    </div>
+                                </div>
                                 </div>
                                 <div class="row" style="margin-top:1.25rem;">
                                     <div class="row col-lg-4">
@@ -93,7 +119,59 @@
                                     </div>
 
                                 </div>
-                             
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Installed Place:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.MachineryInstalledPlace</div>
+                                        </div>
+                                    </div>
+                                    @if (ProductionCavaluation.MachineryInstalledPlace == "Private Owned LHC")
+                                    {
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>LHC Number::</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.LHCNumber</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Owner Name in the LHC:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@ProductionCavaluation.OwnerName</div>
+                                        </div>
+                                    </div>
+
+                                    }else{
+                                        <div class="row col-lg-4">
+                                            <div class="col-lg-6">
+                                                <label>Industrial Park:</label>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div>@ProductionCavaluation.Industrialpark</div>
+                                            </div>
+                                        </div>
+                                       
+                                    }
+
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-12">
+                                        <div class="col-lg-4">
+                                            <label>Poduction Capcity Description:</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <div>@ProductionCavaluation.ProductDescription</div>
+                                        </div>
+                                    </div>
+                                   
+
+                                </div>
                             </div>
                         </div>
           
