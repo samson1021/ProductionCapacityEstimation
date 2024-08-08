@@ -15,6 +15,7 @@ using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Enum.ProductionCapcityEstimation;
+using mechanical.Services.PCE.PCEEvaluationService;
 
 
 namespace mechanical.Controllers
@@ -22,12 +23,11 @@ namespace mechanical.Controllers
     public class ProductionCapcityController : BaseController
     {
         private readonly IPCECaseService _pCECaseService;
-        private readonly IProductionCapacityServices _productionCapacityServices;
-       // private readonly ILogger<ProductionCapcityController> _logger;
+        private readonly IProductionCapacityServices _productionCapacityServices;      
         private readonly CbeContext _cbeContext;
-        //private readonly IProductionUploadFileService _productionUploadFileService;
+       
         private readonly IUploadFileService _uploadFileService;
-
+       
         public ProductionCapcityController(CbeContext cbeContext, IPCECaseService pCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
@@ -35,7 +35,7 @@ namespace mechanical.Controllers
             _pCECaseService = pCECaseService;
             //_productionUploadFileService = productionUploadFileService;
             _uploadFileService = uploadFileService;
-
+           
 
         }
 
@@ -113,6 +113,7 @@ namespace mechanical.Controllers
             var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
             var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
+            var PcevalutionDto = await _productionCapacityServices.GetValuationById(id);
 
             if (rejectedProduction != null)
             {
@@ -120,15 +121,25 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
-           
-             if (response.ProductionType == "Manufacturing")
-            {
-                var Production = await _productionCapacityServices.GetProductionCapacityEvalutionById(id);
-                ViewData["PCEavaluation"] = Production;
-            }
-           
+          
 
-           // ViewData["Prvaluation"] = productionById;
+            if (PcevalutionDto != null)
+            {
+                ViewData["PcevalutionDto"] = PcevalutionDto;
+            }
+           if (response.ProductionType=="Manufacturing")
+            {
+                var Production = await _productionCapacityServices.GetManufuctringProductionCapacityEvalutionById(id);
+                ViewData["Mavaluation"] = Production;
+            }
+            else if (response.ProductionType == "Plant")
+            {
+                var Production = await _productionCapacityServices.GetPlantProductionCapacityEvalutionById(id);
+                ViewData["Pavaluation"] = Production;
+            }
+
+
+            // ViewData["Prvaluation"] = productionById;
             ViewData["pcecaseDtos"] = loanCase;
             ViewData["productionFiles"] = file;
             ViewData["rejectedCollateral"] = rejectedProduction;
@@ -139,6 +150,7 @@ namespace mechanical.Controllers
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
             return View(response);
+            
         }
 
 

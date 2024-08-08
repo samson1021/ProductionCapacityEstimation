@@ -218,6 +218,19 @@ namespace mechanical.Controllers.PCE
         }
 
         [HttpGet]
+        public async Task<IActionResult> ReestimationCase(Guid id)
+        {
+
+            var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
+            //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            //var motorvechiel = await _cbeContext.MotorVehicles.Where(res => res.Collaterial.CaseId == CaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            ViewData["case"] = loanCase;
+            //ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+        [HttpGet]
         public async Task<IActionResult> PCECompleteCase(Guid id)
         {
 
@@ -277,6 +290,21 @@ namespace mechanical.Controllers.PCE
             {
                 await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
                 var response = new { message = "PCE assigned successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var error = new { message = ex.Message };
+                return BadRequest(error);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SendProductionForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
+        {
+            try
+            {
+                await _productionCaseAssignmentServices.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                var response = new { message = "PCE Reestimation assigned successfully" };
                 return Ok(response);
             }
             catch (Exception ex)

@@ -3,10 +3,10 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto;
 @{
     var myCase = ViewData["case"] as PCECaseReturntDto;
-   // var myCase = ViewData["case"] as CaseReturntDto;
+    // var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
+    // var myCase = ViewData["case"] as CaseReturntDto;
     var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
-   // var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;
-   // var conMngAgr = ViewData["conMngAgr"] as List<ConstMngAgrMachinery>;
+ 
 }
 
 <div class="card">
@@ -14,37 +14,7 @@
         <div class="col-12">
             <div class="row">
                 <div class="col-12 col-sm-6">
-                    <div class="btn-group">
-                        @{
-                            // if (motorVehicle != null && motorVehicle.Count > 0)
-                            // {
-                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVReport", "PCECase", new { CaseId = myCase.Id })">
-                            //         MOV Report <i class="nav-icon fas fa-sitemap"></i>
-                            //     </a>
-                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVSummary", "PCECase", new { CaseId = myCase.Id })">
-                            //         MOV Summary <i class="nav-icon fas fa-report"></i>
-                            //     </a>
-                            // }
-                            // // if (conMngAgr != null && conMngAgr.Count > 0)
-                            // {
-                            //     // <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachineryReport", "Case", new { CaseId = myCase.Id })">
-                            //     //     CAM Report <i class="nav-icon fas fa-sitemap"></i>
-                            //     // </a>
-                            //     // <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachinerySummary", "Case", new { CaseId = myCase.Id })">
-                            //     //     CAM Summary <i class="nav-icon fas fa-report"></i>
-                            //     // </a>
-
-                            // }
-                            // if (indBldgFacEq != null && indBldgFacEq.Count > 0)
-                            // {
-                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentReport", "Case", new { CaseId = myCase.Id })">
-                            //         IBFE Report <i class="nav-icon fas fa-sitemap"></i>
-                            //     </a>
-                            //     <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentSummary", "Case", new { CaseId = myCase.Id })">
-                            //         IBFE Summary <i class="nav-icon fas fa-report"></i>
-                            //     </a>
-                            // }
-                        }
+                    <div class="btn-group">                       
                         <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
                     </div>
 
@@ -55,11 +25,12 @@
             </div>
         </div>
     </div>
-    <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" />
+   @*  <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" /> *@
     <div class="card-body">
         <table id="caseCollaterals" class="table table-bordered table-striped">
             <thead>
                 <tr>
+                    <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
                     <th>Property Owner</th>
                     <th>Role</th>
                     <th>Main Sector</th>
@@ -67,6 +38,54 @@
                     <th>Action</th>
                 </tr>
             </thead>
-        </table>
+        </table>      
+        <div class="row">
+            <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
+            <div class="row">
+                <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Request Re-estimation </button>
+            </div>
+        </div
+       @*  <div class="row">
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <button id="assignButton" class="col-12 btn btn-sm bg-purple">Request Re-estimation</button>
+            </div>
+        </div> *@
+    </div>
+</div>
+<div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Send For Re-estimation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("SendProductionForReestimation", "Case", FormMethod.Post, new { id = "assignForm" }))
+                {
+                    <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
+                    <div class="form-group">
+                        <label for="CenterDropdown">Select Valuation Center:</label>
+                        <select class="form-control" id="CenterDropdown" name="CenterId">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="CenterDropdown">Re-estimation Reason:</label>
+                        <select class="form-control" id="ReestimationReason" name="ReestimationReason">
+                            <option value="" disabled selected>Select Re-estimation Reason </option>
+                            <option value="Customer Appeal">Customer Appeal</option>
+                            <option value="Re-estimation">Re-estimation </option>
+                        </select>
+                    </div>
+                    <div class="row col-12">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignButton">Assign</button>
+                            <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>

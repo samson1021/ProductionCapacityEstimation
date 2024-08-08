@@ -210,8 +210,8 @@ namespace mechanical.Services.PCE.PCECaseService
             //var cases = await _cbeContext.PCECases.Where(res => res.CurrentStatus == "Completed" && res.CurrentStage == "Relation Manager").ToListAsync();
             //var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             //return caseDtos;
-            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
-           .Where(res => res.RMUserId == userId && (res.ProductionCapacities.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))).ToListAsync();
+            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Relation Manager"))
+           .Where(res => res.RMUserId == userId && (res.ProductionCapacities.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Relation Manager"))).ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             foreach (var caseDto in caseDtos)
             {
@@ -250,8 +250,8 @@ namespace mechanical.Services.PCE.PCECaseService
                 PendingPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == userId && res.ProductionCapacities.Any(coll => (coll.CurrentStage != "Checker Officer" && coll.CurrentStatus != "Complete") && coll.CurrentStage != "Relation Manager")).CountAsync(),
                 PendingPCECollateralCount = await _cbeContext.ProductionCapacities.Where(coll => coll.CurrentStage != "Checker Officer" && coll.CurrentStatus != "Complete" && coll.CurrentStage != "Relation Manager").CountAsync(),
                
-                CompletedPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == userId && res.ProductionCapacities.Any(coll => coll.CurrentStage == "Checker Officer" && coll.CurrentStatus == "Complete")).CountAsync(),
-                CompletedPCECollateralCount = await _cbeContext.ProductionCapacities.Where(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
+                CompletedPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == userId && res.ProductionCapacities.Any(coll => coll.CurrentStage == "Relation Manager" && coll.CurrentStatus == "Complete")).CountAsync(),
+                CompletedPCECollateralCount = await _cbeContext.ProductionCapacities.Where(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "Complete").CountAsync(),
                 
               
                 TotalPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == userId).CountAsync(),

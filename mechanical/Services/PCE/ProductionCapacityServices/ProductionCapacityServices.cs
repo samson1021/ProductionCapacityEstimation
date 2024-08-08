@@ -21,6 +21,8 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.Dto.UploadFileDto;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using mechanical.Models.Dto.ConstMngAgrMachineryDto;
+using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -377,15 +379,29 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return _mapper.Map<ReturnProductionDto>(productionById);
 
         }
-        public async Task<ReturnProductionDto> GetProductionCapacityEvalutionById(Guid productionId)
-        {
-
-            //var productionById = await _cbeContext.ProductionCapacities.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").FirstOrDefaultAsync(res => res.Id == productionId);            
-          var productionById = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(res => res.Id == productionId);
-            return _mapper.Map<ReturnProductionDto>(productionById);
+        public async Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionId)       {
+ 
+            var productionById = await _cbeContext.PCEEvaluations.Include(res => res.PCE).FirstOrDefaultAsync(res => res.PCEId == productionId);
+            return _mapper.Map<ReturnProductionDto> (productionById);
 
         }
-        
+        public async Task<PlantEditPostDto> GetPlantProductionCapacityEvalutionById(Guid productionId)
+        {
+
+            var productionById = await _cbeContext.PCEEvaluations.Include(res => res.PCE).FirstOrDefaultAsync(res => res.PCEId == productionId);
+            return _mapper.Map<PlantEditPostDto>(productionById);
+
+        }
+        public async Task<PCEEvaluationReturnDto> GetValuationById(Guid productionId)
+        {
+
+            var productionById = await _cbeContext.PCEEvaluations.Include(res => res.PCE).FirstOrDefaultAsync(res => res.PCEId == productionId);
+            return _mapper.Map<PCEEvaluationReturnDto>(productionById);
+
+        }
+       
+
+
         private async Task UploadFile(Guid userId, string Category, ProductionCapacity production, IFormFile? file)
         {
             if (file != null)
@@ -447,7 +463,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
         public async Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid PCECaseId)
         {
-            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Checker Officer" && res.CurrentStatus == "Complete").ToListAsync();
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Relation Manager" && res.CurrentStatus == "Complete").ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(collaterals);
         }
     }

@@ -1,6 +1,7 @@
 ﻿
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Entities;
+using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
 using mechanical.Models.PCE.Entities;
@@ -30,8 +31,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid userId, Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetRemarkProducts(Guid userId, Guid PCECaseId);
         Task<ReturnProductionDto> GetProductionCapacityById(Guid productionid);
-        Task<ReturnProductionDto> GetProductionCapacityEvalutionById(Guid productionid);
+       
+        Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionid);
+        Task<PlantEditPostDto> GetPlantProductionCapacityEvalutionById(Guid productionid);
+        Task<PCEEvaluationReturnDto> GetValuationById(Guid productionid);
         
+
 
         Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid PCECaseId);
         Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid ProductionCapacityId);

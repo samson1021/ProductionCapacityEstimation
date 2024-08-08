@@ -265,7 +265,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
 
 
 
-        public async Task<List<ProductionCaseAssignmentDto>> SendProductionForReestimation(string ReestimationReason, string selectedProductionIds, string CenterId)
+        public async Task<List<ProductionCaseAssignmentDto>> SendProductionForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
         {
             var centerId = Guid.Parse(CenterId);
             var user = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Role.Name == "Maker Manager");
@@ -274,7 +274,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                 throw new Exception("sorry the center is not ready.");
             }
             List<ProductionCaseAssignmentDto> caseAssignments = new List<ProductionCaseAssignmentDto>();
-            List<Guid> collateralIdList = selectedProductionIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
+            List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             PCECaseTimeLinePostDto caseTimeLinePostDto = null;
 
             foreach (Guid collateralId in collateralIdList)
@@ -285,6 +285,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                 {
                     collateral.CurrentStage = "Maker Manager";
                     collateral.CurrentStatus = "New";
+                   
                     var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateralId && res.UserId == user.Id).FirstOrDefaultAsync();
                     if (previousCaseAssignment != null)
                     {
@@ -313,26 +314,27 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                         caseTimeLinePostDto = new PCECaseTimeLinePostDto()
                         {
                             CaseId = collateral.PCECaseId,
-                            Activity = $"<strong>Collateral assigned for Re-evaluation for <a href='/UserManagment/Profile?id={user.Id}'>{user.Name}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {user.District.Name}.",
+                            Activity = $"<strong>PCE assigned for Re-evaluation for <a href='/UserManagment/Profile?id={user.Id}'>{user.Name}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {user.District.Name}.",
                             CurrentStage = "Maker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Manufacturing Main Sector:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'> Manufacturing sub Sector:</i> {(collateral.Type)}. <br>";
 
                 }
-                var caseReEvaluation = new CollateralReestimation
+                var caseReEvaluation = new ProductionReestimation
                 {
-                    CollateralId = collateralId,
+                    ProductionCapacityId = collateralId,
                     Reason = ReestimationReason,
                     CreatedAt = DateTime.Now,
                 };
-                await _cbeContext.CollateralReestimations.AddAsync(caseReEvaluation);
+                await _cbeContext.ProductionReestimations.AddAsync(caseReEvaluation);
                 await _cbeContext.SaveChangesAsync();
             }
             if (caseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(caseTimeLinePostDto);
             return caseAssignments;
+
         }
-    
+
 
 
         public async Task<List<ProductionCaseAssignmentDto>> SendProductionForValuation(string selectedProductionIds, string CenterId) 
@@ -448,8 +450,8 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
             } 
             if (caseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(caseTimeLinePostDto); 
             return caseAssignments; 
-        } 
-    
+        }
+
 
 
     }
