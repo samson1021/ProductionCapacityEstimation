@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacityEstimation
 <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
@@ -355,7 +355,7 @@
                         data: 'Id',
                         width: '10%',
                         // render: function (data, type, row, meta) {
-                        //     return '<a href="Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                        //     return '<a href="Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
                         // }
                         render: function (data, type, row, meta) {
 
@@ -363,9 +363,9 @@
                             console.log("welcome ");;
                             if (row.ProductionType === 'Plant') {
                                 console.log(data.ProductionType);
-                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("PlantEdit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a href="@Url.Action("PlantEdit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
                             } else {
-                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a href="@Url.Action("Edit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
                             }
                         }
                     }
@@ -384,7 +384,7 @@
             $('#deleteItem').on('click', function () {
                 var itemId = $(this).data('id');
                 $.ajax({
-                    url: '@Url.Action("DeleteProduction", "ProductionCapcity")',
+                    url: '@Url.Action("DeleteProduction", "ProductionCapacity")',
                     type: 'POST',
                     data: { id: itemId },
                     success: function (result) {
@@ -406,8 +406,8 @@
 
         function loadCollaterals() {
             $.ajax({
-                url: '/ProductionCapcity/GetProductions?PCECaseId=' + CaseId,
-                //url: '/ProductionCapcity/GetProductions?CaseId' + CaseId,
+                url: '/ProductionCapacity/GetProductions?PCECaseId=' + CaseId,
+                //url: '/ProductionCapacity/GetProductions?CaseId' + CaseId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -515,14 +515,13 @@
 
             var formData = new FormData(this);
             $.ajax({
-                url: '/ProductionCapcity/Create',
+                url: '/ProductionCapacity/Create',
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    this.reset();
                     $('#addMechanicalCollateralModal').modal('hide');
 
                     loadCollaterals();
@@ -544,7 +543,7 @@
         
             var formData = new FormData(this);
             $.ajax({
-                url: '/ProductionCapcity/PlantCreate',
+                url: '/ProductionCapacity/PlantCreate',
                 type: 'POST',
                 data: formData,
                 processData: false,

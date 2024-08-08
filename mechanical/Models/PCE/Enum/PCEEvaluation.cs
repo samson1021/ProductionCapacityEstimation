@@ -49,8 +49,8 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
     //     [Display(Name = "Rejected")]
     //     Rejected,
 
-    //     [Display(Name = "Reevaluated")]
-    //     Reevaluated,
+    //     [Display(Name = "Reestimated")]
+    //     Reestimated,
 
     //     [Display(Name = "Completed")]
     //     Completed,

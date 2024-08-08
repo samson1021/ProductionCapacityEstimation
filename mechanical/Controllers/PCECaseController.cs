@@ -318,26 +318,5 @@ namespace mechanical.Controllers.PCE
 
             return View();
         }
-
-        public async Task<IActionResult> Download(Guid Id, string Type)
-        {
-            
-            var pceReportData = await _PCECaseService.GetPCEReportData(Id);
-
-            byte[] fileContents;
-
-            if (Type == "DOCX")
-            {
-                fileContents = await _PCECaseService.GenerateDOCX(pceReportData);
-                return File(fileContents, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Report.docx");
-            }
-            else if (Type == "PDF")
-            {
-                fileContents = await _PCECaseService.GeneratePDF(pceReportData);
-                return File(fileContents, "application/pdf", "Report.pdf");
-            }
-
-            return BadRequest("Invalid file Type.");
-        }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto
+﻿namespace mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto
 {
-    public class ProductionCapcityCorrectionReturnDto
+    public class ProductionCapacityCorrectionReturnDto
     {
         public Guid ProductionCaseId { get; set; }
         public Guid ProductionCapacityId { get; set; }

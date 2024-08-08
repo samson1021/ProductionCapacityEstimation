@@ -32,7 +32,5 @@ namespace mechanical.Services.PCE.PCECaseService
 
 
         Task<PCEReportDataDto> GetPCEReportData(Guid Id);
-        Task<byte[]> GenerateDOCX(PCEReportDataDto pceReportData);
-        Task<byte[]> GeneratePDF(PCEReportDataDto pceReportData);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace mechanical.Models.Enum.ProductionCapcityEstimation
+namespace mechanical.Models.PCE.Enum.ProductionCapacityEstimation
 {
     public enum MachineryInstalledPlace
     {

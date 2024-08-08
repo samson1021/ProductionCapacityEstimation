@@ -71,7 +71,7 @@ namespace mechanical.Data
         public DbSet<ProductionReject> ProductionRejects { get; set; }
         public DbSet<ProductionCaseAssignment> ProductionCaseAssignments { get; set; }
         public DbSet<ProductionCapacityReestimation> ProductionCapacityReestimations { get; set; }
-        public DbSet<ProductionCapcityCorrection> ProductionCapcityCorrections { get; set; }
+        public DbSet<ProductionCapcityCorrection> ProductionCapacityCorrections { get; set; }
         public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
     
 

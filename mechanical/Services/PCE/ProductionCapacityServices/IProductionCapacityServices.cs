@@ -2,7 +2,7 @@
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
 using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
@@ -32,7 +32,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<ReturnProductionDto> GetProductionCapacityById(Guid productionid);
 
         Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid PCECaseId);
-        Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid ProductionCapacityId);
+        Task<IEnumerable<ProductionCapacityCorrectionReturnDto>> GetComments(Guid ProductionCapacityId);
 
         Task<bool> DeleteProductionFile(Guid userId, Guid Id);
         Task<bool> UploadProductionFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory);

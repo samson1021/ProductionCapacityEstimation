@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacityEstimation
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @* @model mechanical.Models.Dto.CollateralDto.CollateralPostDto; *@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
@@ -103,7 +103,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            @using (Html.BeginForm("Create", "ProductionCapcity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
+            @using (Html.BeginForm("Create", "ProductionCapacity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
             {
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">

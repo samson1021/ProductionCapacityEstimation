@@ -2,7 +2,7 @@
 using mechanical.Data;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.Correction;
-using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
 
 using mechanical.Models.Entities;
 using mechanical.Services.CaseTimeLineService;
@@ -27,7 +27,7 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
             _IPCECaseTimeLineService = _IPCECaseTimeLineService;
 
         }
-        public async Task<ProductionCapcityCorrection> CreateProductionCorrection(ProductionCapcityCorrectionPostDto createCorrectionDto)
+        public async Task<ProductionCapacityCorrectionReturnDto> CreateProductionCorrection(ProductionCapacityCorrectionPostDto createCorrectionDto)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var loanCase = _mapper.Map<ProductionCapcityCorrection>(createCorrectionDto);
@@ -35,7 +35,7 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
             loanCase.ProductionCapacityId = getcaseId;
             loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
             loanCase.CreationDate = DateTime.Now;
-            await _cbeContext.ProductionCapcityCorrections.AddAsync(loanCase);
+            await _cbeContext.ProductionCapacityCorrections.AddAsync(loanCase);
             await _cbeContext.SaveChangesAsync();
 
             //await _IPCECaseTimeLineService.GetPCECaseTimeLines(new PCECaseTimeLinePostDto
@@ -45,13 +45,13 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
             //    CurrentStage = "Relation Manager"
             //});
 
-            return loanCase;
+            return _mapper.Map<ProductionCapacityCorrectionReturnDto>(loanCase);
         }
 
-        public async Task<ProductionCapcityCorrectionPostDto> GetProductionCorrection(Guid Id)
+        public async Task<ProductionCapacityCorrectionPostDto> GetProductionCorrection(Guid Id)
         {
-            var loanCase = await _cbeContext.ProductionCapcityCorrections.Include(res => res.ProductionCapacityId).FirstOrDefaultAsync(c => c.Id == Id);
-            return _mapper.Map<ProductionCapcityCorrectionPostDto>(loanCase);
+            var loanCase = await _cbeContext.ProductionCapacityCorrections.Include(res => res.ProductionCapacityId).FirstOrDefaultAsync(c => c.Id == Id);
+            return _mapper.Map<ProductionCapacityCorrectionPostDto>(loanCase);
         }
 
 

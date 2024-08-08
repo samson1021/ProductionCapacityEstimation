@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.Operations;
 //using mechanical.Services.ProductionCaseTimeLineService;
 //using mechanical.Models.Dto.ProductionCaseTimeLineDto;
 using System.ComponentModel.DataAnnotations;
-using mechanical.Models.PCE.Dto.ProductionCapcityCorrectionDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
 
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Models.PCE.Entities;
@@ -283,13 +283,13 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
     }
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetPendingProductions(Guid PCECaseId)
-        {
-            //  var ProductinCaseId = Guid.Parse("2cd32d1a-89bb-42c6-8a1d-7c631558ba47");
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
-            return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        }
-        public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
+    public async Task<IEnumerable<ReturnProductionDto>> GetPendingProductions(Guid PCECaseId)
+    {
+        //  var ProductinCaseId = Guid.Parse("2cd32d1a-89bb-42c6-8a1d-7c631558ba47");
+        var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
+        return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+    }
+    public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
     {
         var product = await _cbeContext.ProductionCapacities
                         .FirstOrDefaultAsync(c => c.Id == id);
@@ -395,12 +395,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
         }
 
-        public async Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid CollateralId)
+        public async Task<IEnumerable<ProductionCapacityCorrectionReturnDto>> GetComments(Guid CollateralId)
         {
-            var comments = await _cbeContext.ProductionCapcityCorrections.Where(ca => ca.ProductionCapacityId == CollateralId).ToListAsync();
+            var comments = await _cbeContext.ProductionCapacityCorrections.Where(ca => ca.ProductionCapacityId == CollateralId).ToListAsync();
             if (comments != null)
             {
-                return _mapper.Map<IEnumerable<ProductionCapcityCorrectionReturnDto>>(comments);
+                return _mapper.Map<IEnumerable<ProductionCapacityCorrectionReturnDto>>(comments);
             }
 
 

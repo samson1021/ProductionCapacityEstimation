@@ -18,16 +18,16 @@ using mechanical.Models.Dto.CollateralDto;
 
 namespace mechanical.Controllers
 {
-    public class ProductionCapcityController : BaseController
+    public class ProductionCapacityController : BaseController
     {
         private readonly IPCECaseService _pCECaseService;
         private readonly IProductionCapacityServices _productionCapacityServices;
-        private readonly ILogger<ProductionCapcityController> _logger;
+        private readonly ILogger<ProductionCapacityController> _logger;
         private readonly CbeContext _cbeContext;
         //private readonly IProductionUploadFileService _productionUploadFileService;
         private readonly IUploadFileService _uploadFileService;
 
-        public ProductionCapcityController(CbeContext cbeContext, IPCECaseService pCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;

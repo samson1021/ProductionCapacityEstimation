@@ -20,7 +20,7 @@
             </div>
 
             @* @using (Html.BeginForm("Create", "PlantCapacityEstimation", FormMethod.Post, enctype="multipart/form-data", new { id = "EstimatePlaneCollateralForm" })) *@
-            @using (Html.BeginForm("PlantCreate", "PlantCapacity", FormMethod.Post, new { id = "EstimatePlantCollateralForm", enctype = "multipart/form-data", onsubmit = "return validateForm();" }))
+            @using (Html.BeginForm("PlantCreate", "ProductionCapacity", FormMethod.Post, new { id = "EstimatePlantCollateralForm", enctype = "multipart/form-data", onsubmit = "return validateForm();" }))
             {
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">

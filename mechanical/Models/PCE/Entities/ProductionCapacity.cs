@@ -1,5 +1,5 @@
 ﻿using mechanical.Models.Entities;
-using mechanical.Models.Enum.ProductionCapcityEstimation;
+using mechanical.Models.PCE.Enum.ProductionCapacityEstimation;
 using mechanical.Models.PCE.Entities;
 using System.ComponentModel.DataAnnotations;
 

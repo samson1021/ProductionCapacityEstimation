@@ -45,12 +45,19 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
-                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data +
-                                '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data +
-                                '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
-                                '\')">Return</a>';
-
+                            
+                            var evaluateLink = '';
+                            var returnLink = '';
+                            if (row.CurrentStatus === "New"|| row.CurrentStatus === "Pending" || row.CurrentStatus === "Reestimate") {
+                                if (row.CurrentStatus === "Reestimate") {
+                                    evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Reestimate </a> | ';                                                              
+                                } else {
+                                    evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Evaluate </a> | ';
+                                }         
+                                returnLink = ' | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>';   
+                            } 
+                            
+                            return evaluateLink + '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
                         }
                     }
                 ]

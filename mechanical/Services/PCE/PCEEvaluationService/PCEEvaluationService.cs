@@ -269,13 +269,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEntity.PCEId);
 
-                var Status = "Evaluated";
-                var MMActivity = $"<strong>New PCE Case has been evaluated.</strong>";
+                var Status = "Completed";
+                var MMActivity = $"<strong>New PCE Case has been Completed.</strong>";
                 var RMActivity = $"<strong> PCE Case Evaluation is submitted to Relational Manager.</strong>";
-                if (pce.CurrentStatus == "Returned")
+                if (pce.CurrentStatus == "Reestimated")
                 {
-                    Status = "Reevaluated";
-                    MMActivity = $"<strong>New PCE Case has been reevaluated.</strong>";
+                    Status = "Reestimated";
+                    MMActivity = $"<strong>New PCE Case has been reestimated.</strong>";
                     RMActivity = $"<strong> PCE Case Evaluation is resubmitted to Relational Manager.</strong>";
                 }
                 pce.CurrentStage = "Relational Manager";
@@ -340,8 +340,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 {
                     Status = "Rejected";
                     Stage = "Maker Officer";
-                    MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reevaluation.</strong>";
-                    Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reevaluation by Relational Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
+                    MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reestimation.</strong>";
+                    Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reestimation by Relational Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
                 }
 
                 pce.CurrentStage = Stage;
@@ -461,8 +461,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching PCEEvaluation with PCEID {PCEId}");
-                throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEID {PCEId}.");
+                _logger.LogError(ex, "Error fetching PCEEvaluation with PCEId {PCEId}");
+                throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEId {PCEId}.");
             }
         }
 
@@ -513,36 +513,36 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
 
-        public async Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId)
-        {
-            var NewPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "New").ToListAsync();
-            var PendingPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Pending").ToListAsync();
-            var EvaluatedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Evaluated").ToListAsync();
-            var ReevaluatedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reevaluated").ToListAsync();
-            var ReturnedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Returned").ToListAsync();
-            var TotalPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId).ToListAsync();
+        // public async Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId)
+        // {
+        //     var NewPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "New").ToListAsync();
+        //     var PendingPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Pending").ToListAsync();
+        //     var CompletedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Completed").ToListAsync();
+        //     var ReestimatedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reestimated").ToListAsync();
+        //     var ReturnedPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Returned").ToListAsync();
+        //     var TotalPCEs = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId).ToListAsync();
 
-            return new PCECasesCountDto()
-            {
-                NewPCECasesCount = NewPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                NewPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "New").CountAsync(),
+        //     return new PCECasesCountDto()
+        //     {
+        //         NewPCECasesCount = NewPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         NewPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "New").CountAsync(),
 
-                PendingPCECasesCount = PendingPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                PendingPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Pending").CountAsync(),
+        //         PendingPCECasesCount = PendingPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         PendingPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Pending").CountAsync(),
 
-                EvaluatedPCECasesCount = EvaluatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                EvaluatedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Evaluated").CountAsync(),
+        //         CompletedPCECasesCount = CompletedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         CompletedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Completed").CountAsync(),
 
-                ReevaluatedPCECasesCount = ReevaluatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                ReevaluatedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Reevaluated").CountAsync(),
+        //         ReestimatedPCECasesCount = ReestimatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         ReestimatedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Reestimated").CountAsync(),
 
-                ReturnedPCECasesCount = ReturnedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                ReturnedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Returned").CountAsync(),
+        //         ReturnedPCECasesCount = ReturnedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         ReturnedPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.Status == "Returned").CountAsync(),
 
-                TotalPCECasesCount = TotalPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                TotalPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId).CountAsync(),
-            };
-        }
+        //         TotalPCECasesCount = TotalPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         TotalPCEsCount = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId).CountAsync(),
+        //     };
+        // }
 
         //////////////////////////////// PCE /////////////////////////////////////////
 
@@ -576,6 +576,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
             {
                 query = query.Where(pc => pc.CurrentStatus == Status);
+            }
+            else
+            {
+                query = query.Where(pc => pc.CurrentStatus != "Rejected");
             }
 
             var productions = await query.ToListAsync();
@@ -611,6 +615,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 query = query.Where(x => x.CurrentStatus == Status);
             }
+            
+            else
+            {
+                query = query.Where(pc => pc.CurrentStatus != "Rejected");
+            }
 
             return await query.CountAsync();
         }
@@ -624,18 +633,18 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {
             var NewPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "New");
             var PendingPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Pending");
-            var EvaluatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Evaluated");
-            var ReevaluatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Reevaluated");
-            var ReturnedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Returned");
+            var CompletedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Completed");
+            var ResubmittedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Reestimate");
+            var ReestimatedPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage, "Reestimated");
             var TotalPCEsCount = await GetPCEsCountAsync(UserId, PCECaseId, Stage);
 
             return new PCEsCountDto()
             {
                 NewPCEsCount = NewPCEsCount,
                 PendingPCEsCount = PendingPCEsCount,
-                EvaluatedPCEsCount = EvaluatedPCEsCount,
-                ReevaluatedPCEsCount = ReevaluatedPCEsCount,
-                ReturnedPCEsCount = ReturnedPCEsCount,
+                CompletedPCEsCount = CompletedPCEsCount,
+                ResubmittedPCEsCount = ResubmittedPCEsCount,
+                ReestimatedPCEsCount = ReestimatedPCEsCount,
                 TotalPCEsCount = TotalPCEsCount
             };
         }
@@ -652,5 +661,27 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(rejectedCapacities); ;
         // }
+
+        public async Task<PCEDto> GetPCEDetails(Guid UserId, Guid PCEId)
+        {
+
+            var pceCase = await _cbeContext.PCECases.FirstOrDefaultAsync(res => res.Id == PCEId);
+            var pce = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(res => res.Id == PCEId);            
+            var latestPCEEvaluation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == PCEId).OrderByDescending(res => res.UpdatedAt).ThenByDescending(res => res.CreatedAt).FirstOrDefaultAsync(); 
+            // var latestPCEEvaluation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == PCEId).OrderByDescending(res => res.UpdatedAt.HasValue ? res.UpdatedAt.Value : res.CreatedAt).FirstOrDefaultAsync();
+            var reestimation = await _cbeContext.ProductionCapacityReestimations.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
+            var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(PCEId);          
+            var currentUser = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
+
+            return new PCEDto
+            {
+                PCECase = pceCase,
+                ProductionCapacity = _mapper.Map<ReturnProductionDto>(pce),
+                LatestPCEEvaluation = _mapper.Map<PCEEvaluationReturnDto>(latestPCEEvaluation),
+                Reestimation = reestimation,
+                RelatedFiles = relatedFiles,
+                CurrentUser = currentUser
+            };
+        }                       
     }
 }

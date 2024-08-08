@@ -1,4 +1,4 @@
-﻿using mechanical.Models.Enum.ProductionCapcityEstimation;
+﻿using mechanical.Models.PCE.Enum.ProductionCapacityEstimation;
 using System.ComponentModel.DataAnnotations;
 
 namespace mechanical.Models.PCE.Dto.ProductionCapacityDto

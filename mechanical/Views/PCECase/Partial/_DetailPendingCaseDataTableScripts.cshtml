@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacityEstimation
 <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
@@ -321,7 +321,7 @@
                         data: 'Id',
                         width: '10%',
                         // render: function (data, type, row, meta) {
-                        //     return '<a href="Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                        //     return '<a href="Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
                         // }
                         render: function (data, type, row, meta) {
 
@@ -329,9 +329,9 @@
                             console.log("welcome ");;
                             if (row.ProductionType === 'Plant') {
                                 console.log(data.ProductionType);
-                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details </a>';
+                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details </a>';
                             } else {
-                                return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details </a>';
+                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details </a>';
                             }
                         }
                     }
@@ -342,8 +342,8 @@
 
         function loadCollaterals() {
             $.ajax({
-                url: '/ProductionCapcity/GetPendingProductions?PCECaseId=' + CaseId,
-                //url: '/ProductionCapcity/GetProductions?CaseId' + CaseId,
+                url: '/ProductionCapacity/GetPendingProductions?PCECaseId=' + CaseId,
+                //url: '/ProductionCapacity/GetProductions?CaseId' + CaseId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

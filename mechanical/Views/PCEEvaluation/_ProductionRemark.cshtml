@@ -1,0 +1,126 @@
+﻿@using mechanical.Models.PCE.Entities
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
+
+@{
+    var LatestPCEEvaluation = ViewData["LatestPCEEvaluation"] as ReturnProductionDto;
+    @* var LatestPCEEvaluation = ViewData["LatestPCEEvaluation"] as PCEEvaluationReturnDto; *@
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
+    var Remark = ViewData["Remark"] as ReturnProductionDto;
+}
+
+<section class="content">
+
+        <div class="card direct-chat direct-chat-purple">
+            <div class="card-header">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h4> PCE Remark Detail</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+            @{
+                if (LatestPCEEvaluation != null)
+                {
+                    if (LatestPCEEvaluation.Remark == "" || LatestPCEEvaluation.Remark == null)
+                    {
+                    
+                        <h6 >There is No Remark related to this Production Capacity</h6>
+                        
+                    }
+                    else
+                    {
+
+                        if (CurrentUser.Role.Name == "Relation Manager")
+                        {
+                            <div class="card">
+                                <h6>@LatestPCEEvaluation.Remark</h6>
+                            </div>
+                            <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
+                                <input name="collateralId" type="hidden" value=@LatestPCEEvaluation.Id />
+                                <input name="EvaluatorUserID" type="hidden" value=@LatestPCEEvaluation.EvaluatorUserID />
+                                <div class="card">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
+                                        <label class="form-check-label" for="Justification">
+                                            Justfication
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="RemarkType" id="Verfication" value="Verfication">
+                                        <label class="form-check-label" for="Verfication">
+                                            Verfication
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label for="Catagory">Category</label>
+                                    <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
+                                    <span validation-for="Catagory" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label for="File">Remark Document</label>
+                                    <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
+                                    <span validation-for="File" class="text-danger"></span>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-append">
+                                        <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
+                                    </span>
+                                </div>
+                            </form>
+                        }
+                        else if (CurrentUser.Role.Name == "Maker Officer")
+                        {
+                            if (@Model.CurrentStatus == "Remark Justfication")
+                            {
+                                <div class="card">
+                                    <h6>Remark Justfication</h6>
+                                </div>
+                                <form action="/MotorVehicle/RemarkRelease" method="post">
+                                    <div class="card">
+                                        <textarea class="form-control" name="Remark">@LatestPCEEvaluation.Remark</textarea>
+                                    </div>
+
+
+                                    <input name="CollateralId" type="hidden" value=@LatestPCEEvaluation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@LatestPCEEvaluation.EvaluatorUserID />
+                                    <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                                    <input name="Id" type="hidden" value=@LatestPCEEvaluation.Id />
+                                    <div class="input-group">
+                                        <span class="input-group-append">
+                                            <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            }
+                            else if (@Model.CurrentStatus == "Remark Verfication")
+                            {
+                                <div class="card">
+                                    <h6>Remark Verfication</h6>
+                                </div>
+                                <form action="/MOCase/ReEvaluation" method="post">
+                                    <div class="card">
+                                        <textarea class="form-control" name="Remark">@LatestPCEEvaluation.Remark</textarea>
+                                    </div>
+
+                                    <input name="Id" type="hidden" value=@LatestPCEEvaluation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@LatestPCEEvaluation.EvaluatorUserID />
+                                    <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                                    <div class="input-group">
+                                        <span class="input-group-append">
+                                            <button type="submit" class="btn btn-primary" id="Edit">Edit</button>
+                                        </span>
+                                    </div>
+                                </form>
+
+                            }
+                        }
+                    }
+                }
+            }
+            </div>
+        </div>
+</section>

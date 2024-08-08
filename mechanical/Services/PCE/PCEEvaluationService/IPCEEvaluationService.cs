@@ -24,7 +24,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId);
 
         Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id);
-        Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId);
+        // Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId);
         Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status);
 
         Task<int> GetPCEsCount(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
@@ -32,6 +32,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);
         Task<IEnumerable<ReturnProductionDto>> GetPCEs(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
         
+        Task<PCEDto> GetPCEDetails(Guid UserId, Guid PCEId);
         // Task<IEnumerable<ReturnProductionDto>> GetReturnedPCEs(Guid UserId);
         // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId);
     }

@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacityEstimation
 @* //@using mechanical.Models.PCE.Dto.UploadFileDto *@
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
@@ -358,7 +358,7 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("ProductionCapcityScriptPartial/_EditScriptPartial");
+        await Html.RenderPartialAsync("ProductionCapacityScriptPartial/_EditScriptPartial");
     }
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
@@ -428,7 +428,7 @@
             $('#deleteItem').on('click', function () {
                 var itemId = $(this).data('id');
                 $.ajax({
-                    url: '@Url.Action("DeleteProductionFile", "ProductionCapcity")',
+                    url: '@Url.Action("DeleteProductionFile", "ProductionCapacity")',
                     type: 'POST',
                     data: { id: itemId },
                     success: function (result) {
@@ -463,7 +463,7 @@
                 formData.append('DocumentCatagory', DocumentCatagory)
 
                 $.ajax({
-                    url: '@Url.Action("UploadProductionFile", "ProductionCapcity")',
+                    url: '@Url.Action("UploadProductionFile", "ProductionCapacity")',
                     type: 'POST',
                     data: formData,
                     processData: false,

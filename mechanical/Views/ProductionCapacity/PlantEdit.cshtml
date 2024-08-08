@@ -1,21 +1,11 @@
-﻿@* @using mechanical.Models.PCE.Dto.PCECase;
- *@
- @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantEditPostDto
+﻿@model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantEditPostDto
 @{
     //var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
     var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>;
 
 
 }
-@* @using mechanical.Models.Enum.ProductionCapcityEstimation
- //@using mechanical.Models.PCE.Dto.UploadFileDto
-@using mechanical.Models.Dto.UploadFileDto
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
-@{
-    var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>;
-    // var restimation = ViewData["restimation"] as ProductionCapacityReestimation;
-}
- *@
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -428,7 +418,6 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        // await Html.RenderPartialAsync("ProductionCapcityScriptPartial/_EditScriptPartial");
     }
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
@@ -500,7 +489,7 @@
             $('#deleteItem').on('click', function () {
                 var itemId = $(this).data('id');
                 $.ajax({
-                    url: '@Url.Action("DeleteProductionFile", "ProductionCapcity")',
+                    url: '@Url.Action("DeleteProductionFile", "ProductionCapacity")',
                     type: 'POST',
                     data: { id: itemId },
                     success: function (result) {
@@ -540,7 +529,7 @@
                 formData.append('DocumentCatagory', DocumentCatagory)
 
                 $.ajax({
-                    url: '@Url.Action("UploadProductionFile", "ProductionCapcity")',
+                    url: '@Url.Action("UploadProductionFile", "ProductionCapacity")',
                     type: 'POST',
                     data: formData,
                     processData: false,
