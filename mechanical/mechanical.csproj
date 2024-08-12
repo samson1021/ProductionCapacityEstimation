@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <Folder Include="UploadFile\" />
+    <Folder Include="UploadFile\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -522,7 +522,6 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    this.reset();
                     $('#addMechanicalCollateralModal').modal('hide');
 
                     loadCollaterals();

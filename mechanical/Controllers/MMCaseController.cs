@@ -5,6 +5,8 @@ using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MMCaseService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using mechanical.Services.PCE.ProductionCapacityServices;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 
 namespace mechanical.Controllers
 {
@@ -15,16 +17,18 @@ namespace mechanical.Controllers
         private readonly ICaseAssignmentService _caseAssignmentService;
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
 
 
 
-        public MMCaseController(ICaseService caseService,ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
+        public MMCaseController(ICaseService caseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
             _mMCaseService = mMCaseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTerminateService;
+            _productionCaseAssignmentServices = productionCaseAssignmentServices;
         }
 
         [HttpGet]
@@ -72,11 +76,26 @@ namespace mechanical.Controllers
             return Ok(response); 
         }
         [HttpPost]
+        public async Task<IActionResult> PCEAssignTeamleader(string selectedCollateralIds, string employeeId)
+        {
+            await _productionCaseAssignmentServices.AssignProductMakerTeamleader(base.GetCurrentUserId(), selectedCollateralIds, employeeId);
+            var response = new { message = "Collaterals assigned successfully" };
+            return Ok(response);
+        }
+        
+        [HttpPost]
         public async Task<IActionResult> ReAssignTeamleader(string selectedCollateralIds, string employeeId)
         {
             await _caseAssignmentService.ReAssignMakerTeamleader(base.GetCurrentUserId(), selectedCollateralIds, employeeId);
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
+        }
+        [HttpGet]
+        public IActionResult MyPCEs(string Status)
+        {
+            ViewData["Title"] = "My " + Status + " PCEs";
+            ViewBag.Status = Status;
+            return View("MyPCEs");
         }
 
         //[HttpGet]

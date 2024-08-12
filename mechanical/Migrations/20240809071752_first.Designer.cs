@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240723133446_new")]
-    partial class @new
+    [Migration("20240809071752_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
