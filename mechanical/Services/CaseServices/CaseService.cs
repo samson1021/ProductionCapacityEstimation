@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using mechanical.Models.Dto.DashboardDto;
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Dto.CaseScheduleDto;
+using System.Net;
+using System.Xml;
 
 namespace mechanical.Services.CaseServices
 {
@@ -324,7 +326,86 @@ namespace mechanical.Services.CaseServices
         //    return _mapper.Map<IEnumerable<RMCaseDto>>(cases);
         //}
 
+        public async Task<string> GetCustomerName(double customerId)
+        {
+            String CustomerFullName = "";
+            try
+            {
 
+
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => { return true; };
+                var request = (HttpWebRequest)WebRequest.Create("http://172.31.6.113:9095/CREDITVAL1/services?xsd=6");
+
+                request.Headers.Add("SOAPAction", "http://172.31.6.113:9095/CREDITVAL1/services?xsd=6");
+
+                // Set the content type header
+                request.ContentType = "text/xml;charset=\"utf-8\"";
+
+                // Set the HTTP method
+                request.Method = "POST";
+
+                string f = "1051940367"; // Replace with the desired customer ID
+
+                string soapRequest = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/""
+                     xmlns:cred=""http://temenos.com/CREDITVALUATION"">
+                     <soapenv:Header/>
+                     <soapenv:Body>
+                     <cred:LoanInformation>
+                     <WebRequestCommon>
+                     <company/>
+                     <password>123456</password>
+                     <userName>MIKIYASSDC1</userName>
+                     </WebRequestCommon>
+                     <CBECREDITNPVNOFILEENQType>
+                     <enquiryInputCollection>
+                     <columnName>CUSTOMER.ID</columnName>
+                     <criteriaValue>" + customerId + @"</criteriaValue>
+                     <operand>EQ</operand>
+                     </enquiryInputCollection>
+                     </CBECREDITNPVNOFILEENQType>
+                     </cred:LoanInformation>
+                     </soapenv:Body>
+                    </soapenv:Envelope>";
+
+
+                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                {
+                    streamWriter.Write(soapRequest);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+                // Send the SOAP request and get the response
+                var response = (HttpWebResponse)request.GetResponse();
+
+                using (var streamReader = new StreamReader(response.GetResponseStream()))
+                {
+
+                    //read xml response 
+                    var soapResponse = streamReader.ReadToEnd();
+                    // Parse the SOAP response
+                    var doc = new XmlDocument();
+                    doc.LoadXml(soapResponse);
+
+                    // Find the element you're interested in
+                    var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                    nsmgr.AddNamespace("m", "http://temenos.com/CBECREDITNPVNOFILEENQ"); // Add namespace mapping for the SOAP response
+                    var resultElem = doc.SelectSingleNode("//m:CustomerName", nsmgr);
+
+                    // Get the text content of the element as a string
+                    var resultText = resultElem.InnerText.Trim();
+
+                    CustomerFullName = resultText;
+                    return CustomerFullName;
+                }
+
+            }
+            catch (System.Exception e)
+            {
+
+                return "err";
+            }
+
+        }
         public async Task<bool> DeleteBussinessLicence(Guid Id)
         {
             var cases = await _cbeContext.Cases.FindAsync(Id);

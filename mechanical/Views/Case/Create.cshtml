@@ -4,7 +4,7 @@
 
 
 }
-
+<link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -102,6 +102,9 @@
     }
     <script>
         document.getElementById('CustomerId').addEventListener('change', function () {
+            // Show loading indicator
+            showLoadingIndicator();
+
             var customerId = this.value;
             $.ajax({
                 type: 'POST',
@@ -113,15 +116,47 @@
                     } else {
                         document.getElementById('applicantName').value = response;
                     }
-
+                    // Hide loading indicator
+                    hideLoadingIndicator();
                 },
                 error: function (xhr, status, error) {
-
+                    // Hide loading indicator
+                    hideLoadingIndicator();
                 }
             });
         });
 
+        function showLoadingIndicator() {
+            // Disable the page
+            document.body.style.pointerEvents = 'none';
+            document.body.style.opacity = '0.5';
 
+            // Show a loading indicator
+            var loadingIndicator = document.createElement('div');
+            loadingIndicator.classList.add('loading-indicator');
+
+            var spinner = document.createElement('div');
+            spinner.classList.add('spinner');
+            loadingIndicator.appendChild(spinner);
+
+            var loadingText = document.createElement('span');
+            loadingText.textContent = 'Getting customer name, please wait...';
+            loadingIndicator.appendChild(loadingText);
+
+            document.body.appendChild(loadingIndicator);
+        }
+
+        function hideLoadingIndicator() {
+            // Remove the loading indicator
+            var loadingIndicator = document.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                document.body.removeChild(loadingIndicator);
+            }
+
+            // Enable the page
+            document.body.style.pointerEvents = 'auto';
+            document.body.style.opacity = '1';
+        }
         $(document).ready(function () {
 
             $("#businessLicnese").hide();

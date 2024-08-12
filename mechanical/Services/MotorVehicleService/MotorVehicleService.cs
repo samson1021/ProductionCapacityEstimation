@@ -8,7 +8,9 @@ using mechanical.Models.Entities;
 using mechanical.Services.AnnexService;
 using mechanical.Services.CaseTimeLineService;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace mechanical.Services.MotorVehicleService
 {
@@ -49,6 +51,81 @@ namespace mechanical.Services.MotorVehicleService
             });
 
             return motorVehicle;
+        }
+        public async Task<double> Currency(string currency, DateTime currencyDate)
+        {
+            double ExchangeRate;
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => { return true; };
+                var request = (HttpWebRequest)WebRequest.Create("http://172.31.6.113:9095/CREDITVAL1/services?xsd=3");
+
+                request.Headers.Add("SOAPAction", " http://172.31.6.113:9095/CREDITVAL1/services?xsd=3");
+
+                // Set the content type header
+                request.ContentType = "text/xml;charset=\"utf-8\"";
+
+                // Set the HTTP method
+                request.Method = "POST";
+                string soapRequest = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/""
+                                xmlns:cred=""http://temenos.com/CREDITVALUATION"">
+                                <soapenv:Header/>
+                                <soapenv:Body>
+                                <cred:TodayExchangeRate>
+                                <WebRequestCommon>
+                                <company/>
+                                <password>123456</password>
+                                <userName>MIKIYASSDC1</userName>
+                                </WebRequestCommon>
+                                <CURRENCYRATETODAYType>
+                                <enquiryInputCollection>
+                                <columnName>ID</columnName>
+                                <criteriaValue>" + currency + @"</criteriaValue>
+                                <operand>EQ</operand>
+                                </enquiryInputCollection>
+                                </CURRENCYRATETODAYType>
+                                </cred:TodayExchangeRate>
+                                </soapenv:Body>
+                                </soapenv:Envelope>";
+
+
+                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                {
+                    streamWriter.Write(soapRequest);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+                // Send the SOAP request and get the response
+                var response = (HttpWebResponse)request.GetResponse();
+
+                using (var streamReader = new StreamReader(response.GetResponseStream()))
+                {
+
+                    //read xml response 
+                    var soapResponse = streamReader.ReadToEnd();
+                    // Parse the SOAP response
+                    var doc = new XmlDocument();
+                    doc.LoadXml(soapResponse);
+
+                    // Find the element you're interested in
+                    var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                    nsmgr.AddNamespace("m", "http://temenos.com/CURRENCYRATETODAY"); // Add namespace mapping for the SOAP response
+                    var resultElem = doc.SelectSingleNode("//m:BUYRATE", nsmgr);
+
+                    // Get the text content of the element as a string
+                    var resultText = resultElem.InnerText.Trim();
+
+                    ExchangeRate = Convert.ToDouble(resultText);
+                    return ExchangeRate;
+                }
+
+            }
+            catch (System.Exception e)
+            {
+
+                return 0;
+            }
+
         }
         public async Task<ReturnMotorVehicleDto> CheckMotorVehicle(Guid userId, Guid Id,CreateMotorVehicleDto createMotorVehicleDto)
         {

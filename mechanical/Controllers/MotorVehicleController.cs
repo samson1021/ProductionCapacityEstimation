@@ -44,7 +44,13 @@ namespace mechanical.Controllers
             ViewData["collateral"] = collateral;
             return View();
         }
-
+        [HttpPost]
+        public async Task<IActionResult> Currency([FromForm] string currency)
+        {
+            var currencyDate = DateTime.Now;
+            var exchangeRate = await _motorVehicleService.Currency(currency, currencyDate);
+            return Json(new { exchangeRate });
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateMotorVehicleDto createMotorVehicleDto)

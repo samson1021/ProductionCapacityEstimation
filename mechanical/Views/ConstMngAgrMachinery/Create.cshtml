@@ -3,6 +3,7 @@
     var collateral = ViewData["collateral"] as ReturnCollateralDto;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
 }
+<link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -70,7 +71,7 @@
                             <span asp-validation-for="TransmissionType" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
-                              <label asp-for="IgnitionSystem">Ignition System </label>
+                            <label asp-for="IgnitionSystem">Ignition System </label>
                             <select asp-for="IgnitionSystem" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(IgnitionSystem)).Cast<IgnitionSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled selected>Select Ignition System</option>
@@ -88,7 +89,7 @@
                             <span asp-validation-for="CoolingType" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
-                           <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
+                            <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
                             <input asp-for="EnginePower" type="text" class="form-control" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
                             <span asp-validation-for="EnginePower" class="text-danger"></span>
                         </div>
@@ -140,7 +141,7 @@
                             <span asp-validation-for="Color" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
-                           <label asp-for="MakerCompany">Insert Maker Company </label>
+                            <label asp-for="MakerCompany">Insert Maker Company </label>
                             <input asp-for="MakerCompany" type="text" class="form-control" id="MakerCompany" placeholder="Insert Maker Company" required>
                             <span asp-validation-for="MakerCompany" class="text-danger"></span>
                         </div>
@@ -230,17 +231,17 @@
                             <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-3">
+                        <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                            <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-3">
+                        <div class="form-group col-xl-4">
                             <label asp-for="ExchangeRate">Exchange Rate</label>
-                            <input asp-for="ExchangeRate" type="number" class="form-control" placeholder="Enter Exchange Rate" required>
+                            <input asp-for="ExchangeRate" Id="ExchangeRate" type="number" class="form-control" readonly required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>
                         </div>
-                        
+
                     </div>
                     <div class="row">
                         <button type="submit" class="btn btn-sm bg-purple col-xl-3">Save</button>
@@ -257,6 +258,54 @@
 </section>
 @section Scripts {
     <script>
+        document.getElementById('Currency').addEventListener('change', function () {
+            showLoadingIndicator();
+            var currency = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '/MotorVehicle/Currency',
+                data: { currency: currency },
+                success: function (response) {
+                    console.log(response);
+                    document.getElementById("ExchangeRate").value = response.exchangeRate;
+                    hideLoadingIndicator();
+                },
+                error: function (xhr, status, error) {
+                    toastr.error("Exchange rate service is not working ...");
+                    hideLoadingIndicator();
+                }
+            });
+        });
+
+
+        function showLoadingIndicator() {
+            document.body.style.pointerEvents = 'none';
+            document.body.style.opacity = '0.5';
+
+            var loadingIndicator = document.createElement('div');
+            loadingIndicator.classList.add('loading-indicator');
+
+            var spinner = document.createElement('div');
+            spinner.classList.add('spinner');
+            loadingIndicator.appendChild(spinner);
+
+            var loadingText = document.createElement('span');
+            loadingText.textContent = 'Getting Currency name, please wait...';
+            loadingIndicator.appendChild(loadingText);
+
+            document.body.appendChild(loadingIndicator);
+        }
+
+        function hideLoadingIndicator() {
+            var loadingIndicator = document.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                document.body.removeChild(loadingIndicator);
+            }
+
+            document.body.style.pointerEvents = 'auto';
+            document.body.style.opacity = '1';
+        }
+
         $(function () {
             $('#rejectionModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();

@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mechanical.Data;
 
@@ -12,11 +11,9 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240809071752_first")]
-    partial class first
+    partial class CbeContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -802,6 +799,10 @@ namespace mechanical.Migrations
                     b.Property<double>("NetEstimationValue")
                         .HasColumnType("float");
 
+                    b.Property<string>("NoOfProductionLine")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherTechSpec")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -822,6 +823,10 @@ namespace mechanical.Migrations
 
                     b.Property<double>("ReplacementCost")
                         .HasColumnType("float");
+
+                    b.Property<string>("ScaleOfOperation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SerialNo")
                         .IsRequired()

@@ -11,21 +11,23 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
         public Guid CheckerUserID { get; set; }
 
         public string IndustrialBuildingMachineryType { get; set; } = string.Empty;
-        public string EngineType { get; set; }= string.Empty;
-        public string PowerSupply { get; set; }= string.Empty;
+        public string EngineType { get; set; } = string.Empty;
+        public string PowerSupply { get; set; } = string.Empty;
         public string MotorPower { get; set; } = string.Empty;
         public string WorkingProductionCapacity { get; set; } = string.Empty;
         public string OtherTechSpec { get; set; } = string.Empty;
         public string MakerCompany { get; set; } = string.Empty;
-        public string TechnologyStandard { get; set; }= string.Empty;
+        public string TechnologyStandard { get; set; } = string.Empty;
         public string MakerPreferenceType { get; set; } = string.Empty;
-        public string CurrentEqpmntCondition { get; set; }= string.Empty;
-        public string AllocatedPointsRange { get; set; }= string.Empty;
+        public string CurrentEqpmntCondition { get; set; } = string.Empty;
+        public string AllocatedPointsRange { get; set; } = string.Empty;
 
 
         public string ModelNo { get; set; } = string.Empty;
         public string SerialNo { get; set; } = string.Empty;
         public string EngineNo { get; set; } = string.Empty;
+        public string ScaleOfOperation { get; set; } = string.Empty;
+        public string NoOfProductionLine { get; set; } = string.Empty;
         public int YearOfManufacture { get; set; }
         public string CountryOfOrigin { get; set; } = string.Empty;
 
