@@ -428,47 +428,90 @@
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
             console.log("here");
-            var Category = getAttributeByName(formDataArray, 'Category');
-            var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace');
-            if (Category != "" && Category != null) {
+            // var Uploadbusinesslicense = getAttributeByName(formDataArray, 'Uploadbusinesslicense').trim();;
+            // if (Uploadbusinesslicense == "") {
+            //     toastr.error("Please fill in all required fields.");
+            //     return;
+
+            // }
+            
+            var PropertyOwner = getAttributeByName(formDataArray, 'PropertyOwner').trim();
+            if (PropertyOwner === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+
+            var Role = getAttributeByName(formDataArray, 'Role').trim();
+            if (Role === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+
+            var PropertyOwner = getAttributeByName(formDataArray, 'PropertyOwner').trim();
+            if (PropertyOwner === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+
+            var Category = getAttributeByName(formDataArray, 'Category').trim();
+            if (Category === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }          
+            
                 var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-                var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
-                var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace').trim();
-                var Region = getAttributeByName(formDataArray, 'Region').trim();
-                var ProductDescription = getAttributeByName(formDataArray, 'ProductDescription').trim();
-                
-                // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                //  var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-                
-                if (MachineName === "" || Purpose === "" || ProductionBussinessLicence === "" || Purpose === "ProductionBussinessLicence" || Region === ""|| ProductDescription === "") {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
+            if (MachineName === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+              
+            var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
+            if (Purpose === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+           
                
+            var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
+            if (ProductionBussinessLicence === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+
+            var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace');
+            if (MachineryInstalledPlace === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
             }
             if (MachineryInstalledPlace == "Private Owned LHC") {
                 var LHCNumber = getAttributeByName(formDataArray, 'LHCNumber').trim();
                 var OwnerName = getAttributeByName(formDataArray, 'OwnerName').trim();
-                //var UploadLHC = getAttributeByName(formDataArray, 'UploadLHC').trim();                
+                //var UploadLHC = getAttributeByName(formDataArray, 'UploadLHC').trim();
                 if (LHCNumber === "" || OwnerName === "") {
                     toastr.error("Please fill in all required fields.");
                     return;
                 }
             } else {
-                 var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
+                var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
                 // var ploadshaderentagreement = getAttributeByName(formDataArray, 'ploadshaderentagreement').trim();
-                 if (Industrialpark === "") {
-                         toastr.error("Please fill in all required fields.");
-                         return;
-                     }
-                 }
+                if (Industrialpark === "") {
+                    toastr.error("Please fill in all required fields.");
+                    return;
+                }
+            }
 
+                var Region = getAttributeByName(formDataArray, 'Region').trim();
+            if (Region === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+                var ProductDescription = getAttributeByName(formDataArray, 'ProductDescription').trim();
+            if (ProductDescription === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }               
+               
+           
 
             var formData = new FormData(this);
             $.ajax({
@@ -479,8 +522,9 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-
+                    this.reset();
                     $('#addMechanicalCollateralModal').modal('hide');
+
                     loadCollaterals();
                 },
                 error: function (error) {
@@ -518,52 +562,6 @@
             });
         });
         
-
-
-        // $('#addAgricultureCollateralForm').submit(function (e) {
-        //     e.preventDefault();
-        //     var formDataArray = $(this).serializeArray();
-        //     console.log("here");
-        //     var Category = getAttributeByName(formDataArray, 'Category');
-        //     if (Category == "MOV" || Category == "CMAMachinery") {
-        //         var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
-        //         var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
-        //         if (PlateName === "" || ChassisNo === "") {
-        //             toastr.error("Please fill in all required fields.");
-        //             return;
-        //         }
-        //     } else if (Category == "IBFEqupment") {
-        //         var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-        //         var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
-
-
-        //         if (MachineName === "" || Purpose === "") {
-        //             toastr.error("Please fill in all required fields.");
-        //             return;
-        //         }
-        //     }
-
-
-        //     var formData = new FormData(this);
-
-        //     $.ajax({
-        //         url: '/Collateral/CreateAgriculture',
-        //         type: 'POST',
-        //         data: formData,
-        //         processData: false,
-        //         contentType: false,
-        //         success: function (response) {
-        //             toastr.success(response.message);
-
-        //             $('#addAgricultureCollateralModal').modal('hide');
-        //             loadCollaterals();
-        //         },
-        //         error: function (error) {
-        //             toastr.error("Unable to create collateral");
-        //             console.log(error);
-        //         }
-        //     });
-        // });
         loadCollaterals();
         function getAttributeByName(formDataArray, name) {
             for (var i = 0; i < formDataArray.length; i++) {
@@ -582,8 +580,8 @@
         //    loadCollaterals();
         //});
 
-        // $("#IndusteryProp").hide();
-        // $("#MVprop").hide();
+         //$("#IndusteryProp").hide();
+       // $("#MVprop").hide();
 
         var typeDropdown = $("#typeDropdown");
         typeDropdown.prop("disabled", true);
@@ -594,19 +592,15 @@
             typeDropdown.append('<option value="" disabled selected>Select manufacturing sub sector </option>');
             switch (category) {
                 case "Aerospace":
-
-                    // Append the enum values to the dropdown
-                    // typeDropdown.append(Enum.GetValues(typeof(Aerospace))
-                    //     .Cast<Aerospace>()
-                    //     .Select(0 => $('<option></option>').val(0.ToString()).html(o.ToString())));
-                    typeDropdown.append('<option value="Aircraftmanufacturing">Aircraft manufacturing</option>');
-                    typeDropdown.append('<option value="Spacecraftmanufacturing">Spacecraft manufacturing</option>');
-                    typeDropdown.append('<option value="Satellitemanufacturing">Satellite manufacturing</option>');
-                    typeDropdown.append('<option value="Aircraftenginemanufacturing">Aircraft engine manufacturing</option>');
-                    typeDropdown.append('<option value="Avionicsmanufacturing">Avionics manufacturing</option>');
-                    typeDropdown.append('<option value="Missileanddefensesystemmanufacturing">Missile and defense system manufacturing</option>');
-                    typeDropdown.append('<option value="Dronemanufacturing">Drone manufacturing</option>');
-                    typeDropdown.append('<option value="Aerospacecompositematerialsmanufacturing">Aerospace composite materials manufacturing</option>');
+                    // Append the
+                    typeDropdown.append('<option value="Aircraft manufacturing">Aircraft manufacturing</option>');
+                    typeDropdown.append('<option value="Spacecraft manufacturing">Spacecraft manufacturing</option>');
+                    typeDropdown.append('<option value="Satellite manufacturing">Satellite manufacturing</option>');
+                    typeDropdown.append('<option value="Aircraft engine manufacturing">Aircraft engine manufacturing</option>');
+                    typeDropdown.append('<option value="Avionics manufacturing">Avionics manufacturing</option>');
+                    typeDropdown.append('<option value="Missile and defensesystem manufacturing">Missile and defense system manufacturing</option>');
+                    typeDropdown.append('<option value="Drone manufacturing">Drone manufacturing</option>');
+                    typeDropdown.append('<option value="Aerospace composite materials manufacturing">Aerospace composite materials manufacturing</option>');
                     typeDropdown.append('<option value="Other">Others, please specify</option>');
                     $("#IndusteryProp").show();
                     break;
@@ -1154,8 +1148,7 @@
                     typeDropdown.append('<option value="Sand and gravel mining">Sand and gravel mining</option>')
                     typeDropdown.append('<option value="Salt mining">Salt mining</option>')
                     typeDropdown.append('<option value="Phosphate mining">Phosphate mining</option>')
-                    typeDropdown.append('<option value="Mining equipment manufacturing">Mining equipment manufacturing</option>')
-                     
+                    typeDropdown.append('<option value="Mining equipment manufacturing">Mining equipment manufacturing</option>')                     
                     typeDropdown.append('<option value="Other">Others, please specify</option>');
                     $("#IndusteryProp").show();
                     break;

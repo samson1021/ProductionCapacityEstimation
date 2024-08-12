@@ -1,7 +1,7 @@
-﻿@{
-    var Status = ViewBag.Status as string;      
+﻿﻿@{
+    var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCEs found";
-    var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status; 
+    var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status;
     var PCECaseId = ViewData["PCECaseId"] as Guid?;
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
@@ -16,11 +16,10 @@
 }
 
 <script>
-    $(document).ready(function () {      
-
+    $(document).ready(function () {
+        
+        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
-            
-            var combinedData = productions.concat(plants); // Combine productions and plants data
 
             PCEsTable = $('#PCEs').DataTable({
                 language: {
@@ -46,15 +45,11 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var productionType = row.ProductionType;
                             var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
-                            var addUrl = (productionType === 'Plant')
-                                ? 'openAddManufacturingModal()'
-                                : 'openAddPlantModal()';
-                            return  '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + 
-                                    '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data + 
-                                    '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data + 
-                                    '\')">Return</a> | ' + '<a href="#" onclick="' + addUrl + '">Add</a>';
+                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data +
+                                '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data +
+                                '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
+                                '\')">Return</a>';
 
                         }
                     }
@@ -63,7 +58,7 @@
         }
         function loadPCEs() {
             $.ajax({
-                url: '@FetchUrl',
+                url: fetchUrl,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -77,14 +72,13 @@
                     toastr.error("Failed to load Production Capacities");
                     console.log(error);
                 }
-            });    
+            });
         }
-
         loadPCEs();
-    }); 
+    });
 
     function openRejectionModal(PCEId) {
         document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
         $('#rejectionModal1').modal('show');
-    } 
+    }
 </script>

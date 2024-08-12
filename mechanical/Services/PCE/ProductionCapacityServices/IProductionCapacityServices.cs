@@ -32,12 +32,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<ReturnProductionDto> GetProductionCapacityById(Guid productionid);
 
         Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid PCECaseId);
-        Task<IEnumerable<ProductionCapcityCorrectionReturnDto1>> GetComments(Guid ProductionCapacityId);
+        Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid ProductionCapacityId);
 
         Task<bool> DeleteProductionFile(Guid userId, Guid Id);
         Task<bool> UploadProductionFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory);
 
-        Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid CaseId);
+        Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid PCECaseId);
 
 
     }

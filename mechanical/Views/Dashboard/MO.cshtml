@@ -103,7 +103,7 @@
     @*                 Production capacity case
     *@
                 <div class="row">
-                    <div class="col-xl-3 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-green update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -125,7 +125,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-yellow update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -147,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-pink update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -169,7 +169,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-blue update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -192,10 +192,9 @@
                         </div>
                     </div>
                 </div>
-
-
+                
                 <div class="row">
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-green update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -217,7 +216,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-yellow update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -239,7 +238,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-success update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -261,7 +260,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-pink update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -283,29 +282,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-md-6">
-                        <div class="card bg-danger update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="rejectedPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">Rejected PCEs</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h2> <i class="fas fas-solid fa-times"></i></h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Rejected" })" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-blue update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -421,7 +398,7 @@
                 .then(data => {
 
                     animateCountWithCollateral("newPCECasesCount", data.NewPCECasesCount, data.NewPCEsCount);
-                    animateCountWithCollateral("evaluatedPCECasesCount", data.EvaluatedPCECasesCount, data.EvaluatedPCEsCount);
+                    animateCountWithCollateral("evaluatedPCECasesCount", data.EvaluatedPCECasesCount + data.ReevaluatedPCECasesCount, data.EvaluatedPCEsCount + data.ReevaluatedPCEsCount);
                     animateCountWithCollateral("returnedPCECasesCount", data.ReturnedPCECasesCount, data.ReturnedPCEsCount);
                     animateCount("totalPCECasesCount", data.TotalPCECasesCount);
 
@@ -440,9 +417,8 @@
 
                     animateCount("newPCEsCount", data.NewPCEsCount);
                     animateCount("pendingPCEsCount", data.PendingPCEsCount);
-                    animateCount("evaluatedPCEsCount", data.EvaluatedPCEsCount);
+                    animateCount("evaluatedPCEsCount", data.EvaluatedPCEsCount + data.ReevaluatedPCEsCount);
                     animateCount("returnedPCEsCount", data.ReturnedPCEsCount);
-                    animateCount("rejectedPCEsCount", data.RejectedPCEsCount);
                     animateCount("totalPCEsCount", data.TotalPCEsCount);
 
                 })

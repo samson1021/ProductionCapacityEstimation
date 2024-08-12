@@ -21,11 +21,11 @@
         public int TotalPCEsCount { get; set; }
 
         public int NewPCECollateralCount { get; set; }
-        public int PendingPCECaseCount { get; set; }
+        //public int PendingPCECaseCount { get; set; }
         public int PendingPCECollateralCount { get; set; }
-        public int CompletedPCECaseCount { get; set; }
+        //public int CompletedPCECaseCount { get; set; }
         public int CompletedPCECollateralCount { get; set; }
-        public int TotalPCECaseCount { get; set; }
+        //public int TotalPCECaseCount { get; set; }
         public int TotalPCECollateralCount { get; set; }
 
     }

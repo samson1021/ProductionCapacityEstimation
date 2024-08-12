@@ -4,7 +4,7 @@
 
     var shiftHoursContainer = $('#shiftHoursContainer');
     $(document).ready(function () {
-       
+
         $('#ShiftsPerDay').attr({
             "min": 1,
             "max": 5
@@ -41,15 +41,15 @@
             handleDropdownChange(this, "OtherOutputPhase");
         });
     });
-        
+
     function setDefaultTime() {
         var now = new Date();
         var hours = String(now.getHours()).padStart(2, '0');
         var minutes = String(now.getMinutes()).padStart(2, '0');
         var currentTime = hours + ':' + minutes;
 
-        $('#shiftHoursContainer .shift-hour').each(function() {
-            $(this).find('input[type="time"]').each(function() {
+        $('#shiftHoursContainer .shift-hour').each(function () {
+            $(this).find('input[type="time"]').each(function () {
                 if (!$(this).val()) { // Only set if no value is present
                     $(this).val(currentTime);
                 }
@@ -64,7 +64,9 @@
                 $(this).text($(this).text().replace(/Shift \d+/, `Shift ${index + 1}`));
             });
             $(this).find('input').each(function () {
-                $(this).attr('name', $(this).attr('name').replace(/\d+/, index));
+                let name = $(this).attr('name');
+                let newName = name.replace(/\d+/, index);
+                $(this).attr('name', newName);
             });
         });
     }
@@ -90,25 +92,25 @@
 
     function createShiftHourRow(index) {
         return `
-            <div class="row shift-hour col-sm-12" data-index="${index}">
-                <div class="form-group col-sm-6">
-                    <label>Shift ${index + 1} Start <i class="text-danger">*</i></label>
-                    <input name="ShiftHours[${index}].Start" class="form-control form-control-sm" type="time" />
-                    <span class="text-danger"></span>
+                <div class="row shift-hour col-sm-12" data-index="${index}">
+                    <div class="form-group col-sm-6">
+                        <label>Shift ${index + 1} Start <i class="text-danger">*</i></label>
+                        <input name="ShiftHours[${index}].Start" class="form-control form-control-sm" type="time" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>Shift ${index + 1} End <i class="text-danger">*</i></label>
+                        <input name="ShiftHours[${index}].End" class="form-control form-control-sm" type="time" />
+                        <span class="text-danger"></span>
+                    </div>
                 </div>
-                <div class="form-group col-sm-6">
-                    <label>Shift ${index + 1} End <i class="text-danger">*</i></label>
-                    <input name="ShiftHours[${index}].End" class="form-control form-control-sm" type="time" />
-                    <span class="text-danger"></span>
-                </div>
-            </div>
-        `;
+            `;
     }
 
     function handleButtonClick(buttonId, confirmMessage, successMessage, redirectUrl) {
-        document.getElementById(buttonId).addEventListener("click", function(event) {
+        document.getElementById(buttonId).addEventListener("click", function (event) {
             event.preventDefault();
-            
+
             if (!confirm(confirmMessage)) {
                 return;
             }
@@ -119,20 +121,20 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success(successMessage);
-                    setTimeout(function() {
-                        window.location.href = redirectUrl;
-                    }, 1000);
-                } else {
-                    toastr.error('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                toastr.error('Error: ' + error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success(successMessage);
+                        setTimeout(function () {
+                            window.location.href = redirectUrl;
+                        }, 1000);
+                    } else {
+                        toastr.error('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error: ' + error);
+                });
         });
     }
 
@@ -163,7 +165,7 @@
             otherInput.style.display = "none";
             otherInput.removeAttribute("required");
         }
-    }    
+    }
 
     function deleteFile(fileId, event) {
         event.preventDefault();
@@ -225,23 +227,17 @@
                 rejectBtn.style.display = "none";
                 evaluateBtn.style.display = "none";
                 break;
+            case "Reevaluate":
+                updateBtn.style.display = "inline-block";
+                deleteBtn.style.display = "none";
+                rejectBtn.style.display = "none";
+                evaluateBtn.style.display = "inline-block";
+                break;
             case "Reevaluated":
                 updateBtn.style.display = "none";
                 deleteBtn.style.display = "none";
                 rejectBtn.style.display = "none";
                 evaluateBtn.style.display = "none";
-                break;
-            case "Rejected":
-                updateBtn.style.display = "inline-block";
-                deleteBtn.style.display = "inline-block";
-                rejectBtn.style.display = "none";
-                evaluateBtn.style.display = "none";
-                break;
-            case "Rework":
-                updateBtn.style.display = "inline-block";
-                deleteBtn.style.display = "inline-block";
-                rejectBtn.style.display = "inline-block";
-                evaluateBtn.style.display = "inline-block";
                 break;
             default:
                 updateBtn.style.display = "none";
@@ -258,9 +254,11 @@
     .align-left {
         float: left;
     }
+
     .align-center {
         margin: 0 auto;
     }
+
     .align-right {
         float: right;
     }

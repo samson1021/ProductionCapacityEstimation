@@ -1,13 +1,12 @@
-﻿@{    
+﻿﻿@{
     var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCE Cases";
-    var FetchUrl = "/PCEEvaluation/GetMyPCECases?Status=" + Status;  
+    var FetchUrl = "/PCEEvaluation/GetMyPCECases?Status=" + Status;
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
         EmptyMessage = "There are no " + Status + " PCE Cases";
     }
 }
-
 <script>
     $(document).ready(function () {
         $.ajax({
@@ -15,6 +14,36 @@
             type: 'GET',
             dataType: 'json',
             success: function (data) {
+                var columns = [
+                    {
+                        data: 'CreationDate',
+                        width: '15%',
+                        render: function (data, type, row, meta) {
+                            var date = new Date(data);
+                            return date.toLocaleString();
+                        }
+                    },
+                    { data: 'CaseNo', width: '10%' },
+                    { data: 'ApplicantName', width: '15%' },
+                    { data: 'CustomerUserId', width: '15%' }
+                ];
+
+                @if (Status != "All") {
+                    <text>
+                        columns.push({ data: 'NoOfCollateral', width: '10%' });
+                    </text>
+                }
+
+                columns.push({ data: 'TotalNoOfCollateral', width: '10%' });
+
+                columns.push({
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        return '<a href="@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + data + '&Status=@ViewBag.Status">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                    }
+                });
+
                 $('#MyPCECasesDatatable').DataTable({
                     language: {
                         emptyTable: '@EmptyMessage'
@@ -25,29 +54,7 @@
                     autoWidth: false,
                     buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"],
                     data: data,
-                    columns: [
-                        {
-                            data: 'CreationDate',
-                            width: '15%',
-                            render: function (data, type, row, meta) {
-                                var date = new Date(data);
-                                return date.toLocaleString();
-                            }
-                        },
-                        { data: 'CaseNo', width: '10%' },
-                        { data: 'ApplicantName', width: '15%' },
-                        { data: 'CustomerUserId', width: '15%' },
-                        { data: 'NoOfCollateral', width: '10%' },
-                        { data: 'TotalNoOfCollateral', width: '10%' },
-                        {
-                            data: 'Id',
-                            width: '10%',
-                            render: function (data, type, row, meta) {
-                                return '<a href="@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + data + '&Status=@ViewBag.Status">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
-                            }
-                        }
-
-                    ],
+                    columns: columns,
                     order: [[1, 'desc']],
                     responsive: true,
                     lengthChange: false,
@@ -57,5 +64,4 @@
             }
         });
     });
-
 </script>

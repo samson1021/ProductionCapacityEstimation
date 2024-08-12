@@ -163,23 +163,7 @@
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
                         </div>
-                       @*  <div class="row" id="MVprop">
-                            <div class="form-group col-lg-4">
-                                <label asp-for="PlateNo">Plate Number <i class="text-danger">*</i></label>
-                                <input asp-for="PlateNo" type="text" class="form-control form-control-sm" placeholder="00-XX-X00000" id="PlateName" maxlength="12" required >
-                                <span asp-validation-for="PlateNo" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="ChassisNo">Chassis Number <i class="text-danger">*</i></label>
-                                <input asp-for="ChassisNo" type="text" class="form-control form-control-sm" id="ChassisNo" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" maxlength="25" required>
-                                <span id="ChassisNo-error" asp-validation-for="ChassisNo" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="EngineMotorNo">Engine/Motor Number </label>
-                                <input asp-for="EngineMotorNo" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
-                                <span id="EngineMotorNo-error" asp-validation-for="EngineMotorNo" class="text-danger"></span>
-                            </div>
-                        </div> *@
+                      
 @*                        industerial collateral attributes *@
 
                         <div class="row" id="IndusteryProp">
@@ -356,7 +340,7 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="Uploadbusinesslicense"> Upload business license <i class="text-danger">*</i></label>
-                                <input asp-for="Uploadbusinesslicense" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
+                                <input asp-for="Uploadbusinesslicense" type="file" class="form-control  form-control-sm" id="Uploadbusinesslicense" required>
                                 <span asp-validation-for="Uploadbusinesslicense" class="text-danger"></span>
                             </div> 
                             <div class="form-group col-lg-6">
@@ -419,34 +403,12 @@
 </div>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_DetailDatatableSriptsPartial");
+        //await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
 <script>
-    // document.getElementById("ChassisNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("ChassisNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //         console.log("this is");
-    //     } else {
-    //         this.setCustomValidity("");
-    //                     console.log("this is");
-    //         document.getElementById("ChassisNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("EngineMotorNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("EngineMotorNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("EngineMotorNo-error").textContent = "";
-    //     }
-    // });
+   
     document.getElementById("PropertyOwner").addEventListener("input", function () {
         var input = this.value;
         var alphanumericRegex = /^[A-Za-z0-9]+$/;
@@ -459,6 +421,7 @@
             document.getElementById("PropertyOwner-error").textContent = "";
         }
     });
+
     document.getElementById("InvoiceNo").addEventListener("input", function () {
         var input = this.value;
         var alphanumericRegex = /^[A-Za-z0-9]+$/;

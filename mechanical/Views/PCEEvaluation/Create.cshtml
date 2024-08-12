@@ -7,11 +7,12 @@
 @{
     ViewData["Title"] = ViewBag.Title as string;
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
-    var RejectPost = new PCERejectPostDto {
-            PCEId = myPCE.Id, 
-            RejectionComment = "" 
-    }; 
-    ViewData["RejectPost"] = RejectPost; 
+    var RejectPost = new PCERejectPostDto
+            {
+                PCEId = myPCE.Id,
+                RejectionComment = ""
+            };
+    ViewData["RejectPost"] = RejectPost;
 }
 <section class="content-header">
     <div class="container-fluid">
@@ -42,22 +43,21 @@
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create" id="form">
-  
-                    @Html.AntiForgeryToken()
-                    @Html.Partial("Partial/_DataLists")
 
-                    <input asp-for="PCEId" value=@myPCE.Id type="hidden" /> 
+                    @Html.AntiForgeryToken()
+
+                    <input asp-for="PCEId" value=@myPCE.Id type="hidden" />
 
                     <!-- General Information -->
                     <div class="border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px">
                         <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>General Information </h6></div>
                         <div class="row mt-3">
                             <div class="form-group col-lg-3">
-                                <label>Machine/Plant Name</label>                           
+                                <label>Machine/Plant Name</label>
                                 <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.MachineName?? myPCE.PlantName)" readonly required>
                             </div>
                             <div class="form-group col-lg-3">
-                                <label>Country of Origin</label>                           
+                                <label>Country of Origin</label>
                                 <input id="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required>
                             </div>
                             <div class="form-group col-lg-3">
@@ -74,32 +74,30 @@
                         <div class="row">
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.OutputPhase) <i class="text-danger">*</i></label>
-                                <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" >
+                                <select asp-for="OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()">
                                     <option value="" disabled selected>Select Phase of Output</option>
                                 </select>
                                 <span asp-validation-for="OutputPhase" class="text-danger" id="OutputPhase-error"></span>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour)</label>
                                 <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" />
                                 <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
-                            </div> 
+                            </div>
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.EffectiveProductionHourType)</label>
-                                <select asp-for="EffectiveProductionHourType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionHourType>()" >
+                                <select asp-for="EffectiveProductionHourType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionHourType>()">
                                     <option value="" disabled selected>Select Hour Type</option>
                                 </select>
                                 <span asp-validation-for="EffectiveProductionHourType" class="text-danger"></span>
-                            </div>              
+                            </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-4">
                                 <label>@Html.DisplayNameFor(model => model.WorkingDaysPerMonth)</label>
                                 <input asp-for="WorkingDaysPerMonth" class="form-control form-control-sm" type="number" min="1" />
                                 <span asp-validation-for="WorkingDaysPerMonth" class="text-danger"></span>
-                            </div>  
+                            </div>
                             <div class="form-group col-sm-2">
                                 <label>@Html.DisplayNameFor(model => model.ShiftsPerDay)</label>
                                 <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
@@ -165,12 +163,12 @@
                                 <label>@Html.DisplayNameFor(model => model.DepreciationRateApplied) <i class="text-danger">*</i></label>
                                 <input asp-for="DepreciationRateApplied" class="form-control form-control-sm" type="number" step="0.01" required />
                                 <span asp-validation-for="DepreciationRateApplied" class="text-danger"></span>
-                            </div>    
+                            </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label>@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity) <i class="text-danger">*</i></label>
-                                <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control form-control-sm" required ></textarea>
+                                <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control form-control-sm" required></textarea>
                                 <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
@@ -221,7 +219,7 @@
                                 <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" required />
                                 <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
                             </div>
-                        </div>  
+                        </div>
                         <div class="row mt-3">
                             <div class="form-group col-lg-6">
                                 <label>@Html.DisplayNameFor(model => model.SupportingEvidences) <i class="text-danger">*</i></label>
@@ -233,7 +231,7 @@
                                 <input asp-for="ProductionProcessFlowDiagrams" type="file" class="form-control form-control-sm" multiple />
                                 <span asp-validation-for="ProductionProcessFlowDiagrams" class="text-danger"></span>
                             </div>
-                        </div>                    
+                        </div>
                     </div>
 
                     <!-- Additional Information -->
@@ -260,9 +258,9 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Form Buttons -->                   
-                   <div class="row mt-4">
+
+                    <!-- Form Buttons -->
+                    <div class="row mt-4">
                         <div class="col-md-1"></div>
                         <div class="col-md-10">
                             <div class="d-flex justify-content-between">
@@ -285,25 +283,12 @@
 
 
 @section Scripts {
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
 
     @{
         await Html.RenderPartialAsync("Partial/_PCEPartialScript");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
-    } 
+    }
 
 }

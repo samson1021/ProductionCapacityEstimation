@@ -12,21 +12,21 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
 
-<<<<<<< HEAD
+
         [Display(Name = "Type of Output")]
         public string OutputType { get; set; }
 
         [Display(Name = "Phase of Output")]
         public OutputPhase OutputPhase { get; set; }
 
-=======
-        [Display(Name = "Phase of Output")]
-        public OutputPhase? OutputPhase { get; set; }
+
+        //[Display(Name = "Phase of Output")]
+        //public OutputPhase? OutputPhase { get; set; }
 
         [Display(Name = "Country of Origin")]
         public string? OriginCountry { get; set; }
 
->>>>>>> Abdu
+
         [Display(Name = "Shifts Per Day")]
         public int? ShiftsPerDay { get; set; }
 
@@ -134,7 +134,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public DateTime End { get; set; }
     }
 
-<<<<<<< HEAD
+
     // public class DateRangeDto
     // {
     //     [Key]

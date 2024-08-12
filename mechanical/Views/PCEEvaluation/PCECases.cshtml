@@ -1,6 +1,6 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = ViewBag.Title ?? "PCE Cases";
-    var Status = ViewBag.Status as string;   
+    var Status = ViewBag.Status as string;
 }
 
 <section class="content-header">
@@ -31,7 +31,9 @@
                             <th>Case No</th>
                             <th>Applicant Name</th>
                             <th>Customer Id</th>
-                            <th>@Status PCEs</th>
+                            @if (Status != "All"){
+                                <th>@Status PCEs</th>
+                            }
                             <th>Total PCEs</th>
                             <th>Action</th>
                         </tr>
@@ -48,17 +50,4 @@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
-
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 }
