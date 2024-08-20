@@ -34,10 +34,25 @@ namespace mechanical.Data
  
             base.OnModelCreating(modelBuilder);
             
-            modelBuilder.Entity<TimeInterval>()
-                .HasOne<PCEEvaluation>()
-                .WithMany(pc => pc.ShiftHours)
-                .HasForeignKey(ti => ti.PCEEId);
+            // modelBuilder.Entity<TimeInterval>()
+            //     .HasOne<PCEEvaluation>()
+            //     .WithMany(pc => pc.ShiftHours)
+            //     .HasForeignKey(ti => ti.PCEEId);
+
+            // modelBuilder.Entity<DateTimeRange>()
+            //     .HasOne<PCEEvaluation>()
+            //     .WithOne(pc => pc.TimeConsumedToCheck)
+            //     .HasForeignKey<DateTimeRange>(dt => dt.PCEEId); 
+
+            modelBuilder.Entity<PCEEvaluation>()
+                .HasMany(e => e.ShiftHours)
+                .WithOne()
+                .HasForeignKey(ti => ti.PCEEId);          
+
+            modelBuilder.Entity<PCEEvaluation>()
+                .HasOne(pe => pe.TimeConsumedToCheck)
+                .WithOne() 
+                .HasForeignKey<DateTimeRange>(dt => dt.PCEEId); 
 
             var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
                 v => v.ToDateTime(TimeOnly.MinValue),
@@ -59,8 +74,8 @@ namespace mechanical.Data
         // public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
         public DbSet<TimeInterval> TimeIntervals { get; set; }
-        public DbSet<TimeInterval> DateTimeRanges { get; set; }
-        // public DbSet<TimeInterval> DateRanges { get; set; }
+        public DbSet<DateTimeRange> DateTimeRanges { get; set; }
+        // public DbSet<DateRange> DateRanges { get; set; }
         ///////
        // public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
 

@@ -24,7 +24,7 @@ namespace mechanical.Models.PCE.Entities
         public OutputPhase OutputPhase { get; set; }
 
         public int? ShiftsPerDay { get; set; }
-        public List<TimeInterval>? ShiftHours { get; set; } = new List<TimeInterval>();
+        public virtual List<TimeInterval>? ShiftHours { get; set; } = new List<TimeInterval>();
         public int? WorkingDaysPerMonth { get; set; }
         public ProductionHourType? EffectiveProductionHourType { get; set; }
         public decimal? EffectiveProductionHour { get; set; }
@@ -34,7 +34,7 @@ namespace mechanical.Models.PCE.Entities
         public string EstimatedProductionCapacity { get; set; }
         public string? BottleneckProductionLineCapacity { get; set; }
         public string OverallActualCurrentPlantCapacity { get; set; }
-        public DateTimeRange TimeConsumedToCheck { get; set; }
+        public virtual DateTimeRange TimeConsumedToCheck { get; set; }
 
         public string TechnicalObsolescenceStatus { get; set; }
         public decimal DepreciationRateApplied { get; set; }
@@ -52,7 +52,6 @@ namespace mechanical.Models.PCE.Entities
         public DateOnly InspectionDate { get; set; } 
         public string? SurveyRemark { get; set; }
     
-        // public virtual ICollection<UploadFile> SupportingDocuments { get; set; } = new List<UploadFile>();
         public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid? UpdatedBy { get; set; } = null;
@@ -63,32 +62,42 @@ namespace mechanical.Models.PCE.Entities
     {
         [Key]
         public Guid Id { get; set; }
-
         [ForeignKey("PCEEId")]
-        public Guid PCEEId { get; set; } 
+        public Guid PCEEId { get; set; }
 
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
+
+            
+        public bool Contains(TimeSpan time)
+        {
+            return time >= Start && time <= End;
+        }
+
+        public TimeSpan Duration
+        {
+            get { return End - Start; }
+        }
     }
 
     public class DateTimeRange
     {
         [Key]
         public Guid Id { get; set; }
-
         [ForeignKey("PCEEId")]
         public Guid PCEEId { get; set; }
 
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-    }
 
-    // public class DateRange
-    // {
-    //     [Key]
-    //     public Guid Id { get; set; }
-    //     public Guid PCEEId { get; set; }
-    //     public DateOnly Start { get; set; }
-    //     public DateOnly End { get; set; }
-    // }
+        public bool Contains(DateTime dateTime)
+        {
+            return dateTime >= Start && dateTime <= End;
+        }
+
+        public TimeSpan Duration
+        {
+            get { return End - Start; }
+        }
+    }
 }

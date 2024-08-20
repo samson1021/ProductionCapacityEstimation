@@ -6,12 +6,11 @@
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
     var RejectPost = new PCERejectPostDto
-            {
-                PCEId = Model.PCEId,
-                RejectionComment = ""
-            };
+    {
+        PCEId = Model.PCEId,
+        RejectionComment = ""
+    };
     ViewData["RejectPost"] = RejectPost;
 }
 

@@ -3,8 +3,8 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
 
 @{
-    var LatestPCEEvaluation = ViewData["LatestPCEEvaluation"] as ReturnProductionDto;
-    @* var LatestPCEEvaluation = ViewData["LatestPCEEvaluation"] as PCEEvaluationReturnDto; *@
+    var LatestEvaluation = ViewData["LatestEvaluation"] as ReturnProductionDto;
+    @* var LatestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto; *@
     var CurrentUser = ViewData["CurrentUser"] as CreateUser;
     var Remark = ViewData["Remark"] as ReturnProductionDto;
 }
@@ -22,9 +22,9 @@
             
             <div class="card-body">
             @{
-                if (LatestPCEEvaluation != null)
+                if (LatestEvaluation != null)
                 {
-                    if (LatestPCEEvaluation.Remark == "" || LatestPCEEvaluation.Remark == null)
+                    if (LatestEvaluation.Remark == "" || LatestEvaluation.Remark == null)
                     {
                     
                         <h6 >There is No Remark related to this Production Capacity</h6>
@@ -36,11 +36,11 @@
                         if (CurrentUser.Role.Name == "Relation Manager")
                         {
                             <div class="card">
-                                <h6>@LatestPCEEvaluation.Remark</h6>
+                                <h6>@LatestEvaluation.Remark</h6>
                             </div>
                             <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
-                                <input name="collateralId" type="hidden" value=@LatestPCEEvaluation.Id />
-                                <input name="EvaluatorUserID" type="hidden" value=@LatestPCEEvaluation.EvaluatorUserID />
+                                <input name="collateralId" type="hidden" value=@LatestEvaluation.Id />
+                                <input name="EvaluatorUserID" type="hidden" value=@LatestEvaluation.EvaluatorUserID />
                                 <div class="card">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
@@ -81,14 +81,14 @@
                                 </div>
                                 <form action="/MotorVehicle/RemarkRelease" method="post">
                                     <div class="card">
-                                        <textarea class="form-control" name="Remark">@LatestPCEEvaluation.Remark</textarea>
+                                        <textarea class="form-control" name="Remark">@LatestEvaluation.Remark</textarea>
                                     </div>
 
 
-                                    <input name="CollateralId" type="hidden" value=@LatestPCEEvaluation.Id />
-                                    <input name="EvaluatorUserID" type="hidden" value=@LatestPCEEvaluation.EvaluatorUserID />
+                                    <input name="CollateralId" type="hidden" value=@LatestEvaluation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@LatestEvaluation.EvaluatorUserID />
                                     <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
-                                    <input name="Id" type="hidden" value=@LatestPCEEvaluation.Id />
+                                    <input name="Id" type="hidden" value=@LatestEvaluation.Id />
                                     <div class="input-group">
                                         <span class="input-group-append">
                                             <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
@@ -103,11 +103,11 @@
                                 </div>
                                 <form action="/MOCase/ReEvaluation" method="post">
                                     <div class="card">
-                                        <textarea class="form-control" name="Remark">@LatestPCEEvaluation.Remark</textarea>
+                                        <textarea class="form-control" name="Remark">@LatestEvaluation.Remark</textarea>
                                     </div>
 
-                                    <input name="Id" type="hidden" value=@LatestPCEEvaluation.Id />
-                                    <input name="EvaluatorUserID" type="hidden" value=@LatestPCEEvaluation.EvaluatorUserID />
+                                    <input name="Id" type="hidden" value=@LatestEvaluation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@LatestEvaluation.EvaluatorUserID />
                                     <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
                                     <div class="input-group">
                                         <span class="input-group-append">

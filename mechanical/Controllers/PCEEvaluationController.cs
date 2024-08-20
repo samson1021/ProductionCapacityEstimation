@@ -65,7 +65,8 @@ namespace mechanical.Controllers
                 }
             
                 ViewData["Reestimation"] = pceDetail.Reestimation;
-                ViewData["LatestPCEEvaluation"] = pceDetail.LatestPCEEvaluation;
+                ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
+                ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
                 ViewData["PCECase"] = pceDetail.PCECase;
                 ViewData["PCE"] = pceDetail.ProductionCapacity;
 
@@ -172,33 +173,7 @@ namespace mechanical.Controllers
             }
         }
 
-        // // [HttpGet("{Id}")]
-        // [HttpGet]
-        // public async Task<IActionResult> Detail(Guid Id)
-        // {
-        //     try
-        //     {
-        //         var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluation(base.GetCurrentUserId(), Id);
-        //         if (PCEEvaluation == null)
-        //         {
-        //             return RedirectToAction("MyPCEs");
-        //         }
-        //         var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
-        //         var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), pce.PCECaseId);
-
-        //         ViewData["PCE"] = pce;
-        //         ViewData["PCECase"] = pcecase;
-        //         ViewData["CurrentStatus"] = pce.CurrentStatus;
-
-        //         return View(PCEEvaluation);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError(ex, "Error fetching PCEEvaluation details for ID {Id}", Id);
-        //         return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //     }
-        // }
-        
+        // [HttpGet("{Id}")]
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid PCEId)
         {
@@ -213,8 +188,9 @@ namespace mechanical.Controllers
                 ViewData["CurrentUser"] = pceDetail.CurrentUser;
                 ViewData["Reestimation"] = pceDetail.Reestimation;
                 ViewData["PCE"] = pceDetail.ProductionCapacity;
-                ViewData["LatestPCEEvaluation"] = pceDetail.LatestPCEEvaluation;
-                ViewData["pcecase"] = pceDetail.PCECase;
+                ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
+                ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
+                ViewData["PCECase"] = pceDetail.PCECase;
                 ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
                 ViewData["Remark"] = pceDetail.ProductionCapacity;
 
@@ -411,6 +387,23 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(myPCEs);
             return Content(jsonData, "application/json");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyLatestValuation(Guid PCEId)
+        {
+            var valuationHistory = await _PCEEvaluationService.GetValuationHistory(base.GetCurrentUserId(), PCEId);    
+            string jsonData = JsonConvert.SerializeObject(valuationHistory.LatestEvaluation, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyPreviousValuations(Guid PCEId)
+        {
+            var valuationHistory = await _PCEEvaluationService.GetValuationHistory(base.GetCurrentUserId(), PCEId);    
+            string jsonData = JsonConvert.SerializeObject(valuationHistory.PreviousEvaluations, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+            return Content(jsonData, "application/json");
+        }
+
 
         // // Returned 
         // [HttpGet]

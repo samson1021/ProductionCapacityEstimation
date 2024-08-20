@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240723133446_new")]
-    partial class @new
+    [Migration("20240817092210_NewPP")]
+    partial class NewPP
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1107,7 +1107,10 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DateTimeRange");
+                    b.HasIndex("PCEEId")
+                        .IsUnique();
+
+                    b.ToTable("DateTimeRanges");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
@@ -1305,9 +1308,6 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TimeConsumedToCheckId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -1322,8 +1322,6 @@ namespace mechanical.Migrations
                     b.HasIndex("EvaluatorId");
 
                     b.HasIndex("PCEId");
-
-                    b.HasIndex("TimeConsumedToCheckId");
 
                     b.ToTable("PCEEvaluations");
                 });
@@ -1535,7 +1533,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("CommentedByUserIdsId");
 
-                    b.ToTable("ProductionCapcityCorrections");
+                    b.ToTable("ProductionCapacityCorrections");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
@@ -1675,7 +1673,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("PCEEId");
 
-                    b.ToTable("TimeInterval");
+                    b.ToTable("TimeIntervals");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
@@ -1957,6 +1955,15 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.DateTimeRange", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
+                        .WithOne("TimeConsumedToCheck")
+                        .HasForeignKey("mechanical.Models.PCE.Entities.DateTimeRange", "PCEEId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -2013,17 +2020,9 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mechanical.Models.PCE.Entities.DateTimeRange", "TimeConsumedToCheck")
-                        .WithMany()
-                        .HasForeignKey("TimeConsumedToCheckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Evaluator");
 
                     b.Navigation("PCE");
-
-                    b.Navigation("TimeConsumedToCheck");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacity", b =>
@@ -2132,6 +2131,9 @@ namespace mechanical.Migrations
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEEvaluation", b =>
                 {
                     b.Navigation("ShiftHours");
+
+                    b.Navigation("TimeConsumedToCheck")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
