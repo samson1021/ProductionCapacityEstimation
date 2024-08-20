@@ -224,7 +224,7 @@ namespace mechanical.Controllers
                 .Where(u => u.Id == roleId)
                 .Select(u => new {
                     u.Id,
-                    u.Name,
+                    u.Name
                 }).ToList();
             string RoleName = "maker";
             Guid? RoleId = null;

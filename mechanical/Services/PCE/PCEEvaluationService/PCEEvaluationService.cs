@@ -575,7 +575,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
+                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId && x.ProductionCaseAssignment.Status == Status || x.ProductionCapacity.EvaluatorUserID == UserId )
                                     .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)

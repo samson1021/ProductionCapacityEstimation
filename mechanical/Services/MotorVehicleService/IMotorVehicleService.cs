@@ -9,7 +9,7 @@ namespace mechanical.Services.MotorVehicleService
 {
     public interface IMotorVehicleService
     {
-       
+        Task<double> Currency(string currency, DateTime currencyDate);
         Task<MotorVehicle> CreateMotorVehicle(Guid userId, CreateMotorVehicleDto createMotorVehicleDto );
         Task<ReturnMotorVehicleDto> CheckMotorVehicle(Guid userId, Guid Id, CreateMotorVehicleDto createMotorVehicleDto);
         Task<ReturnMotorVehicleDto> GetMotorVehicle(Guid Id);

@@ -86,6 +86,13 @@ namespace mechanical.Controllers
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }
+        [HttpGet]
+        public IActionResult MyPCEs(string Status)
+        {
+            ViewData["Title"] = "My " + Status + " PCEs";
+            ViewBag.Status = Status;
+            return View("MyPCEs");
+        }
 
         //[HttpGet]
         //public IActionResult MyPendingCases()
