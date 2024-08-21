@@ -472,11 +472,11 @@
             }
            
                
-            var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-            if (ProductionBussinessLicence === "") {
-                toastr.error("Please fill in all required fields.");
-                return;
-            }
+            // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
+            // if (ProductionBussinessLicence === "") {
+            //     toastr.error("Please fill in all required fields.");
+            //     return;
+            // }
 
             var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace');
             if (MachineryInstalledPlace === "") {
@@ -527,7 +527,7 @@
                     loadCollaterals();
                 },
                 error: function (error) {
-                    toastr.error("Unable to create PCE");
+                    toastr.error("Unable to create PCE Request");
                     console.log(error);
                 }
             });
@@ -555,7 +555,7 @@
                     loadCollaterals();
                 },
                 error: function (error) {
-                    toastr.error("Unable to create Plant PCE collateralfssssssssssss");
+                    toastr.error("Unable to create Plant PCE ");
                     console.log(error);
                 }
             });
