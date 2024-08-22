@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addCollateralModalLabel">
-                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Search and Select the Applicant 
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Search and Select the Applicant
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -24,10 +24,10 @@
                     </tbody>
                 </table>
             </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-purple bg-purple" id="okButton">Select</button>
-              
+
             </div>
         </div>
     </div>
@@ -35,101 +35,101 @@
 
 <script>
 
-$(document).ready(function () {
-    var table;
+    $(document).ready(function () {
+        var table;
 
-    const checkApplicantName = document.getElementById("checkApplicantName");
-    checkApplicantName.addEventListener("click", function () {
-        const applicantName = document.getElementById("applicantName").value;
-        const url = '@Url.Action("GetByApplicantName", "PCECase")';
-        fetch(url + `?applicantName=${applicantName}`)
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Network response was not ok.');
-                }
-            })
-            .then(data => {
-                populateDataTable(data);
-                // Show the modal after a short delay
-                setTimeout(function () {
-                    $('#checkApplicantNameModal').modal('show');
-                }, 100);
-            })
-            .catch(error => console.error(error));
-    });
-
-    function populateDataTable(data) {
-        table = $('#pcecase-table').DataTable({
-            destroy: true,
-            data: data,
-            columns: [
-                {
-                    data: null,
-                    render: (data, type, row) => {
-                        return `
-<input type="checkbox" class="select-row" data-id="${row.Id}">`;
+        const checkApplicantName = document.getElementById("checkApplicantName");
+        checkApplicantName.addEventListener("click", function () {
+            const applicantName = document.getElementById("applicantName").value;
+            const url = '@Url.Action("GetByApplicantName", "PCECase")';
+            fetch(url + `?applicantName=${applicantName}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Network response was not ok.');
                     }
-                },
-                { data: 'ApplicantName' },
-                { data: 'CustomerEmail' },
-                { data: 'CustomerUserId' },
-                { data: 'CaseNo' }
-            ],
-            initComplete: function () {
-                // Re-add the search form and other UI elements
-                this.api().columns().every(function () {
-                    var column = this;
-                    var searchInput = $(`
-<input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
-                        .appendTo($(column.footer()).empty())
-                        .on('keyup change clear', function () {
-                            if (column.search() !== this.value) {
-                                column.search(this.value).draw();
-                            }
-                        });
-                });
+                })
+                .then(data => {
+                    populateDataTable(data);
+                    // Show the modal after a short delay
+                    setTimeout(function () {
+                        $('#checkApplicantNameModal').modal('show');
+                    }, 100);
+                })
+                .catch(error => console.error(error));
+        });
+
+        function populateDataTable(data) {
+            table = $('#pcecase-table').DataTable({
+                destroy: true,
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        render: (data, type, row) => {
+                            return `
+    <input type="checkbox" class="select-row" data-id="${row.Id}">`;
+                        }
+                    },
+                    { data: 'ApplicantName' },
+                    { data: 'CustomerEmail' },
+                    { data: 'CustomerUserId' },
+                    { data: 'CaseNo' }
+                ],
+                initComplete: function () {
+                    // Re-add the search form and other UI elements
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var searchInput = $(`
+    <input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
+                            .appendTo($(column.footer()).empty())
+                            .on('keyup change clear', function () {
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
+                    });
+                }
+            });
+        }
+
+        $('#pcecase-table').on('change', '.select-row', function () {
+            // Deselect all other checkboxes
+            $('.select-row').not(this).prop('checked', false).closest('tr').removeClass('bg-purple')
+                .find('.select-row').removeClass('bg-purple');
+
+            // Get the current row
+            var currentRow = $(this).closest('tr');
+
+            // Toggle the selected class and styles
+            if ($(this).is(':checked')) {
+                currentRow.addClass('bg-purple');
+                $(this).addClass('bg-purple');
+            } else {
+                currentRow.removeClass('bg-purple');
+                $(this).removeClass('bg-purple');
             }
         });
-    }
 
-    $('#pcecase-table').on('change', '.select-row', function () {
-        // Deselect all other checkboxes
-        $('.select-row').not(this).prop('checked', false).closest('tr').removeClass('bg-purple')
-            .find('.select-row').removeClass('bg-purple');
+        $('#okButton').click(function () {
+            var selectedRows = $('.select-row:checked').map(function () {
+                return table.row($(this).closest('tr')).data();
+            }).get();
+            //console.log(selectedRows);
+            if (selectedRows.length > 0) {
+                var selectedRow = selectedRows[0];
 
-        // Get the current row
-        var currentRow = $(this).closest('tr');
+                selectedRow.CustomerUserId = 1234;
+                $('#applicantName').val(selectedRow.ApplicantName);
+                $('#customerEmail').val(selectedRow.CustomerEmail);
+                $('#CustomerId').val(selectedRow.CustomerUserId);
+                $('#caseNumber').val(selectedRow.CaseNo);
 
-        // Toggle the selected class and styles
-        if ($(this).is(':checked')) {
-            currentRow.addClass('bg-purple');
-            $(this).addClass('bg-purple');
-        } else {
-            currentRow.removeClass('bg-purple');
-            $(this).removeClass('bg-purple');
-        }
+                $('#checkApplicantNameModal').modal('hide');
+            }
+        });
     });
-
-    $('#okButton').click(function () {
-        var selectedRows = $('.select-row:checked').map(function () {
-            return table.row($(this).closest('tr')).data();
-        }).get();
-        //console.log(selectedRows); 
-          if (selectedRows.length > 0) {
-            var selectedRow = selectedRows[0];
-           
-            selectedRow.CustomerUserId=1234;
-            $('#applicantName').val(selectedRow.ApplicantName);
-            $('#customerEmail').val(selectedRow.CustomerEmail); 
-            $('#CustomerId').val(selectedRow.CustomerUserId); 
-            $('#caseNumber').val(selectedRow.CaseNo); 
-
-            $('#checkApplicantNameModal').modal('hide');
-        }
-     });
-});
 
 </script>
 

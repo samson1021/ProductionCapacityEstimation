@@ -32,7 +32,7 @@
                         <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Collaterals Informations</a>
+                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Production Capacity Informations</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Schedule</a>
@@ -43,6 +43,14 @@
                             Comments <span class="badge badge-warning right CommentBage"> </span>
                         </a>
                     </li>
+                    <li class="nav-item ml-auto">
+                        
+                        @* <a class="btn btn-primary" href="@Url.Action("PCEReport", "PCECase", new { Id = myCase.Id })"> *@
+                        <a class="btn btn-primary" href="@Url.Action("PCEReport", "PCECase", new { Id = "16B94CB2-09BD-402A-809D-5A847F9E2054"})">
+                            <i class="fas fa-file-alt mr-2"></i>My PCECases Report
+                        </a>
+                    </li>
+                 
                 </ul>
             </div>
             <div class="card-body">
@@ -53,9 +61,6 @@
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @await Html.PartialAsync("Partial/_CreateManufacturingProductionCapacity")
                     </div>
-                    @* <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                         @await Html.PartialAsync("Partial/_PCECreateCollateral")
-                        </div>  *@
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("Partial/_PCECaseSchedule")
                     </div>
@@ -70,8 +75,6 @@
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("Partial/_DetailCaseDataTableSriptsPartial");
-        // await Html.RenderPartialAsync("Partial/_DetailCaseSriptsPartial");
         await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");              
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

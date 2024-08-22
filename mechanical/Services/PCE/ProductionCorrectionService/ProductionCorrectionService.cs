@@ -27,7 +27,7 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
             _IPCECaseTimeLineService = _IPCECaseTimeLineService;
 
         }
-        public async Task<ProductionCapcityCorrection> CreateProductionCorrection(ProductionCapcityCorrectionPostDto1 createCorrectionDto)
+        public async Task<ProductionCapcityCorrection> CreateProductionCorrection(ProductionCapcityCorrectionPostDto createCorrectionDto)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var loanCase = _mapper.Map<ProductionCapcityCorrection>(createCorrectionDto);
@@ -48,10 +48,10 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
             return loanCase;
         }
 
-        public async Task<ProductionCapcityCorrectionPostDto1> GetProductionCorrection(Guid Id)
+        public async Task<ProductionCapcityCorrectionPostDto> GetProductionCorrection(Guid Id)
         {
             var loanCase = await _cbeContext.ProductionCapcityCorrections.Include(res => res.ProductionCapacityId).FirstOrDefaultAsync(c => c.Id == Id);
-            return _mapper.Map<ProductionCapcityCorrectionPostDto1>(loanCase);
+            return _mapper.Map<ProductionCapcityCorrectionPostDto>(loanCase);
         }
 
 

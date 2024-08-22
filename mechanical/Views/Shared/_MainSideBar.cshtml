@@ -8,7 +8,7 @@
 }
 <script>
 </script>
-<aside class="main-sidebar sidebar-light-purple elevation-4">
+<aside class="main-sidebar sidebar-light-purple elevation-4" style="font-family: 'Times New Roman', Times, serif">
     <a class="brand-link bg-purple">
         <img src="~/img/cbelogo.png" alt="CBE Logo" class="brand-image img-circle elevation-3" style="opacity: .8; ">
         <span class="brand-text font-weight-light">CBE</span>
@@ -166,6 +166,14 @@
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>
                                         Total case
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCECasesReport", "PCECase")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Generate Report
                                     </p>
                                 </a>
                             </li>
@@ -615,129 +623,83 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="@Url.Action("MyNewPCECases", "PCEEvaluation")" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        New PCE Cases
-                                    </p>
+                                <a href="@Url.Action("MyPCECases", "PCEEvaluation")?Status=New" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>New PCE Cases</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("MyPendingPCECases", "PCEEvaluation")" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        Pending PCE Cases
-                                    </p>
+                                <a href="@Url.Action("MyPCECases", "PCEEvaluation")?Status=Pending" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Pending PCE Cases</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("MyCompletedPCECases", "PCEEvaluation")" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        Completed PCE Cases
-                                    </p>
+                                <a href="@Url.Action("MyPCECases", "PCEEvaluation")?Status=Evaluated" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Evaluated PCE Cases</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("MyRejectedPCEs", "PCEEvaluation")" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        Returned  PCEs
-                                    </p>
+                                <a href="@Url.Action("MyPCECases", "PCEEvaluation")?Status=Reevaluated" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Reevaluated  PCE Cases</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("MyResubmittedPCEs", "PCEEvaluation")" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        Resubmitted  PCEs
-                                    </p>
+                                <a href="@Url.Action("MyPCECases", "PCEEvaluation")?Status=Returned" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Returned  PCE Cases</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("MyTotalPCECases", "PCEEvaluation")" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        Total PCE Cases
-                                    </p>
+                                <a href="@Url.Action("MyPCECases", "PCEEvaluation")?Status=All" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>All PCE Cases</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"  id="mypces-toggle">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p>My PCEs<i class="fas fa-angle-left right"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=New" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>New PCEs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Pending" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Pending PCEs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Evaluated" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Evaluated PCEs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Reevaluated" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Reevaluated  PCEs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Returned" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>Returned  PCEs</p>
+                                </a>
+                            </li>
+                            @* <li class="nav-item">
+                                <a href="@Url.Action("MyReturnedPCEs", "PCEEvaluation")" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>All Returned  PCEs</p>
+                                </a>
+                            </li> *@
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=All" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i><p>All PCEs</p>
                                 </a>
                             </li>
                         </ul>
                     </li>
 
-
 @*                     End Product Capacity Estimation
  *@
-
-
-                    @*  here *@                        
-                       
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                                <p>My PCE Evaluation<i class="fas fa-angle-left right"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="@Url.Action("AllNew", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            New PCE Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("AllPending", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Pending PCE Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("AllEvaluated", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Evaluated PCE Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("AllRejected", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Returned  Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("AllReevaluated", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Reevaluated  Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("AllCompleted", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Completed PCE Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("All", "PCEEvaluation")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Total PCE Evaluations
-                                        </p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    @*  here *@
-
 
                 </ul>
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">

@@ -17,6 +17,10 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? ModelNo { get; set; }
         public string? ProductionBussinessLicence { get; set; }
 
+
+        [Display(Name = "Country of Orgin")]
+        public string? CountryOfOrgin { get; set; }
+        
         [Range(1900, 2024)]
         public int? ManufactureYear { get; set; }
         public string? InvoiceNo { get; set; }

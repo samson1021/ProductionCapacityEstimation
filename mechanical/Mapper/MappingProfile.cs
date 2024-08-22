@@ -182,43 +182,54 @@ namespace mechanical.Mapper
             ///////
            
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
+
+
             CreateMap<CreateFileDto, ReturnFileDto>()
-                .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType))
-                .ReverseMap();
+                .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType));
+                // .ReverseMap();
             CreateMap<CreateFileDto, UploadFile>()
                 .ForMember(dest => dest.Catagory, opt => opt.MapFrom((src, dest, destMember, context) =>
                 {
                     return context.Items["Catagory"];
                 }));
 
-            CreateMap<TimePeriod, TimePeriodDto>().ReverseMap();
-            CreateMap<DatePeriod, DatePeriodDto>().ReverseMap();
-            CreateMap<DateTimePeriodDto, DateTimePeriod>()
-                .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.Start))
-                .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.End))
-                .ReverseMap();
-
-            CreateMap<PCEEvaluation, PCEEvaluationReturnDto>()
-                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "Supporting Evidence")))
-                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.SupportingDocuments.Where(f => f.Catagory == "Production Process Flow Diagram")));
-                
-            CreateMap<PCEEvaluationPostDto, PCEEvaluation>()
-                .ForMember(dest => dest.SupportingDocuments, opt => opt.Ignore());
-        
-            CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>()
-                .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
-                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore());
+            // CreateMap<DateRange, DateRangeDto>().ReverseMap();
+            CreateMap<DateTimeRange, DateTimeRangeDto>().ReverseMap();
+            CreateMap<TimeInterval, TimeIntervalDto>().ReverseMap();
+            CreateMap<PCERejectPostDto, ProductionReject>();
+            CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
+            CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
 
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
-                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => new DateTimePeriod
-                {
-                    Start = src.TimeConsumedToCheck.Start,
-                    End = src.TimeConsumedToCheck.End
-                }))
-                .ReverseMap();
-            CreateMap<PCERejectPostDto, ProductionReject>();
+                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
+                .ReverseMap()
+                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
+
+
+            CreateMap<PCEEvaluation, PCEEvaluationUpdateDto>()
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
+                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
+                .ReverseMap()
+                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
+
+            CreateMap<PCEEvaluation, PCEEvaluationReturnDto>()
+                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
+                .ReverseMap()
+                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
+                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
+
+            // CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>()
+            //     .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
+            //     .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore());
             ///////
         }
 

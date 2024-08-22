@@ -16,6 +16,15 @@ namespace mechanical.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            modelBuilder.Entity<PCEEvaluation>()
+                .Property(e => e.DepreciationRateApplied)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<PCEEvaluation>()
+                .Property(e => e.EffectiveProductionHour)
+                .HasColumnType("decimal(18,2)");
+
+
             modelBuilder.Entity<Signatures>()
                 .HasOne(c => c.SignatureFile)
                 .WithOne()
@@ -33,32 +42,15 @@ namespace mechanical.Data
             }
  
             base.OnModelCreating(modelBuilder);
-
-            // modelBuilder.Entity<PCEEvaluation>()
-            //     .HasMany(p => p.SupportingDocuments)
-            //     .WithOne(f => f.CaseId)
-            //     // .HasForeignKey(f => f.CollateralId)
-            //     .OnDelete(DeleteBehavior.Cascade);  
-                
-            var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
-                v => v.ToTimeSpan(),
-                v => TimeOnly.FromTimeSpan(v));
+            
+            modelBuilder.Entity<TimeInterval>()
+                .HasOne<PCEEvaluation>()
+                .WithMany(pc => pc.ShiftHours)
+                .HasForeignKey(ti => ti.PCEEId);
 
             var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
                 v => v.ToDateTime(TimeOnly.MinValue),
                 v => DateOnly.FromDateTime(v));
-
-            modelBuilder.Entity<TimePeriod>(entity =>
-            {
-                entity.Property(e => e.Start).HasConversion(timeOnlyConverter);
-                entity.Property(e => e.End).HasConversion(timeOnlyConverter);
-            });
-
-            modelBuilder.Entity<DatePeriod>(entity =>
-            {
-                entity.Property(e => e.Start).HasConversion(dateOnlyConverter);
-                entity.Property(e => e.End).HasConversion(dateOnlyConverter);
-            });
 
             modelBuilder.Entity<PCEEvaluation>(entity =>
             {
@@ -69,13 +61,15 @@ namespace mechanical.Data
         {
         }
 
-
         //production capacity estimation
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
 
         // public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        public DbSet<TimeInterval> TimeIntervals { get; set; }
+        public DbSet<TimeInterval> DateTimeRanges { get; set; }
+        // public DbSet<TimeInterval> DateRanges { get; set; }
         ///////
        // public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
 

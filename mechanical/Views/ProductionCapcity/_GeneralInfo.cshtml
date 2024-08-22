@@ -76,24 +76,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-@*                                 @{
-                                    if (productionFiles != null && productionFiles.Count() == 0)
-                                    {
 
-                                        <tr class="text-center"> <td colspan="3"><h6>There is no document related to this PCE</h6></td></tr>
-                                    }
-                                    else
-                                    {
-                                        foreach (var productionFile in productionFiles)
-                                        {
-                                            <tr>
-                                                <td>@productionFile.Name</td>
-                                                <td>@productionFile.Catagory</td>
-                                                <td><a href="@Url.Action("ViewFile","UploadFile" ,new { Id =productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
-                                            </tr>
-                                        }
-                                    }
-                                } *@
                                 @{
                                     if (productionFiles != null && productionFiles.Count() == 0)
                                     {
@@ -191,6 +174,8 @@
                         @if (!string.IsNullOrEmpty(Model.Kebele)){<h6 style="margin-top:1.2rem;"><strong>Kebele:</strong> @Model.Kebele</h6> } *@
                     </div>
                 </div>
+
+                
             </div>
         </div>
     </div>

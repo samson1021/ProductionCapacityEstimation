@@ -97,7 +97,7 @@ namespace mechanical.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Detail(Guid id)
-        {
+        {Console.WriteLine("abduuuuu");
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
             var loanCase = await _pCECaseService.GetProductionCaseDetail(id);
 
@@ -166,6 +166,16 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(production);
             return Content(jsonData, "application/json");
         }
+
+        //////////
+        [HttpGet]
+        public async Task<IActionResult> GetRmRejectedProductions(Guid PCECaseId)
+        {
+            var production = await _productionCapacityServices.GetRmRejectedProductions(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(production);
+            return Content(jsonData, "application/json");
+        }        
+        ///////////
 
         [HttpGet]
         public async Task<IActionResult> CheckCategory(Guid CaseId)
@@ -299,7 +309,13 @@ namespace mechanical.Controllers
         }
 
 
-
+        [HttpGet]
+        public async Task<IActionResult> GetRMCompleteCollaterals(Guid PCECaseId)
+        {
+            var collaterals = await _productionCapacityServices.GetRmComCollaterals(PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
 
     }
 }

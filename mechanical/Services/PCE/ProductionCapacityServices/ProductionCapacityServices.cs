@@ -205,6 +205,24 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             var production = await _cbeContext.ProductionCapacities.Where(c => c.Id == id && c.CreatedById == userId && c.CurrentStage == "Relation Manager").FirstOrDefaultAsync();
             if (production != null)
             {
+
+                //delete the assignment case if its new not starting the process or not completed yet
+                var deleteassignment = await _cbeContext.ProductionCaseAssignments.Where(c=>c.ProductionCapacityId == id && c.UserId == userId && c.Status == "New").ToListAsync();
+                if(deleteassignment.Any())
+                {
+                    _cbeContext.RemoveRange(deleteassignment);
+                    await _cbeContext.SaveChangesAsync();
+                }
+
+                //delete the files if they are available
+                var deletedFiles = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id && c.userId == userId).ToListAsync();
+                if (deletedFiles.Any())
+                {
+                    _cbeContext.UploadFiles.RemoveRange(deletedFiles);
+                    await _cbeContext.SaveChangesAsync();
+                }
+
+
                 _cbeContext.Remove(production);
                 await _cbeContext.SaveChangesAsync();
                 var Filrproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
@@ -315,6 +333,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
 
 
+        public async Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid userId, Guid PCECaseId)
+        {
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStatus == "Rejected" && res.CurrentStage == "Relation Manager").ToListAsync();
+            var productionDtos = _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+            return productionDtos;
+        }
 
 
         public async Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid ProductionCaseId)
@@ -389,12 +413,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
         }
 
-        public async Task<IEnumerable<ProductionCapcityCorrectionReturnDto1>> GetComments(Guid CollateralId)
+        public async Task<IEnumerable<ProductionCapcityCorrectionReturnDto>> GetComments(Guid CollateralId)
         {
             var comments = await _cbeContext.ProductionCapcityCorrections.Where(ca => ca.ProductionCapacityId == CollateralId).ToListAsync();
             if (comments != null)
             {
-                return _mapper.Map<IEnumerable<ProductionCapcityCorrectionReturnDto1>>(comments);
+                return _mapper.Map<IEnumerable<ProductionCapcityCorrectionReturnDto>>(comments);
             }
 
 
@@ -474,7 +498,11 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             }
             return false;
         }
-
+        public async Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid PCECaseId)
+        {
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Checker Officer" && res.CurrentStatus == "Complete").ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnProductionDto>>(collaterals);
+        }
     }
 }
     

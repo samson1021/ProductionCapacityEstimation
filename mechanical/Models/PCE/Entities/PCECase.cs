@@ -1,4 +1,5 @@
 ﻿using mechanical.Models.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace mechanical.Models.PCE.Entities
 {
@@ -6,7 +7,9 @@ namespace mechanical.Models.PCE.Entities
     {
         public Guid Id { get; set; }
         public required string CaseNo { get; set; }
-        public required string ApplicantName { get; set; }
+        [Required]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Only letters and spaces are allowed.")]
+        public string ApplicantName { get; set; }
         public string CustomerUserId { get; set; } = string.Empty;
         public string CustomerEmail { get; set; } = string.Empty;
         public Guid DistrictId { get; set; }

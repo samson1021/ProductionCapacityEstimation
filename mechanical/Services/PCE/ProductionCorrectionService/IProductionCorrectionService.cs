@@ -8,7 +8,7 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
 {
     public interface IProductionCorrectionService
     {
-        Task<ProductionCapcityCorrection> CreateProductionCorrection(ProductionCapcityCorrectionPostDto1 correctionDto);
-        Task<ProductionCapcityCorrectionPostDto1> GetProductionCorrection(Guid Id);
+        Task<ProductionCapcityCorrection> CreateProductionCorrection(ProductionCapcityCorrectionPostDto correctionDto);
+        Task<ProductionCapcityCorrectionPostDto> GetProductionCorrection(Guid Id);
     }
 }

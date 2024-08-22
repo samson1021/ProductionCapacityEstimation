@@ -32,7 +32,7 @@
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="PCECreate">
+                <form method="post" enctype="multipart/form-data" asp-action="PCECreate" onsubmit="return validateForm()">
 
 
                     <div class="row">
@@ -88,7 +88,6 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("Partial/_DetailCaseDataTableSriptsPartial");
         await Html.RenderPartialAsync("Partial/_PCECaseModal");
 
     }
@@ -96,32 +95,6 @@
     <script>
         $(document).ready(function () {
 
-        
-
-            // $("#GenerateCaseNo").on('click', function () {
-            //     var employeeId = empId;
-            //     console.log(employeeId);
-            //     var currentDate = new Date();
-            //     var year = currentDate.getFullYear();
-            //     var month = currentDate.getMonth() + 1;
-            //     var formattedMonth = month.toString().padStart(2, '0');
-
-            //     $.ajax({
-            //         url: '/Case/GetNextCaseNumber',
-            //         method: "GET",
-            //         success: function (data) {
-            //             var consecutiveNumber = data.nextNumber.toString().padStart(4, '0');
-            //             var caseNumber = employeeId + '/' + consecutiveNumber + '/' + formattedMonth + '/' + year;
-
-            //             $("#caseNumber").val(caseNumber);
-            //         },
-            //         error: function (error) {
-            //             console.error('Error:', error);
-            //         }
-            //     });
-            //     $('#GenerateCaseNo').prop('disabled', true);
-
-            // });
                 $("#GenerateCaseNo").on('click', function () {
                 var employeeId = @empId;
                 console.log(employeeId);
@@ -152,18 +125,39 @@
         //this is the input validation for application name
         document.getElementById("applicantName").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
-
-            if (!alphanumericRegex.test(input)) {
-                this.setCustomValidity("Only alphanumeric characters are allowed.");
-                document.getElementById("applicantName-error").textContent = "Only alphanumeric characters are allowed.";
+            var nameRegex = /^[A-Za-z\s]+$/;
+         
+            if (!nameRegex.test(input)) {
+                this.setCustomValidity("Only letters and spaces are allowed.");
+                document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
             } else {
                 this.setCustomValidity("");
                 document.getElementById("applicantName-error").textContent = "";
             }
         });
+
+
+        function validateForm(){
+            var applicantName = document.getElementById("applicantName");
+            var nameRegex = /^[A-Za-z\s]+$/;
+
+            if (!nameRegex.test(applicantName.value)) {
+              
+                applicantName.setCustomValidity("Only letters and spaces are allowed.");
+                document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
+                applicantName.reportValidity();
+                return false;
+            } else {
+                applicantName.setCustomValidity("");
+                document.getElementById("applicantName-error").textContent = "";
+                return true;
+            }
+        }
+
+
         //validate the customer Id length
         document.getElementById("CustomerId").addEventListener("input", function () {
+            event.preventDefault();
             var input = this.value;
             if (input.length !== 10) {
                 this.setCustomValidity("Customer ID must be exactly 10 digits.");

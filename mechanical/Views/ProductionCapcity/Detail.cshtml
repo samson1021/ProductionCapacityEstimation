@@ -8,9 +8,7 @@
 @model ReturnProductionDto;
 @{
     var collateralFiles = ViewData["collateralFiles"] as IEnumerable<ReturnFileDto>;
-    // var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
     var ProductionCavaluation = ViewData["Prvaluation"] as ReturnProductionDto;
-    // var Ibvaluation = ViewData["Ibvaluation"] as IndBldgFacilityEquipmentReturnDto;
     var rejectedCollateral = ViewData["RejectedCollateral"] as ProductionReject;
     var user = ViewData["user"] as CreateUser;
     var loggedRole = ViewData["loggedRole"] as CreateRole;
@@ -18,9 +16,6 @@
     var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as ProductionCapacity;
     var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
     var restimation = ViewData["restimation"] as ProductionCapacityReestimation;
-    // var motorVehicle = ViewData["motorVehicle"] as List<MotorVehicle>;
-    // var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;
-    // var conMngAgr = ViewData["conMngAgr"] as List<ConstMngAgrMachinery>;
 }
 
 <section class="content-header">
@@ -71,7 +66,11 @@
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-remark-tab" data-toggle="pill" href="#custom-tabs-four-remark" role="tab" aria-controls="custom-tabs-four-remark" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Remark</a>
                     </li>
-
+                    <li class="nav-item ml-auto">
+                        <a class="btn btn-primary" href="@Url.Action("PCEReport", "PCECase", new { Id = myCase.Id })">
+                            <i class="fas fa-file-alt mr-2"></i>My PCECases Report
+                        </a>
+                    </li>
 
                 </ul>
             </div>
@@ -96,14 +95,7 @@
                         <h6>there is no checker unit comment</h6>
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                        @{
-                            if (restimation != null)
-                            {
-                                @await Html.PartialAsync("_ProductionValuation")
-
-                            }
-
-                        }
+                                @await Html.PartialAsync("_PreviousValuation")
                     </div>
 
                     <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
