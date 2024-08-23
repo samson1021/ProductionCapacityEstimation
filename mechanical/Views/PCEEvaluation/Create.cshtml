@@ -10,10 +10,10 @@
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
     var Reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
     var RejectPost = new PCERejectPostDto
-            {
-                PCEId = myPCE.Id,
-                RejectionComment = ""
-            };
+                    {
+                        PCEId = myPCE.Id,
+                        RejectionComment = ""
+                    };
     ViewData["RejectPost"] = RejectPost;
 }
 <section class="content-header">

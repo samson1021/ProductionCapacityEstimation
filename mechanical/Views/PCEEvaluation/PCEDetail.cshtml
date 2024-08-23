@@ -31,7 +31,7 @@
                         <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="false"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="true"><i class="nav-icon fas fa-file"></i> Valuation Result</a>
+                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="true"><i class="nav-icon fas fa-file"></i> Valuation</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"><i class="nav-icon fas fa-file"></i> Previous Valuations</a>
@@ -57,7 +57,7 @@
                         @await Html.PartialAsync("_ProductionValuation")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
-                        @await Html.PartialAsync("_ProductionRemark")
+                        @await Html.PartialAsync("_PreviousValuations")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
                         @await Html.PartialAsync("_ProductionRemark")
@@ -71,9 +71,26 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("Partial/_PCEPartialScript");
+        await Html.RenderPartialAsync("Partial/_PrevousValuationDatatableScriptsPartial");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
 
+    <Script>    
+        handleButtonClick(
+            "evaluate-btn",
+            "Are you sure you want to send this evaluation?",
+            "Evaluation sent to RM successfully. Redirecting...",
+            '@Url.Action("MyPCEs", "PCEEvaluation", new { Status = "Completed" })'
+        );
+
+        handleButtonClick(
+            "delete-btn",
+            "Are you sure you want to delete this evaluation?",
+            "Evaluation is deleted successfully. Redirecting...",
+            '@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=@Model.Id'
+        );
+
+    </script> 
 }

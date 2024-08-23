@@ -26,7 +26,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-        public List<TimeIntervalDto>? ShiftHours { get; set; } = new List<TimeIntervalDto>();
+        public virtual List<TimeIntervalReturnDto>? ShiftHours { get; set; } = new List<TimeIntervalReturnDto>();
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -53,7 +53,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string OverallActualCurrentPlantCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
-        public DateTimeRangeDto TimeConsumedToCheck { get; set; }
+        public virtual DateTimeRangeReturnDto TimeConsumedToCheck { get; set; }
 
         [Display(Name = "Technical Obsolescence Status")]
         public string TechnicalObsolescenceStatus { get; set; }

@@ -177,12 +177,12 @@
         </div>
         <div class="form-group col-lg-4">
             <label>Checking Started At <i class="text-danger">*</i></label>
-            <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" value="@(Model.TimeConsumedToCheck?.Start.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"))" required />
+            <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" value="@Model.TimeConsumedToCheck.Start.ToString("yyyy-MM-ddTHH:mm:ss")" required />
             <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger"></span>
         </div>
         <div class="form-group col-lg-4">
             <label>Checking Ended At <i class="text-danger">*</i></label>
-            <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@(Model.TimeConsumedToCheck?.End.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"))" required />
+            <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@Model.TimeConsumedToCheck.End.ToString("yyyy-MM-ddTHH:mm:ss")" required />
             <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
         </div>
     </div>
