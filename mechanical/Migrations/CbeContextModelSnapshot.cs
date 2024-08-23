@@ -799,6 +799,10 @@ namespace mechanical.Migrations
                     b.Property<double>("NetEstimationValue")
                         .HasColumnType("float");
 
+                    b.Property<string>("NoOfProductionLine")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherTechSpec")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -819,6 +823,10 @@ namespace mechanical.Migrations
 
                     b.Property<double>("ReplacementCost")
                         .HasColumnType("float");
+
+                    b.Property<string>("ScaleOfOperation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SerialNo")
                         .IsRequired()

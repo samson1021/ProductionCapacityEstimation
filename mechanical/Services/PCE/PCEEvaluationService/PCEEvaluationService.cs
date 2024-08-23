@@ -560,7 +560,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
+                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId && x.ProductionCaseAssignment.Status == Status || x.ProductionCapacity.EvaluatorUserID == UserId )
                                     .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)
@@ -573,14 +573,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 query = query.Where(pc => pc.CurrentStage == Stage);
             }
 
-            if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
-            {
-                query = query.Where(pc => pc.CurrentStatus == Status);
-            }
-            else
-            {
-                query = query.Where(pc => pc.CurrentStatus != "Rejected");
-            }
+            //if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    query = query.Where(pc => pc.CurrentStatus == Status);
+            //}
 
             var productions = await query.ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);

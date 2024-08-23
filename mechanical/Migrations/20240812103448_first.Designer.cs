@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240723133446_new")]
-    partial class @new
+    [Migration("20240812103448_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -802,6 +802,10 @@ namespace mechanical.Migrations
                     b.Property<double>("NetEstimationValue")
                         .HasColumnType("float");
 
+                    b.Property<string>("NoOfProductionLine")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherTechSpec")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -822,6 +826,10 @@ namespace mechanical.Migrations
 
                     b.Property<double>("ReplacementCost")
                         .HasColumnType("float");
+
+                    b.Property<string>("ScaleOfOperation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SerialNo")
                         .IsRequired()

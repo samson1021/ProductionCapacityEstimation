@@ -147,7 +147,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                             CurrentStage = "Maker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> . &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}. <br>";
 
                     if (collateralCaseId == Guid.Empty)
                     {

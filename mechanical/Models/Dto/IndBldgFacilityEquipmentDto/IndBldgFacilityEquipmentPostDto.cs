@@ -19,10 +19,13 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
         public EquipmentCondition CurrentEqpmntCondition { get; set; }
         public AllocatedPointRange AllocatedPointsRange { get; set; }
 
-    
+
         public string ModelNo { get; set; } = string.Empty;
         public string SerialNo { get; set; } = string.Empty;
         public string EngineNo { get; set; } = string.Empty;
+        public string ScaleOfOperation { get; set; } = string.Empty;
+        public string NoOfProductionLine { get; set; } = string.Empty;
+
         public int YearOfManufacture { get; set; }
         public string CountryOfOrigin { get; set; } = string.Empty;
 

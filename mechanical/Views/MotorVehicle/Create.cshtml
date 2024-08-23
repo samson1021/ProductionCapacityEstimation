@@ -3,6 +3,7 @@
     var collateral = ViewData["collateral"] as ReturnCollateralDto;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
 }
+<link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -23,59 +24,59 @@
 <section class="content">
     <section class="col-xl-12 connectedSortable">
         <div class="card">
-@*             <div class="card-header">
-                <div class="col-12" style="margin-top:0.5em;">
-                    <div class="row">
-                        <div class="col-12 col-sm-2">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Property Owner</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@collateral.PropertyOwner</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-2">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Role</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@collateral.Role</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Equipment Catagory</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@collateral.Category</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Equipment Type</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@collateral.Type</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-2">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Related document</span>
-                                    <span class="info-box-number text-center text-muted mb-0">
-                                        <button id="showCollateralFile" type="button" class="btn btn-sm bg-purple col-12" data-toggle="modal" data-target="#CollateralFileModal">
-                                           Show <i class="fas fa-eye"></i> 
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            @*             <div class="card-header">
+            <div class="col-12" style="margin-top:0.5em;">
+            <div class="row">
+            <div class="col-12 col-sm-2">
+            <div class="info-box bg-light">
+            <div class="info-box-content">
+            <span class="info-box-text text-center text-muted">Property Owner</span>
+            <span class="info-box-number text-center text-muted mb-0">@collateral.PropertyOwner</span>
             </div>
- *@           
-                <div class="card-body">
-                 <form method="post" enctype="multipart/form-data" asp-action="Create">
+            </div>
+            </div>
+            <div class="col-12 col-sm-2">
+            <div class="info-box bg-light">
+            <div class="info-box-content">
+            <span class="info-box-text text-center text-muted">Role</span>
+            <span class="info-box-number text-center text-muted mb-0">@collateral.Role</span>
+            </div>
+            </div>
+            </div>
+            <div class="col-12 col-sm-3">
+            <div class="info-box bg-light">
+            <div class="info-box-content">
+            <span class="info-box-text text-center text-muted">Equipment Catagory</span>
+            <span class="info-box-number text-center text-muted mb-0">@collateral.Category</span>
+            </div>
+            </div>
+            </div>
+            <div class="col-12 col-sm-3">
+            <div class="info-box bg-light">
+            <div class="info-box-content">
+            <span class="info-box-text text-center text-muted">Equipment Type</span>
+            <span class="info-box-number text-center text-muted mb-0">@collateral.Type</span>
+            </div>
+            </div>
+            </div>
+            <div class="col-12 col-sm-2">
+            <div class="info-box bg-light">
+            <div class="info-box-content">
+            <span class="info-box-text text-center text-muted">Related document</span>
+            <span class="info-box-number text-center text-muted mb-0">
+            <button id="showCollateralFile" type="button" class="btn btn-sm bg-purple col-12" data-toggle="modal" data-target="#CollateralFileModal">
+            Show <i class="fas fa-eye"></i>
+            </button>
+            </span>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            *@
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Create">
                     <input asp-for="CollateralId" value=@collateral.Id type="hidden" />
                     <div class="row">
                         <div class="form-group col-xl-4">
@@ -183,7 +184,7 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ModelNo">Model Number</label>
-                            <input asp-for="ModelNo" type="text"  value="@collateral.ModelNo" class="form-control" placeholder="Model Number" required>
+                            <input asp-for="ModelNo" type="text" value="@collateral.ModelNo" class="form-control" placeholder="Model Number" required>
                             <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
@@ -200,12 +201,12 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="SerialNo">Serial Number</label>
-                            <input asp-for="SerialNo" type="text"  value="@collateral.SerialNo" class="form-control" placeholder="Serial Number" required>
+                            <input asp-for="SerialNo" type="text" value="@collateral.SerialNo" class="form-control" placeholder="Serial Number" required>
                             <span id="SerialNo-error" asp-validation-for="SerialNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="PlateNo">Plate Number</label>
-                            <input asp-for="PlateNo" type="text" value="@collateral.PlateNo"class="form-control" placeholder="Plate Number" required>
+                            <input asp-for="PlateNo" type="text" value="@collateral.PlateNo" class="form-control" placeholder="Plate Number" required>
                             <span asp-validation-for="PlateNo" class="text-danger"></span>
                         </div>
                     </div>
@@ -221,7 +222,7 @@
                             <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
-                            <label asp-for="CountryOfOrigin" >Country of Origin</label>
+                            <label asp-for="CountryOfOrigin">Country of Origin</label>
                             <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
                             <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                         </div>
@@ -239,26 +240,45 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="Remark">Remark</label>
-                            <textarea asp-for="Remark" class="form-control"  placeholder="Remark" rows="3" required></textarea>
+                            <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
                             <span asp-validation-for="Remark" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="InvoiceValue">Invoice Value</label>
-                            <input  asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
+                            <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                         </div>
+
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                            <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ExchangeRate">Exchange Rate</label>
-                            <input asp-for="ExchangeRate" type="number" class="form-control"  required>
+                            <input asp-for="ExchangeRate" Id="ExchangeRate" type="number" class="form-control" readonly required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>
                         </div>
+
+                        @* <div class="form-group col-xl-4">
+                        <label asp-for="Currency">Currency</label>
+                        <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                        <span asp-validation-for="Currency" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-xl-4">
+                        <label asp-for="ExchangeRate">Exchange Rate</label>
+                        <input asp-for="ExchangeRate" type="number" class="form-control" readonly required>
+                        <span asp-validation-for="ExchangeRate" class="text-danger"></span>
+                        </div> *@
+
+                        @* <div class="form-group col-xl-4">
+                        <label asp-for="ExchangeRate">Exchange Rate</label>
+                        <input asp-for="ExchangeRate" type="number" class="form-control"  required>
+                        <span asp-validation-for="ExchangeRate" class="text-danger"></span>
+                        </div> *@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -277,14 +297,89 @@
 </section>
 @section Scripts {
     <script src="~/lib/toastr/toastr.min.js"></script>
+
     <script>
+
+
+        // // Currency input event listener
+        // var currencyInput = document.getElementById("Currency");
+        // console.log(currencyInput);
+        //     currencyInput.addEventListener('change', function () {
+        //         var currencyValue = this.value;
+        //         var url = "@Url.Action("Currency", "MotorVehicle")";
+
+        //         fetch(url, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json'
+        //             },
+        //             body: JSON.stringify({ currency: currencyValue })
+
+        //         })
+        //             .then(response => response.json())
+        //             .then(data => {
+
+        //                 document.getElementById("ExchangeRate").value = data.exchangeRate;
+        //             })
+        //             .catch(error => {
+        //                 console.error('Error:', error);
+        //             });
+        //     });
+
+        document.getElementById('Currency').addEventListener('change', function () {
+            showLoadingIndicator();
+            var currency = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '/MotorVehicle/Currency',
+                data: { currency: currency },
+                success: function (response) {
+                    console.log(response);
+                    document.getElementById("ExchangeRate").value = response.exchangeRate;
+                    hideLoadingIndicator();
+                },
+                error: function (xhr, status, error) {
+                    toastr.error("Exchange rate service is not working ...");
+                    hideLoadingIndicator();
+                }
+            });
+        });
+       
+
+        function showLoadingIndicator() {
+            document.body.style.pointerEvents = 'none';
+            document.body.style.opacity = '0.5';
+
+            var loadingIndicator = document.createElement('div');
+            loadingIndicator.classList.add('loading-indicator');
+
+            var spinner = document.createElement('div');
+            spinner.classList.add('spinner');
+            loadingIndicator.appendChild(spinner);
+
+            var loadingText = document.createElement('span');
+            loadingText.textContent = 'Getting Currency name, please wait...';
+            loadingIndicator.appendChild(loadingText);
+
+            document.body.appendChild(loadingIndicator);
+        }
+
+        function hideLoadingIndicator() {
+            var loadingIndicator = document.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                document.body.removeChild(loadingIndicator);
+            }
+
+            document.body.style.pointerEvents = 'auto';
+            document.body.style.opacity = '1';
+        }
         $(function () {
             $('#rejectionModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
             });
 
             $('#rejectionForm').submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault(); 
 
                 var rejectionComment = $('#rejectionComment').val();
                 var CollateralId = $('#CollateralId').val();
@@ -295,14 +390,12 @@
 
                     data: { rejectionComment: rejectionComment, CollateralId: CollateralId },
                     success: function (response) {
-                        // Handle the response from the controller if needed
                         toastr.success(' Reason for Return saved successfully');
                         $('#rejectionModal1').modal('hide');
                         window.location.href = '/MOCase/MyCases';
 
                     },
                     error: function (error) {
-                        // Handle the error if needed
                         toastr.error('Error saving rejection comment:', error);
                     }
                 });
@@ -341,16 +434,13 @@
                 document.getElementById("SerialNo-error").textContent = "";
             }
         });
-       
+
     </script>
     @{
         await Html.RenderPartialAsync("ScriptPartial/_MVSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
 }
-
-
-
 
 <div class="modal fade" id="rejectionModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel">
     <div class="modal-dialog" role="document">
@@ -364,62 +454,61 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="RejectionComment">Comment:</label>
-                            <textarea class="form-control" id="rejectionComment" rows="3"></textarea>
-                      </div>
-                     <div class="modal-footer">
-                           <button type="submit" class="btn btn-sm bg-purple col-xl-3">Save</button>
-                     </div>
+                        <textarea class="form-control" id="rejectionComment" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-sm bg-purple col-xl-3">Save</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
 <datalist id="carColors">
-  <option value="Black"/>
-  <option value="White"/>
-  <option value="Silver"/>
-  <option value="Gray"/>
-  <option value="Red"/>
-  <option value="Blue"/>
-  <option value="Green"/>
-  <option value="Yellow"/>
-  <option value="Orange"/>
-  <option value="Brown"/>
-  <option value="Beige"/>
-  <option value="Gold"/>
-  <option value="Purple"/>
-  <option value="Pink"/>
-  <option value="Bronze"/>
-  <option value="Burgundy"/>
-  <option value="Teal"/>
-  <option value="Champagne"/>
-  <option value="Maroon"/>
-  <option value="Navy"/>
-  <option value="Cream"/>
-  <option value="Ivory"/>
-  <option value="Indigo"/>
-  <option value="Turquoise"/>
-  <option value="Lime"/>
-  <option value="Aqua"/>
-  <option value="Magenta"/>
-  <option value="Charcoal"/>
-  <option value="Ruby"/>
-  <option value="Emerald"/>
-  <option value="Sapphire"/>
-  <option value="Pearl"/>
-  <option value="Copper"/>
-  <option value="Mocha"/>
-  <option value="Plum"/>
-  <option value="Amber"/>
-  <option value="Coral"/>
-  <option value="Lilac"/>
-  <option value="Ebony"/>
-  <option value="Frost"/>
-  <option value="Graphite"/>
+    <option value="Black" />
+    <option value="White" />
+    <option value="Silver" />
+    <option value="Gray" />
+    <option value="Red" />
+    <option value="Blue" />
+    <option value="Green" />
+    <option value="Yellow" />
+    <option value="Orange" />
+    <option value="Brown" />
+    <option value="Beige" />
+    <option value="Gold" />
+    <option value="Purple" />
+    <option value="Pink" />
+    <option value="Bronze" />
+    <option value="Burgundy" />
+    <option value="Teal" />
+    <option value="Champagne" />
+    <option value="Maroon" />
+    <option value="Navy" />
+    <option value="Cream" />
+    <option value="Ivory" />
+    <option value="Indigo" />
+    <option value="Turquoise" />
+    <option value="Lime" />
+    <option value="Aqua" />
+    <option value="Magenta" />
+    <option value="Charcoal" />
+    <option value="Ruby" />
+    <option value="Emerald" />
+    <option value="Sapphire" />
+    <option value="Pearl" />
+    <option value="Copper" />
+    <option value="Mocha" />
+    <option value="Plum" />
+    <option value="Amber" />
+    <option value="Coral" />
+    <option value="Lilac" />
+    <option value="Ebony" />
+    <option value="Frost" />
+    <option value="Graphite" />
 </datalist>
 <datalist id="country">
     <option value="Afghanistan" />
@@ -663,162 +752,162 @@
     <option value="Zimbabwe" />
 </datalist>
 <datalist id="currencyList">
-  <option value="ETB"/>
-  <option value="USD"/>
-  <option value="EUR" />
-  <option value="AED"/>
-  <option value="AFN"/>
-  <option value="ALL"/>
-  <option value="AMD"/>
-  <option value="ANG"/>
-  <option value="AOA"/>
-  <option value="ARS"/>
-  <option value="AUD"/>
-  <option value="AWG"/>
-  <option value="AZN"/>
-  <option value="BAM"/>
-  <option value="BBD"/>
-  <option value="BDT"/>
-  <option value="BGN"/>
-  <option value="BHD"/>
-  <option value="BIF"/>
-  <option value="BMD"/>
-  <option value="BND"/>
-  <option value="BOB"/>
-  <option value="BRL"/>
-  <option value="BSD"/>
-  <option value="BTN"/>
-  <option value="BWP"/>
-  <option value="BYN"/>
-  <option value="BZD"/>
-  <option value="CAD"/>
-  <option value="CDF"/>
-  <option value="CHF"/>
-  <option value="CLP"/>
-  <option value="CNY"/>
-  <option value="COP"/>
-  <option value="CRC"/>
-  <option value="CUC"/>
-  <option value="CUP"/>
-  <option value="CVE"/>
-  <option value="CZK"/>
-  <option value="DJF"/>
-  <option value="DKK"/>
-  <option value="DOP"/>
-  <option value="DZD"/>
-  <option value="EGP"/>
-  <option value="ERN"/>
-  <option value="FJD"/>
-  <option value="FKP"/>
-  <option value="GBP"/>
-  <option value="GEL"/>
-  <option value="GHS"/>
-  <option value="GIP"/>
-  <option value="GMD"/>
-  <option value="GNF"/>
-  <option value="GTQ"/>
-  <option value="GYD"/>
-  <option value="HKD"/>
-  <option value="HNL"/>
-  <option value="HRK"/>
-  <option value="HTG"/>
-  <option value="HUF"/>
-  <option value="IDR"/>
-  <option value="ILS"/>
-  <option value="INR"/>
-  <option value="IQD"/>
-  <option value="IRR"/>
-  <option value="ISK"/>
-  <option value="JMD"/>
-  <option value="JOD"/>
-  <option value="JPY"/>
-  <option value="KES"/>
-  <option value="KGS"/>
-  <option value="KHR"/>
-  <option value="KMF"/>
-  <option value="KPW"/>
-  <option value="KRW"/>
-  <option value="KWD"/>
-  <option value="KYD"/>
-  <option value="KZT"/>
-  <option value="LAK"/>
-  <option value="LBP"/>
-  <option value="LKR"/>
-  <option value="LRD"/>
-  <option value="LSL"/>
-  <option value="LYD"/>
-  <option value="MAD"/>
-  <option value="MDL"/>
-  <option value="MGA"/>
-  <option value="MKD"/>
-  <option value="MMK"/>
-  <option value="MNT"/>
-  <option value="MOP"/>
-  <option value="MRU"/>
-  <option value="MUR"/>
-  <option value="MVR"/>
-  <option value="MWK"/>
-  <option value="MXN"/>
-  <option value="MYR"/>
-  <option value="MZN"/>
-  <option value="NAD"/>
-  <option value="NGN"/>
-  <option value="NIO"/>
-  <option value="NOK"/>
-  <option value="NPR"/>
-  <option value="NZD"/>
-  <option value="OMR"/>
-  <option value="PAB"/>
-  <option value="PEN"/>
-  <option value="PGK"/>
-  <option value="PHP"/>
-  <option value="PKR"/>
-  <option value="PLN"/>
-  <option value="PYG"/>
-  <option value="QAR"/>
-  <option value="RON"/>
-  <option value="RSD"/>
-  <option value="RUB"/>
-  <option value="RWF"/>
-  <option value="SAR"/>
-  <option value="SBD"/>
-  <option value="SCR"/>
-  <option value="SDG"/>
-  <option value="SEK"/>
-  <option value="SGD"/>
-  <option value="SHP"/>
-  <option value="SLL"/>
-  <option value="SOS"/>
-  <option value="SRD"/>
-  <option value="SSP"/>
-  <option value="STN"/>
-  <option value="SVC"/>
-  <option value="SYP"/>
-  <option value="SZL"/>
-  <option value="THB"/>
-  <option value="TJS"/>
-  <option value="TMT"/>
-  <option value="TND"/>
-  <option value="TOP"/>
-  <option value="TRY"/>
-  <option value="TTD"/>
-  <option value="TWD"/>
-  <option value="TZS"/>
-  <option value="UAH"/>
-  <option value="UGX"/>
-  <option value="UYU"/>
-  <option value="UZS"/>
-  <option value="VES"/>
-  <option value="VND"/>
-  <option value="VUV"/>
-  <option value="WST"/>
-  <option value="XAF"/>
-  <option value="XCD"/>
-  <option value="XDR"/>
-  <option value="XOF"/>
-  <option value="XPF"/>
-  <option value="YER"/>
-  <option value="ZAR"/>
-  <option value="ZMW"/>
-  <option value="ZWL"/>
+    <option value="ETB" />
+    <option value="USD" />
+    <option value="EUR" />
+    <option value="AED" />
+    <option value="AFN" />
+    <option value="ALL" />
+    <option value="AMD" />
+    <option value="ANG" />
+    <option value="AOA" />
+    <option value="ARS" />
+    <option value="AUD" />
+    <option value="AWG" />
+    <option value="AZN" />
+    <option value="BAM" />
+    <option value="BBD" />
+    <option value="BDT" />
+    <option value="BGN" />
+    <option value="BHD" />
+    <option value="BIF" />
+    <option value="BMD" />
+    <option value="BND" />
+    <option value="BOB" />
+    <option value="BRL" />
+    <option value="BSD" />
+    <option value="BTN" />
+    <option value="BWP" />
+    <option value="BYN" />
+    <option value="BZD" />
+    <option value="CAD" />
+    <option value="CDF" />
+    <option value="CHF" />
+    <option value="CLP" />
+    <option value="CNY" />
+    <option value="COP" />
+    <option value="CRC" />
+    <option value="CUC" />
+    <option value="CUP" />
+    <option value="CVE" />
+    <option value="CZK" />
+    <option value="DJF" />
+    <option value="DKK" />
+    <option value="DOP" />
+    <option value="DZD" />
+    <option value="EGP" />
+    <option value="ERN" />
+    <option value="FJD" />
+    <option value="FKP" />
+    <option value="GBP" />
+    <option value="GEL" />
+    <option value="GHS" />
+    <option value="GIP" />
+    <option value="GMD" />
+    <option value="GNF" />
+    <option value="GTQ" />
+    <option value="GYD" />
+    <option value="HKD" />
+    <option value="HNL" />
+    <option value="HRK" />
+    <option value="HTG" />
+    <option value="HUF" />
+    <option value="IDR" />
+    <option value="ILS" />
+    <option value="INR" />
+    <option value="IQD" />
+    <option value="IRR" />
+    <option value="ISK" />
+    <option value="JMD" />
+    <option value="JOD" />
+    <option value="JPY" />
+    <option value="KES" />
+    <option value="KGS" />
+    <option value="KHR" />
+    <option value="KMF" />
+    <option value="KPW" />
+    <option value="KRW" />
+    <option value="KWD" />
+    <option value="KYD" />
+    <option value="KZT" />
+    <option value="LAK" />
+    <option value="LBP" />
+    <option value="LKR" />
+    <option value="LRD" />
+    <option value="LSL" />
+    <option value="LYD" />
+    <option value="MAD" />
+    <option value="MDL" />
+    <option value="MGA" />
+    <option value="MKD" />
+    <option value="MMK" />
+    <option value="MNT" />
+    <option value="MOP" />
+    <option value="MRU" />
+    <option value="MUR" />
+    <option value="MVR" />
+    <option value="MWK" />
+    <option value="MXN" />
+    <option value="MYR" />
+    <option value="MZN" />
+    <option value="NAD" />
+    <option value="NGN" />
+    <option value="NIO" />
+    <option value="NOK" />
+    <option value="NPR" />
+    <option value="NZD" />
+    <option value="OMR" />
+    <option value="PAB" />
+    <option value="PEN" />
+    <option value="PGK" />
+    <option value="PHP" />
+    <option value="PKR" />
+    <option value="PLN" />
+    <option value="PYG" />
+    <option value="QAR" />
+    <option value="RON" />
+    <option value="RSD" />
+    <option value="RUB" />
+    <option value="RWF" />
+    <option value="SAR" />
+    <option value="SBD" />
+    <option value="SCR" />
+    <option value="SDG" />
+    <option value="SEK" />
+    <option value="SGD" />
+    <option value="SHP" />
+    <option value="SLL" />
+    <option value="SOS" />
+    <option value="SRD" />
+    <option value="SSP" />
+    <option value="STN" />
+    <option value="SVC" />
+    <option value="SYP" />
+    <option value="SZL" />
+    <option value="THB" />
+    <option value="TJS" />
+    <option value="TMT" />
+    <option value="TND" />
+    <option value="TOP" />
+    <option value="TRY" />
+    <option value="TTD" />
+    <option value="TWD" />
+    <option value="TZS" />
+    <option value="UAH" />
+    <option value="UGX" />
+    <option value="UYU" />
+    <option value="UZS" />
+    <option value="VES" />
+    <option value="VND" />
+    <option value="VUV" />
+    <option value="WST" />
+    <option value="XAF" />
+    <option value="XCD" />
+    <option value="XDR" />
+    <option value="XOF" />
+    <option value="XPF" />
+    <option value="YER" />
+    <option value="ZAR" />
+    <option value="ZMW" />
+    <option value="ZWL" />
 </datalist>

@@ -92,8 +92,16 @@ namespace mechanical.Controllers
             }
             return View();
         }
-      
 
+        [HttpPost]
+        public async Task<IActionResult> GetCustomerName(double customerId)
+        {
+            //double cus= 9755012884;
+            var myCase = await _caseService.GetCustomerName(customerId);
+            if (myCase == null) { return BadRequest("Unable Customer Name"); }
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
 
 
 
