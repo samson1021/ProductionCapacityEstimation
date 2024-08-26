@@ -30,7 +30,7 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
         public async Task<ProductionCapacityCorrectionReturnDto> CreateProductionCorrection(ProductionCapacityCorrectionPostDto createCorrectionDto)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var loanCase = _mapper.Map<ProductionCapcityCorrection>(createCorrectionDto);
+            var loanCase = _mapper.Map<ProductionCapacityCorrection>(createCorrectionDto);
             var getcaseId = _cbeContext.Collaterals.Where(c => c.Id == createCorrectionDto.ProductionCapacityId).Select(c => c.CaseId).FirstOrDefault();
             loanCase.ProductionCapacityId = getcaseId;
             loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));

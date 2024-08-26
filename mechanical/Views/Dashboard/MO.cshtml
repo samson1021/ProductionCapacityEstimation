@@ -120,22 +120,24 @@
                             </div>
                             <div class="card-footer text-center">
                                 <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="col flex-grow-1">
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-yellow update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pendingPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">Pending PCE Cases</h6>
+                                        <h4 class="text-white" id="evaluatedPCECasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">Evaluated PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
-                                            <h1><i class="fas fa-spinner"></i></h1>
+                                            <h1><i class="fas fa-check"></i></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -152,12 +154,12 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="completedPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">Completed PCE Cases</h6>
+                                        <h4 class="text-white" id="returnedPCECasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">Returned PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
-                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                            <h1> <i class="fas fas-solid fa-undo"></i></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -191,6 +193,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col flex-grow-1">
                     <div class="col flex-grow-1">
                         <div class="card bg-c-blue update-card">
                             <div class="card-block">

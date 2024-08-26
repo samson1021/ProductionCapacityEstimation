@@ -28,6 +28,12 @@
                 buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
                 data: data,
                 columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
+                        }
+                    },
                     { data: 'PropertyOwner', width: '20%' },
                     { data: 'Role', width: '20%' },
                     { data: 'Category', width: '25%' },
@@ -64,4 +70,90 @@
 
         loadCollaterals();
     });
+
+
+    $('#assignButton').on('click', function () {
+
+        var checkedCollaterals = $('.purple-checkbox:checked');
+        var selectedCollateralIds = [];
+
+        checkedCollaterals.each(function () {
+            var collateralId = $(this).val();
+            selectedCollateralIds.push(collateralId);
+        });
+        if (selectedCollateralIds.length === 0) {
+            toastr.error('Please select at least one PCE');
+        } else {
+            $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+
+            $('#SendForEvaluationModal').modal('show');
+        }
+    });
+
+    $('#sendEvaluationButton').on('click', function () {
+
+        var checkedCollaterals = $('.purple-checkbox:checked');
+        var selectedCollateralIds = [];
+
+        checkedCollaterals.each(function () {
+            var collateralId = $(this).val();
+            selectedCollateralIds.push(collateralId);
+        });
+        if (selectedCollateralIds.length === 0) {
+            toastr.error('Please select at least one PCE');
+        } else {
+            $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+
+            $('#SendForEvaluationModal').modal('show');
+        }
+    });
+
+    fetch('/UserManagment/GetDistrict')
+        .then(response => response.json())
+        .then(data => {
+            var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Valuation Center');
+            $('#CenterDropdown').append(selectOption);
+            data.forEach(function (district) {
+                var option = $('<option></option>').attr('value', district.Id).text(district.Name);
+                $('#CenterDropdown').append(option);
+
+            });
+        })
+        .catch(error => {
+            console.log('Error fetching District data:', error);
+        });
+
+
+    $('#selectAllCheckbox').on('click', function () {
+        var isChecked = $(this).prop('checked');
+        $('.purple-checkbox').prop('checked', isChecked);
+    });
+
+    $('#caseCollaterals tbody').on('change', '.purple-checkbox', function () {
+        var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+        $('#selectAllCheckbox').prop('checked', allChecked);
+    });
+    $('#assignForm').submit(function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/PCECase/SendProductionForReestimation',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                toastr.success(response.message);
+                loadCollaterals();
+                $('#SendForEvaluationModal').modal('hide');
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                var error = xhr.responseJSON;
+                toastr.error(error.message);
+            }
+        });
+    });
+
 </script>

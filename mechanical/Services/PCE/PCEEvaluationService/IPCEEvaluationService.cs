@@ -20,8 +20,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id);
 
+
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);
         Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId);
+
 
         Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id);
         // Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId);

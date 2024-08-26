@@ -14,6 +14,8 @@ using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.Dto.CollateralDto;
+using mechanical.Models.PCE.Enum.ProductionCapacity;
+using mechanical.Services.PCE.PCEEvaluationService;
 
 
 namespace mechanical.Controllers
@@ -24,7 +26,7 @@ namespace mechanical.Controllers
         private readonly IProductionCapacityServices _productionCapacityServices;
         private readonly ILogger<ProductionCapacityController> _logger;
         private readonly CbeContext _cbeContext;
-        //private readonly IProductionUploadFileService _productionUploadFileService;
+       
         private readonly IUploadFileService _uploadFileService;
 
         public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
@@ -32,10 +34,7 @@ namespace mechanical.Controllers
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
             _pCECaseService = pCECaseService;
-            //_productionUploadFileService = productionUploadFileService;
-            _uploadFileService = uploadFileService;
-
-
+            _uploadFileService = uploadFileService;         
         }
 
         public IActionResult Index()
@@ -48,16 +47,15 @@ namespace mechanical.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Guid PCECaseId, ProductionPostDto productionDto)
         {
-            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
             if (ModelState.IsValid)
             {
                 await _productionCapacityServices.CreateProductionCapacity(base.GetCurrentUserId(), PCECaseId, productionDto);
-                var response = new { message = "PCE created successfully" };
+                var response = new { message = "Manufacturing PCE created successfully" };
                 return Ok(response);
             }
             return BadRequest();
 
-        }
+        }        
         [HttpPost]
        // [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
@@ -97,11 +95,11 @@ namespace mechanical.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Detail(Guid id)
-        {Console.WriteLine("abduuuuu");
+        {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
             var loanCase = await _pCECaseService.GetProductionCaseDetail(id);
 
-            var restimation = await _cbeContext.ProductionReestimations.Where(res => res.PCECaseId == id).FirstOrDefaultAsync();
+            var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
             if (restimation != null)
             {
                 ViewData["restimation"] = restimation;
@@ -112,6 +110,7 @@ namespace mechanical.Controllers
             var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
             var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
+            var PcevalutionDto = await _productionCapacityServices.GetValuationById(id);
 
             if (rejectedProduction != null)
             {
@@ -119,8 +118,25 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
+          
 
-            ViewData["Prvaluation"] = productionById;
+            if (PcevalutionDto != null)
+            {
+                ViewData["PcevalutionDto"] = PcevalutionDto;
+            }
+           if (response.ProductionType=="Manufacturing")
+            {
+                var Production = await _productionCapacityServices.GetManufuctringProductionCapacityEvalutionById(id);
+                ViewData["Mavaluation"] = Production;
+            }
+            else if (response.ProductionType == "Plant")
+            {
+                var Production = await _productionCapacityServices.GetPlantProductionCapacityEvalutionById(id);
+                ViewData["Pavaluation"] = Production;
+            }
+
+
+            // ViewData["Prvaluation"] = productionById;
             ViewData["pcecaseDtos"] = loanCase;
             ViewData["productionFiles"] = file;
             ViewData["rejectedCollateral"] = rejectedProduction;
@@ -131,6 +147,7 @@ namespace mechanical.Controllers
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
             return View(response);
+            
         }
 
 

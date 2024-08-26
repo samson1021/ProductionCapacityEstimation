@@ -1,4 +1,4 @@
-﻿using mechanical.Data;
+﻿﻿using mechanical.Data;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
@@ -78,31 +78,12 @@ namespace mechanical.Controllers.PCE
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
 
-
-
         public async Task<IActionResult> PCECaseDetailReport(Guid id)
         {
             var pcecaseDto = _PCECaseService.GetPCECaseDetailReport(base.GetCurrentUserId(), id);
             //ViewData["pcecaseDtos"] = pcecaseDto;
             return View(pcecaseDto);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         [HttpGet]
         public IActionResult PCEPendingCases()
@@ -204,10 +185,6 @@ namespace mechanical.Controllers.PCE
             }
             return View();
         }
-
-
-
-
 
         [HttpGet]
         public IActionResult GetByApplicantName(string applicantName)

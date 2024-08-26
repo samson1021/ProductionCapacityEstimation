@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - mechanical</title>
     
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/mechanical.styles.css" asp-append-version="true" />
+    
+    <link href="~/css/style.css" rel="stylesheet" />
     
     <link href="~/css/style.css" rel="stylesheet" />
     <link href="~/css/adminlte.min.css" rel="stylesheet" />
@@ -42,8 +45,10 @@
             @RenderBody()
             <aside class="control-sidebar control-sidebar-dark">
             </aside>            
+            </aside>            
         </div>
         <footer class="main-footer">
+            <div class="float-left d-none d-sm-block">
             <div class="float-left d-none d-sm-block">
                 <b>Version</b> 3.2.0
             </div>

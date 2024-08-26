@@ -91,10 +91,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
-
+                var currentStatus = "Pending";
                 pce.CurrentStage = "Maker Officer";
-                pce.CurrentStatus = "Pending";
+                pce.CurrentStatus = currentStatus;
                 _cbeContext.ProductionCapacities.Update(pce);
+                
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pce.Id && res.UserId == pceEntity.EvaluatorId).FirstOrDefaultAsync();
+                previousCaseAssignment.Status = currentStatus;
+                _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
@@ -378,7 +382,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.ProductionCapacities.Update(pce);
 
                 var previousPCECaseAssignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == Dto.PCEId && res.UserId == UserId);
-                previousPCECaseAssignment.Status = Status;
+                previousPCECaseAssignment.Status = Status;              
                 _cbeContext.Update(previousPCECaseAssignment);
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
@@ -575,7 +579,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId && x.ProductionCaseAssignment.Status == Status || x.ProductionCapacity.EvaluatorUserID == UserId )
+                                    .Where(x => (x.ProductionCaseAssignment.UserId == UserId 
+                                                && (Status == "All" || Status == null || x.ProductionCaseAssignment.Status == Status)) 
+                                                || x.ProductionCapacity.EvaluatorUserID == UserId)
                                     .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)
