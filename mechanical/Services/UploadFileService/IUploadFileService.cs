@@ -10,6 +10,8 @@ namespace mechanical.Services.UploadFileService
         Task<Guid> CreateUploadFile (Guid userId, CreateFileDto file);
         Task<ReturnFileDto> GetUploadFile(Guid? uploadFileId);
         Task<IEnumerable<ReturnFileDto>> GetUploadFileByCollateralId(Guid? CollateralId);
+        Task<IEnumerable<ReturnPCEReportFileDto>> GetAllUploadFileByCaseId(Guid? CollateralId);
+
         Task<ActionResult> DownloadFile(Guid Id);
         Task<(byte[], string, string)> ViewFile(Guid Id);
         Task<bool> DeleteFile(Guid Id);

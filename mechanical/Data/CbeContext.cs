@@ -16,6 +16,15 @@ namespace mechanical.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            modelBuilder.Entity<PCEEvaluation>()
+                .Property(e => e.DepreciationRateApplied)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<PCEEvaluation>()
+                .Property(e => e.EffectiveProductionHour)
+                .HasColumnType("decimal(18,2)");
+
+
             modelBuilder.Entity<Signatures>()
                 .HasOne(c => c.SignatureFile)
                 .WithOne()

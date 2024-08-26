@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
     <PackageReference Include="OpenCVSharp" Version="2.4.0.1" />
     <PackageReference Include="PdfSharp" Version="6.1.1" />
+    <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.14" />
   </ItemGroup>
 

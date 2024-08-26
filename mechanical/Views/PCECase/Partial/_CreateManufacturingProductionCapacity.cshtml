@@ -22,10 +22,10 @@
                             <i class="fas fa-plus-circle"></i> Estimate Plant Production Capacity
                         </button>
 
-                        <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
+                        <button  type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" >
                             <i class="fas fa-plus-circle"></i> Add any other
                         </button>
-                        <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = "88" })">
+                        <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "PCECaseTimeLine", new { CaseId = @myCase.Id })">
                             <i class="nav-icon fas fa-sitemap"></i>
                         </a>
                     </div>

@@ -137,6 +137,8 @@
                 $('#SendForEvaluationModal').modal('show');
             }
         });
+
+
         $('#sendEvaluationButton').on('click', function () {
 
             var checkedCollaterals = $('.purple-checkbox:checked');
@@ -424,17 +426,14 @@
             });
         }
 
+
+
+
         $('#addMechanicalCollateralForm').submit(function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
-            console.log("here");
-            // var Uploadbusinesslicense = getAttributeByName(formDataArray, 'Uploadbusinesslicense').trim();;
-            // if (Uploadbusinesslicense == "") {
-            //     toastr.error("Please fill in all required fields.");
-            //     return;
-
-            // }
-            
+          
+         
             var PropertyOwner = getAttributeByName(formDataArray, 'PropertyOwner').trim();
             if (PropertyOwner === "") {
                 toastr.error("Please fill in all required fields.");
@@ -523,7 +522,7 @@
                 success: function (response) {
                     toastr.success(response.message);
                     $('#addMechanicalCollateralModal').modal('hide');
-
+                    $('#addMechanicalCollateralForm')[0].reset();
                     loadCollaterals();
                 },
                 error: function (error) {
@@ -539,7 +538,7 @@
         $('#EstimatePlantCollateralForm').submit(function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
-            console.log("here planggggt");
+       
         
             var formData = new FormData(this);
             $.ajax({
@@ -550,8 +549,8 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-
                     $('#EstimatePlaneCollateralModal').modal('hide');
+                    $('#EstimatePlantCollateralForm')[0].reset();
                     loadCollaterals();
                 },
                 error: function (error) {

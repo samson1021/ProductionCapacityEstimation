@@ -162,6 +162,9 @@ namespace mechanical.Mapper
             ///////
            
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
+
+
             CreateMap<CreateFileDto, ReturnFileDto>()
                 .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType));
                 // .ReverseMap();

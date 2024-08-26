@@ -97,6 +97,20 @@ namespace mechanical.Services.UploadFileService
             var uploadFiles = await _cbeContext.UploadFiles.Where(res=>res.CollateralId == CollateralId).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
         }
+
+
+
+        public async Task<IEnumerable<ReturnPCEReportFileDto>> GetAllUploadFileByCaseId(Guid? CollateralId)
+        {
+            if (CollateralId == null) return null;
+
+            var uploadFiles = await _cbeContext.UploadFiles.Where(res => res.CaseId == CollateralId).ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnPCEReportFileDto>>(uploadFiles);
+        }
+
+
+
+
         public async Task<ReturnFileDto> UpdateFile(Guid Id, CreateFileDto file)
         {
             var httpContext = _httpContextAccessor.HttpContext;
