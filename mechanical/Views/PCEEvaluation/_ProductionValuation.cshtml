@@ -109,8 +109,8 @@
                     {
                         <div class="row">
                             @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
-                        </div>  
-                        @if (Model.EvaluatorUserID == CurrentUser.Id && Model.CurrentStage == "Maker Officer")
+                        </div>
+                        @if (Model.EvaluatorUserID == CurrentUser.Id || Model.CurrentStage == "Maker Officer")
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {

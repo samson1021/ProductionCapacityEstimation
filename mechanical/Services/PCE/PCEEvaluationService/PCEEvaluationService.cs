@@ -308,18 +308,18 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var Status = "Completed";
                 var MMActivity = $"<strong>New PCE Case has been Completed.</strong>";
-                var RMActivity = $"<strong> PCE Case Evaluation is submitted to Relational Manager.</strong>";
+                var RMActivity = $"<strong> PCE Case Evaluation is submitted to Relation Manager.</strong>";
                 if (pceEntity.PCE.CurrentStatus == "Reestimated")
                 {
                     Status = "Reestimated";
                     MMActivity = $"<strong>New PCE Case has been reestimated.</strong>";
-                    RMActivity = $"<strong> PCE Case Evaluation is resubmitted to Relational Manager.</strong>";
+                    RMActivity = $"<strong> PCE Case Evaluation is resubmitted to Relation Manager.</strong>";
                 }
-                pceEntity.PCE.CurrentStage = "Relational Manager";
+                pceEntity.PCE.CurrentStage = "Relation Manager";
                 pceEntity.PCE.CurrentStatus = Status;
                 _cbeContext.ProductionCapacities.Update(pceEntity.PCE);
 
-                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCE.Id).FirstOrDefaultAsync();
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == UserId).FirstOrDefaultAsync();
                 previousCaseAssignment.Status = Status;
                 previousCaseAssignment.CompletionDate = DateTime.Now;// DateTime.UtcNow
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
@@ -335,7 +335,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 {
                     CaseId = pceEntity.PCE.PCECaseId,
                     Activity = MMActivity,
-                    CurrentStage = "Relational Manager"
+                    CurrentStage = "Relation Manager"
                 });
 
                 await _cbeContext.SaveChangesAsync();
@@ -366,15 +366,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 
                 var Status = "Rejected";
-                var Stage = "Relational Manager";
-                var MMActivity = $"<strong>PCE is rejected as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
-                var Activity = $"<strong>PCE is rejected by MO as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
-                if (pce.CurrentStage == "Relational Manager")
+                var Stage = "Relation Manager";
+                var MMActivity = $"<strong>PCE is rejected as inadequate for evaluation and returned to Relation Manager for correction.</strong>";
+                var Activity = $"<strong>PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.</strong>";
+                if (pce.CurrentStage == "Relation Manager")
                 {
                     Status = "Rejected";
                     Stage = "Maker Officer";
                     MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reestimation.</strong>";
-                    Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reestimation by Relational Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
+                    Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reestimation by Relation Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
                 }
 
                 pce.CurrentStage = Stage;

@@ -72,8 +72,8 @@ namespace mechanical.Data
 
         // public virtual DbSet<FileUpload> FileUploads { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
-        public DbSet<TimeInterval> TimeInterval { get; set; }
-        public DbSet<DateTimeRange> DateTimeRange { get; set; }
+        public DbSet<TimeInterval> TimeIntervals { get; set; }
+        public DbSet<DateTimeRange> DateTimeRanges { get; set; }
         // public DbSet<DateRange> DateRanges { get; set; }
         ///////
 

@@ -399,7 +399,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
         public async Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionId)       {
  
-            var productionById = await _cbeContext.PCEEvaluations.Include(res => res.PCE).FirstOrDefaultAsync(res => res.PCEId == productionId);
+            var productionById = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(res => res.Id == productionId);
             return _mapper.Map<ReturnProductionDto> (productionById);
 
         }

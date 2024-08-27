@@ -69,7 +69,7 @@
                                     <td>@item.ProductionType</td>
                                     <td>======</td>
                                     <td>
-                                        @if (@item.CurrentStatus == "Evaluated")
+                                        @if (@item.CurrentStatus == "Complete")
                                         {
                                             <a class="btn btn-primary" style="background-color:purple; color: white" href="@Url.Action("PCEReport", "PCECase")?Id= @item.Id">
                                                 <i class="fas fa-file-alt mr-2"></i>PCE Report
