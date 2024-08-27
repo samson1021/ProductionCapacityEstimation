@@ -99,7 +99,18 @@
     </div>
 </section>
 <section class="content" style="max-width: 300mm; font-family: 'Times New Roman', Times, serif; text-align: justify; line-height: 1.5; font-size: 12pt; margin: 0 auto;">
-    <div class="container-fluid " style=" padding: 25mm 20mm;">
+
+    
+    <div class="card" style="margin: 10mm 20mm;">
+        <div class="card-body d-flex justify-content-end">
+            <div>
+                <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
+                @* <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button> *@
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid " style=" padding: 10mm 20mm;">
         <div class="card py-4 ">
             <div class="card-body px-2 mx-2">
 
@@ -112,8 +123,11 @@
                         <h4 class="mb-0">Commercial Bank of Ethiopia</h4>
                     </div>
                     <div>
-                        <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
-                        <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button> 
+                        <div class="">
+                            &nbsp;
+                        </div>
+                     @*    <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
+                        <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button>  *@
                     </div>
                 </div>
 
@@ -244,9 +258,9 @@
                     <div class="form-group row my-0 pl-4">
                         <p class="my-0 py-0">
                             <label class="col-form-label pr-2">A.&nbsp; &nbsp; Time Consumed to Check Production Process: &nbsp; &nbsp; Start</label>
-                            <u class="  "> @PCEEvaluations[0].TimeConsumedToCheck.Start</u>
+                          @*   <u class="  "> @PCEEvaluations[0].TimeConsumedToCheck.Start</u>
                             <label class="col-form-label pl-2"> End   </label>
-                            <u class="  ">@PCEEvaluations[0].TimeConsumedToCheck.End</u>
+                            <u class="  ">@PCEEvaluations[0].TimeConsumedToCheck.End</u> *@
                         </p>
                     </div>
 
