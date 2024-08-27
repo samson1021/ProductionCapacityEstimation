@@ -573,6 +573,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             var query = _cbeContext.ProductionCapacities
                                     .AsNoTracking()
+                                    .Include(pc => pc.PCECase)
                                     .Join(
                                         _cbeContext.ProductionCaseAssignments,
                                         pc => pc.Id,
@@ -688,8 +689,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         public async Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid PCEId)
         {
 
-            var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(res => res.Id == PCEId);
-            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().FirstOrDefaultAsync(res => res.Id == PCEId);                 
+            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
+            // var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(res => res.Id == pce.PCECaseId);                 
             var reestimation = await _cbeContext.ProductionCapacityReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
             var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(PCEId);          
             var currentUser = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);             
@@ -697,7 +698,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                   
             return new PCEDetailDto
             {
-                PCECase = pceCase,
+                PCECase = pce.PCECase,
                 ProductionCapacity = _mapper.Map<ReturnProductionDto>(pce),
                 PCEValuationHistory = valuationHistory,
                 Reestimation = reestimation,
@@ -718,7 +719,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 latestEvaluation = await GetPCEEvaluationsByPCEId(UserId, PCEId);
             }
 
-            var previousEvaluations = await _cbeContext.PCEEvaluations.AsNoTracking().Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id)).ToListAsync();
+            var previousEvaluations = await _cbeContext.PCEEvaluations
+                                                        .AsNoTracking()
+                                                        .Include(p => p.PCE)
+                                                        .ThenInclude(pc => pc.PCECase)
+                                                        .Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id))
+                                                        .ToListAsync();
             
             return new PCEValuationHistoryDto
             {

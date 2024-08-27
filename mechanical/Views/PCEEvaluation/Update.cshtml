@@ -1,7 +1,5 @@
 @using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
-@using mechanical.Models.Dto.UploadFileDto
-@using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
@@ -64,20 +62,16 @@
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
-                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
                             <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1">
-                                <i class="fas fa-undo mr-2"></i> Return
                                 <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
-                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
                             <button type="submit" class="btn btn-primary btn-block">
                                 <i class="fas fa-save mr-2"></i> Update
                             </button>
                         </div>
-                    </div>
                     </div>
                 </form>
             </div>
@@ -90,11 +84,8 @@
 
     @{
         await Html.RenderPartialAsync("Partial/_PCEPartialScript");
-        await Html.RenderPartialAsync("Partial/_PCEPartialScript");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
-    }
-}
     }
 }

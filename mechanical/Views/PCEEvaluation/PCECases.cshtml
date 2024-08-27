@@ -1,4 +1,4 @@
-﻿﻿@{
+﻿﻿﻿﻿@{
     ViewData["Title"] = ViewBag.Title ?? "PCE Cases";
     var Status = ViewBag.Status as string;
 }
@@ -34,9 +34,6 @@
                             @if (Status != "All"){
                                 <th>@Status PCEs</th>
                             }
-                            @if (Status != "All"){
-                                <th>@Status PCEs</th>
-                            }
                             <th>Total PCEs</th>
                             <th>Action</th>
                         </tr>
@@ -53,5 +50,4 @@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
-}
 }
