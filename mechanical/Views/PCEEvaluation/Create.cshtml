@@ -7,7 +7,6 @@
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    ViewData["Title"] = ViewBag.Title as string;
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
     var Reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
     var RejectPost = new PCERejectPostDto
@@ -63,7 +62,6 @@
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create" id="form">
 
-
                     @Html.AntiForgeryToken()
                     <input asp-for="PCEId" value=@myPCE.Id type="hidden" />  
 
@@ -75,10 +73,8 @@
                         <div class="col-md-10">
                             <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-md btn-primary" style="margin-top:2rem;margin-bottom:1rem;">
-                                <button type="submit" class="btn btn-md btn-primary" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-save mr-2"></i> Save
                                 </button>
-                                <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1" style="margin-top:2rem;margin-bottom:1rem;">
                                 <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-undo mr-2"></i> Return
                                 </button>
@@ -98,12 +94,9 @@
 
     @{
         await Html.RenderPartialAsync("Partial/_PCEPartialScript");
-        await Html.RenderPartialAsync("Partial/_PCEPartialScript");
         await Html.RenderPartialAsync("Partial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
-    }
 
-}
 }

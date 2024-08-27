@@ -97,7 +97,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Detail(Guid id)
         {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var loanCase = await _pCECaseService.GetProductionCaseDetail(id);
+            var loanCase = await _pCECaseService.GetProductionCaseDetail(response.PCECaseId);
 
             var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
             if (restimation != null)
