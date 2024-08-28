@@ -37,5 +37,12 @@
   <ItemGroup>
     <Folder Include="UploadFile\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\ProductionCapacity\Partial\_RMEvaluationDetailPartial.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
   
 </Project>

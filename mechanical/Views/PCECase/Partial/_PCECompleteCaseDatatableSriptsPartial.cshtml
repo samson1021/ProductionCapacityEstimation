@@ -19,7 +19,7 @@
         function initializeDataTable(data) {
             caseCollateralsTable = $('#caseCollaterals').DataTable({
                 language: {
-                    emptyTable: "There is no PCE register for this case please click the above add button to add collaterals"
+                    emptyTable: "There is no PCE register for this case please click the above add button to add PCE"
                 },
                 responsive: true,
                 pageLength: 8,
@@ -146,8 +146,9 @@
             contentType: false,
             success: function (response) {
                 toastr.success(response.message);
-                loadCollaterals();
                 $('#SendForEvaluationModal').modal('hide');
+                $('#assignForm')[0].reset();
+                location.reload();
             },
             error: function (xhr, textStatus, errorThrown) {
                 var error = xhr.responseJSON;

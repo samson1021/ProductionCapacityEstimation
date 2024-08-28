@@ -397,7 +397,8 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return _mapper.Map<ReturnProductionDto>(productionById);
 
         }
-        public async Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionId)       {
+        public async Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionId) 
+        {
  
             var productionById = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(res => res.Id == productionId);
             return _mapper.Map<ReturnProductionDto> (productionById);
@@ -481,7 +482,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
         public async Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid PCECaseId)
         {
-            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Relation Manager" && res.CurrentStatus == "Complete").ToListAsync();
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Relation Manager" && res.CurrentStatus == "Completed").ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(collaterals);
         }
     }

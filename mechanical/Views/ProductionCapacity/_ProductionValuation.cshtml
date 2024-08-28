@@ -1,4 +1,215 @@
-﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
+﻿﻿@using mechanical.Models.PCE.Entities
+@using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
+
+@{
+    var LatestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+    var Reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
+
+    ViewData["Title"] = ViewBag.Title as string;
+}
+
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+
+        @{
+            if (Reestimation != null)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title text-warning">Reason for Reestimation</h3>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            @Reestimation.Reason
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-info center">General Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="container col-12">
+                        
+                        <div class="row">
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Manufacturing Main Sector:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.Category</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Manufacturing sector:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.Type</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Machine Name:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.MachineName</div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row" style="margin-top:1.25rem;">
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Purpose:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.Purpose</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label> Manufacture Year:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.ManufactureYear</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Property Address:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.Region</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:1.25rem;">
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Model Number:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.ModelNo</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Production Type:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.ProductionType</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Bussiness Licence:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.ProductionBussinessLicence</div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row" style="margin-top:1.25rem;">
+                            <div class="row col-lg-4">
+                                <div class="col-lg-6">
+                                    <label>Installed Place:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.MachineryInstalledPlace</div>
+                                </div>
+                            </div>
+                            @if (Model.MachineryInstalledPlace == "Private Owned LHC")
+                            {
+                                <div class="row col-lg-4">
+                                    <div class="col-lg-6">
+                                        <label>LHC Number::</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>@Model.LHCNumber</div>
+                                    </div>
+                                </div>
+                                <div class="row col-lg-4">
+                                    <div class="col-lg-6">
+                                        <label>Owner Name in the LHC:</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>@Model.OwnerName</div>
+                                    </div>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="row col-lg-4">
+                                    <div class="col-lg-6">
+                                        <label>Industrial Park:</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>@Model.Industrialpark</div>
+                                    </div>
+                                </div>
+
+                            }
+
+                        </div>
+                        <div class="row" style="margin-top:1.25rem;">
+                            <div class="row col-lg-12">
+                                <div class="col-lg-4">
+                                    <label>Poduction Capcity Description:</label>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div>@Model.ProductDescription</div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-success text-center"> PCE Valuation Result</h3>
+            </div>
+            <div class="card-body">
+                @{
+                    if (LatestEvaluation != null)
+                    {
+                        <div class="row">
+                            @await Html.PartialAsync("Partial/_RMEvaluationDetailPartial", LatestEvaluation)
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <h6 class="text-center">
+                                Not evaluated yet.
+
+                            </h6>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+    </section>
+</section>
+
+@* 
+@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
@@ -303,66 +514,66 @@
                                 </div>
                             </div>
                         }
-                        //dispaly Coman evalution for both manufacturing and plant General Information
-                        <div class="row">
-                            <div class="container col-12">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h4 class="text-center">Valuation result</h4>
-                                    </div>
-                                </div>
-                                <div class="row" style="margin-top:1.25rem;">
-                                    <div class="row col-lg-4">
-                                        <div class="col-lg-6">
-                                            <label>ProductionLine Or EquipmentName:</label>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div>@PCEValuationResult.BottleneckProductionLineCapacity</div>
-                                        </div>
-                                    </div>
+                        // //dispaly Coman evalution for both manufacturing and plant General Information
+                        // <div class="row">
+                        //     <div class="container col-12">
+                        //         <div class="row">
+                        //             <div class="col-lg-12">
+                        //                 <h4 class="text-center">Valuation result</h4>
+                        //             </div>
+                        //         </div>
+                        //         <div class="row" style="margin-top:1.25rem;">
+                        //             <div class="row col-lg-4">
+                        //                 <div class="col-lg-6">
+                        //                     <label>ProductionLine Or EquipmentName:</label>
+                        //                 </div>
+                        //                 <div class="col-lg-6">
+                        //                     <div>@PCEValuationResult.BottleneckProductionLineCapacity</div>
+                        //                 </div>
+                        //             </div>
                                    
-                                </div>
+                        //         </div>
                                 
-                                <div class="row" style="margin-top:1.25rem;">
-                                    <div class="row col-lg-12">
-                                        <div class="col-lg-4">
-                                            <label>Actual Production Capacity:</label>
-                                        </div>
-                                        <div class="col-lg-8">
-                                            <div>@PCEValuationResult.ActualProductionCapacity</div>
-                                        </div>
-                                    </div>
+                        //         <div class="row" style="margin-top:1.25rem;">
+                        //             <div class="row col-lg-12">
+                        //                 <div class="col-lg-4">
+                        //                     <label>Actual Production Capacity:</label>
+                        //                 </div>
+                        //                 <div class="col-lg-8">
+                        //                     <div>@PCEValuationResult.ActualProductionCapacity</div>
+                        //                 </div>
+                        //             </div>
 
 
-                                </div>
-                            </div>
-                        </div>
+                        //         </div>
+                        //     </div>
+                        // </div>
                       
                         
                         <div class="row col-12">
                             @{
-                                if (PCEValuationResult.EvaluatorId == CurrentUserId && currentStage == "Maker Officer")
-                                {
-                                    @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post))
-                                    {
-                                        <div class="row col-12">
-                                            <div style="margin-top:1.25rem;" class="col-2">
-                                                <input name="CollateralId" value=@Manufacturingavaluation.Id type="hidden" id="CollateralId" />
+                                // if (PCEValuationResult.EvaluatorId == CurrentUserId && currentStage == "Maker Officer")
+                                // {
+                                //     @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post))
+                                //     {
+                                //         <div class="row col-12">
+                                //             <div style="margin-top:1.25rem;" class="col-2">
+                                //                 <input name="CollateralId" value=@Manufacturingavaluation.Id type="hidden" id="CollateralId" />
 
-                                                <div class="row">
-                                                    <button type="submit" class="col-xl-11  btn btn-sm  bg-purple">send for checker  <i class="fas fa-paper-plane"></i></button>
+                                //                 <div class="row">
+                                //                     <button type="submit" class="col-xl-11  btn btn-sm  bg-purple">send for checker  <i class="fas fa-paper-plane"></i></button>
 
-                                                </div>
-                                            </div>
-                                            <div style="margin-top:1.25rem;" class="col-2">
-                                                <div class="row">
-                                                    <a href="@Url.Action("Edit", "ProductionCapcity")?id=@Manufacturingavaluation.Id" class="col-xl-12  btn btn-sm  bg-purple">Edit  <i class="fas fa-pen"></i></a>
+                                //                 </div>
+                                //             </div>
+                                //             <div style="margin-top:1.25rem;" class="col-2">
+                                //                 <div class="row">
+                                //                     <a href="@Url.Action("Edit", "ProductionCapcity")?id=@Manufacturingavaluation.Id" class="col-xl-12  btn btn-sm  bg-purple">Edit  <i class="fas fa-pen"></i></a>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                }
+                                //                 </div>
+                                //             </div>
+                                //         </div>
+                                //     }
+                                // }
                             }
                         </div>
                     }
@@ -383,4 +594,4 @@
      formatAndDisplayValue('ReplacementCost');
      formatAndDisplayValue('InvoiceValue');
      formatAndDisplayValue('NetEstimationValue');
-</script>
+</script> *@
