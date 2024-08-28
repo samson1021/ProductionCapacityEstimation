@@ -302,13 +302,13 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
         public async Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid ProductionCaseId)
         {
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && (res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Complete")).ToListAsync();
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && (res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Completed")).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
         public async  Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid ProductionCaseId)
         {
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && res.CurrentStage == "Checker officer" && res.CurrentStatus == "Complete").ToListAsync();
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && res.CurrentStage == "Checker officer" && res.CurrentStatus == "Completed").ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
@@ -481,7 +481,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
         public async Task<IEnumerable<ReturnProductionDto>> GetRmComCollaterals(Guid PCECaseId)
         {
-            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Relation Manager" && res.CurrentStatus == "Complete").ToListAsync();
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Relation Manager" && res.CurrentStatus == "Completed").ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(collaterals);
         }
     }
