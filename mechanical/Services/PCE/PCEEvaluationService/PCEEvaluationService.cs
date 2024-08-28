@@ -129,6 +129,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEntity = await _cbeContext.PCEEvaluations
                                                 .Include(e => e.ShiftHours)
                                                 .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.PCE)
                                                 .FirstOrDefaultAsync(e => e.Id == Id);
                                         
                 if (pceEntity == null)
@@ -158,7 +159,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     }
                     _cbeContext.UploadFiles.RemoveRange(filesToDelete);
                 }           
-
+                
                 // Handle new file uploads
                 if (Dto.NewSupportingEvidences != null && Dto.NewSupportingEvidences.Count > 0)
                 {
@@ -175,7 +176,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
                     }
                 }
-
+                
                 if (Dto.NewProductionProcessFlowDiagrams != null && Dto.NewProductionProcessFlowDiagrams.Count > 0)
                 {
                     foreach (var file in Dto.NewProductionProcessFlowDiagrams)
@@ -191,7 +192,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
-
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -613,15 +614,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {              
             var query = _cbeContext.ProductionCapacities
                                     .AsNoTracking()
-                                    .Join(
+                                    .Join(                                    
                                         _cbeContext.ProductionCaseAssignments,
                                         pc => pc.Id,
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId
+                                    .Where(x => (x.ProductionCaseAssignment.UserId == UserId 
+                                                && (Status == "All" || Status == null || x.ProductionCaseAssignment.Status == Status)) 
                                                 || x.ProductionCapacity.EvaluatorUserID == UserId)
                                     .Select(x => x.ProductionCapacity); 
+
 
             if (PCECaseId.HasValue)
             {

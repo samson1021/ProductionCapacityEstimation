@@ -3,6 +3,7 @@
 @{
     var Status = ViewBag.Status as string;
     var RedirectUrl = Url.Action("MyPCEs", "PCEEvaluation", new { Status = "All" });
+    
     @* var PCECaseId = ViewData["PCECaseId"] as Guid?;  
     if (PCECaseId.HasValue)
     {
@@ -10,7 +11,6 @@
     } *@
 }
 
-<!-- Return Modal -->
 <!-- Return Modal -->
 <div class="modal fade" id="rejectionModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -23,7 +23,6 @@
             </div>
             <div class="modal-body">
                 <form method="post" action="@Url.Action("Reject", "PCEEvaluation")" id="RejectionForm">
-                    @Html.AntiForgeryToken()
                     @Html.AntiForgeryToken()
                     <input asp-for="PCEId" type="hidden" />
                     <div class="form-group">
@@ -63,12 +62,7 @@
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        toastr.success('Return Comment saved successfully');
-                        $(rejectionModal).modal('hide');
+            })               
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -84,17 +78,7 @@
                 })
                 .catch(error => {
                     toastr.error('Error saving Return comment: ' + error);
-                });
-                        setTimeout(function () {
-                            window.location.href = '@RedirectUrl';
-                        }, 1000);
-                    } else {
-                        toastr.error('Error saving Return comment: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    toastr.error('Error saving Return comment: ' + error);
-                });
+                });                      
         });
     });
 </script>
