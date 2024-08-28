@@ -391,7 +391,7 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<PCEReportDataDto> GetPCEReportData(Guid Id)
         {
             // the following code are used to access each production based on  Single pce
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.Id == Id && res.CurrentStatus == "Evaluated" && res.CurrentStage == "Relational Manager").ToListAsync();            
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.Id == Id && res.CurrentStatus == "Completed" && res.CurrentStage == "Relation Manager").ToListAsync();            
             var pceCase = _cbeContext.PCECases
                         .Include(res => res.District)
                         .Include(res => res.ProductionCapacities)

@@ -97,7 +97,10 @@ builder.Services.AddScoped<IProductionCapacityServices,ProductionCapacityService
 builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
+builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
 
+
+builder.Services.AddScoped<ISignatureService, SignatureService>();
 
 
 
