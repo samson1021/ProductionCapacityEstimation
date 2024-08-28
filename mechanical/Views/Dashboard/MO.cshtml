@@ -263,7 +263,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col flex-grow-1">
+                    @* <div class="col flex-grow-1">
                         <div class="card bg-success update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -302,6 +302,28 @@
                             </div>
                             <div class="card-footer text-center">
                                 <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Reestimate" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div> *@
+                    <div class="col flex-grow-1">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="completedPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Completed PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2> <i class="fas fas-solid fa-undo"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>

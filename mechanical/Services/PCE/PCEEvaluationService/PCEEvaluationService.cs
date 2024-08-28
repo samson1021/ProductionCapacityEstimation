@@ -614,15 +614,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {              
             var query = _cbeContext.ProductionCapacities
                                     .AsNoTracking()
-                                    .Join(
+                                    .Join(                                    
                                         _cbeContext.ProductionCaseAssignments,
                                         pc => pc.Id,
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId
+                                    .Where(x => (x.ProductionCaseAssignment.UserId == UserId 
+                                                && (Status == "All" || Status == null || x.ProductionCaseAssignment.Status == Status)) 
                                                 || x.ProductionCapacity.EvaluatorUserID == UserId)
                                     .Select(x => x.ProductionCapacity); 
+
 
             if (PCECaseId.HasValue)
             {

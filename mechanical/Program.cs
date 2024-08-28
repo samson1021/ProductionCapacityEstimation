@@ -84,10 +84,6 @@ builder.Services.AddDbContext<CbeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
                          throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
 
-
-
-
-
 //production capacity estimation
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
@@ -98,10 +94,6 @@ builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseSchedul
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
 
-
-
-
-builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService,CaseAssignmentService>();
 builder.Services.AddScoped<ICaseTimeLineService, CaseTimeLineService>();
@@ -123,6 +115,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Registering PCE services
@@ -169,10 +163,13 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 {
     Seed.SeedData(app);
     SeedDistrict.SeedData(app);
+    // SeedUsersRolesDistricts.SeedData(app);
 }
 
 Seed.SeedData(app);
 SeedDistrict.SeedData(app);
+// SeedUsersRolesDistricts.SeedData(app);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
