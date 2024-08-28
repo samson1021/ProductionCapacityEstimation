@@ -27,14 +27,16 @@ namespace mechanical.Controllers
         private readonly ILogger<ProductionCapacityController> _logger;
         private readonly CbeContext _cbeContext;
        
-        private readonly IUploadFileService _uploadFileService;
+        private readonly IUploadFileService _uploadFileService; 
+        private readonly IPCEEvaluationService _PCEEvaluationService;
 
-        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IPCEEvaluationService PCEEvaluationService,IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
             _pCECaseService = pCECaseService;
-            _uploadFileService = uploadFileService;         
+            _uploadFileService = uploadFileService;  
+            _PCEEvaluationService = PCEEvaluationService;       
         }
 
         public IActionResult Index()
@@ -146,6 +148,13 @@ namespace mechanical.Controllers
             var role = await _cbeContext.CreateRoles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
+
+            
+            var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), id);
+            ViewData["CurrentUser"] = pceDetail.CurrentUser;
+            ViewData["PCE"] = pceDetail.ProductionCapacity;
+            ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
+
             return View(response);
             
         }

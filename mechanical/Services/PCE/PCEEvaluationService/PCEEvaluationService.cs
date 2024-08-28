@@ -91,8 +91,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
+
                 var currentStatus = "Pending";
-                pce.CurrentStage = "Maker Officer";
+                var CurrentStage = "Maker Officer";
+
+                pce.CurrentStage = CurrentStage;
                 pce.CurrentStatus = currentStatus;
                 _cbeContext.ProductionCapacities.Update(pce);
                 
@@ -102,8 +105,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
-                    Activity = $"<strong> PCE Case Evaluation Created and Pending.</strong>",
-                    CurrentStage = "Maker Officer",
+                    Activity = $"<strong class=\"text-info\"> PCE Case Evaluation Created and Pending.</strong> <br> <i class='text-purple'>Property Owner:</i> {pce.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pce.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pce.PlantName}",
+                    CurrentStage = CurrentStage,
                     CaseId = pce.PCECaseId,
                     // UserId = pce.CreatedBy
                 });
@@ -253,12 +256,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEntity.PCEId && res != pceEntity).ToListAsync();
                 var currentStatus = "New";
+                var CurrentStage = "Maker Officer";
+
                 // if (previousValuation.Count > 1){
                 if (previousValuation.Any()){
                     currentStatus = "Reestimate";
                 }
 
-                pceEntity.PCE.CurrentStage = "Maker Officer";
+                pceEntity.PCE.CurrentStage = CurrentStage;
                 pceEntity.PCE.CurrentStatus = currentStatus;
                 _cbeContext.ProductionCapacities.Update(pceEntity.PCE);
 
@@ -269,8 +274,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     CaseId = pceEntity.PCE.PCECaseId,
-                    Activity = $"<strong> PCE Case Evaluation is retracted.</strong>",
-                    CurrentStage = "Maker Officer",
+                    Activity = $"<strong class=\"text-warning\"> PCE Case Evaluation is retracted.</strong> <br> <i class='text-purple'>Property Owner:</i> {pceEntity.PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pceEntity.PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pceEntity.PCE.PlantName}",
+                    CurrentStage = CurrentStage,
                     // UserId = pceEntity.PCE.CreatedBy
                 });
 
@@ -308,15 +313,18 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.PCEEvaluations.Update(pceEntity);
 
                 var Status = "Completed";
-                var MMActivity = $"<strong>New PCE Case has been Completed.</strong>";
-                var RMActivity = $"<strong> PCE Case Evaluation is submitted to Relation Manager.</strong>";
+                var CurrentStage = "Maker Officer";
+                // var CurrentStage = "Relation Manager";
+                var activity = "completed";
+                // var activity = "submitted";
+
                 if (pceEntity.PCE.CurrentStatus == "Reestimated")
                 {
                     Status = "Reestimated";
-                    MMActivity = $"<strong>New PCE Case has been reestimated.</strong>";
-                    RMActivity = $"<strong> PCE Case Evaluation is resubmitted to Relation Manager.</strong>";
+                    activity = "reestimated";
+                    // activity = "resubmitted";
                 }
-                pceEntity.PCE.CurrentStage = "Relation Manager";
+                pceEntity.PCE.CurrentStage = CurrentStage;
                 pceEntity.PCE.CurrentStatus = Status;
                 _cbeContext.ProductionCapacities.Update(pceEntity.PCE);
 
@@ -328,15 +336,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     CaseId = pceEntity.PCE.PCECaseId,
-                    Activity = RMActivity,
-                    CurrentStage = "Maker Manager"
-                });
-
-                await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-                {
-                    CaseId = pceEntity.PCE.PCECaseId,
-                    Activity = MMActivity,
-                    CurrentStage = "Relation Manager"
+                    Activity = $"<strong class=\"text-success\"> PCE Case Evaluation is {activity} to Relation Manager.</strong>  <br> <i class='text-purple'>Property Owner:</i> {pceEntity.PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pceEntity.PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pceEntity.PCE.PlantName}",
+                    // Activity =  $"<strong class=\"text-success\">New PCE Case has been {activity}.</strong>  <br> <i class='text-purple'>Property Owner:</i> {pceEntity.PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pceEntity.PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pceEntity.PCE.PlantName}",
+                    CurrentStage = CurrentStage
                 });
 
                 await _cbeContext.SaveChangesAsync();
@@ -367,18 +369,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 
                 var Status = "Rejected";
-                var Stage = "Relation Manager";
-                var MMActivity = $"<strong>PCE is rejected as inadequate for evaluation and returned to Relation Manager for correction.</strong>";
-                var Activity = $"<strong>PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.</strong>";
-                if (pce.CurrentStage == "Relation Manager")
-                {
-                    Status = "Rejected";
-                    Stage = "Maker Officer";
-                    MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reestimation.</strong>";
-                    Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reestimation by Relation Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
-                }
+                var CurrentStage = "Maker Officer";
 
-                pce.CurrentStage = Stage;
+                pce.CurrentStage = CurrentStage;
                 pce.CurrentStatus = Status;
                 _cbeContext.ProductionCapacities.Update(pce);
 
@@ -388,16 +381,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
-                    CaseId = pce.PCECaseId,
-                    Activity = MMActivity,
-                    CurrentStage = "Maker Manager"
-                });
-
-                await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-                {
                     CaseId = pce.PCECaseId, 
-                    Activity = Activity,
-                    CurrentStage = Stage
+                    Activity = $" <strong class=\"text-danger\">PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.</strong> <br> <i class='text-purple'>Property Owner:</i> {pce.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pce.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pce.PlantName}",
+                    CurrentStage = CurrentStage
                 });
 
                 await _cbeContext.SaveChangesAsync();
