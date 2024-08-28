@@ -628,11 +628,6 @@
                                     <i class="far fa-circle nav-icon"></i><p>Reesubmitted  PCEs</p>
                                 </a>
                             </li>
-                            @* <li class="nav-item">
-                        <a href="@Url.Action("MyReturnedPCEs", "PCEEvaluation")" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>All Returned  PCEs</p>
-                        </a>
-                        </li> *@
                             <li class="nav-item">
                                 <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=All" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i><p>All PCEs</p>
@@ -739,7 +734,7 @@
                     </li>
 
                     @* Start Production Capacity Estimation *@
-                    @* 
+                    
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
@@ -779,7 +774,8 @@
                                 </a>
                             </li>
                         </ul>
-                    </li> *@
+                    </li> 
+                     @* *@
                     <li class="nav-item">
                         <a href="#" class="nav-link"  id="mypces-toggle">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
