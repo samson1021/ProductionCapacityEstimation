@@ -2,7 +2,7 @@
     var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCEs found";
     var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status;
-    var PCECaseId = ViewData["PCECaseId"] as Guid?; *@
+    var PCECaseId = ViewData["PCECaseId"] as Guid?; 
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {

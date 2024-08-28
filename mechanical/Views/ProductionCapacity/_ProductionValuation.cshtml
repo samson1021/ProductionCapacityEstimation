@@ -38,7 +38,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="container col-12">
-                        
+
                         <div class="row">
                             <div class="row col-lg-4">
                                 <div class="col-lg-6">
@@ -208,7 +208,7 @@
     </section>
 </section>
 
-@* 
+@*
 @using mechanical.Models.Dto.ConstMngAgrMachineryDto;
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
@@ -217,7 +217,7 @@
     var Manufacturingavaluation = ViewData["Mavaluation"] as ReturnProductionDto;
     var Plantavaluation = ViewData["Pavaluation"] as PlantEditPostDto;
     var PCEValuationResult = ViewData["PcevalutionDto"] as PCEEvaluationReturnDto;
-    
+
     var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
     var currentStage = Model.CurrentStage;
 }
@@ -497,7 +497,7 @@
                                                 <div>@Plantavaluation.ObsolescenceStatus</div>
                                             </div>
                                         </div>
-                                       
+
                                     </div>
                                     <div class="row" style="margin-top:1.25rem;">
                                         <div class="row col-lg-12">
@@ -531,9 +531,9 @@
                         //                     <div>@PCEValuationResult.BottleneckProductionLineCapacity</div>
                         //                 </div>
                         //             </div>
-                                   
+
                         //         </div>
-                                
+
                         //         <div class="row" style="margin-top:1.25rem;">
                         //             <div class="row col-lg-12">
                         //                 <div class="col-lg-4">
@@ -548,8 +548,8 @@
                         //         </div>
                         //     </div>
                         // </div>
-                      
-                        
+
+
                         <div class="row col-12">
                             @{
                                 // if (PCEValuationResult.EvaluatorId == CurrentUserId && currentStage == "Maker Officer")
@@ -585,7 +585,7 @@
                     }
 
                 }
-               
+
             </div>
         </div>
     </section>
