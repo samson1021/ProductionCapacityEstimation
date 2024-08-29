@@ -38,19 +38,20 @@
 
 
                     <li class="nav-item">
-                        <a href="@Url.Action("Create", "Case")" class="nav-link">
-                            <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>
-                                Create new case
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("Create", "Case")" class="nav-link">
+                                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                                    <p>
+                                        Create new case
+                                    </p>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="@Url.Action("NewCases", "Case")" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
@@ -99,6 +100,18 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("TerminatedCases", "Case")" class="nav-link" style="color:red;">
+                                    <i class="fas fa-ban nav-icon "> </i>
+                                    <p>Terminated Case</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("ReestimationCases", "Case")" class="nav-link">
+                                    <i class="fas fa-undo nav-icon"> </i>
+                                    <p>Request Re-estimation</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -108,19 +121,20 @@
 
 
                     <li class="nav-item">
-                        <a href="@Url.Action("PCECreate", "PCECase")" class="nav-link">
-                            <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>
-                                Create new PCE case
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My PCE Case<i class="fas fa-angle-left right"></i></p>
+                            <p> PCE Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCECreate", "PCECase")" class="nav-link">
+                                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                                    <p>
+                                        Create new PCE case
+                                    </p>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="@Url.Action("PCENewCases", "PCECase")" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
@@ -170,6 +184,18 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="@Url.Action("TerminatedCases", "Case")" class="nav-link" style="color:red;">
+                                    <i class="fas fa-ban nav-icon "> </i>
+                                    <p>Terminated Case</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("ReestimationCases", "Case")" class="nav-link">
+                                    <i class="fas fa-undo nav-icon"> </i>
+                                    <p>Request Re-estimation</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="@Url.Action("PCECasesReport", "PCECase")" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>
@@ -179,15 +205,10 @@
                             </li>
                         </ul>
                     </li>
-
-
-@*                     End Product Capacity Estimation
- *@
-
                 </ul>
 
 
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+             @*    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
                     <li class="nav-item">
                         <a href="@Url.Action("TerminatedCases", "Case")" class="nav-link" style="color:red;">
@@ -201,9 +222,8 @@
                             Request Re-estimation
                         </a>
                     </li>
-                </ul>
+                </ul> *@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-signature"></i>
@@ -224,9 +244,17 @@
                                     </p>
                                 </a>
                             </li>
+
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
-
                 </ul>
 
 
@@ -246,7 +274,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -281,20 +309,28 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyAssignments", "Case")" class="nav-link">
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>
+                                        My Assignments
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
+                 @*    <li class="nav-item">
                         <a href="@Url.Action("MyAssignments", "Case")" class="nav-link">
                             <i class="fas fa-tasks nav-icon"></i>
                             <p>
                                 My Assignments
                             </p>
                         </a>
-                    </li>
+                    </li> *@
                     <li class="nav-item">
                         <a href="#" class="nav-link" id="mypces-toggle">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My PCEs<i class="fas fa-angle-left right"></i></p>
+                            <p> PCE Case<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -327,11 +363,19 @@
                                     <i class="far fa-circle nav-icon"></i><p>All PCEs</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyAssignments", "MMCase")" class="nav-link">
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>
+                                        My Assignments
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-signature"></i>
@@ -352,10 +396,18 @@
                                     </p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
-
                 </ul>
+
+
 
             }
             else if (@userRole == "District Valuation Manager")
@@ -372,7 +424,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>Maker Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation Case<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -420,7 +472,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link" id="mypces-toggle">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My PCEs<i class="fas fa-angle-left right"></i></p>
+                            <p> PCE Case<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -531,6 +583,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -551,7 +609,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p> Collateral Evaluation <i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -587,20 +645,21 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyAssignments", "MTLCase")" class="nav-link">
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>
+                                        My Assignments
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a href="@Url.Action("MyAssignments", "MTLCase")" class="nav-link">
-                            <i class="fas fa-tasks nav-icon"></i>
-                            <p>
-                                My Assignments
-                            </p>
-                        </a>
-                    </li>
+            
                     <li class="nav-item">
                         <a href="#" class="nav-link" id="mypces-toggle">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My PCEs<i class="fas fa-angle-left right"></i></p>
+                            <p>PCE Case<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -633,6 +692,14 @@
                                     <i class="far fa-circle nav-icon"></i><p>All PCEs</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyAssignments", "PCEMTLCase")" class="nav-link">
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>
+                                        My Assignments
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -658,6 +725,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -678,7 +751,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -738,7 +811,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My PCE Cases<i class="fas fa-angle-left right"></i></p>
+                            <p>PCE Cases<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -773,48 +846,7 @@
                             </li>
                         </ul>
                     </li> 
-                     @* 
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"  id="mypces-toggle">
-                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My PCEs<i class="fas fa-angle-left right"></i></p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=New" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i><p>New PCEs</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Pending" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i><p>Pending PCEs</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Completed" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i><p>Completed PCEs</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Reestimated" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i><p>Reestimated PCEs</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=Reestimate" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i><p>Reesubmitted  PCEs</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("MyPCEs", "PCEEvaluation")?Status=All" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i><p>All PCEs</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    *@
-
-                @* End Product Capacity Estimation *@
+            
 
                 </ul>
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -839,6 +871,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -860,7 +898,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -896,16 +934,17 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyAssignments", "CMCase")" class="nav-link">
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>
+                                        My Assignments
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a href="@Url.Action("MyAssignments", "CMCase")" class="nav-link">
-                            <i class="fas fa-tasks nav-icon"></i>
-                            <p>
-                                My Assignments
-                            </p>
-                        </a>
-                    </li>
+          
                 </ul>
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
@@ -929,6 +968,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -949,7 +994,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -984,16 +1029,17 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyAssignments", "CTLCase")" class="nav-link">
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>
+                                        My Assignments
+                                    </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a href="@Url.Action("MyAssignments", "CTLCase")" class="nav-link">
-                            <i class="fas fa-tasks nav-icon"></i>
-                            <p>
-                                My Assignments
-                            </p>
-                        </a>
-                    </li>
+                   
                 </ul>
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
@@ -1017,6 +1063,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -1038,7 +1090,7 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p>My Case<i class="fas fa-angle-left right"></i></p>
+                            <p>Collateral Evaluation<i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -1107,6 +1159,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -1161,6 +1219,12 @@
                                     </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p> Profile </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -1168,12 +1232,12 @@
 
             }
              <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <li class="nav-item">
-                        <a href="@Url.Action("MyProfile","UserManagment")"" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
+                     @* <li class="nav-item">
+                        <a href="@Url.Action("MyProfile","UserManagment")" class="nav-link  @(ViewBag.ActiveMenu == "UserProfile" ? "active" : "")">
                             <i class="nav-icon fas fa-user"></i>
                             <p> Profile </p>
                         </a>
-                    </li>
+                    </li>  *@
                     <li class="nav-item">
                         <a href="@Url.Action("Logout", "Home")" class="nav-link">
                             <i class="nav-icon fa fas fa-sign-out-alt"></i>
