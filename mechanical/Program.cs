@@ -116,6 +116,11 @@ builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 
 
+
+builder.Services.AddScoped<ISignatureService, SignatureService>();
+
+
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 /////////////////////////////////////////////////////////////////////////////////////////////
