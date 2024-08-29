@@ -37,5 +37,9 @@
   <ItemGroup>
     <Folder Include="UploadFile\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Signature management\Signature management.csproj" />
+  </ItemGroup>
   
 </Project>
