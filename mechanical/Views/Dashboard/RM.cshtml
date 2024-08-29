@@ -100,107 +100,12 @@
                     </div>
                 </div>
 
-    @*                 Production capacity case
-    *@
-                <div class="row">
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-green update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pcsnewCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS New Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1><i class="fas fa-plus"></i></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCENewCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info<i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-yellow update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pcspendingCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS Pending Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1><i class="fas fa-spinner"></i></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCEPendingCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-pink update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pcscompletedCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS Completed Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCECompleteCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-blue update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pcstotalCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCS Total Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1> <i class="fas fa-grip-lines"></i></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCETotalCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-@* @* Production Estimation Capacity Estimation *@ 
-
 
 
                 <div class="row">
                     <div class="card">
                         <div class="card-header border-transparent">
-                            <h3 class="card-title">Latest Case</h3>
+                            <h3 class="card-title">Latest Collateral Case</h3>
                         </div>
 
                         <div class="card-body p-0">
@@ -249,16 +154,149 @@
 
                         </div>
 
-                        <div class="card-footer clearfix">
+                       @*  <div class="card-footer clearfix">
                             <a href="@Url.Action("Create", "Case")" class="btn btn-sm btn-info float-left">Place New Case</a>
                             <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Cases</a>
                         </div>
-
+ *@
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    @*  Production capacity case   *@
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+
+                @*                 Production capacity case
+                *@
+                <div class="row">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-green update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcsnewCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE New Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1><i class="fas fa-plus"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCENewCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info<i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-yellow update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcspendingCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE Pending Cs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1><i class="fas fa-spinner"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCEPendingCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcscompletedCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE Completed Cs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCECompleteCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-blue update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pcstotalCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">PCE Total Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1> <i class="fas fa-grip-lines"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("PCETotalCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               
+               
+                <div class="row">
+                    <div class="card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Latest PCE Cases</h3>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table  class="table table-bordered table-striped m-0">
+                                    <thead>
+                                        <tr>
+                                        <tr>
+                                            <th>Case No</th>
+                                            <th>Creation Date</th>
+                                            <th>Applicant Name</th>
+                                            <th>Customer Id</th>
+                                            <th>Total PCE </th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                     @*   list of new PCe cases *@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        @* Production Estimation Capacity Estimation *@
+    </div>
 </section>
 @section Scripts {
     <script>

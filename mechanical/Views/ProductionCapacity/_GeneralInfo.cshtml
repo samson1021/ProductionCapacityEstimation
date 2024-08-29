@@ -13,7 +13,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Production Capcity Information</h3>
+                        <h3 class="card-title">Production Capacity Information</h3>
                     </div>
                     <div class="card-body">
                         @if (!string.IsNullOrEmpty(Model.PropertyOwner)){<h6><strong>Property Owner:</strong> @Model.PropertyOwner</h6> }
@@ -76,24 +76,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-@*                                 @{
-                                    if (productionFiles != null && productionFiles.Count() == 0)
-                                    {
 
-                                        <tr class="text-center"> <td colspan="3"><h6>There is no document related to this PCE</h6></td></tr>
-                                    }
-                                    else
-                                    {
-                                        foreach (var productionFile in productionFiles)
-                                        {
-                                            <tr>
-                                                <td>@productionFile.Name</td>
-                                                <td>@productionFile.Catagory</td>
-                                                <td><a href="@Url.Action("ViewFile","UploadFile" ,new { Id =productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
-                                            </tr>
-                                        }
-                                    }
-                                } *@
                                 @{
                                     if (productionFiles != null && productionFiles.Count() == 0)
                                     {
@@ -177,7 +160,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Poduction Capcity Description</h3>
+                        <h3 class="card-title">Production Capacity Description</h3>
                     </div>
                     <div class="card-body">
                         @if (!string.IsNullOrEmpty(Model.ProductDescription))

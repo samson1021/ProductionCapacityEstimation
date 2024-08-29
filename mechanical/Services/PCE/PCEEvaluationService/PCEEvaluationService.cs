@@ -92,14 +92,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     }
                 }
 
-                pce.CurrentStage = "Maker Officer";
-                pce.CurrentStatus = "Pending";
+                var currentStatus = "Pending";
+                var CurrentStage = "Maker Officer";
+
+                pce.CurrentStage = CurrentStage;
+                pce.CurrentStatus = currentStatus;
                 _cbeContext.ProductionCapacities.Update(pce);
+                
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pce.Id && res.UserId == pceEntity.EvaluatorId).FirstOrDefaultAsync();
+                previousCaseAssignment.Status = currentStatus;
+                _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
-                    Activity = $"<strong> PCE Case Evaluation Created and Pending.</strong>",
-                    CurrentStage = "Maker Officer",
+                    Activity = $"<strong class=\"text-info\"> PCE Case Evaluation Created and Pending.</strong> <br> <i class='text-purple'>Property Owner:</i> {pce.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pce.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pce.PlantName}",
+                    CurrentStage = CurrentStage,
                     CaseId = pce.PCECaseId,
                     // UserId = pce.CreatedBy
                 });
@@ -125,6 +132,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEntity = await _cbeContext.PCEEvaluations
                                                 .Include(e => e.ShiftHours)
                                                 .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.PCE)
                                                 .FirstOrDefaultAsync(e => e.Id == Id);
                                         
                 if (pceEntity == null)
@@ -154,7 +162,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     }
                     _cbeContext.UploadFiles.RemoveRange(filesToDelete);
                 }           
-
+                
                 // Handle new file uploads
                 if (Dto.NewSupportingEvidences != null && Dto.NewSupportingEvidences.Count > 0)
                 {
@@ -171,7 +179,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, supportingEvidenceFile);
                     }
                 }
-
+                
                 if (Dto.NewProductionProcessFlowDiagrams != null && Dto.NewProductionProcessFlowDiagrams.Count > 0)
                 {
                     foreach (var file in Dto.NewProductionProcessFlowDiagrams)
@@ -187,7 +195,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         await _uploadFileService.CreateUploadFile(UserId, productionProcessFlowDiagramFile);
                     }
                 }
-
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -248,12 +256,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEntity.PCEId && res != pceEntity).ToListAsync();
                 var currentStatus = "New";
+                var CurrentStage = "Maker Officer";
+
                 // if (previousValuation.Count > 1){
                 if (previousValuation.Any()){
                     currentStatus = "Reestimate";
                 }
 
-                pceEntity.PCE.CurrentStage = "Maker Officer";
+                pceEntity.PCE.CurrentStage = CurrentStage;
                 pceEntity.PCE.CurrentStatus = currentStatus;
                 _cbeContext.ProductionCapacities.Update(pceEntity.PCE);
 
@@ -264,8 +274,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     CaseId = pceEntity.PCE.PCECaseId,
-                    Activity = $"<strong> PCE Case Evaluation is retracted.</strong>",
-                    CurrentStage = "Maker Officer",
+                    Activity = $"<strong class=\"text-warning\"> PCE Case Evaluation is retracted.</strong> <br> <i class='text-purple'>Property Owner:</i> {pceEntity.PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pceEntity.PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pceEntity.PCE.PlantName}",
+                    CurrentStage = CurrentStage,
                     // UserId = pceEntity.PCE.CreatedBy
                 });
 
@@ -303,19 +313,22 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.PCEEvaluations.Update(pceEntity);
 
                 var Status = "Completed";
-                var MMActivity = $"<strong>New PCE Case has been Completed.</strong>";
-                var RMActivity = $"<strong> PCE Case Evaluation is submitted to Relational Manager.</strong>";
+                var CurrentStage = "Maker Officer";
+                // var CurrentStage = "Relation Manager";
+                var activity = "completed";
+                // var activity = "submitted";
+
                 if (pceEntity.PCE.CurrentStatus == "Reestimated")
                 {
                     Status = "Reestimated";
-                    MMActivity = $"<strong>New PCE Case has been reestimated.</strong>";
-                    RMActivity = $"<strong> PCE Case Evaluation is resubmitted to Relational Manager.</strong>";
+                    activity = "reestimated";
+                    // activity = "resubmitted";
                 }
-                pceEntity.PCE.CurrentStage = "Relational Manager";
+                pceEntity.PCE.CurrentStage = CurrentStage;
                 pceEntity.PCE.CurrentStatus = Status;
                 _cbeContext.ProductionCapacities.Update(pceEntity.PCE);
 
-                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCE.Id).FirstOrDefaultAsync();
+                var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == pceEntity.PCEId && res.UserId == UserId).FirstOrDefaultAsync();
                 previousCaseAssignment.Status = Status;
                 previousCaseAssignment.CompletionDate = DateTime.Now;// DateTime.UtcNow
                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
@@ -323,15 +336,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     CaseId = pceEntity.PCE.PCECaseId,
-                    Activity = RMActivity,
-                    CurrentStage = "Maker Manager"
-                });
-
-                await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-                {
-                    CaseId = pceEntity.PCE.PCECaseId,
-                    Activity = MMActivity,
-                    CurrentStage = "Relational Manager"
+                    Activity = $"<strong class=\"text-success\"> PCE Case Evaluation is {activity} to Relation Manager.</strong>  <br> <i class='text-purple'>Property Owner:</i> {pceEntity.PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pceEntity.PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pceEntity.PCE.PlantName}",
+                    // Activity =  $"<strong class=\"text-success\">New PCE Case has been {activity}.</strong>  <br> <i class='text-purple'>Property Owner:</i> {pceEntity.PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pceEntity.PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pceEntity.PCE.PlantName}",
+                    CurrentStage = CurrentStage
                 });
 
                 await _cbeContext.SaveChangesAsync();
@@ -362,37 +369,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
                 
                 var Status = "Rejected";
-                var Stage = "Relational Manager";
-                var MMActivity = $"<strong>PCE is rejected as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
-                var Activity = $"<strong>PCE is rejected by MO as inadequate for evaluation and returned to Relational Manager for correction.</strong>";
-                if (pce.CurrentStage == "Relational Manager")
-                {
-                    Status = "Rejected";
-                    Stage = "Maker Officer";
-                    MMActivity = $"<strong>PCE Evaluation is rejected and returned to MO for reestimation.</strong>";
-                    Activity = $" <strong class=\"text-sucess\">PCE Evaluation has been rejected and returned for reestimation by Relational Manager.</strong>";//<br> <i class='text-purple'>Evaluation Center:</i> {pce.PCECase.District.Name}."</strong> <br> <i class='text-purple'>PCE Catagory:</i> {EnumHelper.GetEnumDisplayName(pce.Catagory)}. &nbsp; <i class='text-purple'>PCE Type:</i> {EnumHelper.GetEnumDisplayName(pce.ProductionType)}.",
-                }
+                var CurrentStage = "Maker Officer";
 
-                pce.CurrentStage = Stage;
+                pce.CurrentStage = CurrentStage;
                 pce.CurrentStatus = Status;
                 _cbeContext.ProductionCapacities.Update(pce);
 
                 var previousPCECaseAssignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == Dto.PCEId && res.UserId == UserId);
-                previousPCECaseAssignment.Status = Status;
+                previousPCECaseAssignment.Status = Status;              
                 _cbeContext.Update(previousPCECaseAssignment);
 
                 await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
-                    CaseId = pce.PCECaseId,
-                    Activity = MMActivity,
-                    CurrentStage = "Maker Manager"
-                });
-
-                await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-                {
                     CaseId = pce.PCECaseId, 
-                    Activity = Activity,
-                    CurrentStage = Stage
+                    Activity = $" <strong class=\"text-danger\">PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.</strong> <br> <i class='text-purple'>Property Owner:</i> {pce.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {pce.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{pce.PlantName}",
+                    CurrentStage = CurrentStage
                 });
 
                 await _cbeContext.SaveChangesAsync();
@@ -528,36 +519,40 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
 
-        // public async Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId)
-        // {
-        //     var NewPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "New").ToListAsync();
-        //     var PendingPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Pending").ToListAsync();
-        //     var CompletedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Completed").ToListAsync();
-        //     var ReestimatedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reestimated").ToListAsync();
-        //     var ReturnedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Returned").ToListAsync();
-        //     var TotalPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId).ToListAsync();
+        public async Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId)
+        {
+            var NewPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "New").ToListAsync();
+            var PendingPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Pending").ToListAsync();
+            var CompletedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Completed").ToListAsync();
+            var ReestimatedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reestimated").ToListAsync();
+            var ResubmittedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Reestimate").ToListAsync();
+            var RejectedPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.Status == "Rejected").ToListAsync();
+            var TotalPCEs = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId).ToListAsync();
 
-        //     return new PCECasesCountDto()
-        //     {
-        //         NewPCECasesCount = NewPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         NewPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "New").CountAsync(),
+            return new PCECasesCountDto()
+            {
+                NewPCECasesCount = NewPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                NewPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "New").CountAsync(),
 
-        //         PendingPCECasesCount = PendingPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         PendingPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Pending").CountAsync(),
+                PendingPCECasesCount = PendingPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                PendingPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Pending").CountAsync(),
 
-        //         CompletedPCECasesCount = CompletedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         CompletedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Completed").CountAsync(),
+                CompletedPCECasesCount = CompletedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                CompletedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Completed").CountAsync(),
 
-        //         ReestimatedPCECasesCount = ReestimatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         ReestimatedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Reestimated").CountAsync(),
+                ReestimatedPCECasesCount = ReestimatedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                ReestimatedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Reestimated").CountAsync(),
 
-        //         ReturnedPCECasesCount = ReturnedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         ReturnedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Returned").CountAsync(),
+                ResubmittedPCECasesCount = ResubmittedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                ResubmittedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Reestimate").CountAsync(),
 
-        //         TotalPCECasesCount = TotalPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         TotalPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId).CountAsync(),
-        //     };
-        // }
+                RejectedPCECasesCount = RejectedPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                RejectedPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId && res.Status == "Rejected").CountAsync(),
+
+                TotalPCECasesCount = TotalPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                TotalPCEsCount = await _cbeContext.ProductionCaseAssignments.AsNoTracking().Where(res => res.UserId == UserId).CountAsync(),
+            };
+        }
 
         //////////////////////////////// PCE /////////////////////////////////////////
 
@@ -569,13 +564,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             var query = _cbeContext.ProductionCapacities
                                     .AsNoTracking()
+                                    .Include(pc => pc.PCECase)
                                     .Join(
                                         _cbeContext.ProductionCaseAssignments,
                                         pc => pc.Id,
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId && x.ProductionCaseAssignment.Status == Status || x.ProductionCapacity.EvaluatorUserID == UserId )
+                                    .Where(x => (x.ProductionCaseAssignment.UserId == UserId 
+                                                && (Status == "All" || Status == null || x.ProductionCaseAssignment.Status == Status)) 
+                                                || x.ProductionCapacity.EvaluatorUserID == UserId)
                                     .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)
@@ -606,15 +604,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {              
             var query = _cbeContext.ProductionCapacities
                                     .AsNoTracking()
-                                    .Join(
+                                    .Join(                                    
                                         _cbeContext.ProductionCaseAssignments,
                                         pc => pc.Id,
                                         pca => pca.ProductionCapacityId,
                                         (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
                                         )
-                                    .Where(x => x.ProductionCaseAssignment.UserId == UserId
+                                    .Where(x => (x.ProductionCaseAssignment.UserId == UserId 
+                                                && (Status == "All" || Status == null || x.ProductionCaseAssignment.Status == Status)) 
                                                 || x.ProductionCapacity.EvaluatorUserID == UserId)
                                     .Select(x => x.ProductionCapacity); 
+
 
             if (PCECaseId.HasValue)
             {
@@ -682,8 +682,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         public async Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid PCEId)
         {
 
-            var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(res => res.Id == PCEId);
-            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().FirstOrDefaultAsync(res => res.Id == PCEId);                 
+            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
+            // var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(res => res.Id == pce.PCECaseId);                 
             var reestimation = await _cbeContext.ProductionCapacityReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
             var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(PCEId);          
             var currentUser = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);             
@@ -691,7 +691,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                   
             return new PCEDetailDto
             {
-                PCECase = pceCase,
+                PCECase = pce.PCECase,
                 ProductionCapacity = _mapper.Map<ReturnProductionDto>(pce),
                 PCEValuationHistory = valuationHistory,
                 Reestimation = reestimation,
@@ -712,7 +712,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 latestEvaluation = await GetPCEEvaluationsByPCEId(UserId, PCEId);
             }
 
-            var previousEvaluations = await _cbeContext.PCEEvaluations.AsNoTracking().Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id)).ToListAsync();
+            var previousEvaluations = await _cbeContext.PCEEvaluations
+                                                        .AsNoTracking()
+                                                        .Include(p => p.PCE)
+                                                        .ThenInclude(pc => pc.PCECase)
+                                                        .Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id))
+                                                        .ToListAsync();
             
             return new PCEValuationHistoryDto
             {

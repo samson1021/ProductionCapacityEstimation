@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace mechanical.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class firstdemomigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,20 +21,6 @@ namespace mechanical.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CreateRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DateTimeRange",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    PCEEId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    End = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DateTimeRange", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -145,7 +131,7 @@ namespace mechanical.Migrations
                         column: x => x.RoleId,
                         principalTable: "CreateRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_CreateUsers_CreateUsers_SupervisorId",
                         column: x => x.SupervisorId,
@@ -156,7 +142,7 @@ namespace mechanical.Migrations
                         column: x => x.DistrictId,
                         principalTable: "Districts",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,7 +164,7 @@ namespace mechanical.Migrations
                         column: x => x.SignatureFileId,
                         principalTable: "UploadFiles",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,13 +191,13 @@ namespace mechanical.Migrations
                         column: x => x.CaseOriginatorId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Cases_Districts_DistrictId",
                         column: x => x.DistrictId,
                         principalTable: "Districts",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Cases_UploadFiles_BussinessLicenceId",
                         column: x => x.BussinessLicenceId,
@@ -235,7 +221,7 @@ namespace mechanical.Migrations
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -288,13 +274,13 @@ namespace mechanical.Migrations
                         column: x => x.RMUserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PCECases_Districts_DistrictId",
                         column: x => x.DistrictId,
                         principalTable: "Districts",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PCECases_UploadFiles_BussinessLicenceId",
                         column: x => x.BussinessLicenceId,
@@ -303,7 +289,7 @@ namespace mechanical.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductionCapcityCorrections",
+                name: "ProductionCapacityCorrections",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
@@ -318,9 +304,9 @@ namespace mechanical.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductionCapcityCorrections", x => x.Id);
+                    table.PrimaryKey("PK_ProductionCapacityCorrections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductionCapcityCorrections_CreateUsers_CommentedByUserIdsId",
+                        name: "FK_ProductionCapacityCorrections_CreateUsers_CommentedByUserIdsId",
                         column: x => x.CommentedByUserIdsId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id");
@@ -344,13 +330,13 @@ namespace mechanical.Migrations
                         column: x => x.CaseId,
                         principalTable: "Cases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_CaseComments_CreateUsers_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -373,13 +359,13 @@ namespace mechanical.Migrations
                         column: x => x.CaseId,
                         principalTable: "Cases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_CaseSchedules_CreateUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -401,13 +387,13 @@ namespace mechanical.Migrations
                         column: x => x.CaseId,
                         principalTable: "Cases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_CaseTerminates_CreateUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -429,13 +415,13 @@ namespace mechanical.Migrations
                         column: x => x.CaseId,
                         principalTable: "Cases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_CaseTimeLines_CreateUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -487,13 +473,13 @@ namespace mechanical.Migrations
                         column: x => x.CaseId,
                         principalTable: "Cases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Collaterals_CreateUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -516,7 +502,7 @@ namespace mechanical.Migrations
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PCECaseTimeLines_PCECases_NewCaseId",
                         column: x => x.NewCaseId,
@@ -586,7 +572,7 @@ namespace mechanical.Migrations
                         column: x => x.PCECaseId,
                         principalTable: "PCECases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -609,13 +595,13 @@ namespace mechanical.Migrations
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ProductionCaseSchedules_PCECases_PCECaseId",
                         column: x => x.PCECaseId,
                         principalTable: "PCECases",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -642,7 +628,7 @@ namespace mechanical.Migrations
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -662,7 +648,7 @@ namespace mechanical.Migrations
                         column: x => x.CollateralId,
                         principalTable: "Collaterals",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -718,7 +704,7 @@ namespace mechanical.Migrations
                         column: x => x.CollateralId,
                         principalTable: "Collaterals",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ConstMngAgrMachineries_CreateUsers_CheckerUserID",
                         column: x => x.CheckerUserID,
@@ -729,7 +715,7 @@ namespace mechanical.Migrations
                         column: x => x.EvaluatorUserID,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -778,7 +764,7 @@ namespace mechanical.Migrations
                         column: x => x.CollateralId,
                         principalTable: "Collaterals",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_IndBldgFacilityEquipment_CreateUsers_CheckerUserID",
                         column: x => x.CheckerUserID,
@@ -789,7 +775,7 @@ namespace mechanical.Migrations
                         column: x => x.EvaluatorUserID,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -841,7 +827,7 @@ namespace mechanical.Migrations
                         column: x => x.CollateralId,
                         principalTable: "Collaterals",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_MotorVehicles_CreateUsers_CheckerUserID",
                         column: x => x.CheckerUserID,
@@ -852,7 +838,7 @@ namespace mechanical.Migrations
                         column: x => x.EvaluatorUserID,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -874,7 +860,6 @@ namespace mechanical.Migrations
                     EstimatedProductionCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BottleneckProductionLineCapacity = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OverallActualCurrentPlantCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TimeConsumedToCheckId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TechnicalObsolescenceStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepreciationRateApplied = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discrepancies = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -901,19 +886,13 @@ namespace mechanical.Migrations
                         column: x => x.EvaluatorId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PCEEvaluations_DateTimeRange_TimeConsumedToCheckId",
-                        column: x => x.TimeConsumedToCheckId,
-                        principalTable: "DateTimeRange",
-                        principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PCEEvaluations_ProductionCapacities_PCEId",
                         column: x => x.PCEId,
                         principalTable: "ProductionCapacities",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -933,7 +912,7 @@ namespace mechanical.Migrations
                         column: x => x.ProductionCapacityId,
                         principalTable: "ProductionCapacities",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -955,13 +934,13 @@ namespace mechanical.Migrations
                         column: x => x.UserId,
                         principalTable: "CreateUsers",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ProductionCaseAssignments_ProductionCapacities_ProductionCapacityId",
                         column: x => x.ProductionCapacityId,
                         principalTable: "ProductionCapacities",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -969,10 +948,9 @@ namespace mechanical.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    PCECaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProductionCapacityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -981,7 +959,28 @@ namespace mechanical.Migrations
                         name: "FK_ProductionReestimations_ProductionCapacities_ProductionCapacityId",
                         column: x => x.ProductionCapacityId,
                         principalTable: "ProductionCapacities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DateTimeRange",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    PCEEId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    End = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DateTimeRange", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DateTimeRange_PCEEvaluations_PCEEId",
+                        column: x => x.PCEEId,
+                        principalTable: "PCEEvaluations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1001,7 +1000,7 @@ namespace mechanical.Migrations
                         column: x => x.PCEEId,
                         principalTable: "PCEEvaluations",
                         principalColumn: "Id",
-                         onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
@@ -1125,6 +1124,12 @@ namespace mechanical.Migrations
                 column: "SupervisorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DateTimeRange_PCEEId",
+                table: "DateTimeRange",
+                column: "PCEEId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IndBldgFacilityEquipment_CheckerUserID",
                 table: "IndBldgFacilityEquipment",
                 column: "CheckerUserID");
@@ -1190,11 +1195,6 @@ namespace mechanical.Migrations
                 column: "PCEId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PCEEvaluations_TimeConsumedToCheckId",
-                table: "PCEEvaluations",
-                column: "TimeConsumedToCheckId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductionCapacities_CreatedById",
                 table: "ProductionCapacities",
                 column: "CreatedById");
@@ -1205,14 +1205,14 @@ namespace mechanical.Migrations
                 column: "PCECaseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductionCapacityCorrections_CommentedByUserIdsId",
+                table: "ProductionCapacityCorrections",
+                column: "CommentedByUserIdsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductionCapacityReestimations_ProductionCapacityId",
                 table: "ProductionCapacityReestimations",
                 column: "ProductionCapacityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductionCapcityCorrections_CommentedByUserIdsId",
-                table: "ProductionCapcityCorrections",
-                column: "CommentedByUserIdsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductionCaseAssignments_ProductionCapacityId",
@@ -1282,6 +1282,9 @@ namespace mechanical.Migrations
                 name: "Corrections");
 
             migrationBuilder.DropTable(
+                name: "DateTimeRange");
+
+            migrationBuilder.DropTable(
                 name: "Employees");
 
             migrationBuilder.DropTable(
@@ -1294,10 +1297,10 @@ namespace mechanical.Migrations
                 name: "PCECaseTimeLines");
 
             migrationBuilder.DropTable(
-                name: "ProductionCapacityReestimations");
+                name: "ProductionCapacityCorrections");
 
             migrationBuilder.DropTable(
-                name: "ProductionCapcityCorrections");
+                name: "ProductionCapacityReestimations");
 
             migrationBuilder.DropTable(
                 name: "ProductionCaseAssignments");
@@ -1328,9 +1331,6 @@ namespace mechanical.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cases");
-
-            migrationBuilder.DropTable(
-                name: "DateTimeRange");
 
             migrationBuilder.DropTable(
                 name: "ProductionCapacities");

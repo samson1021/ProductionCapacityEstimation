@@ -32,7 +32,7 @@
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="PCECreate">
+                <form method="post" enctype="multipart/form-data" asp-action="PCECreate" onsubmit="return validateForm()">
 
 
                     <div class="row">
@@ -123,20 +123,41 @@
         });
 
         //this is the input validation for application name
-        document.getElementById("applicantName").addEventListener("input", function() {
-        var input = this.value;
-        var nameRegex = /^[A-Za-z\s]+$/;
-
-        if (!nameRegex.test(input)) {
-            this.setCustomValidity("Only letters and spaces are allowed.");
-            document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("applicantName-error").textContent = "";
-        }
+        document.getElementById("applicantName").addEventListener("input", function () {
+            var input = this.value;
+            var nameRegex = /^[A-Za-z\s]+$/;
+         
+            if (!nameRegex.test(input)) {
+                this.setCustomValidity("Only letters and spaces are allowed.");
+                document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
+            } else {
+                this.setCustomValidity("");
+                document.getElementById("applicantName-error").textContent = "";
+            }
         });
+
+
+        function validateForm(){
+            var applicantName = document.getElementById("applicantName");
+            var nameRegex = /^[A-Za-z\s]+$/;
+
+            if (!nameRegex.test(applicantName.value)) {
+              
+                applicantName.setCustomValidity("Only letters and spaces are allowed.");
+                document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
+                applicantName.reportValidity();
+                return false;
+            } else {
+                applicantName.setCustomValidity("");
+                document.getElementById("applicantName-error").textContent = "";
+                return true;
+            }
+        }
+
+
         //validate the customer Id length
         document.getElementById("CustomerId").addEventListener("input", function () {
+            event.preventDefault();
             var input = this.value;
             if (input.length !== 10) {
                 this.setCustomValidity("Customer ID must be exactly 10 digits.");

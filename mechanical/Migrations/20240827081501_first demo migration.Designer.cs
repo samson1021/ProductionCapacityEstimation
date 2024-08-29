@@ -12,8 +12,8 @@ using mechanical.Data;
 namespace mechanical.Migrations
 {
     [DbContext(typeof(CbeContext))]
-    [Migration("20240817092210_NewPP")]
-    partial class NewPP
+    [Migration("20240827081501_first demo migration")]
+    partial class firstdemomigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -802,6 +802,10 @@ namespace mechanical.Migrations
                     b.Property<double>("NetEstimationValue")
                         .HasColumnType("float");
 
+                    b.Property<string>("NoOfProductionLine")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OtherTechSpec")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -822,6 +826,10 @@ namespace mechanical.Migrations
 
                     b.Property<double>("ReplacementCost")
                         .HasColumnType("float");
+
+                    b.Property<string>("ScaleOfOperation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SerialNo")
                         .IsRequired()
@@ -1110,7 +1118,7 @@ namespace mechanical.Migrations
                     b.HasIndex("PCEEId")
                         .IsUnique();
 
-                    b.ToTable("DateTimeRanges");
+                    b.ToTable("DateTimeRange");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
@@ -1473,30 +1481,7 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionCapacities");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductionCapacityId");
-
-                    b.ToTable("ProductionCapacityReestimations");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapcityCorrection", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityCorrection", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1534,6 +1519,29 @@ namespace mechanical.Migrations
                     b.HasIndex("CommentedByUserIdsId");
 
                     b.ToTable("ProductionCapacityCorrections");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityId");
+
+                    b.ToTable("ProductionCapacityReestimations");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
@@ -1612,10 +1620,7 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProductionCapacityId")
+                    b.Property<Guid>("ProductionCapacityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
@@ -1673,7 +1678,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("PCEEId");
 
-                    b.ToTable("TimeIntervals");
+                    b.ToTable("TimeInterval");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
@@ -2042,6 +2047,15 @@ namespace mechanical.Migrations
                     b.Navigation("PCECase");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityCorrection", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
+                        .WithMany()
+                        .HasForeignKey("CommentedByUserIdsId");
+
+                    b.Navigation("CommentedByUserIds");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
@@ -2051,15 +2065,6 @@ namespace mechanical.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductionCapacity");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapcityCorrection", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
-                        .WithMany()
-                        .HasForeignKey("CommentedByUserIdsId");
-
-                    b.Navigation("CommentedByUserIds");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
@@ -2104,7 +2109,9 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
                         .WithMany()
-                        .HasForeignKey("ProductionCapacityId");
+                        .HasForeignKey("ProductionCapacityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ProductionCapacity");
                 });

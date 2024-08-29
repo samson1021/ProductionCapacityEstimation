@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿﻿using AutoMapper;
 using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Dto.CaseAssignmentDto;
@@ -320,19 +320,20 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                     caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {collateral.Type}. <br>";
 
                 }
-                var caseReEvaluation = new CollateralReestimation
+                var caseReEstimation = new ProductionReestimation
                 {
-                    CollateralId = collateralId,
+                    ProductionCapacityId = collateralId,
                     Reason = ReestimationReason,
                     CreatedAt = DateTime.Now,
                 };
-                await _cbeContext.CollateralReestimations.AddAsync(caseReEvaluation);
+                await _cbeContext.ProductionReestimations.AddAsync(caseReEstimation);
                 await _cbeContext.SaveChangesAsync();
             }
             if (caseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(caseTimeLinePostDto);
             return caseAssignments;
         }
-    
+
+
 
 
         public async Task<List<ProductionCaseAssignmentDto>> SendProductionForValuation(string selectedProductionIds, string CenterId) 

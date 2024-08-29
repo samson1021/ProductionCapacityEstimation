@@ -100,9 +100,64 @@
                     </div>
                 </div>
 
-    @*                 Production capacity case
-    *@
-                @*<div class="row">
+  
+                <div class="row">
+                    <div class="card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Latest Cases</h3>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Case No</th>
+                                            <th>Creation Date</th>
+                                            <th>Applicant Name</th>
+                                            <th>Customer Id</th>
+                                            <th>Collateral</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td><a href="@Url.Action("Detail", "Case")?Id=@item.Id">@item.CaseNo</a></td>
+                                                <td>@item.CreationAt</td>
+                                                <td>@item.ApplicantName</td>
+                                                <td>@item.CustomerId</td>
+                                                <td>@item.NoOfCollateral</td>
+                                                <td>
+                                                    @if (item.Status == "New")
+                                                    {
+                                                        <span class="badge badge-success">New</span>
+                                                    }
+                                                    else if (item.Status == "Pending")
+                                                    {
+                                                        <span class="badge badge-warning">Pending</span>
+                                                    }
+                                                    else if (item.Status == "Complete")
+                                                    {
+                                                        <span class="badge badge-purple">Complete</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+          @*  Production capacity case   *@
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                <div class="row">
                     <div class="col flex-grow-1">
                         <div class="card bg-c-green update-card">
                             <div class="card-block">
@@ -148,7 +203,7 @@
                         </div>
                     </div>
                     <div class="col flex-grow-1">
-                        <div class="card bg-success update-card">
+                        <div class="card bg-c-pink update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
@@ -164,28 +219,6 @@
                             </div>
                             <div class="card-footer text-center">
                                 <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col flex-grow-1">
-                        <div class="card bg-c-pink update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="resubmittedPCECasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">Resubmitted PCE Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1> <i class="fas fas-solid fa-undo"></i></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "Resubmitted" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -213,8 +246,8 @@
                             </div>
                         </div>
                     </div>
-                </div>*@
-                
+                </div>
+                  @* 
                 <div class="row">
                     <div class="col flex-grow-1">
                         <div class="card bg-c-green update-card">
@@ -260,7 +293,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col flex-grow-1">
+                  <div class="col flex-grow-1">
                         <div class="card bg-success update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -305,6 +338,28 @@
                         </div>
                     </div>
                     <div class="col flex-grow-1">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="completedPCEsCount">-</h4>
+                                        <h6 class="text-white m-b-0">Completed PCEs</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h2> <i class="fas fas-solid fa-undo"></i></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col flex-grow-1">
                         <div class="card bg-c-blue update-card">
                             <div class="card-block">
                                 <div class="row align-items-end">
@@ -327,73 +382,44 @@
                         </div>
                     </div>
                 </div>
-
-
-@* @* Production Estimation Capacity Estimation *@ 
-
-
+                 *@
 
                 <div class="row">
                     <div class="card">
                         <div class="card-header border-transparent">
-                            <h3 class="card-title">Latest Case</h3>
+                            <h3 class="card-title">Latest PCECases</h3>
                         </div>
-
+                                   
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table m-0">
+                                <table id="MyPCECasesDatatable" class="table table-bordered table-striped m-0">
                                     <thead>
                                         <tr>
                                             <th>Case No</th>
                                             <th>Creation Date</th>
                                             <th>Applicant Name</th>
                                             <th>Customer Id</th>
-                                            <th>Collateral</th>
+                                            <th>New PCEs</th>
+                                            <th>Total PCEs</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        @foreach (var item in Model)
-                                        {
-                                            <tr>
-                                                <td><a href="@Url.Action("Detail", "Case")?Id=@item.Id">@item.CaseNo</a></td>
-                                                <td>@item.CreationAt</td>
-                                                <td>@item.ApplicantName</td>
-                                                <td>@item.CustomerId</td>
-                                                <td>@item.NoOfCollateral</td>
-                                                <td>
-                                                    @if (item.Status == "New")
-                                                    {
-                                                        <span class="badge badge-success">New</span>
-                                                    }
-                                                    else if (item.Status == "Pending")
-                                                    {
-                                                        <span class="badge badge-warning">Pending</span>
-                                                    }
-                                                    else if (item.Status == "Complete")
-                                                    {
-                                                        <span class="badge badge-purple">Complete</span>
-                                                    }
-                                                </td>
-                                            </tr>
-
-
-                                        }
-                                    </tbody>
                                 </table>
                             </div>
-
                         </div>
-
-                        
-
                     </div>
                 </div>
-            </div>
+            </div>  
         </div>
-        </div>
+        @* Production Estimation Capacity Estimation *@ 
+    </div>
 </section>
+
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
+    }
+        
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetDashboardCaseCount")
@@ -483,9 +509,71 @@
                 element.textContent = `${currentCount} (${collateralCount})`;
             }, 20);
         }
-
-
-
     </script>
-}
 
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "/PCEEvaluation/GetMyPCECases",
+                // url: "/PCEEvaluation/GetMyPCECases?Status=All",
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var columns = [
+                        { data: 'CaseNo', width: '10%' },
+                        {
+                            data: 'CreationDate',
+                            width: '15%',
+                            render: function (data) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        { data: 'ApplicantName', width: '15%' },
+                        { data: 'CustomerUserId', width: '15%' },
+                        { data: 'NoOfCollateral', width: '10%' },
+                        { data: 'TotalNoOfCollateral', width: '10%' },
+                        {
+                            data: 'CurrentStatus',
+                            width: '10%',
+                            render: function (data) {
+                                var statusHtml = '';
+                                if (data === "New") {
+                                    statusHtml = '<span class="badge badge-success">New</span>';
+                                } else if (data === "Pending") {
+                                    statusHtml = '<span class="badge badge-warning">Pending</span>';
+                                } else if (data === "Rejected") {
+                                    statusHtml = '<span class="badge badge-danger">Returned</span>';
+                                } else if (data === "Completed") {
+                                    statusHtml = '<span class="badge badge-purple">Completed</span>';
+                                }
+                                return statusHtml;
+                            }
+                        },
+                    ];
+
+                    $('#MyPCECasesDatatable').DataTable({
+                        language: {
+                            emptyTable: "There are no new PCE Cases",
+                            info: "",
+                        },
+                        responsive: true,
+                        pageLength: 10,
+                        paging: false,
+                        lengthChange: false,
+                        autoWidth: false,
+                        searching: false,
+                        ordering: false, 
+                        data: data,
+                        columns: columns,
+                        order: [[1, 'desc']],
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error: " + status + " - " + error);
+                }
+            });
+        });
+    </script>
+
+}

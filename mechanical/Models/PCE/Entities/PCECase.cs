@@ -1,4 +1,5 @@
 ﻿using mechanical.Models.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace mechanical.Models.PCE.Entities
 {
@@ -6,7 +7,9 @@ namespace mechanical.Models.PCE.Entities
     {
         public Guid Id { get; set; }
         public required string CaseNo { get; set; }
-        public required string ApplicantName { get; set; }
+        [Required]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Only letters and spaces are allowed.")]
+        public string ApplicantName { get; set; }
         public string CustomerUserId { get; set; } = string.Empty;
         public string CustomerEmail { get; set; } = string.Empty;
         public Guid DistrictId { get; set; }
@@ -19,8 +22,7 @@ namespace mechanical.Models.PCE.Entities
         public required Guid RMUserId { get; set; }
         public virtual District? District { get; set; }
         public virtual CreateUser? RMUser { get; set; }
-        public virtual UploadFile? BussinessLicence { get; set; }
-        //public virtual ICollection<PlantCapacityEstimation>? PCECollaterals { get; set; }
+        public virtual UploadFile? BussinessLicence { get; set; }       
         public virtual ICollection<ProductionCapacity>? ProductionCapacities { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.PCE.Entities
+﻿﻿@using mechanical.Models.PCE.Entities
 @using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
@@ -33,74 +33,6 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-info center">General Information</h3>
-            </div>
-            <div class="card-body">                    
-                <div class="row">
-                    <div class="container col-12">
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Manufacturing Catagory:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.Category</div>
-                                </div>
-                            </div>
-
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label> Manufacture Year:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.ManufactureYear</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Region:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.Region</div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Model Number:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.ModelNo</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Production Type:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.ProductionType</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Bussiness Licence:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.ProductionBussinessLicence</div>
-                                </div>
-                            </div>
-
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
                 <h3 class="card-title text-success text-center">Valuation Result</h3>
             </div>
             <div class="card-body">
@@ -109,8 +41,8 @@
                     {
                         <div class="row">
                             @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
-                        </div>  
-                        @if (Model.EvaluatorUserID == CurrentUser.Id && Model.CurrentStage == "Maker Officer")
+                        </div>
+                        @if (Model.EvaluatorUserID == CurrentUser.Id || Model.CurrentStage == "Maker Officer")
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {
@@ -139,32 +71,7 @@
                                     </div>
                                 </div>
                             }
-                        } 
-
-                        <div class="row mt-3 mb-2">
-                                    <div class="col-12 d-flex justify-content-around">
-                                        <div id="update-btn-container">
-                                            <a href="@Url.Action("Update", "PCEEvaluation", new { Id = @LatestEvaluation.Id })" id="update-btn" class="btn btn-md btn-info">
-                                                <i class="fas fa-pen mr-2"></i> Update
-                                            </a>
-                                        </div>
-                                        <div id="delete-btn-container">
-                                            <a href="@Url.Action("Delete", "PCEEvaluation", new { Id = @LatestEvaluation.Id })" id="delete-btn" class="btn btn-md btn-dark">
-                                                <i class="fas fa-trash-alt mr-2"></i> Delete
-                                            </a>
-                                        </div>
-                                        <div id="reject-btn-container">
-                                            <button id="reject-btn" type="button" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1">
-                                                <i class="fas fa-undo mr-2"></i> Return
-                                            </button>
-                                        </div>
-                                        <div id="evaluate-btn-container">
-                                            <a href="@Url.Action("Evaluate", "PCEEvaluation", new { Id = @LatestEvaluation.Id })" id="evaluate-btn" class="btn btn-md btn-success">
-                                                <i class="fas fa-paper-plane mr-2"></i> Complete
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                        }                       
                     }
                     else
                     {

@@ -2,7 +2,7 @@
 
 namespace mechanical.Models.PCE.Entities
 {
-    public class ProductionCapcityCorrection
+    public class ProductionCapacityCorrection
     {
         public Guid Id { get; set; }
         public Guid PCECaseId { get; set; } = Guid.Empty;

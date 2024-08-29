@@ -1,10 +1,10 @@
-﻿using mechanical.Data;
+﻿﻿using mechanical.Data;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
-
+using mechanical.Services.UploadFileService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -21,13 +21,16 @@ namespace mechanical.Controllers.PCE
         private readonly ILogger<PCECaseController> _logger;
         private readonly IPCECaseService _iPCECaseService;
         private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
+        private readonly IUploadFileService _uploadFileService;
 
 
-        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices , IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _PCECaseService = ipCECaseService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
+            _uploadFileService = uploadFileService;
+
         }
 
 
@@ -62,7 +65,25 @@ namespace mechanical.Controllers.PCE
             var newCases = await _PCECaseService.GetPCENewCases(base.GetCurrentUserId());
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
-        
+
+        [HttpGet]
+        public IActionResult PCECasesReport()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPCECasesReport()
+        {
+            var newCases = await _PCECaseService.GetPCECasesReport(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
+
+        public async Task<IActionResult> PCECaseDetailReport(Guid id)
+        {
+            var pcecaseDto = _PCECaseService.GetPCECaseDetailReport(base.GetCurrentUserId(), id);
+            //ViewData["pcecaseDtos"] = pcecaseDto;
+            return View(pcecaseDto);
+        }
 
         [HttpGet]
         public IActionResult PCEPendingCases()
@@ -164,10 +185,6 @@ namespace mechanical.Controllers.PCE
             }
             return View();
         }
-
-
-
-
 
         [HttpGet]
         public IActionResult GetByApplicantName(string applicantName)
@@ -286,7 +303,22 @@ namespace mechanical.Controllers.PCE
             }
         }
 
-
+        [HttpPost]
+        public async Task<IActionResult> SendProductionForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
+        {
+            var userId = base.GetCurrentUserId();
+            try
+            {
+                await _productionCaseAssignmentServices.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                var response = new { message = "PCE Reestimation assigned successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var error = new { message = ex.Message };
+                return BadRequest(error);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> PCEPendingDetail(Guid id)
@@ -310,7 +342,24 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> PCEReport(Guid Id)
         {
             var pceReportData = await _PCECaseService.GetPCEReportData(Id);
+            var file = await _uploadFileService.GetUploadFileByCollateralId(Id);
+            ViewData["productionFiles"] = file;
 
+            ViewData["pceCase"] = pceReportData.PCESCase;
+            ViewData["productions"] = pceReportData.Productions;
+            ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;
+            ViewData["pceCaseSchedule"] = pceReportData.PCECaseSchedule;
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PCEAllReport(Guid Id)
+        {
+            var pceReportData = await _PCECaseService.GetPCEAllReportData(Id);
+            var file = await _uploadFileService.GetAllUploadFileByCaseId(Id);
+            ViewData["productionFiles"] = file;
+             
             ViewData["pceCase"] = pceReportData.PCESCase;
             ViewData["productions"] = pceReportData.Productions;
             ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;

@@ -320,13 +320,13 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-        // [HttpGet]
-        // public async Task<IActionResult> GetMyDashboardPCECaseCount()
-        // {
-        //     var pcecase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
-        //     string jsonData = JsonConvert.SerializeObject(pcecase);
-        //     return Content(jsonData, "application/json");
-        // }
+        [HttpGet]
+        public async Task<IActionResult> GetMyDashboardPCECaseCount()
+        {
+            var pcecase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(pcecase);
+            return Content(jsonData, "application/json");
+        }
 
         //// PCEs /////////
         [HttpGet]

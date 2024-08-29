@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.PCE.Enum.ProductionCapacityEstimation
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
 @* //@using mechanical.Models.PCE.Dto.UploadFileDto *@
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
@@ -358,7 +358,7 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("ProductionCapacityScriptPartial/_EditScriptPartial");
+        await Html.RenderPartialAsync("Partial/_EditScriptPartial");
     }
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>

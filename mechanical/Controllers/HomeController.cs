@@ -16,6 +16,8 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net.Http;
 
+using Microsoft.AspNetCore.Identity;
+
 namespace mechanical.Controllers
 {
     public class HomeController : Controller
@@ -33,8 +35,23 @@ namespace mechanical.Controllers
         }
 
        
-        public ActionResult Index()
+        public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (HttpContext.Session.GetString("userId") != null)
+                {
+                    var loggedUser = _context.CreateUsers.Include(c => c.Role).Include(c=>c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
+
+                    if (loggedUser != null)
+                    {
+                        return RedirectToDashboard(loggedUser);
+                    }
+
+                    return RedirectToAction("Logout");
+                }
+            }
+
             return View();
         }
         
@@ -48,9 +65,25 @@ namespace mechanical.Controllers
         [HttpPost]
         public IActionResult Index(CreateUser logins)
         {   
+            if (User.Identity.IsAuthenticated)
+            {
+                if (HttpContext.Session.GetString("userId") != null)
+                {
+                    var loggedUser = _context.CreateUsers.Include(c => c.Role).Include(c=>c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
+
+                    if (loggedUser != null)
+                    {
+                        return RedirectToDashboard(loggedUser);
+                    }
+
+                    return RedirectToAction("Logout");
+                }
+            }
+
             var UpperEmail = logins.Email.ToUpper();
             if (UpperEmail == null)
             {
+                ViewData["Error"] = "Enter Both User Name and Password to Login";
                 return View();
             }
 
@@ -83,14 +116,12 @@ namespace mechanical.Controllers
 
             var usersWithRoles = _context.CreateUsers.Include(c => c.Role).Include(c=>c.District).Where(c => c.Email == UpperEmail).FirstOrDefault();
             //var district = _context.Districts.FirstOrDefault(c => c.Id == id);
-            string userRole;
-            
-                 userRole = usersWithRoles.Role.Name;
+            string userRole = usersWithRoles.Role.Name;
            
             var claims = new List<Claim>
-                    {                      
-                        new Claim(ClaimTypes.Role, userRole) // Set the role for the user
-                    };
+            {                      
+                new Claim(ClaimTypes.Role, userRole) // Set the role for the user
+            };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
@@ -98,7 +129,7 @@ namespace mechanical.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30) 
             };
 
-                        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
             byte[] userId = Encoding.UTF8.GetBytes(user.Id.ToString());
             _httpContextAccessor.HttpContext.Session.Set("UserId", userId);
             HttpContext.Session.SetString("userRole", userRole);
@@ -125,51 +156,55 @@ namespace mechanical.Controllers
             else
             {
                 if (user.Password == logins.Password)
-                {   if (userRole == "Relation Manager")
-                    {
-                        Console.WriteLine("this is the viewbag result:",ViewBag.UserRole);
-                        return RedirectToAction("RM", "Dashboard",userRole);
-                    }
-                    else if ( usersWithRoles.Role.Name == "Maker Officer")
-                    {
-                        return RedirectToAction("MO", "Dashboard", userRole);
-                    }
-                    else if (usersWithRoles.Role.Name == "Maker Manager" )
-                    {
-                        ViewData["Center"] = usersWithRoles.District.Name;
+                {   
+                    return RedirectToDashboard(user);    
+                    // if (userRole == "Relation Manager")
+                    // {
+                    //     Console.WriteLine("this is the viewbag result:",ViewBag.UserRole);
+                    //     return RedirectToAction("RM", "Dashboard",userRole);
+                    // }
+                    // else if ( usersWithRoles.Role.Name == "Maker Officer")
+                    // {
+                    //     return RedirectToAction("MO", "Dashboard", userRole);
+                    // }
+                    // else if (usersWithRoles.Role.Name == "Maker Manager" )
+                    // {
+                    //     ViewData["Center"] = usersWithRoles.District.Name;
 
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else if (usersWithRoles.Role.Name == "Maker TeamLeader")
-                    {
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else if(usersWithRoles.Role.Name == "Admin")
-                    {
-                        return RedirectToAction("Index", "UserManagment");
-                    }
-                    else if (usersWithRoles.Role.Name == "Checker TeamLeader")
-                    {
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else if (usersWithRoles.Role.Name == "Checker Manager")
-                    {
-                        ViewData["Center"] = usersWithRoles.District.Name;
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else if (usersWithRoles.Role.Name == "Checker Officer")
-                    {
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else if(usersWithRoles.Role.Name == "District Valuation Manager"){
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else if (usersWithRoles.Role.Name == "District Valuation Manager")
-                    {
-                        return RedirectToAction("MM", "Dashboard", userRole);
-                    }
-                    else{
-                        return RedirectToAction("HO", "Dashboard", userRole); }
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else if (usersWithRoles.Role.Name == "Maker TeamLeader")
+                    // {
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else if(usersWithRoles.Role.Name == "Admin")
+                    // {
+                    //     return RedirectToAction("Index", "UserManagment");
+                    // }
+                    // else if (usersWithRoles.Role.Name == "Checker TeamLeader")
+                    // {
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else if (usersWithRoles.Role.Name == "Checker Manager")
+                    // {
+                    //     ViewData["Center"] = usersWithRoles.District.Name;
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else if (usersWithRoles.Role.Name == "Checker Officer")
+                    // {
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else if(usersWithRoles.Role.Name == "District Valuation Manager"){
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else if (usersWithRoles.Role.Name == "District Valuation Manager")
+                    // {
+                    //     return RedirectToAction("MM", "Dashboard", userRole);
+                    // }
+                    // else
+                    // {
+                    //     return RedirectToAction("HO", "Dashboard", userRole); 
+                    // }
                 }
                 else
                 {
@@ -179,6 +214,54 @@ namespace mechanical.Controllers
                     return View("Index", logins);
                 }
             }
+        }
+
+        // [Authorize]
+        // [HttpGet("logout")]
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+
+            // await HttpContext.SignOutAsync();
+            // return Ok();
+        }
+
+       
+        public IActionResult RedirectToDashboard(CreateUser user)
+        {   
+            if (user != null)
+            {
+                switch (user.Role.Name)
+                {
+                    case "Relation Manager":
+                        return RedirectToAction("RM", "Dashboard", user.Role.Name);
+                    case "Maker Officer":
+                        return RedirectToAction("MO", "Dashboard", user.Role.Name);
+                    case "Maker Manager":
+                        ViewData["Center"] = user.District.Name;
+                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                    case "Maker TeamLeader":
+                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                    case "Admin":
+                        return RedirectToAction("Index", "UserManagment");
+                    case "Checker TeamLeader":
+                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                    case "Checker Manager":
+                        ViewData["Center"] = user.District.Name;
+                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                    case "Checker Officer":
+                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                    case "District Valuation Manager":
+                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                    default:
+                        return RedirectToAction("HO", "Dashboard", user.Role.Name);
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

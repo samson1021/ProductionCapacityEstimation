@@ -14,13 +14,13 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>PCE Case Detail</h4>
+                <h4>PCE Complete Case Detail</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("PCENewCases", "PCECase")">My PCE Case</a></li>
-                    <li class="breadcrumb-item active">PCE Case Detail</li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECompleteCases", "PCECase")">My PCE Complete Case</a></li>
+                    <li class="breadcrumb-item active">PCE Complete Case Detail</li>
                 </ol>
             </div>
         </div>
@@ -68,6 +68,7 @@
         </div>
     </div>
 </section>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("Partial/_PCECompleteCaseDatatableSriptsPartial");

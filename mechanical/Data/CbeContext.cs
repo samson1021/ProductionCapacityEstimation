@@ -16,6 +16,15 @@ namespace mechanical.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            modelBuilder.Entity<PCEEvaluation>()
+                .Property(e => e.DepreciationRateApplied)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<PCEEvaluation>()
+                .Property(e => e.EffectiveProductionHour)
+                .HasColumnType("decimal(18,2)");
+
+
             modelBuilder.Entity<Signatures>()
                 .HasOne(c => c.SignatureFile)
                 .WithOne()
@@ -34,16 +43,6 @@ namespace mechanical.Data
  
             base.OnModelCreating(modelBuilder);
             
-            // modelBuilder.Entity<TimeInterval>()
-            //     .HasOne<PCEEvaluation>()
-            //     .WithMany(pc => pc.ShiftHours)
-            //     .HasForeignKey(ti => ti.PCEEId);
-
-            // modelBuilder.Entity<DateTimeRange>()
-            //     .HasOne<PCEEvaluation>()
-            //     .WithOne(pc => pc.TimeConsumedToCheck)
-            //     .HasForeignKey<DateTimeRange>(dt => dt.PCEEId); 
-
             modelBuilder.Entity<PCEEvaluation>()
                 .HasMany(e => e.ShiftHours)
                 .WithOne()
@@ -77,8 +76,6 @@ namespace mechanical.Data
         public DbSet<DateTimeRange> DateTimeRanges { get; set; }
         // public DbSet<DateRange> DateRanges { get; set; }
         ///////
-       // public DbSet<PlantCapacityEstimation> PlantCapacityEstimations { get; set; }
-
 
         // Manufacture
         public DbSet<ProductionCapacity> ProductionCapacities { get; set; }     
@@ -86,14 +83,12 @@ namespace mechanical.Data
         public DbSet<ProductionReject> ProductionRejects { get; set; }
         public DbSet<ProductionCaseAssignment> ProductionCaseAssignments { get; set; }
         public DbSet<ProductionCapacityReestimation> ProductionCapacityReestimations { get; set; }
-        public DbSet<ProductionCapcityCorrection> ProductionCapacityCorrections { get; set; }
+        public DbSet<ProductionCapacityCorrection> ProductionCapacityCorrections { get; set; }
         public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
-    
+        
 
         public DbSet<Case> Cases { get; set; }
-
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
-
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }
         public DbSet<CaseTimeLine> CaseTimeLines { get; set; }
         public DbSet<CaseComment> CaseComments { get; set; }
