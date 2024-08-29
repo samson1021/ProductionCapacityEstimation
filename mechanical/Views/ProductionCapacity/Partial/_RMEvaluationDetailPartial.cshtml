@@ -50,18 +50,18 @@
                     <tbody>
                         @foreach (var shift in Model.ShiftHours)
                         {
-                            
+
                             var startTime = new DateTime(1, 1, 1, shift.Start.Hours, shift.Start.Minutes, shift.Start.Seconds);
                             var endTime = new DateTime(1, 1, 1, shift.End.Hours, shift.End.Minutes, shift.End.Seconds);
-                        
+
                             <tr>
                                 <td>@startTime.ToString("hh:mm tt")</td>
                                 <td>@endTime.ToString("hh:mm tt")</td>
                             </tr>
                             @* <tr>
-                                <td>@shift.Start.ToString(@"h\:mm")</td>
-                                <td>@shift.End.ToString(@"h\:mm")</td>
-                            </tr> *@
+                    <td>@shift.Start.ToString(@"h\:mm")</td>
+                    <td>@shift.End.ToString(@"h\:mm")</td>
+                    </tr> *@
                         }
                     </tbody>
                 </table>
@@ -72,7 +72,7 @@
             }
         </div>
     </div>
-    
+
     <!-- Inspection Information -->
     <div class="card bg-light">
         <div class="card-header text-white">
@@ -212,9 +212,9 @@
                     <th>File Name</th>
                     <th>Actions</th>
                 </tr>
-            </thead>                         
+            </thead>
             <tbody>
-            
+
                 @{
                     if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
                     {

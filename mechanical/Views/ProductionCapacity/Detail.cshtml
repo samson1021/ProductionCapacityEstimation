@@ -22,7 +22,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Production Capacity Estimation Detail</h4>
+                <h4>PCE Request Detail</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -65,7 +65,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-remark-tab" data-toggle="pill" href="#custom-tabs-four-remark" role="tab" aria-controls="custom-tabs-four-remark" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Remark</a>
-                    </li>           
+                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -89,7 +89,7 @@
                         <h6>there is no checker unit comment</h6>
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                                @await Html.PartialAsync("_PreviousValuation")
+                        @await Html.PartialAsync("_PreviousValuation")
                     </div>
 
                     <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
@@ -103,7 +103,9 @@
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("Partial/_PrevousValuationDatatableScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
 
 }

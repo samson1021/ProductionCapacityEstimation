@@ -16,6 +16,7 @@ using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.PCE.Enum.ProductionCapacity;
 using mechanical.Services.PCE.PCEEvaluationService;
+using DocumentFormat.OpenXml.Bibliography;
 
 
 namespace mechanical.Controllers
@@ -26,17 +27,18 @@ namespace mechanical.Controllers
         private readonly IProductionCapacityServices _productionCapacityServices;
         private readonly ILogger<ProductionCapacityController> _logger;
         private readonly CbeContext _cbeContext;
-       
-        private readonly IUploadFileService _uploadFileService; 
+
+        private readonly IUploadFileService _uploadFileService;
         private readonly IPCEEvaluationService _PCEEvaluationService;
 
-        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IPCEEvaluationService PCEEvaluationService,IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+
+        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
+            _PCEEvaluationService = PCEEvaluationService;
             _pCECaseService = pCECaseService;
-            _uploadFileService = uploadFileService;  
-            _PCEEvaluationService = PCEEvaluationService;       
+            _uploadFileService = uploadFileService;
         }
 
         public IActionResult Index()
@@ -57,9 +59,9 @@ namespace mechanical.Controllers
             }
             return BadRequest();
 
-        }        
+        }
         [HttpPost]
-       // [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
         {
             if (ModelState.IsValid)
@@ -120,13 +122,13 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
-          
+
 
             if (PcevalutionDto != null)
             {
                 ViewData["PcevalutionDto"] = PcevalutionDto;
             }
-           if (response.ProductionType=="Manufacturing")
+            if (response.ProductionType == "Manufacturing")
             {
                 var Production = await _productionCapacityServices.GetManufuctringProductionCapacityEvalutionById(id);
                 ViewData["Mavaluation"] = Production;
@@ -149,14 +151,14 @@ namespace mechanical.Controllers
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
 
-            
             var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), id);
             ViewData["CurrentUser"] = pceDetail.CurrentUser;
             ViewData["PCE"] = pceDetail.ProductionCapacity;
             ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
 
+
             return View(response);
-            
+
         }
 
 
@@ -200,7 +202,7 @@ namespace mechanical.Controllers
             var production = await _productionCapacityServices.GetRmRejectedProductions(base.GetCurrentUserId(), PCECaseId);
             string jsonData = JsonConvert.SerializeObject(production);
             return Content(jsonData, "application/json");
-        }        
+        }
         ///////////
 
         [HttpGet]
@@ -287,15 +289,15 @@ namespace mechanical.Controllers
         public async Task<ActionResult> UploadProductionFile(IFormFile BussinessLicence, Guid caseId, string DocumentCatagory)
         {
 
-           
+
             if (await _productionCapacityServices.UploadProductionFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCatagory))
             {
                 return Ok();
             }
             return BadRequest();
-           
+
         }
-       
+
         [HttpPost]
         public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
         {

@@ -303,7 +303,22 @@ namespace mechanical.Controllers.PCE
             }
         }
 
-
+        [HttpPost]
+        public async Task<IActionResult> SendProductionForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
+        {
+            var userId = base.GetCurrentUserId();
+            try
+            {
+                await _productionCaseAssignmentServices.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                var response = new { message = "PCE Reestimation assigned successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var error = new { message = ex.Message };
+                return BadRequest(error);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> PCEPendingDetail(Guid id)
