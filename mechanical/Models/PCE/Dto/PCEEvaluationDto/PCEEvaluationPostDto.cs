@@ -31,7 +31,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-        public List<TimeIntervalDto>? ShiftHours { get; set; } = new List<TimeIntervalDto>();
+        public virtual List<TimeIntervalPostDto>? ShiftHours { get; set; } = new List<TimeIntervalPostDto>();
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -58,7 +58,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string OverallActualCurrentPlantCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
-        public DateTimeRangeDto TimeConsumedToCheck { get; set; }
+        public virtual DateTimeRangePostDto TimeConsumedToCheck { get; set; }
 
         [Display(Name = "Technical Obsolescence Status")]
         public string TechnicalObsolescenceStatus { get; set; }
@@ -106,10 +106,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public ICollection<IFormFile> ProductionProcessFlowDiagrams { get; set; }  
     }
 
-    public class TimeIntervalDto
+    public class TimeIntervalPostDto
     {
-        [Key]
-        public Guid Id { get; set; }
         public Guid PCEEId { get; set; } 
 
         [Display(Name = "Start Time")]
@@ -119,10 +117,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public TimeSpan End { get; set; }
     }
 
-    public class DateTimeRangeDto
+    public class DateTimeRangePostDto
     {
-        [Key]
-        public Guid Id { get; set; }
         public Guid PCEEId { get; set; }
 
         [Display(Name = "Start DateTime")]
@@ -133,18 +129,4 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime End { get; set; }
     }
-
-
-    // public class DateRangeDto
-    // {
-    //     [Key]
-    //     public Guid Id { get; set; }
-    //     public Guid PCEEId { get; set; }
-
-    //     [Display(Name = "Start Date")]
-    //     public DateOnly Start { get; set; }
-
-    //     [Display(Name = "End Date")]
-    //     public DateOnly End { get; set; }
-    // }
 }

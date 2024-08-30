@@ -1112,7 +1112,10 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DateTimeRange");
+                    b.HasIndex("PCEEId")
+                        .IsUnique();
+
+                    b.ToTable("DateTimeRanges");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
@@ -1310,9 +1313,6 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TimeConsumedToCheckId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -1327,8 +1327,6 @@ namespace mechanical.Migrations
                     b.HasIndex("EvaluatorId");
 
                     b.HasIndex("PCEId");
-
-                    b.HasIndex("TimeConsumedToCheckId");
 
                     b.ToTable("PCEEvaluations");
                 });
@@ -1480,30 +1478,7 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionCapacities");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductionCapacityId");
-
-                    b.ToTable("ProductionCapacityReestimations");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapcityCorrection", b =>
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityCorrection", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1540,7 +1515,30 @@ namespace mechanical.Migrations
 
                     b.HasIndex("CommentedByUserIdsId");
 
-                    b.ToTable("ProductionCapcityCorrections");
+                    b.ToTable("ProductionCapacityCorrections");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityId");
+
+                    b.ToTable("ProductionCapacityReestimations");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
@@ -1619,10 +1617,7 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProductionCapacityId")
+                    b.Property<Guid>("ProductionCapacityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
@@ -1680,7 +1675,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("PCEEId");
 
-                    b.ToTable("TimeInterval");
+                    b.ToTable("TimeIntervals");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>
@@ -1962,6 +1957,15 @@ namespace mechanical.Migrations
                     b.Navigation("SignatureFile");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.DateTimeRange", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCEEvaluation", null)
+                        .WithOne("TimeConsumedToCheck")
+                        .HasForeignKey("mechanical.Models.PCE.Entities.DateTimeRange", "PCEEId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
@@ -2018,17 +2022,9 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mechanical.Models.PCE.Entities.DateTimeRange", "TimeConsumedToCheck")
-                        .WithMany()
-                        .HasForeignKey("TimeConsumedToCheckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Evaluator");
 
                     b.Navigation("PCE");
-
-                    b.Navigation("TimeConsumedToCheck");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacity", b =>
@@ -2048,6 +2044,15 @@ namespace mechanical.Migrations
                     b.Navigation("PCECase");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityCorrection", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
+                        .WithMany()
+                        .HasForeignKey("CommentedByUserIdsId");
+
+                    b.Navigation("CommentedByUserIds");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityReestimation", b =>
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
@@ -2057,15 +2062,6 @@ namespace mechanical.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductionCapacity");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapcityCorrection", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
-                        .WithMany()
-                        .HasForeignKey("CommentedByUserIdsId");
-
-                    b.Navigation("CommentedByUserIds");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
@@ -2110,7 +2106,9 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
                         .WithMany()
-                        .HasForeignKey("ProductionCapacityId");
+                        .HasForeignKey("ProductionCapacityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ProductionCapacity");
                 });
@@ -2137,6 +2135,9 @@ namespace mechanical.Migrations
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCEEvaluation", b =>
                 {
                     b.Navigation("ShiftHours");
+
+                    b.Navigation("TimeConsumedToCheck")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

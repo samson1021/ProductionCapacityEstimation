@@ -1,0 +1,64 @@
+﻿﻿@using mechanical.Models.PCE.Entities
+@using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
+
+@{
+    var LatestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+    var Reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
+
+    ViewData["Title"] = ViewBag.Title as string;   
+}
+
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+         
+        @{
+            if (Reestimation != null)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title text-warning">Reason for Reestimation</h3>
+                    </div>
+                    <div class="card-body">                              
+                        <div>
+                            @Reestimation.Reason
+                        </div>                         
+                    </div>
+                </div>
+            }
+        }    
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-success text-center">Valuation Result</h3>
+            </div>
+            <div class="card-body">
+                @{
+                    if (LatestEvaluation != null)
+                    {
+                        <div class="row">
+                            @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
+                        </div>                                             
+                    }
+                    else
+                    {
+                        <div>
+                            <h6 class="text-center">
+                                Not evaluated yet.                            
+                    
+                                @* @if (Model.EvaluatorUserID == CurrentUser.Id && Model.CurrentStage == "Maker Officer")
+                                { *@
+                                        <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>
+                                @* } *@  
+                            </h6>                           
+                        </div>
+                    }                    
+                }
+                 
+            </div>          
+        </div>   
+    </section>           
+</section>

@@ -2,7 +2,7 @@
     var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCEs found";
     var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status;
-    var PCECaseId = ViewData["PCECaseId"] as Guid?;
+    var PCECaseId = ViewData["PCECaseId"] as Guid?; 
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
@@ -45,12 +45,22 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var detailUrl = '@Url.Action("Detail", "ProductionCapcity")';
-                            return '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data +
-                                '">Evaluation</a> | ' + '<a href="' + detailUrl + '?Id=' + data +
-                                '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
-                                '\')">Return</a>';
-
+                            
+                            var evaluateLink = '';
+                            var returnLink = '';
+                            if (row.CurrentStatus === "New"|| row.CurrentStatus === "Reestimate") {
+                                if (row.CurrentStatus === "Reestimate") {
+                                    evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Reestimate </a> | ';                                                              
+                                } else {
+                                    evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Evaluate </a> | ';
+                                }         
+                                returnLink = ' | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>';   
+                            } else if (row.CurrentStatus === "Pending") {                               
+                                    // evaluateLink = '<a href="@Url.Action("Evaluate", "PCEEvaluation")?Id=' + data + '"> Complete </a> | ';
+                                    returnLink = ' | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>';
+                            } 
+                            
+                            return evaluateLink + '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
                         }
                     }
                 ]

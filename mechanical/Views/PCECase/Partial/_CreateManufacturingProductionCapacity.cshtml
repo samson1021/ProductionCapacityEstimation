@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Enum.ProductionCapcityEstimation
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @* @model mechanical.Models.Dto.CollateralDto.CollateralPostDto; *@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
@@ -15,17 +15,17 @@
                     <div class="btn-group">
 
                         <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Estimate Manufacturing Production Capacity
+                            <i class="fas fa-plus-circle"></i> Manufacturing Production Capacity Estimation Request
                         </button>
                         </button>
-                        <button id="EstimatePlaneCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#EstimatePlaneCollateralModal">
+                        @* <button id="EstimatePlaneCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#EstimatePlaneCollateralModal">
                             <i class="fas fa-plus-circle"></i> Estimate Plant Production Capacity
                         </button>
 
-                        <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
+                        <button  type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" >
                             <i class="fas fa-plus-circle"></i> Add any other
-                        </button>
-                        <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = "88" })">
+                        </button>*@
+                        <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "PCECaseTimeLine", new { CaseId = @myCase.Id })">
                             <i class="nav-icon fas fa-sitemap"></i>
                         </a>
                     </div>
@@ -52,7 +52,7 @@
         <div class="row">
             <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
             <div class="row">
-                <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
+                <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Send for Estimation   <i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
@@ -79,12 +79,12 @@
     </div>
 </div>
 
-@await Html.PartialAsync("Partial/_PCECreateCollateral")
-@* @await Html.PartialAsync("CreateCivilCollateral") *@
+@* @await Html.PartialAsync("Partial/_PCECreateCollateral")
+@* @await Html.PartialAsync("CreateCivilCollateral") *@ 
 <script>
-    const addMechanicalCollateralButton = document.getElementById("EstimatePlaneCollateralButton");
-    // const addCivilCollateralButton = document.getElementById("addCivilCollateralButton");
-    const myCaseId = "@myCase.Id";
+    // const addMechanicalCollateralButton = document.getElementById("EstimatePlaneCollateralButton");
+    // // const addCivilCollateralButton = document.getElementById("addCivilCollateralButton");
+    // const myCaseId = "@myCase.Id";
 
     addAgricultureCollateralButton.addEventListener("click", function () {
         $('#EstimatePlaneCollateralButton').modal('show');
@@ -103,8 +103,10 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            @using (Html.BeginForm("Create", "ProductionCapcity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
+            @using (Html.BeginForm("Create", "ProductionCapacity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
             {
+            @* @using (Html.BeginForm("Create", "ProductionCapcity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
+            { *@
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
                          <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" /> 
@@ -149,18 +151,18 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="Category"> Manufacturing Main Sector <i class="text-danger">*</i></label>
-                                <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
+                                <select id="categoryDropdown" asp-for="Category" id="Category" required class="form-control form-control-sm"
                                         asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                     <option value="" disabled selected>Select manufacturing main sector</option>
                                 </select>
-                                <span asp-validation-for="Category" class="text-danger"></span>
+                                <span id="Category-error" asp-validation-for="Category" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
                                 <label asp-for="Type">Manufacturing Sub Sector <i class="text-danger">*</i></label>
-                                <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
+                                <select id="typeDropdown" asp-for="Type"  required class="form-control form-control-sm">
                                     <option value="" disabled selected>Select manufacturing sub sector </option>
                                 </select>
-                                <span asp-validation-for="Type" class="text-danger"></span>
+                                <span id="Type-error" asp-validation-for="Type" class="text-danger"></span>
                             </div>
                         </div>
                       
@@ -169,13 +171,13 @@
                         <div class="row" id="IndusteryProp">
                             <div class="form-group col-lg-4">
                                 <label asp-for="MachineName">Machine Name <i class="text-danger">*</i></label>
-                                <input asp-for="MachineName" type="text" class="form-control form-control-sm" placeholder="Enter Machine Name" id="MachineName" required>
-                                <span asp-validation-for="MachineName" class="text-danger"></span>
+                                <input asp-for="MachineName" type="text" class="form-control form-control-sm"  placeholder="Enter Machine Name" id="MachineName" required>
+                                <span id="MachineName-error" asp-validation-for="MachineName" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label asp-for="Purpose">Purpose <i class="text-danger">*</i></label>
                                 <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose" required>
-                                <span asp-validation-for="Purpose" class="text-danger"></span>
+                                <span id="Purpose-error" asp-validation-for="Purpose" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label asp-for="ModelNo">Model Number</label>
@@ -186,12 +188,12 @@
                                 <div class="form-group col-lg-3">
                                     <label asp-for="ProductionBussinessLicence">Business License Number<i class="text-danger">*</i> </label>
                                     <input asp-for="ProductionBussinessLicence" type="text" required class="form-control form-control-sm" id="ManufactureYear" placeholder="Business License Number">
-                                    <span asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
+                                    <span id="ProductionBussinessLicence-error" asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-3">
                                     <label asp-for="ManufactureYear">Manufactuing Year</label>
                                     <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
-                                    <span asp-validation-for="ManufactureYear" class="text-danger"></span>
+                                    <span id="ManufactureYear-error" asp-validation-for="ManufactureYear" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-3">
                                     <label asp-for="InvoiceNo">Invoice Number</label>
@@ -216,7 +218,7 @@
                                     <option value="Private Owned LHC">Private Owned LHC</option>
                                     <option value="Industrial Park">Industrial Park</option>
                                 </select>
-                                <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
+                                <span id="MachineryInstalledPlace-error" asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
                                    
                             </div>
                            
@@ -227,18 +229,18 @@
                             <div class="row">
                              <div class="form-group col-lg-4">
                                 <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
-                                <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
-                                <span asp-validation-for="LHCNumber" class="text-danger"></span>
+                                    <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber" required>
+                                    <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label asp-for="OwnerName">Owner Name in the LHC <i class="text-danger">*</i></label>
-                                <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX" required>
+                                    <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX" required>
                                 <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
                                 <label asp-for="UploadLHC">Upload LHC Document<i class="text-danger">*</i></label>
-                                    <input asp-for="UploadLHC" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
-                                <span asp-validation-for="UploadLHC" class="text-danger"></span>
+                                    <input asp-for="UploadLHC" type="file" class="form-control  form-control-sm" id="UploadLHC" required>
+                                    <span id="UploadLHC-error" asp-validation-for="UploadLHC" class="text-danger"></span>
                             </div>
                            </div>
                         </div>
@@ -247,17 +249,17 @@
                            <div class="row">
                             <div class="form-group col-lg-4">
                                 <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
-                                    <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
+                                    <select id="IndustrialparkDropdown" asp-for="Industrialpark" id="Industrialpark" required class="form-control form-control-sm"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                     <option value="" disabled selected>Select Industrial Park </option>
                                 </select>
-                                <span asp-validation-for="Industrialpark" class="text-danger"></span>
+                                    <span id="Industrialpark-error" asp-validation-for="Industrialpark" class="text-danger"></span>
 
                             </div>
                             <div class="form-group col-lg-4">
                                 <label asp-for="ploadshaderentagreement">Upload Shade Rent Agreement Document<i class="text-danger">*</i></label>
-                                    <input asp-for="ploadshaderentagreement" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
-                                <span asp-validation-for="ploadshaderentagreement" class="text-danger"></span>
+                                    <input asp-for="ploadshaderentagreement" type="file" class="form-control  form-control-sm" id="ploadshaderentagreement" required>
+                                    <span id="ploadshaderentagreement-error" asp-validation-for="ploadshaderentagreement" class="text-danger"></span>
                             </div>
                                 </div>
                         </div>
@@ -287,7 +289,7 @@
                                             <option value="Others">Others, please specify</option>
                                         </select>
                                         <input type="text" class="form-control form-control-sm mt-2" id="OtherRegion" name="OtherRegion" style="display: none;">
-                                        <span asp-validation-for="Region" class="text-danger"></span>
+                                        <span id="Region-error" asp-validation-for="Region" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Zone">Zone</label>
@@ -332,8 +334,8 @@
                         <div class="row">
                             <div class="form-group col-lg-12">
                                 <label asp-for="ProductDescription"> Manufacturing Production Capacity Description </label>
-                                <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..." required> </textarea>
-                                <span asp-validation-for="ProductDescription" class="text-danger"></span>
+                                <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="ProductDescription" placeholder="Write product description here ..." required> </textarea>
+                                <span id="ProductDescription-error" asp-validation-for="ProductDescription" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -341,25 +343,25 @@
                             <div class="form-group col-lg-6">
                                 <label asp-for="Uploadbusinesslicense"> Upload business license <i class="text-danger">*</i></label>
                                 <input asp-for="Uploadbusinesslicense" type="file" class="form-control  form-control-sm" id="Uploadbusinesslicense" required>
-                                <span asp-validation-for="Uploadbusinesslicense" class="text-danger"></span>
+                                <span id="Uploadbusinesslicense-error" asp-validation-for="Uploadbusinesslicense" class="text-danger"></span>
                             </div> 
                             <div class="form-group col-lg-6">
                                 <label asp-for="Machinespecificationdocumen">Machine specification document <i class="text-danger">*</i></label>
-                                <input asp-for="Machinespecificationdocumen" type="file" class="form-control  form-control-sm" id="businessLicenseCertificate" multiple required>
-                                <span asp-validation-for="Machinespecificationdocumen" class="text-danger"></span>
+                                <input asp-for="Machinespecificationdocumen" type="file" class="form-control  form-control-sm" id="Machinespecificationdocumen" required>
+                                <span id="Machinespecificationdocumen-error" asp-validation-for="Machinespecificationdocumen" class="text-danger"></span>
                             </div>
                             </div>
 
                         <div class="row">
                             <div class="form-group col-lg-6">
-                                <label asp-for="Machineoperationmanual"> Machine operation manual <i class="text-danger">*</i></label>
-                                <input asp-for="Machineoperationmanual" type="file" class="form-control  form-control-sm" id="ownerCertificate" multiple required>
-                                <span asp-validation-for="Machineoperationmanual" class="text-danger"></span>
+                                <label asp-for="Machineoperationmanual"> Machine operation manual <i class="text-danger"></i></label>
+                                <input asp-for="Machineoperationmanual" type="file" class="form-control  form-control-sm" id="Machineoperationmanual">
+                                <span id="Machineoperationmanual-error" asp-validation-for="Machineoperationmanual" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
                                 <label asp-for="OtherDocument">Other supporting Document</label>
                                 <input asp-for="OtherDocument" type="file" class="form-control form-control-sm" id="OtherDocument" multiple>
-                                <span asp-validation-for="OtherDocument" class="text-danger"></span>
+                                <span id="OtherDocument-error" asp-validation-for="OtherDocument" class="text-danger"></span>
                             </div>
                         </div>
                          <div class="row">
@@ -367,6 +369,7 @@
                         </div>
                     </div>
                 </div>
+               
             }
         </div>
     </div>
@@ -403,7 +406,6 @@
 </div>
 @section Scripts {
     @{
-        //await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
@@ -473,7 +475,105 @@
             IndustrialPark.style.display = "none";
         }
     }
+    function validateForm() {
+        var isValid = true;
+
+        // Validate the required fields
+        // if (document.getElementById("PlantName").value.trim() === "") {
+        //     document.getElementById("PlantName-error").textContent = "Name of Plant is required.";
+        //     document.getElementById("PlantName").style.borderColor = "red";
+
+        //     isValid = false;
+        // } else {
+        //     document.getElementById("PlantName").style.borderColor = "";
+        //     document.getElementById("PlantName-error").textContent = "";
+        // }
+        if (document.getElementById("PropertyOwner").value.trim() === "") {
+            document.getElementById("PropertyOwner-error").textContent = "Property Owner is required.";
+            document.getElementById("PropertyOwner").style.borderColor = "red";
+
+            isValid = false;
+        } else {
+            document.getElementById("PropertyOwner").style.borderColor = "";
+            document.getElementById("PropertyOwner-error").textContent = "";
+        }
+        if (document.getElementById("MachineryInstalledPlace").value.trim() === "") {
+            document.getElementById("MachineryInstalledPlace-error").textContent = "Machinery Installed Place is required.";
+            document.getElementById("MachineryInstalledPlace").style.borderColor = "red";
+            isValid = false;
+
+        }
+        else {
+            document.getElementById("MachineryInstalledPlace").style.borderColor = "";
+            document.getElementById("MachineryInstalledPlace-error").textContent = "";
+        }
+
+        if (document.getElementById("Region").value.trim() === "") {
+            document.getElementById("Region-error").textContent = "Region is required.";
+            document.getElementById("Region").style.borderColor = "red";
+            isValid = false;
+
+        }
+        else {
+            document.getElementById("Region").style.borderColor = "";
+            document.getElementById("Region-error").textContent = "";
+        }
+
+
+        
+        if (document.getElementById("Uploadbusinesslicense").value.trim() === "") {
+            document.getElementById("Uploadbusinesslicense-error").textContent = "Business license is required.";
+            document.getElementById("LHC").style.borderColor = "red";
+            isValid = false;
+
+        }
+        else {
+            document.getElementById("Uploadbusinesslicense").style.borderColor = "";
+            document.getElementById("Uploadbusinesslicense-error").textContent = "";
+        }
+
+
+        if (document.getElementById("Machinespecificationdocumen").value.trim() === "") {
+            document.getElementById("Machinespecificationdocumen-error").textContent = "Machine specification documen is required.";
+            document.getElementById("Machinespecificationdocumen").style.borderColor = "red";
+            isValid = false;
+
+        }
+        else {
+            document.getElementById("Machinespecificationdocumen").style.borderColor = "";
+            document.getElementById("Machinespecificationdocumen-error").textContent = "";
+        }
+
+
+        return isValid;
+    }
+    document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
+        this.style.borderColor = "";
+        document.getElementById("MachineryInstalledPlace-error").textContent = "";
+    });
+    document.getElementById("Uploadbusinesslicense").addEventListener("input", function () {
+        this.style.borderColor = "";
+        document.getElementById("Uploadbusinesslicense-error").textContent = "";
+    });
+    document.getElementById("Machinespecificationdocumen").addEventListener("input", function () {
+        this.style.borderColor = "";
+        document.getElementById("Machinespecificationdocumen-error").textContent = "";
+    });
    
+
+
+    document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
+        var input = this.value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphanumericRegex.test(input)) {
+            this.setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById("MachineryInstalledPlace-error").textContent = "Only alphanumeric characters are allowed.";
+            console.log("here");
+        } else {
+            this.setCustomValidity("");
+            document.getElementById("PropertyOwner-error").textContent = "";
+        }
+    });
     // function for the Region dropdown value 
     function handleRegionChange(selectElement) {
         var otherRegionInput = document.getElementById("OtherRegion");

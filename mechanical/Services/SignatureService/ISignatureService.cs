@@ -8,6 +8,6 @@ namespace mechanical.Services.SignatureService
     {
         Task<Signatures> CreateSignature(Guid userId, SignatureDto signatureDto);
         Task<IEnumerable<ReturnSignatureDto>> Getsignature(string Id);
-        Task<EmployeeInfoes>GetEmployeeName(string emp_ID);
+        Task<EmployeeInfoes> GetEmployeeName(string emp_ID);
     }
 }

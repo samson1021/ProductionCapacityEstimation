@@ -33,53 +33,6 @@ namespace mechanical.Mapper
     {
         public MappingProfile()
         {
-            //create the new mapping for PCE
-            CreateMap<PCECaseDto, PCECase>().ReverseMap();
-            CreateMap<PCECaseReturntDto, PCECase>().ReverseMap();
-
-            CreateMap<PCENewCaseDto, PCECase>().ReverseMap();
-            CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
-            CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
-
-
-
-            //create the new mapping for PCE
-            CreateMap<PCECaseDto, PCECase>().ReverseMap();
-            CreateMap<PCECaseReturntDto, PCECase>();
-
-            CreateMap<PCECase, PCECaseReturntDto>()
-                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c => c.ProductionType)))
-                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
-
-            CreateMap<PCENewCaseDto, PCECase>();
-
-            CreateMap<PCECase, PCENewCaseDto>()
-                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
-                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
-
-
-            CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
-            CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
-
-            // CreateMap<PCEReturnFileDto, PCEUploadFile>().ReverseMap();
-            // CreateMap<PCECreateFileDto, PCEUploadFile>().ReverseMap();           
-
-            //manufatring PCE
-            CreateMap<ProductionPostDto, ProductionCapacity>();
-            CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();
-            CreateMap<ProductionCapacity, ReturnProductionDto>()
-                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
-                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-
-            CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
-
-            CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
-
-            CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
-
-
-
             CreateMap<CollateralPostDto, Collateral>();
             CreateMap<CivilCollateralPostDto, Collateral>();
             CreateMap<AgricultureCollateralPostDto, Collateral>();
@@ -106,8 +59,6 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src=>src.CaseOriginator.Department))
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
-
-
 
             CreateMap<Case, CaseTerminateDto>()
                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
@@ -182,6 +133,9 @@ namespace mechanical.Mapper
             ///////
            
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+            CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
+
+
             CreateMap<CreateFileDto, ReturnFileDto>()
                 .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType));
                 // .ReverseMap();
@@ -190,10 +144,42 @@ namespace mechanical.Mapper
                 {
                     return context.Items["Catagory"];
                 }));
+            ///////
+            
+            //create the new mapping for PCE
+            CreateMap<PCECaseDto, PCECase>().ReverseMap();
+            // CreateMap<PCECaseReturntDto, PCECase>().ReverseMap();
+            CreateMap<PCECaseReturntDto, PCECase>();
+            CreateMap<PCENewCaseDto, PCECase>().ReverseMap();
+            CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
+            CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
+            CreateMap<PCECase, PCECaseReturntDto>()
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c => c.ProductionType)))
+                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
+            CreateMap<PCENewCaseDto, PCECase>();
+            CreateMap<PCECase, PCENewCaseDto>()
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
+                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+
+            //manufatring PCE
+            CreateMap<ProductionPostDto, ProductionCapacity>();
+            CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();
+            CreateMap<ProductionCapacity, ReturnProductionDto>()
+                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+
+            CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
+            CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
+            CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
+
+            /////////////
+            CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();
+            CreateMap<TimeInterval, TimeIntervalPostDto>().ReverseMap();
+            CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
+            CreateMap<TimeInterval, TimeIntervalReturnDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
-            CreateMap<DateTimeRange, DateTimeRangeDto>().ReverseMap();
-            CreateMap<TimeInterval, TimeIntervalDto>().ReverseMap();
             CreateMap<PCERejectPostDto, ProductionReject>();
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
@@ -207,7 +193,6 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
 
-
             CreateMap<PCEEvaluation, PCEEvaluationUpdateDto>()
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
@@ -220,13 +205,7 @@ namespace mechanical.Mapper
             CreateMap<PCEEvaluation, PCEEvaluationReturnDto>()
                 .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
-                .ReverseMap()
-                .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
-                .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
-
-            // CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>()
-            //     .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
-            //     .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore());
+                .ReverseMap();
             ///////
         }
 

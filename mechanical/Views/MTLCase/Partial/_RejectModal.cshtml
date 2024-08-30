@@ -2,9 +2,9 @@
 
 @{
     var Status = ViewBag.Status as string;
-    var PCECaseId = ViewData["PCECaseId"] as Guid?;
     var RedirectUrl = Url.Action("MyPCEs", "PCEEvaluation", new { Status = "All" });
 
+    var PCECaseId = ViewData["PCECaseId"] as Guid?;
     if (PCECaseId.HasValue)
     {
         RedirectUrl = Url.Action("PCECaseDetail", "PCEEvaluation", new { PCECaseId = PCECaseId.Value });

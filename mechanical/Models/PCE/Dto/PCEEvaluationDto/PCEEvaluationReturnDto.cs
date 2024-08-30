@@ -20,15 +20,11 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Production Line/Equipment Name")]
         public string ProductionLineOrEquipmentName { get; set; }
 
-
         [Display(Name = "Type of Output")]
         public string OutputType { get; set; }
         
         [Display(Name = "Phase of Output")]
         public OutputPhase OutputPhase { get; set; }
-
-        //[Display(Name = "Phase of Output")]
-        //public OutputPhase? OutputPhase { get; set; }
 
         [Display(Name = "Country of Origin")]
         public string? OriginCountry { get; set; }
@@ -37,7 +33,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public int? ShiftsPerDay { get; set; }
 
         [Display(Name = "Shift Hours")]
-        public List<TimeIntervalDto>? ShiftHours { get; set; } = new List<TimeIntervalDto>();
+        public virtual List<TimeIntervalReturnDto>? ShiftHours { get; set; } = new List<TimeIntervalReturnDto>();
 
         [Display(Name = "Working Days Per Month")]
         public int? WorkingDaysPerMonth { get; set; }
@@ -64,7 +60,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string OverallActualCurrentPlantCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
-        public DateTimeRangeDto TimeConsumedToCheck { get; set; }
+        public virtual DateTimeRangeReturnDto TimeConsumedToCheck { get; set; }
 
         [Display(Name = "Technical Obsolescence Status")]
         public string TechnicalObsolescenceStatus { get; set; }
@@ -114,5 +110,31 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 
 
+    }
+    
+    public class TimeIntervalReturnDto
+    {
+        // public Guid Id { get; set; }    
+        // public Guid PCEEId { get; set; } 
+
+        [Display(Name = "Start Time")]
+        public TimeSpan Start { get; set; }
+
+        [Display(Name = "End Time")]
+        public TimeSpan End { get; set; }
+    }
+
+    public class DateTimeRangeReturnDto
+    {
+        // public Guid Id { get; set; }
+        // public Guid PCEEId { get; set; }
+
+        [Display(Name = "Start DateTime")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
+        public DateTime Start { get; set; }
+
+        [Display(Name = "End DateTime")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
+        public DateTime End { get; set; }
     }
 }

@@ -1,0 +1,111 @@
+﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto
+@using mechanical.Models.Dto.IndBldgFacilityEquipmentDto
+@using mechanical.Models.Dto.CaseScheduleDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@using mechanical.Models.PCE.Entities
+
+@model ReturnProductionDto;
+@{
+    var collateralFiles = ViewData["collateralFiles"] as IEnumerable<ReturnFileDto>;
+    var ProductionCavaluation = ViewData["Prvaluation"] as ReturnProductionDto;
+    var rejectedCollateral = ViewData["RejectedCollateral"] as ProductionReject;
+    var user = ViewData["user"] as CreateUser;
+    var loggedRole = ViewData["loggedRole"] as CreateRole;
+    var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
+    var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as ProductionCapacity;
+    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
+    var restimation = ViewData["restimation"] as ProductionCapacityReestimation;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>PCE Request Detail</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCENewCases", "PCECase")">My PCE Case</a></li>
+                    <li class="breadcrumb-item active">PCE Case Detail</li>
+
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
+            @{
+                if (restimation != null)
+                {
+                    <div class="ribbon-wrapper ribbon-xl">
+                        <div class="ribbon bg-danger">
+                            @restimation.Reason
+                        </div>
+                    </div>
+                }
+            }
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Valuation Result</a>
+                    </li>
+                  @*   <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"><i class="nav-icon fas fa-file"></i> Checker Unit</a>
+                    </li> *@
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false"><i class="nav-icon fas fa-file"></i> Previous Valuations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-remark-tab" data-toggle="pill" href="#custom-tabs-four-remark" role="tab" aria-controls="custom-tabs-four-remark" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Remark</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                        @await Html.PartialAsync("_GeneralInfo")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                        @{
+                            if (restimation == null)
+                            {
+
+                                @await Html.PartialAsync("_ProductionValuation")
+
+                            }
+
+                        }
+
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                        <h6>there is no checker unit comment</h6>
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+                        @await Html.PartialAsync("_PreviousValuation")
+                    </div>
+
+                    <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
+                        @await Html.PartialAsync("_ProductionRemark")
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("Partial/_PrevousValuationDatatableScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
+    }
+
+}

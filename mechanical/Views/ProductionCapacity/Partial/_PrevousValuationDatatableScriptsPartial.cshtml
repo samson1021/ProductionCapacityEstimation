@@ -1,0 +1,55 @@
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+
+@{
+    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var EmptyMessage = "No Previous Evaluation / Valuation History.";
+    var FetchUrl = "/PCEEvaluation/GetMyPreviousValuations?PCEId=" + myPCE.Id;
+}
+
+<script>
+    $(document).ready(function () {
+
+        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
+        function initializeDataTable(data) {
+
+            PreviousValuationsTable = $('#PreviousValuations').DataTable({
+                language: {
+                    emptyTable: '@EmptyMessage'
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                data: data,
+                columns: [
+                    { data: 'PCE.PropertyOwner', width: '25%' },
+                    { data: 'ProductionLineOrEquipmentName', width: '25%' },
+                    { data: 'PCE.ProductionType', width: '25%' },
+                    { data: 'PCE.CurrentStatus', width: '35%' },
+                    { data: 'CreatedAt', width: '35%' }
+                ]
+            });
+        }
+        function loadPreviousValuations() {
+            $.ajax({
+                url: fetchUrl,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#PreviousValuations')) {
+                        var PreviousValuationsTable = $('#PreviousValuations').DataTable();
+                        PreviousValuationsTable.destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load Previous Valuations");
+                    console.log(error);
+                }
+            });
+        }
+        loadPreviousValuations();
+    });
+
+
+</script>

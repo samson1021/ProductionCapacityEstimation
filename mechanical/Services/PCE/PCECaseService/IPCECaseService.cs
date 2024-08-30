@@ -14,6 +14,8 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<CreateNewCaseCountDto> GetMyDashboardCaseCount();
 
         Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId);
+        Task<IEnumerable<PCENewCaseDto>> GetPCECasesReport(Guid userId);
+
         Task<IEnumerable<PCENewCaseDto>> GetPCEPendingCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCECompleteCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCERejectedCases(Guid userId);
@@ -21,9 +23,9 @@ namespace mechanical.Services.PCE.PCECaseService
 
 
         PCECaseReturntDto GetPCECase(Guid userId, Guid id);
+        PCEReportDataDto GetPCECaseDetailReport(Guid userId, Guid id);
 
-
-      Task<PCECaseReturntDto> PCEEdit(Guid userId, PCECaseReturntDto caseDto);
+        Task<PCECaseReturntDto> PCEEdit(Guid userId, PCECaseReturntDto caseDto);
 
         ////manufuctuer
         Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id);
@@ -32,7 +34,6 @@ namespace mechanical.Services.PCE.PCECaseService
 
 
         Task<PCEReportDataDto> GetPCEReportData(Guid Id);
-        Task<byte[]> GenerateDOCX(PCEReportDataDto pceReportData);
-        Task<byte[]> GeneratePDF(PCEReportDataDto pceReportData);
+        Task<PCEReportDataDto> GetPCEAllReportData(Guid Id);
     }
 }
