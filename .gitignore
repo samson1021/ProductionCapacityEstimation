@@ -361,7 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/mechanical/Services/SignatureService/SignatureService.cs
+# /mechanical/Services/SignatureService/SignatureService.cs
 /Signature management/Service/AcknowledgementService/AcknowledgementService.cs
 mechanical/UploadFile/*
 mechanical/Migrations/*
