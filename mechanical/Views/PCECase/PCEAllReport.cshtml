@@ -1,4 +1,5 @@
-﻿@using mechanical.Models.PCE.Entities;
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Entities;
 @using mechanical.Models.Dto.UploadFileDto
 
 @{
@@ -8,6 +9,8 @@
     var PCECaseSchedule = ViewData["PCECaseSchedule"] as ProductionCaseSchedule;
 
     var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnPCEReportFileDto>;
+
+    var EvaluatorReports = ViewData["EvaluatorReports"] as IEnumerable<EvaluatorReportDto>;
 
 
     bool isPrinting = false;
@@ -359,7 +362,34 @@
                                     </div>
                                 </div>
                                 <div class="approvedby" style="display:block">
-                                    <p>Capacity estimated by: - _______________________________________; Signature: _________________Date: ________________</p>
+
+
+                                    
+                                        @foreach (var EvaluatorReport in EvaluatorReports)
+                                    {
+                                        @if (evaluate.EvaluatorId == EvaluatorReport.EvaluatorId)
+                                        {
+                                              <p>
+                                                    Capacity estimated by:- <u><strong>@(EvaluatorReport.EvaluatorName)</strong></u>; Signature:
+                                                    <span style="text-decoration: underline; margin: 0 5px;">
+                                                    <img src="/UploadFile/@($"{EvaluatorReport.SignatureImageId}.png")" alt="Signature" style="max-width: 60px;" />
+                                                    </span>
+                                                    Evaluated Date: <u><strong>@(EvaluatorReport.CreatedAt)</strong></u>
+                                                </p> 
+                                        }
+                                        else
+                                        {
+                                            <h1>welcome</h1>
+                                        }
+
+                                     }
+
+
+                               
+
+
+
+
                                 </div>
                                 <div class="requieddoc" id="requieddoc">
 

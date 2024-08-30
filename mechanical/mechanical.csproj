@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="UploadFile\cbelogo.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="UploadFile\cbelogo.jpg">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.2" />
@@ -32,10 +43,6 @@
     <PackageReference Include="PdfSharp" Version="6.1.1" />
     <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.14" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="UploadFile\" />
   </ItemGroup>
 
   <ItemGroup>

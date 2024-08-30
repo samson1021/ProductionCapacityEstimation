@@ -426,24 +426,8 @@ namespace mechanical.Services.PCE.PCECaseService
                                      .Include(e => e.ShiftHours)
                                      .Include(e => e.TimeConsumedToCheck)
                                      .Where(c=>productions.Select(d=>d.Id).Contains(c.PCEId)).ToListAsync();
-            
-            //var pceEvaluations = await _cbeContext.PCEEvaluations
-            //                         .Include(e => e.ShiftHours)
-            //                         .Include(e => e.TimeConsumedToCheck)
-            //                         .Include(res => res.Evaluator).Where(res => res.PCEId == Id).ToListAsync();
+         
             var pceCaseSchedule = await _cbeContext.ProductionCaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
-
-
-
-            //var pceEntity = await _cbeContext.PCEEvaluations
-            //                         .Include(e => e.ShiftHours)
-            //                         .Include(e => e.TimeConsumedToCheck)
-            //                         .Include(e => e.PCE)
-            //                         .ThenInclude(e => e.PCECase)
-            //                         // .Include(pe => pe.UploadFiles)
-            //                         .FirstOrDefaultAsync(e => e.Id == Id);
-
-
             return new PCEReportDataDto
             {
                 PCESCase = pceCase,
