@@ -4,11 +4,11 @@
 
 <!-- General Information -->
 <div class="col-md-6">
-    <div class="card bg-light">
-        <div class="card-header text-white">
+    <div class="card shadow-none">
+        <div class="card-header">
             <h3 class="card-title">General Information</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-white">
             <dl class="row">
                 <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName)</dt>
                 <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.ProductionLineOrEquipmentName)</h6></dd>
@@ -33,11 +33,11 @@
             </dl>
         </div>
     </div>
-    <div class="card bg-light mt-4">
-        <div class="card-header text-white">
+    <div class="card shadow-none  mt-4">
+        <div class="card-header">
             <h3 class="card-title">Shift Hours</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-white">
             @if (Model.ShiftHours != null && Model.ShiftHours.Any())
             {
                 <table class="table table-striped table-hover">
@@ -50,18 +50,18 @@
                     <tbody>
                         @foreach (var shift in Model.ShiftHours)
                         {
-                            
+
                             var startTime = new DateTime(1, 1, 1, shift.Start.Hours, shift.Start.Minutes, shift.Start.Seconds);
                             var endTime = new DateTime(1, 1, 1, shift.End.Hours, shift.End.Minutes, shift.End.Seconds);
-                        
+
                             <tr>
                                 <td>@startTime.ToString("hh:mm tt")</td>
                                 <td>@endTime.ToString("hh:mm tt")</td>
                             </tr>
                             @* <tr>
-                                <td>@shift.Start.ToString(@"h\:mm")</td>
-                                <td>@shift.End.ToString(@"h\:mm")</td>
-                            </tr> *@
+                    <td>@shift.Start.ToString(@"h\:mm")</td>
+                    <td>@shift.End.ToString(@"h\:mm")</td>
+                    </tr> *@
                         }
                     </tbody>
                 </table>
@@ -72,13 +72,13 @@
             }
         </div>
     </div>
-    
+
     <!-- Inspection Information -->
-    <div class="card bg-light">
-        <div class="card-header text-white">
+    <div class="card shadow-none">
+        <div class="card-header">
             <h3 class="card-title">Inspection Information</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-white">
             <dl class="row">
                 <dt class="col-sm-6">Inspection Started At</dt>
                 <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.TimeConsumedToCheck.Start, new { @class = "datetime-format" })</h6></dd>
@@ -98,11 +98,11 @@
 
 <!-- Capacity Information -->
 <div class="col-md-6">
-    <div class="card bg-light">
-        <div class="card-header text-white">
+    <div class="card shadow-none">
+        <div class="card-header">
             <h3 class="card-title">Capacity Information</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-white">
             <dl class="row">
                 <dt class="col-sm-6">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
                 <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.DesignProductionCapacity)</h6></dd>
@@ -132,11 +132,11 @@
     </div>
 
     <!-- Additional Information -->
-    <div class="card bg-light">
-        <div class="card-header text-white">
+    <div class="card shadow-none">
+        <div class="card-header">
             <h3 class="card-title">Additional Information</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-white">
             <dl class="row">
                 <dt class="col-sm-6">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</dt>
                 <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.TechnicalObsolescenceStatus)</h6></dd>
@@ -163,8 +163,8 @@
     </div>
 </div>
 
-<div class="card bg-light">
-    <div class="card-header text-white">
+<div class="card shadow-none">
+    <div class="card-header ">
         <h3 class="card-title">Supporting Documents</h3>
     </div>
     <div class="card-body">
@@ -201,20 +201,20 @@
         </table>
     </div>
 </div>
-<div class="card bg-light">
-    <div class="card-header text-white">
+<div class="card shadow-none">
+    <div class="card-header">
         <h3 class="card-title">Production Process Flow Diagrams</h3>
     </div>
-    <div class="card-body">
+    <div class="card-body ">
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>File Name</th>
                     <th>Actions</th>
                 </tr>
-            </thead>                         
+            </thead>
             <tbody>
-            
+
                 @{
                     if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
                     {

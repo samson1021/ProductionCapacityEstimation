@@ -1115,7 +1115,7 @@ namespace mechanical.Migrations
                     b.HasIndex("PCEEId")
                         .IsUnique();
 
-                    b.ToTable("DateTimeRange");
+                    b.ToTable("DateTimeRanges");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
@@ -1675,7 +1675,7 @@ namespace mechanical.Migrations
 
                     b.HasIndex("PCEEId");
 
-                    b.ToTable("TimeInterval");
+                    b.ToTable("TimeIntervals");
                 });
 
             modelBuilder.Entity("mechanical.Models.Entities.Case", b =>

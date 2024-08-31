@@ -1,128 +1,15 @@
-﻿
-<div class="card">
-    <div class="Card-header">
-
-    </div>
-
-    <div class="card-body">
-        <table id="caseCollaterals" class="table table-bordered table-striped">
+﻿<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <table id="PreviousValuations" class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
                     <th>Property Owner</th>
-                    <th>Role</th>
-                    <th>Production Catagory</th>
-                    <th>Action</th>
+                    <th>Production Line/Equipment</th>
+                    <th>Production Type</th>
+                    <th>Valuation Status</th>
+                    <th>CreatedAt</th>
                 </tr>
             </thead>
-
         </table>
-        <div class="row">
-@*             <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
- *@            <div class="row">
-                <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-
-    var CaseId = $('#CaseId').val();
-    function initializeDataTable(data) {
-        caseCollateralsTable = $('#caseCollaterals').DataTable({
-            language: {
-                emptyTable: "There is no PCE register for this case please click the above add button to add PCE"
-            },
-            responsive: true,
-            pageLength: 8,
-            lengthChange: false,
-            autoWidth: false,
-            buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
-            data: data,
-            columns: [
-                {
-                    data: null,
-                    render: function (data, type, row, meta) {
-                        return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
-                    }
-                },
-                { data: 'PropertyOwner', width: '25%' },
-                { data: 'Role', width: '25%' },
-                { data: 'ProductionType', width: '35%' },
-
-                {
-                    data: 'Id',
-                    width: '10%',
-                    // render: function (data, type, row, meta) {
-                    //     return '<a href="Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
-                    // }
-                    render: function (data, type, row, meta) {
-
-                        console.log(row.ProductionType);
-                        console.log("welcome ");;
-                        if (row.ProductionType === 'Plant') {
-                            console.log(data.ProductionType);
-                            return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("PlantEdit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
-                        } else {
-                            return '<a href="@Url.Action("Detail", "ProductionCapcity")?Id=' + data + '">Details | </a><a href="@Url.Action("Edit", "ProductionCapcity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
-                        }
-                    }
-                }
-            ]
-        }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
-
-        $('.delete-link').on('click', function (e) {
-            e.preventDefault();
-            var itemId = $(this).data('id');
-            console.log(itemId);
-            $('#deleteItem').data('id', itemId);
-            $('#deleteConfirmationModal').modal('show');
-        });
-
-        //this is to delete the collateral
-        $('#deleteItem').on('click', function () {
-            var itemId = $(this).data('id');
-            $.ajax({
-                url: '@Url.Action("DeleteProduction", "ProductionCapcity")',
-                type: 'POST',
-                data: { id: itemId },
-                success: function (result) {
-                    toastr.success('PCE deleted successfully.');
-                    // setTimeout(function () {
-                    // location.reload();
-                    loadCollaterals();
-
-                    // }, 5000);
-                },
-                error: function (xhr, status, error) {
-                    toastr.error('unable to delete PCE collateral.');
-                }
-            });
-
-            $('#deleteConfirmationModal').modal('hide');
-        });
-    }
-
-    function loadCollaterals() {
-        $.ajax({
-            url: '/ProductionCapcity/GetProductions?PCECaseId=' + CaseId,
-            //url: '/ProductionCapcity/GetProductions?CaseId' + CaseId,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
-                    var caseCollateralsTable = $('#caseCollaterals').DataTable();
-                    caseCollateralsTable.destroy();
-                }
-                initializeDataTable(data);
-            },
-            error: function (error) {
-                toastr.error("Failed to load Production Capcity");
-                console.log(error);
-            }
-        });
-    }
-
-
-</script>
+    </section>
+</section>

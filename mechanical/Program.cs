@@ -46,6 +46,7 @@ using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using Microsoft.Extensions.FileProviders;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,6 +117,11 @@ builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 
 
+
+builder.Services.AddScoped<ISignatureService, SignatureService>();
+
+
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,6 +187,17 @@ app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Serve static files from UploadFile directory
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(
+         Path.Combine(Directory.GetCurrentDirectory(), @"UploadFile")),
+    RequestPath = new PathString("/UploadFile")
+});
+
+
 
 app.UseRouting();
 

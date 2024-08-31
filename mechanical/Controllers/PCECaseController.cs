@@ -303,7 +303,22 @@ namespace mechanical.Controllers.PCE
             }
         }
 
-
+        [HttpPost]
+        public async Task<IActionResult> SendProductionForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
+        {
+            var userId = base.GetCurrentUserId();
+            try
+            {
+                await _productionCaseAssignmentServices.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                var response = new { message = "PCE Reestimation assigned successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var error = new { message = ex.Message };
+                return BadRequest(error);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> PCEPendingDetail(Guid id)
@@ -329,6 +344,33 @@ namespace mechanical.Controllers.PCE
             var pceReportData = await _PCECaseService.GetPCEReportData(Id);
             var file = await _uploadFileService.GetUploadFileByCollateralId(Id);
             ViewData["productionFiles"] = file;
+            
+           
+            if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            {
+                var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                var EvaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
+        
+     
+                var evaluatorReportDto = new EvaluatorReportDto
+                {
+                    EvaluatorId = pceReportData.PCEEvaluations[0].EvaluatorId,
+                    CreatedAt = pceReportData.PCEEvaluations[0].CreatedAt,
+                    EvaluatorName = EvaluatorName,
+                    PCEvaluationId = pceReportData.PCEEvaluations[0].Id,
+                    SignatureImageId = signaturefilename
+                };
+                ViewData["EvaluatorReport"] = evaluatorReportDto;
+
+            }
+            else
+            {
+                var evaluatorReportDto = new EvaluatorReportDto();
+                ViewData["EvaluatorReport"] = evaluatorReportDto;
+
+            }
+
 
             ViewData["pceCase"] = pceReportData.PCESCase;
             ViewData["productions"] = pceReportData.Productions;
@@ -343,6 +385,54 @@ namespace mechanical.Controllers.PCE
         {
             var pceReportData = await _PCECaseService.GetPCEAllReportData(Id);
             var file = await _uploadFileService.GetAllUploadFileByCaseId(Id);
+
+
+            //if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            //{
+            //    var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+            //    var EvaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.Name).FirstOrDefault();
+            //    var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
+            //    var evaluatorReportDto = new EvaluatorReportDto
+            //    {
+            //        EvaluatorId = pceReportData.PCEEvaluations[0].EvaluatorId,
+            //        CreatedAt = pceReportData.PCEEvaluations[0].CreatedAt,
+            //        EvaluatorName = EvaluatorName,
+            //        PCEvaluationId = pceReportData.PCEEvaluations[0].Id,
+            //        SignatureImageId = signaturefilename
+            //    };
+            //    ViewData["EvaluatorReport"] = evaluatorReportDto;
+
+            //}
+            if (pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Any())
+            {
+                var evaluatorReports = new List<EvaluatorReportDto>();
+
+                foreach (var evaluation in pceReportData.PCEEvaluations)
+                {
+                    var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                    var evaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                    var signatureFilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
+
+                    var evaluatorReportDto = new EvaluatorReportDto
+                    {
+                        EvaluatorId = evaluation.EvaluatorId,
+                        CreatedAt = evaluation.CreatedAt,
+                        EvaluatorName = evaluatorName,
+                        PCEvaluationId = evaluation.Id,
+                        SignatureImageId = signatureFilename
+                    };
+
+                    evaluatorReports.Add(evaluatorReportDto);
+                }
+
+                ViewData["EvaluatorReports"] = evaluatorReports;
+            }
+
+
+
+
+
+
             ViewData["productionFiles"] = file;
              
             ViewData["pceCase"] = pceReportData.PCESCase;
