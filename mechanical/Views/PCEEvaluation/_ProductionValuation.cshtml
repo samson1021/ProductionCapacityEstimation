@@ -42,7 +42,8 @@
                         <div class="row">
                             @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
                         </div>
-                        @if (Model.EvaluatorUserID == CurrentUser.Id || Model.CurrentStage == "Maker Officer")
+                        @* @if (CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == CurrentUser.Id) *@
+                        @if ((CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == CurrentUser.Id)
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {
@@ -79,8 +80,9 @@
                             <h6 class="text-center">
                                 Not evaluated yet.                            
                     
-                                @* @if (Model.EvaluatorUserID == CurrentUser.Id && Model.CurrentStage == "Maker Officer")
-                                { *@
+                                @* @if (CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == CurrentUser.Id) *@
+                                @if ((CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == CurrentUser.Id)
+                                { 
                                     @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
                                     {
                                         if (Model.CurrentStatus == "Reestimate") {
@@ -91,7 +93,7 @@
                                     
                                         <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>
                                     }
-                                @* } *@  
+                                 } 
                             </h6>                           
                         </div>
                     }                    

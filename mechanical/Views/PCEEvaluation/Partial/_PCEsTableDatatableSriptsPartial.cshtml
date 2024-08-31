@@ -1,5 +1,8 @@
-﻿﻿@{
+﻿﻿@using mechanical.Models.PCE.Entities
+
+@{
     var Status = ViewBag.Status as string;
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
     var EmptyMessage = "There are no PCEs found";
     var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status;
     var PCECaseId = ViewData["PCECaseId"] as Guid?; 
@@ -19,6 +22,7 @@
     $(document).ready(function () {
         
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
+        var currentUserRoleName = '$CurrentUser.Role.Name';
         function initializeDataTable(data) {
 
             PCEsTable = $('#PCEs').DataTable({
@@ -48,6 +52,7 @@
                             
                             var evaluateLink = '';
                             var returnLink = '';
+                           
                             if (row.CurrentStatus === "New"|| row.CurrentStatus === "Reestimate") {
                                 if (row.CurrentStatus === "Reestimate") {
                                     evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Reestimate </a> | ';                                                              
@@ -58,9 +63,15 @@
                             } else if (row.CurrentStatus === "Pending") {                               
                                     // evaluateLink = '<a href="@Url.Action("Evaluate", "PCEEvaluation")?Id=' + data + '"> Complete </a> | ';
                                     returnLink = ' | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>';
-                            } 
+                            }                              
+                        
                             
-                            return evaluateLink + '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
+                            if (currentUserRoleName == "Maker Officer"){
+                                return evaluateLink + '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
+                            }
+                            else{
+                                return '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
+                            }
                         }
                     }
                 ]

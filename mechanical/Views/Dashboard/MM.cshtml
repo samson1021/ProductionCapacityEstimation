@@ -175,7 +175,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MMCase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -197,7 +197,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MMCase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -219,7 +219,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MMCase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -241,7 +241,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MMCase", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -300,9 +300,9 @@
                 });
         });
  
-        @* // production capacity estimation start
+        // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCEEvaluation/GetMyDashboardPCECaseCount")
+            fetch("/MMCase/GetMyDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
 
@@ -316,12 +316,12 @@
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
-        }); *@
+        }); 
 
         
-        // production capacity estimation start
+        @* // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCEEvaluation/GetMyDashboardPCECount")
+            fetch("/PCECase/GetMyDashboardPCECount")
                 .then(response => response.json())
                 .then(data => {
 
@@ -335,7 +335,7 @@
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
-        });
+        }); *@
 
         // Production capacity estimation case end
 
@@ -377,12 +377,18 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: "/PCEEvaluation/GetMyPCECases",
+                url: "/MMCase/GetMyPCECases",
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
                     var columns = [
-                        { data: 'CaseNo', width: '10%' },
+                        { 
+                            data: 'CaseNo', 
+                            width: '10%',
+                            render: function (data) {
+                                return '<a href="@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + data + '">' + data + '</a>';
+                            }                 
+                        },
                         {
                             data: 'CreationDate',
                             width: '15%',

@@ -140,6 +140,19 @@ namespace mechanical.Services.MMCaseService
         //        PendingCaseCount = await _cbeContext.Cases.Where(res => res.DistrictId == user.DistrictId && res.CurrentStage == "Maker" &&  res.CurrentStatus == "Pending").CountAsync(),
         //        CompletedCaseCount = await _cbeContext.Cases.Where(res => res.DistrictId == user.DistrictId && res.CurrentStage == "Checker Manager" && res.CurrentStatus == "Complete").CountAsync()
         //    };
-        //}
+        //}   
+
+        // public async Task<IEnumerable<CaseDto>> GetMoRemarkedPCECases(Guid userId)
+        // {
+
+        //     var pceCaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).ThenInclude(res => res.PCECase).Where(Ca => Ca.UserId == userId && Ca.Status == "Remark").ToListAsync();
+        //     var uniquePCECases = pceCaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
+        //     var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseDto>>(uniquePCECases);
+        //     foreach (var pceCaseDto in pceCaseDtos)
+        //     {
+        //         pceCaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == pceCaseDto.Id);
+        //     }
+        //     return pceCaseDtos;
+        // }    
     }
 }

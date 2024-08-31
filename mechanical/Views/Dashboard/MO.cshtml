@@ -515,12 +515,17 @@
         $(document).ready(function () {
             $.ajax({
                 url: "/PCEEvaluation/GetMyPCECases",
-                // url: "/PCEEvaluation/GetMyPCECases?Status=All",
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
                     var columns = [
-                        { data: 'CaseNo', width: '10%' },
+                        { 
+                            data: 'CaseNo', 
+                            width: '10%',
+                            render: function (data) {
+                                return '<a href="@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + data + '">' + data + '</a>';
+                            }                 
+                        },
                         {
                             data: 'CreationDate',
                             width: '15%',

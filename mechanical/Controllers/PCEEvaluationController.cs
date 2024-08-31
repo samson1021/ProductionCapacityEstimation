@@ -378,15 +378,15 @@ namespace mechanical.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetMyDashboardPCECount()
-        {
-            Guid? PCECaseId = null;
-            var Stage = string.Empty;
-            var myPCEs = await _PCEEvaluationService.GetDashboardPCECount(base.GetCurrentUserId(), PCECaseId, Stage);
-            string jsonData = JsonConvert.SerializeObject(myPCEs);
-            return Content(jsonData, "application/json");
-        }
+        // [HttpGet]
+        // public async Task<IActionResult> GetMyDashboardPCECount()
+        // {
+        //     Guid? PCECaseId = null;
+        //     var Stage = string.Empty;
+        //     var myPCEs = await _PCEEvaluationService.GetDashboardPCECount(base.GetCurrentUserId(), PCECaseId, Stage);
+        //     string jsonData = JsonConvert.SerializeObject(myPCEs);
+        //     return Content(jsonData, "application/json");
+        // }
 
         [HttpGet]
         public async Task<IActionResult> GetMyLatestValuation(Guid PCEId)
