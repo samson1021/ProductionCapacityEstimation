@@ -101,10 +101,7 @@ namespace mechanical.Controllers
                 }
             }
 
-            var UpperEmail = logins.Email;
-
-
-            if (UpperEmail == null || logins.Password == null)
+            if (logins.Email == null || logins.Password == null)
             {
                 if (logins.Password == null)
                 {
@@ -112,8 +109,6 @@ namespace mechanical.Controllers
                 }
                 return View("Index", logins);
             }
-           
-
 
             var user = _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email == logins.Email.ToUpper()).FirstOrDefault();
 

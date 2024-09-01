@@ -10,10 +10,10 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public ReturnProductionDto ProductionCapacity { get; set; }
         public PCECase PCECase { get; set; }
         public IEnumerable<ReturnFileDto> RelatedFiles { get; set; }
-        public CreateUser CurrentUser { get; set; }
         public ProductionCapacityReestimation Reestimation { get; set; }
         public PCEValuationHistoryDto PCEValuationHistory { get; set; }
     }
+    
     public class PCEValuationHistoryDto
     {
         public PCEEvaluationReturnDto LatestEvaluation { get; set; }

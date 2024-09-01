@@ -152,7 +152,8 @@ namespace mechanical.Controllers
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
 
             var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), id);
-            ViewData["CurrentUser"] = pceDetail.CurrentUser;
+            var currentUser = await _PCEEvaluationService.GetUser(base.GetCurrentUserId());
+            ViewData["CurrentUser"] = currentUser;
             ViewData["PCE"] = pceDetail.ProductionCapacity;
             ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
 

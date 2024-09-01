@@ -22,7 +22,6 @@
     $(document).ready(function () {
         
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
-        var currentUserRoleName = '$CurrentUser.Role.Name';
         function initializeDataTable(data) {
 
             PCEsTable = $('#PCEs').DataTable({
@@ -49,29 +48,27 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            
-                            var evaluateLink = '';
-                            var returnLink = '';
-                           
-                            if (row.CurrentStatus === "New"|| row.CurrentStatus === "Reestimate") {
-                                if (row.CurrentStatus === "Reestimate") {
-                                    evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Reestimate </a> | ';                                                              
-                                } else {
-                                    evaluateLink = '<a href="@Url.Action("Create", "PCEEvaluation")?PCEId=' + data + '"> Evaluate </a> | ';
-                                }         
-                                returnLink = ' | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>';   
-                            } else if (row.CurrentStatus === "Pending") {                               
-                                    // evaluateLink = '<a href="@Url.Action("Evaluate", "PCEEvaluation")?Id=' + data + '"> Complete </a> | ';
-                                    returnLink = ' | <a href="#" onclick="openRejectionModal(\'' + data + '\')">Return</a>';
-                            }                              
-                        
-                            
-                            if (currentUserRoleName == "Maker Officer"){
-                                return evaluateLink + '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
+                                                       
+                            const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
+                            const detailsUrl = '@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=';
+                            const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
+
+                            const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
+                                ? `<a href="${baseUrl}${data}">${evaluateText}</a> | `
+                                : '';
+
+                            const returnLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate" || row.CurrentStatus === "Pending")
+                                ? ` | <a href="#" onclick="openRejectionModal('${data}')">Return</a>`
+                                : '';
+
+                            let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`;
+
+                            if ('@CurrentUser.Role.Name' === "Maker Officer") {
+                                link = evaluateLink + link;
                             }
-                            else{
-                                return '<a href="@Url.Action("PCEDetail", "PCEEvaluation")?PCEId=' + data + '">Details</a>' + returnLink;
-                            }
+
+                            return link;
+                            
                         }
                     }
                 ]

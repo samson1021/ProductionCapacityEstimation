@@ -19,7 +19,7 @@ using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.MailService;
+using mechanical.Services.UserService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 
 namespace mechanical.Controllers
@@ -31,18 +31,19 @@ namespace mechanical.Controllers
         private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly ILogger<PCEEvaluationController> _logger;
         private readonly IMapper _mapper;
-        private readonly IMailService _mailService;
+        private readonly IUserService _userService;
         private readonly IUploadFileService _uploadFileService;
         private readonly IProductionCapacityServices _productionCapacityService;
 
-        public PCEEvaluationController(IMapper mapper, IPCEEvaluationService PCEEvaluationService, IMailService mailService, ILogger<PCEEvaluationController> logger, IUploadFileService UploadFileService, IProductionCapacityServices ProductionCapacityService)
+        public PCEEvaluationController(IMapper mapper, IPCEEvaluationService PCEEvaluationService, ILogger<PCEEvaluationController> logger, IUserService UserService, IUploadFileService UploadFileService, IProductionCapacityServices ProductionCapacityService)
         {
             _PCEEvaluationService = PCEEvaluationService;
             _mapper = mapper;
             _logger = logger;
-            _mailService = mailService;
+            _userService = UserService;
             _uploadFileService = UploadFileService;
             _productionCapacityService = ProductionCapacityService;
+            
         }
 
         [HttpGet]
@@ -184,8 +185,10 @@ namespace mechanical.Controllers
                 {
                     return RedirectToAction("MyPCEs");
                 }
-    
-                ViewData["CurrentUser"] = pceDetail.CurrentUser;
+                
+                var currentUser = await _PCEEvaluationService.GetUser(base.GetCurrentUserId());
+                ViewData["CurrentUser"] = currentUser;
+                // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
                 ViewData["Reestimation"] = pceDetail.Reestimation;
                 ViewData["PCE"] = pceDetail.ProductionCapacity;
                 ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
@@ -291,9 +294,15 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyPCECases");
             }
-            ViewData["PCECaseId"] = Id;
+            
+            ViewData["CurrentUser"] = await _PCEEvaluationService.GetUser(base.GetCurrentUserId());
+            // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
+
+            ViewData["PCECaseId"] = pcecase.Id;
             ViewData["PCECase"] = pcecase;
-            ViewData["Title"] = Status + " PCE Case Details";
+            ViewData["Title"] = Status + " PCE Case Details";             
+
+
             ViewBag.Status = Status;
 
             return View();
