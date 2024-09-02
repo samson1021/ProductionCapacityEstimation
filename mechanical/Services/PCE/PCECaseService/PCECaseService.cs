@@ -436,5 +436,17 @@ namespace mechanical.Services.PCE.PCECaseService
                 PCECaseSchedule = pceCaseSchedule
             };
         }
+     
+        public async Task<IEnumerable<PCENewCaseDto>> GetMyAssignmentPCECases(Guid UserId)
+        {
+            var productionCaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).ThenInclude(res => res.PCECase).Where(pca => pca.UserId == UserId && pca.Status != "Terminate").ToListAsync();
+            var uniquePCECases = productionCaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
+            var pceCaseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(uniquePCECases);
+            foreach (var PCEcaseDto in pceCaseDtos)
+            {
+                PCEcaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == PCEcaseDto.Id);
+            }
+            return pceCaseDtos;
+        }
     }
 }

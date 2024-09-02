@@ -1,0 +1,108 @@
+﻿<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>PCE Case Detail</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("MyPCECases", "PCECase")">My PCE Case</a></li>
+                    <li class="breadcrumb-item active">PCECase Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
+            <table id="PCEs" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                        <th>Property Owner</th>
+                        <th>Role</th>
+                        <th>Production Catagory</th>
+                        <th>Production Type</th>
+                        <th>Assignment Date</th>
+                        <th>PCE Case Owner</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+            </table>
+            <div class="row">
+                <div class="col-xl-2 col-lg-4 col-sm-6">
+                    <button id="assignButton" class="col-12 btn btn-sm bg-purple">Re-Assign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Assign PCE Case</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("PCEReAssignMakerOfficer", "MTLCase", FormMethod.Post, new { id = "assignForm" }))
+                {
+                    <input type="hidden" id="selectedPCEIds" name="selectedPCEIds">
+                    <div class="form-group">
+                        <label for="employeeDropdown">Select Employee:</label>
+                        <select class="form-control" id="employeeDropdown" name="employeeId">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" id="selectedPCEIds" />
+                    </div>
+                    <div class="row col-12">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignButton">Re-Assign</button>
+                            <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="PCEFileModal" tabindex="-1" role="dialog" aria-labelledby="addPCEModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="PCEFileModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> PCE Related Document List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>File Category</th>
+                        <th>File Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="modalTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("Partial/_MyAssignmentPCECaseDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
+    }
+}

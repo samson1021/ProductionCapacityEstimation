@@ -35,5 +35,7 @@ namespace mechanical.Services.PCE.PCECaseService
 
         Task<PCEReportDataDto> GetPCEReportData(Guid Id);
         Task<PCEReportDataDto> GetPCEAllReportData(Guid Id);
+
+        Task<IEnumerable<PCENewCaseDto>> GetMyAssignmentPCECases(Guid UserId);
     }
 }

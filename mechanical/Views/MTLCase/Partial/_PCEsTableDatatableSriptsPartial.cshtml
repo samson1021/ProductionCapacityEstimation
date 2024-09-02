@@ -44,8 +44,7 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var detailUrl = '@Url.Action("Detail", "ProductionCapacity")';
-                            return '<a href="' + detailUrl + '?Id=' + data +
+                            return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data +
                                 '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
                                 '\')">Return</a>';
 

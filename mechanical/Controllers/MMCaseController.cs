@@ -5,6 +5,7 @@ using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MMCaseService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using mechanical.Services.PCE.PCEEvaluationService;
@@ -18,18 +19,20 @@ namespace mechanical.Controllers
         private readonly ICaseAssignmentService _caseAssignmentService;
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
+        private readonly IPCECaseService _PCECaseService;
         private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
         private readonly IPCEEvaluationService _PCEEvaluationService;
 
 
 
-        public MMCaseController(ICaseService caseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IPCEEvaluationService PCEEvaluationService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
+        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IPCEEvaluationService PCEEvaluationService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
             _mMCaseService = mMCaseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTerminateService;
+            _PCECaseService = PCECaseService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
             _PCEEvaluationService = PCEEvaluationService;
         }
@@ -58,6 +61,7 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
+
         [HttpGet]
         public async Task<IActionResult> MyCase(Guid Id)
         {
@@ -87,14 +91,34 @@ namespace mechanical.Controllers
             return Ok(response);
         }
 
+        //[HttpGet]
+        //public IActionResult MyPendingCases()
+        //{
+        //    return View();
+        //}
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetMyPendingCases()
+        //{
+        //    var myCase = await _mMCaseService.GetMmPendingCases();
+        //    string jsonData = JsonConvert.SerializeObject(myCase);
+        //    return Content(jsonData, "application/json");
+        //}
+        //[HttpGet]
+        //public async Task<IActionResult> GetDashboardCaseCount()
+        //{
+        //    var myCase = await _mMCaseService.GetDashboardCaseCount();
+        //    string jsonData = JsonConvert.SerializeObject(myCase);
+        //    return Content(jsonData, "application/json");
+        //}
 
         //// PCE Cases /////////
 
         [HttpPost]
         public async Task<IActionResult> PCEAssignTeamleader(string selectedPCEIds, string employeeId)
         {
-            await _productionCaseAssignmentServices.AssignProductMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
-            var response = new { message = "Productions assigned successfully" };
+            await _productionCaseAssignmentServices.AssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            var response = new { message = "Productions assigned to MTL successfully" };
             return Ok(response);
         }
         
@@ -102,7 +126,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> PCEReAssignTeamleader(string selectedPCEIds, string employeeId)
         {
             await _productionCaseAssignmentServices.ReAssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
-            var response = new { message = "Productions re-assigned successfully" };
+            var response = new { message = "Productions re-assigned to MTL successfully" };
             return Ok(response);
         }
 
@@ -167,26 +191,31 @@ namespace mechanical.Controllers
 
             return View();
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetMyAssignmentPCECases()
+        {
+            var myPCECase = await _PCECaseService.GetMyAssignmentPCECases(base.GetCurrentUserId());
+            if (myPCECase == null) { return BadRequest("Unable to load PCEcase"); }
+            string jsonData = JsonConvert.SerializeObject(myPCECase);
+            return Content(jsonData, "application/json");
+        }
 
-        //[HttpGet]
-        //public IActionResult MyPendingCases()
-        //{
-        //    return View();
-        //}
+        public IActionResult MyPCEAssignments()
+        {
+            return View();
+        }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetMyPendingCases()
-        //{
-        //    var myCase = await _mMCaseService.GetMmPendingCases();
-        //    string jsonData = JsonConvert.SerializeObject(myCase);
-        //    return Content(jsonData, "application/json");
-        //}
-        //[HttpGet]
-        //public async Task<IActionResult> GetDashboardCaseCount()
-        //{
-        //    var myCase = await _mMCaseService.GetDashboardCaseCount();
-        //    string jsonData = JsonConvert.SerializeObject(myCase);
-        //    return Content(jsonData, "application/json");
-        //}
+        public async Task<IActionResult> MyPCEAssignment(Guid Id)
+        {            
+            var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (pcecase == null)
+            {
+                return RedirectToAction("MyPCECases");
+            }
+            ViewData["PCECaseId"] = Id;
+
+            return View();
+        }
     }
 }
