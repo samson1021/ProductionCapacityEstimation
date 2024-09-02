@@ -145,9 +145,9 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyDashboardPCECaseCount()
+        public async Task<IActionResult> GetMyDashboardPCECasesCount()
         {
-            var pcecase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
+            var pcecase = await _PCEEvaluationService.GetDashboardPCECasesCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(pcecase);
             return Content(jsonData, "application/json");
         }

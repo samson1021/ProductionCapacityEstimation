@@ -115,10 +115,10 @@ namespace mechanical.Controllers
                 }
 
                 var pce = await _productionCapacityService.GetProduction(base.GetCurrentUserId(), PCEEvaluation.PCEId);
-                var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), pce.PCECaseId);
+                var pceCase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), pce.PCECaseId);
 
                 ViewData["PCE"] = pce;
-                ViewData["PCECase"] = pcecase;
+                ViewData["PCECase"] = pceCase;
 
                 return View(_mapper.Map<PCEEvaluationUpdateDto>(PCEEvaluation));
             }
@@ -276,12 +276,12 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPCECase(Guid Id)
         {
-            var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), Id);
-            if (pcecase == null)
+            var pceCase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (pceCase == null)
             {
                 return BadRequest("Unable to load PCE Cases");
             }
-            string jsonData = JsonConvert.SerializeObject(pcecase);
+            string jsonData = JsonConvert.SerializeObject(pceCase);
             return Content(jsonData, "application/json");
         }
 
@@ -289,8 +289,8 @@ namespace mechanical.Controllers
         public async Task<IActionResult> PCECaseDetail(Guid Id, string Status)
         {
 
-            var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), Id);
-            if (pcecase == null)
+            var pceCase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (pceCase == null)
             {
                 return RedirectToAction("MyPCECases");
             }
@@ -298,8 +298,8 @@ namespace mechanical.Controllers
             ViewData["CurrentUser"] = await _PCEEvaluationService.GetUser(base.GetCurrentUserId());
             // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
 
-            ViewData["PCECaseId"] = pcecase.Id;
-            ViewData["PCECase"] = pcecase;
+            ViewData["PCECaseId"] = pceCase.Id;
+            ViewData["PCECase"] = pceCase;
             ViewData["Title"] = Status + " PCE Case Details";             
 
 
@@ -320,20 +320,33 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyPCECases(string Status)
         {
-            var pcecase = await _PCEEvaluationService.GetPCECases(base.GetCurrentUserId(), Status);
-            if (pcecase == null)
+            var pceCases = await _PCEEvaluationService.GetPCECases(base.GetCurrentUserId(), Status);
+            if (pceCases == null)
             {
                 return BadRequest("Unable to load {Status} PCE Cases");
             }
-            string jsonData = JsonConvert.SerializeObject(pcecase);
+            string jsonData = JsonConvert.SerializeObject(pceCases);
             return Content(jsonData, "application/json");
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyDashboardPCECaseCount()
+        public async Task<IActionResult> GetLatestMyPCECases(string Status)
         {
-            var pcecase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(pcecase);
+            var Limit = 10;
+            var pceCases = await _PCEEvaluationService.GetPCECases(base.GetCurrentUserId(), Status, Limit);
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load {Status} PCE Cases");
+            }
+            string jsonData = JsonConvert.SerializeObject(pceCases);
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyDashboardPCECasesCount()
+        {
+            var pceCasesCount = await _PCEEvaluationService.GetDashboardPCECasesCount(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(pceCasesCount);
             return Content(jsonData, "application/json");
         }
 
@@ -349,8 +362,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPCEs(Guid PCECaseId, string Status)
         {
-            var Stage = string.Empty;
-            var productions = await _PCEEvaluationService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Stage, Status);
+            var productions = await _PCEEvaluationService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Status: Status);
 
             if (productions == null)
             {
@@ -374,10 +386,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyPCEs(string Status)
         {
-            Guid? PCECaseId = null;
-            var Stage = string.Empty;
-
-            var myPCEs = await _PCEEvaluationService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Stage, Status);
+            var myPCEs = await _PCEEvaluationService.GetPCEs(base.GetCurrentUserId(), Status: Status);
             if (myPCEs == null)
             {
                 return BadRequest("Unable to load {Status} PCEs");
@@ -390,9 +399,7 @@ namespace mechanical.Controllers
         // [HttpGet]
         // public async Task<IActionResult> GetMyDashboardPCECount()
         // {
-        //     Guid? PCECaseId = null;
-        //     var Stage = string.Empty;
-        //     var myPCEs = await _PCEEvaluationService.GetDashboardPCECount(base.GetCurrentUserId(), PCECaseId, Stage);
+        //     var myPCEs = await _PCEEvaluationService.GetDashboardPCECount(base.GetCurrentUserId());
         //     string jsonData = JsonConvert.SerializeObject(myPCEs);
         //     return Content(jsonData, "application/json");
         // }

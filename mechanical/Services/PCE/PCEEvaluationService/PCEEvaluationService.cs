@@ -392,7 +392,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
         
-        public async Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status)
+        public async Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status, int? Limit = null)
         {
             var PCECaseAssignmentsQuery = _cbeContext.ProductionCaseAssignments
                                                     .AsNoTracking()
@@ -426,13 +426,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                     : productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id && pc.CurrentStatus == Status);
                 Dto.TotalNoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id);
                 return Dto;
-            }).ToList();
+            });
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                returnDtos = returnDtos.Take(Limit.Value);
+            }
 
-            return returnDtos;
+            return returnDtos.ToList();
         }
 
 
-        public async Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId)
+        public async Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId)
         {
             var allPCEs = await _cbeContext.ProductionCaseAssignments
                                             .AsNoTracking()
