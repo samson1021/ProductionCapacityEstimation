@@ -1,13 +1,14 @@
-﻿<section class="content-header">
+﻿
+<section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>My Reestimation Cases</h1>
+                <h4>My PCE Terminated Case</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">My Reestimation  Case</li>
+                    <li class="breadcrumb-item active">My PCETerminated Case</li>
                 </ol>
             </div>
         </div>
@@ -17,16 +18,16 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="MyNewCase" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Created At</th>
                             <th>Case No</th>
                             <th>Aplicant Name</th>
                             <th>Customer Id</th>
-                            <th>Completed Collaterals</th>
-                            <th>Total Collateral</th>
-                            <th>Action</th>
+                            <th>Number of PCE</th>
+                            <th>Termination Reason</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
 
@@ -48,51 +49,51 @@
     <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
     <script src="~/lib/datatable/js/buttons.print.min.js"></script>
     <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: '/Case/GetCompleteCases',
+                url: '/PCECase/GetPCETerminatedCases',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    $('#example1').DataTable({
+                    $('#MyNewCase').DataTable({
                         data: data,
-                        columns: [
-                            {
-                                data: 'CreationAt',
-                                width: '15%',
-                                render: function (data, type, row, meta) {
-                                    var date = new Date(data);
-                                    return date.toLocaleString();
+                        columns:
+                            [
+                                {
+                                    data: 'CreationAt',
+                                    width: '15%',
+                                    render: function (data, type, row, meta) {
+                                        var date = new Date(data);
+                                        return date.toLocaleString();
+                                    }
+                                },
+                                { data: 'CaseNo', width: '10%' },
+                                { data: 'ApplicantName', width: '20%' },
+                                { data: 'CustomerId', width: '15%' },
+                                { data: 'NoOfCollateral', width: '15%' },
+                                { data: 'TerminationReason', width: '15%' },
+                                {
+                                    data: 'Id',
+                                    width: '10%',
+                                    render: function (data, type, row, meta) {
+                                        return '<span class="text-danger">Terminated</span>';
+                                    }
                                 }
-                            },
-                            { data: 'CaseNo', width: '10%' },
-                            { data: 'ApplicantName', width: '20%' },
-                            { data: 'CustomerId', width: '15%' },
-                            { data: 'NoOfCollateral', width: '15%' },
-                            { data: 'TotalNoOfCollateral', width: '15%' },
-                            {
-                                data: 'Id',
-                                width: '10%',
-                                render: function (data, type, row, meta) {
-                                    return '<a href="@Url.Action("ReestimationCase", "Case")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
-                                }
-                            }
 
-                        ],
+                            ],
                         order: [[0, 'desc']],
                         responsive: true,
                         lengthChange: false,
                         autoWidth: false,
-                        buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"]
-                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                        buttons: [{ extend: 'copy', title: 'RM New Case' }, { extend: 'csv', title: 'RM New Case' }, { extend: 'excel', title: 'RM New Case' }, { extend: 'pdf', title: 'RM New Case - pdf' }, { extend: 'print', title: 'RM New Case - Print' }, 'colvis']
+                    }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
                 }
             });
         });
-
     </script>
+
     @{
+
     }
 }
-
