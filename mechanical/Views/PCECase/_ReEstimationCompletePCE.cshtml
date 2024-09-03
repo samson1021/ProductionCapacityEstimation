@@ -46,7 +46,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("SendForValuation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("SendProductionForReestimation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
                     <div class="form-group">

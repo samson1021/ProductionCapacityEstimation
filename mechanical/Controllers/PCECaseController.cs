@@ -171,7 +171,7 @@ namespace mechanical.Controllers.PCE
         {
 
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
-            var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
+            //var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
            // var production = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId).ToListAsync();
             if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["case"] = loanCase;
