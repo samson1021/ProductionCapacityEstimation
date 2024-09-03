@@ -46,6 +46,7 @@ using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using Signature_management.Service.SignatureService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,8 +117,6 @@ builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 
 
-
-builder.Services.AddScoped<ISignatureService, SignatureService>();
 
 
 

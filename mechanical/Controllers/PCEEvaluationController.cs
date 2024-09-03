@@ -305,7 +305,7 @@ namespace mechanical.Controllers
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/PCEEvaluation/GetMyPCECases";
             ViewBag.Status = Status;
-            return View("PCECases");
+            return View("PCEs");
         }
 
         [HttpGet]

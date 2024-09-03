@@ -6,6 +6,14 @@ namespace mechanical.Models.Enum
     {
         [Display(Name = "Industrial (Mfg) Machinery")]
         IndustrialMachinery,
+        [Display(Name = "Industrial (Mfg.) Process Line Equipment")]
+        IndustrialMfgProcessLineEquipment,
+
+        [Display(Name = "HVAC system, Fuel Station and Security Apparatus etc")]
+        HVACSystemFuelStationAndSecurityApparatusetc,
+        
+        [Display(Name = "Hotel, Office, Laboratory Equipment etc")]
+        HotelOfficeLaboratoryEquipment,
 
         [Display(Name = "Building Facility Equipment")]
         BuildingFacilityEquipment ,

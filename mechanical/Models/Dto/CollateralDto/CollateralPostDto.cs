@@ -37,9 +37,9 @@ namespace mechanical.Models.Dto.CollateralDto
         public string? Ownership { get; set; }
         public string? LHCNo { get; set; }
        
-        public required IFormFile TitleDeed { get; set; }
-        public required IFormFile CommercialInvoice { get; set; }
-        public required IFormFile CustomDeclaration { get; set; }
+        public required IFormFile? TitleDeed { get; set; }
+        public required IFormFile? CommercialInvoice { get; set; }
+        public required IFormFile? CustomDeclaration { get; set; }
         public IFormFile? PackingList { get; set; }
         public IFormFile? SalesDocument { get; set; }
         public IEnumerable<IFormFile>? OtherDocument { get; set; }
