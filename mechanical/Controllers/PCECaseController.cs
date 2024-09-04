@@ -2,8 +2,12 @@
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
+using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.UploadFileService;
@@ -25,9 +29,12 @@ namespace mechanical.Controllers.PCE
         private readonly IProductionCaseAssignmentServices _productionCaseAssignmentService;
         private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IUploadFileService _uploadFileService;
+        private readonly IPCECaseTerminateService _pcecaseTermnateService;
+        private readonly IPCECaseScheduleService _pcecaseScheduleService;
 
 
-        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IProductionCaseAssignmentServices ProductionCaseAssignmentService , IUploadFileService uploadFileService)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService , IUploadFileService uploadFileService)
+ 
         {
             _cbeContext = cbeContext;
             _PCECaseService = PCECaseService;
@@ -144,6 +151,41 @@ namespace mechanical.Controllers.PCE
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
 
+        // PCE Terminate Cases
+        [HttpGet]
+        public IActionResult PCETerminatedCases()
+        {
+            return View();
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetPCETerminatedCases()
+        {
+            var newCases = await _PCECaseService.GetCaseTerminates(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
+
+
+        [HttpGet]
+        public IActionResult PCEReestimationCases()
+        {
+            return View();
+        }
+        public async Task<IActionResult> PCEReestimationCase(Guid Id)       {
+
+            var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
+            //var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
+           // var production = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
+            ViewData["case"] = loanCase;
+            //ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+
+
+
+
 
 
         [HttpGet]
@@ -230,9 +272,6 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetPCECompleteCases()
         {
-            //var newCases = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
-            //return Content(JsonConvert.SerializeObject(newCases), "application/json");
-
             var myCase = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
@@ -245,7 +284,7 @@ namespace mechanical.Controllers.PCE
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
             //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
             var production = await _cbeContext.ProductionCapacities.ToListAsync();
-            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["case"] = loanCase;
           //  ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();

@@ -4,14 +4,14 @@
     var empId = ViewData["EmployeeId"];
 
 
+
 }
-
-
+<link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6 col-xl-6 offset-xl-1">
-                <h4 class="m-0">Create new Produ Capacity Estimation case</h4>
+                <h4 class="m-0">Create New Case</h4>
             </div>
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
@@ -28,52 +28,46 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                    PCE Case
+                    Case
                 </h3>
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="PCECreate" onsubmit="return validateForm()">
 
-
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CaseNo">Case Number</label>
                             <div class="input-group" style="margin:0;">
-                             <input asp-for="CaseNo" type="text" class="form-control col-lg-10" id="caseNumber" required readonly>
-                              <input type="button" class="form-control btn btn-outline-primary  col-lg-2" id="GenerateCaseNo" value="Generate" required>
+                                <input asp-for="CaseNo" type="text" class="form-control col-lg-10" id="caseNumber" required readonly>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-2" id="GenerateCaseNo" value="Generate" required>
                             </div>
                             <span asp-validation-for="CaseNo" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name</label>
-                            <div class="input-group" style="margin:0;">
-                                <input asp-for="ApplicantName" type="text" class="form-control col-lg-10" id="applicantName" required oninvalid="handleInvalidInput()">
-                                <button id="checkApplicantName" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#checkApplicantNameModal">
-                                    <i class="fas fa-search"></i> Check the Apllicant Name
-                                </button>
-                            </div>
-                            <span id="applicantName-error" asp-validation-for="ApplicantName" class="text-danger"></span>
+                            <label asp-for="CustomerUserId">Customer ID</label>
+                            <input asp-for="CustomerUserId" type="number" class="form-control" id="CustomerUserId" maxlength="10" required>
+                            <span id="CustomerUserId-error" asp-validation-for="CustomerUserId" class="text-danger"></span>
                         </div>
                     </div>
-
-
-
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="CustomerUserId">Customer ID</label>
-                            <input asp-for="CustomerUserId" type="number" class="form-control" id="CustomerId" maxlength="10" required>
-                            <span id="CustomerId-error" asp-validation-for="CustomerUserId" class="text-danger"></span>
+                            <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name</label>
+                            <input asp-for="ApplicantName" type="text" class="form-control" id="applicantName" required oninvalid="handleInvalidInput()">
+                            <span id="applicantName-error" asp-validation-for="ApplicantName" class="text-danger"></span>
                         </div>
+
                     </div>
+
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CustomerEmail">Customer Email</label>
-                            <input asp-for="CustomerEmail" type="email" class="form-control" id="customerEmail">
+                            <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerUserId">
                             <span asp-validation-for="CustomerEmail" class="text-danger"></span>
                         </div>
                     </div>
+                 
                     <div class="row">
                         <button type="submit" class="col-xl-4  btn bg-purple">Register</button>
                     </div>
@@ -82,33 +76,87 @@
         </div>
     </section>
 </section>
-
-
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("Partial/_PCECaseModal");
-
     }
-
     <script>
+        document.getElementById('CustomerUserId').addEventListener('change', function () {
+            // Show loading indicator
+            showLoadingIndicator();
+
+            var CustomerUserId = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '/Case/GetCustomerName',
+                data: { customerId: CustomerUserId },
+                success: function (response) {
+                    if (response == "err") {
+                        alert("unable to load applicant name");
+                    } else {
+                        document.getElementById('applicantName').value = response;
+                    }
+                    // Hide loading indicator
+                    hideLoadingIndicator();
+                },
+                error: function (xhr, status, error) {
+                    // Hide loading indicator
+                    hideLoadingIndicator();
+                }
+            });
+        });
+
+        function showLoadingIndicator() {
+            // Disable the page
+            document.body.style.pointerEvents = 'none';
+            document.body.style.opacity = '0.5';
+
+            // Show a loading indicator
+            var loadingIndicator = document.createElement('div');
+            loadingIndicator.classList.add('loading-indicator');
+
+            var spinner = document.createElement('div');
+            spinner.classList.add('spinner');
+            loadingIndicator.appendChild(spinner);
+
+            var loadingText = document.createElement('span');
+            loadingText.textContent = 'Getting customer name, please wait...';
+            loadingIndicator.appendChild(loadingText);
+
+            document.body.appendChild(loadingIndicator);
+        }
+
+        function hideLoadingIndicator() {
+            // Remove the loading indicator
+            var loadingIndicator = document.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                document.body.removeChild(loadingIndicator);
+            }
+
+            // Enable the page
+            document.body.style.pointerEvents = 'auto';
+            document.body.style.opacity = '1';
+        }
+        
+        
         $(document).ready(function () {
 
-                $("#GenerateCaseNo").on('click', function () {
+          
+
+            $("#GenerateCaseNo").on('click', function () {
                 var employeeId = @empId;
                 console.log(employeeId);
                 var currentDate = new Date();
                 var year = currentDate.getFullYear();
-                var month = currentDate.getMonth() + 1; 
-                var formattedMonth = month.toString().padStart(2, '0'); 
+                var month = currentDate.getMonth() + 1;
+                var formattedMonth = month.toString().padStart(2, '0');
 
                 $.ajax({
                     url: '/Case/GetNextCaseNumber',
                     method: "GET",
                     success: function (data) {
-                        var consecutiveNumber = data.nextNumber.toString().padStart(4, '0'); 
-                        var caseNumber = employeeId +'/'+ consecutiveNumber +'/'+ formattedMonth +'/'+ year;
+                        var consecutiveNumber = data.nextNumber.toString().padStart(4, '0');
+                        var caseNumber = employeeId + '/' + consecutiveNumber + '/' + formattedMonth + '/' + year;
 
                         $("#caseNumber").val(caseNumber);
                     },
@@ -119,55 +167,37 @@
                 $('#GenerateCaseNo').prop('disabled', true);
 
             });
-
         });
 
         //this is the input validation for application name
         document.getElementById("applicantName").addEventListener("input", function () {
             var input = this.value;
-            var nameRegex = /^[A-Za-z\s]+$/;
-         
-            if (!nameRegex.test(input)) {
-                this.setCustomValidity("Only letters and spaces are allowed.");
-                document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
+            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+
+            if (!alphanumericRegex.test(input)) {
+                this.setCustomValidity("Only alphanumeric characters are allowed.");
+                document.getElementById("applicantName-error").textContent = "Only alphanumeric characters are allowed.";
             } else {
                 this.setCustomValidity("");
                 document.getElementById("applicantName-error").textContent = "";
             }
         });
-
-
-        function validateForm(){
-            var applicantName = document.getElementById("applicantName");
-            var nameRegex = /^[A-Za-z\s]+$/;
-
-            if (!nameRegex.test(applicantName.value)) {
-              
-                applicantName.setCustomValidity("Only letters and spaces are allowed.");
-                document.getElementById("applicantName-error").textContent = "Only letters and spaces are allowed.";
-                applicantName.reportValidity();
-                return false;
-            } else {
-                applicantName.setCustomValidity("");
-                document.getElementById("applicantName-error").textContent = "";
-                return true;
-            }
-        }
-
-
         //validate the customer Id length
-        document.getElementById("CustomerId").addEventListener("input", function () {
-            event.preventDefault();
+        document.getElementById("CustomerUserId").addEventListener("input", function () {
             var input = this.value;
             if (input.length !== 10) {
                 this.setCustomValidity("Customer ID must be exactly 10 digits.");
-                document.getElementById("CustomerId-error").textContent = "Customer ID must be exactly 10 digits.";
+                document.getElementById("CustomerUserId-error").textContent = "Customer ID must be exactly 10 digits.";
             } else {
                 this.setCustomValidity("");
-                document.getElementById("CustomerId-error").textContent = "";
+                document.getElementById("CustomerUserId-error").textContent = "";
             }
         });
+        var applicantNameLabel = document.getElementById('applicantNameLabel');
+        var applicantNameInput = document.getElementById('applicantName');
 
+
+   
     </script>
 }
 

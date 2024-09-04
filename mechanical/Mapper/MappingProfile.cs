@@ -25,6 +25,8 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
+using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
 /////
 
 namespace mechanical.Mapper
@@ -173,6 +175,14 @@ namespace mechanical.Mapper
             CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
             CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
             CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
+            ////////////
+             CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>();
+            CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>();
+            ////////////
+
+            CreateMap<ProductionCaseSchedulePostDto, ProductionCaseSchedule>();
+            CreateMap<ProductionCaseSchedule, ProductionCaseScheduleReturnDto>();
+
 
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();

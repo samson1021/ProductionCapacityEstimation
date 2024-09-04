@@ -4,6 +4,7 @@ using mechanical.Services.CaseServices;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using mechanical.Services.PCE.MOPCECaseService;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,11 @@ namespace mechanical.Controllers
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IPCECaseService _PCECaseService;
+        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
         private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
         private readonly IMOPCECaseService _MOPCECaseService;
 
-        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, IPCECaseService PCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
+        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, IPCECaseService PCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
@@ -30,6 +32,7 @@ namespace mechanical.Controllers
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
             _PCECaseService = PCECaseService;
+            _ProductionCaseScheduleService = ProductionCaseScheduleService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
             _MOPCECaseService = MOPCECaseService;
         }
@@ -177,14 +180,21 @@ namespace mechanical.Controllers
         public async Task<IActionResult> PCECaseDetail(Guid Id, string Status)
         {
 
-            var pcecase = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
-            if (pcecase == null)
+            var pceCase = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (pceCase == null)
             {
                 return RedirectToAction("MyPCECases");
             }
-            ViewData["PCECaseId"] = Id;
-            ViewData["PCECase"] = pcecase;
-            ViewData["Title"] = Status + " PCE Case Details";
+            // var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            
+            ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
+            // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
+            ViewData["PCECaseId"] = pceCase.Id;
+            ViewData["PCECase"] = pceCase;
+            // ViewData["PCECaseTerminate"] = PCECaseTerminate;
+            ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
+            ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
 
             return View();

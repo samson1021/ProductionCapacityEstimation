@@ -50,7 +50,7 @@
                         render: function (data, type, row, meta) {
                                                        
                             const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
-                            const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?PCEId=';
+                            const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
                             const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
 
                             const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")

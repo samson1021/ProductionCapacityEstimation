@@ -31,7 +31,7 @@
         function loadPCEs() {
 
             $.ajax({
-                url: '/ProductionCapacity/GetRemarkProductions?CaseId=' + '@ViewData["PCECaseId"]',
+                url: '/ProductionCapacity/GetRemarkProductions?PCECaseId=' + '@ViewData["PCECaseId"]',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

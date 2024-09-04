@@ -463,5 +463,18 @@ namespace mechanical.Services.PCE.PCECaseService
             }
             return PCECaseDtos;
         }
+
+        public async Task<IEnumerable<PCECaseTerminateDto>> GetCaseTerminates(Guid userId)
+        {
+            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities)
+                       .Where(res => res.Id == userId && res.CurrentStatus == "Terminate")
+                       .ToListAsync();
+            var caseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(cases);
+            foreach (var caseDto in caseDtos)
+            {
+                caseDto.TerminationReason = (await _cbeContext.PCECaseTerminates.Where(res => res.PCECaseId == caseDto.Id).FirstOrDefaultAsync()).Reason;
+            }
+            return caseDtos;
+        }
     }
 }

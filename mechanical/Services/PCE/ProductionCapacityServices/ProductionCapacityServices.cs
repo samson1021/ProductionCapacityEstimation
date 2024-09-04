@@ -417,12 +417,12 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return null;
         }
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetRemarkProductions(Guid UserId, Guid ProductionCaseId)
+        public async Task<IEnumerable<ReturnProductionDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId)
         {
             var productioncaseAssignments = await _cbeContext.ProductionCaseAssignments
                                                             .Include(res => res.ProductionCapacity)
                                                             .Where(res => res.UserId == UserId 
-                                                                        && res.ProductionCapacity.PCECaseId == ProductionCaseId 
+                                                                        && res.ProductionCapacity.PCECaseId == PCECaseId 
                                                                         && res.Status.Contains("Remark"))
                                                             .ToListAsync();
             var productions = productioncaseAssignments.Select(res => res.ProductionCapacity);
