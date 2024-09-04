@@ -5,6 +5,9 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
@@ -31,9 +34,10 @@ namespace mechanical.Controllers.PCE
         private readonly IUploadFileService _uploadFileService;
         private readonly IPCECaseTerminateService _pcecaseTermnateService;
         private readonly IPCECaseScheduleService _pcecaseScheduleService;
+        private readonly IPCECaseTerminateService _pcecaseTermnateService;
+        private readonly IPCECaseScheduleService _pcecaseScheduleService;
 
-
-        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService , IUploadFileService uploadFileService)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseTerminateService pcecaseTermnateService, IPCECaseScheduleService pcecaseScheduleService)
  
         {
             _cbeContext = cbeContext;
@@ -42,6 +46,8 @@ namespace mechanical.Controllers.PCE
             _productionCaseAssignmentService = ProductionCaseAssignmentService;
             _PCEEvaluationService = PCEEvaluationService;
             _uploadFileService = uploadFileService;
+            _pcecaseTermnateService = pcecaseTermnateService;
+            _pcecaseScheduleService = pcecaseScheduleService;
         }
 
 
@@ -186,6 +192,41 @@ namespace mechanical.Controllers.PCE
 
 
 
+        // PCE Terminate Cases
+        [HttpGet]
+        public IActionResult PCETerminatedCases()
+        {
+            return View();
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetPCETerminatedCases()
+        {
+            var newCases = await _PCECaseService.GetCaseTerminates(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
+
+
+        [HttpGet]
+        public IActionResult PCEReestimationCases()
+        {
+            return View();
+        }
+        public async Task<IActionResult> PCEReestimationCase(Guid Id)       {
+
+            var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
+            //var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
+           // var production = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
+            ViewData["case"] = loanCase;
+            //ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+
+
+
+
 
 
         [HttpGet]
@@ -284,6 +325,7 @@ namespace mechanical.Controllers.PCE
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
             //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
             var production = await _cbeContext.ProductionCapacities.ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["case"] = loanCase;
           //  ViewData["CaseSchedule"] = caseSchedule;

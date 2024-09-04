@@ -36,6 +36,8 @@ namespace mechanical.Services.PCE.PCECaseService
 
         Task<IEnumerable<PCENewCaseDto>> GetMyAssignmentPCECases(Guid UserId);   
         Task<IEnumerable<PCENewCaseDto>> GetRemarkedPCECases(Guid UserId);
+        Task<IEnumerable<PCENewCaseDto>> GetMyAssignmentPCECases(Guid UserId);
+
         Task<IEnumerable<PCECaseTerminateDto>> GetCaseTerminates(Guid userId);
     }
 }
