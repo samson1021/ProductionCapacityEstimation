@@ -167,8 +167,7 @@ namespace mechanical.Controllers.PCE
         {
             return View();
         }
-        public async Task<IActionResult> PCEReestimationCase(Guid Id)
-        {
+        public async Task<IActionResult> PCEReestimationCase(Guid Id)       {
 
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
             //var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
