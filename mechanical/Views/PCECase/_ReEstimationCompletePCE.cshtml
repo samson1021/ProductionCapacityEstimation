@@ -1,31 +1,20 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
-@using mechanical.Models.PCE.Entities
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto;
+﻿@* @model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+    var motorVehicle = ViewData["motorVehicle"];
+    var indBldgFacEq = ViewData["indBldgFacEq"];
+    var conMngAgr = ViewData["conMngAgr"];
+} *@
+@using mechanical.Models.PCE.Enum.ProductionCapacity
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 @{
     var myCase = ViewData["case"] as PCECaseReturntDto;
-    // var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
-    // var myCase = ViewData["case"] as CaseReturntDto;
-   // var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
- 
 }
 
 <div class="card">
-    <div class="Card-header">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12 col-sm-6">
-                    <div class="btn-group">                       
-                        <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
-                    </div>
+    <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" />
 
-
-                </div>
-                <div class="col-12 col-sm-4">
-                </div>
-            </div>
-        </div>
-    </div>
-   @*  <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" /> *@
     <div class="card-body">
         <table id="caseCollaterals" class="table table-bordered table-striped">
             <thead>
@@ -38,20 +27,15 @@
                     <th>Action</th>
                 </tr>
             </thead>
-        </table>      
+        </table>
         <div class="row">
-            <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" />
-            <div class="row">
-                <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Request Re-estimation </button>
-            </div>
-        </div
-       @*  <div class="row">
-            <div class="col-xl-3 col-lg-4 col-sm-6">
+            <div class="col-xl-2 col-lg-4 col-sm-6">
                 <button id="assignButton" class="col-12 btn btn-sm bg-purple">Request Re-estimation</button>
             </div>
-        </div> *@
+        </div>
     </div>
 </div>
+
 <div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -72,10 +56,10 @@
                     </div>
                     <div class="form-group">
                         <label for="CenterDropdown">Re-estimation Reason:</label>
-                        <select class="form-control" id="ReestimationReason" name="ReestimationReason" required>
+                        <select class="form-control" id="ReestimationReason" name="ReestimationReason">
                             <option value="" disabled selected>Select Re-estimation Reason </option>
                             <option value="Customer Appeal">Customer Appeal</option>
-                            <option value="Re-estimation">Re-estimation </option>
+                            <option value="Customer Appeal">Re-estimation </option>
                         </select>
                     </div>
                     <div class="row col-12">

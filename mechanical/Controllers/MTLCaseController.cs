@@ -3,6 +3,8 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MMCaseService;
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using mechanical.Services.PCE.PCEEvaluationService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,15 +18,19 @@ namespace mechanical.Controllers
         private readonly ICaseAssignmentService _caseAssignmentService;
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
+        private readonly IPCECaseService _PCECaseService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
         private readonly IPCEEvaluationService _PCEEvaluationService;
 
-        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, IPCEEvaluationService PCEEvaluationService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
+        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, IPCECaseService PCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IPCEEvaluationService PCEEvaluationService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
             _mmCaseService = mMCaseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
+            _PCECaseService = PCECaseService;
+            _productionCaseAssignmentServices = productionCaseAssignmentServices;
             _PCEEvaluationService = PCEEvaluationService;
         }
 
@@ -61,7 +67,8 @@ namespace mechanical.Controllers
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
             return View();
-        }
+        }        
+
         [HttpGet]
         public async Task<IActionResult> MyCase(Guid Id)
         {
@@ -106,6 +113,21 @@ namespace mechanical.Controllers
         //}
 
 
+        [HttpPost]
+        public async Task<IActionResult> PCEAssignMakerOfficer(string selectedPCEIds, string employeeId)
+        {
+            
+            await _productionCaseAssignmentServices.AssignProductionMakerOfficer(base.GetCurrentUserId(),selectedPCEIds, employeeId);
+            var response = new { message = "Productions assigned to MO successfully" };
+            return Ok(response);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PCEReAssignMakerOfficer(string selectedPCEIds, string employeeId)
+        {
+            await _productionCaseAssignmentServices.ReAssignProductionMakerOfficer(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            var response = new { message = "Productions re-assigned to MO successfully" };
+            return Ok(response);
+        }
         
         [HttpGet]
         public IActionResult MyPCECases(string Status = "New")
@@ -145,9 +167,9 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyDashboardPCECaseCount()
+        public async Task<IActionResult> GetMyDashboardPCECasesCount()
         {
-            var pcecase = await _PCEEvaluationService.GetDashboardPCECaseCount(base.GetCurrentUserId());
+            var pcecase = await _PCEEvaluationService.GetDashboardPCECasesCount(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(pcecase);
             return Content(jsonData, "application/json");
         }
@@ -165,6 +187,32 @@ namespace mechanical.Controllers
             ViewData["PCECase"] = pcecase;
             ViewData["Title"] = Status + " PCE Case Details";
             ViewBag.Status = Status;
+
+            return View();
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetMyAssignmentPCECases()
+        {
+            var myPCECase = await _PCECaseService.GetMyAssignmentPCECases(base.GetCurrentUserId());
+            if (myPCECase == null) { return BadRequest("Unable to load PCEcase"); }
+            string jsonData = JsonConvert.SerializeObject(myPCECase);
+            return Content(jsonData, "application/json");
+        }
+
+        public IActionResult MyPCEAssignments()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> MyPCEAssignment(Guid Id)
+        {            
+            var pcecase = await _PCEEvaluationService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (pcecase == null)
+            {
+                return RedirectToAction("MyPCECases");
+            }
+            ViewData["PCECaseId"] = Id;
 
             return View();
         }

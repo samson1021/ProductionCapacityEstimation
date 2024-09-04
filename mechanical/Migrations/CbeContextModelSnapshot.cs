@@ -1178,6 +1178,37 @@ namespace mechanical.Migrations
                     b.ToTable("PCECases");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PCECaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PCECaseTerminates");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1989,6 +2020,25 @@ namespace mechanical.Migrations
                     b.Navigation("District");
 
                     b.Navigation("RMUser");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany()
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PCECase");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>
