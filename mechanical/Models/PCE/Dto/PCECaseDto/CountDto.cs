@@ -1,4 +1,4 @@
-﻿namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
+﻿namespace mechanical.Models.PCE.Dto.PCECaseDto
 {
     public class PCECasesCountDto
     {

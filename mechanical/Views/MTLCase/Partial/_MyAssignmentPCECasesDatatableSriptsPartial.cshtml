@@ -21,7 +21,8 @@
                             width: '15%',
                             render: function (data, type, row, meta) {
                                 var date = new Date(data);
-                                return date.toLocaleString();
+                                return date.toISOString().split('T')[0]; 
+                                // return date.toLocaleString();
                             }
                         },
                         { data: 'CaseNo', width: '10%' },

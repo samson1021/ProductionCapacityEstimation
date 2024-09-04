@@ -330,9 +330,9 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRemarkProducts(Guid CaseId)
+        public async Task<IActionResult> GetRemarkProductions(Guid CaseId)
         {
-            var collaterals = await _productionCapacityServices.GetRemarkProducts(base.GetCurrentUserId(), CaseId);
+            var collaterals = await _productionCapacityServices.GetRemarkProductions(base.GetCurrentUserId(), CaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }

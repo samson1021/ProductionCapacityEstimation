@@ -8,11 +8,11 @@
 
 <script>
     $(document).ready(function () {
-
+        
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
-            PreviousValuationsTable = $('#PreviousValuations').DataTable({
+            $('#PreviousValuations').DataTable({
                 language: {
                     emptyTable: '@EmptyMessage'
                 },
@@ -37,8 +37,7 @@
                 dataType: 'json',
                 success: function (data) {
                     if ($.fn.DataTable.isDataTable('#PreviousValuations')) {
-                        var PreviousValuationsTable = $('#PreviousValuations').DataTable();
-                        PreviousValuationsTable.destroy();
+                        $('#PreviousValuations').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },
@@ -51,5 +50,8 @@
         loadPreviousValuations();
     });
 
-
+    function openRejectionModal(PCEId) {
+        document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
+        $('#rejectionModal1').modal('show');
+    }
 </script>

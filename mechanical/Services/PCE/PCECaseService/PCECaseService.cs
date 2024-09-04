@@ -448,5 +448,20 @@ namespace mechanical.Services.PCE.PCECaseService
             }
             return pceCaseDtos;
         }
+
+        public async Task<IEnumerable<PCENewCaseDto>> GetRemarkedPCECases(Guid UserId)
+        {
+            var PCECases = await _cbeContext.PCECases
+                                            .Include(pc => pc.ProductionCapacities.Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
+                                            .Where(res => res.ProductionCapacities.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
+                                            // .Where(res => res.PCECaseOriginatorId == UserId && (res.ProductionCapacities.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")))
+                                            .ToListAsync();
+            var PCECaseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(PCECases);
+            foreach (var PCECaseDto in PCECaseDtos)
+            {
+                PCECaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == PCECaseDto.Id);
+            }
+            return PCECaseDtos;
+        }
     }
 }

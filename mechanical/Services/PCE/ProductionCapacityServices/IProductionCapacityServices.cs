@@ -29,7 +29,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid PCECaseId);
         Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid userId, Guid PCECaseId);
-        Task<IEnumerable<ReturnProductionDto>> GetRemarkProducts(Guid userId, Guid PCECaseId);
+        Task<IEnumerable<ReturnProductionDto>> GetRemarkProductions(Guid userId, Guid PCECaseId);
         Task<ReturnProductionDto> GetProductionCapacityById(Guid productionid);
        
         Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionid);

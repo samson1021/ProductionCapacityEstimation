@@ -41,6 +41,7 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
@@ -130,6 +131,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 // builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+builder.Services.AddScoped<IMOPCECaseService, MOPCECaseService>();
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
 

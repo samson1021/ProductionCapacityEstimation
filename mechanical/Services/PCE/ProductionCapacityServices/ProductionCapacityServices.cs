@@ -417,9 +417,14 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return null;
         }
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetRemarkProducts(Guid UserId, Guid ProductionCaseId)
+        public async Task<IEnumerable<ReturnProductionDto>> GetRemarkProductions(Guid UserId, Guid ProductionCaseId)
         {
-            var productioncaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == UserId && res.ProductionCapacity.PCECaseId == ProductionCaseId && res.Status.Contains("Remark")).ToListAsync();
+            var productioncaseAssignments = await _cbeContext.ProductionCaseAssignments
+                                                            .Include(res => res.ProductionCapacity)
+                                                            .Where(res => res.UserId == UserId 
+                                                                        && res.ProductionCapacity.PCECaseId == ProductionCaseId 
+                                                                        && res.Status.Contains("Remark"))
+                                                            .ToListAsync();
             var productions = productioncaseAssignments.Select(res => res.ProductionCapacity);
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
