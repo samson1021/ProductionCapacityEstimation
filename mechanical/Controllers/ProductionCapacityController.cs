@@ -341,7 +341,6 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRMCompleteCollaterals(Guid PCECaseId)
         {
-           /// Guid PCECaseId = Guid.Parse("ced1b3c4-7ee3-4219-a62a-72cb7475f304");
             var collaterals = await _productionCapacityServices.GetRmComCollaterals(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
