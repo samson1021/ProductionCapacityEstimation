@@ -26,7 +26,7 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             {
                 throw new Exception("case Terminatenot Found");
             }
-            pcecaseTerminate.Status = "Approved";
+            pcecaseTerminate.CurrentStatus = "Approved";
             _cbeContext.Update(pcecaseTerminate);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<PCECaseTerminateReturnDto>(pcecaseTerminate);
@@ -39,9 +39,9 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
         public async Task<PCECaseTerminateReturnDto> CreateCaseTerminate(Guid userId, PCECaseTerminatePostDto pcecaseTerminatePostDto)
         {
             var pcecaseTerminate = _mapper.Map<PCECaseTerminate>(pcecaseTerminatePostDto);
-            pcecaseTerminate.UserId = userId;
-            pcecaseTerminate.CreatedAt = DateTime.Now;
-            pcecaseTerminate.Status = "proposed";
+            pcecaseTerminate.RMUserId = userId;
+            pcecaseTerminate.CreationDate = DateTime.Now;
+            pcecaseTerminate.CurrentStatus = "proposed";
             await _cbeContext.PCECaseTerminates.AddAsync(pcecaseTerminate);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<PCECaseTerminateReturnDto>(pcecaseTerminate);
@@ -54,7 +54,7 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
         {
             try
             {
-                var caseTerminatess = await _cbeContext.PCECaseTerminates.Include(res => res.User).Where(res => res.PCECaseId == pcecaseId).OrderBy(res => res.CreatedAt).ToListAsync();
+                var caseTerminatess = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).Where(res => res.PCECaseId == pcecaseId).OrderBy(res => res.CreationDate).ToListAsync();
                
                 return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(caseTerminatess);
             }
@@ -77,13 +77,13 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             {
                 throw new Exception("Case Terminate not Found");
             }
-            if (caseTerminate.UserId != userId)
+            if (caseTerminate.RMUserId != userId)
             {
                 throw new Exception("unauthorized user");
             }
             pcecaseTerminatePostDto.PCECaseId = caseTerminate.PCECaseId;
             _mapper.Map(pcecaseTerminatePostDto, caseTerminate);
-            caseTerminate.CreatedAt = DateTime.Now;
+            caseTerminate.CreationDate = DateTime.Now;
             _cbeContext.Update(caseTerminate);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<PCECaseTerminateReturnDto>(caseTerminate);

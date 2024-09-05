@@ -61,7 +61,7 @@
                         columns:
                             [
                                 {
-                                    data: 'CreationAt',
+                                    data: 'CreationDate',
                                     width: '15%',
                                     render: function (data, type, row, meta) {
                                         var date = new Date(data);
@@ -70,9 +70,10 @@
                                 },
                                 { data: 'CaseNo', width: '10%' },
                                 { data: 'ApplicantName', width: '20%' },
-                                { data: 'CustomerId', width: '15%' },
+                                { data: 'CustomerUserId', width: '15%' },
                                 { data: 'NoOfCollateral', width: '15%' },
                                 { data: 'TerminationReason', width: '15%' },
+                                { data: 'CurrentStatus', width: '15%' },
                                 {
                                     data: 'Id',
                                     width: '10%',

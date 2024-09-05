@@ -1185,26 +1185,26 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrentStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RMUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PCECaseId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RMUserId");
 
                     b.ToTable("PCECaseTerminates");
                 });
@@ -2030,15 +2030,15 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "RMUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("RMUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("PCECase");
 
-                    b.Navigation("User");
+                    b.Navigation("RMUser");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>

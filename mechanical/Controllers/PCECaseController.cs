@@ -1,9 +1,13 @@
 ﻿﻿using mechanical.Data;
+using mechanical.Models.Dto.CaseTerminateDto;
+using mechanical.Models.Dto.MailDto;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
+using mechanical.Services.MailService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECaseTerminateService;
@@ -28,8 +32,9 @@ namespace mechanical.Controllers.PCE
         private readonly IUploadFileService _uploadFileService;
         private readonly IPCECaseTerminateService _pcecaseTermnateService;
         private readonly IPCECaseScheduleService _pcecaseScheduleService;
+        private readonly IMailService _mailService;
 
-        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IUploadFileService uploadFileService, IPCECaseTerminateService pcecaseTermnateService, IPCECaseScheduleService pcecaseScheduleService)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IUploadFileService uploadFileService, IPCECaseTerminateService pcecaseTermnateService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _PCECaseService = ipCECaseService;
@@ -37,6 +42,7 @@ namespace mechanical.Controllers.PCE
             _uploadFileService = uploadFileService;
             _pcecaseTermnateService = pcecaseTermnateService;
             _pcecaseScheduleService = pcecaseScheduleService;
+            _mailService = mailService;
 
         }
 
@@ -160,7 +166,37 @@ namespace mechanical.Controllers.PCE
             var newCases = await _PCECaseService.GetCaseTerminates(base.GetCurrentUserId());
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
-
+        [HttpPost]
+        public async Task<IActionResult> CreateTermination(PCECaseTerminatePostDto caseTerminatePostDto)
+        {
+            var caseTerminate = await _pcecaseTermnateService.CreateCaseTerminate(base.GetCurrentUserId(), caseTerminatePostDto);
+            if (caseTerminate == null) { return BadRequest("Unable to Create case Schdule"); }
+            var CaseInfo = await _PCECaseService.GetCaseDetail(caseTerminate.PCECaseId);
+            await _mailService.SendEmail(new MailPostDto
+            {
+                SenderEmail = "getnetadane1@cbe.com.et",
+                SenderPassword = "Gechlove@1234",
+                RecipantEmail = "yohannessintayhu@cbe.com.et",
+                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseTerminate.Reason + " For further Detail please check PCE Valuation System",
+            });
+            string jsonData = JsonConvert.SerializeObject(caseTerminate);
+            return Ok(caseTerminate);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTermination(Guid Id, PCECaseTerminatePostDto caseTerminatePostDto)
+        {
+            var caseTerminate = await _pcecaseTermnateService.UpdateCaseTerminate(base.GetCurrentUserId(), Id, caseTerminatePostDto);
+            if (caseTerminate == null) { return BadRequest("Unable to update case Termination"); }
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ApproveCaseTermination(Guid Id)
+        {
+            var caseSchedule = await _PCECaseService.ApproveCaseTermination(Id);
+            if (caseSchedule == null) { return BadRequest("Unable to update PCE case Schdule"); }
+            return Ok();
+        }
 
         [HttpGet]
         public IActionResult PCEReestimationCases()
@@ -373,7 +409,10 @@ namespace mechanical.Controllers.PCE
             //return View();
 
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            var caseTerminate = await _PCECaseService.GetCaseTerminates(id);
             ViewData["pcecaseDtos"] = pcecaseDto;
+            ViewData["caseTerminate"] = caseTerminate;
+            ViewData["Id"] = base.GetCurrentUserId();          
             return View();
         }
 

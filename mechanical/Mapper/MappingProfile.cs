@@ -176,7 +176,11 @@ namespace mechanical.Mapper
             CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
             CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
             ////////////
-             CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>();
+            CreateMap<PCECase, PCECaseTerminateDto>()
+              .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+              .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+
+            CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>();
             CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>();
             ////////////
 

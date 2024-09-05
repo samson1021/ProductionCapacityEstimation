@@ -36,6 +36,7 @@ using OpenXmlTableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
 
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
+using mechanical.Models.Entities;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
@@ -453,7 +454,7 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<IEnumerable<PCECaseTerminateDto>> GetCaseTerminates(Guid userId)
         {
             var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities)
-                       .Where(res => res.Id == userId && res.CurrentStatus == "Terminate")
+                       .Where(res => res.RMUserId == userId && res.CurrentStatus == "Terminate")
                        .ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(cases);
             foreach (var caseDto in caseDtos)
@@ -461,6 +462,46 @@ namespace mechanical.Services.PCE.PCECaseService
                 caseDto.TerminationReason = (await _cbeContext.PCECaseTerminates.Where(res => res.PCECaseId == caseDto.Id).FirstOrDefaultAsync()).Reason;
             }
             return caseDtos;
+        }
+
+        public async Task<PCECaseReturntDto> GetCaseDetail(Guid id)
+        {
+            var loanCase = await _cbeContext.PCECases
+                           .Include(res => res.District).Include(res => res.ProductionCapacities)
+                           .FirstOrDefaultAsync(c => c.Id == id);
+            return _mapper.Map<PCECaseReturntDto>(loanCase);
+        }
+        public async Task<PCECaseTerminate> ApproveCaseTermination(Guid id)
+        {
+            var caseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(id);
+            if (caseTerminate == null)
+            {
+                throw new Exception("case Schedule not Found");
+            }
+            caseTerminate.CurrentStatus = "Approved";
+            _cbeContext.Update(caseTerminate);
+
+            var cases = await _cbeContext.PCECases.FindAsync(caseTerminate.PCECaseId);
+            cases.CurrentStatus = "Terminate";
+            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == caseTerminate.PCECaseId).ToListAsync();
+
+            foreach (var collateral in collaterals)
+            {
+                collateral.CurrentStage = "Relation Manager";
+                collateral.CurrentStatus = "Terminate";
+                var caseAssignments = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateral.Id).ToListAsync();
+                foreach (var caseAssignment in caseAssignments)
+                {
+                    caseAssignment.Status = "Terminate";
+
+                }
+                _cbeContext.ProductionCaseAssignments.UpdateRange(caseAssignments);
+            }
+
+            _cbeContext.ProductionCapacities.UpdateRange(collaterals);
+
+            await _cbeContext.SaveChangesAsync();
+            return caseTerminate;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
@@ -38,5 +39,7 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<IEnumerable<PCENewCaseDto>> GetMyAssignmentPCECases(Guid UserId);
 
         Task<IEnumerable<PCECaseTerminateDto>> GetCaseTerminates(Guid userId);
+        Task<PCECaseReturntDto> GetCaseDetail(Guid id);
+        Task<PCECaseTerminate> ApproveCaseTermination(Guid id);
     }
 }

@@ -81,7 +81,6 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid PCECaseId)
         {
-            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
             var products = await _productionCapacityServices.GetProductions(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(products);
             return Content(jsonData, "application/json");
