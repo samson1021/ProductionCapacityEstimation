@@ -568,5 +568,14 @@ namespace mechanical.Controllers.PCE
             string jsonData = JsonConvert.SerializeObject(pceCases);
             return Content(jsonData, "application/json");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> PCESummary(Guid Id)
+        {
+            var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            ViewData["PCECase"] = pceCase;
+           
+            return View();
+        }
     }
 }

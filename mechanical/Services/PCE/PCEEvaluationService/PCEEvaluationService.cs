@@ -343,7 +343,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId)
+        public async Task<PCEEvaluationReturnDto> GetPCEEvaluationByPCEId(Guid UserId, Guid PCEId)
         {
             try
             {
@@ -378,6 +378,50 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEId {PCEId}.");
             }
         }
+
+
+        public async Task<IEnumerable<PCEEvaluationReturnDto>> GetPCEEvaluationsByPCECaseId(Guid UserId, Guid PCECaseId)
+        {
+            try
+            {
+                var pceEntities = await _cbeContext.PCEEvaluations
+                                                    .AsNoTracking()
+                                                    .Include(e => e.ShiftHours)
+                                                    .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(e => e.PCE)
+                                                    .ThenInclude(e => e.PCECase)
+                                                    .Where(e => e.PCE.PCECaseId == PCECaseId)
+                                                    .OrderByDescending(e => e.UpdatedAt)
+                                                    .ThenByDescending(e => e.CreatedAt)
+                                                    .ToListAsync();
+
+                if (pceEntities == null || !pceEntities.Any())
+                {
+                    return Enumerable.Empty<PCEEvaluationReturnDto>();
+                }
+
+                var pceEntityIds = pceEntities.Select(e => e.Id).ToList();
+                var uploadFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => pceEntityIds.Contains(uf.CollateralId.Value)).ToListAsync();          
+                var supportingEvidences = uploadFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+
+                var pceEntitiesDto = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(pceEntities).ToList();
+
+                foreach (var dto in pceEntitiesDto)
+                {
+                    dto.SupportingEvidences = _mapper.Map<ICollection<ReturnFileDto>>(supportingEvidences);
+                    dto.ProductionProcessFlowDiagrams = _mapper.Map<ICollection<ReturnFileDto>>(productionProcessFlowDiagrams);
+                }
+
+                return pceEntitiesDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching PCEEvaluation with PCEId {PCEId}");
+                throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEId {PCEId}.");
+            }
+        }
+
 
         ///////// PCE Case //////////////
         public async Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id)
@@ -622,7 +666,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate")
             {  
-                latestEvaluation = await GetPCEEvaluationsByPCEId(UserId, PCEId);
+                latestEvaluation = await GetPCEEvaluationByPCEId(UserId, PCEId);
             }
 
             var previousEvaluations = await _cbeContext.PCEEvaluations
