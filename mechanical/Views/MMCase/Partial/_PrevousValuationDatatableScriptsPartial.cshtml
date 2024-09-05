@@ -3,7 +3,7 @@
 @{
     var myPCE = ViewData["PCE"] as ReturnProductionDto;
     var EmptyMessage = "No Previous Evaluation / Valuation History.";
-    var FetchUrl = "/PCEEvaluation/GetMyPreviousValuations?PCEId=" + myPCE.Id;
+    var FetchUrl = "/MOPCECase/GetMyPreviousValuations?PCEId=" + myPCE.Id;
 }
 
 <script>
@@ -12,7 +12,7 @@
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
-            PreviousValuationsTable = $('#PreviousValuations').DataTable({
+            $('#PreviousValuations').DataTable({
                 language: {
                     emptyTable: '@EmptyMessage'
                 },
@@ -37,8 +37,7 @@
                 dataType: 'json',
                 success: function (data) {
                     if ($.fn.DataTable.isDataTable('#PreviousValuations')) {
-                        var PreviousValuationsTable = $('#PreviousValuations').DataTable();
-                        PreviousValuationsTable.destroy();
+                        $('#PreviousValuations').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },

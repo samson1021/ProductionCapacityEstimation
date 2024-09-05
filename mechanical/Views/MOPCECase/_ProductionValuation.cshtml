@@ -85,12 +85,11 @@
                                 { 
                                     @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
                                     {
+                                        var linkName = "Evaluate";
                                         if (Model.CurrentStatus == "Reestimate") {
-                                            <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> Reestimate </a>                                                                
-                                        } else {
-                                            <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> Evaluate </a>
-                                        }         
-                                    
+                                            linkName = "Reestimate";                                                              
+                                        } 
+                                        <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> linkName </a>
                                         <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>
                                     }
                                  } 

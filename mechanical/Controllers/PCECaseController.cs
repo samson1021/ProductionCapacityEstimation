@@ -9,9 +9,14 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MailService;
 using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.UploadFileService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,18 +32,21 @@ namespace mechanical.Controllers.PCE
         private readonly CbeContext _cbeContext;
         private readonly IPCECaseService _PCECaseService;
         private readonly ILogger<PCECaseController> _logger;
-        private readonly IPCECaseService _iPCECaseService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
+        private readonly IProductionCaseScheduleService _productionCaseScheduleService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentService;
+        private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IUploadFileService _uploadFileService;
         private readonly IPCECaseTerminateService _pcecaseTermnateService;
         private readonly IPCECaseScheduleService _pcecaseScheduleService;
         private readonly IMailService _mailService;
 
-        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IUploadFileService uploadFileService, IPCECaseTerminateService pcecaseTermnateService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService)
         {
             _cbeContext = cbeContext;
-            _PCECaseService = ipCECaseService;
-            _productionCaseAssignmentServices = productionCaseAssignmentServices;
+            _PCECaseService = PCECaseService;
+            _productionCaseScheduleService = ProductionCaseScheduleService;
+            _productionCaseAssignmentService = ProductionCaseAssignmentService;
+            _PCEEvaluationService = PCEEvaluationService;
             _uploadFileService = uploadFileService;
             _pcecaseTermnateService = pcecaseTermnateService;
             _pcecaseScheduleService = pcecaseScheduleService;
@@ -214,12 +222,6 @@ namespace mechanical.Controllers.PCE
             ViewData["Id"] = base.GetCurrentUserId();
             return View();
         }
-
-
-
-
-
-
         [HttpGet]
         public async Task<IActionResult> GetDashboardPCECaseCount()
         {
@@ -317,6 +319,7 @@ namespace mechanical.Controllers.PCE
             //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
             var production = await _cbeContext.ProductionCapacities.ToListAsync();
             if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["case"] = loanCase;
           //  ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
@@ -367,7 +370,7 @@ namespace mechanical.Controllers.PCE
             var userId = base.GetCurrentUserId();
             try
             {
-                await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
+                await _productionCaseAssignmentService.SendProductionForValuation(selectedCollateralIds, CenterId);
                 var response = new { message = "PCE assigned successfully" };
                 return Ok(response);
             }
@@ -384,7 +387,7 @@ namespace mechanical.Controllers.PCE
             var userId = base.GetCurrentUserId();
             try
             {
-                await _productionCaseAssignmentServices.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                await _productionCaseAssignmentService.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
                 var response = new { message = "PCE Reestimation assigned successfully" };
                 return Ok(response);
             }
@@ -505,20 +508,65 @@ namespace mechanical.Controllers.PCE
 
                 ViewData["EvaluatorReports"] = evaluatorReports;
             }
-
-
-
-
-
-
-            ViewData["productionFiles"] = file;
-             
+            ViewData["productionFiles"] = file;             
             ViewData["pceCase"] = pceReportData.PCESCase;
             ViewData["productions"] = pceReportData.Productions;
             ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;
             ViewData["pceCaseSchedule"] = pceReportData.PCECaseSchedule;
 
             return View();
+        }
+    
+        /////////////////// PCE /////////////
+        [HttpGet]
+        public IActionResult PCECases(string Status = "New")
+        {
+            ViewData["Title"] = Status + " PCE Cases";
+            ViewBag.Url = "/PCECase/GetPCECases";
+            ViewBag.Status = Status;
+            return View("PCECases");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPCECases(string Status)
+        {
+            var pceCases = await _PCEEvaluationService.GetPCECases(base.GetCurrentUserId(), Status);
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load {Status} PCE Cases");
+            }
+            string jsonData = JsonConvert.SerializeObject(pceCases);
+            return Content(jsonData, "application/json");
+        }
+        
+        public IActionResult RemarkPCECases()
+        {
+            return View();
+        }
+        public async Task<IActionResult> RemarkPCECase(Guid Id)
+        {
+            var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            // var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var PCECaseSchedule = await _productionCaseScheduleService.GetProductionCaseSchedules(Id);
+            if (pceCase == null) 
+            { 
+                return RedirectToAction("NewPCECases"); 
+            }
+            ViewData["pcecaseDtos"] = pceCase;
+            ViewData["PCECaseSchedule"] = PCECaseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetRemarkedPCECases()
+        {
+            var pceCases = await _PCECaseService.GetRemarkedPCECases(GetCurrentUserId());
+            if (pceCases == null) 
+            { 
+                return BadRequest("Unable to load PCE Case"); 
+            }
+            string jsonData = JsonConvert.SerializeObject(pceCases);
+            return Content(jsonData, "application/json");
         }
     }
 }

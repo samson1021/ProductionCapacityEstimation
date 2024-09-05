@@ -1,7 +1,7 @@
 ﻿﻿@{
     var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCE Cases";
-    var FetchUrl = "/PCEEvaluation/GetMyPCECases?Status=" + Status;
+    var FetchUrl = "/MOPCECase/GetMyPCECases?Status=" + Status;
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
         EmptyMessage = "There are no " + Status + " PCE Cases";
@@ -40,7 +40,7 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                        return '<a href="@Url.Action("PCECaseDetail", "PCEEvaluation")?Id=' + data + '&Status=@ViewBag.Status">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                        return '<a href="@Url.Action("PCECaseDetail", "MOPCECase")?Id=' + data + '&Status=@ViewBag.Status">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
                     }
                 });
 

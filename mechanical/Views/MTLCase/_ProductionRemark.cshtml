@@ -64,7 +64,7 @@
                     }
                     else if (currentUser.Role.Name == "Maker Officer")
                     {
-                        string formAction = Model.CurrentStatus == "Remark Justification" ? "/MotorVehicle/RemarkRelease" : "/MOCase/ReEvaluation";
+                        string formAction = Model.CurrentStatus == "Remark Justification" ? "/MotorVehicle/RemarkRelease" : "/MOPCECase/ReEvaluation";
                         string buttonLabel = Model.CurrentStatus == "Remark Justification" ? "Release Remark" : "Edit";
 
                         <div class="card">

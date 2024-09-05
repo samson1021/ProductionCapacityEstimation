@@ -359,7 +359,7 @@ namespace mechanical.Services.CaseServices
                      <CBECREDITNPVNOFILEENQType>
                      <enquiryInputCollection>
                      <columnName>CUSTOMER.ID</columnName>
-                     <criteriaValue>" + customerId + @"</criteriaValue>
+                     <criteriaValue>" + f + @"</criteriaValue>
                      <operand>EQ</operand>
                      </enquiryInputCollection>
                      </CBECREDITNPVNOFILEENQType>

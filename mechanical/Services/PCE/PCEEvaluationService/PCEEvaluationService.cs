@@ -30,15 +30,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
         private readonly ILogger<PCEEvaluationService> _logger;
-        private readonly IUploadFileService _uploadFileService;
+        private readonly IUploadFileService _UploadFileService;
         private readonly IPCECaseTimeLineService _pceCaseTimeLineService;
 
-        public PCEEvaluationService(CbeContext context, IMapper mapper, ILogger<PCEEvaluationService> logger, IUploadFileService uploadFileService, IPCECaseTimeLineService PCECaseTimeLineService)
+        public PCEEvaluationService(CbeContext context, IMapper mapper, ILogger<PCEEvaluationService> logger, IUploadFileService UploadFileService, IPCECaseTimeLineService PCECaseTimeLineService)
         {
             _cbeContext = context;
             _mapper = mapper;
             _logger = logger;
-            _uploadFileService = uploadFileService;
+            _UploadFileService = UploadFileService;
             _pceCaseTimeLineService = PCECaseTimeLineService;
         }
 
@@ -220,7 +220,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         CollateralId = PCEEId
                     };
 
-                    await _uploadFileService.CreateUploadFile(UserId, fileDto);
+                    await _UploadFileService.CreateUploadFile(UserId, fileDto);
                 }
             }
         }
@@ -600,7 +600,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
             var reestimation = await _cbeContext.ProductionCapacityReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
-            var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(PCEId);          
+            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
             var valuationHistory = await GetValuationHistory(UserId, PCEId);
      
             return new PCEDetailDto

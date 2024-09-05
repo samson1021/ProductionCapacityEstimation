@@ -7,7 +7,7 @@
     var PCECaseId = ViewData["PCECaseId"] as Guid?;
     if (PCECaseId.HasValue)
     {
-        RedirectUrl = Url.Action("PCECaseDetail", "PCEEvaluation", new { PCECaseId = PCECaseId.Value });
+        RedirectUrl = Url.Action("PCECaseDetail", "MMCase", new { PCECaseId = PCECaseId.Value });
     } 
 }
 
