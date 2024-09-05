@@ -17,6 +17,7 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.ProductionCapacityServices;
+using Humanizer;
 
 namespace mechanical.Controllers
 {
@@ -42,7 +43,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluationsByPCEId(base.GetCurrentUserId(), PCEId);
+                var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluationByPCEId(base.GetCurrentUserId(), PCEId);
 
                 if (PCEEvaluation != null && PCEEvaluation.PCE.CurrentStatus != "Reestimate")
                 {            
@@ -212,7 +213,7 @@ namespace mechanical.Controllers
                 // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }
-        }    
+        }
 
         // [HttpGet]
         // public async Task<IActionResult> Rework(Guid Id)
@@ -229,5 +230,14 @@ namespace mechanical.Controllers
         //         return Json(new { success = false, error = ex.Message });
         //     }
         // }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
+        {
+            var pceEvaluations = await _PCEEvaluationService.GetPCEEvaluationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
     }
 }

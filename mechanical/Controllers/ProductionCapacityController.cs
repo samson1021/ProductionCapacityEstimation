@@ -61,6 +61,7 @@ namespace mechanical.Controllers
             return BadRequest();
 
         }
+
         [HttpPost]
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)

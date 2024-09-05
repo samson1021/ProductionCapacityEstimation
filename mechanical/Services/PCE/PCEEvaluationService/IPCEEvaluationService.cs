@@ -22,7 +22,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id);
 
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);
-        Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId);
+        Task<PCEEvaluationReturnDto> GetPCEEvaluationByPCEId(Guid UserId, Guid PCEId);
+        Task<IEnumerable<PCEEvaluationReturnDto>> GetPCEEvaluationsByPCECaseId(Guid UserId, Guid PCEId);
 
         Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId);
         Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id);

@@ -292,7 +292,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
 
             if (pce != null && pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate")
             {  
-                latestEvaluation = await _PCEEvaluationService.GetPCEEvaluationsByPCEId(UserId, PCEId);
+                latestEvaluation = await _PCEEvaluationService.GetPCEEvaluationByPCEId(UserId, PCEId);
             }
 
             var previousEvaluations = await _cbeContext.PCEEvaluations

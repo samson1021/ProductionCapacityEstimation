@@ -1,10 +1,8 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using mechanical.Models.PCE.Entities
+@using mechanical.Models.PCE.Dto.PCECaseDto;
+
 @{
-    var Collateral = ViewData["collaterals"] as List<Collateral>;
-    var cases = ViewData["cases"] as Case;
-    var motorVehicles = ViewData["motorVehicles"] as List<MotorVehicle>;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
 }
 <section class="content-header">
     <div class="container-fluid">
@@ -22,59 +20,58 @@
         </div>
     </div>
 </section>
+
+
 <section class="content">
     <div class="container-fluid">
-        <div class="card">
+        <div class="card" style="overflow: hidden; padding: 20px;">
             <div class="card-body">
-                <input  value=@cases.Id type="hidden" id="CaseId" />
-                <table id="caseCollaterals" class="table table-bordered table-striped">
+                <input value="@myPCECase.Id" type="hidden" id="PCECaseId" />
+                <table id="PCECaseProductions" class="table table-bordered table-striped" style="width: 100%; font-size: 1em;">
                     <thead>
                         <tr>
-                            <th colspan="14" class="text-center"><h2>Commerecial Bank Of Ethiopia</h2></th>
+                            <th colspan="14" class="text-center" style="font-size: 1.5em;"><h2>Commercial Bank Of Ethiopia</h2></th>
                         </tr>
-
                         <tr>
-                            <th colspan="4"> Applicant Name</th>
+                            <th colspan="4">Applicant Name</th>
                             <th colspan="3">Applicant Address</th>
                             <th colspan="3">Date Of Evaluation</th>
-                            <th colspan="4">Mechanical Equpiment Type</th>
+                            <th colspan="4">Mechanical Equipment Type</th>
                         </tr>
                         <tr>
-                            <td colspan="4" id="ApplicantName">@cases.ApplicantName</td>
+                            <td colspan="4" id="ApplicantName">@myPCECase.ApplicantName</td>
                             <td colspan="3"></td>
                             <td colspan="3"></td>
-                            <td colspan="4">Man Vechile</td>
+                            <td colspan="4">Motor Vehicle</td>
                         </tr>
                         <tr>
-                            <th colspan="14">PART II: SUMMERY OF VALUATION</th>
+                            <th colspan="14">PART II: SUMMARY OF VALUATION</th>
                         </tr>
                         <tr>
                             <th>S/No.</th>
+                            <th>Property Owner</th>
                             <th>Mechanical Equipment Name</th>
                             <th>YoMfg</th>
                             <th>Origin</th>
-                            <th>Model </th>
-                            <th>Engine No.</th>
-                            <th>Chassis No</th>
+                            <th>Model No</th>
+                            <th>Invoice No.</th>
+                            <th>LHC No</th>
+                            <th>Type Manufacturing</th>
                             <th>Serial No.</th>
-                            <th>Physical & Technical Assessment</th>
-                            <th>Property Of </th>
-                            <th>Replacement Cost </th>
-                            <th>Depreciation Rate </th>
-                            <th>Net Estimation Value </th>
-                            <th>Remark </th>
+                            <th>Depreciation Rate</th>
+                            <th>Actual Production Capacity</th>
+                            <th>Estimated Production Capacity</th>
+                            <th>Remark</th>
                         </tr>
                     </thead>
-                    
-
                 </table>
-
             </div>
         </div>
     </div>
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_RMMOVSummaryCasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("Partial/_PCESummaryCasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
 }
