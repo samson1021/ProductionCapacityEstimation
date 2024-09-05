@@ -1178,6 +1178,36 @@ namespace mechanical.Migrations
                     b.ToTable("PCECases");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PCECaseId");
+
+                    b.ToTable("PCECaseComments");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2020,6 +2050,25 @@ namespace mechanical.Migrations
                     b.Navigation("District");
 
                     b.Navigation("RMUser");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseComment", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany()
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("PCECase");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>

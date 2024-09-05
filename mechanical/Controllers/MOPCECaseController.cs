@@ -22,6 +22,7 @@ using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
 using mechanical.Services.MailService;
 using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
+using mechanical.Services.PCE.PCECaseTerminateService;
 // using mechanical.Services.PCE.ProductionCaseTerminateService;
 
 namespace mechanical.Controllers
@@ -34,16 +35,16 @@ namespace mechanical.Controllers
         private readonly ILogger<MOPCECaseController> _logger;
         private readonly IMOPCECaseService _MOPCECaseService;
         private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
-        // private readonly IProductionCaseTerminateService _PCECaseTerminateService;
+        private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
-        public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService mailService)
+        public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService mailService, IPCECaseTerminateService PCECaseTerminateService)
         // public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseTerminateService ProductionCaseTerminateService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService mailService)
         {
             _logger = Logger;
             _mailService = mailService;    
             _MOPCECaseService = MOPCECaseService;
             _ProductionCaseScheduleService = ProductionCaseScheduleService;
-            // _PCECaseTerminateService = PCECaseTerminateService;
+             _PCECaseTerminateService = PCECaseTerminateService;
         }
 
         // [HttpGet("{Id}")]
@@ -101,14 +102,14 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyPCECases");
             }
-            // var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
             var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
-            // ViewData["PCECaseTerminate"] = PCECaseTerminate;
+            ViewData["PCECaseTerminate"] = PCECaseTerminate;
             ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;

@@ -36,8 +36,9 @@ namespace mechanical.Controllers.PCE
         private readonly IPCECaseTerminateService _pcecaseTermnateService;
         private readonly IPCECaseScheduleService _pcecaseScheduleService;
         private readonly IMailService _mailService;
+        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
 
-        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService, IProductionCaseScheduleService productionCaseScheduleService)
         {
             _cbeContext = cbeContext;
             _PCECaseService = PCECaseService;
@@ -48,7 +49,7 @@ namespace mechanical.Controllers.PCE
             _pcecaseTermnateService = pcecaseTermnateService;
             _pcecaseScheduleService = pcecaseScheduleService;
             _mailService = mailService;
-
+            _ProductionCaseScheduleService = productionCaseScheduleService;
         }
 
 
@@ -299,7 +300,7 @@ namespace mechanical.Controllers.PCE
             }
                 
         }
-        // abdu start 
+        // abdu start
         [HttpGet]
         public async Task<IActionResult> GetPCECompleteCases()
         {
@@ -410,8 +411,10 @@ namespace mechanical.Controllers.PCE
 
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
             var caseTerminate = await _PCECaseService.GetCaseTerminates(id);
+            var caseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
             ViewData["pcecaseDtos"] = pcecaseDto;
             ViewData["caseTerminate"] = caseTerminate;
+            ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();          
             return View();
         }

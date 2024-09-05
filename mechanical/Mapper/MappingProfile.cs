@@ -27,6 +27,7 @@ using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 /////
 
 namespace mechanical.Mapper
@@ -182,6 +183,10 @@ namespace mechanical.Mapper
 
             CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>();
             CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>();
+
+            CreateMap<PCECaseCommentPostDto, PCECaseComment>();
+            CreateMap<PCECaseComment, PCECaseCommentReturnDto>()
+                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
             ////////////
 
             CreateMap<ProductionCaseSchedulePostDto, ProductionCaseSchedule>();

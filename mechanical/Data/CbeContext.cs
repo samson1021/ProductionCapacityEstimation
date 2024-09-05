@@ -86,7 +86,9 @@ namespace mechanical.Data
         public DbSet<ProductionCapacityCorrection> ProductionCapacityCorrections { get; set; }
         public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
         public DbSet<PCECaseTerminate> PCECaseTerminates { get; set; }
+        public DbSet<PCECaseComment> PCECaseComments { get; set; }
         
+
 
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }

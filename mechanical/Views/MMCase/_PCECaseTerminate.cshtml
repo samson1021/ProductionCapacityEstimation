@@ -4,14 +4,15 @@
 @using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
 @{
-    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
-    var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<ProductionCaseScheduleReturnDto>;
-    var caseTerminate = ViewData["caseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
+    var myCase = ViewData["PCEcase"] as PCECaseReturntDto;
+    var caseSchedule = ViewData["ProductionCaseSchedule"] as IEnumerable<ProductionCaseScheduleReturnDto>;
+    var caseTerminate = ViewData["PCEcaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+
 }
 
 <section class="content-header col-xl-6">
-    <h4 class="text-center text-danger"> PCE Case Termination Request</h4>
+    <h4 class="text-center text-danger">Case Termination Request</h4>
 </section>
 
 <section class="content">
@@ -70,19 +71,22 @@
                                     if (caseTerm.RMUser.Id != userId && caseTerm.CurrentStatus == "proposed")
                                     {
                                         <div class="btn-group">
-                                            <input type="hidden" id="CaseScheduleId" name="Id" value="@caseTerm.Id" />
-                                            <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addCollateralModal">
+                                            <input type="hidden" id="CaseTerminationId" name="Id" value="@caseTerm.Id" />
+                                            <button id="AcceptcaseTerminationButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addCollateralModal">
                                                 <i class="fas fa-check-circle"></i> Accept
                                             </button>
-                                            <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
-                                                <i class="fas fa-plus-circle"></i> Propose New
+                                            <button id="PendCaseTermination" type="button" class="btn btn-sm btn-outline-warning ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
+                                                <i class="fas fa-spinner"></i> Pend
+                                            </button>
+                                            <button id="DeclineCaseTermination" type="button" class="btn btn-sm btn-outline-danger ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
+                                                <i class="fas fa-ban"></i> Decline
                                             </button>
                                         </div>
                                     }
                                     else if (caseTerm.RMUser.Id == userId && caseTerm.CurrentStatus == "proposed")
                                     {
                                         <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseTerm.Id" />
-                                        <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason"/>
+                                        <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason" />
                                         <button id="UpdateTerminate" class="update-link btn btn-sm btn-outline-primary">Update</button>
                                     }
                                 }
@@ -108,17 +112,17 @@
                 </button>
             </div>
             <form id="updateForm">
-            <div class="modal-body">
+                <div class="modal-body">
                     <div class="form-group">
                         <label for="Reason" class="form-label">Reason *</label>
                         <textarea name="Reason" id="modalReason" rows="4" placeholder="Please enter case termination reason" class="form-control" required></textarea>
                         <span for="Reason" class="text-danger"></span>
                     </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn bg-purple btn-sm" id="updateButton">Update</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn bg-purple btn-sm" id="updateButton">Update</button>
+                </div>
             </form>
         </div>
     </div>

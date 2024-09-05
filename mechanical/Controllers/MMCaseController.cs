@@ -10,6 +10,9 @@ using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.MailService;
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseTerminateService;
 
 namespace mechanical.Controllers
 {
@@ -23,11 +26,13 @@ namespace mechanical.Controllers
         private readonly IPCECaseService _PCECaseService;
         private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
         private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
-        private readonly IMOPCECaseService _MOPCECaseService;
+        private readonly IMOPCECaseService _MOPCECaseService;       
+        private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
 
 
-        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
+
+        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment, IPCECaseTerminateService PCECaseTerminateService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
@@ -38,6 +43,7 @@ namespace mechanical.Controllers
             _ProductionCaseScheduleService = ProductionCaseScheduleService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
             _MOPCECaseService = MOPCECaseService;
+            _PCECaseTerminateService = PCECaseTerminateService;
         }
 
         [HttpGet]
@@ -235,6 +241,18 @@ namespace mechanical.Controllers
             var valuationHistory = await _MOPCECaseService.GetValuationHistory(base.GetCurrentUserId(), PCEId);    
             string jsonData = JsonConvert.SerializeObject(valuationHistory.PreviousEvaluations, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
             return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> MyPCECase(Guid Id)
+        {
+            var loanCase = await _PCECaseService.GetCaseDetail(Id);
+            var caseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var caseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            ViewData["PCEcaseTerminate"] = caseTerminate;
+            if (loanCase == null) { return RedirectToAction("NewCases"); }
+            ViewData["PCEcase"] = loanCase;
+            ViewData["ProductionCaseSchedule"] = caseSchedule;
+            return View();
         }
     }
 }

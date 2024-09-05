@@ -50,6 +50,7 @@ using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseCommentService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -98,6 +99,11 @@ builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
+builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
+
+
+
+
 
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService, CaseAssignmentService>();
