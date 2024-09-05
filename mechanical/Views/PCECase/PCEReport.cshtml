@@ -47,41 +47,30 @@
     }
 
     var makers = PCEEvaluations.Select(m => m.Evaluator).Distinct();
-
     var PCECaseScheduleDate = DateTime.Now;
     if (PCECaseSchedule != null)
     {
         PCECaseScheduleDate = PCECaseSchedule.ScheduleDate;
     }
-    
-
     bool isPrinting = false;
-
 }
 
-
-
-
-
 <style>
-        
-
-        .printing #requieddoc {
-        display: none !important;
-        }
-        .printing .approvedby {
-            display: block !important;
-        }
-        .printing #print-btn {
-        display: none !important;
-        }
-
+    .printing #requieddoc {
+    display: none !important;
+    }
+    .printing .approvedby {
+        display: block !important;
+    }
+    .printing #print-btn {
+    display: none !important;
+    }
     .printing #download-btn {
         display: none !important;
     }
-        .printing footer {
-        display: none !important;
-       }
+    .printing footer {
+    display: none !important;
+    }
     @@media print {
          footer {
             display: none !important
@@ -100,11 +89,7 @@
             display:block !important;
         }
     }
-
 </style>
-
-
-
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">

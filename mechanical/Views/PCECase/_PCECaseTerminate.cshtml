@@ -67,7 +67,7 @@
                                 }
 
                                 @{
-                                    if (caseTerm.RMUser.Id != userId && caseTerm.CurrentStatus == "proposed")
+                                    if (caseTerm.RMUser.Id != userId && caseTerm.CurrentStatus == "Proposed")
                                     {
                                         <div class="btn-group">
                                             <input type="hidden" id="CaseScheduleId" name="Id" value="@caseTerm.Id" />
@@ -79,13 +79,54 @@
                                             </button>
                                         </div>
                                     }
-                                    else if (caseTerm.RMUser.Id == userId && caseTerm.CurrentStatus == "proposed")
+                                    else if (caseTerm.RMUser.Id == userId && caseTerm.CurrentStatus == "Proposed")
                                     {
                                         <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseTerm.Id" />
                                         <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason"/>
                                         <button id="UpdateTerminate" class="update-link btn btn-sm btn-outline-primary">Update</button>
                                     }
                                 }
+
+                                
+                                @* @if (@caseTerm.Status == "Approved")
+                                {
+                                    <p>Status: <span class="text-success">@caseTerm.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
+                                }
+                                else if (@caseTerm.Status == "Rejected")
+                                {
+                                    <p>Status: <span class="text-danger">@caseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
+                                }
+                                else
+                                {
+                                    <p>Status: <span class="text-info">@caseTerm.Status</span>  <i class="fas fa-spinner text-info"></i></p>
+                                }
+                                @{
+                                    if (caseTerm.Reason != null)
+                                    {
+                                        <p>Reason: <span class="text-danger">@caseTerm.Reason</span></p>
+                                    }
+                                }
+
+                                @{
+                                    if (caseTerm.RMUser.Id != userId && caseTerm.Status == "Proposed")
+                                    {
+                                        <div class="btn-group">
+                                            <input type="hidden" id="CaseScheduleId" name="Id" value="@caseTerm.Id" />
+                                            <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addCollateralModal">
+                                                <i class="fas fa-check-circle"></i> Accept
+                                            </button>
+                                            <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
+                                                <i class="fas fa-plus-circle"></i> Propose New
+                                            </button>
+                                        </div>
+                                    }
+                                    else if (caseTerm.RMUser.Id == userId && caseTerm.Status == "Proposed")
+                                    {
+                                        <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseTerm.Id" />
+                                        <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason"/>
+                                        <button id="UpdateTerminate" class="update-link btn btn-sm btn-outline-primary">Update</button>
+                                    }
+                                } *@
 
 
                             </div>
