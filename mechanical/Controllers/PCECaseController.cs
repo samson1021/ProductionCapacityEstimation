@@ -9,9 +9,6 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MailService;
 using mechanical.Services.PCE.PCECaseScheduleService;
-using mechanical.Services.CaseScheduleService;
-using mechanical.Services.CaseTerminateService;
-using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
@@ -40,7 +37,7 @@ namespace mechanical.Controllers.PCE
         private readonly IPCECaseScheduleService _pcecaseScheduleService;
         private readonly IMailService _mailService;
 
-        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService)
+        public PCECaseController(CbeContext cbeContext, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _PCECaseService = PCECaseService;

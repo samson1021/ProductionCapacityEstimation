@@ -17,6 +17,7 @@ using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.PCE.Enum.ProductionCapacity;
 using mechanical.Services.PCE.PCEEvaluationService;
 using DocumentFormat.OpenXml.Bibliography;
+using mechanical.Services.PCE.MOPCECaseService;
 
 
 namespace mechanical.Controllers
@@ -29,14 +30,14 @@ namespace mechanical.Controllers
         private readonly CbeContext _cbeContext;
 
         private readonly IUploadFileService _uploadFileService;
-        private readonly IPCEEvaluationService _PCEEvaluationService;
+        private readonly IMOPCECaseService _MOPCECaseService;
 
 
-        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IMOPCECaseService MOPCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
-            _PCEEvaluationService = PCEEvaluationService;
+            _MOPCECaseService = MOPCECaseService;
             _pCECaseService = pCECaseService;
             _uploadFileService = uploadFileService;
         }
@@ -150,8 +151,8 @@ namespace mechanical.Controllers
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
 
-            var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), id);
-            var currentUser = await _PCEEvaluationService.GetUser(base.GetCurrentUserId());
+            var pceDetail = await _MOPCECaseService.GetPCEDetails(base.GetCurrentUserId(), id);
+            var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             ViewData["CurrentUser"] = currentUser;
             ViewData["PCE"] = pceDetail.ProductionCapacity;
             ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
