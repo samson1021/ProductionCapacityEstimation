@@ -102,14 +102,14 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyPCECases");
             }
-             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+             //var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
             var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
-            ViewData["PCECaseTerminate"] = PCECaseTerminate;
+            //ViewData["PCECaseTerminate"] = PCECaseTerminate;
             ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
