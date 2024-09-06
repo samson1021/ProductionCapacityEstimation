@@ -65,7 +65,12 @@
                     </li>
                 </ul>
             </div>
-            <div class="card-body">
+            <div class="card-body">     
+                <div class="ribbon-wrapper ribbon-xl">
+                    <div class="ribbon bg-warning">
+                        @Model.CurrentStatus
+                    </div>
+                </div> 
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @await Html.PartialAsync("_GeneralInfo")

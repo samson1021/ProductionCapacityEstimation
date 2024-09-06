@@ -109,8 +109,9 @@ namespace mechanical.Controllers
             {
                 ViewData["restimation"] = restimation;
             }
-
-            if (response == null) { return RedirectToAction("PCENewCases"); }
+            if (response == null) { 
+                return RedirectToAction("PCENewCases"); 
+            }
             var file = await _uploadFileService.GetUploadFileByCollateralId(id);
             var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
@@ -123,7 +124,6 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
-
 
             if (PcevalutionDto != null)
             {
@@ -139,8 +139,7 @@ namespace mechanical.Controllers
                 var Production = await _productionCapacityServices.GetPlantProductionCapacityEvalutionById(id);
                 ViewData["Pavaluation"] = Production;
             }
-
-
+            
             // ViewData["Prvaluation"] = productionById;
             ViewData["pcecaseDtos"] = loanCase;
             ViewData["productionFiles"] = file;
