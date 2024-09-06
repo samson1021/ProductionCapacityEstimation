@@ -278,8 +278,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
                 Reestimation = reestimation,
                 RelatedFiles = relatedFiles,
                 Reject = reject,
-                RejectedBy = user,
-                Remark = _mapper.Map<ReturnProductionDto>(remark)
+                RejectedBy = user
 
             };
         }                       

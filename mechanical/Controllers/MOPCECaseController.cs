@@ -53,22 +53,21 @@ namespace mechanical.Controllers
         {
             try
             {
-                var pceDetail = await _MOPCECaseService.GetPCEDetails(base.GetCurrentUserId(), PCEId);
+                var userId = base.GetCurrentUserId();
+                var pceDetail = await _MOPCECaseService.GetPCEDetails(userId, PCEId);
+
                 if (pceDetail.ProductionCapacity == null)
                 {
-                    return RedirectToAction("MyPCEs");
+                    return RedirectToAction("PCENewCases");
                 }
                 
-                var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
-                ViewData["CurrentUser"] = currentUser;
-                // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
+                ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
                 ViewData["Reestimation"] = pceDetail.Reestimation;
                 ViewData["PCE"] = pceDetail.ProductionCapacity;
                 ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
                 ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
                 ViewData["PCECase"] = pceDetail.PCECase;
                 ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
-                ViewData["Remark"] = pceDetail.Remark;
                 ViewData["Reject"] = pceDetail.Reject;
                 ViewData["RejectedBy"] = pceDetail.RejectedBy;
 
@@ -96,21 +95,20 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> PCECaseDetail(Guid Id, string Status)
         {
-
-            var pceCase = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _MOPCECaseService.GetPCECase(userId, Id);
             if (pceCase == null)
             {
                 return RedirectToAction("MyPCECases");
             }
-             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+             var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             
-            ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
-            // ViewData["CurrentUserRole"] = pceDetail.CurrentUserRole;
+            ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
-            ViewData["PCECaseTerminate"] = PCECaseTerminate;
-            ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
+            ViewData["PCECaseTerminate"] = pceCaseTerminate;
+            ViewData["ProductionCaseSchedule"] = productionCaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
 
@@ -140,10 +138,10 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetLatestMyPCECases(string Status)
+        public async Task<IActionResult> GetMyLatestPCECases(string Status)
         {
-            var Limit = 10;
-            var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Status, Limit);
+            var limit = 10;
+            var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Status, limit);
             if (pceCases == null)
             {
                 return BadRequest("Unable to load {Status} PCE Cases");
@@ -237,15 +235,16 @@ namespace mechanical.Controllers
 
         public async Task<IActionResult> RemarkPCECase(Guid Id)
         {
-            var pceCase = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _MOPCECaseService.GetPCECase(userId, Id);
             var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             if (pceCase == null) 
             { 
                 return RedirectToAction("NewPCECases"); 
             }
-            ViewData["pcecaseDtos"] = pceCase;
+            ViewData["PCECase"] = pceCase;
             ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
-            ViewData["Id"] = base.GetCurrentUserId();
+            ViewData["Id"] = userId;
             return View();
         }
 

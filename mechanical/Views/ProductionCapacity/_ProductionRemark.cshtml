@@ -1,16 +1,17 @@
-﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
-@using mechanical.Models.Dto.IndBldgFacilityEquipmentDto;
-@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+﻿@using mechanical.Models.Entities
 @using mechanical.Models.PCE.Entities
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+
+@model ReturnProductionDto;
 @{
-    var Productionvaluation = ViewData["Prvaluation"] as ReturnProductionDto;
+    var productionValuation = ViewData["ProductionValuation"] as ReturnProductionDto;
+    var user = ViewData["user"] as CreateUser;
     var loggedRole = ViewData["loggedRole"] as CreateRole;
-    var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as ProductionCapacity;
 }
 
 <section class="content">
-
+    <div class="container-fluid">
         <div class="card direct-chat direct-chat-purple">
             <div class="card-header">
                 <div class="row mb-2">
@@ -22,107 +23,102 @@
             
             <div class="card-body">
             @{
-                    if (Productionvaluation != null)
+                if (productionValuation != null)
+                {
+                    if (productionValuation.Remark == "" || productionValuation.Remark == null)
+                    {                    
+                        <h6 >There is No Remark related to this Production Capacity</h6>                        
+                    }
+                    else
                     {
-                        if (Productionvaluation.Remark == "" || Productionvaluation.Remark == null)
+                        if (loggedRole.Name == "Relation Manager")
                         {
-                      
-                            <h6 >There is No Remark related to this Production Capacity</h6>
-                           
+                            <div class="card">
+                                <h6>@productionValuation.Remark</h6>
+                            </div>
+                            <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
+                                <input name="collateralId" type="hidden" value=@productionValuation.Id />
+                                <input name="EvaluatorUserID" type="hidden" value=@productionValuation.EvaluatorUserID />
+                                <div class="card">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
+                                        <label class="form-check-label" for="Justification">
+                                            Justfication
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="RemarkType" id="Verfication" value="Verfication">
+                                        <label class="form-check-label" for="Verfication">
+                                            Verfication
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label for="Catagory">Category</label>
+                                    <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
+                                    <span validation-for="Catagory" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label for="File">Remark Document</label>
+                                    <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
+                                    <span validation-for="File" class="text-danger"></span>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-append">
+                                        <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
+                                    </span>
+                                </div>
+                            </form>
                         }
-                        else
+                        else if (loggedRole.Name == "Maker Officer")
                         {
-
-                            if (loggedRole.Name == "Relation Manager")
+                            if (@Model.CurrentStatus == "Remark Justfication")
                             {
                                 <div class="card">
-                                    <h6>@Productionvaluation.Remark</h6>
+                                    <h6>Remark Justfication</h6>
                                 </div>
-                                <form action="/Collateral/handleRemark" method="post" enctype="multipart/form-data">
-                                    <input name="collateralId" type="hidden" value=@Productionvaluation.Id />
-                                    <input name="EvaluatorUserID" type="hidden" value=@Productionvaluation.EvaluatorUserID />
-                                    <input name="CheckerUserID" type="hidden" value=@Productionvaluation.CheckerUserID />
+                                <form action="/MotorVehicle/RemarkRelease" method="post">
                                     <div class="card">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="RemarkType" id="Justfication" value="Justfication">
-                                            <label class="form-check-label" for="Justification">
-                                                Justfication
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="RemarkType" id="Verfication" value="Verfication">
-                                            <label class="form-check-label" for="Verfication">
-                                                Verfication
-                                            </label>
-                                        </div>
+                                        <textarea class="form-control" name="Remark">@productionValuation.Remark</textarea>
                                     </div>
-                                    <div class="form-group col-lg-4">
-                                        <label for="Catagory">Category</label>
-                                        <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
-                                        <span validation-for="Catagory" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group col-lg-4">
-                                        <label for="File">Remark Document</label>
-                                        <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
-                                        <span validation-for="File" class="text-danger"></span>
-                                    </div>
+
+
+                                    <input name="CollateralId" type="hidden" value=@productionValuation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@productionValuation.EvaluatorUserID />
+                                    <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                                    <input name="Id" type="hidden" value=@productionValuation.Id />
                                     <div class="input-group">
                                         <span class="input-group-append">
-                                            <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
+                                            <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
                                         </span>
                                     </div>
                                 </form>
                             }
-                            else if (loggedRole.Name == "Maker Officer")
+                            else if (@Model.CurrentStatus == "Remark Verfication")
                             {
-                                if (@Model.CurrentStatus == "Remark Justfication")
-                                {
+                                <div class="card">
+                                    <h6>Remark Verfication</h6>
+                                </div>
+                                <form action="/MOCase/ReEvaluation" method="post">
                                     <div class="card">
-                                        <h6>Remark Justfication</h6>
+                                        <textarea class="form-control" name="Remark">@productionValuation.Remark</textarea>
                                     </div>
-                                    <form action="/MotorVehicle/RemarkRelease" method="post">
-                                        <div class="card">
-                                            <textarea class="form-control" name="Remark">@Productionvaluation.Remark</textarea>
-                                        </div>
 
-
-                                        <input name="CollateralId" type="hidden" value=@Productionvaluation.Id />
-                                        <input name="EvaluatorUserID" type="hidden" value=@Productionvaluation.EvaluatorUserID />
-                                        <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
-                                        <input name="Id" type="hidden" value=@Productionvaluation.Id />
-                                        <div class="input-group">
-                                            <span class="input-group-append">
-                                                <button type="submit" class="btn btn-primary" id="ReleaseRemark">Release Remark</button>
-                                            </span>
-                                        </div>
-                                    </form>
-                                }
-                                else if (@Model.CurrentStatus == "Remark Verfication")
-                                {
-                                    <div class="card">
-                                        <h6>Remark Verfication</h6>
+                                    <input name="Id" type="hidden" value=@productionValuation.Id />
+                                    <input name="EvaluatorUserID" type="hidden" value=@productionValuation.EvaluatorUserID />
+                                    <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
+                                    <div class="input-group">
+                                        <span class="input-group-append">
+                                            <button type="submit" class="btn btn-primary" id="Edit">Edit</button>
+                                        </span>
                                     </div>
-                                    <form action="/MOCase/ReEvaluation" method="post">
-                                        <div class="card">
-                                            <textarea class="form-control" name="Remark">@Productionvaluation.Remark</textarea>
-                                        </div>
-
-                                        <input name="Id" type="hidden" value=@Productionvaluation.Id />
-                                        <input name="EvaluatorUserID" type="hidden" value=@Productionvaluation.EvaluatorUserID />
-                                        <input name="CurrentStatus" type="hidden" value=@Model.CurrentStatus />
-                                        <div class="input-group">
-                                            <span class="input-group-append">
-                                                <button type="submit" class="btn btn-primary" id="Edit">Edit</button>
-                                            </span>
-                                        </div>
-                                    </form>
-
-                                }
+                                </form>
                             }
                         }
                     }
-
+                }
             }
             </div>
         </div>
+    </div>
 </section>

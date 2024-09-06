@@ -399,8 +399,9 @@
                                             <th>Creation Date</th>
                                             <th>Applicant Name</th>
                                             <th>Customer Id</th>
-                                            <th>New PCEs</th>
-                                            <th>Total PCEs</th>
+                                            @* <th>New PCEs</th> *@
+                                            @* <th>Total PCEs</th> *@
+                                            <th>Productions</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -523,8 +524,8 @@
                         { 
                             data: 'CaseNo', 
                             width: '10%',
-                            render: function (data) {
-                                return '<a href="@Url.Action("PCECaseDetail", "MOPCECase")?Id=' + data + '">' + data + '</a>';
+                            render: function (data, type, row) {
+                                return '<a href="@Url.Action("PCECaseDetail", "MOPCECase")?Id=' + row.Id + '">' + data + '</a>';
                             }                 
                         },
                         {
@@ -532,12 +533,13 @@
                             width: '15%',
                             render: function (data) {
                                 var date = new Date(data);
-                                return date.toLocaleString();
+                                return date.toISOString().split('T')[0];
+                                // return date.toLocaleString();
                             }
                         },
                         { data: 'ApplicantName', width: '15%' },
                         { data: 'CustomerUserId', width: '15%' },
-                        { data: 'NoOfCollateral', width: '10%' },
+                        @* { data: 'NoOfCollateral', width: '10%' }, *@
                         { data: 'TotalNoOfCollateral', width: '10%' },
                         {
                             data: 'CurrentStatus',

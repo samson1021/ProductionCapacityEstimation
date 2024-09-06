@@ -140,7 +140,6 @@ namespace mechanical.Controllers
                 ViewData["Pavaluation"] = Production;
             }
             
-            // ViewData["Prvaluation"] = productionById;
             ViewData["pcecaseDtos"] = loanCase;
             ViewData["productionFiles"] = file;
             ViewData["rejectedCollateral"] = rejectedProduction;

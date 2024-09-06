@@ -181,8 +181,8 @@ namespace mechanical.Mapper
               .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
               .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
-            CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>();
-            CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>();
+            CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>().ReverseMap();
+            CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>().ReverseMap();
 
             CreateMap<PCECaseCommentPostDto, PCECaseComment>();
             CreateMap<PCECaseComment, PCECaseCommentReturnDto>()

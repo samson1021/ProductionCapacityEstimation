@@ -552,7 +552,7 @@ namespace mechanical.Controllers.PCE
             { 
                 return RedirectToAction("NewPCECases"); 
             }
-            ViewData["pcecaseDtos"] = pceCase;
+            ViewData["PCECase"] = pceCase;
             ViewData["PCECaseSchedule"] = PCECaseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
             return View();

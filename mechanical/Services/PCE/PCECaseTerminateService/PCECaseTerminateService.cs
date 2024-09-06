@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using mechanical.Data;
-using mechanical.Models.Dto.CaseTerminateDto;
-using mechanical.Models.Entities;
-using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
-using mechanical.Models.PCE.Entities;
 using Microsoft.EntityFrameworkCore;
+
+using mechanical.Data;
+using mechanical.Models.Entities;
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 
 namespace mechanical.Services.PCE.PCECaseTerminateService
 {
@@ -12,81 +12,74 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
+        
         public PCECaseTerminateService(CbeContext cbeContext, IMapper mapper)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
-        }
-
-      
-        public async Task<PCECaseTerminateReturnDto> ApproveCaseTerminate(Guid id)
+        }      
+       
+        public async Task<PCECaseTerminateReturnDto> CreateCaseTerminate(Guid UserId, PCECaseTerminatePostDto pceCaseTerminatePostDto)
         {
-            var pcecaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(id);
-            if (pcecaseTerminate == null)
+            var pceCaseTerminate = _mapper.Map<PCECaseTerminate>(pceCaseTerminatePostDto);
+            pceCaseTerminate.RMUserId = UserId;
+            pceCaseTerminate.CreationDate = DateTime.Now;
+            pceCaseTerminate.CurrentStatus = "proposed";
+
+            await _cbeContext.PCECaseTerminates.AddAsync(pceCaseTerminate);
+            await _cbeContext.SaveChangesAsync();
+            
+            return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
+
+        } 
+       
+        public async Task<PCECaseTerminateReturnDto> UpdateCaseTerminate(Guid UserId, Guid Id, PCECaseTerminatePostDto pceCaseTerminatePostDto)
+        {
+            var pceCaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(Id);
+            if (pceCaseTerminate == null)
             {
-                throw new Exception("case Terminatenot Found");
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
             }
-            pcecaseTerminate.CurrentStatus = "Approved";
-            _cbeContext.Update(pcecaseTerminate);
-            await _cbeContext.SaveChangesAsync();
-            return _mapper.Map<PCECaseTerminateReturnDto>(pcecaseTerminate);
-        }
-
-
-
-
-       
-        public async Task<PCECaseTerminateReturnDto> CreateCaseTerminate(Guid userId, PCECaseTerminatePostDto pcecaseTerminatePostDto)
-        {
-            var pcecaseTerminate = _mapper.Map<PCECaseTerminate>(pcecaseTerminatePostDto);
-            pcecaseTerminate.RMUserId = userId;
-            pcecaseTerminate.CreationDate = DateTime.Now;
-            pcecaseTerminate.CurrentStatus = "proposed";
-            await _cbeContext.PCECaseTerminates.AddAsync(pcecaseTerminate);
-            await _cbeContext.SaveChangesAsync();
-            return _mapper.Map<PCECaseTerminateReturnDto>(pcecaseTerminate);
-
-        }
-
-       
-
-        public async Task<IEnumerable<PCECaseTerminateReturnDto>> GetCaseTerminates(Guid pcecaseId)
-        {
-            try
+            if (pceCaseTerminate.RMUserId != UserId)
             {
-                var caseTerminatess = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).Where(res => res.PCECaseId == pcecaseId).OrderBy(res => res.CreationDate).ToListAsync();
+                // throw new Exception("unauthorized user");
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
+            }
+            pceCaseTerminatePostDto.PCECaseId = pceCaseTerminate.PCECaseId;
+            _mapper.Map(pceCaseTerminatePostDto, pceCaseTerminate);
+            pceCaseTerminate.CreationDate = DateTime.Now;
+            _cbeContext.Update(pceCaseTerminate);
+            await _cbeContext.SaveChangesAsync();
+            return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
+        }
+
+        public async Task<PCECaseTerminateReturnDto> ApproveCaseTerminate(Guid Id)
+        {
+            var pceCaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(Id);
+            if (pceCaseTerminate == null)
+            {
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
+            }
+            
+            pceCaseTerminate.CurrentStatus = "Approved";
+            _cbeContext.Update(pceCaseTerminate);
+            await _cbeContext.SaveChangesAsync();
+            
+            return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
+        }       
+
+        public async Task<PCECaseTerminateReturnDto> GetCaseTerminate(Guid Id)
+        {
+            var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).FirstOrDefaultAsync(res => res.Id == Id);
                
-                return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(caseTerminatess);
-            }
-            catch (Exception ex)
-            {
+            return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);            
+        }        
 
-                var ErrorMessage = "An error occurred: " + ex.Message;
-                return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(ErrorMessage);
-
-            }
-        }
-
-       
-
-
-        public async Task<PCECaseTerminateReturnDto> UpdateCaseTerminate(Guid userId, Guid id, PCECaseTerminatePostDto pcecaseTerminatePostDto)
+        public async Task<IEnumerable<PCECaseTerminateReturnDto>> GetCaseTerminates(Guid PCECaseId)
         {
-            var caseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(id);
-            if (caseTerminate == null)
-            {
-                throw new Exception("Case Terminate not Found");
-            }
-            if (caseTerminate.RMUserId != userId)
-            {
-                throw new Exception("unauthorized user");
-            }
-            pcecaseTerminatePostDto.PCECaseId = caseTerminate.PCECaseId;
-            _mapper.Map(pcecaseTerminatePostDto, caseTerminate);
-            caseTerminate.CreationDate = DateTime.Now;
-            _cbeContext.Update(caseTerminate);
-            await _cbeContext.SaveChangesAsync();
-            return _mapper.Map<PCECaseTerminateReturnDto>(caseTerminate);
+            var pceCaseTerminates = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreationDate).ToListAsync();
+            
+            return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(pceCaseTerminates);            
         }
     }
 }

@@ -74,7 +74,7 @@
                 ]
             }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
         }
-        function loadPCEs() {
+        function loadProductions() {
             $.ajax({
                 url: fetchUrl,
                 type: 'GET',
@@ -91,7 +91,7 @@
                 }
             });
         }
-        loadPCEs();
+        loadProductions();
     });
 
     function openRejectionModal(PCEId) {

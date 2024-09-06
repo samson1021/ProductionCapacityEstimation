@@ -248,5 +248,18 @@ namespace mechanical.Controllers
             ViewData["ProductionCaseSchedule"] = caseSchedule;
             return View();
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetMyLatestPCECases(string Status)
+        {
+            var Limit = 10;
+            var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Status, Limit);
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load {Status} PCE Cases");
+            }
+            string jsonData = JsonConvert.SerializeObject(pceCases);
+            return Content(jsonData, "application/json");
+        }
     }
 }
