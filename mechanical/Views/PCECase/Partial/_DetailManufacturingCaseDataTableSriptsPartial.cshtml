@@ -192,7 +192,7 @@
 
         function loadComments() {
             $.ajax({
-                url: '/CaseComment/GetCaseComments?CaseId=' + CaseId,
+                url: '/PCECaseComment/GetCaseComments?PCECaseId=' + CaseId,
                 method: 'GET',
                 success: function (data) {
                     var currentUserID = data.userId;
@@ -288,14 +288,14 @@
 
         loadComments();
 
-        function sendMessage(message, CaseId) {
+        function sendMessage(message, PCECaseId) {
             var requestData = {
                 Content: message,
-                CaseId: CaseId
+                PCECaseId: PCECaseId
             };
 
             $.ajax({
-                url: '/CaseComment/CreateCaseComment',
+                url: '/PCECaseComment/CreateCaseComment',
                 method: 'POST',
                 data: requestData,
                 success: function (response) {
@@ -316,7 +316,7 @@
             var message = $('input[name="message"]').val();
             if (message.trim() !== '') {
                 // Send the message
-                sendMessage(message, CaseId);
+                sendMessage(message, PCECaseId);
                 location.reload();
                 $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
                 // loadComments();
