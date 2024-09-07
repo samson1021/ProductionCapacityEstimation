@@ -1142,14 +1142,6 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CurrentStage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrentStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CustomerEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1166,6 +1158,10 @@ namespace mechanical.Migrations
 
                     b.Property<Guid>("RMUserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1218,9 +1214,6 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CurrentStatus")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PCECaseId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1228,6 +1221,9 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1503,9 +1499,6 @@ namespace mechanical.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")

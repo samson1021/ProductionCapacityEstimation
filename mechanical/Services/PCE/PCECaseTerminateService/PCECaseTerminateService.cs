@@ -24,8 +24,8 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             var pceCaseTerminate = _mapper.Map<PCECaseTerminate>(pceCaseTerminatePostDto);
             pceCaseTerminate.RMUserId = UserId;
             pceCaseTerminate.CreationDate = DateTime.Now;
-            pceCaseTerminate.Status = "Proposed";
-            // pceCaseTerminate.CurrentStatus = "Proposed";
+            // pceCaseTerminate.Status = "Proposed";
+            pceCaseTerminate.CurrentStatus = "Proposed";
 
             await _cbeContext.PCECaseTerminates.AddAsync(pceCaseTerminate);
             await _cbeContext.SaveChangesAsync();
@@ -62,8 +62,8 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
                 return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
             }
             
-            pceCaseTerminate.Status = "Approved";
-            // pceCaseTerminate.CurrentStatus = "Approved";
+            // pceCaseTerminate.Status = "Approved";
+            pceCaseTerminate.CurrentStatus = "Approved";
             _cbeContext.Update(pceCaseTerminate);
             await _cbeContext.SaveChangesAsync();
             
