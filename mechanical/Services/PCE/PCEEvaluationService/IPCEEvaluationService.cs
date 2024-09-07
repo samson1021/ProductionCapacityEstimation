@@ -36,6 +36,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId);
         Task<CreateUser> GetUser(Guid UserId);
 
+        Task<PCEEvaluationReturnDto> RemarkReleasePCEEvaluation(Guid UserId, Guid Id, String Remark, Guid EvaluatorId);
+
+
         // Task<IEnumerable<ReturnProductionDto>> GetReturnedPCEs(Guid UserId);
         // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId); 
         // Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);

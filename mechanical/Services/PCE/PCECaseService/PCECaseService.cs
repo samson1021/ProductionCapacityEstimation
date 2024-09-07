@@ -65,8 +65,8 @@ namespace mechanical.Services.PCE.PCECaseService
             var httpContext = _httpContextAccessor.HttpContext;
             var loanCase = _mapper.Map<PCECase>(pCECaseDto);
             loanCase.Id = Guid.NewGuid();
-            loanCase.CurrentStatus = "New";
-            // loanCase.Status = "New";
+            // loanCase.CurrentStatus = "New";
+            loanCase.Status = "New";
             loanCase.DistrictId = user.DistrictId;
             loanCase.RMUserId = userId;
             loanCase.CreationDate = DateTime.Now;
@@ -88,8 +88,8 @@ namespace mechanical.Services.PCE.PCECaseService
         {
             var cases = await _cbeContext.PCECases
                                         .Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
-                                        .Where(res => res.RMUserId == userId && res.CurrentStatus == "New")
-                                        // .Where(res => res.RMUserId == userId && res.Status == "New")
+                                        // .Where(res => res.RMUserId == userId && res.CurrentStatus == "New")
+                                        .Where(res => res.RMUserId == userId && res.Status == "New")
                                         .ToListAsync();
 
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
@@ -471,8 +471,8 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<IEnumerable<PCECaseTerminateDto>> GetCaseTerminates(Guid userId)
         {
             var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities)
-                       .Where(res => res.RMUserId == userId && res.CurrentStatus == "Terminate")
-                    //    .Where(res => res.RMUserId == userId && res.Status == "Terminate")
+                    //    .Where(res => res.RMUserId == userId && res.CurrentStatus == "Terminate")
+                       .Where(res => res.RMUserId == userId && res.Status == "Terminate")
                        .ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(cases);
             foreach (var caseDto in caseDtos)
@@ -496,12 +496,13 @@ namespace mechanical.Services.PCE.PCECaseService
             {
                 throw new Exception("case Schedule not Found");
             }
-            caseTerminate.CurrentStatus = "Approved";
+            caseTerminate.Status = "Approved";
+            // caseTerminate.CurrentStatus = "Approved";
             _cbeContext.Update(caseTerminate);
 
             var cases = await _cbeContext.PCECases.FindAsync(caseTerminate.PCECaseId);
-            cases.CurrentStatus = "Terminate";
-            // cases.Status = "Terminate";
+            // cases.CurrentStatus = "Terminate";
+            cases.Status = "Terminate";
             var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == caseTerminate.PCECaseId).ToListAsync();
 
             foreach (var collateral in collaterals)

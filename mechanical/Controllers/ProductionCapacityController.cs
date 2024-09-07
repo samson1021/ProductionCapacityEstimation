@@ -299,32 +299,32 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
+        public async Task<IActionResult> HandleRemark(Guid ProductionCapacityId, Guid EvaluatorId, String RemarkType, CreateFileDto UploadFile)
         {
-            var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
-            ProductioncaseAssignment.Status = "Remark";
-            _cbeContext.Update(ProductioncaseAssignment);
+            var productioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorId).FirstOrDefaultAsync();
+            productioncaseAssignment.Status = "Remark";
+            _cbeContext.Update(productioncaseAssignment);
 
-            var Production = await _cbeContext.ProductionCapacities.Where(res => res.Id == ProductionCapacityId).FirstOrDefaultAsync();
+            var production = await _cbeContext.ProductionCapacities.Where(res => res.Id == ProductionCapacityId).FirstOrDefaultAsync();
             if (RemarkType == "Verfication")
             {
-                Production.CurrentStatus = "Remark Verfication";
+                production.CurrentStatus = "Remark Verfication";
             }
             else
             {
-                Production.CurrentStatus = "Remark Justfication";
+                production.CurrentStatus = "Remark Justfication";
             }
-            if (uploadFile.File != null)
+            if (UploadFile.File != null)
             {
-                uploadFile.CaseId = Production.PCECaseId;
-                await _uploadFileService.CreateUploadFile(base.GetCurrentUserId(), uploadFile);
+                UploadFile.CaseId = production.PCECaseId;
+                await _uploadFileService.CreateUploadFile(base.GetCurrentUserId(), UploadFile);
             }
-            Production.CurrentStage = "Maker Officer";
-            _cbeContext.Update(Production);
+
+            production.CurrentStage = "Maker Officer";
+
+            _cbeContext.Update(production);
             _cbeContext.SaveChanges();
 
-            //return RedirectToAction("MyCompleteCases", "Case");
-            //just for opration 
             return RedirectToAction("PCENewCases", "PCECase");
         }
 

@@ -114,7 +114,7 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(collateral);
             return Content(jsonData, "application/json");
         }
-        public async Task<IActionResult>ReEvaluation(Guid Id)
+        public async Task<IActionResult> ReEvaluation(Guid Id)
         {
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
             if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))

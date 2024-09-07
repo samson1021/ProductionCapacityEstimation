@@ -31,17 +31,17 @@ namespace mechanical.Controllers
 
     public class MOPCECaseController : BaseController
     {
-        private readonly IMailService _mailService;
+        private readonly IMailService _MailService;
         private readonly ILogger<MOPCECaseController> _logger;
         private readonly IMOPCECaseService _MOPCECaseService;
         private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
-        public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService mailService, IPCECaseTerminateService PCECaseTerminateService)
-        // public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseTerminateService ProductionCaseTerminateService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService mailService)
+        public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService MailService, IPCECaseTerminateService PCECaseTerminateService)
+        // public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseTerminateService ProductionCaseTerminateService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService MailService)
         {
             _logger = Logger;
-            _mailService = mailService;    
+            _MailService = MailService;    
             _MOPCECaseService = MOPCECaseService;
             _ProductionCaseScheduleService = ProductionCaseScheduleService;
              _PCECaseTerminateService = PCECaseTerminateService;
@@ -319,7 +319,7 @@ namespace mechanical.Controllers
         {
             var pceCaseInfo = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), productionCaseSchedule.PCECaseId);
 
-            await _mailService.SendEmail(new MailPostDto
+            await _MailService.SendEmail(new MailPostDto
             {
                 SenderEmail = "sender@cbe.com.et",
                 SenderPassword = "test@1234",

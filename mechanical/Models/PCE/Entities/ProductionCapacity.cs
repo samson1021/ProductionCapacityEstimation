@@ -60,7 +60,7 @@ namespace mechanical.Models.PCE.Entities
 
         public string? CurrentStage { get; set; }
         public string? CurrentStatus { get; set; }
-        public string? Remark { get; set; } = string.Empty;
+        // public string? Remark { get; set; } = string.Empty;
         
         public Guid? EvaluatorUserID { get; set; }
         public Guid? CheckerUserID { get; set; }

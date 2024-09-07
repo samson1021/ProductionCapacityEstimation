@@ -8,7 +8,8 @@
         public required string ApplicantName { get; set; }
         public required string CustomerUserId { get; set; }
         public string District { get; set; } = string.Empty;
-        public required string CurrentStatus { get; set; }
+        public required string Status { get; set; }
+        // public required string CurrentStatus { get; set; }
         public int NoOfCollateral { get; set; } = 0;
         public string? TerminationReason { get; set; }
     }

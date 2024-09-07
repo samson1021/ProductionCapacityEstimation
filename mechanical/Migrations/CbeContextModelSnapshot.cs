@@ -1364,6 +1364,9 @@ namespace mechanical.Migrations
                     b.Property<int>("ProductionUnit")
                         .HasColumnType("int");
 
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ShiftsPerDay")
                         .HasColumnType("int");
 

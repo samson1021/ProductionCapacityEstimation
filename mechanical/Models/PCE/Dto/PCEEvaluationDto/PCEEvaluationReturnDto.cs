@@ -100,6 +100,9 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Survey Remark")]
         public string? SurveyRemark { get; set; }
+        
+        [Display(Name = "Remark")]
+        public string? Remark { get; set; } = string.Empty;
 
         [Display(Name = "Supporting Evidences")]
         public ICollection<ReturnFileDto> SupportingEvidences { get; set; }
