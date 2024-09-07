@@ -87,7 +87,7 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<IEnumerable<PCENewCaseDto>> GetPCENewCases(Guid userId)
         {
             var cases = await _cbeContext.PCECases
-                                        .Include(x => x.ProductionCapacitiyes.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+                                        .Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
                                         .Where(res => res.RMUserId == userId && res.CurrentStatus == "New")
                                         // .Where(res => res.RMUserId == userId && res.Status == "New")
                                         .ToListAsync();
