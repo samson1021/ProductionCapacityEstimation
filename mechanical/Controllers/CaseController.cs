@@ -105,7 +105,7 @@ namespace mechanical.Controllers
 
 
 
-        [HttpGet]   
+        [HttpGet]
         public IActionResult NewCases()
         {
             return View();

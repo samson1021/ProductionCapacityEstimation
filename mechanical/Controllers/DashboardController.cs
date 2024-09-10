@@ -1,6 +1,7 @@
 ﻿using mechanical.Data;
 using mechanical.Services.CaseServices;
 using mechanical.Services.MMCaseService;
+using mechanical.Services.PCE.PCECaseService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,14 +11,19 @@ namespace mechanical.Controllers
     {
         private readonly ICaseService _caseService;
         private readonly CbeContext _cbeContext;
-        public DashboardController(ICaseService caseService, CbeContext cbeContext)
+
+        private readonly IPCECaseService _PCECaseService;
+        public DashboardController(ICaseService caseService, CbeContext cbeContext, IPCECaseService pCECaseService)
         {
             _caseService = caseService;
             _cbeContext = cbeContext;
+            _PCECaseService = pCECaseService;
         }
         public async Task<IActionResult> RM()
         {
             var latestCase = await _caseService.GetRmLatestCases(base.GetCurrentUserId());
+            var newCases = await _PCECaseService.GetPCENewCases(base.GetCurrentUserId());
+            ViewData["NewCases"] = newCases;
             return View(latestCase);
         }
         public async Task<IActionResult> MO()

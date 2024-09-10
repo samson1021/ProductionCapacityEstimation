@@ -4,6 +4,8 @@ using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
 using mechanical.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace mechanical.Services.PCE.ProductionCaseScheduleService
 {
@@ -16,18 +18,6 @@ namespace mechanical.Services.PCE.ProductionCaseScheduleService
             _cbeContext = cbeContext;
             _mapper = mapper;
         }
-        //public async Task<CaseScheduleReturnDto> ApproveCaseSchedule(Guid id)
-        //{
-        //    var caseSchedule = await _cbeContext.CaseSchedules.FindAsync(id);
-        //    if (caseSchedule == null)
-        //    {
-        //        throw new Exception("case Schedule not Found");
-        //    }
-        //    caseSchedule.Status = "Approved";
-        //    _cbeContext.Update(caseSchedule);
-        //    await _cbeContext.SaveChangesAsync();
-        //    return _mapper.Map<CaseScheduleReturnDto>(caseSchedule);
-        //}
         public async Task<ProductionCaseScheduleReturnDto> ApproveProductionCaseSchedule(Guid id)
         {
             var caseSchedule = await _cbeContext.ProductionCaseSchedules.FindAsync(id);
@@ -41,10 +31,11 @@ namespace mechanical.Services.PCE.ProductionCaseScheduleService
             return _mapper.Map<ProductionCaseScheduleReturnDto>(caseSchedule);
         }
 
-        public async Task<ProductionCaseScheduleReturnDto> CreateProductionCaseSchedule(Guid userId, ProductionCaseSchedulePostDto caseCommentPostDto)
+
+        public async Task<ProductionCaseScheduleReturnDto> CreateProductionCaseSchedule(Guid UserId, ProductionCaseSchedulePostDto caseCommentPostDto)
         {
             var caseSchedule = _mapper.Map<Models.PCE.Entities.ProductionCaseSchedule>(caseCommentPostDto);
-            caseSchedule.UserId = userId;
+            caseSchedule.UserId = UserId;
             caseSchedule.CreatedAt = DateTime.Now;
             caseSchedule.Status = "proposed";
 
@@ -53,20 +44,27 @@ namespace mechanical.Services.PCE.ProductionCaseScheduleService
             return _mapper.Map<ProductionCaseScheduleReturnDto>(caseSchedule);
         }
 
-        public async Task<IEnumerable<ProductionCaseScheduleReturnDto>> GetProductionCaseSchedules(Guid caseId)
+        public async Task<IEnumerable<ProductionCaseScheduleReturnDto>> GetProductionCaseSchedules(Guid PCECaseId)
         {
-            var caseSchedules = await _cbeContext.ProductionCaseSchedules.Include(res => res.User).Where(res => res.PCECaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            var caseSchedules = await _cbeContext.ProductionCaseSchedules.Include(res => res.User).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            
             return _mapper.Map<IEnumerable<ProductionCaseScheduleReturnDto>>(caseSchedules);
         }
 
-        public async Task<ProductionCaseScheduleReturnDto> UpdateProductionCaseSchedule(Guid userId, Guid id, ProductionCaseSchedulePostDto caseCommentPostDto)
+        //public async Task<IEnumerable<CaseScheduleReturnDto>> GetCaseSchedules(Guid caseId)
+        //{
+        //    var caseSchedules = await _cbeContext.CaseSchedules.Include(res => res.User).Where(res => res.CaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
+        //    return _mapper.Map<IEnumerable<CaseScheduleReturnDto>>(caseSchedules);
+        //}
+
+        public async Task<ProductionCaseScheduleReturnDto> UpdateProductionCaseSchedule(Guid UserId, Guid id, ProductionCaseSchedulePostDto caseCommentPostDto)
         {
             var caseSchedule = await _cbeContext.ProductionCaseSchedules.FindAsync(id);
             if (caseSchedule == null)
             {
                 throw new Exception("Production case Schedule not Found");
             }
-            if (caseSchedule.UserId != userId)
+            if (caseSchedule.UserId != UserId)
             {
                 throw new Exception("unauthorized user");
             }

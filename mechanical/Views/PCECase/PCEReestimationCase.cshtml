@@ -1,0 +1,236 @@
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
+
+@{
+    var myCase = ViewData["case"] as PCECaseReturntDto;
+    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+   
+
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>PCE Case Detail</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+@*                     <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "PCECase")">My Case</a></li>
+ *@                    <li class="breadcrumb-item active"> PCE Case Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Production Capacity Estimation Informations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
+                            <i class="fas fa-comments"> </i>
+                            Comments <span class="badge badge-warning right CommentBage"> </span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                        @await Html.PartialAsync("_GeneralInfo")
+                    </div>
+                    <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                        @await Html.PartialAsync("_ReEstimationCompletePCE")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                        @* @await Html.PartialAsync("_PCECaseSchedule") *@
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+                        @* @await Html.PartialAsync("_PCECaseComment") *@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/lib/datatable/js/jszip.min.js"></script>
+    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
+    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
+    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var CaseId = $('#CaseId').val();
+            var caseCollateralsTable;
+
+            function initializeDataTable(data) {
+                caseCollateralsTable = $('#caseCollaterals').DataTable({
+                    language: {
+                        emptyTable: "No data available in table"
+                    },
+                    responsive: true,
+                    pageLength: 8,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"],
+                    data: data,
+                    columns: [
+                        {
+                            data: null,
+                            render: function (data, type, row, meta) {
+                                return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
+                            }
+                        },
+                        { data: 'PropertyOwner', width: '20%' },
+                        { data: 'Role', width: '20%' },
+                        { data: 'Category', width: '25%' },
+                        { data: 'Type', width: '25%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details';
+                            }
+                        }
+                    ]
+                }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
+            }
+
+            function loadCollaterals() {
+                console.log("sdfsdf");
+                console.log('@myCase.Id');
+
+                $.ajax({
+                    url: '/ProductionCapacity/GetRMCompleteCollaterals?PCECaseId=' + '@myCase.Id',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
+                            var caseCollateralsTable = $('#caseCollaterals').DataTable();
+                            caseCollateralsTable.destroy();
+                        }
+                        initializeDataTable(data);
+                    },
+                    error: function (error) {
+                        toastr.error("Failed to load PCE");
+                        console.log(error);
+                    }
+                });
+            }
+
+            loadCollaterals();
+            $('#assignButton').on('click', function () {
+
+                var checkedCollaterals = $('.purple-checkbox:checked');
+                var selectedCollateralIds = [];
+
+                checkedCollaterals.each(function () {
+                    var collateralId = $(this).val();
+                    selectedCollateralIds.push(collateralId);
+                });
+                if (selectedCollateralIds.length === 0) {
+                    toastr.error('Please select at least one PCE');
+                } else {
+                    $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+
+                    $('#SendForEvaluationModal').modal('show');
+                }
+            });
+            $('#sendEvaluationButton').on('click', function () {
+
+                var checkedCollaterals = $('.purple-checkbox:checked');
+                var selectedCollateralIds = [];
+
+                checkedCollaterals.each(function () {
+                    var collateralId = $(this).val();
+                    selectedCollateralIds.push(collateralId);
+                });
+                if (selectedCollateralIds.length === 0) {
+                    toastr.error('Please select at least one PCE');
+                } else {
+                    $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+
+                    $('#SendForEvaluationModal').modal('show');
+                }
+            });
+
+            fetch('/UserManagment/GetDistrict')
+                .then(response => response.json())
+                .then(data => {
+                    var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Valuation Center');
+                    $('#CenterDropdown').append(selectOption);
+                    data.forEach(function (district) {
+                        var option = $('<option></option>').attr('value', district.Id).text(district.Name);
+                        $('#CenterDropdown').append(option);
+
+                    });
+                })
+                .catch(error => {
+                    console.log('Error fetching District data:', error);
+                });
+
+            $('#selectAllCheckbox').on('click', function () {
+                var isChecked = $(this).prop('checked');
+                $('.purple-checkbox').prop('checked', isChecked);
+            });
+
+            $('#caseCollaterals tbody').on('change', '.purple-checkbox', function () {
+                var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+                $('#selectAllCheckbox').prop('checked', allChecked);
+            });
+            $('#assignForm').submit(function (e) {
+                e.preventDefault();
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/PCECase/SendProductionForReestimation',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        toastr.success(response.message);
+                        loadCollaterals();
+                        $('#SendForEvaluationModal').modal('hide');
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        var error = xhr.responseJSON;
+                        toastr.error(error.message);
+                    }
+                });
+            });
+        });
+    </script>
+    @{
+        // await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+
+    }
+
+}
+
+

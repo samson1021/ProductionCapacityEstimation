@@ -1,0 +1,103 @@
+﻿
+<script>
+    $(document).ready(function () {
+        var PCECaseId = $('#PCECaseId').val();
+        var applicantNameElement = document.querySelector('#ApplicantName').innerText;
+
+        function initializeDataTable(data) {
+            $('#PCECaseProductions').DataTable({
+                language: {
+                    emptyTable: "There is no production register for this PCE case please click the above add button to add Productions"
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                scrollX: true, // Enable horizontal scrolling
+                buttons: [
+                    { extend: 'copy', title: 'Production Capacity Evaluation Report Summary - Copy', exportOptions: { columns: ':visible' } },
+                    { extend: 'csv', title: 'Production Capacity Evaluation Report Summary - CSV', exportOptions: { columns: ':visible' } },
+                    {
+                        extend: 'excelHtml5', title: 'Production Capacity Evaluation Report Summary - Excel', exportOptions: { columns: ':visible' }, customize: function (xlsx) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            $('row c[r^="J"]', sheet).attr('s', '55');
+                        }
+                    },
+                    {
+                        extend: 'pdf', title: 'Production Capacity Evaluation Report Summary - PDF', exportOptions: { columns: ':visible' },
+                    },
+                    {
+                        extend: 'print', title: 'Production Capacity Evaluation Report Summary - Print', exportOptions: { columns: ':visible' },
+                        customize: function (win) {
+                            $(win.document.body).find('h1').text('Production Capacity Evaluation Report Summary').addClass('text-center');
+                            $(win.document.body).find('table').prepend(
+                                '<tr><th colspan="10" class="text-center"><h2>Commercial Bank Of Ethiopia</h2></th></tr>' +
+                                '<tr><th colspan="3">Applicant Name</th><th colspan="2">Applicant Address</th><th colspan="2">Date Of Evaluation</th><th colspan="3">Mechanical Equipment Type</th></tr>' +
+                                '<tr><td colspan="3">' + applicantNameElement + '</td><td colspan="2"></td><td colspan="2"></td><td colspan="3">Production Capacity</td></tr>' +
+                                '<tr><th colspan="10">PART II: SUMMARY OF VALUATION</th></tr>' +
+                                '<tr>' +
+                                '<th>S/No.</th>' +
+                                '<th>Mechanical Equipment Name</th>' +
+                                '<th>YoMfg & Origin</th>' +
+                                '<th>Model & Engine No., Chassis & Serial No.</th>' +
+                                '<th>Physical & Technical Assessment</th>' +
+                                '<th>Property Of</th>' +
+                                '<th>Replacement Cost</th>' +
+                                '<th>Depreciation Rate</th>' +
+                                '<th>Net Estimation Value</th>' +
+                                '<th>Remark</th>' +
+                                '</tr>'
+                            );
+                            $(win.document.body).find('table thead').empty();
+                        }
+                    },
+                    'colvis'
+                ],
+                data: data,
+                columns: [
+                    { data: null, render: function (data) { return data.PCE.SerialNo; }, width: '5%' },
+                    { data: null, render: function (data) { return data.PCE.PropertyOwner; }, width: '5%' },
+                    { data: null, render: function (data) { return data.ProductionLineOrEquipmentName + ' ' + data.PCE.MachineName; }, width: '10%' },
+                    { data: null, render: function (data) { return data.PCE.ManufactureYear; }, width: '10%' },
+                    { data: null, render: function (data) { return data.SerialNo; }, width: '10%' },
+                    { data: null, render: function (data) { return data.PCE.ModelNo; }, width: '20%' },
+                    { data: null, render: function (data) { return data.PCE.InvoiceNo; }, width: '20%' },
+                    { data: null, render: function (data) { return data.PCE.LHCNumber; }, width: '20%' },
+                    { data: null, render: function (data) { return data.PCE.Type; }, width: '20%' },
+                    { data: 'PCE.SerialNo', width: '10%' },
+                    { data: 'DepreciationRateApplied', width: '10%' },
+                    { data: 'ActualProductionCapacity', width: '20%' },
+                    { data: 'EstimatedProductionCapacity', width: '10%' },
+                    { data: 'SurveyRemark', width: '10%' },
+                ]
+            }).buttons().container().appendTo('#PCECaseProductions_wrapper .col-md-6:eq(0)');
+        }
+
+        function loadProductions() {
+            $.ajax({
+                url: '/PCEEvaluation/GetPCESummary?PCECaseId=' + PCECaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log("Returned data:", data.length, data);
+                    if ($.fn.DataTable.isDataTable('#PCECaseProductions')) {
+                        $('#PCECaseProductions').DataTable().destroy();
+                    }
+
+                    if (data && data.length > 0) {
+                        initializeDataTable(data);
+                    } else {
+                        // Display message when there are no Productions
+                        $('#PCECaseProductions').html('There are no Productions.');
+                    }
+                },
+                error: function (error) {
+                    toastr.error("Failed to load Productions");
+                    console.log(error);
+                }
+            });
+        }
+
+        loadProductions();
+    });
+</script>

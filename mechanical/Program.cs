@@ -41,12 +41,16 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
-using Signature_management.Service.SignatureService;
+using Microsoft.Extensions.FileProviders;
+using mechanical.Services.PCE.PCECaseTerminateService;
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseCommentService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -91,9 +95,15 @@ builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
 builder.Services.AddScoped<IProductionCapacityServices, ProductionCapacityServices>();
-builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
+builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
+builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
+builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
+
+
+
+
 
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService, CaseAssignmentService>();
@@ -118,6 +128,8 @@ builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 
 
 
+builder.Services.AddScoped<ISignatureService, SignatureService>();
+
 
 
 builder.Services.AddAutoMapper(typeof(Program));
@@ -128,6 +140,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 // builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+builder.Services.AddScoped<IMOPCECaseService, MOPCECaseService>();
+builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -185,6 +199,17 @@ app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Serve static files from UploadFile directory
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(
+         Path.Combine(Directory.GetCurrentDirectory(), @"UploadFile")),
+    RequestPath = new PathString("/UploadFile")
+});
+
+
 
 app.UseRouting();
 

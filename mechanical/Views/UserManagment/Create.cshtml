@@ -195,7 +195,6 @@
                         if (data != null && data.length > 0) {
                             $(data).each(function (index, supervisor) {
                                 dropdown.append($('<option></option>').val(supervisor.Id).text(supervisor.Name));
-                                 dropdown.prop('disabled', false);
                             });
                         } else {
                             dropdown.prop('disabled', true);

@@ -1,14 +1,28 @@
 ﻿﻿using mechanical.Data;
+using mechanical.Models.Dto.CaseTerminateDto;
+using mechanical.Models.Dto.MailDto;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Entities;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.MailService;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.ProductionCaseScheduleService;
+using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.UploadFileService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+using mechanical.Models.Dto.CaseScheduleDto;
+using Humanizer;
+using mechanical.Services.PCE.MOPCECaseService;
 
 namespace mechanical.Controllers.PCE
 {
@@ -19,18 +33,29 @@ namespace mechanical.Controllers.PCE
         private readonly CbeContext _cbeContext;
         private readonly IPCECaseService _PCECaseService;
         private readonly ILogger<PCECaseController> _logger;
-        private readonly IPCECaseService _iPCECaseService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
+        private readonly IProductionCaseScheduleService _productionCaseScheduleService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentService;
+        private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IUploadFileService _uploadFileService;
+        private readonly IPCECaseTerminateService _pcecaseTermnateService;
+        private readonly IPCECaseScheduleService _pcecaseScheduleService;
+        private readonly IMailService _mailService;
+        private readonly IMOPCECaseService _MOPCECaseService;
+        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
 
-
-        public PCECaseController(CbeContext cbeContext, IPCECaseService ipCECaseService, IProductionCaseAssignmentServices productionCaseAssignmentServices , IUploadFileService uploadFileService)
+        public PCECaseController(CbeContext cbeContext, IMOPCECaseService IMOPCECaseService, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService, IProductionCaseScheduleService productionCaseScheduleService)
         {
             _cbeContext = cbeContext;
-            _PCECaseService = ipCECaseService;
-            _productionCaseAssignmentServices = productionCaseAssignmentServices;
+            _PCECaseService = PCECaseService;
+            _productionCaseScheduleService = ProductionCaseScheduleService;
+            _productionCaseAssignmentService = ProductionCaseAssignmentService;
+            _PCEEvaluationService = PCEEvaluationService;
             _uploadFileService = uploadFileService;
-
+            _pcecaseTermnateService = pcecaseTermnateService;
+            _pcecaseScheduleService = pcecaseScheduleService;
+            _mailService = mailService;
+            _ProductionCaseScheduleService = productionCaseScheduleService;
+            _MOPCECaseService = IMOPCECaseService;
         }
 
 
@@ -140,8 +165,67 @@ namespace mechanical.Controllers.PCE
             return Content(JsonConvert.SerializeObject(newCases), "application/json");
         }
 
+        // PCE Terminate Cases
+        [HttpGet]
+        public IActionResult PCETerminatedCases()
+        {
+            return View();
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetPCETerminatedCases()
+        {
+            var newCases = await _PCECaseService.GetCaseTerminates(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateTermination(PCECaseTerminatePostDto caseTerminatePostDto)
+        {
+            var caseTerminate = await _pcecaseTermnateService.CreateCaseTerminate(base.GetCurrentUserId(), caseTerminatePostDto);
+            if (caseTerminate == null) { return BadRequest("Unable to Create case Schdule"); }
+            var CaseInfo = await _PCECaseService.GetCaseDetail(caseTerminate.PCECaseId);
+            await _mailService.SendEmail(new MailPostDto
+            {
+                SenderEmail = "getnetadane1@cbe.com.et",
+                SenderPassword = "Gechlove@1234",
+                RecipantEmail = "yohannessintayhu@cbe.com.et",
+                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseTerminate.Reason + " For further Detail please check PCE Valuation System",
+            });
+            string jsonData = JsonConvert.SerializeObject(caseTerminate);
+            return Ok(caseTerminate);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTermination(Guid Id, PCECaseTerminatePostDto caseTerminatePostDto)
+        {
+            var caseTerminate = await _pcecaseTermnateService.UpdateCaseTerminate(base.GetCurrentUserId(), Id, caseTerminatePostDto);
+            if (caseTerminate == null) { return BadRequest("Unable to update case Termination"); }
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ApproveCaseTermination(Guid Id)
+        {
+            var caseSchedule = await _PCECaseService.ApproveCaseTermination(Id);
+            if (caseSchedule == null) { return BadRequest("Unable to update PCE case Schdule"); }
+            return Ok();
+        }
 
+        [HttpGet]
+        public IActionResult PCEReestimationCases()
+        {
+            return View();
+        }
+        public async Task<IActionResult> PCEReestimationCase(Guid Id)       {
 
+            var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
+            //var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
+           // var production = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
+            ViewData["case"] = loanCase;
+            //ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
         [HttpGet]
         public async Task<IActionResult> GetDashboardPCECaseCount()
         {
@@ -156,17 +240,31 @@ namespace mechanical.Controllers.PCE
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
-
         [HttpGet]
         public async Task<IActionResult> PCEDetail(Guid id)
         {
-            var pcecaseDto =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            ViewData["pcecaseDtos"] = pcecaseDto;
-            return View();
-        } 
+            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
 
-      
-        public async Task<IActionResult> PCEEdit(Guid Id)
+            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
+           // ViewData["pcecaseDtos"] = pcecaseDto;
+            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key
+            ViewData["Id"] = base.GetCurrentUserId();
+
+            //var usersdata = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
+            ViewData["CurrentUser"] = base.GetCurrentUserId();
+            ViewData["PCECaseId"] = pcecaseDto.Id;
+            ViewData["pcecaseDtos"] = pcecaseDto;
+            
+            return View();
+        }
+
+
+  
+
+
+
+    public async Task<IActionResult> PCEEdit(Guid Id)
         {
             var editCase =  _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
             if (editCase == null) { return RedirectToAction("PCENewCases"); }
@@ -222,13 +320,10 @@ namespace mechanical.Controllers.PCE
             }
                 
         }
-        // abdu start 
+        // abdu start
         [HttpGet]
         public async Task<IActionResult> GetPCECompleteCases()
         {
-            //var newCases = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
-            //return Content(JsonConvert.SerializeObject(newCases), "application/json");
-
             var myCase = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
@@ -241,7 +336,8 @@ namespace mechanical.Controllers.PCE
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
             //var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
             var production = await _cbeContext.ProductionCapacities.ToListAsync();
-            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
+            if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["case"] = loanCase;
           //  ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
@@ -292,7 +388,7 @@ namespace mechanical.Controllers.PCE
             var userId = base.GetCurrentUserId();
             try
             {
-                await _productionCaseAssignmentServices.SendProductionForValuation(selectedCollateralIds, CenterId);
+                await _productionCaseAssignmentService.SendProductionForValuation(selectedCollateralIds, CenterId);
                 var response = new { message = "PCE assigned successfully" };
                 return Ok(response);
             }
@@ -309,7 +405,7 @@ namespace mechanical.Controllers.PCE
             var userId = base.GetCurrentUserId();
             try
             {
-                await _productionCaseAssignmentServices.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                await _productionCaseAssignmentService.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
                 var response = new { message = "PCE Reestimation assigned successfully" };
                 return Ok(response);
             }
@@ -334,7 +430,12 @@ namespace mechanical.Controllers.PCE
             //return View();
 
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            var caseTerminate = await _PCECaseService.GetCaseTerminates(id);
+            var caseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
             ViewData["pcecaseDtos"] = pcecaseDto;
+            ViewData["caseTerminate"] = caseTerminate;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();          
             return View();
         }
 
@@ -344,6 +445,33 @@ namespace mechanical.Controllers.PCE
             var pceReportData = await _PCECaseService.GetPCEReportData(Id);
             var file = await _uploadFileService.GetUploadFileByCollateralId(Id);
             ViewData["productionFiles"] = file;
+            
+           
+            if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            {
+                var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                var EvaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
+        
+     
+                var evaluatorReportDto = new EvaluatorReportDto
+                {
+                    EvaluatorId = pceReportData.PCEEvaluations[0].EvaluatorId,
+                    CreatedAt = pceReportData.PCEEvaluations[0].CreatedAt,
+                    EvaluatorName = EvaluatorName,
+                    PCEvaluationId = pceReportData.PCEEvaluations[0].Id,
+                    SignatureImageId = signaturefilename
+                };
+                ViewData["EvaluatorReport"] = evaluatorReportDto;
+
+            }
+            else
+            {
+                var evaluatorReportDto = new EvaluatorReportDto();
+                ViewData["EvaluatorReport"] = evaluatorReportDto;
+
+            }
+
 
             ViewData["pceCase"] = pceReportData.PCESCase;
             ViewData["productions"] = pceReportData.Productions;
@@ -358,8 +486,49 @@ namespace mechanical.Controllers.PCE
         {
             var pceReportData = await _PCECaseService.GetPCEAllReportData(Id);
             var file = await _uploadFileService.GetAllUploadFileByCaseId(Id);
-            ViewData["productionFiles"] = file;
-             
+
+
+            //if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            //{
+            //    var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+            //    var EvaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.Name).FirstOrDefault();
+            //    var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
+            //    var evaluatorReportDto = new EvaluatorReportDto
+            //    {
+            //        EvaluatorId = pceReportData.PCEEvaluations[0].EvaluatorId,
+            //        CreatedAt = pceReportData.PCEEvaluations[0].CreatedAt,
+            //        EvaluatorName = EvaluatorName,
+            //        PCEvaluationId = pceReportData.PCEEvaluations[0].Id,
+            //        SignatureImageId = signaturefilename
+            //    };
+            //    ViewData["EvaluatorReport"] = evaluatorReportDto;
+
+            //}
+            if (pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Any())
+            {
+                var evaluatorReports = new List<EvaluatorReportDto>();
+
+                foreach (var evaluation in pceReportData.PCEEvaluations)
+                {
+                    var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                    var evaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                    var signatureFilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
+
+                    var evaluatorReportDto = new EvaluatorReportDto
+                    {
+                        EvaluatorId = evaluation.EvaluatorId,
+                        CreatedAt = evaluation.CreatedAt,
+                        EvaluatorName = evaluatorName,
+                        PCEvaluationId = evaluation.Id,
+                        SignatureImageId = signatureFilename
+                    };
+
+                    evaluatorReports.Add(evaluatorReportDto);
+                }
+
+                ViewData["EvaluatorReports"] = evaluatorReports;
+            }
+            ViewData["productionFiles"] = file;             
             ViewData["pceCase"] = pceReportData.PCESCase;
             ViewData["productions"] = pceReportData.Productions;
             ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;
@@ -367,5 +536,147 @@ namespace mechanical.Controllers.PCE
 
             return View();
         }
+    
+        /////////////////// PCE /////////////
+        [HttpGet]
+        public IActionResult PCECases(string Status = "New")
+        {
+            ViewData["Title"] = Status + " PCE Cases";
+            ViewBag.Url = "/PCECase/GetPCECases";
+            ViewBag.Status = Status;
+            return View("PCECases");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPCECases(string Status)
+        {
+            var pceCases = await _PCEEvaluationService.GetPCECases(base.GetCurrentUserId(), Status);
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load {Status} PCE Cases");
+            }
+            string jsonData = JsonConvert.SerializeObject(pceCases);
+            return Content(jsonData, "application/json");
+        }
+        
+        public IActionResult RemarkPCECases()
+        {
+            return View();
+        }
+        public async Task<IActionResult> RemarkPCECase(Guid Id)
+        {
+            var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            // var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var PCECaseSchedule = await _productionCaseScheduleService.GetProductionCaseSchedules(Id);
+            if (pceCase == null) 
+            { 
+                return RedirectToAction("NewPCECases"); 
+            }
+            ViewData["pcecaseDtos"] = pceCase;
+            ViewData["PCECaseSchedule"] = PCECaseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetRemarkedPCECases()
+        {
+            var pceCases = await _PCECaseService.GetRemarkedPCECases(GetCurrentUserId());
+            if (pceCases == null) 
+            { 
+                return BadRequest("Unable to load PCE Case"); 
+            }
+            string jsonData = JsonConvert.SerializeObject(pceCases);
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PCESummary(Guid Id)
+        {
+            var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            ViewData["PCECase"] = pceCase;
+           
+            return View();
+        }
+
+
+        private async Task<IActionResult> SendScheduleEmail(ProductionCaseScheduleReturnDto productionCaseSchedule, string subjectPrefix)
+        {
+            var pceCaseInfo = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), productionCaseSchedule.PCECaseId);
+
+            await _mailService.SendEmail(new MailPostDto
+            {
+                SenderEmail = "sender@cbe.com.et",
+                SenderPassword = "test@1234",
+                RecipantEmail = "recipient@cbe.com.et",
+                Subject = $"{subjectPrefix}{pceCaseInfo.CaseNo}",
+                Body = $"Dear! Valuation Schedule For Applicant: {pceCaseInfo.ApplicantName} is {productionCaseSchedule.ScheduleDate}. For further details, please check the Production Valuation System."
+            });
+
+            string jsonData = JsonConvert.SerializeObject(productionCaseSchedule);
+
+            return Ok(productionCaseSchedule);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateSchedule(ProductionCaseSchedulePostDto CaseSchedulePostDto)
+        {
+            var caseSche = await _cbeContext.ProductionCaseSchedules.FindAsync(CaseSchedulePostDto.Id);
+            caseSche.Status = "Rejected";
+            caseSche.Reason = CaseSchedulePostDto.Reason;
+            _cbeContext.Update(caseSche);
+            await _cbeContext.SaveChangesAsync();
+            CaseSchedulePostDto.Reason = null;
+            CaseSchedulePostDto.Id = Guid.Empty;
+            var productionCaseSchedule = await _productionCaseScheduleService.CreateProductionCaseSchedule(base.GetCurrentUserId(), CaseSchedulePostDto);
+            if (productionCaseSchedule == null) { return BadRequest("Unable to Create case Schdule"); }
+            return await SendScheduleEmail(productionCaseSchedule, "Valuation Schedule for PCECase Number ");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateSchedule(Guid Id, CaseSchedulePostDto CaseSchedulePostDto)
+        {
+            var caseSchedule = await _cbeContext.ProductionCaseSchedules.FindAsync(Id);
+            if (caseSchedule == null)
+            {
+                throw new Exception("case Schedule not Found");
+            }
+            if (caseSchedule.UserId != base.GetCurrentUserId())
+            {
+                throw new Exception("unauthorized user");
+            }
+            caseSchedule.CreatedAt = DateTime.Now;
+            caseSchedule.ScheduleDate = CaseSchedulePostDto.ScheduleDate;
+            _cbeContext.Update(caseSchedule);
+            var caseSchedules = await _cbeContext.SaveChangesAsync();
+            if (caseSchedules == null) { return BadRequest("Unable to update case Schdule"); }
+            var CaseInfo = await _PCECaseService.GetCaseDetail(caseSchedule.PCECaseId);
+            await _mailService.SendEmail(new MailPostDto
+            {
+                SenderEmail = "getnetadane1@cbe.com.et",
+                SenderPassword = "Gechlove@1234",
+                RecipantEmail = "yohannessintayhu@cbe.com.et",
+                Subject = "Valuation Schedule Update for Case Number " + CaseInfo.CaseNo,
+                Body = "Dear! Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + " For further Detail please check Collateral Valuation System",
+            });
+            string jsonData = JsonConvert.SerializeObject(caseSchedule);
+            return Ok(caseSchedule);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveSchedule(Guid Id)
+        {
+            var caseSchedule = await _cbeContext.ProductionCaseSchedules.FindAsync(Id);
+            if (caseSchedule == null)
+            {
+                throw new Exception("case Schedule not Found");
+            }
+            caseSchedule.Status = "Approved";
+            _cbeContext.Update(caseSchedule);
+            await _cbeContext.SaveChangesAsync();
+            string jsonData = JsonConvert.SerializeObject(caseSchedule);
+            return Ok(jsonData);
+        }
+
+
+
     }
 }

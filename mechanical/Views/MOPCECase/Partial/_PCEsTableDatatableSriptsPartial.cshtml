@@ -1,0 +1,101 @@
+﻿﻿@using mechanical.Models.PCE.Entities
+
+@{
+    var Status = ViewBag.Status as string;
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
+    var EmptyMessage = "There are no PCEs found";
+    var FetchUrl = "/MOPCECase/GetMyPCEs?Status=" + Status;
+    var PCECaseId = ViewData["PCECaseId"] as Guid?; 
+
+    if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        EmptyMessage = "There are no " + Status + " PCEs found";
+    }
+    if (PCECaseId.HasValue)
+    {
+        FetchUrl = "/MOPCECase/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
+        EmptyMessage = EmptyMessage + " for this  PCE Case";
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        
+        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
+        function initializeDataTable(data) {
+
+            $('#PCEs').DataTable({
+                language: {
+                    emptyTable: '@EmptyMessage'
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">';
+                        }
+                    },
+                    { data: 'PropertyOwner', width: '25%' },
+                    { data: 'Role', width: '25%' },
+                    { data: 'ProductionType', width: '35%' },
+                    {
+                        data: 'Id',
+                        width: '10%',
+                        render: function (data, type, row, meta) {
+                                                       
+                            const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
+                            const detailsUrl = '@Url.Action("PCEDetail", "MOPCECase")?PCEId=';
+                            const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
+
+                            const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
+                                ? `<a href="${baseUrl}${data}">${evaluateText}</a> | `
+                                : '';
+
+                            const returnLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate" || row.CurrentStatus === "Pending")
+                                ? ` | <a href="#" onclick="openRejectionModal('${data}')">Return</a>`
+                                : '';
+
+                            let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`;
+
+                            if ('@CurrentUser.Role.Name' === "Maker Officer") {
+                                link = evaluateLink + link;
+                            }
+
+                            return link;
+                            
+                        }
+                    }
+                ]
+            }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
+        }
+        function loadPCEs() {
+            $.ajax({
+                url: fetchUrl,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#PCEs')) {
+                        $('#PCEs').DataTable().destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load Production Capacities");
+                    console.log(error);
+                }
+            });
+        }
+        loadPCEs();
+    });
+
+    function openRejectionModal(PCEId) {
+        document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
+        $('#rejectionModal1').modal('show');
+    }
+</script>

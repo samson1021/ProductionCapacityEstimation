@@ -17,6 +17,7 @@ using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.PCE.Enum.ProductionCapacity;
 using mechanical.Services.PCE.PCEEvaluationService;
 using DocumentFormat.OpenXml.Bibliography;
+using mechanical.Services.PCE.MOPCECaseService;
 
 
 namespace mechanical.Controllers
@@ -29,14 +30,14 @@ namespace mechanical.Controllers
         private readonly CbeContext _cbeContext;
 
         private readonly IUploadFileService _uploadFileService;
-        private readonly IPCEEvaluationService _PCEEvaluationService;
+        private readonly IMOPCECaseService _MOPCECaseService;
 
 
-        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IMOPCECaseService MOPCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
-            _PCEEvaluationService = PCEEvaluationService;
+            _MOPCECaseService = MOPCECaseService;
             _pCECaseService = pCECaseService;
             _uploadFileService = uploadFileService;
         }
@@ -60,6 +61,7 @@ namespace mechanical.Controllers
             return BadRequest();
 
         }
+
         [HttpPost]
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
@@ -81,7 +83,6 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid PCECaseId)
         {
-            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
             var products = await _productionCapacityServices.GetProductions(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(products);
             return Content(jsonData, "application/json");
@@ -151,8 +152,9 @@ namespace mechanical.Controllers
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
 
-            var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), id);
-            ViewData["CurrentUser"] = pceDetail.CurrentUser;
+            var pceDetail = await _MOPCECaseService.GetPCEDetails(base.GetCurrentUserId(), id);
+            var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
+            ViewData["CurrentUser"] = currentUser;
             ViewData["PCE"] = pceDetail.ProductionCapacity;
             ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
 
@@ -329,9 +331,9 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRemarkProducts(Guid CaseId)
+        public async Task<IActionResult> GetRemarkProductions(Guid PCECaseId)
         {
-            var collaterals = await _productionCapacityServices.GetRemarkProducts(base.GetCurrentUserId(), CaseId);
+            var collaterals = await _productionCapacityServices.GetRemarkProductions(base.GetCurrentUserId(), PCECaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }

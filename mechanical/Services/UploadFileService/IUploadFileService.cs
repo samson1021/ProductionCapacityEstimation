@@ -11,6 +11,7 @@ namespace mechanical.Services.UploadFileService
         Task<ReturnFileDto> GetUploadFile(Guid? uploadFileId);
         Task<IEnumerable<ReturnFileDto>> GetUploadFileByCollateralId(Guid? CollateralId);
         Task<IEnumerable<ReturnPCEReportFileDto>> GetAllUploadFileByCaseId(Guid? CollateralId);
+        //Task<ReturnPCEReportFileDto> GetSignatureByEmployeeId(string? CollateralId);
 
         Task<ActionResult> DownloadFile(Guid Id);
         Task<(byte[], string, string)> ViewFile(Guid Id);

@@ -1,56 +1,39 @@
-﻿@using mechanical.Models.PCE.Entities;
+﻿@using mechanical.Models.PCE.Entities
 @using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
 
 @{
     var PCECase = ViewData["PCECase"] as PCECase;
     var productions = ViewData["productions"] as List<ProductionCapacity>;
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
     var PCECaseSchedule = ViewData["PCECaseSchedule"] as ProductionCaseSchedule;
-
     var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnPCEReportFileDto>;
-
-
+    var EvaluatorReports = ViewData["EvaluatorReports"] as IEnumerable<EvaluatorReportDto>;
     bool isPrinting = false;
-
-
 }
 
-
-
-
-
 <style>
-
-
     .printing #requieddoc {
         display: none !important;
     }
-
     .printing .approvedby {
         display: block !important;
     }
-
     .printing #print-btn {
         display: none !important;
     }
-
     .printing #download-btn {
         display: none !important;
     }
-
     .printing footer {
         display: none !important;
     }
-
     .printing .page-break-after {
         page-break-after: always;
     }
-
     .printing .disableprint {
         display: none
     }
-
-
     @@media print {
         footer {
             display: none !important
@@ -66,7 +49,6 @@
             font-size: 12px;
             color: #666;
         }
-
         .page-break-after {
             page-break-after: always;
         }
@@ -75,15 +57,12 @@
         #requieddoc {
             display: none !important;
         }
-
         .approvedby {
             display: block !important;
         }
     }
 
 </style>
-
-
 
 <section class="content-header">
     <div class="container-fluid">
@@ -102,8 +81,6 @@
     </div>
 </section>
 <section class="content" style="max-width: 300mm; font-family: 'Times New Roman', Times, serif; text-align: justify; line-height: 1.5; font-size: 12pt; margin: 0 auto;">
-
-
     <div class="card disableprint" style="margin: 10mm 20mm;">
         <div class="card-body d-flex justify-content-end">
             <div>
@@ -119,10 +96,6 @@
         {
             @foreach (var evaluate in PCEEvaluations.Where(e => e.PCEId == pce.Id))
             {
-
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 <div class="container-fluid page-break-after" style=" padding: 5mm 20mm;">
                     <div class="card py-4 ">
                         <div class="card-body px-2 mx-2">
@@ -137,15 +110,10 @@
                                 </div>
                                 <div class="">
                                     &nbsp;
-                                </div>
-                              
+                                </div>                              
                             </div>
-
                             <hr class="my-1 border-1 border-dotted border-dark">
-
-
                             <div>
-
                                 <div class="d-flex flex-column py-2">
                                     <div class="d-flex justify-content-center">
                                         <h5 class="mb-1"> @pce.ProductionType  Capacity Estimation</h5>
@@ -160,25 +128,19 @@
                                             Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@PCECase.CaseNo</u>
                                         </p>
                                     </div>
-                                    <div class="d-flex justify-content-end">
-
-                                      
+                                    <div class="d-flex justify-content-end">                                      
                                         <p class="mb-1 mr-4 " style="font-weight:500">
                                             PCE Reference No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@pce.Id</u>
                                         </p>
                                     </div>
                                 </div>
-
-
                                 <h5 class="mt-1 pl-4">A. General Data Collection</h5>
-
                                 <div class="row my-0 py-0">
                                     <p class="py-0">
                                         <label class="col-form-label">CBE Branch:</label>
                                         <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
                                     </p>
                                 </div>
-
                                 <div class="pl-4">
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
@@ -186,7 +148,6 @@
                                             <u class=" ">@PCECase.ApplicantName</u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0 my-0">
                                             <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
@@ -195,21 +156,18 @@
                                             Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">3.&nbsp; &nbsp; Owner of the Machinery/Equipment:</label>
                                             <u class="  ">@pce.OwnerOfMachinery</u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Plant Machine Purchased by CBE's partial Financing?</label>
                                             <u class="  "> &nbsp;&nbsp;&nbsp;</u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0 my-0">
                                             <label class="col-form-label pr-2">4.&nbsp; &nbsp; Plant Location:</label> &nbsp;
@@ -218,7 +176,6 @@
                                             Woreda: <u class="   px-2"> @pce.Wereda</u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
@@ -251,7 +208,6 @@
                                             <u class="  ">@pce.CountryOfOrgin</u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">9.&nbsp; &nbsp; Place of inspection:</label>
@@ -260,14 +216,12 @@
                                             <u class="  ">@evaluate.InspectionDate </u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">10.&nbsp; &nbsp;Name of CRM who accompanied the Inspection:</label>
                                             <u class="  "> &nbsp; &nbsp; &nbsp; &nbsp;  </u>
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
@@ -282,7 +236,6 @@
                                             <u class="  ">@evaluate.TimeConsumedToCheck.End</u> *@
                                         </p>
                                     </div>
-
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment/Plant Machinery Status:</label>
@@ -311,9 +264,6 @@
                                     <label class=" col-form-label font-weight-bold">Survey remark:</label>
                                     <u class="pl-4"> @evaluate.SurveyRemark </u>
                                 </div>
-
-
-
                                 <br />
                                 <h5 class="mt-1 pl-4">B. Plant Capacity Estimation Summary</h5>
 
@@ -352,22 +302,33 @@
                                             </tr>
                                         </tbody>
                                     </table>
-
                                     <div class="form-group mb-1">
                                         <label class=" col-form-label font-weight-bold">Conclusion </label>
                                         <u class="pl-4">&nbsp; </u>
                                     </div>
                                 </div>
                                 <div class="approvedby" style="display:block">
-                                    <p>Capacity estimated by: - _______________________________________; Signature: _________________Date: ________________</p>
+                                    @foreach (var EvaluatorReport in EvaluatorReports)
+                                    {
+                                        @if (evaluate.EvaluatorId == EvaluatorReport.EvaluatorId)
+                                        {
+                                              <p>
+                                                    Capacity estimated by:- <u><strong>@(EvaluatorReport.EvaluatorName)</strong></u>; Signature:
+                                                    <span style="text-decoration: underline; margin: 0 5px;">
+                                                    <img src="/UploadFile/@($"{EvaluatorReport.SignatureImageId}.png")" alt="Signature" style="max-width: 60px;" />
+                                                    </span>
+                                                    Evaluated Date: <u><strong>@(EvaluatorReport.CreatedAt)</strong></u>
+                                                </p> 
+                                        }
+                                        else
+                                        {
+                                            <h1>welcome</h1>
+                                        }
+                                     }
                                 </div>
                                 <div class="requieddoc" id="requieddoc">
-
-
-
                                     <br />
                                     <h5 class="mt-1 pl-4">C.  Documents used for Plant Capacity Estimation</h5>
-
                                     <table class="table table-border-none table-responsive">
                                         <thead style="border-bottom: 3px solid #6f42c1;">
                                             <tr>
@@ -378,12 +339,10 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                             @if (productionFiles != null && productionFiles.Any(e => e.CollateralId == pce.Id || e.CollateralId == evaluate.Id))
                                             {
                                                 @foreach (var productionFile in productionFiles.Where(e => e.CollateralId == pce.Id || e.CollateralId == evaluate.Id))
                                                 {
-
                                                     <tr>
                                                         <td>@productionFile.Name</td>
                                                         <td>@productionFile.Catagory</td>
@@ -394,36 +353,22 @@
                                                         </td>
                                                     </tr>
                                                 }
-
-                                            }
-                                           
+                                            }                                           
                                         </tbody>
                                     </table>
                                 </div>
-
                             </div>
-
                             <div class="page-number"></div>
                         </div>
-
-
                     </div>
                 </div>
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             }
         }
         else
         {
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             <div class="container-fluid page-break-after" style=" padding: 5mm 20mm;">
                 <div class="card py-4 ">
                     <div class="card-body px-2 mx-2">
-
                         <div class="d-flex justify-content-between">
                             <div class="">
                                 &nbsp;
@@ -433,15 +378,10 @@
                                 <h4 class="mb-0">Commercial Bank of Ethiopia</h4>
                             </div> <div class="">
                                 &nbsp;
-                            </div>
-                           
+                            </div>                           
                         </div>
-
                         <hr class="my-1 border-1 border-dotted border-dark">
-
-
                         <div>
-
                             <div class="d-flex flex-column py-2">
                                 <div class="d-flex justify-content-center">
                                     <h5 class="mb-1"> @pce.ProductionType  Capacity Estimation</h5>
@@ -457,24 +397,18 @@
                                     </p>
                                 </div>
                                 <div class="d-flex justify-content-end">
-
-
                                     <p class="mb-1 mr-4 " style="font-weight:500">
                                         PCE Reference No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@pce.Id</u>
                                     </p>
                                 </div>
                             </div>
-
-
                             <h5 class="mt-1 pl-4">A. General Data Collection</h5>
-
                             <div class="row my-0 py-0">
                                 <p class="py-0">
                                     <label class="col-form-label">CBE Branch:</label>
                                     <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
                                 </p>
                             </div>
-
                             <div class="pl-4">
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
@@ -482,7 +416,6 @@
                                         <u class=" ">@PCECase.ApplicantName</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0 my-0">
                                         <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
@@ -491,21 +424,18 @@
                                         Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">3.&nbsp; &nbsp; Owner of the Machinery/Equipment:</label>
                                         <u class="  ">@pce.OwnerOfMachinery</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0 pl-4">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Plant Machine Purchased by CBE's partial Financing?</label>
                                         <u class="  "> &nbsp;&nbsp;&nbsp;</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0 my-0">
                                         <label class="col-form-label pr-2">4.&nbsp; &nbsp; Plant Location:</label> &nbsp;
@@ -514,7 +444,6 @@
                                         Woreda: <u class="   px-2"> @pce.Wereda</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
@@ -547,7 +476,6 @@
                                         <u class="  ">@pce.CountryOfOrgin</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">9.&nbsp; &nbsp; Place of inspection:</label>
@@ -556,14 +484,12 @@
                                         <u class="  "> ============= </u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">10.&nbsp; &nbsp;Name of CRM who accompanied the Inspection:</label>
                                         <u class="  "> &nbsp; &nbsp; &nbsp; &nbsp;  </u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
@@ -578,7 +504,6 @@
                                         <u class="  "> =============</u>
                                     </p>
                                 </div>
-
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment/Plant Machinery Status:</label>
@@ -607,9 +532,6 @@
                                 <label class=" col-form-label font-weight-bold">Survey remark:</label>
                                 <u class="pl-4">  =============  ============= ============= ============= ============= </u>
                             </div>
-
-
-
                             <br />
                             <h5 class="mt-1 pl-4">B. Plant Capacity Estimation Summary</h5>
 
@@ -648,7 +570,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
                                 <div class="form-group mb-1">
                                     <label class=" col-form-label font-weight-bold">Conclusion </label>
                                     <u class="pl-4">&nbsp; </u>
@@ -658,9 +579,6 @@
                                 <p>Capacity estimated by: - _______________________________________; Signature: _________________Date: ________________</p>
                             </div>
                             <div class="requieddoc" id="requieddoc">
-
-
-
                                 <br />
                                 <h5 class="mt-1 pl-4">C.  Documents used for Plant Capacity Estimation</h5>
 
@@ -674,7 +592,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-
                                         @if (productionFiles != null && productionFiles.Any(e => e.CollateralId == pce.Id ))
                                         {
                                             @foreach (var productionFile in productionFiles.Where(e => e.CollateralId == pce.Id ))
@@ -690,34 +607,18 @@
                                                     </td>
                                                 </tr>
                                             }
-
                                         }
-
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
-
                         <div class="page-number"></div>
                     </div>
-
-
                 </div>
             </div>
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         }
-
     }
-
-
-
-
 </section>
-
 
 @section Scripts {
     <script src="~/js/jsPDF/jspdf.umd.min.js"></script>
@@ -732,8 +633,6 @@
         });
     </script>
 }
-
-
 
 <script>
     document.getElementById('print-btn').addEventListener('click', function () {

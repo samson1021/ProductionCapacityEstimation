@@ -1,4 +1,10 @@
-﻿@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>;
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>;
+
+    @{
+    var newCases = ViewData["NewCases"] as IEnumerable<PCENewCaseDto>;
+}
+
 <style>
     .small-box-footer:hover {
         text-decoration: underline;
@@ -165,13 +171,13 @@
         </div>
     </div>
 
+    <div class="container-fluid">
     @*  Production capacity case   *@
+
+
     <div class="card">
         <div class="card-body">
             <div class="row">
-
-                @*                 Production capacity case
-                *@
                 <div class="row">
                     <div class="col-xl-3 col-md-6">
                         <div class="card bg-c-green update-card">
@@ -179,7 +185,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="pcsnewCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE New Cases</h6>
+                                        <h6 class="text-white m-b-0">New Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -201,7 +207,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="pcspendingCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE Pending Cs</h6>
+                                        <h6 class="text-white m-b-0">Pending Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -223,7 +229,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="pcscompletedCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE Completed Cs</h6>
+                                        <h6 class="text-white m-b-0">Completed Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -245,7 +251,7 @@
                                 <div class="row align-items-end">
                                     <div class="col-8">
                                         <h4 class="text-white" id="pcstotalCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">PCE Total Cases</h6>
+                                        <h6 class="text-white m-b-0">Total Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -266,14 +272,14 @@
                
                
                 <div class="row">
-                    <div class="card">
+                    <div class="card mx-2">
                         <div class="card-header border-transparent">
                             <h3 class="card-title">Latest PCE Cases</h3>
                         </div>
 
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table  class="table table-bordered table-striped m-0">
+                                <table  class="table m-0">
                                     <thead>
                                         <tr>
                                         <tr>
@@ -285,9 +291,22 @@
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                     @*   list of new PCe cases *@
-                                    </tbody>
+                                        <tbody>
+                                            @foreach (var item in newCases)
+                                            {
+                                                <tr>
+                                                    <td><a href="@Url.Action("PCEDetail", "PCECase", new { Id = item.Id })">@item.CaseNo</a></td>
+                                                    <td>@item.CreationDate</td>
+                                                    <td>@item.ApplicantName</td>
+                                                    <td>@item.CustomerUserId</td>
+                                                    <td>@item.TotalNoOfCollateral</td>
+                                                    <td>
+                                                            <span class="badge badge-success">New</span>
+                                                    
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
                                 </table>
                             </div>
                         </div>
@@ -297,7 +316,11 @@
         </div>
         @* Production Estimation Capacity Estimation *@
     </div>
+    </div>
 </section>
+
+
+
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {

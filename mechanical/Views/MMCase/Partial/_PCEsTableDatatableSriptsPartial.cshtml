@@ -1,8 +1,11 @@
-﻿﻿@{
+﻿﻿@using mechanical.Models.PCE.Entities
+
+@{
     var Status = ViewBag.Status as string;
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
     var EmptyMessage = "There are no PCEs found";
-    var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status;
-    var PCECaseId = ViewData["PCECaseId"] as Guid?;
+    var FetchUrl = "/MOPCECase/GetMyPCEs?Status=" + Status;
+    var PCECaseId = ViewData["PCECaseId"] as Guid?; 
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
@@ -10,7 +13,7 @@
     }
     if (PCECaseId.HasValue)
     {
-        FetchUrl = "/PCEEvaluation/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
+        FetchUrl = "/MOPCECase/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
         EmptyMessage = EmptyMessage + " for this  PCE Case";
     }
 }
@@ -21,7 +24,7 @@
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
-            PCEsTable = $('#PCEs').DataTable({
+            $('#PCEs').DataTable({
                 language: {
                     emptyTable: '@EmptyMessage'
                 },
@@ -45,11 +48,27 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var detailUrl = '@Url.Action("Detail", "ProductionCapacity")';
-                            return '<a href="' + detailUrl + '?Id=' + data +
-                                '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
-                                '\')">Return</a>';
+                                                       
+                            const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
+                            const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
+                            const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
 
+                            const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
+                                ? `<a href="${baseUrl}${data}">${evaluateText}</a> | `
+                                : '';
+
+                            const returnLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate" || row.CurrentStatus === "Pending")
+                                ? ` | <a href="#" onclick="openRejectionModal('${data}')">Return</a>`
+                                : '';
+
+                            let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`;
+
+                            if ('@CurrentUser.Role.Name' === "Maker Officer") {
+                                link = evaluateLink + link;
+                            }
+
+                            return link;
+                            
                         }
                     }
                 ]
@@ -62,8 +81,7 @@
                 dataType: 'json',
                 success: function (data) {
                     if ($.fn.DataTable.isDataTable('#PCEs')) {
-                        var PCEsTable = $('#PCEs').DataTable();
-                        PCEsTable.destroy();
+                        $('#PCEs').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },

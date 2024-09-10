@@ -5,7 +5,7 @@
     var myCase = ViewData["case"] as PCECaseReturntDto;
     // var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
     // var myCase = ViewData["case"] as CaseReturntDto;
-    var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
+   // var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
  
 }
 
@@ -25,7 +25,7 @@
             </div>
         </div>
     </div>
-   @*  <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" /> *@
+    <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" />
     <div class="card-body">
         <table id="caseCollaterals" class="table table-bordered table-striped">
             <thead>
@@ -62,7 +62,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("SendProductionForReestimation", "Case", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("SendProductionForReestimation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
                     <div class="form-group">
