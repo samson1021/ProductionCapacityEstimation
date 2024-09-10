@@ -59,7 +59,7 @@
                         @* @await Html.PartialAsync("_PCECaseSchedule") *@
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                        @* @await Html.PartialAsync("_PCECaseComment") *@
+                        @await Html.PartialAsync("_PCECaseComment")
                     </div>
 
                 </div>
@@ -226,7 +226,7 @@
         });
     </script>
     @{
-        // await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
+       await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");    
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
 
     }
