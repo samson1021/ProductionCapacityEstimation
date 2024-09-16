@@ -26,20 +26,30 @@
 
                     if (caseSchedule.Count() == 0)
                     {
-                        @using (Html.BeginForm("CreateSchedule", "MOPCECase", FormMethod.Post, new { Id = "evaluationForm" }))
-                        {
-                            <input  asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
-                            <div class="form-group">
 
-                                <div class="input-group">
-                                    <input asp-for="ScheduleDate" type="datetime-local" class="form-control" />
-                                </div>
-                                <span class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn bg-purple btn-sm">Submit</button>
+                        if (@currentUser.Role.Name != "Maker Officer")
+                        {
+                            <div class="text-center">
+                                <h6>Valuation Schedule Is Not Set Yet For This PCE Case </h6>
                             </div>
                         }
+                        else
+                        {
+                            @using (Html.BeginForm("CreateSchedule", "PCESchedule", FormMethod.Post))
+                            {
+                                <input  asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input asp-for="ScheduleDate" type="datetime-local" class="form-control" required />
+                                    </div>
+                                    <span class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn bg-purple btn-sm">Submit</button>
+                                </div>
+                            }  
+                        }
+                       
                     }
                     else
                     {

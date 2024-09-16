@@ -15,50 +15,50 @@
 <script>
     console.log("debug");
     $(document).ready(function () {
-        $('#UpdateSchedule').on('click', function (event) {
-            event.preventDefault();
-            $('#datetimepicker-modal').modal('show');
-        });
-        $('#datetimepicker-form').submit(function (event) {
-            event.preventDefault();
-            var formData = new FormData(this);
-            var Id = $('#CaseSchedulleId').val();
-            formData.append('Id', Id);
+        // $('#UpdateSchedule').on('click', function (event) {
+        //     event.preventDefault();
+        //     $('#datetimepicker-modal').modal('show');
+        // });
+        // $('#datetimepicker-form').submit(function (event) {
+        //     event.preventDefault();
+        //     var formData = new FormData(this);
+        //     var Id = $('#CaseSchedulleId').val();
+        //     formData.append('Id', Id);
 
-            $.ajax({
-                url: '/MOPCECase/UpdateSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    location.reload();
-                },
-                error: function () {
-                    alert('Error occurred while updating the date.');
-                }
-            });
-        });
-        $('#AcceptButton').click(function (event) {
-            event.preventDefault();
-            var formData = new FormData();
-            var Id = $('#CaseScheduleId').val();
-            formData.append('Id', Id);
+        //     $.ajax({
+        //         url: '/MOPCECase/UpdateSchedule',
+        //         type: 'POST',
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+        //         success: function (response) {
+        //             location.reload();
+        //         },
+        //         error: function () {
+        //             alert('Error occurred while updating the date.');
+        //         }
+        //     });
+        // });
+        // $('#AcceptButton').click(function (event) {
+        //     event.preventDefault();
+        //     var formData = new FormData();
+        //     var Id = $('#CaseScheduleId').val();
+        //     formData.append('Id', Id);
 
-            $.ajax({
-                url: '/MOPCECase/ApproveSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    location.reload();
-                },
-                error: function () {
-                    alert('Error occurred while updating the date.');
-                }
-            });
-        });
+        //     $.ajax({
+        //         url: '/MOPCECase/ApproveSchedule',
+        //         type: 'POST',
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+        //         success: function (response) {
+        //             location.reload();
+        //         },
+        //         error: function () {
+        //             alert('Error occurred while updating the date.');
+        //         }
+        //     });
+        // });
 
         $('#PlateName').on('input', function () {
             let value = $(this).val().replace(/[^0-9a-zA-Z]/g, '').substr(0, 10);
@@ -115,9 +115,9 @@
         $('#addCollateralButton').click(function () {
             $('#addCollateralModal').modal('show');
         });
-        $('#proposeNewScheduleButton').click(function () {
-            $('#proposeNewSchedule-modal').modal('show');
-        });
+        // $('#proposeNewScheduleButton').click(function () {
+        //     $('#proposeNewSchedule-modal').modal('show');
+        // });
         var caseCollateralsTable;
 
         $('#assignButton').on('click', function () {
@@ -1447,27 +1447,27 @@
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
 
-        $('#proposeNewSchedule-form').submit(function (event) {
-            event.preventDefault();
-            var formData = new FormData(this);
-            var Id = $('#CaseScheduleId').val();
-            formData.append('id', Id);
+        // $('#proposeNewSchedule-form').submit(function (event) {
+        //     event.preventDefault();
+        //     var formData = new FormData(this);
+        //     var Id = $('#CaseScheduleId').val();
+        //     formData.append('id', Id);
 
-            $.ajax({
-                url: '/Case/CreateSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    location.reload();
-                    // Handle success response
-                },
-                error: function () {
-                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
-                }
-            });
-        });
+        //     $.ajax({
+        //         url: '/Case/CreateSchedule',
+        //         type: 'POST',
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+        //         success: function (response) {
+        //             location.reload();
+        //             // Handle success response
+        //         },
+        //         error: function () {
+        //             $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+        //         }
+        //     });
+        // });
 
     });
 </script>
