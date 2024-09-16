@@ -1,4 +1,5 @@
-﻿using mechanical.Models.PCE.Dto;
+﻿using mechanical.Models.Dto.CaseDto;
+using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 
@@ -18,6 +19,7 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<IEnumerable<PCENewCaseDto>> GetPCERejectedCases(Guid userId);
         Task<IEnumerable<PCENewCaseDto>> GetPCETotalCases(Guid userId);
 
+        Task<IEnumerable<PCENewCaseDto>> GetRmLatestPCECases(Guid userId);
 
         PCECaseReturntDto GetPCECase(Guid userId, Guid id);
         PCEReportDataDto GetPCECaseDetailReport(Guid userId, Guid id);

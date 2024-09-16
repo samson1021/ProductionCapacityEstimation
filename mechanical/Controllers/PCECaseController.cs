@@ -346,17 +346,11 @@ namespace mechanical.Controllers.PCE
             ViewData["production"] = production;
 
 
-            //var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            //if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
-
-            //ViewData["Id"] = base.GetCurrentUserId();
-            //var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
-            //ViewData["CurrentUser"] = currentUser;
-            ////ViewData["CurrentUser"] = base.GetCurrentUserId();
-            //ViewData["PCECaseId"] = pcecaseDto.Id;
-            //ViewData["PCECase"] = pcecaseDto;
-
-
+            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
+            ViewData["PCECase"] = pcecaseDto;
+           
+            ViewData["PCECaseId"] = pcecaseDto.Id;
 
             return View();
         }
