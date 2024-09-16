@@ -103,26 +103,26 @@
         });
         var CaseId = $('#CaseId').val();
 
-        // $('#proposeNewSchedule-form').submit(function (event) {
-        //     event.preventDefault();
-        //     var formData = new FormData(this);
-        //     var Id = $('#CaseScheduleId').val();
-        //     formData.append('id', Id);
+        $('#pcescheduleForm').submit(function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var Id = $('#CaseScheduleId').val();
+            formData.append('id', Id);
 
-        //     $.ajax({
-        //         url: '/PCESchedule/CreateSchedule',
-        //         type: 'POST',
-        //         data: formData,
-        //         processData: false,
-        //         contentType: false,
-        //         success: function (response) {
-        //             location.reload();
-        //             // Handle success response
-        //         },
-        //         error: function () {
-        //             $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
-        //         }
-        //     });
-        // });
+            $.ajax({
+                url: '/PCESchedule/CreateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                    // Handle success response
+                },
+                error: function () {
+                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                }
+            });
+        });
     });
 </script>

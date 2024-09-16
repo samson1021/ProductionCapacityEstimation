@@ -66,8 +66,9 @@
                         @await Html.PartialAsync("_CreateCollateral")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
-                        @await Html.PartialAsync("_CaseSchedule")
+                        @await Html.PartialAsync("ScriptPartial/PCESchedule/_PCECaseSchedule")
                     </div>
+
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @await Html.PartialAsync("_CaseComment")
                     </div>
@@ -177,6 +178,7 @@
     </script>
     @{
         await Html.RenderPartialAsync("ScriptPartial/MM/_MMMyCaseDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
     }
 }
 
