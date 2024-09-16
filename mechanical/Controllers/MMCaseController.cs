@@ -245,6 +245,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> MyPCECase(Guid Id)
         {
+
             var loanCase = await _PCECaseService.GetCaseDetail(Id);
             var caseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             var caseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);

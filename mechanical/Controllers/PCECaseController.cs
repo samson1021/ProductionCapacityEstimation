@@ -331,7 +331,7 @@ namespace mechanical.Controllers.PCE
 
 
             var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
-            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key
+            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key 
 
 
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
@@ -342,25 +342,18 @@ namespace mechanical.Controllers.PCE
             var production = await _cbeContext.ProductionCapacities.ToListAsync();
             List<ProductionCapacity> productions = null;
             try { productions = await _cbeContext.ProductionCapacities.ToListAsync(); }
-            catch (Exception ex){ Console.WriteLine($"An error occurred while retrieving productions vehicles: {ex.Message}"); }
+            catch (Exception ex) { Console.WriteLine($"An error occurred while retrieving productions vehicles: {ex.Message}"); }
             ViewData["production"] = production;
 
 
-            //var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            //if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
+            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
+            if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
+            ViewData["PCECase"] = pcecaseDto;
 
-            //ViewData["Id"] = base.GetCurrentUserId();
-            //var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
-            //ViewData["CurrentUser"] = currentUser;
-            ////ViewData["CurrentUser"] = base.GetCurrentUserId();
-            //ViewData["PCECaseId"] = pcecaseDto.Id;
-            //ViewData["PCECase"] = pcecaseDto;
-
-
+            ViewData["PCECaseId"] = pcecaseDto.Id;
 
             return View();
         }
-
         [HttpGet]
         public async Task<IActionResult> MOVSummary(Guid CaseId)
         {
