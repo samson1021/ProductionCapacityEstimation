@@ -1,4 +1,9 @@
-﻿<section class="content">
+﻿﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@{
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+
+}
+<section class="content">
         <div class="card direct-chat direct-chat-purple">
             <div class="card-header">
             <h3 class="card-title">PCE Case Comment </h3>
@@ -29,6 +34,12 @@
             </div>
         </div>
 </section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("Partial/_PCECaseCommentDatatableScriptPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
+    }
+}
 
 @* 
 <script>

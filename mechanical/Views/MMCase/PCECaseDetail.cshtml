@@ -1,5 +1,6 @@
 ﻿﻿@using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Entities
 
 @{   
     var myCase = ViewData["PCECase"] as PCECaseReturntDto;
@@ -76,7 +77,9 @@
         await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");    
-        await Html.RenderPartialAsync("ScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/MM/_MMMyCaseDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");      
+        await Html.RenderPartialAsync("Partial/_PCECaseCommentDatatableScriptPartial");
+
+      
     }
 }

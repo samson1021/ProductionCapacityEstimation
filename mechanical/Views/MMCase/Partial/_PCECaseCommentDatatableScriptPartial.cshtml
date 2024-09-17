@@ -1,47 +1,15 @@
-﻿<section class="content">
-        <div class="card direct-chat direct-chat-purple">
-            <div class="card-header">
-            <h3 class="card-title"> PCE Case Comment </h3>
-                <div class="card-tools">
-                <span title="3 New Messages" class="badge badge-warning CommentBage"></span>
-                    <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                        <i class="fas fa-comments"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body" >
-            <div class="direct-chat-messages" style="height:30rem;">
-            </div>
-            <div class="direct-chat-contacts">
-                <ul class="contacts-list">
-                </ul>
-            </div>
-            </div>
-            <div class="card-footer">
-                <form action="#" method="post">
-                    <div class="input-group">
-                        <input type="text" name="message" id="messageinput" placeholder="Type Message ..." class="form-control">
-                        <span class="input-group-append">
-                            <button type="button" class="btn btn-primary" id="SendButton">Send</button>
-                        </span>
-                    </div>
-                </form>
-            </div>
-        </div>
-</section>
+﻿<script>
+    $(document).ready(function () {
+        var CaseId = $('#CaseId').val();
 
-@* 
-<script>
-    $(document).ready(function () {      
-
-
+    $(document).ready(function () {
         var chatMessages = $('.direct-chat-messages');
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
-        
+
         function loadComments() {
             $.ajax({
-                url: '/CaseComment/GetCaseComments?CaseId=' + CaseId,
+                url: '/MMCase/GetPCECaseComments?PCECaseId=' + CaseId,
                 method: 'GET',
                 success: function (data) {
                     var currentUserID = data.userId;
@@ -102,7 +70,7 @@
                         });
                         populateContactList(users);
                     } else {
-                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this PCE Case.');
                         $('.direct-chat-messages').append(noCommentsMsg);
                     }
                 },
@@ -137,15 +105,14 @@
 
         loadComments();
 
-    
         function sendMessage(message, CaseId) {
             var requestData = {
                 Content: message,
-                CaseId: CaseId
+                PCECaseId: CaseId
             };
 
             $.ajax({
-                url: '/CaseComment/CreateCaseComment',
+                url: '/MMCase/CreatePCECaseComment',
                 method: 'POST',
                 data: requestData,
                 success: function (response) {
@@ -177,4 +144,4 @@
         });
 
     });
-</script> *@
+</script> 
