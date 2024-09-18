@@ -101,10 +101,6 @@ namespace mechanical.Services.PCE.PCECaseService
 
 
 
-
-
-
-
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
             foreach (var caseDto in caseDtos)
             {
