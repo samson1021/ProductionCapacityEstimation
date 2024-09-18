@@ -45,9 +45,10 @@ namespace mechanical.Controllers
             {
                 var PCEEvaluation = await _PCEEvaluationService.GetPCEEvaluationByPCEId(base.GetCurrentUserId(), PCEId);
 
-                if (PCEEvaluation != null && PCEEvaluation.PCE.CurrentStatus != "Reestimate")
+                // if (PCEEvaluation != null && PCEEvaluation.PCE.CurrentStatus != "Reestimate")
+                if (PCEEvaluation != null)
                 {            
-                    return RedirectToAction("PCEDetail", "PCEEvaluation", new { PCEId = PCEEvaluation.PCEId });
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = PCEEvaluation.PCEId });
                 }
                 
                 var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), PCEId);     
@@ -82,7 +83,7 @@ namespace mechanical.Controllers
                 {
                     var PCEEvaluation = await _PCEEvaluationService.CreatePCEEvaluation(base.GetCurrentUserId(), Dto);
 
-                    return RedirectToAction("PCEDetail", "PCEEvaluation", new { PCEId = PCEEvaluation.PCEId });
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = PCEEvaluation.PCEId });
 
                 }
                 catch (Exception ex)
@@ -134,7 +135,7 @@ namespace mechanical.Controllers
                 try
                 {
                     var PCEEvaluation = await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
-                    return RedirectToAction("PCEDetail", "PCEEvaluation", new { PCEId = PCEEvaluation.PCEId });
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = PCEEvaluation.PCEId });
                 }
                 catch (Exception ex)
                 {

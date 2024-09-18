@@ -144,7 +144,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public IActionResult MyPCECases(string Status = "New")
+        public IActionResult MyPCECases(string Status = "All")
         {
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/MMCase/GetMyPCECases";
