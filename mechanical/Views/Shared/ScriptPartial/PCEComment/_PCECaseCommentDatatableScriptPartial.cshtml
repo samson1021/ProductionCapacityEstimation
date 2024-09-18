@@ -9,7 +9,7 @@
 
         function loadComments() {
             $.ajax({
-                url: '/MMCase/GetPCECaseComments?PCECaseId=' + CaseId,
+                    url: '/PCECaseComment/GetCaseComments?PCECaseId=' + CaseId,
                 method: 'GET',
                 success: function (data) {
                     var currentUserID = data.userId;
@@ -112,7 +112,7 @@
             };
 
             $.ajax({
-                url: '/MMCase/CreatePCECaseComment',
+                url: '/PCECaseComment/CreateCaseComment',
                 method: 'POST',
                 data: requestData,
                 success: function (response) {
