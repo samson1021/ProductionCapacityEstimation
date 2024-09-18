@@ -1,15 +1,14 @@
 ﻿<script>
     $(document).ready(function () {
-        var CaseId = $('#CaseId').val();
-
-    $(document).ready(function () {
+        var PCECaseId = $('#PCECaseId').val();
+        console.log("PCECaseId", PCECaseId);
         var chatMessages = $('.direct-chat-messages');
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
 
         function loadComments() {
             $.ajax({
-                    url: '/PCECaseComment/GetCaseComments?PCECaseId=' + CaseId,
+                    url: '/PCECaseComment/GetCaseComments?PCECaseId=' + PCECaseId,
                 method: 'GET',
                 success: function (data) {
                     var currentUserID = data.userId;
@@ -105,10 +104,10 @@
 
         loadComments();
 
-        function sendMessage(message, CaseId) {
+        function sendMessage(message, PCECaseId) {
             var requestData = {
                 Content: message,
-                PCECaseId: CaseId
+                PCECaseId: PCECaseId
             };
 
             $.ajax({
@@ -133,7 +132,7 @@
             var message = $('input[name="message"]').val();
             if (message.trim() !== '') {
                 // Send the message
-                sendMessage(message, CaseId);
+                sendMessage(message, PCECaseId);
                 location.reload();
                 $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
                 // loadComments();

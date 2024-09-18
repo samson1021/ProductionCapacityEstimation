@@ -120,16 +120,11 @@ builder.Services.AddScoped<IMotorVehicleService, MotorVehicleService>();
 builder.Services.AddScoped<IMMCaseService, MMCaseService>();
 builder.Services.AddScoped<ICOCaseService, MOCaseService>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
-//builder.Services.AddScoped<ISignatureService,SignatureService>();
+builder.Services.AddScoped<ISignatureService, SignatureService>();
 builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
-
-
-
-builder.Services.AddScoped<ISignatureService, SignatureService>();
-
 
 
 builder.Services.AddAutoMapper(typeof(Program));

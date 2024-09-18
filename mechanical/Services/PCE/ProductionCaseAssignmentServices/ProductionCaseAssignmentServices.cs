@@ -104,249 +104,237 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
             return pceCaseAssignments;
         }
 
-        // Usage
-        public Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
-            AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, false);
 
-        public Task<List<ProductionCaseAssignmentDto>> ReAssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
-            AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, true);
+        public async Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId)
+        {
+            Guid PCECaseId = Guid.Empty;
+            var employeeId = Guid.Parse(EmployeeId);
+            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
+            List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
 
-        public Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
-            AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, false);
-
-        public Task<List<ProductionCaseAssignmentDto>> ReAssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
-            AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, true);
-
-        // public async Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId)
-        // {
-        //     Guid PCECaseId = Guid.Empty;
-        //     var employeeId = Guid.Parse(EmployeeId);
-        //     var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
-        //     List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
-
-        //     List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
-        //     PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
-        //     foreach (Guid PCEId in PCEIdList)
-        //     {
-        //         var production = await _cbeContext.ProductionCapacities.FindAsync(PCEId);
-        //         if (production != null)
-        //         {
-        //             production.CurrentStage = user.Role.Name;
-        //             production.CurrentStatus = "New";
-        //             var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == PCEId && res.UserId == user.Id).FirstOrDefaultAsync();
-        //             if (previousCaseAssignment != null)
-        //             {
-        //                 previousCaseAssignment.Status = "New";
-        //                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
-        //                 await _cbeContext.SaveChangesAsync();
-        //             }
-        //             else
-        //             {
-        //                 var pceCaseAssignment = new ProductionCaseAssignment()
-        //                 {
-        //                     ProductionCapacityId = PCEId,
-        //                     UserId = UserId,
-        //                     Status = "New",
-        //                     AssignmentDate = DateTime.Now
-        //                 };
-        //                 await _cbeContext.ProductionCaseAssignments.AddAsync(pceCaseAssignment);
-        //                 await _cbeContext.SaveChangesAsync();
-        //                 pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
-        //             }
+            List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
+            PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
+            foreach (Guid PCEId in PCEIdList)
+            {
+                var production = await _cbeContext.ProductionCapacities.FindAsync(PCEId);
+                if (production != null)
+                {
+                    production.CurrentStage = user.Role.Name;
+                    production.CurrentStatus = "New";
+                    var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == PCEId && res.UserId == user.Id).FirstOrDefaultAsync();
+                    if (previousCaseAssignment != null)
+                    {
+                        previousCaseAssignment.Status = "New";
+                        _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
+                        await _cbeContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var pceCaseAssignment = new ProductionCaseAssignment()
+                        {
+                            ProductionCapacityId = PCEId,
+                            UserId = user.Id,
+                            Status = "New",
+                            AssignmentDate = DateTime.Now
+                        };
+                        await _cbeContext.ProductionCaseAssignments.AddAsync(pceCaseAssignment);
+                        await _cbeContext.SaveChangesAsync();
+                        pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
+                    }
 
 
-        //             _cbeContext.ProductionCapacities.Update(production);
-        //             await _cbeContext.SaveChangesAsync();
-        //             if (PCECaseTimeLinePostDto == null)
-        //             {
-        //                 PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
-        //                 {
-        //                     CaseId = production.PCECaseId,
-        //                     Activity = $" <strong>A production has been assigned for {user.Name} {user.Role.Name}. </strong> <br>",
-        //                     CurrentStage = "Maker Manager"
-        //                 };
-        //             }
-        //             PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> . &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
+                    _cbeContext.ProductionCapacities.Update(production);
+                    await _cbeContext.SaveChangesAsync();
+                    if (PCECaseTimeLinePostDto == null)
+                    {
+                        PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
+                        {
+                            CaseId = production.PCECaseId,
+                            Activity = $" <strong>A production has been assigned for {user.Name} {user.Role.Name}. </strong> <br>",
+                            CurrentStage = "Maker Manager"
+                        };
+                    }
+                    PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> . &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
 
-        //             if (PCECaseId == Guid.Empty)
-        //             {
-        //                 PCECaseId = production.PCECaseId;
-        //             }
-        //         }
-        //         var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
-        //         pceCaseassign.Status = "Pending";
-        //         _cbeContext.Update(pceCaseassign);
-        //         await _cbeContext.SaveChangesAsync();
+                    if (PCECaseId == Guid.Empty)
+                    {
+                        PCECaseId = production.PCECaseId;
+                    }
+                }
+                var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
+                pceCaseassign.Status = "Pending";
+                _cbeContext.Update(pceCaseassign);
+                await _cbeContext.SaveChangesAsync();
 
-        //     }
-        //     if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
+            }
+            if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
 
-        //     return pceCaseAssignments;
-        // }
+            return pceCaseAssignments;
+        }
 
-        // public async Task<List<ProductionCaseAssignmentDto>> ReAssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId)
-        // {
-        //     Guid PCECaseId = Guid.Empty;
-        //     var employeeId = Guid.Parse(EmployeeId);
-        //     var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
-        //     List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
+        public async Task<List<ProductionCaseAssignmentDto>> ReAssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId)
+        {
+            Guid PCECaseId = Guid.Empty;
+            var employeeId = Guid.Parse(EmployeeId);
+            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
+            List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
 
-        //     List<Guid> caseAssigmentIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
-        //     PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
-        //     foreach (Guid cassAssigmentId in caseAssigmentIdList)
-        //     {
-        //         var pceCaseAssignment = await _cbeContext.ProductionCaseAssignments.FindAsync(cassAssigmentId);
-        //         var production = await _cbeContext.ProductionCapacities.FindAsync(pceCaseAssignment.ProductionCapacityId);
-        //         if (pceCaseAssignment != null)
-        //         {
-        //             if (pceCaseAssignment.Status == "New")
-        //             {
-        //                 pceCaseAssignment.UserId = UserId;
-        //                 pceCaseAssignment.AssignmentDate = DateTime.Now;
-        //             }
-        //             _cbeContext.ProductionCaseAssignments.Update(pceCaseAssignment);
-        //             await _cbeContext.SaveChangesAsync();
+            List<Guid> caseAssigmentIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
+            PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
+            foreach (Guid cassAssigmentId in caseAssigmentIdList)
+            {
+                var pceCaseAssignment = await _cbeContext.ProductionCaseAssignments.FindAsync(cassAssigmentId);
+                var production = await _cbeContext.ProductionCapacities.FindAsync(pceCaseAssignment.ProductionCapacityId);
+                if (pceCaseAssignment != null)
+                {
+                    if (pceCaseAssignment.Status == "New")
+                    {
+                        pceCaseAssignment.UserId = user.Id;
+                        pceCaseAssignment.AssignmentDate = DateTime.Now;
+                    }
+                    _cbeContext.ProductionCaseAssignments.Update(pceCaseAssignment);
+                    await _cbeContext.SaveChangesAsync();
 
-        //             if (PCECaseTimeLinePostDto == null)
-        //             {
-        //                 PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
-        //                 {
-        //                     CaseId = production.PCECaseId,
-        //                     Activity = $" <strong>A production has been Re-assigned for {user.Name} {user.Role.Name}. </strong> <br>",
-        //                     CurrentStage = "Maker Manager"
-        //                 };
-        //             }
-        //             PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
-        //             pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
-        //             if (PCECaseId == Guid.Empty)
-        //             {
-        //                 PCECaseId = production.PCECaseId;
-        //             }
-        //         }
-        //         var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
-        //         pceCaseassign.Status = "Pending";
-        //         _cbeContext.Update(pceCaseassign);
+                    if (PCECaseTimeLinePostDto == null)
+                    {
+                        PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
+                        {
+                            CaseId = production.PCECaseId,
+                            Activity = $" <strong>A production has been Re-assigned for {user.Name} {user.Role.Name}. </strong> <br>",
+                            CurrentStage = "Maker Manager"
+                        };
+                    }
+                    PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
+                    pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
+                    if (PCECaseId == Guid.Empty)
+                    {
+                        PCECaseId = production.PCECaseId;
+                    }
+                }
+                var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
+                pceCaseassign.Status = "Pending";
+                _cbeContext.Update(pceCaseassign);
 
-        //     }
-        //     if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
-        //     return pceCaseAssignments;
-        // }
-
-
-        // public async Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId)
-        // {
-        //     Guid PCECaseId = Guid.Empty;
-        //     var employeeId = Guid.Parse(EmployeeId);
-        //     var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
-        //     List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
-
-        //     List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
-        //     PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
-        //     foreach (Guid PCEId in PCEIdList)
-        //     {
-        //         var production = await _cbeContext.ProductionCapacities.FindAsync(PCEId);
-        //         if (production != null)
-        //         {
-        //             production.CurrentStage = user.Role.Name;
-        //             production.CurrentStatus = "New";
-        //             var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == PCEId && res.UserId == user.Id).FirstOrDefaultAsync();
-        //             if (previousCaseAssignment != null)
-        //             {
-        //                 previousCaseAssignment.Status = "New";
-        //                 _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
-        //                 await _cbeContext.SaveChangesAsync();
-        //             }
-        //             else
-        //             {
-        //                 var pceCaseAssignment = new ProductionCaseAssignment()
-        //                 {
-        //                     ProductionCapacityId = PCEId,
-        //                     UserId = UserId,
-        //                     Status = "New",
-        //                     AssignmentDate = DateTime.Now
-        //                 };
-        //                 await _cbeContext.ProductionCaseAssignments.AddAsync(pceCaseAssignment);
-        //                 await _cbeContext.SaveChangesAsync();
-        //                 pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
-        //             }
+            }
+            if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
+            return pceCaseAssignments;
+        }
 
 
-        //             _cbeContext.ProductionCapacities.Update(production);
-        //             await _cbeContext.SaveChangesAsync();
-        //             if (PCECaseTimeLinePostDto == null)
-        //             {
-        //                 PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
-        //                 {
-        //                     CaseId = production.PCECaseId,
-        //                     Activity = $" <strong>A production has been assigned for {user.Name} {user.Role.Name}. </strong> <br>",
-        //                     CurrentStage = "Maker Manager"
-        //                 };
-        //             }
-        //             PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> . &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
+        public async Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId)
+        {
+            Guid PCECaseId = Guid.Empty;
+            var employeeId = Guid.Parse(EmployeeId);
+            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
+            List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
 
-        //             if (PCECaseId == Guid.Empty)
-        //             {
-        //                 PCECaseId = production.PCECaseId;
-        //             }
-        //         }
-        //         var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
-        //         pceCaseassign.Status = "Pending";
-        //         _cbeContext.Update(pceCaseassign);
-        //         await _cbeContext.SaveChangesAsync();
+            List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
+            PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
+            foreach (Guid PCEId in PCEIdList)
+            {
+                var production = await _cbeContext.ProductionCapacities.FindAsync(PCEId);
+                if (production != null)
+                {
+                    production.CurrentStage = user.Role.Name;
+                    production.CurrentStatus = "New";
+                    var previousCaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == PCEId && res.UserId == user.Id).FirstOrDefaultAsync();
+                    if (previousCaseAssignment != null)
+                    {
+                        previousCaseAssignment.Status = "New";
+                        _cbeContext.ProductionCaseAssignments.Update(previousCaseAssignment);
+                        await _cbeContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var pceCaseAssignment = new ProductionCaseAssignment()
+                        {
+                            ProductionCapacityId = PCEId,
+                            UserId = user.Id,
+                            Status = "New",
+                            AssignmentDate = DateTime.Now
+                        };
+                        await _cbeContext.ProductionCaseAssignments.AddAsync(pceCaseAssignment);
+                        await _cbeContext.SaveChangesAsync();
+                        pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
+                    }
 
-        //     }
-        //     if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
 
-        //     return pceCaseAssignments;
-        // }
+                    _cbeContext.ProductionCapacities.Update(production);
+                    await _cbeContext.SaveChangesAsync();
+                    if (PCECaseTimeLinePostDto == null)
+                    {
+                        PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
+                        {
+                            CaseId = production.PCECaseId,
+                            Activity = $" <strong>A production has been assigned for {user.Name} {user.Role.Name}. </strong> <br>",
+                            CurrentStage = "Maker Manager"
+                        };
+                    }
+                    PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> . &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
 
-        // public async Task<List<ProductionCaseAssignmentDto>> ReAssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId)
-        // {
-        //     Guid PCECaseId = Guid.Empty;
-        //     var employeeId = Guid.Parse(EmployeeId);
-        //     var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
-        //     List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
+                    if (PCECaseId == Guid.Empty)
+                    {
+                        PCECaseId = production.PCECaseId;
+                    }
+                }
+                var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
+                pceCaseassign.Status = "Pending";
+                _cbeContext.Update(pceCaseassign);
+                await _cbeContext.SaveChangesAsync();
 
-        //     List<Guid> caseAssigmentIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
-        //     PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
-        //     foreach (Guid cassAssigmentId in caseAssigmentIdList)
-        //     {
-        //         var pceCaseAssignment = await _cbeContext.ProductionCaseAssignments.FindAsync(cassAssigmentId);
-        //         var production = await _cbeContext.ProductionCapacities.FindAsync(pceCaseAssignment.ProductionCapacityId);
-        //         if (pceCaseAssignment != null)
-        //         {
-        //             if (pceCaseAssignment.Status == "New")
-        //             {
-        //                 pceCaseAssignment.UserId = UserId;
-        //                 pceCaseAssignment.AssignmentDate = DateTime.Now;
-        //             }
-        //             _cbeContext.ProductionCaseAssignments.Update(pceCaseAssignment);
-        //             await _cbeContext.SaveChangesAsync();
+            }
+            if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
 
-        //             if (PCECaseTimeLinePostDto == null)
-        //             {
-        //                 PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
-        //                 {
-        //                     CaseId = production.PCECaseId,
-        //                     Activity = $" <strong>A production has been Re-assigned for {user.Name} {user.Role.Name}. </strong> <br>",
-        //                     CurrentStage = "Maker Manager"
-        //                 };
-        //             }
-        //             PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
-        //             pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
-        //             if (PCECaseId == Guid.Empty)
-        //             {
-        //                 PCECaseId = production.PCECaseId;
-        //             }
-        //         }
-        //         var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
-        //         pceCaseassign.Status = "Pending";
-        //         _cbeContext.Update(pceCaseassign);
+            return pceCaseAssignments;
+        }
 
-        //     }
-        //     if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
-        //     return pceCaseAssignments;
-        // }
+        public async Task<List<ProductionCaseAssignmentDto>> ReAssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId)
+        {
+            Guid PCECaseId = Guid.Empty;
+            var employeeId = Guid.Parse(EmployeeId);
+            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
+            List<ProductionCaseAssignmentDto> pceCaseAssignments = new List<ProductionCaseAssignmentDto>();
+
+            List<Guid> caseAssigmentIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
+            PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
+            foreach (Guid cassAssigmentId in caseAssigmentIdList)
+            {
+                var pceCaseAssignment = await _cbeContext.ProductionCaseAssignments.FindAsync(cassAssigmentId);
+                var production = await _cbeContext.ProductionCapacities.FindAsync(pceCaseAssignment.ProductionCapacityId);
+                if (pceCaseAssignment != null)
+                {
+                    if (pceCaseAssignment.Status == "New")
+                    {
+                        pceCaseAssignment.UserId = user.Id;
+                        pceCaseAssignment.AssignmentDate = DateTime.Now;
+                    }
+                    _cbeContext.ProductionCaseAssignments.Update(pceCaseAssignment);
+                    await _cbeContext.SaveChangesAsync();
+
+                    if (PCECaseTimeLinePostDto == null)
+                    {
+                        PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
+                        {
+                            CaseId = production.PCECaseId,
+                            Activity = $" <strong>A production has been Re-assigned for {user.Name} {user.Role.Name}. </strong> <br>",
+                            CurrentStage = "Maker Manager"
+                        };
+                    }
+                    PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
+                    pceCaseAssignments.Add(_mapper.Map<ProductionCaseAssignmentDto>(pceCaseAssignment));
+                    if (PCECaseId == Guid.Empty)
+                    {
+                        PCECaseId = production.PCECaseId;
+                    }
+                }
+                var pceCaseassign = await _cbeContext.ProductionCaseAssignments.Where(res => res.UserId == UserId && res.ProductionCapacityId == production.Id).FirstOrDefaultAsync();
+                pceCaseassign.Status = "Pending";
+                _cbeContext.Update(pceCaseassign);
+
+            }
+            if (PCECaseTimeLinePostDto != null) await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
+            return pceCaseAssignments;
+        }
 
 
 

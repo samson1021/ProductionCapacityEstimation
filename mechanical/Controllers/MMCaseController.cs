@@ -258,23 +258,6 @@ namespace mechanical.Controllers
             ViewData["PCEcase"] = loanCase;
             ViewData["ProductionCaseSchedule"] = caseSchedule;
             return View();
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetPCECaseComments(Guid PCECaseId)
-        {
-            var response = new
-            {
-                userId = base.GetCurrentUserId(),
-                caseComments = await _PCEcaseCommentService.GetCaseComments(PCECaseId)
-            };
-            return Content(JsonConvert.SerializeObject(response), "application/json");
-        }
-        [HttpPost]
-        public async Task<IActionResult> CreatePCECaseComment(string PCECaseId, PCECaseCommentPostDto caseCommentPostDto)
-        {
-            await _PCEcaseCommentService.CreateCaseComment(base.GetCurrentUserId(), caseCommentPostDto);
-            return Ok();
-        }
-        
+        }        
     }
 }
