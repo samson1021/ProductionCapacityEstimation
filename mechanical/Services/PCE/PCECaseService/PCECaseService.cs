@@ -240,6 +240,15 @@ namespace mechanical.Services.PCE.PCECaseService
 
                 await _cbeContext.SaveChangesAsync();
 
+
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = pceCase.Id,
+                    Activity = $"<strong>The case with case number {pceCase.CaseNo} has been edited</strong>",
+                    CurrentStage = "Relation Manager"
+                });
+
+
                 return _mapper.Map<PCECaseReturntDto>(pceCase);
             }
             else
@@ -297,8 +306,15 @@ namespace mechanical.Services.PCE.PCECaseService
 
         public async Task<IEnumerable<PCENewCaseDto>> GetPCETotalCases(Guid userId)
         {
-            var cases = await _cbeContext.PCECases.Where(res => res.RMUserId == userId).ToListAsync();
+            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => (res.CurrentStage != "Relation Manager") && ((res.CurrentStatus != "Completed" && res.CurrentStage != "Checker Officer"))))
+                       .Where(res => res.RMUserId == userId)
+                       .ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
+            foreach (var caseDto in caseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id);
+            }
+
             return caseDtos;
         }
 
@@ -504,7 +520,36 @@ namespace mechanical.Services.PCE.PCECaseService
                     .Include(x => x.District)
                     .Where(res => res.RMUserId == userId)
                     .OrderByDescending(res => res.CreationDate).Take(7).ToListAsync();
-            return _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
+            foreach (var cas in cases)
+            {
+                var status = "New";
+                var iterationcount = 0;
+                var completcount = 0;
+                foreach (var c in cas.ProductionCapacities)
+                {
+                    iterationcount = iterationcount + 1;
+
+                    if (c.CurrentStatus == "New")
+                    {
+                    }
+                    else if(c.CurrentStatus == "Completed")
+                    {
+                        completcount = completcount + 1;
+                    }
+                    else
+                    {
+                        status = "Pending";
+                    }
+                }
+                if(completcount == iterationcount)
+                {
+                    status = "Completed";
+                }
+                cas.CurrentStatus = status;
+            }
+
+            var a =  _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
+            return a;
         }
 
 
