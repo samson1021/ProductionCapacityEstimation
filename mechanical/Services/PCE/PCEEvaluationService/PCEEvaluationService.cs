@@ -82,12 +82,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _mapper.Map(Dto, pceEntity);
                 UpdatePCEEntity(pceEntity, UserId);
 
-                await HandleDeletedFiles(Dto.DeletedFileIds);
+                var filesToDelete = await HandleDeletedFiles(Dto.DeletedFileIds);
+
                 await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEntity.PCE.PCECaseId, pceEntity.Id);
                 await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEntity.PCE.PCECaseId, pceEntity.Id);
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                DeleteFiles(filesToDelete);
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEntity);
             }
@@ -225,8 +227,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private async Task HandleDeletedFiles(string DeletedFileIds)
+        private async Task<List<string>> HandleDeletedFiles(string DeletedFileIds)
         {
+            var filePaths = new List<string>();
             if (!string.IsNullOrEmpty(DeletedFileIds))
             {
                 var deletedFileGuids = DeletedFileIds.Split(',').Select(Guid.Parse).ToList();
@@ -236,11 +239,25 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 {
                     if (File.Exists(file.Path))
                     {
-                        File.Delete(file.Path);
+                        // File.Delete(file.Path);
+                        filePaths.Add(file.Path);
                     }
                 }
 
                 _cbeContext.UploadFiles.RemoveRange(filesToDelete);
+            }
+            
+            return filePaths;
+        }
+
+        private void DeleteFiles(IEnumerable<string> filePaths)
+        {
+            foreach (var filePath in filePaths)
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
             }
         }
 

@@ -120,7 +120,7 @@ namespace mechanical.Controllers
 
 
         [HttpGet]
-        public IActionResult MyPCECases(string Status = "New")
+        public IActionResult MyPCECases(string Status = "All")
         {
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/MOCase/GetMyPCECases";
@@ -143,7 +143,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLatestMyPCECases(string Status)
         {
-            var Limit = 10;
+            var Limit = 5;
             var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Status, Limit);
             if (pceCases == null)
             {
