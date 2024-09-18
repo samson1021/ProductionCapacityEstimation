@@ -215,14 +215,17 @@ namespace mechanical.Controllers.PCE
         }
         public async Task<IActionResult> PCEReestimationCase(Guid Id)
         {
-
             var loanCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
-            //var caseSchedule = await _pcecaseScheduleService.GetCaseSchedules(Id);
-            // var production = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId).ToListAsync();
             if (loanCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["case"] = loanCase;
-            //ViewData["CaseSchedule"] = caseSchedule;
+            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
+            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key
             ViewData["Id"] = base.GetCurrentUserId();
+            ViewData["CurrentUser"] =  await _MOPCECaseService.GetUser(base.GetCurrentUserId());
+            ViewData["PCECaseId"] = pcecaseDto.Id;
+            ViewData["PCECase"] = pcecaseDto;
             return View();
         }
         [HttpGet]
