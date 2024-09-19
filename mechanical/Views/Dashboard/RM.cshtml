@@ -301,7 +301,18 @@
                                                     <td>@item.CustomerUserId</td>
                                                     <td>@item.TotalNoOfCollateral</td>
                                                     <td>
-                                                            <span class="badge badge-success">New</span>
+                                                        @if (item.CurrentStatus == "New")
+                                                        {
+                                                            <span class="badge badge-success" style="padding: 10px 15px;">New</span>
+                                                        }
+                                                        else if (item.CurrentStatus == "Pending")
+                                                        {
+                                                            <span class="badge badge-warning" style="padding: 10px 15px;">Pending</span>
+                                                        }
+                                                        else if (item.CurrentStatus == "Completed")
+                                                        {
+                                                            <span class="badge badge-info" style="padding: 10px 15px;">Complete</span>
+                                                        }
                                                     
                                                     </td>
                                                 </tr>

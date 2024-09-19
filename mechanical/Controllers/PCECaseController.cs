@@ -514,7 +514,7 @@ namespace mechanical.Controllers.PCE
 
         /////////////////// PCE /////////////
         [HttpGet]
-        public IActionResult PCECases(string Status = "New")
+        public IActionResult PCECases(string Status = "All")
         {
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/PCECase/GetPCECases";
