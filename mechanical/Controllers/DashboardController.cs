@@ -22,7 +22,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> RM()
         {
             var latestCase = await _caseService.GetRmLatestCases(base.GetCurrentUserId());
-            var newCases = await _PCECaseService.GetPCENewCases(base.GetCurrentUserId());
+            var newCases = await _PCECaseService.GetRmLatestPCECases(base.GetCurrentUserId());
             ViewData["NewCases"] = newCases;
             return View(latestCase);
         }

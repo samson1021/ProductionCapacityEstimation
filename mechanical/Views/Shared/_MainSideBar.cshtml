@@ -160,21 +160,6 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("RemarkPCECases", "PCECase")" class="nav-link">
-                                    <i class="fas fa-file nav-icon"></i>
-                                    <p>
-                                        Remark Release PCE Cases
-                                    </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("PCEReestimationCases", "PCECase")" class="nav-link">
-                                    <i class="fas fa-sync nav-icon"> </i>
-                                    <p>Request PCE Re-Estimation</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
                                 <a href="@Url.Action("PCECompleteCases", "PCECase")" class="nav-link">
                                     <i class="fas fa-check nav-icon"></i>
                                     <p>
@@ -183,9 +168,23 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="@Url.Action("RemarkPCECases", "PCECase")" class="nav-link">
+                                    <i class="fas fa-file nav-icon"></i>
+                                    <p>
+                                        Remark Release PCE Cases
+                                    </p>
+                                </a>
+                            </li>                          
+                            <li class="nav-item">
                                 <a href="@Url.Action("PCETerminatedCases", "PCECase")" class="nav-link" style="color:red;">
                                     <i class="fas fa-ban nav-icon "> </i>
                                     <p>Terminated PCE Cases</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("PCEReestimationCases", "PCECase")" class="nav-link">
+                                    <i class="fas fa-sync nav-icon"> </i>
+                                    <p>Request PCE Re-Estimation</p>
                                 </a>
                             </li>
                             <li class="nav-item">
