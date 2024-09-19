@@ -183,15 +183,22 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                     await _cbeContext.SaveChangesAsync();
                 }
 
-
                 _cbeContext.Remove(production);
                 await _cbeContext.SaveChangesAsync();
-                var Filrproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
-                if( Filrproduction != null)
+                //var Filrproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
+                //if( Filrproduction != null)
+                //{
+                //    _cbeContext.Remove(Filrproduction);
+                //    await _cbeContext.SaveChangesAsync();
+                //}
+
+
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
-                    _cbeContext.Remove(Filrproduction);
-                    await _cbeContext.SaveChangesAsync();
-                }
+                    CaseId = production.PCECaseId,
+                    Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {production.Id} has been deleted. </strong>.",
+                    CurrentStage = "Relation Manager"
+                });
                 return true;
             }
                 return false;
@@ -219,6 +226,15 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 await _cbeContext.SaveChangesAsync();
                 return Production;
             }
+            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+            {
+                CaseId = Production.PCECaseId,
+                Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {Production.Id} has been Updated. </strong>.",
+
+
+                CurrentStage = "Relation Manager"
+            });
+
             throw new Exception("unable to Edit PCE");
         }
 
