@@ -1,27 +1,25 @@
-﻿using mechanical.Data;
-using mechanical.Models.Dto.CaseTerminateDto;
-using mechanical.Models.Dto.MailDto;
-using mechanical.Models.Entities;
-using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.CaseScheduleService;
-using mechanical.Services.CaseTerminateService;
-using mechanical.Services.MailService;
-using mechanical.Services.PCE.PCECaseScheduleService;
-using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.ProductionCaseScheduleService;
-using mechanical.Services.PCE.PCECaseTerminateService;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
-using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.UploadFileService;
+﻿using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
-using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
-using mechanical.Models.Dto.CaseScheduleDto;
-using Humanizer;
+
+using mechanical.Data;
+using mechanical.Models.Entities;
+using mechanical.Models.Dto.MailDto;
+using mechanical.Services.MailService;
+using mechanical.Services.UploadFileService;
+
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Dto.PCECaseDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
+using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseTerminateService;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.MOPCECaseService;
 
 namespace mechanical.Controllers.PCE
@@ -31,31 +29,28 @@ namespace mechanical.Controllers.PCE
 
 
         private readonly CbeContext _cbeContext;
+        private readonly IMailService _mailService;
         private readonly IPCECaseService _PCECaseService;
         private readonly ILogger<PCECaseController> _logger;
-        private readonly IProductionCaseScheduleService _productionCaseScheduleService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentService;
-        private readonly IPCEEvaluationService _PCEEvaluationService;
-        private readonly IUploadFileService _uploadFileService;
-        private readonly IPCECaseTerminateService _pcecaseTermnateService;
-        private readonly IPCECaseScheduleService _pcecaseScheduleService;
-        private readonly IMailService _mailService;
         private readonly IMOPCECaseService _MOPCECaseService;
-        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
+        private readonly IUploadFileService _uploadFileService;
+        private readonly IPCEEvaluationService _PCEEvaluationService;
+        private readonly IPCECaseScheduleService _PCECaseScheduleService;
+        private readonly IPCECaseTerminateService _pcecaseTermnateService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentService;
+       
 
-        public PCECaseController(CbeContext cbeContext, IMOPCECaseService IMOPCECaseService, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCaseScheduleService ProductionCaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IPCECaseScheduleService pcecaseScheduleService, IMailService mailService, IProductionCaseScheduleService productionCaseScheduleService)
+        public PCECaseController(CbeContext cbeContext, IMOPCECaseService IMOPCECaseService, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
-            _PCECaseService = PCECaseService;
-            _productionCaseScheduleService = ProductionCaseScheduleService;
-            _productionCaseAssignmentService = ProductionCaseAssignmentService;
-            _PCEEvaluationService = PCEEvaluationService;
-            _uploadFileService = uploadFileService;
-            _pcecaseTermnateService = pcecaseTermnateService;
-            _pcecaseScheduleService = pcecaseScheduleService;
             _mailService = mailService;
-            _ProductionCaseScheduleService = productionCaseScheduleService;
+            _PCECaseService = PCECaseService;
             _MOPCECaseService = IMOPCECaseService;
+            _uploadFileService = uploadFileService;
+            _PCEEvaluationService = PCEEvaluationService;
+            _PCECaseScheduleService = PCECaseScheduleService;
+            _pcecaseTermnateService = pcecaseTermnateService;
+            _productionCaseAssignmentService = ProductionCaseAssignmentService;
         }
 
         [HttpGet]
@@ -220,8 +215,8 @@ namespace mechanical.Controllers.PCE
             ViewData["case"] = pceCase;
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
             if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
-            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
-            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
+            ViewData["PCECaseSchedule"] = pceCaseSchedule; // Updated key
             ViewData["Id"] = base.GetCurrentUserId();
             ViewData["CurrentUser"] =  await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             ViewData["PCECaseId"] = pcecaseDto.Id;
@@ -248,8 +243,8 @@ namespace mechanical.Controllers.PCE
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
             if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
 
-            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
-            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(id);
+            ViewData["PCECaseSchedule"] = pceCaseSchedule; // Updated key
             ViewData["Id"] = base.GetCurrentUserId();
             var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             ViewData["CurrentUser"] = currentUser;
@@ -333,8 +328,8 @@ namespace mechanical.Controllers.PCE
             ViewData["Id"] = base.GetCurrentUserId();
 
 
-            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
-            ViewData["ProductionCaseSchedule"] = productionCaseSchedule; // Updated key 
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(id);
+            ViewData["PCECaseSchedule"] = pceCaseSchedule; // Updated key 
 
 
             var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
@@ -371,7 +366,7 @@ namespace mechanical.Controllers.PCE
             var cases = await _cbeContext.PCECases.FindAsync(CaseId);
             var MotorVehicles = await _cbeContext.ProductionCapacities.Include(res => res.EvaluatorUserID).Include(res => res.CheckerUserID).ToListAsync();
             var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
-            var caseSchedule = await _cbeContext.ProductionCaseSchedules.Where(res => res.PCECaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
+            var caseSchedule = await _cbeContext.PCECaseSchedules.Where(res => res.PCECaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
             ViewData["collaterals"] = collaterals;
             ViewData["MotorVehicles"] = MotorVehicles;
@@ -419,10 +414,10 @@ namespace mechanical.Controllers.PCE
         {
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
             var caseTerminate = await _PCECaseService.GetCaseTerminates(id);
-            var caseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(id);
+            var caseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(id);
             ViewData["PCECase"] = pcecaseDto;
             ViewData["caseTerminate"] = caseTerminate;
-            ViewData["ProductionCaseSchedule"] = caseSchedule;
+            ViewData["PCECaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             ViewData["PCECaseId"] = pcecaseDto.Id;
@@ -541,7 +536,7 @@ namespace mechanical.Controllers.PCE
         {
             var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
             // var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
-            var PCECaseSchedule = await _productionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var PCECaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             if (pceCase == null)
             {
                 return RedirectToAction("NewPCECases");

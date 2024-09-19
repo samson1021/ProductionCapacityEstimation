@@ -1,6 +1,6 @@
-﻿namespace mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+﻿namespace mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 
-public class ProductionCaseSchedulePostDto
+public class PCECaseSchedulePostDto
 {
     public Guid Id { get; set; }
     public DateTime ScheduleDate { get; set; }

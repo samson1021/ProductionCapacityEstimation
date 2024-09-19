@@ -14,8 +14,8 @@ namespace mechanical.Models.PCE.Entities
         public string CustomerEmail { get; set; } = string.Empty;
         public Guid DistrictId { get; set; }
         // public string CurrentStage { get; set; } = string.Empty;
-        public string CurrentStatus { get; set; } = string.Empty;
-        // public string Status { get; set; } = string.Empty;
+        // public string CurrentStatus { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
         public DateTime MakerAssignmentDate { get; set; }
         public DateTime CompletionDate { get; set; }

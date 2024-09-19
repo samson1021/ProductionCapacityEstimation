@@ -1,5 +1,4 @@
-﻿using mechanical.Models.Dto.CaseCommentDto;
-using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+﻿using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 
 namespace mechanical.Services.PCE.PCECaseCommentService
 {

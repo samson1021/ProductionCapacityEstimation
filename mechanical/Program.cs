@@ -44,7 +44,6 @@ using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Services.PCE.ProductionCaseScheduleService;
 using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using Microsoft.Extensions.FileProviders;
@@ -131,7 +130,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
 builder.Services.AddScoped<IMOPCECaseService, MOPCECaseService>();
-builder.Services.AddScoped<IProductionCaseScheduleService, ProductionCaseScheduleService>();
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
 

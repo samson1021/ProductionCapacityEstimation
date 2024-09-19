@@ -43,8 +43,8 @@ namespace mechanical.Controllers
             _mapper = mapper;
             _logger = logger;
             _MailService = MailService;   
-            _PCEEvaluationService = PCEEvaluationService;
             _MOPCECaseService  = MOPCECaseService;
+            _PCEEvaluationService = PCEEvaluationService;
             _ProductionCapacityService = ProductionCapacityService;            
         }
 

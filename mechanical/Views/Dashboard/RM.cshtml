@@ -301,15 +301,18 @@
                                                     <td>@item.CustomerUserId</td>
                                                     <td>@item.TotalNoOfCollateral</td>
                                                     <td>
-                                                        @if (item.CurrentStatus == "New")
+                                                        @* @if (item.CurrentStatus == "New") *@
+                                                        @if (item.Status == "New")
                                                         {
                                                             <span class="badge badge-success" style="padding: 10px 15px;">New</span>
                                                         }
-                                                        else if (item.CurrentStatus == "Pending")
+                                                        @* else if (item.CurrentStatus == "Pending") *@
+                                                        else if (item.Status == "Pending")
                                                         {
                                                             <span class="badge badge-warning" style="padding: 10px 15px;">Pending</span>
                                                         }
-                                                        else if (item.CurrentStatus == "Completed")
+                                                        @* else if (item.CurrentStatus == "Completed") *@
+                                                        else if (item.Status == "Completed")
                                                         {
                                                             <span class="badge badge-info" style="padding: 10px 15px;">Complete</span>
                                                         }

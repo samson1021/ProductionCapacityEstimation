@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 using mechanical.Models.Entities;
-using mechanical.Models.Entities;
-using mechanical.Models.Dto.Correction;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;

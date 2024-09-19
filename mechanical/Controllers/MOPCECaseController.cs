@@ -18,10 +18,10 @@ using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Entities;
 using mechanical.Models.Dto.MailDto;
-using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Services.MailService;
 using mechanical.Services.PCE.MOPCECaseService;
-using mechanical.Services.PCE.ProductionCaseScheduleService;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 // using mechanical.Services.PCE.ProductionCaseTerminateService;
 
@@ -34,16 +34,16 @@ namespace mechanical.Controllers
         private readonly IMailService _MailService;
         private readonly ILogger<MOPCECaseController> _logger;
         private readonly IMOPCECaseService _MOPCECaseService;
-        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
+        private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
-        public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService MailService, IPCECaseTerminateService PCECaseTerminateService)
-        // public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseTerminateService ProductionCaseTerminateService, IProductionCaseScheduleService ProductionCaseScheduleService, IMailService MailService)
+        public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IPCECaseScheduleService PCECaseScheduleService, IMailService MailService, IPCECaseTerminateService PCECaseTerminateService)
+        // public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseTerminateService ProductionCaseTerminateService, IPCECaseScheduleService PCECaseScheduleService, IMailService MailService)
         {
             _logger = Logger;
             _MailService = MailService;    
             _MOPCECaseService = MOPCECaseService;
-            _ProductionCaseScheduleService = ProductionCaseScheduleService;
+            _PCECaseScheduleService = PCECaseScheduleService;
              _PCECaseTerminateService = PCECaseTerminateService;
         }
 
@@ -58,6 +58,10 @@ namespace mechanical.Controllers
 
                 if (pceDetail.ProductionCapacity == null)
                 {
+                    if (pceDetail.PCECase != null)
+                    {
+                        return RedirectToAction("PCECaseDetail", "MOPCECase", new { Id = pceDetail.PCECase.Id });   
+                    }
                     return RedirectToAction("MyPCECases");
                 }
                 
@@ -101,14 +105,16 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyPCECases");
             }
-             var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            //  var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            // var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
-            ViewData["PCECaseTerminate"] = pceCaseTerminate;
-            ViewData["ProductionCaseSchedule"] = productionCaseSchedule;
+            // ViewData["PCECaseTerminate"] = pceCaseTerminate;
+            // ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["PCECaseTerminate"] = null;
+            ViewData["PCECaseSchedule"] = null;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
 
@@ -237,13 +243,13 @@ namespace mechanical.Controllers
         {
             var userId = base.GetCurrentUserId();
             var pceCase = await _MOPCECaseService.GetPCECase(userId, Id);
-            var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             if (pceCase == null) 
             { 
                 return RedirectToAction("MyPCECases"); 
             }
             ViewData["PCECase"] = pceCase;
-            ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
             ViewData["Id"] = userId;
             return View();
         }
@@ -277,47 +283,47 @@ namespace mechanical.Controllers
         // }
 
         [HttpPost]
-        public async Task<IActionResult> CreateSchedule(ProductionCaseSchedulePostDto Dto)
+        public async Task<IActionResult> CreateSchedule(PCECaseSchedulePostDto Dto)
         {
-            var productionCaseSchedule = await _ProductionCaseScheduleService.CreateProductionCaseSchedule(base.GetCurrentUserId(), Dto);
+            var pceCaseSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), Dto);
             
-            if (productionCaseSchedule == null) 
+            if (pceCaseSchedule == null) 
             { 
                 return BadRequest("Unable to create PCECase Schedule"); 
             }
             
-            return await SendScheduleEmail(productionCaseSchedule, "Valuation Schedule for PCECase Number ");
+            return await SendScheduleEmail(pceCaseSchedule, "Valuation Schedule for PCECase Number ");
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateSchedule(Guid id, ProductionCaseSchedulePostDto Dto)
+        public async Task<IActionResult> UpdateSchedule(Guid id, PCECaseSchedulePostDto Dto)
         {
-            var productionCaseSchedule = await _ProductionCaseScheduleService.UpdateProductionCaseSchedule(base.GetCurrentUserId(), id, Dto);
+            var pceCaseSchedule = await _PCECaseScheduleService.UpdatePCECaseSchedule(base.GetCurrentUserId(), id, Dto);
             
-            if (productionCaseSchedule == null) 
+            if (pceCaseSchedule == null) 
             { 
                 return BadRequest("Unable to update PCECase Schedule"); 
             }
 
-            return await SendScheduleEmail(productionCaseSchedule, "Valuation Schedule Update for PCECase Number ");
+            return await SendScheduleEmail(pceCaseSchedule, "Valuation Schedule Update for PCECase Number ");
         }
 
         [HttpPost]
         public async Task<IActionResult> ApproveSchedule(Guid id)
         {
-            var productionCaseSchedule = await _ProductionCaseScheduleService.ApproveProductionCaseSchedule(id);
+            var pceCaseSchedule = await _PCECaseScheduleService.ApprovePCECaseSchedule(id);
             
-            if (productionCaseSchedule == null) 
+            if (pceCaseSchedule == null) 
             { 
                 return BadRequest("Unable to approve PCECase Schedule"); 
             }
             
-            return Ok(productionCaseSchedule);
+            return Ok(pceCaseSchedule);
         }
 
-        private async Task<IActionResult> SendScheduleEmail(ProductionCaseScheduleReturnDto productionCaseSchedule, string subjectPrefix)
+        private async Task<IActionResult> SendScheduleEmail(PCECaseScheduleReturnDto pceCaseSchedule, string subjectPrefix)
         {
-            var pceCaseInfo = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), productionCaseSchedule.PCECaseId);
+            var pceCaseInfo = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), pceCaseSchedule.PCECaseId);
 
             await _MailService.SendEmail(new MailPostDto
             {
@@ -325,12 +331,12 @@ namespace mechanical.Controllers
                 SenderPassword = "test@1234",
                 RecipantEmail = "recipient@cbe.com.et",
                 Subject = $"{subjectPrefix}{pceCaseInfo.CaseNo}",
-                Body = $"Dear! Valuation Schedule For Applicant: {pceCaseInfo.ApplicantName} is {productionCaseSchedule.ScheduleDate}. For further details, please check the Production Valuation System."
+                Body = $"Dear! Valuation Schedule For Applicant: {pceCaseInfo.ApplicantName} is {pceCaseSchedule.ScheduleDate}. For further details, please check the Production Valuation System."
             });
 
-            string jsonData = JsonConvert.SerializeObject(productionCaseSchedule);
+            string jsonData = JsonConvert.SerializeObject(pceCaseSchedule);
             
-            return Ok(productionCaseSchedule);
+            return Ok(pceCaseSchedule);
         }
     }
 }

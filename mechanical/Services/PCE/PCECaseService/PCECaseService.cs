@@ -1,20 +1,20 @@
 ﻿﻿using AutoMapper;
-using mechanical.Data;
-using mechanical.Models.Dto.CaseDto;
-using mechanical.Models.Dto.DashboardDto;
-using mechanical.Models.PCE.Dto;
-using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.PCE.PCECaseTimeLineService;
-
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+
+using mechanical.Data;
+using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Dto;
+using mechanical.Models.PCE.Dto.PCECaseDto;
+using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Services.PCE.PCECaseTimeLineService;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
@@ -39,24 +39,39 @@ namespace mechanical.Services.PCE.PCECaseService
 
         async Task<PCECase> IPCECaseService.PCECase(Guid userId, PCECaseDto pCECaseDto)
         {
-            var user = _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == userId);
-            var httpContext = _httpContextAccessor.HttpContext;
-            var loanCase = _mapper.Map<PCECase>(pCECaseDto);
-            loanCase.Id = Guid.NewGuid();
-            loanCase.CurrentStatus = "New";
-            // loanCase.Status = "New";
-            loanCase.DistrictId = user.DistrictId;
-            loanCase.RMUserId = userId;
-            loanCase.CreationDate = DateTime.Now;
-            await _cbeContext.PCECases.AddAsync(loanCase);
-            await _cbeContext.SaveChangesAsync();
-            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            { 
+                var user = _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == userId);
+                var httpContext = _httpContextAccessor.HttpContext;
+                var loanCase = _mapper.Map<PCECase>(pCECaseDto);
+                loanCase.Id = Guid.NewGuid();
+                // loanCase.CurrentStatus = "New";
+                loanCase.Status = "New";
+                loanCase.DistrictId = user.DistrictId;
+                loanCase.RMUserId = userId;
+                loanCase.CreationDate = DateTime.Now;
+                await _cbeContext.PCECases.AddAsync(loanCase);
+
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = loanCase.Id,
+                    Activity = $"<strong>A new case with ID {loanCase.CaseNo} has been created</strong>",
+                    CurrentStage = "Relation Manager"
+                });   
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return loanCase; 
+            }
+
+            catch (Exception ex)
             {
-                CaseId = loanCase.Id,
-                Activity = $"<strong>A new case with ID {loanCase.CaseNo} has been created</strong>",
-                CurrentStage = "Relation Manager"
-            });
-            return loanCase;
+                _logger.LogError(ex, "Error creating case");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while creating case.");
+            }
 
         }
 
@@ -201,31 +216,37 @@ namespace mechanical.Services.PCE.PCECaseService
 
         public async Task<PCECaseReturntDto> PCEEdit(Guid userId, PCECaseReturntDto caseDto)
         {
-            var pceCase = await _cbeContext.PCECases.FirstOrDefaultAsync(c => c.Id == userId);
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {  
+                var pceCase = await _cbeContext.PCECases.FirstOrDefaultAsync(c => c.Id == userId);
 
-            if (pceCase != null)
-            {
-                pceCase.ApplicantName = caseDto.ApplicantName;
-                pceCase.CustomerEmail = caseDto.CustomerEmail;
-                pceCase.CustomerUserId = caseDto.CustomerUserId;
-
-                await _cbeContext.SaveChangesAsync();
-
-
-                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                if (pceCase != null)
                 {
-                    CaseId = pceCase.Id,
-                    Activity = $"<strong>The case with case number {pceCase.CaseNo} has been edited</strong>",
-                    CurrentStage = "Relation Manager"
-                });
+                    pceCase.ApplicantName = caseDto.ApplicantName;
+                    pceCase.CustomerEmail = caseDto.CustomerEmail;
+                    pceCase.CustomerUserId = caseDto.CustomerUserId;
 
-
+                    await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                    {
+                        CaseId = pceCase.Id,
+                        Activity = $"<strong>The case with case number {pceCase.CaseNo} has been edited</strong>",
+                        CurrentStage = "Relation Manager"
+                    });
+                }
+                
+                              
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                    
                 return _mapper.Map<PCECaseReturntDto>(pceCase);
             }
-            else
+
+            catch (Exception ex)
             {
-                // If the PCECase is not found, return null
-                return _mapper.Map<PCECaseReturntDto>(pceCase);
+                _logger.LogError(ex, "Error updating the case");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while updating the case.");
             }
         }
 
@@ -367,7 +388,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                      .Include(e => e.ShiftHours)
                                      .Include(e => e.TimeConsumedToCheck)
                                      .Include(res => res.Evaluator).Where(res => res.PCEId == Id).ToListAsync();
-            var pceCaseSchedule = await _cbeContext.ProductionCaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
                      
 
 
@@ -392,7 +413,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                      .Include(e => e.TimeConsumedToCheck)
                                      .Where(c=>productions.Select(d=>d.Id).Contains(c.PCEId)).ToListAsync();
          
-            var pceCaseSchedule = await _cbeContext.ProductionCaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
             return new PCEReportDataDto
             {
                 PCESCase = pceCase,
@@ -432,8 +453,8 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<IEnumerable<PCECaseTerminateDto>> GetCaseTerminates(Guid userId)
         {
             var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities)
-                       .Where(res => res.RMUserId == userId && res.CurrentStatus == "Terminate")
-                    //    .Where(res => res.RMUserId == userId && res.Status == "Terminate")
+                    //    .Where(res => res.RMUserId == userId && res.CurrentStatus == "Terminate")
+                       .Where(res => res.RMUserId == userId && res.Status == "Terminate")
                        .ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(cases);
             foreach (var caseDto in caseDtos)
@@ -452,36 +473,50 @@ namespace mechanical.Services.PCE.PCECaseService
         }
         public async Task<PCECaseTerminate> ApproveCaseTermination(Guid id)
         {
-            var caseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(id);
-            if (caseTerminate == null)
-            {
-                throw new Exception("case Schedule not Found");
-            }
-            caseTerminate.CurrentStatus = "Approved";
-            _cbeContext.Update(caseTerminate);
-
-            var cases = await _cbeContext.PCECases.FindAsync(caseTerminate.PCECaseId);
-            cases.CurrentStatus = "Terminate";
-            // cases.Status = "Terminate";
-            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == caseTerminate.PCECaseId).ToListAsync();
-
-            foreach (var collateral in collaterals)
-            {
-                collateral.CurrentStage = "Relation Manager";
-                collateral.CurrentStatus = "Terminate";
-                var caseAssignments = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateral.Id).ToListAsync();
-                foreach (var caseAssignment in caseAssignments)
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {  
+                var caseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(id);
+                if (caseTerminate == null)
                 {
-                    caseAssignment.Status = "Terminate";
-
+                    throw new Exception("case Schedule not Found");
                 }
-                _cbeContext.ProductionCaseAssignments.UpdateRange(caseAssignments);
+                caseTerminate.Status = "Approved";
+                // caseTerminate.CurrentStatus = "Approved";
+                _cbeContext.Update(caseTerminate);
+
+                var cases = await _cbeContext.PCECases.FindAsync(caseTerminate.PCECaseId);
+                // cases.CurrentStatus = "Terminate";
+                cases.Status = "Terminate";
+                var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == caseTerminate.PCECaseId).ToListAsync();
+
+                foreach (var collateral in collaterals)
+                {
+                    collateral.CurrentStage = "Relation Manager";
+                    collateral.CurrentStatus = "Terminate";
+                    var caseAssignments = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == collateral.Id).ToListAsync();
+                    foreach (var caseAssignment in caseAssignments)
+                    {
+                        caseAssignment.Status = "Terminate";
+
+                    }
+                    _cbeContext.ProductionCaseAssignments.UpdateRange(caseAssignments);
+                }
+
+                _cbeContext.ProductionCapacities.UpdateRange(collaterals);
+          
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                
+                return caseTerminate;    
             }
 
-            _cbeContext.ProductionCapacities.UpdateRange(collaterals);
-
-            await _cbeContext.SaveChangesAsync();
-            return caseTerminate;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error approving case termination");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while approving case termination.");
+            }
         }
 
 
@@ -519,7 +554,8 @@ namespace mechanical.Services.PCE.PCECaseService
                 {
                     status = "Completed";
                 }
-                cas.CurrentStatus = status;
+                // cas.CurrentStatus = status;
+                cas.Status = status;
             }
 
             var a =  _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
