@@ -28,6 +28,9 @@ using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
+using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 /////
 
 namespace mechanical.Mapper

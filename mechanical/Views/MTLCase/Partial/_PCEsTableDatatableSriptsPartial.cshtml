@@ -92,7 +92,78 @@
             });
         }
         loadPCEs();
+
+
+        $.ajax({
+            url: '/UserManagment/GetMakerOfficer',
+            method: 'GET',
+            dataType: 'json'
+        })
+            .done(function (data) {
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Maker Officer');
+                $('#employeeDropdown').append(selectOption);
+                data.forEach(function (employee) {
+                    var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
+                    $('#employeeDropdown').append(option);
+                });
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log('Error fetching employee data:', errorThrown);
+            });
+
+        $('#assignButton').on('click', function () {
+
+            console.log("clicked");
+            var checkedProductions = $('.purple-checkbox:checked');
+            var SelectedPCEIds = [];
+
+            checkedProductions.each(function () {
+                var ProductionId = $(this).val();
+                SelectedPCEIds.push(ProductionId);
+            });
+            if (SelectedPCEIds.length === 0) {
+                toastr.error('Please select at least one Production');
+            } else {
+                $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
+
+                $('#assignModal').modal('show');
+            }
+        });
+
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#caseProductions tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+
+        $('#assignForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/MTLCase/PCEAssignMakerOfficer',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    location.reload();
+                    $('#assignModal').modal('hide');
+                },
+                error: function (error) {
+                    toastr.error("Unable to assign Production");
+                    console.log(error);
+                }
+            });
+        });
     });
+
 
     function openRejectionModal(PCEId) {
         document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;

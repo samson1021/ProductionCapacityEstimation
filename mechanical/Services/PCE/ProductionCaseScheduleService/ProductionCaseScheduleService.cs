@@ -4,6 +4,8 @@ using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
 using mechanical.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace mechanical.Services.PCE.ProductionCaseScheduleService
 {
@@ -29,6 +31,7 @@ namespace mechanical.Services.PCE.ProductionCaseScheduleService
             return _mapper.Map<ProductionCaseScheduleReturnDto>(caseSchedule);
         }
 
+
         public async Task<ProductionCaseScheduleReturnDto> CreateProductionCaseSchedule(Guid UserId, ProductionCaseSchedulePostDto caseCommentPostDto)
         {
             var caseSchedule = _mapper.Map<Models.PCE.Entities.ProductionCaseSchedule>(caseCommentPostDto);
@@ -44,8 +47,15 @@ namespace mechanical.Services.PCE.ProductionCaseScheduleService
         public async Task<IEnumerable<ProductionCaseScheduleReturnDto>> GetProductionCaseSchedules(Guid PCECaseId)
         {
             var caseSchedules = await _cbeContext.ProductionCaseSchedules.Include(res => res.User).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            
             return _mapper.Map<IEnumerable<ProductionCaseScheduleReturnDto>>(caseSchedules);
         }
+
+        //public async Task<IEnumerable<CaseScheduleReturnDto>> GetCaseSchedules(Guid caseId)
+        //{
+        //    var caseSchedules = await _cbeContext.CaseSchedules.Include(res => res.User).Where(res => res.CaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
+        //    return _mapper.Map<IEnumerable<CaseScheduleReturnDto>>(caseSchedules);
+        //}
 
         public async Task<ProductionCaseScheduleReturnDto> UpdateProductionCaseSchedule(Guid UserId, Guid id, ProductionCaseSchedulePostDto caseCommentPostDto)
         {

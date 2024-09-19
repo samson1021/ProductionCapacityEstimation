@@ -1,5 +1,3 @@
-﻿using System.ComponentModel.DataAnnotations;
-
 namespace mechanical.Models.PCE.Dto.PCECaseCommentDto
 {
     public class PCECaseCommentReturnDto

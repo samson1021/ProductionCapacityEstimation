@@ -58,7 +58,7 @@ namespace mechanical.Controllers
 
                 if (pceDetail.ProductionCapacity == null)
                 {
-                    return RedirectToAction("PCENewCases");
+                    return RedirectToAction("MyPCECases");
                 }
                 
                 ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
@@ -93,7 +93,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PCECaseDetail(Guid Id, string Status)
+        public async Task<IActionResult> PCECaseDetail(Guid Id, string Status = "All")
         {
             var userId = base.GetCurrentUserId();
             var pceCase = await _MOPCECaseService.GetPCECase(userId, Id);
@@ -101,13 +101,13 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyPCECases");
             }
-            //  var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+             var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
             var productionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
-            // ViewData["PCECaseTerminate"] = pceCaseTerminate;
+            ViewData["PCECaseTerminate"] = pceCaseTerminate;
             ViewData["ProductionCaseSchedule"] = productionCaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
@@ -117,7 +117,7 @@ namespace mechanical.Controllers
 
 
         [HttpGet]
-        public IActionResult MyPCECases(string Status = "New")
+        public IActionResult MyPCECases(string Status = "All")
         {
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/MOCase/GetMyPCECases";
@@ -126,7 +126,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyPCECases(string Status)
+        public async Task<IActionResult> GetMyPCECases(string Status = "All")
         {
             var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Status);
             if (pceCases == null)
@@ -138,10 +138,10 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyLatestPCECases(string Status)
+        public async Task<IActionResult> GetMyLatestPCECases()
         {
-            var limit = 10;
-            var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Status, limit);
+            var limit = 5;
+            var pceCases = await _MOPCECaseService.GetPCECases(base.GetCurrentUserId(), Limit: limit);
             if (pceCases == null)
             {
                 return BadRequest("Unable to load {Status} PCE Cases");
@@ -160,7 +160,7 @@ namespace mechanical.Controllers
 
         //// PCEs /////////
         [HttpGet]
-        public IActionResult PCEs(string Status)
+        public IActionResult PCEs(string Status = "All")
         {
             ViewData["Title"] = Status + " PCEs";
             ViewBag.Status = Status;
@@ -168,7 +168,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPCEs(Guid PCECaseId, string Status)
+        public async Task<IActionResult> GetPCEs(Guid PCECaseId, string Status = "All")
         {
             var productions = await _MOPCECaseService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Status: Status);
 
@@ -184,7 +184,7 @@ namespace mechanical.Controllers
 
         //// My PCEs /////////
         [HttpGet]
-        public IActionResult MyPCEs(string Status)
+        public IActionResult MyPCEs(string Status = "All")
         {
             ViewData["Title"] = "My " + Status + " PCEs";
             ViewBag.Status = Status;
@@ -192,7 +192,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyPCEs(string Status)
+        public async Task<IActionResult> GetMyPCEs(string Status = "All")
         {
             var myPCEs = await _MOPCECaseService.GetPCEs(base.GetCurrentUserId(), Status: Status);
             if (myPCEs == null)
@@ -240,7 +240,7 @@ namespace mechanical.Controllers
             var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
             if (pceCase == null) 
             { 
-                return RedirectToAction("NewPCECases"); 
+                return RedirectToAction("MyPCECases"); 
             }
             ViewData["PCECase"] = pceCase;
             ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;

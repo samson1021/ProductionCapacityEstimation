@@ -33,10 +33,15 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> MM()
         {
-           var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return View(latestCase);
         }
-        
+        public async Task<IActionResult> MTL()
+        {
+            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            return View(latestCase);
+        }
+
         //public async Task<IActionResult> RoleBased()
         //{
         //    var currentUser = base.GetCurrentUserId();

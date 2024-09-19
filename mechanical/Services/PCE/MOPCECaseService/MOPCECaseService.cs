@@ -51,7 +51,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
             return _mapper.Map<PCECaseReturntDto>(pCECase);
         }
         
-        public async Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status, int? Limit = null)
+        public async Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status = null, int? Limit = null)
         {
             var PCECaseAssignmentsQuery = _cbeContext.ProductionCaseAssignments
                                                     .AsNoTracking()
@@ -68,6 +68,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
             var UniquePCECases = PCECaseAssignments
                                 .Select(ca => ca.ProductionCapacity.PCECase)
                                 .DistinctBy(c => c.Id)
+                                .OrderByDescending(c => c.CreationDate)
                                 .ToList();
 
             var productionCapacities = await _cbeContext.ProductionCapacities

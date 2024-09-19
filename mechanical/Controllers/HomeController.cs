@@ -185,7 +185,7 @@ namespace mechanical.Controllers
                         ViewData["Center"] = user.District.Name;
                         return RedirectToAction("MM", "Dashboard", user.Role.Name);
                     case "Maker TeamLeader":
-                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                        return RedirectToAction("MTL", "Dashboard", user.Role.Name);
                     case "Admin":
                         return RedirectToAction("Index", "UserManagment");
                     case "Checker TeamLeader":

@@ -3,7 +3,7 @@
 @* @model mechanical.Models.Dto.CollateralDto.CollateralPostDto; *@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 @{
-    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
+    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
 }
 
 
@@ -18,13 +18,13 @@
                             <i class="fas fa-plus-circle"></i> Manufacturing Production Capacity Estimation Request
                         </button>
                         </button>
-                        @* <button id="EstimatePlaneCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#EstimatePlaneCollateralModal">
+                        <button id="EstimatePlaneCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#EstimatePlaneCollateralModal">
                             <i class="fas fa-plus-circle"></i> Estimate Plant Production Capacity
                         </button>
 
                         <button  type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" >
                             <i class="fas fa-plus-circle"></i> Add any other
-                        </button>*@
+                        </button>
                         <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "PCECaseTimeLine", new { CaseId = @myCase.Id })">
                             <i class="nav-icon fas fa-sitemap"></i>
                         </a>

@@ -101,10 +101,6 @@ builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssi
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
 
-
-
-
-
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService, CaseAssignmentService>();
 builder.Services.AddScoped<ICaseTimeLineService, CaseTimeLineService>();
@@ -120,17 +116,11 @@ builder.Services.AddScoped<IMotorVehicleService, MotorVehicleService>();
 builder.Services.AddScoped<IMMCaseService, MMCaseService>();
 builder.Services.AddScoped<ICOCaseService, MOCaseService>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
-//builder.Services.AddScoped<ISignatureService,SignatureService>();
+builder.Services.AddScoped<ISignatureService, SignatureService>();
 builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
-
-
-
-builder.Services.AddScoped<ISignatureService, SignatureService>();
-
-
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -181,12 +171,12 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 {
     Seed.SeedData(app);
     SeedDistrict.SeedData(app);
-    // SeedUsersRolesDistricts.SeedData(app);
+    // SeedUsersRolesAndDistricts.SeedData(app);
 }
 
 Seed.SeedData(app);
 SeedDistrict.SeedData(app);
-// SeedUsersRolesDistricts.SeedData(app);
+// SeedUsersRolesAndDistricts.SeedData(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

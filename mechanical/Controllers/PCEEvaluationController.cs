@@ -1,4 +1,5 @@
 using AutoMapper;
+using Humanizer;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,16 +11,19 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 using mechanical.Data;
 using mechanical.Models;
-using mechanical.Services.MailService;
 using mechanical.Models.Dto.MailDto;
+using mechanical.Services.MailService;
 using mechanical.Models.PCE.Entities;
+using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.ProductionCapacityServices;
-using Humanizer;
 
 namespace mechanical.Controllers
 {
@@ -30,15 +34,17 @@ namespace mechanical.Controllers
         private readonly IMapper _mapper;
         private readonly IMailService _MailService;
         private readonly ILogger<PCEEvaluationController> _logger;
+        private readonly IMOPCECaseService _MOPCECaseService;
         private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IProductionCapacityServices _ProductionCapacityService;
 
-        public PCEEvaluationController(IMapper mapper, IMailService MailService, IPCEEvaluationService PCEEvaluationService, ILogger<PCEEvaluationController> logger, IProductionCapacityServices ProductionCapacityService)
+        public PCEEvaluationController(IMapper mapper, IMailService MailService, IMOPCECaseService MOPCECaseService, IPCEEvaluationService PCEEvaluationService, ILogger<PCEEvaluationController> logger, IProductionCapacityServices ProductionCapacityService)
         {
             _mapper = mapper;
             _logger = logger;
             _MailService = MailService;   
             _PCEEvaluationService = PCEEvaluationService;
+            _MOPCECaseService  = MOPCECaseService;
             _ProductionCapacityService = ProductionCapacityService;            
         }
 
@@ -50,16 +56,17 @@ namespace mechanical.Controllers
                 var userId = base.GetCurrentUserId();
                 var pceEvaluation = await _PCEEvaluationService.GetPCEEvaluationByPCEId(userId, PCEId);
 
-                if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
+                // if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
+                if (pceEvaluation != null)
                 {            
-                    return RedirectToAction("PCEDetail", "PCEEvaluation", new { PCEId = pceEvaluation.PCEId });
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = pceEvaluation.PCEId });
                 }
                 
-                var pceDetail = await _PCEEvaluationService.GetPCEDetails(userId, PCEId);     
+                var pceDetail = await _MOPCECaseService.GetPCEDetails(userId, PCEId);     
 
                 if (pceDetail.ProductionCapacity == null)
                 {
-                    return RedirectToAction("MyPCEs");
+                    return RedirectToAction("MyPCECases", "MOPCECase");
                 }
             
                 ViewData["Reestimation"] = pceDetail.Reestimation;
@@ -88,8 +95,7 @@ namespace mechanical.Controllers
                 {
                     var pceEvaluation = await _PCEEvaluationService.CreatePCEEvaluation(userId, Dto);
 
-                    return RedirectToAction("PCEDetail", "PCEEvaluation", new { PCEId = pceEvaluation.PCEId });
-
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = pceEvaluation.PCEId });
                 }
                 catch (Exception ex)
                 {
@@ -110,13 +116,14 @@ namespace mechanical.Controllers
 
                 if (pceEvaluation == null)
                 {
-                    return RedirectToAction("MyPCEs");
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = pceEvaluation.PCEId });
                 }
 
                 var pce = await _ProductionCapacityService.GetProduction(userId, pceEvaluation.PCEId);
-                var pceCase = await _PCEEvaluationService.GetPCECase(userId, pce.PCECaseId);
+                var pceCase = await _MOPCECaseService.GetPCECase(userId, pce.PCECaseId);
 
                 ViewData["PCE"] = pce;
+                ViewData["PCECase"] = pceCase;
                 ViewData["PCECase"] = pceCase;
 
                 return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));
@@ -141,7 +148,7 @@ namespace mechanical.Controllers
                 try
                 {
                     var pceEvaluation = await _PCEEvaluationService.UpdatePCEEvaluation(base.GetCurrentUserId(), Id, Dto);
-                    return RedirectToAction("PCEDetail", "PCEEvaluation", new { PCEId = pceEvaluation.PCEId });   
+                    return RedirectToAction("PCEDetail", "MOPCECase", new { PCEId = pceEvaluation.PCEId });   
                 }
                 catch (Exception ex)
                 {
@@ -244,15 +251,6 @@ namespace mechanical.Controllers
         //     }
         // }
 
-
-        [HttpGet]
-        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
-        {
-            var pceEvaluations = await _PCEEvaluationService.GetPCEEvaluationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            return Content(jsonData, "application/json");
-        }
-
         [HttpGet]
         // [HttpPost]
         // [ValidateAntiForgeryToken]
@@ -299,6 +297,14 @@ namespace mechanical.Controllers
                 // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }
-        }    
+        }  
+
+        [HttpGet]
+        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
+        {
+            var pceEvaluations = await _PCEEvaluationService.GetPCEEvaluationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        } 
     }
 }

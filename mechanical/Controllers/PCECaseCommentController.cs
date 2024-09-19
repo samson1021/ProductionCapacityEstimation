@@ -15,7 +15,7 @@ namespace mechanical.Controllers
             _PCEcaseCommentService = PCEcaseCommentService;
         }
         [HttpPost]
-        public async Task<IActionResult> CreateCaseComment(string userId, PCECaseCommentPostDto caseCommentPostDto)
+        public async Task<IActionResult> CreateCaseComment(string PCECaseId, PCECaseCommentPostDto caseCommentPostDto)
         {
             await _PCEcaseCommentService.CreateCaseComment(base.GetCurrentUserId(), caseCommentPostDto);
             return Ok();

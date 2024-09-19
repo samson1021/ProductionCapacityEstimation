@@ -40,16 +40,6 @@
         document.getElementById("OutputPhase").addEventListener("change", function () {
             handleDropdownChange(this, "OtherOutputPhase");
         });
- 
-        const urlParams = new URLSearchParams(window.location.search);
-        const tab = urlParams.get('tab');
-
-        if (tab) {
-            const targetTab = $(`#${tab}`);
-            if (targetTab.length) {
-                targetTab.tab('show'); 
-            }
-        }
     });
 
     function setDefaultTime() {
@@ -199,7 +189,7 @@
             }
         }
     }
-@* 
+
     function adjustButtonPositions() {
         var buttons = document.querySelectorAll('.action-btn');
         var visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
@@ -231,19 +221,19 @@
                 rejectBtn.style.display = "inline-block";
                 evaluateBtn.style.display = "inline-block";
                 break;
-            case "Completed":
+            case "Evaluated":
                 updateBtn.style.display = "none";
                 deleteBtn.style.display = "none";
                 rejectBtn.style.display = "none";
                 evaluateBtn.style.display = "none";
                 break;
-            case "Reestimate":
+            case "Reevaluate":
                 updateBtn.style.display = "inline-block";
                 deleteBtn.style.display = "none";
                 rejectBtn.style.display = "none";
                 evaluateBtn.style.display = "inline-block";
                 break;
-            case "Reestimated":
+            case "Reevaluated":
                 updateBtn.style.display = "none";
                 deleteBtn.style.display = "none";
                 rejectBtn.style.display = "none";
@@ -257,10 +247,10 @@
                 break;
         }
         adjustButtonPositions();
-    } *@
+    }
 </script>
 
-@* <style>
+<style>
     .align-left {
         float: left;
     }
@@ -271,34 +261,5 @@
 
     .align-right {
         float: right;
-    }
-</style> *@
-
-<style>
-    .card-title {
-        font-size: 1.25rem;
-        font-weight: bold; 
-        color: #080808; 
-        text-align: center; 
-        margin: 0; 
-        padding: 10px;
-    }
-    .card {
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem; 
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-    }
-    .card-header {
-        background-color: #f8f9fa; 
-        border-bottom: 1px solid #dee2e6; 
-    }
-    .card-body {
-        padding: 20px;
-    }
-    .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%; 
     }
 </style>

@@ -24,113 +24,11 @@
     </div>
 </section>
 
-<div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignModalLabel">Assign Case</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                @using (Html.BeginForm("PCEAssignTeamleader", "MMCase", FormMethod.Post, new { id = "assignForm" }))
-                {
-                    <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
-                    <div class="form-group">
-                        <label for="employeeDropdown">Select Employee:</label>
-                        <select class="form-control" id="employeeDropdown" name="employeeId">
-                        </select>
-                    </div>
-                    <div class="row col-12">
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignButton">Assign</button>
-                            <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
 @section Scripts {
-
     @{
         await Html.RenderPartialAsync("_RejectModal");
         await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-    }
-    <script> 
-        $(document).ready(function () {
-        var CaseId = $('#CaseId').val();
-            fetch('/UserManagment/GetMakerOfficer')
-                .then(response => response.json())
-                .then(data => {
-                    var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Maker Officer');
-                    $('#employeeDropdown').append(selectOption);
-                    data.forEach(function (employee) {
-                        var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
-                        $('#employeeDropdown').append(option);
-
-                    });
-                })
-                .catch(error => {
-                    console.log('Error fetching employee data:', error);
-                });
-
-            $('#assignButton').on('click', function () {
-
-                console.log("clicked");
-                var checkedCollaterals = $('.purple-checkbox:checked');
-                var selectedCollateralIds = [];
-
-                checkedCollaterals.each(function () {
-                    var collateralId = $(this).val();
-                    selectedCollateralIds.push(collateralId);
-                });
-                if (selectedCollateralIds.length === 0) {
-                    toastr.error('Please select at least one collateral');
-                } else {
-                    $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
-
-                    $('#assignModal').modal('show');
-                }
-            });
-
-            $('#selectAllCheckbox').on('click', function () {
-                var isChecked = $(this).prop('checked');
-                $('.purple-checkbox').prop('checked', isChecked);
-            });
-
-            $('#caseCollaterals tbody').on('change', '.purple-checkbox', function () {
-                var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
-                $('#selectAllCheckbox').prop('checked', allChecked);
-            });
-
-            $('#assignForm').submit(function (e) {
-                e.preventDefault();
-
-                var formData = new FormData(this);
-
-                $.ajax({
-                    url: '/MMCase/PCEAssignTeamleader',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        toastr.success(response.message);
-                        location.reload();
-                        $('#assignModal').modal('hide');
-                    },
-                    error: function (error) {
-                        toastr.error("Unable to assign collateral");
-                        console.log(error);
-                    }
-                });
-            });
-        });
-    </script>
-    
+    }   
 }

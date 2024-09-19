@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Data
 {
-    public class SeedUsersRolesDistricts
+    public class SeedUsersRolesAndDistricts
     {
         public static void SeedData(IApplicationBuilder applicationBuilder)
         {

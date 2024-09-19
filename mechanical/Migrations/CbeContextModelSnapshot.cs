@@ -2086,6 +2086,44 @@ namespace mechanical.Migrations
                     b.Navigation("RMUser");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseComment", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany()
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("PCECase");
+                });
+
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany()
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "RMUser")
+                        .WithMany()
+                        .HasForeignKey("RMUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PCECase");
+
+                    b.Navigation("RMUser");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.PCECase", "NewCase")
