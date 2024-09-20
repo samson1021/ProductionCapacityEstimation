@@ -19,9 +19,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
         private readonly IMapper _mapper;
         private readonly ILogger<ProductionCaseAssignmentServices> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        //private readonly IProductionCaseTimeLineService _productionCaseTimeLineService;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
-
 
         public ProductionCaseAssignmentServices(CbeContext cbeContext, IMapper mapper, ILogger<ProductionCaseAssignmentServices> logger, IHttpContextAccessor httpContextAccessor, IPCECaseTimeLineService IPCECaseTimeLineService)
         {
@@ -29,7 +27,6 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
             _mapper = mapper;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
-            //_productionCaseTimeLineService = productionCaseTimeLineService;
             _IPCECaseTimeLineService = IPCECaseTimeLineService;
 
         }
@@ -122,7 +119,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
 
         public async Task<List<ProductionCaseAssignmentDto>> AssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync(); // BeginTransactionAsync(IsolationLevel.RepeatableRead); // ReadCommitted // ReadUncommitted // Serializable
             try
             { 
                 Guid PCECaseId = Guid.Empty;

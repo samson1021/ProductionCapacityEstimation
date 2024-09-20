@@ -16,7 +16,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
 
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
-            private readonly ILogger<PCECaseTimeLineService> _logger;
+        private readonly ILogger<PCECaseTimeLineService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
@@ -30,7 +30,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
 
         public async Task<PCECaseTimeLinePostDto> PCECaseTimeLine(PCECaseTimeLinePostDto pCECaseTimeLinePostDto)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            // using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             { 
                 var httpContext = _httpContextAccessor.HttpContext;
@@ -41,7 +41,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
 
                 await _cbeContext.PCECaseTimeLines.AddAsync(caseTimeline);
                 await _cbeContext.SaveChangesAsync(); 
-                await transaction.CommitAsync();
+                // await transaction.CommitAsync();
 
                 return _mapper.Map<PCECaseTimeLinePostDto>(caseTimeline);  
             }
@@ -49,7 +49,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating case timeline");
-                await transaction.RollbackAsync();
+                // await transaction.RollbackAsync();
                 throw new ApplicationException("An error occurred while creating case timeline.");
             }
         }

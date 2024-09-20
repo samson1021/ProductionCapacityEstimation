@@ -1204,6 +1204,40 @@ namespace mechanical.Migrations
                     b.ToTable("PCECaseComments");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PCECaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ScheduleDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PCECaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PCECaseSchedules");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1630,40 +1664,6 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionCaseAssignments");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseSchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ScheduleDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PCECaseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProductionCaseSchedules");
-                });
-
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2067,6 +2067,25 @@ namespace mechanical.Migrations
                     b.Navigation("PCECase");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseSchedule", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
+                        .WithMany()
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PCECase");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
                 {
                     b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
@@ -2174,25 +2193,6 @@ namespace mechanical.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductionCapacity");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseSchedule", b =>
-                {
-                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
-                        .WithMany()
-                        .HasForeignKey("PCECaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PCECase");
 
                     b.Navigation("User");
                 });
