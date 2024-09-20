@@ -104,7 +104,7 @@
                 selectedCollateralIds.push(collateralId);
             });
             if (selectedCollateralIds.length === 0) {
-                toastr.error('Please select at least one collateral');
+                toastr.error('Please select at least one PCE');
             } else {
                 $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
 
@@ -158,11 +158,11 @@
 
                             console.log(row.ProductionType);
                             console.log("welcome ");;
-                            if (row.ProductionType === 'Plant') {
+                            if (row.ProductionType === 'Manufacturing') {
                                 console.log(data.ProductionType);
-                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a class="text-info" href="@Url.Action("PlantEdit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
-                            } else {
                                 return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a class="text-info" href="@Url.Action("Edit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
+                            } else {
+                                return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details | </a><a class="text-info" href="@Url.Action("PlantEdit", "ProductionCapacity")?Id=' + data + '"> Edit | </a> <a class="delete-link" href="#" data-id=' + data + '><span class="text-danger"> Delete</span></a>';
                             }
                         }
                     }
@@ -292,8 +292,7 @@
             }
             if (MachineryInstalledPlace == "Private Owned LHC") {
                 var LHCNumber = getAttributeByName(formDataArray, 'LHCNumber').trim();
-                var OwnerName = getAttributeByName(formDataArray, 'OwnerName').trim();
-                // var UploadLHC = getAttributeByName(formDataArray, 'UploadLHC').trim();
+                var OwnerName = getAttributeByName(formDataArray, 'OwnerName').trim();                
                 var UploadLHC = $("#UploadLHC");
                 if (LHCNumber === "" || OwnerName === "" || (UploadLHC.get(0).files.length === 0)) {
                     toastr.error("Please fill in all required fields.");
@@ -301,7 +300,6 @@
                 }
             } else {
                 var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
-                // var ploadshaderentagreement = getAttributeByName(formDataArray, 'ploadshaderentagreement').trim();
                 var ploadshaderentagreement = $("#ploadshaderentagreement");
                 if (Industrialpark === "" || (ploadshaderentagreement.get(0).files.length === 0)) {
                     toastr.error("Please fill in all required fields.");

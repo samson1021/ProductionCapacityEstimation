@@ -461,7 +461,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                             PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
                             {
                                 CaseId = production.PCECaseId,
-                                Activity = $"<strong>production assigned for Re-evaluation for <a href='/UserManagment/Profile?id={user.Id}'>{user.Name}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {user.District.Name}.",
+                                Activity = $"<strong>production assigned for Re-estimation for <a href='/UserManagment/Profile?id={user.Id}'>{user.Name}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {user.District.Name}.",
                                 CurrentStage = "Maker Manager"
                             };
                         }
@@ -599,7 +599,7 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                             PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto() 
                             { 
                                 CaseId = production.PCECaseId, 
-                                Activity = $"<strong>PCE assigned for evaluation for <a href='/UserManagment/Profile?id={UserID}'>{UserName}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {districtName}.", 
+                                Activity = $"<strong>PCE assigned for estimation for <a href='/UserManagment/Profile?id={UserID}'>{UserName}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {districtName}.", 
                                 CurrentStage = "Maker Manager" 
                             }; 
                         } 
