@@ -30,7 +30,7 @@
             <div class="card-body">
                 <div class="row">
                     <form method="post" enctype="multipart/form-data" asp-action="PCEEdit" onsubmit="return validateForm()">
-
+                        <input asp-for="Id" hidden />
                         <div class="row">
                             <div class="form-group col-xl-10">
                                 <label asp-for="CaseNo">Case Number</label>

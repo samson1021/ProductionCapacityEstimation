@@ -79,6 +79,21 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
 
                 await _cbeContext.ProductionCapacities.AddAsync(production);
+
+
+                //////////
+               
+                var productionCaseAssignment1 = new ProductionCaseAssignment
+                {
+                    Id = Guid.NewGuid(),
+                    ProductionCapacityId = production.Id,
+                    UserId = UserId,
+                    AssignmentDate = new DateTime(2023, 6, 1),
+                    CompletionDate = null,
+                    Status = "New"
+                };
+                await _cbeContext.ProductionCaseAssignments.AddAsync(productionCaseAssignment1);
+                ///////
             
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {

@@ -10,6 +10,7 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
 {
@@ -589,7 +590,18 @@ namespace mechanical.Services.PCE.ProductionCaseAssignmentServices
                         { 
                             previousRM.Status = "Pending"; 
                             _cbeContext.ProductionCaseAssignments.Update(previousRM); 
-                        } 
+                        }
+                        //else
+                        //{
+                        //    var pceCaseAssignment = new ProductionCaseAssignment()
+                        //    {
+                        //        ProductionCapacityId = PCEId,
+                        //        UserId  = new Guid(production.CreatedById.ToString()),
+                        //        Status = "Pending",
+                        //        AssignmentDate = DateTime.Now
+                        //    };
+                        //    await _cbeContext.ProductionCaseAssignments.AddAsync(pceCaseAssignment);
+                        //}
                         ///####################################################################################################################################################### 
         
             

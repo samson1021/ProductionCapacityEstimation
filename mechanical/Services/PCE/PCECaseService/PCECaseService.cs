@@ -15,6 +15,7 @@ using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
@@ -321,16 +322,25 @@ namespace mechanical.Services.PCE.PCECaseService
                                                         (res.ProductionCapacities.Any(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New")
                                                          || !res.ProductionCapacities.Any()))
                                                     .CountAsync();
+
+            var allPCEs = await _cbeContext.ProductionCaseAssignments
+                                          .AsNoTracking()
+                                          .Include(res => res.ProductionCapacity)
+                                          .Where(res => res.UserId == userId)
+                                          .ToListAsync();
+            var pendingPCEs = allPCEs.Where(res => res.Status == "Pending").ToList();
+
             return new CreateNewCaseCountDto()
             {
                 NewPCECaseCount = newPCECaseCount,
-                NewPCECollateralCount = await _cbeContext.ProductionCapacities.Where(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
+                NewPCECollateralCount = await _cbeContext.ProductionCapacities
+                                                .Where(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
+                PendingPCECaseCount = pendingPCEs.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+                PendingPCECollateralCount = pendingPCEs.Count,
 
-                PendingPCECaseCount = await _cbeContext.PCECases
-                .Where(res => res.RMUserId == userId && res.ProductionCapacities
-                .Any(coll => (coll.CurrentStatus != "New" && coll.CurrentStatus != "Completed") && coll.CurrentStage != "Relation Manager")).CountAsync(),
-                PendingPCECollateralCount = await _cbeContext.ProductionCapacities.Where(coll => coll.CurrentStatus != "New" && coll.CurrentStatus != "Completed" && coll.CurrentStage != "Relation Manager").CountAsync(),
-
+                //PendingPCECollateralCount = await _cbeContext.ProductionCaseAssignments
+                //                            .Where(coll => coll.Status == "Pending" && coll.UserId== userId)
+                //                            .CountAsync(),
                 CompletedPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == userId && res.ProductionCapacities.Any(coll => coll.CurrentStage == "Relation Manager" && coll.CurrentStatus == "Completed")).CountAsync(),
                 CompletedPCECollateralCount = await _cbeContext.ProductionCapacities.Where(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "Completed").CountAsync(),
                 TotalPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == userId).CountAsync(),
@@ -530,7 +540,7 @@ namespace mechanical.Services.PCE.PCECaseService
                     .Where(res => res.RMUserId == userId)
                     .OrderByDescending(res => res.CreationDate).Take(5).ToListAsync();
 
-            var ff=3;
+          
             foreach (var cas in cases)
             {
                 var status = "New";
@@ -555,6 +565,10 @@ namespace mechanical.Services.PCE.PCECaseService
                 if(completcount == iterationcount)
                 {
                     status = "Completed";
+                }
+                if (iterationcount ==0)
+                {
+                    status = "New";
                 }
                 // cas.CurrentStatus = status;
                 cas.Status = status;
