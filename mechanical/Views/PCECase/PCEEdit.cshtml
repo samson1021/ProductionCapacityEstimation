@@ -29,62 +29,47 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <form method="post" enctype="multipart/form-data" asp-action="PCEEdit">
-                        <div class="row">
-                            <input asp-for="Id" hidden />
+                    <form method="post" enctype="multipart/form-data" asp-action="PCEEdit" onsubmit="return validateForm()">
 
+                        <div class="row">
                             <div class="form-group col-xl-10">
                                 <label asp-for="CaseNo">Case Number</label>
-                                <input asp-for="CaseNo" type="text" class="form-control" readonly>
+                                <div class="input-group" style="margin:0;">
+                                    <input asp-for="CaseNo" type="text" class="form-control col-lg-10" id="caseNumber" required readonly>
+                                </div>
                                 <span asp-validation-for="CaseNo" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xl-10">
-                                <label asp-for="ApplicantName" id="ApplicantNameLabel">Applicant Name</label>
-                                <input asp-for="ApplicantName" type="text" class="form-control" id="ApplicantName">
-                                <span asp-validation-for="ApplicantName" class="text-danger" id="ApplicantName-error"></span>
+                                <label asp-for="CustomerUserId">Customer ID</label>
+                                <input asp-for="CustomerUserId" type="number" class="form-control" id="CustomerUserId" maxlength="10" required>
+                                <span id="CustomerUserId-error" asp-validation-for="CustomerUserId" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xl-10">
-                                <label asp-for="CustomerUserId">User Customer ID</label>
-                                <input asp-for="CustomerUserId" type="text" class="form-control" id="CustomerUserId">
-                                <span asp-validation-for="CustomerUserId" class="text-danger" id="CustomerUserId-error"></span>
+                                <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name</label>
+                                <input asp-for="ApplicantName" type="text" class="form-control" id="applicantName" required oninvalid="handleInvalidInput()">
+                                <span id="applicantName-error" asp-validation-for="ApplicantName" class="text-danger"></span>
                             </div>
+
                         </div>
+
                         <div class="row">
                             <div class="form-group col-xl-10">
-                                <label asp-for="CustomerEmail">User Customer Email</label>
-                                <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerEmail">
+                                <label asp-for="CustomerEmail">Customer Email</label>
+                                <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerUserId">
                                 <span asp-validation-for="CustomerEmail" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="row">
-                            <button type="submit" class="col-xl-4 btn bg-purple">Edit</button>
+                            <button type="submit" class="col-xl-4  btn bg-purple">Register</button>
                         </div>
                     </form>
                 </div>
-              @*   <div class="row" style="margin-top:1.2rem;margin-bottom:0.2rem;">
-                    <table class="table table-bordered " style="border-top: 3px solid #6f42c1;">
-                        <thead>
-                            <tr>
-                                <th colspan="4"><h4>Edit Case Document</h4></th>
-                            </tr>
-                            <tr>
-                                <th>Document Name</th>
-                                <th>Document Catagory</th>
-                                <th>Document Type</th>
-                                <th>Document Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-              
-                                    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">There is no document related to this case (Click to Add new Document)</a></h6></td></tr>
-       
-                        </tbody>
-                    </table>
-                </div> *@
+         
             </div>
         </div>
     </section>
@@ -92,28 +77,42 @@
 
 
 
-<script>
-    document.getElementById("ApplicantName").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+    <script>
+   
 
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("ApplicantName-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("ApplicantName-error").textContent = "";
-        }
-    });
+        //this is the input validation for application name
+        document.getElementById("applicantName").addEventListener("input", function () {
+            var input = this.value;
+            var alphanumericRegex = /^[A-Za-z0-9]+$/;
 
-    document.getElementById("CustomerUserId").addEventListener("input", function () {
-        var input = this.value;
-        if (input.length !== 10) {
-            this.setCustomValidity("Customer ID must be exactly 10 digits.");
-            document.getElementById("CustomerUserId-error").textContent = "Customer ID must be exactly 10 digits.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("CustomerUserId-error").textContent = "";
-        }
-    });
-</script>
+            if (!alphanumericRegex.test(input)) {
+                this.setCustomValidity("Only alphanumeric characters are allowed.");
+                document.getElementById("applicantName-error").textContent = "Only alphanumeric characters are allowed.";
+            } else {
+                this.setCustomValidity("");
+                document.getElementById("applicantName-error").textContent = "";
+            }
+        });
+        //validate the customer Id length
+        document.getElementById("CustomerUserId").addEventListener("input", function () {
+            var input = this.value;
+            if (input.length !== 10) {
+                this.setCustomValidity("Customer ID must be exactly 10 digits.");
+                document.getElementById("CustomerUserId-error").textContent = "Customer ID must be exactly 10 digits.";
+            } else {
+                this.setCustomValidity("");
+                document.getElementById("CustomerUserId-error").textContent = "";
+            }
+        });
+        var applicantNameLabel = document.getElementById('applicantNameLabel');
+        var applicantNameInput = document.getElementById('applicantName');
+
+
+
+    </script>
+}
+

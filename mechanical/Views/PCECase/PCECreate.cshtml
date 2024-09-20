@@ -67,7 +67,7 @@
                             <span asp-validation-for="CustomerEmail" class="text-danger"></span>
                         </div>
                     </div>
-                 
+
                     <div class="row">
                         <button type="submit" class="col-xl-4  btn bg-purple">Register</button>
                     </div>
@@ -81,7 +81,8 @@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
     <script>
-        document.getElementById('CustomerUserId').addEventListener('change', function () {
+        document.getElementById('CustomerUserId').addEventListener('blur', function () {
+         
             // Show loading indicator
             showLoadingIndicator();
 
@@ -137,11 +138,11 @@
             document.body.style.pointerEvents = 'auto';
             document.body.style.opacity = '1';
         }
-        
-        
+
+
         $(document).ready(function () {
 
-          
+
 
             $("#GenerateCaseNo").on('click', function () {
                 var employeeId = @empId;
@@ -197,7 +198,6 @@
         var applicantNameInput = document.getElementById('applicantName');
 
 
-   
+
     </script>
 }
-

@@ -1142,6 +1142,10 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomerEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1158,10 +1162,6 @@ namespace mechanical.Migrations
 
                     b.Property<Guid>("RMUserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1214,6 +1214,9 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrentStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("PCECaseId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1221,9 +1224,6 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -2044,44 +2044,6 @@ namespace mechanical.Migrations
                     b.Navigation("BussinessLicence");
 
                     b.Navigation("District");
-
-                    b.Navigation("RMUser");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseComment", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
-                        .WithMany()
-                        .HasForeignKey("PCECaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("PCECase");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTerminate", b =>
-                {
-                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
-                        .WithMany()
-                        .HasForeignKey("PCECaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "RMUser")
-                        .WithMany()
-                        .HasForeignKey("RMUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PCECase");
 
                     b.Navigation("RMUser");
                 });
