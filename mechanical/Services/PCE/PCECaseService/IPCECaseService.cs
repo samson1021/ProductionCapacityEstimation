@@ -26,7 +26,7 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<PCECaseReturntDto> PCEEdit(Guid userId, PCECaseReturntDto caseDto);
 
         ////manufuctuer
-        Task<PCECaseReturntDto> GetProductionCaseDetail(Guid id);
+        Task<PCECaseReturntDto> GetPCECaseDetail(Guid id);
 
         Task<PCECaseReturntDto> GetCase(Guid userId, Guid id);
 

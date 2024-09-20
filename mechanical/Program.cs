@@ -45,7 +45,7 @@ using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityServices;
 using mechanical.Services.PCE.ProductionCorrectionService;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using mechanical.Services.PCE.PCECaseAssignmentServices;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
@@ -96,7 +96,7 @@ builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 builder.Services.AddScoped<IProductionCapacityServices, ProductionCapacityServices>();
 builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
-builder.Services.AddScoped<IProductionCaseAssignmentServices, ProductionCaseAssignmentServices>();
+builder.Services.AddScoped<IPCECaseAssignmentServices, PCECaseAssignmentServices>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
 
@@ -169,12 +169,21 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 {
     // Seed.SeedData(app);
     // SeedDistrict.SeedData(app);
-    SeedUsersRolesAndDistricts.SeedData(app);
+    // SeedUsersRolesAndDistricts.SeedData(app);
 }
 
-// Seed.SeedData(app);
-// SeedDistrict.SeedData(app);
-SeedUsersRolesAndDistricts.SeedData(app);
+// Apply database migrations automatically (if any)
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
+    context.Database.Migrate(); // Apply migrations
+    // Seed.SeedData(app);
+    // SeedDistrict.SeedData(app);
+    Console.WriteLine("Initializing Districts, Roles and Users...");
+    SeedUsersRolesAndDistricts.SeedData(app);
+    Console.WriteLine("Finished initializing Districts, Roles and Users.");
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

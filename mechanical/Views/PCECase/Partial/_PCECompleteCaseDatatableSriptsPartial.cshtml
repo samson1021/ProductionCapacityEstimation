@@ -62,7 +62,7 @@
                     initializeDataTable(data);
                 },
                 error: function (error) {
-                    toastr.error("Failed to load collaterals");
+                    toastr.error("Failed to load productions");
                     console.log(error);
                 }
             });
@@ -148,7 +148,7 @@
                 toastr.success(response.message);
                 $('#SendForEvaluationModal').modal('hide');
                 $('#assignForm')[0].reset();
-                location.reload();
+                loadCollaterals();
             },
             error: function (xhr, textStatus, errorThrown) {
                 var error = xhr.responseJSON;

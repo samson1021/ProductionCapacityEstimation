@@ -57,7 +57,6 @@
                     var PCECaseComments = data.PCECaseComments;
                     var countComment = data.PCECaseComments.length;
                     $(".CommentBage").text(countComment);
-                    console.log(countComment);
                     var users = [];
 
                     if (PCECaseComments && PCECaseComments.length > 0) {
@@ -157,7 +156,6 @@
                 method: 'POST',
                 data: requestData,
                 success: function (response) {
-                    console.log(response);
                     $('#messageinput').val('');
                     var chatMessages = $('.direct-chat-messages');
                     var scrollHeight = chatMessages[0].scrollHeight;

@@ -4,15 +4,10 @@
 @{
     var myCase = ViewData["PCECase"] as PCECaseReturntDto;
     var caseId =  ViewData["PCECaseId"] as Guid? ?? Guid.Empty;
-    //var userId = ViewData["CurrentUser"];
     var currentUser = ViewData["CurrentUser"] as CreateUser;
-    Guid userId = currentUser.Id; // Access the Id property
-
     var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
-    
+    Guid userId = currentUser.Id;     
 }
-
-
 
 <section class="content-header">
     <h4>Valuation Schedule</h4>
@@ -24,94 +19,97 @@
             <div class="box-body" id="CaseSchedule">
                 @{
 
-                    if (caseSchedule.Count() == 0)
+                    if (caseSchedule != null)
                     {
-
-                        if (@currentUser.Role.Name != "Maker Officer")
+                        if (caseSchedule.Count() == 0)
                         {
-                            <div class="text-center">
-                                <h6>Valuation Schedule Is Not Set Yet For This PCE Case </h6>
-                            </div>
+
+                            if (@currentUser.Role.Name != "Maker Officer")
+                            {
+                                <div class="text-center">
+                                    <h6>Valuation Schedule Is Not Set Yet For This PCE Case </h6>
+                                </div>
+                            }
+                            else
+                            {
+                                @using (Html.BeginForm("CreateSchedule", "PCESchedule", FormMethod.Post, new { id = "pcescheduleForm" }))
+                                {
+                                    <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input asp-for="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" required />
+                                        </div>
+                                        <span class="text-danger" id="dateError"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn bg-purple btn-sm">Submit</button>
+                                    </div>
+                                }
+                            }
+                        
                         }
                         else
                         {
-                            @using (Html.BeginForm("CreateSchedule", "PCESchedule", FormMethod.Post, new { id = "pcescheduleForm" }))
+                            @foreach (var caseSched in caseSchedule)
                             {
-                                <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <input asp-for="ScheduleDate" type="datetime-local" class="form-control" required />
+                                <div class="post clearfix" style="border-bottom: 1px solid rgb(173, 181, 189); color: rgb(102, 102, 102); margin-bottom: 15px; padding-bottom: 15px;">
+                                    <div class="user-block">
+                                        <img class="img-circle img-bordered-sm" src="/img/avatar5.png" alt="User Image">
+                                        <span class="username"><a href="@Url.Action("Profile","UserManagment")?id=@caseSched.User.Id">@caseSched.User.Name</a> </span>
+                                        <span class="description">@caseSched.CreatedAt</span>
                                     </div>
-                                    <span class="text-danger" id="dateError"></span>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn bg-purple btn-sm">Submit</button>
-                                </div>
-                            }
-                        }
-                       
-                    }
-                    else
-                    {
-                        @foreach (var caseSched in caseSchedule)
-                        {
-                            <div class="post clearfix" style="border-bottom: 1px solid rgb(173, 181, 189); color: rgb(102, 102, 102); margin-bottom: 15px; padding-bottom: 15px;">
-                                <div class="user-block">
-                                    <img class="img-circle img-bordered-sm" src="/img/avatar5.png" alt="User Image">
-                                    <span class="username"><a href="@Url.Action("Profile","UserManagment")?id=@caseSched.User.Id">@caseSched.User.Name</a> </span>
-                                    <span class="description">@caseSched.CreatedAt</span>
-                                </div>
-                                <p id="ScheduleDate">Schedule Date: @caseSched.ScheduleDate</p>
-                                @if (@caseSched.Status == "Approved")
-                                {
-                                    <p>Status: <span class="text-success">@caseSched.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
-                                }
-                                else if (@caseSched.Status == "Rejected")
-                                {
-                                    <p>Status: <span class="text-danger">Another date is proposed</span>  <i class="fas fa-times-circle text-danger"></i></p>
-                                }
-                                else
-                                {
-                                    <p>Status: <span class="text-info">@caseSched.Status</span>  <i class="fas fa-spinner text-info"></i></p>
-                                }
-                                @{
-                                    if (caseSched.Reason != null)
+                                    <p id="ScheduleDate">Schedule Date: @caseSched.ScheduleDate</p>
+                                    @if (@caseSched.Status == "Approved")
                                     {
-                                        <p>Reason: <span class="text-danger">@caseSched.Reason</span></p>
+                                        <p>Status: <span class="text-success">@caseSched.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
                                     }
-                                }
-                                @{
-
-                                    if (currentUser.Role.Name == "Maker Manager" || currentUser.Role.Name == "Checker TeamLeader" || currentUser.Role.Name == "District Valuation Manager" || currentUser.Role.Name == "Maker TeamLeader" || currentUser.Role.Name == "Checker Officer")
+                                    else if (@caseSched.Status == "Rejected")
                                     {
-                                        // <p>Status: <span class="text-info">@caseSched.Status</span>  <i class="fas fa-spinner text-info"></i></p>
-
+                                        <p>Status: <span class="text-danger">Another date is Proposed</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                     }
                                     else
                                     {
-                                         if (caseSched.User.Id != userId && caseSched.Status == "proposed")
-                                            {
-                                                <div class="btn-group">
-                                                    <input type="hidden" id="CaseScheduleId" name="Id" value="@caseSched.Id" />
-                                                    <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addCollateralModal">
-                                                        <i class="fas fa-check-circle"></i> Accept
-                                                    </button>
-                                                    <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
-                                                        <i class="fas fa-plus-circle"></i> Propose New
-                                                    </button>
-                                                </div>
-                                            }
-                                            else if (caseSched.User.Id == userId && caseSched.Status == "proposed")
-                                            {
-                                                <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseSched.Id" />
-                                                <button id="UpdateSchedule" class="update-link btn btn-sm btn-outline-primary">Update</button>
-                                            }
+                                        <p>Status: <span class="text-info">@caseSched.Status</span>  <i class="fas fa-spinner text-info"></i></p>
                                     }
-                                   
-                                }
+                                    @{
+                                        if (caseSched.Reason != null)
+                                        {
+                                            <p>Reason: <span class="text-danger">@caseSched.Reason</span></p>
+                                        }
+                                    }
+                                    @{
+
+                                        if (currentUser.Role.Name == "Maker Manager" || currentUser.Role.Name == "Checker TeamLeader" || currentUser.Role.Name == "District Valuation Manager" || currentUser.Role.Name == "Maker TeamLeader" || currentUser.Role.Name == "Checker Officer")
+                                        {
+                                            // <p>Status: <span class="text-info">@caseSched.Status</span>  <i class="fas fa-spinner text-info"></i></p>
+
+                                        }
+                                        else
+                                        {
+                                            if (caseSched.User.Id != userId && caseSched.Status == "Proposed")
+                                                {
+                                                    <div class="btn-group">
+                                                        <input type="hidden" id="CaseScheduleId" name="Id" value="@caseSched.Id" />
+                                                        <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal">
+                                                            <i class="fas fa-check-circle"></i> Accept
+                                                        </button>
+                                                        <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal">
+                                                            <i class="fas fa-plus-circle"></i> Propose New
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else if (caseSched.User.Id == userId && caseSched.Status == "Proposed")
+                                                {
+                                                    <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseSched.Id" />
+                                                    <button id="UpdateSchedule" class="update-link btn btn-sm btn-outline-primary">Update</button>
+                                                }
+                                        }
+                                    
+                                    }
 
 
-                            </div>
+                                </div>
+                            }
                         }
                     }
                 }
@@ -136,7 +134,7 @@
                     <input type="hidden" name="PCECaseId" value="@myCase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" class="form-control" />
+                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local"  value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group">
@@ -169,7 +167,7 @@
                     <div class="form-group">
 
                         <div class="input-group">
-                            <input name="ScheduleDate" type="datetime-local" class="form-control" />
+                            <input name="ScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
                         </div>
                         <span class="text-danger"></span>
                     </div>

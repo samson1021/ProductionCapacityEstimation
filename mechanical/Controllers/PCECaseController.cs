@@ -12,15 +12,14 @@ using mechanical.Services.UploadFileService;
 
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
-using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
-using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCECaseAssignmentServices;
 
 namespace mechanical.Controllers.PCE
 {
@@ -37,10 +36,9 @@ namespace mechanical.Controllers.PCE
         private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _pcecaseTermnateService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentService;
-       
+        private readonly IPCECaseAssignmentServices _pceCaseAssignmentService;
 
-        public PCECaseController(CbeContext cbeContext, IMOPCECaseService IMOPCECaseService, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IProductionCaseAssignmentServices ProductionCaseAssignmentService, IUploadFileService uploadFileService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, IMOPCECaseService IMOPCECaseService, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService pcecaseTermnateService, IPCECaseAssignmentServices PCECaseAssignmentService, IUploadFileService uploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _mailService = mailService;
@@ -50,7 +48,8 @@ namespace mechanical.Controllers.PCE
             _PCEEvaluationService = PCEEvaluationService;
             _PCECaseScheduleService = PCECaseScheduleService;
             _pcecaseTermnateService = pcecaseTermnateService;
-            _productionCaseAssignmentService = ProductionCaseAssignmentService;
+            _pceCaseAssignmentService = PCECaseAssignmentService;
+            _pceCaseAssignmentService = PCECaseAssignmentService;
         }
 
         [HttpGet]
@@ -351,29 +350,7 @@ namespace mechanical.Controllers.PCE
 
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> MOVSummary(Guid CaseId)
-        {
-            var cases = await _cbeContext.PCECases.FindAsync(CaseId);
-            ViewData["cases"] = cases;
-            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
-            ViewData["collaterals"] = collaterals;
-            return View();
-        }
-        [HttpGet]
-        public async Task<IActionResult> MOVReport(Guid CaseId)
-        {
-            var cases = await _cbeContext.PCECases.FindAsync(CaseId);
-            var MotorVehicles = await _cbeContext.ProductionCapacities.Include(res => res.EvaluatorUserID).Include(res => res.CheckerUserID).ToListAsync();
-            var collaterals = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
-            var caseSchedule = await _cbeContext.PCECaseSchedules.Where(res => res.PCECaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
-            ViewData["cases"] = cases;
-            ViewData["collaterals"] = collaterals;
-            ViewData["MotorVehicles"] = MotorVehicles;
-            ViewData["caseSchedule"] = caseSchedule;
-            return View();
-        }
-
+     
         [HttpPost]
         public async Task<IActionResult> SendForValuation(string selectedCollateralIds, string CenterId)
         {
@@ -381,7 +358,7 @@ namespace mechanical.Controllers.PCE
             var userId = base.GetCurrentUserId();
             try
             {
-                await _productionCaseAssignmentService.SendProductionForValuation(selectedCollateralIds, CenterId);
+                await _pceCaseAssignmentService.SendProductionForValuation(selectedCollateralIds, CenterId);
                 var response = new { message = "PCE Estimation assigned successfully" };
                 return Ok(response);
             }
@@ -398,7 +375,7 @@ namespace mechanical.Controllers.PCE
             var userId = base.GetCurrentUserId();
             try
             {
-                await _productionCaseAssignmentService.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
+                await _pceCaseAssignmentService.SendProductionForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
                 var response = new { message = "PCE Reestimation assigned successfully" };
                 return Ok(response);
             }

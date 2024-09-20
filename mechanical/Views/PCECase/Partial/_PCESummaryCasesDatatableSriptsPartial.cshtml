@@ -79,7 +79,6 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    console.log("Returned data:", data.length, data);
                     if ($.fn.DataTable.isDataTable('#PCECaseProductions')) {
                         $('#PCECaseProductions').DataTable().destroy();
                     }

@@ -1,6 +1,6 @@
-﻿namespace mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto
+﻿namespace mechanical.Models.PCE.Dto.PCECaseAssignmentDto
 {
-    public class ProductionCaseAssignmentDto
+    public class PCECaseAssignmentDto
     {
         public required Guid PCECaseId { get; set; }
         public required Guid UserId { get; set; }

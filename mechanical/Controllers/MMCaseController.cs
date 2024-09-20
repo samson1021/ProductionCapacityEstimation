@@ -15,7 +15,7 @@ using mechanical.Services.PCE.PCECaseCommentService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
+using mechanical.Services.PCE.PCECaseAssignmentServices;
 
 namespace mechanical.Controllers
 {
@@ -32,12 +32,12 @@ namespace mechanical.Controllers
         private readonly IPCECaseCommentService _PCEcaseCommentService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
+        private readonly IPCECaseAssignmentServices _pceCaseAssignmentServices;
 
 
 
 
-        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment, IPCECaseTerminateService PCECaseTerminateService, IPCECaseCommentService PCEcaseCommentService)
+        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseAssignmentServices pceCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment, IPCECaseTerminateService PCECaseTerminateService, IPCECaseCommentService PCEcaseCommentService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
@@ -46,7 +46,7 @@ namespace mechanical.Controllers
             _caseTermnateService = caseTerminateService;
             _PCECaseService = PCECaseService;
             _PCECaseScheduleService = PCECaseScheduleService;
-            _productionCaseAssignmentServices = productionCaseAssignmentServices;
+            _pceCaseAssignmentServices = pceCaseAssignmentServices;
             _MOPCECaseService = MOPCECaseService;
             _PCECaseTerminateService = PCECaseTerminateService;
             _PCEcaseCommentService = PCEcaseCommentService;
@@ -132,7 +132,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> PCEAssignTeamleader(string selectedPCEIds, string employeeId)
         {
-            await _productionCaseAssignmentServices.AssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            await _pceCaseAssignmentServices.AssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
             var response = new { message = "Productions assigned to MTL successfully" };
             return Ok(response);
         }
@@ -140,7 +140,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> PCEReAssignTeamleader(string selectedPCEIds, string employeeId)
         {
-            await _productionCaseAssignmentServices.ReAssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            await _pceCaseAssignmentServices.ReAssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
             var response = new { message = "Productions re-assigned to MTL successfully" };
             return Ok(response);
         }

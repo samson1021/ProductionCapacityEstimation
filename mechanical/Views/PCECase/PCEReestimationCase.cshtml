@@ -217,6 +217,7 @@
                         toastr.success(response.message);
                         loadCollaterals();
                         $('#SendForEvaluationModal').modal('hide');
+                        $('#assignForm')[0].reset();
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         var error = xhr.responseJSON;

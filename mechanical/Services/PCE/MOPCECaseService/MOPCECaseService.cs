@@ -16,7 +16,7 @@ using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
+using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.PCEEvaluationService;
 
@@ -53,7 +53,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
         
         public async Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status = null, int? Limit = null)
         {
-            var PCECaseAssignmentsQuery = _cbeContext.ProductionCaseAssignments
+            var PCECaseAssignmentsQuery = _cbeContext.PCECaseAssignments
                                                     .AsNoTracking()
                                                     .Include(ca => ca.ProductionCapacity)
                                                     .ThenInclude(pc => pc.PCECase)
@@ -74,7 +74,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
             var productionCapacities = await _cbeContext.ProductionCapacities
                                                         .AsNoTracking()
                                                         .Where(pc => UniquePCECases.Select(c => c.Id).Contains(pc.PCECaseId) &&
-                                                                    _cbeContext.ProductionCaseAssignments
+                                                                    _cbeContext.PCECaseAssignments
                                                                                 .Any(ca => ca.ProductionCapacityId == pc.Id && ca.UserId == UserId))
                                                         .ToListAsync();
 
@@ -98,7 +98,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
 
         public async Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId)
         {
-            var allPCEs = await _cbeContext.ProductionCaseAssignments
+            var allPCEs = await _cbeContext.PCECaseAssignments
                                             .AsNoTracking()
                                             .Include(res => res.ProductionCapacity)
                                             .Where(res => res.UserId == UserId)
@@ -141,20 +141,20 @@ namespace mechanical.Services.PCE.MOPCECaseService
         public async Task<IEnumerable<ReturnProductionDto>> GetPCEs(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
             // var query = _cbeContext.ProductionCapacities.AsNoTracking()
-            //                                             .Where(pc => pc.ProductionCaseAssignments
+            //                                             .Where(pc => pc.PCECaseAssignments
             //                                             .Any(pca => pca.UserId == UserId || pc.EvaluatorUserID == UserId));
 
             var query = _cbeContext.ProductionCapacities
                                     .AsNoTracking()
                                     .Include(pc => pc.PCECase)
                                     .Join(
-                                        _cbeContext.ProductionCaseAssignments,
+                                        _cbeContext.PCECaseAssignments,
                                         pc => pc.Id,
                                         pca => pca.ProductionCapacityId,
-                                        (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
+                                        (pc, pca) => new { ProductionCapacity = pc, PCECaseAssignment = pca }
                                         )
-                                        .Where(x => (x.ProductionCaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
-                                                && (Status == null || Status == "All" || x.ProductionCaseAssignment.Status == Status))
+                                        .Where(x => (x.PCECaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
+                                                && (Status == null || Status == "All" || x.PCECaseAssignment.Status == Status))
                                     .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)
@@ -190,13 +190,13 @@ namespace mechanical.Services.PCE.MOPCECaseService
             var query = _cbeContext.ProductionCapacities
                 .AsNoTracking()
                 .Join(
-                    _cbeContext.ProductionCaseAssignments,
+                    _cbeContext.PCECaseAssignments,
                     pc => pc.Id,
                     pca => pca.ProductionCapacityId,
-                    (pc, pca) => new { ProductionCapacity = pc, ProductionCaseAssignment = pca }
+                    (pc, pca) => new { ProductionCapacity = pc, PCECaseAssignment = pca }
                 )
-                .Where(x => (x.ProductionCaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
-                        && (Status == null || Status == "All" || x.ProductionCaseAssignment.Status == Status))
+                .Where(x => (x.PCECaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
+                        && (Status == null || Status == "All" || x.PCECaseAssignment.Status == Status))
                 .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)
@@ -312,7 +312,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
         public async Task<IEnumerable<PCENewCaseDto>> GetRemarkedPCECases(Guid UserId)
         {
 
-            var PCECaseAssignments = await _cbeContext.ProductionCaseAssignments
+            var PCECaseAssignments = await _cbeContext.PCECaseAssignments
                                                         .Include(res => res.ProductionCapacity)
                                                         .ThenInclude(res => res.PCECase)
                                                         // .ThenInclude(res => res.PCECaseOriginator)

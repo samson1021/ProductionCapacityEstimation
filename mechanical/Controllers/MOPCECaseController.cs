@@ -23,7 +23,6 @@ using mechanical.Services.MailService;
 using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
-// using mechanical.Services.PCE.ProductionCaseTerminateService;
 
 namespace mechanical.Controllers
 {
@@ -38,7 +37,6 @@ namespace mechanical.Controllers
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
         public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IPCECaseScheduleService PCECaseScheduleService, IMailService MailService, IPCECaseTerminateService PCECaseTerminateService)
-        // public MOPCECaseController(ILogger<MOPCECaseController> Logger, IMOPCECaseService MOPCECaseService, IProductionCaseTerminateService ProductionCaseTerminateService, IPCECaseScheduleService PCECaseScheduleService, IMailService MailService)
         {
             _logger = Logger;
             _MailService = MailService;    
@@ -105,16 +103,14 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyPCECases");
             }
-            //  var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            // var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
+            var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
-            // ViewData["PCECaseTerminate"] = pceCaseTerminate;
-            // ViewData["PCECaseSchedule"] = pceCaseSchedule;
-            ViewData["PCECaseTerminate"] = null;
-            ViewData["PCECaseSchedule"] = null;
+            ViewData["PCECaseTerminate"] = pceCaseTerminate;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
 

@@ -101,7 +101,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Detail(Guid id)
         {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var loanCase = await _pCECaseService.GetProductionCaseDetail(response.PCECaseId);
+            var loanCase = await _pCECaseService.GetPCECaseDetail(response.PCECaseId);
 
             var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
             if (restimation != null)
@@ -300,9 +300,9 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> HandleRemark(Guid ProductionCapacityId, Guid EvaluatorId, String RemarkType, CreateFileDto UploadFile)
         {
-            var productioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorId).FirstOrDefaultAsync();
-            productioncaseAssignment.Status = "Remark";
-            _cbeContext.Update(productioncaseAssignment);
+            var pceCaseAssignment = await _cbeContext.PCECaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorId).FirstOrDefaultAsync();
+            pceCaseAssignment.Status = "Remark";
+            _cbeContext.Update(pceCaseAssignment);
 
             var production = await _cbeContext.ProductionCapacities.Where(res => res.Id == ProductionCapacityId).FirstOrDefaultAsync();
             if (RemarkType == "Verfication")

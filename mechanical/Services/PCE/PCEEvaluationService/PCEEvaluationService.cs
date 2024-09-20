@@ -21,7 +21,7 @@ using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Models.Dto.Correction;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
+using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
@@ -324,13 +324,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid UserId, string Status, DateTime? CompletionDate = null)
         {
-            var assignment = await _cbeContext.ProductionCaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
+            var assignment = await _cbeContext.PCECaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
 
             if (assignment != null)
             {
                 assignment.Status = Status;
                 assignment.CompletionDate = CompletionDate;
-                _cbeContext.ProductionCaseAssignments.Update(assignment);
+                _cbeContext.PCECaseAssignments.Update(assignment);
             }
         }
 

@@ -2,7 +2,7 @@
 
 namespace mechanical.Models.PCE.Entities
 {
-    public class ProductionCaseAssignment
+    public class PCECaseAssignment
     {
         public Guid Id { get; set; }
         public required Guid ProductionCapacityId { get; set; }
