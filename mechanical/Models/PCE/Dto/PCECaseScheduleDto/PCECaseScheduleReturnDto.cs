@@ -1,8 +1,8 @@
 ﻿using mechanical.Models.Entities;
 
-namespace mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+namespace mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 
-public class ProductionCaseScheduleReturnDto
+public class PCECaseScheduleReturnDto
 {
     public Guid Id { get; set; }
     public DateTime ScheduleDate { get; set; }

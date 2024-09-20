@@ -8,36 +8,36 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.CaseAssignmentService;
 
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Services.PCE.ProductionCaseScheduleService;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCECaseCommentService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
-using mechanical.Services.PCE.PCECaseCommentService;
-using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Services.PCE.ProductionCapacityServices;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 
 namespace mechanical.Controllers
 {
     public class MMCaseController : BaseController
     {
         private readonly ICaseService _caseService;
-        private readonly IMMCaseService _mMCaseService;
-        private readonly ICaseAssignmentService _caseAssignmentService;
+        private readonly IMMCaseService _mMCaseService;  
         private readonly ICaseScheduleService _caseScheduleService;
-        private readonly ICaseTerminateService _caseTermnateService;
-        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
+        private readonly ICaseTerminateService _caseTermnateService;  
+        private readonly ICaseAssignmentService _caseAssignmentService; 
+        
         private readonly IPCECaseService _PCECaseService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
-        private readonly IMOPCECaseService _MOPCECaseService;       
-        private readonly IPCECaseTerminateService _PCECaseTerminateService;
+        private readonly IMOPCECaseService _MOPCECaseService;  
         private readonly IPCECaseCommentService _PCEcaseCommentService;
+        private readonly IPCECaseScheduleService _PCECaseScheduleService;
+        private readonly IPCECaseTerminateService _PCECaseTerminateService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
 
 
 
 
-        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment, IPCECaseTerminateService PCECaseTerminateService, IPCECaseCommentService PCEcaseCommentService)
+        public MMCaseController(ICaseService caseService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment, IPCECaseTerminateService PCECaseTerminateService, IPCECaseCommentService PCEcaseCommentService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
@@ -45,7 +45,7 @@ namespace mechanical.Controllers
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTerminateService;
             _PCECaseService = PCECaseService;
-            _ProductionCaseScheduleService = ProductionCaseScheduleService;
+            _PCECaseScheduleService = PCECaseScheduleService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
             _MOPCECaseService = MOPCECaseService;
             _PCECaseTerminateService = PCECaseTerminateService;
@@ -201,13 +201,13 @@ namespace mechanical.Controllers
             }
 
             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
 
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
             ViewData["PCECaseTerminate"] = PCECaseTerminate;
-            ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
 
@@ -255,7 +255,7 @@ namespace mechanical.Controllers
         {
             var pceCase = await _PCECaseService.GetCaseDetail(Id);
             var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            var pceCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             
             if (pceCase == null) 
             { 
@@ -264,7 +264,7 @@ namespace mechanical.Controllers
             
             ViewData["PCECase"] = pceCase;
             ViewData["PCECaseTerminate"] = pceCaseTerminate;
-            ViewData["ProductionCaseSchedule"] = pceCaseSchedule;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
 
             return View();
         }

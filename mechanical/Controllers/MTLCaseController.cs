@@ -1,20 +1,17 @@
-﻿using mechanical.Services.CaseAssignmentService;
-using mechanical.Services.CaseScheduleService;
-using mechanical.Services.CaseServices;
-using mechanical.Services.CaseTerminateService;
-using mechanical.Services.MMCaseService;
-using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.ProductionCaseScheduleService;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
-using mechanical.Services.PCE.MOPCECaseService;
-using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.ProductionCaseScheduleService;
-using mechanical.Services.PCE.ProductionCaseAssignmentServices;
-using mechanical.Services.PCE.MOPCECaseService;
+﻿using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+
+using mechanical.Services.CaseServices;
+using mechanical.Services.MMCaseService;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.CaseAssignmentService;
+
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
-using mechanical.Services.PCE.PCECaseTerminateService;
+using mechanical.Services.PCE.ProductionCaseAssignmentServices;
 
 namespace mechanical.Controllers
 {
@@ -22,32 +19,29 @@ namespace mechanical.Controllers
     {
         private readonly ICaseService _caseService;
         private readonly IMMCaseService _mmCaseService;
-        private readonly ICaseAssignmentService _caseAssignmentService;
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
-        private readonly IPCECaseService _PCECaseService;
-        private readonly IProductionCaseScheduleService _ProductionCaseScheduleService;
-        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
-        private readonly IMOPCECaseService _MOPCECaseService;
-        private readonly IPCECaseTerminateService _PCECaseTerminateService;
+        private readonly ICaseAssignmentService _caseAssignmentService;
 
-        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, IPCECaseService PCECaseService, IProductionCaseScheduleService ProductionCaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService, IPCECaseTerminateService PCECaseTerminateService)
+        private readonly IPCECaseService _PCECaseService;
+        private readonly IMOPCECaseService _MOPCECaseService;
+        private readonly IPCECaseScheduleService _PCECaseScheduleService;
+        private readonly IPCECaseTerminateService _PCECaseTerminateService;
+        private readonly IProductionCaseAssignmentServices _productionCaseAssignmentServices;
+
+        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IProductionCaseAssignmentServices productionCaseAssignmentServices, IMOPCECaseService MOPCECaseService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService, IPCECaseTerminateService PCECaseTerminateService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
             _mmCaseService = mMCaseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
+
             _PCECaseService = PCECaseService;
-            _ProductionCaseScheduleService = ProductionCaseScheduleService;
-            _productionCaseAssignmentServices = productionCaseAssignmentServices;
             _MOPCECaseService = MOPCECaseService;
+            _PCECaseScheduleService = PCECaseScheduleService;
             _PCECaseTerminateService = PCECaseTerminateService;
-            _PCECaseService = PCECaseService;
-            _ProductionCaseScheduleService = ProductionCaseScheduleService;
             _productionCaseAssignmentServices = productionCaseAssignmentServices;
-            _MOPCECaseService = MOPCECaseService;
-            _PCECaseTerminateService = PCECaseTerminateService;
         }
 
         [HttpGet]
@@ -200,13 +194,13 @@ namespace mechanical.Controllers
                 return RedirectToAction("MyPCECases");
             }
             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            var ProductionCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var PCECaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
             ViewData["PCECaseId"] = pceCase.Id;
             ViewData["PCECase"] = pceCase;
             ViewData["PCECaseTerminate"] = PCECaseTerminate;
-            ViewData["ProductionCaseSchedule"] = ProductionCaseSchedule;
+            ViewData["PCECaseSchedule"] = PCECaseSchedule;
             ViewData["Title"] = Status + " PCE Case Details";             
             ViewBag.Status = Status;
 
@@ -254,7 +248,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> MyPCECase(Guid Id)
         {
             var pceCase = await _PCECaseService.GetCaseDetail(Id);
-            var pceCaseSchedule = await _ProductionCaseScheduleService.GetProductionCaseSchedules(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
             
             if (pceCase == null) 
@@ -264,7 +258,7 @@ namespace mechanical.Controllers
 
             ViewData["PCECase"] = pceCase;
             ViewData["PCECaseTerminate"] = pceCaseTerminate;
-            ViewData["ProductionCaseSchedule"] = pceCaseSchedule;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
 
             return View();
         }

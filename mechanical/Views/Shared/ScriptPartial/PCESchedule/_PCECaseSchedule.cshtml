@@ -1,6 +1,6 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
-@using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto
-@model mechanical.Models.PCE.Dto.ProductionCaseScheduleDto.ProductionCaseSchedulePostDto
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto
+@model mechanical.Models.PCE.Dto.PCECaseScheduleDto.PCECaseSchedulePostDto
 @{
     var myCase = ViewData["PCECase"] as PCECaseReturntDto;
     var caseId =  ViewData["PCECaseId"] as Guid? ?? Guid.Empty;
@@ -8,7 +8,7 @@
     var currentUser = ViewData["CurrentUser"] as CreateUser;
     Guid userId = currentUser.Id; // Access the Id property
 
-    var caseSchedule = ViewData["ProductionCaseSchedule"] as IEnumerable<ProductionCaseScheduleReturnDto>;
+    var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
     
 }
 

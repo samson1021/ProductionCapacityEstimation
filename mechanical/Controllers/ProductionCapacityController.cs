@@ -1,23 +1,22 @@
-﻿using mechanical.Controllers.PCE;
-using mechanical.Data;
-using mechanical.Models.Enum;
-using mechanical.Models;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.CaseServices;
-using mechanical.Services.PCE.PCECaseService;
-//using mechanical.Services.ProductionCaseService;
-using mechanical.Services.UploadFileService;
+﻿using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.Dto.CollateralDto;
-using mechanical.Models.PCE.Enum.ProductionCapacity;
-using mechanical.Services.PCE.PCEEvaluationService;
 using DocumentFormat.OpenXml.Bibliography;
+
+using mechanical.Data;
+using mechanical.Models;
+using mechanical.Models.Enum;
+using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Services.UploadFileService;
+
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Enum.ProductionCapacity;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+// using mechanical.Controllers.PCE;
+using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCEEvaluationService;
+using mechanical.Services.PCE.ProductionCapacityServices;
 
 
 namespace mechanical.Controllers

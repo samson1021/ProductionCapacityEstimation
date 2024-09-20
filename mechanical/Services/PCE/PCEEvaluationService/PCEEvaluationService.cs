@@ -59,7 +59,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 UpdatePCEStatus(pce, "Pending", "Maker Officer");
                 await UpdateCaseAssignmentStatus(pce.Id, pceEvaluation.EvaluatorId, "Pending");
 
-                await LogPCECaseTimeline(pce, "PCE Case Evaluation Created and Pending.");
+                await LogPCECaseTimeline(pce, "Production valuation is created and pending.");
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -85,6 +85,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var filesToDelete = await HandleDeletedFiles(Dto.DeletedFileIds);
                 await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
+
+                await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is updated.");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -112,7 +114,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);
                 await UpdatePCEStatusAfterDeletion(pceEvaluation);
 
-                await LogPCECaseTimeline(pceEvaluation.PCE, "PCE Case Evaluation is retracted.");
+                await LogPCECaseTimeline(pceEvaluation.PCE, "The current production valuation is retracted.");
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -135,7 +137,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Maker Officer");
 
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
-                await LogPCECaseTimeline(pceEvaluation.PCE, "PCE Case Evaluation is completed to Relation Manager.");
+                await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();

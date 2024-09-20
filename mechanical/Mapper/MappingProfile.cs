@@ -17,20 +17,17 @@ using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
 
 /////
-using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
 using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
-using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
-using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
-using mechanical.Models.PCE.Dto.PCECaseCommentDto;
-using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
-using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
-using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 /////
 
 namespace mechanical.Mapper
@@ -192,8 +189,8 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
             ////////////
 
-            CreateMap<ProductionCaseSchedulePostDto, ProductionCaseSchedule>();
-            CreateMap<ProductionCaseSchedule, ProductionCaseScheduleReturnDto>();
+            CreateMap<PCECaseSchedulePostDto, PCECaseSchedule>();
+            CreateMap<PCECaseSchedule, PCECaseScheduleReturnDto>();
 
 
             /////////////

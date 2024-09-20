@@ -1,11 +1,11 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Dto.PCECaseTerminateDto
-@using mechanical.Models.PCE.Dto.ProductionCaseScheduleDto;
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 @using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
 @{
     var myCase = ViewData["PCECase"] as PCECaseReturntDto;
-    var caseSchedule = ViewData["ProductionCaseSchedule"] as IEnumerable<ProductionCaseScheduleReturnDto>;
+    var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
     var caseTerminate = ViewData["PCECaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
    
@@ -48,22 +48,22 @@
                                     <span class="username"><a href="@Url.Action("Profile","UserManagment")?id=@caseTerm.RMUser.Id">@caseTerm.RMUser.Name</a> </span>
                                     <span class="description">@caseTerm.CreationDate</span>
                                 </div>
-                                @if (@caseTerm.CurrentStatus == "Approved")
-                                @* @if (@caseTerm.Status == "Approved") *@
+                                @* @if (@caseTerm.CurrentStatus == "Approved") *@
+                                @if (@caseTerm.Status == "Approved")
                                 {
-                                    <p>Status: <span class="text-success">@caseTerm.CurrentStatus</span>  <i class="fas fa-check-circle text-success"></i></p>
-                                    @* <p>Status: <span class="text-success">@caseTerm.Status</span>  <i class="fas fa-check-circle text-success"></i></p> *@
+                                    @* <p>Status: <span class="text-success">@caseTerm.CurrentStatus</span>  <i class="fas fa-check-circle text-success"></i></p> *@
+                                    <p>Status: <span class="text-success">@caseTerm.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
                                 }
-                                else if (@caseTerm.CurrentStatus == "Rejected")
-                                @* else if (@caseTerm.Status == "Rejected") *@
+                                @* else if (@caseTerm.CurrentStatus == "Rejected") *@
+                                else if (@caseTerm.Status == "Rejected")
                                 {
-                                    <p>Status: <span class="text-danger">@caseTerm.CurrentStatus</span>  <i class="fas fa-times-circle text-danger"></i></p>
-                                    @* <p>Status: <span class="text-danger">@caseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p> *@
+                                    @* <p>Status: <span class="text-danger">@caseTerm.CurrentStatus</span>  <i class="fas fa-times-circle text-danger"></i></p> *@
+                                    <p>Status: <span class="text-danger">@caseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                 }
                                 else
                                 {
-                                    <p>Status: <span class="text-info">@caseTerm.CurrentStatus</span>  <i class="fas fa-spinner text-info"></i></p>
-                                    @* <p>Status: <span class="text-info">@caseTerm.Status</span>  <i class="fas fa-spinner text-info"></i></p> *@
+                                    @* <p>Status: <span class="text-info">@caseTerm.CurrentStatus</span>  <i class="fas fa-spinner text-info"></i></p> *@
+                                    <p>Status: <span class="text-info">@caseTerm.Status</span>  <i class="fas fa-spinner text-info"></i></p>
                                 }
                                 @{
                                     if (caseTerm.Reason != null)
@@ -73,8 +73,8 @@
                                 }
 
                                 @{
-                                    if (caseTerm.RMUser.Id != userId && caseTerm.CurrentStatus == "proposed")
-                                    @* if (caseTerm.RMUser.Id != userId && caseTerm.Status == "proposed") *@
+                                    @* if (caseTerm.RMUser.Id != userId && caseTerm.CurrentStatus == "proposed") *@
+                                    if (caseTerm.RMUser.Id != userId && caseTerm.Status == "proposed")
                                     {
                                         <div class="btn-group">
                                             <input type="hidden" id="CaseTerminationId" name="Id" value="@caseTerm.Id" />
@@ -89,8 +89,8 @@
                                             </button>
                                         </div>
                                     }
-                                    else if (caseTerm.RMUser.Id == userId && caseTerm.CurrentStatus == "proposed")
-                                    @* else if (caseTerm.RMUser.Id == userId && caseTerm.Status == "proposed") *@
+                                    @* else if (caseTerm.RMUser.Id == userId && caseTerm.CurrentStatus == "proposed") *@
+                                    else if (caseTerm.RMUser.Id == userId && caseTerm.Status == "proposed")
                                     {
                                         <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseTerm.Id" />
                                         <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason" />

@@ -3,7 +3,7 @@ using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Models.PCE.Entities
 {
-    public class ProductionCaseSchedule
+    public class PCECaseSchedule
     {
         public Guid Id { get; set; }
         public DateTime ScheduleDate { get; set; }

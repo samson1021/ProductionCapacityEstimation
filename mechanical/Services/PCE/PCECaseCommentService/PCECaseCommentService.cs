@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using mechanical.Data;
-using mechanical.Models.Dto.CaseCommentDto;
-using mechanical.Models.Entities;
-using mechanical.Models.PCE.Dto.PCECaseCommentDto;
-using mechanical.Models.PCE.Entities;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+
+using mechanical.Data;
+using mechanical.Models.Entities;
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 
 namespace mechanical.Services.PCE.PCECaseCommentService
 {
@@ -12,19 +13,35 @@ namespace mechanical.Services.PCE.PCECaseCommentService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
-        public PCECaseCommentService(CbeContext cbeContext, IMapper mapper)
+        private readonly ILogger<PCECaseCommentService> _logger;
+
+        public PCECaseCommentService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseCommentService> logger)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<PCECaseCommentReturnDto> CreateCaseComment(Guid userId, PCECaseCommentPostDto caseCommentPostDto)
         {
-            var caseComment = _mapper.Map<PCECaseComment>(caseCommentPostDto);
-            caseComment.AuthorId = userId;
-            caseComment.CreatedAt = DateTime.Now;
-            await _cbeContext.PCECaseComments.AddAsync(caseComment);
-            await _cbeContext.SaveChangesAsync();
-            return _mapper.Map<PCECaseCommentReturnDto>(caseComment);
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {    
+                var caseComment = _mapper.Map<PCECaseComment>(caseCommentPostDto);
+                caseComment.AuthorId = userId;
+                caseComment.CreatedAt = DateTime.Now;
+
+                await _cbeContext.PCECaseComments.AddAsync(caseComment);
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return _mapper.Map<PCECaseCommentReturnDto>(caseComment);               
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating case comment");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while creating case comment.");
+            }
         }
 
         public async Task<IEnumerable<PCECaseCommentReturnDto>> GetCaseComments(Guid PCECaseId)
