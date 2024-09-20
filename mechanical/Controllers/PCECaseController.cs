@@ -382,7 +382,7 @@ namespace mechanical.Controllers.PCE
             try
             {
                 await _productionCaseAssignmentService.SendProductionForValuation(selectedCollateralIds, CenterId);
-                var response = new { message = "PCE assigned successfully" };
+                var response = new { message = "PCE Estimation assigned successfully" };
                 return Ok(response);
             }
             catch (Exception ex)
