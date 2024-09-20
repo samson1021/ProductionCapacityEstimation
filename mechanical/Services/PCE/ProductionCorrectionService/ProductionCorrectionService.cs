@@ -19,6 +19,7 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
         private readonly ILogger<ProductionCorrectionService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
+
         public ProductionCorrectionService(CbeContext cbeContext, IMapper mapper, ILogger<ProductionCorrectionService> logger, IHttpContextAccessor httpContextAccessor, IPCECaseTimeLineService IPCECaseTimeLineService)
         {
             _cbeContext = cbeContext;
@@ -40,8 +41,10 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
                 loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
                 loanCase.CreationDate = DateTime.Now;
                 await _cbeContext.ProductionCapacityCorrections.AddAsync(loanCase);
+
                 await _cbeContext.SaveChangesAsync();  
                 await transaction.CommitAsync();
+
                 return _mapper.Map<ProductionCapacityCorrectionReturnDto>(loanCase);
 
                 //await _IPCECaseTimeLineService.GetPCECaseTimeLines(new PCECaseTimeLinePostDto

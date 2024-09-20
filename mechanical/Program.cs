@@ -167,14 +167,14 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
 {
-    Seed.SeedData(app);
-    SeedDistrict.SeedData(app);
-    // SeedUsersRolesAndDistricts.SeedData(app);
+    // Seed.SeedData(app);
+    // SeedDistrict.SeedData(app);
+    SeedUsersRolesAndDistricts.SeedData(app);
 }
 
-Seed.SeedData(app);
-SeedDistrict.SeedData(app);
-// SeedUsersRolesAndDistricts.SeedData(app);
+// Seed.SeedData(app);
+// SeedDistrict.SeedData(app);
+SeedUsersRolesAndDistricts.SeedData(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

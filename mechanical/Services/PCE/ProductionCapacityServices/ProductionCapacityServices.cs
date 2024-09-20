@@ -28,7 +28,6 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductionCapacityServices> _logger;
-       // private readonly IProductionUploadFileService _productionUploadFileService;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUploadFileService _uploadFileService;
