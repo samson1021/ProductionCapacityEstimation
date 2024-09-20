@@ -132,16 +132,16 @@ namespace mechanical.Services.PCE.PCECaseService
 
 
 
-            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => ( res.CurrentStage != "Relation Manager")&&((res.CurrentStatus != "Completed" && res.CurrentStatus != "New"))))
-                       .Where(res => res.RMUserId == userId && (res.ProductionCapacities.Any(collateral => ( collateral.CurrentStage != "Relation Manager") && ((collateral.CurrentStatus != "Completed" && collateral.CurrentStatus != "New")))))
+            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => ( res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Completed" )))
+                       .Where(res => res.RMUserId == userId && (res.ProductionCapacities.Any(collateral => ( collateral.CurrentStage != "Relation Manager" && collateral.CurrentStatus != "Completed"))))
 
                        .ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<PCENewCaseDto>>(cases);
-            foreach (var caseDto in caseDtos)
-            {
-                caseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id);
-                caseDto.NoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id && res.CurrentStatus == "Pending");
-            }
+            //foreach (var caseDto in caseDtos)
+            //{
+            //    caseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id);
+            //    caseDto.NoOfCollateral = await _cbeContext.ProductionCaseAssignments.CountAsync(res => res.UserId == caseDto.Id && res.Status == "Pending");
+            //}
             return caseDtos;
         }
 

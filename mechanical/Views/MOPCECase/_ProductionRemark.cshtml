@@ -10,32 +10,35 @@
 <section class="content">
     <div class="card direct-chat direct-chat-purple">
         <div class="card-header">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h4>PCE Remark Detail</h4>
-                </div>
-            </div>
+            <h4 class="mb-0">PCE Remark Detail</h4>
         </div>
 
         <div class="card-body">
             @if (latestEvaluation != null)
             {
-                if (string.IsNullOrEmpty(latestEvaluation.SurveyRemark))
+                if (string.IsNullOrEmpty(latestEvaluation.Remark))
                 {
-                    <h6>There is no remark related to this Production Capacity</h6>
+                    <div class="alert alert-info" role="alert">
+                        There are currently no remarks related to this Production Capacity.
+                    </div>
                 }
                 else
                 {
-                    <div class="card">
-                        <h6>@latestEvaluation.SurveyRemark</h6>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title">Remark:</h6>
+                            <p>@latestEvaluation.Remark</p>
+                        </div>
                     </div>
 
-                    if (currentUser.Role.Name == "Relation Manager")
+                    @if (currentUser.Role.Name == "Relation Manager")
                     {
                         <form action="/ProductionCapacity/HandleRemark" method="post" enctype="multipart/form-data">
                             <input name="PCEId" type="hidden" value="@latestEvaluation.Id" />
                             <input name="EvaluatorId" type="hidden" value="@latestEvaluation.EvaluatorId" />
-                            <div class="card">
+                            
+                            <div class="mb-3">
+                                <h6>Remark Type:</h6>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="RemarkType" id="Justification" value="Justification">
                                     <label class="form-check-label" for="Justification">Justification</label>
@@ -45,21 +48,20 @@
                                     <label class="form-check-label" for="Verification">Verification</label>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-4">
+
+                            <div class="form-group">
                                 <label for="Category">Category</label>
-                                <input name="Category" type="text" class="form-control form-control-sm" id="Category">
+                                <input name="Category" type="text" class="form-control form-control-sm" id="Category" required>
                                 <span validation-for="Category" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-lg-4">
+
+                            <div class="form-group">
                                 <label for="File">Remark Document</label>
-                                <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument">
+                                <input name="File" type="file" class="form-control form-control-sm" id="OtherDocument" required>
                                 <span validation-for="File" class="text-danger"></span>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-append">
-                                    <button type="submit" class="btn btn-primary" id="SendRemark">Send Remark Release</button>
-                                </span>
-                            </div>
+
+                            <button type="submit" class="btn btn-primary">Send Remark Release</button>
                         </form>
                     }
                     else if (currentUser.Role.Name == "Maker Officer")
@@ -67,25 +69,33 @@
                         string formAction = Model.CurrentStatus == "Remark Justification" ? "/PCEEvaluation/RemarkRelease" : "/PCEEvaluation/Reevaluate";
                         string buttonLabel = Model.CurrentStatus == "Remark Justification" ? "Release Remark" : "Edit";
 
-                        <div class="card">
-                            <h6>@Model.CurrentStatus</h6>
-                        </div>
-                        <form action="@formAction" method="post">
+                        <div class="mb-3">
+                            <h6>Current Status:</h6>
                             <div class="card">
-                                <textarea class="form-control" name="Remark">@latestEvaluation.SurveyRemark</textarea>
+                                <div class="card-body">
+                                    <p>@Model.CurrentStatus</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form action="@formAction" method="post">
+                            <div class="form-group">
+                                <textarea class="form-control" name="Remark" rows="4" required>@latestEvaluation.Remark</textarea>
                             </div>
 
                             <input name="Id" type="hidden" value="@latestEvaluation.Id" />
                             <input name="EvaluatorId" type="hidden" value="@latestEvaluation.EvaluatorId" />
                             <input name="CurrentStatus" type="hidden" value="@Model.CurrentStatus" />
-                            <div class="input-group">
-                                <span class="input-group-append">
-                                    <button type="submit" class="btn btn-primary" id="Edit">@buttonLabel</button>
-                                </span>
-                            </div>
+                            <button type="submit" class="btn btn-primary">@buttonLabel</button>
                         </form>
                     }
                 }
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    This Production Capacity is currently pending valuation.
+                </div>
             }
         </div>
     </div>
