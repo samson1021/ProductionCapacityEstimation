@@ -14,7 +14,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
         public Guid DistrictId { get; set; }
         public DateTime CreationDate { get; set; }
         public string Status { get; set; } = string.Empty;
-        // public string CurrentStatus { get; set; } = string.Empty;
+       // public string CurrentStatus { get; set; } = string.Empty;
 
 
         public int NoOfCollateral { get; set; } = 0;

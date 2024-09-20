@@ -529,6 +529,8 @@ namespace mechanical.Services.PCE.PCECaseService
                     .Include(x => x.District)
                     .Where(res => res.RMUserId == userId)
                     .OrderByDescending(res => res.CreationDate).Take(5).ToListAsync();
+
+            var ff=3;
             foreach (var cas in cases)
             {
                 var status = "New";
