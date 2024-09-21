@@ -1,7 +1,7 @@
 <script>
     $(document).ready(function () {
         function initializeDataTable(data) {
-            $('#PCECasePCEs').DataTable({
+            $('#PCECaseProductions').DataTable({
                 language: {
                     emptyTable: "There is no Production register for this PCECase"
                 },
@@ -25,7 +25,7 @@
                     }
 
                 ]
-            }).buttons().container().appendTo('#PCECasePCEs_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#PCECaseProductions_wrapper .col-md-6:eq(0)');
         }
 
         function loadProductions() {
@@ -35,13 +35,13 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCECasePCEs')) {
-                        $('#PCECasePCEs').DataTable().destroy();
+                    if ($.fn.DataTable.isDataTable('#PCECaseProductions')) {
+                        $('#PCECaseProductions').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },
                 error: function (error) {
-                    toastr.error("Failed to load PCEs");
+                    toastr.error("Failed to load Productions");
                     console.log(error);
                 }
             });

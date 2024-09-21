@@ -134,7 +134,7 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    loadCollaterals();
+                    loadProductions();
                     $('#SendForEvaluationModal').modal('hide');
                     $('#assignForm')[0].reset();
                 },
@@ -205,7 +205,7 @@
                         toastr.success('PCE deleted successfully.');
                         // setTimeout(function () {
                         // location.reload();
-                        loadCollaterals();
+                        loadProductions();
 
                         // }, 5000);
                     },
@@ -218,7 +218,7 @@
             });
         }
 
-        function loadCollaterals() {
+        function loadProductions() {
             $.ajax({
                 url: '/ProductionCapacity/GetProductions?PCECaseId=' + CaseId,
                 type: 'GET',
@@ -338,7 +338,7 @@
                     toastr.success(response.message);
                     $('#addMechanicalCollateralModal').modal('hide');
                     $('#addMechanicalCollateralForm')[0].reset();
-                    loadCollaterals();
+                    loadProductions();
                 },
                 error: function (error) {
                     toastr.error("Unable to create PCE Request");
@@ -366,7 +366,7 @@
                     toastr.success(response.message);
                     $('#EstimatePlaneCollateralModal').modal('hide');
                     $('#EstimatePlantCollateralForm')[0].reset();
-                    loadCollaterals();
+                    loadProductions();
                 },
                 error: function (error) {
                     toastr.error("Unable to create Plant PCE ");
@@ -375,7 +375,7 @@
             });
         });
 
-        loadCollaterals();
+        loadProductions();
         function getAttributeByName(formDataArray, name) {
             for (var i = 0; i < formDataArray.length; i++) {
                 if (formDataArray[i].name === name) {
@@ -390,7 +390,7 @@
         chatMessages.scrollTop(scrollHeight);
 
         //$('#custom-tabs-four-profile-tab').on('shown.bs.tab', function (e) {
-        //    loadCollaterals();
+        //    loadProductions();
         //});
 
         //$("#IndusteryProp").hide();

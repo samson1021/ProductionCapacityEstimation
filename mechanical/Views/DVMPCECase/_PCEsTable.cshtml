@@ -8,7 +8,7 @@
 
     <div class="card-body">
         <div class="row">
-          <table id="PCEs" class="table table-bordered table-striped">
+          <table id="Productions" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
@@ -39,7 +39,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("PCEAssignTeamleader", "MMCase", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("PCEAssignTeamleader", "DVMPCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                     <div class="form-group">

@@ -15,10 +15,10 @@
             });
         $('#assignButton').on('click', function () {
 
-            var checkedPCEs = $('.purple-checkbox:checked');
+            var checkedProductions = $('.purple-checkbox:checked');
             var selectedPCEIds = [];
 
-            checkedPCEs.each(function () {
+            checkedProductions.each(function () {
                 var PCECaseAssignmentId= $(this).val();
                 selectedPCEIds.push(PCECaseAssignmentId);
             });
@@ -43,7 +43,7 @@
             });
         });
 
-        $('#PCEs tbody').on('change', '.purple-checkbox', function () {
+        $('#Productions tbody').on('change', '.purple-checkbox', function () {
             var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
@@ -71,7 +71,7 @@
         });
 
         function initializeDataTable(data) {
-            $('#PCEs').DataTable({
+            $('#Productions').DataTable({
                 language: {
                     emptyTable: "There are no assigned Productions for this PCE Case."
                 },
@@ -118,7 +118,7 @@
                         }
                     }
                 ]
-            }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
         }
 
         function loadProductions() {
@@ -127,13 +127,13 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCEs')) {
-                        $('#PCEs').DataTable().destroy();
+                    if ($.fn.DataTable.isDataTable('#Productions')) {
+                        $('#Productions').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },
                 error: function (error) {
-                    toastr.error("Failed to load PCEs");
+                    toastr.error("Failed to load Productions");
                     console.log(error);
                 }
             });

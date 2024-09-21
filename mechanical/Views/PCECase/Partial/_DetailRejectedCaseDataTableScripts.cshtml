@@ -250,7 +250,7 @@
 
         }
 
-        function loadCollaterals() {
+        function loadProductions() {
             $.ajax({
                 url: '/ProductionCapacity/GetRmRejectedProductions?PCECaseId=' + CaseId,
                 type: 'GET',
@@ -268,8 +268,8 @@
             });
         }
 
-        loadCollaterals();
-        loadCollaterals();
+        loadProductions();
+        loadProductions();
 
 
 
@@ -279,7 +279,7 @@
         chatMessages.scrollTop(scrollHeight);
 
         //$('#custom-tabs-four-profile-tab').on('shown.bs.tab', function (e) {
-        //    loadCollaterals();
+        //    loadProductions();
         //});
 
         // $("#IndusteryProp").hide();

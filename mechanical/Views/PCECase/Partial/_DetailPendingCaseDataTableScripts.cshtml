@@ -176,7 +176,7 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    loadCollaterals();
+                    loadProductions();
                     $('#SendForEvaluationModal').modal('hide');
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -335,7 +335,7 @@
 
         }
 
-        function loadCollaterals() {
+        function loadProductions() {
             $.ajax({
                 url: '/ProductionCapacity/GetPendingProductions?PCECaseId=' + CaseId,
                 //url: '/ProductionCapacity/GetProductions?CaseId' + CaseId,
@@ -355,7 +355,7 @@
             });
         }
 
-        loadCollaterals();
+        loadProductions();
 
 
 

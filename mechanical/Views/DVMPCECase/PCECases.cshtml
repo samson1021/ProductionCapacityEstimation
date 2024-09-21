@@ -12,7 +12,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCECases", "MMCase")">My PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCECases", "DVMPCECase")">My PCE Cases</a></li>
                     <li class="breadcrumb-item active">@ViewData["Title"]</li>
                 </ol>
             </div>
@@ -32,9 +32,9 @@
                             <th>Applicant Name</th>
                             <th>Customer Id</th>
                             @if (Status != "All"){
-                                <th>@Status PCEs</th>
+                                <th>@Status Productions</th>
                             }
-                            <th>Total PCEs</th>
+                            <th>Total Productions</th>
                             <th>Action</th>
                         </tr>
                     </thead>

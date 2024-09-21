@@ -3,13 +3,13 @@
 @{
     var Status = ViewBag.Status as string;
     var CurrentUser = ViewData["CurrentUser"] as CreateUser;
-    var EmptyMessage = "There are no PCEs found";
+    var EmptyMessage = "There are no Productions found";
     var FetchUrl = "/MOPCECase/GetMyPCEs?Status=" + Status;
     var PCECaseId = ViewData["PCECaseId"] as Guid?; 
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
-        EmptyMessage = "There are no " + Status + " PCEs found";
+        EmptyMessage = "There are no " + Status + " Productions found";
     }
     if (PCECaseId.HasValue)
     {
@@ -24,7 +24,7 @@
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
-            $('#PCEs').DataTable({
+            $('#Productions').DataTable({
                 language: {
                     emptyTable: '@EmptyMessage'
                 },
@@ -72,7 +72,7 @@
                         }
                     }
                 ]
-            }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
         }
         function loadProductions() {
             $.ajax({
@@ -80,8 +80,8 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCEs')) {
-                        $('#PCEs').DataTable().destroy();
+                    if ($.fn.DataTable.isDataTable('#Productions')) {
+                        $('#Productions').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },
@@ -144,7 +144,7 @@
             var formData = new FormData(this);
 
             $.ajax({
-                url: '/MMCase/PCEAssignTeamleader',
+                url: '/DVMPCECase/PCEAssignTeamleader',
                 type: 'POST',
                 data: formData,
                 processData: false,
