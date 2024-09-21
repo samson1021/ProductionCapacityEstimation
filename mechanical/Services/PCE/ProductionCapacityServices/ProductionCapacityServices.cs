@@ -88,7 +88,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                     Id = Guid.NewGuid(),
                     ProductionCapacityId = production.Id,
                     UserId = UserId,
-                    AssignmentDate = new DateTime(2023, 6, 1),
+                    AssignmentDate = DateTime.Now,
                     CompletionDate = null,
                     Status = "New"
                 };
@@ -164,7 +164,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                     Id = Guid.NewGuid(),
                     ProductionCapacityId = production.Id,
                     UserId = UserId,
-                    AssignmentDate = new DateTime(2023, 6, 1),
+                    AssignmentDate = DateTime.Now,
                     CompletionDate = null,
                     Status = "New"
                 };

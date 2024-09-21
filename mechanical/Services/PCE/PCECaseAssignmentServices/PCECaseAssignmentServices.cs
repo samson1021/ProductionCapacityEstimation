@@ -49,8 +49,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {    
-                var employeeId = Guid.Parse(EmployeeId);
-                var assignedUser = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == employeeId);
+                var assignedUser = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == Guid.Parse(EmployeeId));
                 List<PCECaseAssignmentDto> pceCaseAssignments = new List<PCECaseAssignmentDto>();
                 List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
                 PCECaseTimeLinePostDto PCECaseTimeLinePostDto = null;
@@ -96,7 +95,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                         {
                             CaseId = production.PCECaseId,
                             Activity = $" <strong>A production has been {(isReassign ? "re-assigned" : "assigned")} for {assignedUser.Name} {assignedUser.Role.Name}. </strong> <br>",
-                            CurrentStage = "Maker Manager"
+                            CurrentStage = assignedUser.Role.Name
                         };
                     }
                     PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; " +
@@ -111,8 +110,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                     if (previousCaseAssignment != null)
                     {
                         previousCaseAssignment.Status = "Pending";
-                        _cbeContext.Update(previousCaseAssignment);
-                    }                  
+                        _cbeContext.PCECaseAssignments.Update(previousCaseAssignment);
+                    }
                 }
 
                 if (PCECaseTimeLinePostDto != null)
@@ -140,7 +139,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
             try
             {   
                 var centerId = Guid.Parse(CenterId);
-                var user = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Role.Name == "Maker Manager");
+                var user = await _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Role.Name == "Maker Manager");
                 if (user == null)
                 {
                     throw new Exception("sorry the center is not ready.");
@@ -179,14 +178,20 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                             pceCaseAssignments.Add(_mapper.Map<PCECaseAssignmentDto>(pceCaseAssignment));
                         }
 
+                        var previousRM = await _cbeContext.PCECaseAssignments.Where(res => res.ProductionCapacityId == PCEId && res.UserId == production.CreatedById).FirstOrDefaultAsync();
+                        if (previousRM != null)
+                        {
+                            previousRM.Status = "Pending";
+                            _cbeContext.PCECaseAssignments.Update(previousRM);
+                        }
 
                         if (PCECaseTimeLinePostDto == null)
                         {
                             PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto()
                             {
                                 CaseId = production.PCECaseId,
-                                Activity = $"<strong>production assigned for Re-estimation for <a href='/UserManagment/Profile?id={user.Id}'>{user.Name}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {user.District.Name}.",
-                                CurrentStage = "Maker Manager"
+                                Activity = $"<strong>production assigned for Re-estimation for <a href='/UserManagment/Profile?id={user.Id}'>{user.Name}</a> {user.Role.Name}.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {user.District.Name}.",
+                                CurrentStage = user.Role.Name
                             };
                         }
                         PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>";
@@ -229,9 +234,9 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
             {    
                 var centerId = Guid.Parse(CenterId); 
                 var districtName = await _cbeContext.Districts.Where(c => c.Id == centerId).Select(c => c.Name).FirstOrDefaultAsync(); 
-                var CivilUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Civil" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
-                var MechanicalUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
-                var AgricultureUser = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
+                var CivilUser = await _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Civil" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
+                var MechanicalUser = await _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
+                var AgricultureUser = await _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")); 
         
                 List<PCECaseAssignmentDto> pceCaseAssignments = new List<PCECaseAssignmentDto>(); 
                 List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList(); 
@@ -253,8 +258,9 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                             production.CurrentStage = "District Valuation Manager"; 
                         } 
                         production.CurrentStatus = "New"; 
-                        var UserID = Guid.Empty; 
-                        string UserName = ""; 
+                        var UserID = Guid.Empty;
+                        string UserName = "";
+                        string UserRoleName = "";
                         string District = ""; 
         
                         if (production.ProductionType == "Manufacturing") 
@@ -265,8 +271,9 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                             } 
                             else 
                             { 
-                                UserID = MechanicalUser.Id; 
-                                UserName = MechanicalUser.Name; 
+                                UserID = MechanicalUser.Id;
+                                UserName = MechanicalUser.Name;
+                                UserRoleName = MechanicalUser.Role.Name;
                             } 
                         } 
                         else
@@ -280,7 +287,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                                 else 
                                 { 
                                     UserID = MechanicalUser.Id; 
-                                    UserName = MechanicalUser.Name; 
+                                    UserName = MechanicalUser.Name;
+                                    UserRoleName = MechanicalUser.Role.Name;
                                 } 
                             } 
                         }
@@ -334,8 +342,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                             PCECaseTimeLinePostDto = new PCECaseTimeLinePostDto() 
                             { 
                                 CaseId = production.PCECaseId, 
-                                Activity = $"<strong>PCE assigned for estimation for <a href='/UserManagment/Profile?id={UserID}'>{UserName}</a> Maker Manager.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {districtName}.", 
-                                CurrentStage = "Maker Manager" 
+                                Activity = $"<strong>PCE assigned for estimation for <a href='/UserManagment/Profile?id={UserID}'>{UserName}</a> {UserRoleName}.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {districtName}.", 
+                                CurrentStage = UserRoleName
                             }; 
                         } 
                     //  PCECaseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>production Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>production Type:</i> {production.Type}. <br>"; 

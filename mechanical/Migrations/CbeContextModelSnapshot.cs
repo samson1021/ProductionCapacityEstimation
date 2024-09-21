@@ -1174,6 +1174,38 @@ namespace mechanical.Migrations
                     b.ToTable("PCECases");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("AssignmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CompletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductionCapacityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductionCapacityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PCECaseAssignments");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseComment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1632,38 +1664,6 @@ namespace mechanical.Migrations
                     b.ToTable("ProductionCapacityReestimations");
                 });
 
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("AssignmentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("CompletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductionCapacityId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProductionCaseAssignments");
-                });
-
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2048,6 +2048,25 @@ namespace mechanical.Migrations
                     b.Navigation("RMUser");
                 });
 
+            modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseAssignment", b =>
+                {
+                    b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
+                        .WithMany()
+                        .HasForeignKey("ProductionCapacityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductionCapacity");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseComment", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.CreateUser", "Author")
@@ -2176,25 +2195,6 @@ namespace mechanical.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductionCapacity");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCaseAssignment", b =>
-                {
-                    b.HasOne("mechanical.Models.PCE.Entities.ProductionCapacity", "ProductionCapacity")
-                        .WithMany()
-                        .HasForeignKey("ProductionCapacityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductionCapacity");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>
