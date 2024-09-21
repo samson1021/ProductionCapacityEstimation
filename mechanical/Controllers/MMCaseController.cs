@@ -133,7 +133,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> PCEAssignTeamleader(string selectedPCEIds, string employeeId)
         {
             await _pceCaseAssignmentServices.AssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
-            var response = new { message = "Productions assigned to MTL successfully" };
+            var response = new { message = "Productions assigned to Maker Team Leader successfully" };
             return Ok(response);
         }
         
@@ -141,7 +141,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> PCEReAssignTeamleader(string selectedPCEIds, string employeeId)
         {
             await _pceCaseAssignmentServices.ReAssignProductionMakerTeamleader(base.GetCurrentUserId(), selectedPCEIds, employeeId);
-            var response = new { message = "Productions re-assigned to MTL successfully" };
+            var response = new { message = "Productions re-assigned to Maker Team Leader successfully" };
             return Ok(response);
         }
 

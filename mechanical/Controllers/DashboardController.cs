@@ -26,12 +26,12 @@ namespace mechanical.Controllers
             ViewData["NewCases"] = newCases;
             return View(latestCase);
         }
-        public async Task<IActionResult> MO()
+        public async Task<IActionResult> MM()
         {
-            var latestCase = await _caseService.GetMoLatestCases(base.GetCurrentUserId());
+            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return View(latestCase);
         }
-        public async Task<IActionResult> MM()
+        public async Task<IActionResult> DVM()
         {
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return View(latestCase);
@@ -39,6 +39,11 @@ namespace mechanical.Controllers
         public async Task<IActionResult> MTL()
         {
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            return View(latestCase);
+        }
+        public async Task<IActionResult> MO()
+        {
+            var latestCase = await _caseService.GetMoLatestCases(base.GetCurrentUserId());
             return View(latestCase);
         }
 

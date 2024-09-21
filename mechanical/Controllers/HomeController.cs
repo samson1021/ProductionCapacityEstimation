@@ -196,7 +196,7 @@ namespace mechanical.Controllers
                     case "Checker Officer":
                         return RedirectToAction("MM", "Dashboard", user.Role.Name);
                     case "District Valuation Manager":
-                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                        return RedirectToAction("DVM", "Dashboard", user.Role.Name);
                     default:
                         return RedirectToAction("HO", "Dashboard", user.Role.Name);
                 }

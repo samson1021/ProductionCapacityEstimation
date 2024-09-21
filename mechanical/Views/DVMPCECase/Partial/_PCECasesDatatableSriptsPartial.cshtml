@@ -1,7 +1,7 @@
 ﻿﻿@{
     var Status = ViewBag.Status as string;
     var EmptyMessage = "There are no PCE Cases";
-    var FetchUrl = "/MTLCase/GetMyPCECases?Status=" + Status;
+    var FetchUrl = "/MMCase/GetMyPCECases?Status=" + Status;
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
         EmptyMessage = "There are no " + Status + " PCE Cases";
@@ -20,8 +20,7 @@
                         width: '15%',
                         render: function (data, type, row, meta) {
                             var date = new Date(data);
-                            return date.toISOString().split('T')[0];
-                            // return date.toLocaleString();
+                            return date.toLocaleString();
                         }
                     },
                     { data: 'CaseNo', width: '10%' },
@@ -41,7 +40,7 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                        return '<a href="@Url.Action("PCECaseDetail", "MTLCase")?Id=' + data + '&Status=@ViewBag.Status">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                        return '<a href="@Url.Action("PCECaseDetail", "MMCase")?Id=' + data + '&Status=@ViewBag.Status">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
                     }
                 });
 
@@ -59,9 +58,6 @@
                     order: [[1, 'desc']],
                     buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCECase - pdf' }, { extend: 'print', title: 'My PCECase - Print' }, "colvis"]
                 }).buttons().container().appendTo('#MyPCECasesDatatable_wrapper .col-md-6:eq(0)');
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX error: " + status + " - " + error);
             }
         });
     });
