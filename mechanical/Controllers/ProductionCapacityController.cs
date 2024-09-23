@@ -1,22 +1,22 @@
-﻿using mechanical.Controllers.PCE;
-using mechanical.Data;
-using mechanical.Models.Enum;
-using mechanical.Models;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.CaseServices;
-using mechanical.Services.PCE.PCECaseService;
-//using mechanical.Services.ProductionCaseService;
-using mechanical.Services.UploadFileService;
+﻿using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.Dto.CollateralDto;
-using mechanical.Models.PCE.Enum.ProductionCapacity;
-using mechanical.Services.PCE.PCEEvaluationService;
 using DocumentFormat.OpenXml.Bibliography;
+
+using mechanical.Data;
+using mechanical.Models;
+using mechanical.Models.Enum;
+using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Services.UploadFileService;
+
+using mechanical.Models.PCE.Entities;
+using mechanical.Models.PCE.Enum.ProductionCapacity;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+// using mechanical.Controllers.PCE;
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCEEvaluationService;
+using mechanical.Services.PCE.ProductionCapacityServices;
 
 
 namespace mechanical.Controllers
@@ -29,14 +29,14 @@ namespace mechanical.Controllers
         private readonly CbeContext _cbeContext;
 
         private readonly IUploadFileService _uploadFileService;
-        private readonly IPCEEvaluationService _PCEEvaluationService;
+        private readonly IMOPCECaseService _MOPCECaseService;
 
 
-        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IPCEEvaluationService PCEEvaluationService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IMOPCECaseService MOPCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
         {
             _cbeContext = cbeContext;
             _productionCapacityServices = productionCapacityServices;
-            _PCEEvaluationService = PCEEvaluationService;
+            _MOPCECaseService = MOPCECaseService;
             _pCECaseService = pCECaseService;
             _uploadFileService = uploadFileService;
         }
@@ -60,6 +60,7 @@ namespace mechanical.Controllers
             return BadRequest();
 
         }
+
         [HttpPost]
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
@@ -81,7 +82,6 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid PCECaseId)
         {
-            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
             var products = await _productionCapacityServices.GetProductions(PCECaseId);
             string jsonData = JsonConvert.SerializeObject(products);
             return Content(jsonData, "application/json");
@@ -101,15 +101,16 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Detail(Guid id)
         {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var loanCase = await _pCECaseService.GetProductionCaseDetail(response.PCECaseId);
+            var loanCase = await _pCECaseService.GetPCECaseDetail(response.PCECaseId);
 
             var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
             if (restimation != null)
             {
                 ViewData["restimation"] = restimation;
             }
-
-            if (response == null) { return RedirectToAction("PCENewCases"); }
+            if (response == null) { 
+                return RedirectToAction("PCENewCases"); 
+            }
             var file = await _uploadFileService.GetUploadFileByCollateralId(id);
             var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
             var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
@@ -122,7 +123,6 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
-
 
             if (PcevalutionDto != null)
             {
@@ -138,9 +138,7 @@ namespace mechanical.Controllers
                 var Production = await _productionCapacityServices.GetPlantProductionCapacityEvalutionById(id);
                 ViewData["Pavaluation"] = Production;
             }
-
-
-            // ViewData["Prvaluation"] = productionById;
+            
             ViewData["pcecaseDtos"] = loanCase;
             ViewData["productionFiles"] = file;
             ViewData["rejectedCollateral"] = rejectedProduction;
@@ -151,8 +149,9 @@ namespace mechanical.Controllers
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeProduction;
 
-            var pceDetail = await _PCEEvaluationService.GetPCEDetails(base.GetCurrentUserId(), id);
-            ViewData["CurrentUser"] = pceDetail.CurrentUser;
+            var pceDetail = await _MOPCECaseService.GetPCEDetails(base.GetCurrentUserId(), id);
+            var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
+            ViewData["CurrentUser"] = currentUser;
             ViewData["PCE"] = pceDetail.ProductionCapacity;
             ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
 
@@ -299,39 +298,39 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> handleProductionRemark(Guid ProductionCapacityId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
+        public async Task<IActionResult> HandleRemark(Guid ProductionCapacityId, Guid EvaluatorId, String RemarkType, CreateFileDto UploadFile)
         {
-            var ProductioncaseAssignment = await _cbeContext.ProductionCaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
-            ProductioncaseAssignment.Status = "Remark";
-            _cbeContext.Update(ProductioncaseAssignment);
+            var pceCaseAssignment = await _cbeContext.PCECaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorId).FirstOrDefaultAsync();
+            pceCaseAssignment.Status = "Remark";
+            _cbeContext.Update(pceCaseAssignment);
 
-            var Production = await _cbeContext.ProductionCapacities.Where(res => res.Id == ProductionCapacityId).FirstOrDefaultAsync();
+            var production = await _cbeContext.ProductionCapacities.Where(res => res.Id == ProductionCapacityId).FirstOrDefaultAsync();
             if (RemarkType == "Verfication")
             {
-                Production.CurrentStatus = "Remark Verfication";
+                production.CurrentStatus = "Remark Verfication";
             }
             else
             {
-                Production.CurrentStatus = "Remark Justfication";
+                production.CurrentStatus = "Remark Justfication";
             }
-            if (uploadFile.File != null)
+            if (UploadFile.File != null)
             {
-                uploadFile.CaseId = Production.PCECaseId;
-                await _uploadFileService.CreateUploadFile(base.GetCurrentUserId(), uploadFile);
+                UploadFile.CaseId = production.PCECaseId;
+                await _uploadFileService.CreateUploadFile(base.GetCurrentUserId(), UploadFile);
             }
-            Production.CurrentStage = "Maker Officer";
-            _cbeContext.Update(Production);
+
+            production.CurrentStage = "Maker Officer";
+
+            _cbeContext.Update(production);
             _cbeContext.SaveChanges();
 
-            //return RedirectToAction("MyCompleteCases", "Case");
-            //just for opration 
             return RedirectToAction("PCENewCases", "PCECase");
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRemarkProducts(Guid CaseId)
+        public async Task<IActionResult> GetRemarkProductions(Guid PCECaseId)
         {
-            var collaterals = await _productionCapacityServices.GetRemarkProducts(base.GetCurrentUserId(), CaseId);
+            var collaterals = await _productionCapacityServices.GetRemarkProductions(base.GetCurrentUserId(), PCECaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }

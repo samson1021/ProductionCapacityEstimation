@@ -303,7 +303,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<ActionResult> GetMakerTeamleader()
         {
-             var httpContext = _httpContextAccessor.HttpContext;
+            var httpContext = _httpContextAccessor.HttpContext;
             var managerId = Guid.Parse(httpContext.Session.GetString("userId"));
             var manager = await _context.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
             if (manager.Role.Name == "District Valuation Manager")

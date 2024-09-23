@@ -13,7 +13,6 @@
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/toastr/toastr.min.js"></script>
 <script>
-    console.log("debug");
     $(document).ready(function () {
         $('#UpdateSchedule').on('click', function (event) {
             event.preventDefault();
@@ -26,7 +25,7 @@
             formData.append('Id', Id);
 
             $.ajax({
-                url: '/MOCase/UpdateSchedule',
+                url: '/MOPCECase/UpdateSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -46,7 +45,7 @@
             formData.append('Id', Id);
 
             $.ajax({
-                url: '/MOCase/ApproveSchedule',
+                url: '/MOPCECase/ApproveSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -147,7 +146,7 @@
                 selectedCollateralIds.push(collateralId);
             });
             if (selectedCollateralIds.length === 0) {
-                toastr.error('Please select at least one collateral');
+                toastr.error('Please select at least one production');
             } else {
                 $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
 
@@ -177,7 +176,7 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    loadCollaterals();
+                    loadProductions();
                     $('#SendForEvaluationModal').modal('hide');
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -197,7 +196,6 @@
                     var caseComments = data.caseComments;
                     var countComment = data.caseComments.length;
                     $(".CommentBage").text(countComment);
-                    console.log(countComment);
                     var users = [];
 
                     if (caseComments && caseComments.length > 0) {
@@ -325,10 +323,7 @@
                         // }
                         render: function (data, type, row, meta) {
 
-                            console.log(row.ProductionType);
-                            console.log("welcome ");;
                             if (row.ProductionType === 'Plant') {
-                                console.log(data.ProductionType);
                                 return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details </a>';
                             } else {
                                 return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details </a>';
@@ -340,7 +335,7 @@
 
         }
 
-        function loadCollaterals() {
+        function loadProductions() {
             $.ajax({
                 url: '/ProductionCapacity/GetPendingProductions?PCECaseId=' + CaseId,
                 //url: '/ProductionCapacity/GetProductions?CaseId' + CaseId,
@@ -360,7 +355,7 @@
             });
         }
 
-        loadCollaterals();
+        loadProductions();
 
 
 

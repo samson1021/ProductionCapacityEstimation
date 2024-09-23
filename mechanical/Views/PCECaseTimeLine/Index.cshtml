@@ -1,7 +1,5 @@
 ﻿@model IEnumerable<mechanical.Models.PCE.Dto.PCECaseTimeLineDto.PCECaseTimeLineReturnDto>
 
-@* @model IEnumerable<mechanical.Models.Dto.CaseTimeLineDto.CaseTimeLineReturnDto>
- *@
 @{
 }
 <section class="content-header">
@@ -31,6 +29,7 @@
                         @foreach (var item in Model)
                         {
                             if (item.CurrentStage == "Relation Manager")
+                            @* if (item.Stage == "Relation Manager") *@
                             {
                                 if (rmCounter == 0)
                                 {
@@ -52,6 +51,7 @@
                                 </div>
                             }
                             else if (item.CurrentStage == "Maker Manager")
+                            @* else if (item.Stage == "Maker Manager") *@
                             {
                                 if (MMCounter == 0)
                                 {
@@ -72,28 +72,6 @@
                                     </div>
                                 </div>
                             }
-                            else if (item.CurrentStage == "Checker Manager")
-                            {
-                                if (CMCounter == 0)
-                                {
-                                    <div class="time-label">
-                                        <span class="bg-purple">Checker Unit</span>
-                                    </div>
-                                    CMCounter++;
-                                }
-                                <div>
-                                    <i class="fas fa-user bg-purple"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
-                                        <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
-
-                                        <div class="timeline-body">
-                                            @Html.Raw(item.Activity)
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-
                         }
                     }
 

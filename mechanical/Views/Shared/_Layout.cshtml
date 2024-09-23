@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="~/lib/datatable/css/responsive.bootstrap4.min.css" />
     <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.min.css">
+
     <style>
         header {            
             position: sticky;
@@ -29,7 +32,7 @@
         }
     </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed accent-purple">
+<body class="hold-transition sidebar-mini layout-fixed accent-purple"  style="font-family: 'Times New Roman', Times, serif">
     <div class="wrapper">
         <header>
             @await Html.PartialAsync("_MainHeader")
@@ -49,16 +52,21 @@
         </footer>
     </div>
     
-    <script src="~/js/dashboard.js"></script>
     <script src="~/js/adminlte.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
-    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    @* <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> *@
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    @* <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script> *@
+
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/chart.js/chart.min.js"></script>
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!---->
     <script>
        $(document).ready(function () {

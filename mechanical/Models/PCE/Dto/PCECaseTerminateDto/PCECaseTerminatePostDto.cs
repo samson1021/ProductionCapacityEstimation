@@ -4,6 +4,7 @@
     {
         public Guid Id { get; set; }
         public string? Reason { get; set; }
-        public Guid PCEId { get; set; }
+        public Guid PCECaseId { get; set; }
+       
     }
 }

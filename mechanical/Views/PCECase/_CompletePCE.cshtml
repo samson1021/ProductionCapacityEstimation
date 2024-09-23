@@ -5,7 +5,7 @@
     var myCase = ViewData["case"] as PCECaseReturntDto;
     // var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
     // var myCase = ViewData["case"] as CaseReturntDto;
-    var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
+   // var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
  
 }
 
@@ -25,7 +25,7 @@
             </div>
         </div>
     </div>
-   @*  <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" /> *@
+    <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" />
     <div class="card-body">
         <table id="caseCollaterals" class="table table-bordered table-striped">
             <thead>
@@ -44,12 +44,7 @@
             <div class="row">
                 <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Request Re-estimation </button>
             </div>
-        </div
-       @*  <div class="row">
-            <div class="col-xl-3 col-lg-4 col-sm-6">
-                <button id="assignButton" class="col-12 btn btn-sm bg-purple">Request Re-estimation</button>
-            </div>
-        </div> *@
+        </div>
     </div>
 </div>
 <div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
@@ -62,7 +57,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("SendProductionForReestimation", "Case", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("SendProductionForReestimation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
                     <div class="form-group">
@@ -80,7 +75,7 @@
                     </div>
                     <div class="row col-12">
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignButton">Assign</button>
+                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1">Assign</button>
                             <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
                         </div>
                     </div>

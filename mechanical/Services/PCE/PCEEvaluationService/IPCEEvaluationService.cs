@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-using mechanical.Models.Dto.Correction;
+using mechanical.Models.Entities;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
@@ -20,21 +20,20 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id);
 
+        Task<PCEEvaluationReturnDto> RemarkReleasePCEEvaluation(Guid UserId, Guid Id, String Remark, Guid EvaluatorId);
+
         Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id);
-        Task<PCEEvaluationReturnDto> GetPCEEvaluationsByPCEId(Guid UserId, Guid PCEId);
-
-        Task<PCECaseReturntDto> GetPCECase(Guid UserId, Guid Id);
-        Task<PCECasesCountDto> GetDashboardPCECaseCount(Guid UserId);
-        Task<IEnumerable<PCENewCaseDto>> GetPCECases(Guid UserId, string Status);
-
-        Task<int> GetPCEsCount(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
-        Task<int> GetPCEsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
-        Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);
-        Task<IEnumerable<ReturnProductionDto>> GetPCEs(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
-        
-        Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid PCEId);
+        Task<PCEEvaluationReturnDto> GetPCEEvaluationByPCEId(Guid UserId, Guid PCEId);
+        Task<IEnumerable<PCEEvaluationReturnDto>> GetPCEEvaluationsByPCECaseId(Guid UserId, Guid PCEId);
         Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId);
+        Task<CreateUser> GetUser(Guid UserId);
+
         // Task<IEnumerable<ReturnProductionDto>> GetReturnedPCEs(Guid UserId);
-        // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId);
+        // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId); 
+        // Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);
+        // Task<int> GetPCEsCount(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
+        // Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid UserId, Guid PCEId); 
+        // Task<PCEsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null);
+        // Task<int> GetPCEsCount(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
     }
 }

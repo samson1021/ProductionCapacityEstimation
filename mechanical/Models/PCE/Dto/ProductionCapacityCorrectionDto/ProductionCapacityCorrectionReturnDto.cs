@@ -2,7 +2,7 @@
 {
     public class ProductionCapacityCorrectionReturnDto
     {
-        public Guid ProductionCaseId { get; set; }
+        public Guid PCECaseId { get; set; }
         public Guid ProductionCapacityId { get; set; }
         public Guid EquipmentId { get; set; }
         public Guid CommentedByUserId { get; set; }

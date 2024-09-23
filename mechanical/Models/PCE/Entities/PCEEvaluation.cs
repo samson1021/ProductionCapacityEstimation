@@ -51,6 +51,7 @@ namespace mechanical.Models.PCE.Entities
         public string InspectionPlace { get; set; }
         public DateOnly InspectionDate { get; set; } 
         public string? SurveyRemark { get; set; }
+        public string? Remark { get; set; } = string.Empty;
     
         public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }

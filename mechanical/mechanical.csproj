@@ -35,12 +35,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
-    <Folder Include="UploadFile\" />
+    <ProjectReference Include="..\Signature management\Signature management.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Signature management\Signature management.csproj" />
+    <Content Update="Views\PCEEvaluation\PCECases.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Shared\ScriptPartial\PCEComment\_PCECaseCommentDatatableScriptPartial.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UploadFile\" />
   </ItemGroup>
   
 </Project>

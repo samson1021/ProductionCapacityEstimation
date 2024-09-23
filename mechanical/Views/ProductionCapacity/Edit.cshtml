@@ -1,5 +1,4 @@
 ﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
-@* //@using mechanical.Models.PCE.Dto.UploadFileDto *@
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
@@ -355,13 +354,42 @@
     </div>
 </section>
 
+<div class="modal fade" id="sendEvaluationButtonModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/Case/SendReEvaluation" id="ReevaluationForm">
+                <input asp-for="Id" hidden />
+                <div class="modal-header">
+                    <h4 class="modal-title" id="rejectionModalLabel">Reevaluation Comment</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="ReevaluationComment">Are you sure you want to send it to Reevaluation:</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn bg-purple col-xl-3" onclick="closeModal()">No</button>
+                        </div>
+                        <div class="col-md-6 ">
+                            <button type="submit" class="btn bg-purple col-xl-3">Yes</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("Partial/_EditScriptPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
     }
-    <script src="~/lib/toastr/toastr.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
     <script>
         // //this is for the Machinery Installed Place
 
@@ -481,32 +509,3 @@
         });
     </script>
 }
-<div class="modal fade" id="sendEvaluationButtonModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form method="post" action="/Case/SendReEvaluation" id="ReevaluationForm">
-                <input asp-for="Id" hidden />
-                <div class="modal-header">
-                    <h4 class="modal-title" id="rejectionModalLabel">Reevaluation Comment</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="ReevaluationComment">Are you sure you want to send it to Reevaluation:</label>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <button type="button" class="btn bg-purple col-xl-3" onclick="closeModal()">No</button>
-                        </div>
-                        <div class="col-md-6 ">
-                            <button type="submit" class="btn bg-purple col-xl-3">Yes</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </div>
-</div>

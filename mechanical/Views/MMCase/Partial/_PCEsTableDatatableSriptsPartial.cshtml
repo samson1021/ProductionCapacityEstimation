@@ -1,16 +1,19 @@
-﻿﻿@{
+﻿﻿@using mechanical.Models.PCE.Entities
+
+@{
     var Status = ViewBag.Status as string;
-    var EmptyMessage = "There are no PCEs found";
-    var FetchUrl = "/PCEEvaluation/GetMyPCEs?Status=" + Status;
-    var PCECaseId = ViewData["PCECaseId"] as Guid?;
+    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
+    var EmptyMessage = "There are no Productions found";
+    var FetchUrl = "/MOPCECase/GetMyPCEs?Status=" + Status;
+    var PCECaseId = ViewData["PCECaseId"] as Guid?; 
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
-        EmptyMessage = "There are no " + Status + " PCEs found";
+        EmptyMessage = "There are no " + Status + " Productions found";
     }
     if (PCECaseId.HasValue)
     {
-        FetchUrl = "/PCEEvaluation/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
+        FetchUrl = "/MOPCECase/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
         EmptyMessage = EmptyMessage + " for this  PCE Case";
     }
 }
@@ -21,7 +24,7 @@
         var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
-            PCEsTable = $('#PCEs').DataTable({
+            $('#Productions').DataTable({
                 language: {
                     emptyTable: '@EmptyMessage'
                 },
@@ -45,25 +48,40 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            var detailUrl = '@Url.Action("Detail", "ProductionCapacity")';
-                            return '<a href="' + detailUrl + '?Id=' + data +
-                                '">Details</a> | ' + '<a href="#" onclick="openRejectionModal(\'' + data +
-                                '\')">Return</a>';
+                                                       
+                            const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
+                            const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
+                            const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
 
+                            const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
+                                ? `<a href="${baseUrl}${data}">${evaluateText}</a> | `
+                                : '';
+
+                            const returnLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate" || row.CurrentStatus === "Pending")
+                                ? ` | <a href="#" onclick="openRejectionModal('${data}')">Return</a>`
+                                : '';
+
+                            let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`;
+
+                            if ('@CurrentUser.Role.Name' === "Maker Officer") {
+                                link = evaluateLink + link;
+                            }
+
+                            return link;
+                            
                         }
                     }
                 ]
-            }).buttons().container().appendTo('#PCEs_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
         }
-        function loadPCEs() {
+        function loadProductions() {
             $.ajax({
                 url: fetchUrl,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCEs')) {
-                        var PCEsTable = $('#PCEs').DataTable();
-                        PCEsTable.destroy();
+                    if ($.fn.DataTable.isDataTable('#Productions')) {
+                        $('#Productions').DataTable().destroy();
                     }
                     initializeDataTable(data);
                 },
@@ -73,8 +91,77 @@
                 }
             });
         }
-        loadPCEs();
+        loadProductions();
+
+
+        $.ajax({
+            url: '/UserManagment/GetMakerTeamleader',
+            method: 'GET',
+            dataType: 'json'
+        })
+            .done(function (data) {
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Team Leader');
+                $('#employeeDropdown').append(selectOption);
+                data.forEach(function (employee) {
+                    var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
+                    $('#employeeDropdown').append(option);
+                });
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log('Error fetching employee data:', errorThrown);
+            });
+
+        $('#assignButton').on('click', function () {
+            var checkedProductions = $('.purple-checkbox:checked');
+            var SelectedPCEIds = [];
+
+            checkedProductions.each(function () {
+                var ProductionId = $(this).val();
+                SelectedPCEIds.push(ProductionId);
+            });
+            if (SelectedPCEIds.length === 0) {
+                toastr.error('Please select at least one Production');
+            } else {
+                $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
+
+                $('#assignModal').modal('show');
+            }
+        });
+
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#caseProductions tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+
+        $('#assignForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/MMCase/PCEAssignTeamleader',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    location.reload();
+                    $('#assignModal').modal('hide');
+                },
+                error: function (error) {
+                    toastr.error("Unable to assign Production");
+                    console.log(error);
+                }
+            });
+        });
     });
+
 
     function openRejectionModal(PCEId) {
         document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;

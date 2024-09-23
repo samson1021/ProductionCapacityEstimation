@@ -1,28 +1,25 @@
 ﻿using AutoMapper;
-using mechanical.Data;
-using mechanical.Models.Dto.CaseTimeLineDto;
-using mechanical.Models;
-using mechanical.Models.Dto.CollateralDto;
-using mechanical.Models.Entities;
-using mechanical.Services.CaseTimeLineService;
-using mechanical.Services.UploadFileService;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using Microsoft.CodeAnalysis.Operations;
-//using mechanical.Services.ProductionCaseTimeLineService;
-//using mechanical.Models.Dto.ProductionCaseTimeLineDto;
 using System.ComponentModel.DataAnnotations;
-using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
-
-using mechanical.Services.PCE.PCECaseTimeLineService;
-using mechanical.Models.PCE.Entities;
-using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-
-using mechanical.Models.Dto.UploadFileDto;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using mechanical.Models.Dto.ConstMngAgrMachineryDto;
+
+using mechanical.Data;
+using mechanical.Models;
+using mechanical.Models.Entities;
+using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Services.UploadFileService;
+
+using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
+using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
+using mechanical.Services.PCE.PCECaseTimeLineService;
 
 namespace mechanical.Services.PCE.ProductionCapacityServices
 {
@@ -30,220 +27,306 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
-       // private readonly IProductionUploadFileService _productionUploadFileService;
+        private readonly ILogger<ProductionCapacityServices> _logger;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUploadFileService _uploadFileService;
 
-        public ProductionCapacityServices(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, IPCECaseTimeLineService IPCECaseTimeLineService)
+        public ProductionCapacityServices(CbeContext cbeContext, IMapper mapper, ILogger<ProductionCapacityServices> logger, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, IPCECaseTimeLineService IPCECaseTimeLineService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
+            _logger = logger;
            // _productionUploadFileService = productionUploadFileService;
             _IPCECaseTimeLineService = IPCECaseTimeLineService;
             _httpContextAccessor = httpContextAccessor;
             _uploadFileService = uploadFileService;
 
         }
-        public async Task<ProductionCapacity> CreateProductionCapacity(Guid userId, Guid PCECaseId, ProductionPostDto createProductionDto)
+        public async Task<ProductionCapacity> CreateProductionCapacity(Guid UserId, Guid PCECaseId, ProductionPostDto createProductionDto)
         {
-            var production = _mapper.Map<ProductionCapacity>(createProductionDto);
-            production.Id = Guid.NewGuid();
-            production.PCECaseId = PCECaseId;
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {
-                await this.UploadFile(userId, "PCE Owner LHC Certificate", production, createProductionDto.UploadLHC);
-                await this.UploadFile(userId, "PCE Shade Rent Agreement", production, createProductionDto.ploadshaderentagreement);
-                await this.UploadFile(userId, "PCE Business license", production, createProductionDto.Uploadbusinesslicense);
-                await this.UploadFile(userId, "PCE Machine specification document", production, createProductionDto.Machinespecificationdocumen);
-                await this.UploadFile(userId, "PCE Machine operation manual", production, createProductionDto.Machineoperationmanual);
-                if (createProductionDto.OtherDocument != null)
+            { 
+                var production = _mapper.Map<ProductionCapacity>(createProductionDto);
+                production.Id = Guid.NewGuid();
+                production.PCECaseId = PCECaseId;
+                try
                 {
-                    foreach (var otherDocument in createProductionDto.OtherDocument)
+                    await this.UploadFile(UserId, "PCE Owner LHC Certificate", production, createProductionDto.UploadLHC);
+                    await this.UploadFile(UserId, "PCE Shade Rent Agreement", production, createProductionDto.ploadshaderentagreement);
+                    await this.UploadFile(UserId, "PCE Business license", production, createProductionDto.Uploadbusinesslicense);
+                    await this.UploadFile(UserId, "PCE Machine specification document", production, createProductionDto.Machinespecificationdocumen);
+                    await this.UploadFile(UserId, "PCE Machine operation manual", production, createProductionDto.Machineoperationmanual);
+                    if (createProductionDto.OtherDocument != null)
                     {
-                        await this.UploadFile(userId, "PCE Other Supportive Document", production, otherDocument);
+                        foreach (var otherDocument in createProductionDto.OtherDocument)
+                        {
+                            await this.UploadFile(UserId, "PCE Other Supportive Document", production, otherDocument);
+                        }
                     }
                 }
+                catch (Exception)
+                {
+                    throw new Exception("unable to upload file");
+                }
+
+                production.CreationDate = DateTime.Now;
+                production.CreatedById = UserId;
+                production.CurrentStage = "Relation Manager";
+                production.CurrentStatus = "New";
+                production.ProductionType = "Manufacturing";
+
+
+                await _cbeContext.ProductionCapacities.AddAsync(production);
+
+
+                //////////
+               
+                var pceCaseAssignment1 = new PCECaseAssignment
+                {
+                    Id = Guid.NewGuid(),
+                    ProductionCapacityId = production.Id,
+                    UserId = UserId,
+                    AssignmentDate = DateTime.Now,
+                    CompletionDate = null,
+                    Status = "New"
+                };
+                await _cbeContext.PCECaseAssignments.AddAsync(pceCaseAssignment1);
+                ///////
+            
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = production.PCECaseId,
+                    //Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {production.Type}.",
+                    Activity = $" <strong>A new Manufacturing PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Manufacturing Main Sector:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Manufacturing Sub Sector:</i> {production.Type}.",
+
+                    CurrentStage = "Relation Manager"
+                });
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return production;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("unable to upload file");
-            }
-
-            production.CreationDate = DateTime.Now;
-            production.CreatedById = userId;
-            production.CurrentStage = "Relation Manager";
-            production.CurrentStatus = "New";
-            production.ProductionType = "Manufacturing";
-
-
-            await _cbeContext.ProductionCapacities.AddAsync(production);
-            await _cbeContext.SaveChangesAsync();
-           
-            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-            {
-                CaseId = production.PCECaseId,
-                //Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {production.Type}.",
-                Activity = $" <strong>A new Manufacturing PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Manufacturing Main Sector:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Manufacturing Sub Sector:</i> {production.Type}.",
-
-                CurrentStage = "Relation Manager"
-            });
-
-            return production;
+                _logger.LogError(ex, "Error creating production");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while creating production.");
+            } 
         }
 
        
-        public async Task<ProductionCapacity> CreatePlantProduction(Guid userId, Guid PCECaseId, PlantPostDto createProductionDto)
+        public async Task<ProductionCapacity> CreatePlantProduction(Guid UserId, Guid PCECaseId, PlantPostDto createProductionDto)
         {
             
-            var production = _mapper.Map<ProductionCapacity>(createProductionDto);
-            production.Id = Guid.NewGuid();
-            var produId= production.Id;
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {
-                await this.UploadFile(userId, "Plant LHC Certificate", production, createProductionDto.LHC);
-                await this.UploadFile(userId, "Plant Commercial Invoice", production, createProductionDto.CommercialInvoice);
-                await this.UploadFile(userId, "Plant Custom Declaration", production, createProductionDto.customDeclaration);
-                await this.UploadFile(userId, "Plant Bussiness Licence", production, createProductionDto.BussinessLicence);
-                if (createProductionDto.CBEPartialFinancing != null)
+            { 
+                var production = _mapper.Map<ProductionCapacity>(createProductionDto);
+                production.Id = Guid.NewGuid();
+                var produId= production.Id;
+                try
                 {
-                    await this.UploadFile(userId, "CBE Partial Financing Supportive Document", production, createProductionDto.CBEPartialFinancing);
-                }
-
-                if (createProductionDto.OtherDocument != null)
-                {
-                    foreach (var otherDocument in createProductionDto.OtherDocument)
+                    await this.UploadFile(UserId, "Plant LHC Certificate", production, createProductionDto.LHC);
+                    await this.UploadFile(UserId, "Plant Commercial Invoice", production, createProductionDto.CommercialInvoice);
+                    await this.UploadFile(UserId, "Plant Custom Declaration", production, createProductionDto.customDeclaration);
+                    await this.UploadFile(UserId, "Plant Bussiness Licence", production, createProductionDto.BussinessLicence);
+                    if (createProductionDto.CBEPartialFinancing != null)
                     {
-                        await this.UploadFile(userId, "Plant Other Supportive Document", production, otherDocument);
+                        await this.UploadFile(UserId, "CBE Partial Financing Supportive Document", production, createProductionDto.CBEPartialFinancing);
+                    }
+
+                    if (createProductionDto.OtherDocument != null)
+                    {
+                        foreach (var otherDocument in createProductionDto.OtherDocument)
+                        {
+                            await this.UploadFile(UserId, "Plant Other Supportive Document", production, otherDocument);
+                        }
                     }
                 }
+                catch (Exception)
+                {
+                    throw new Exception("unable to upload file");
+                }
+
+                production.CreationDate = DateTime.Now;
+                production.CreatedById = UserId;
+                production.CurrentStage = "Relation Manager";
+                production.CurrentStatus = "New";
+                //production.ProductionType = "Plant";
+                await _cbeContext.ProductionCapacities.AddAsync(production);
+
+                // Create sample PCECaseAssignment instances
+                var pceCaseAssignment1 = new PCECaseAssignment
+                {
+                    Id = Guid.NewGuid(),
+                    ProductionCapacityId = production.Id,
+                    UserId = UserId,
+                    AssignmentDate = DateTime.Now,
+                    CompletionDate = null,
+                    Status = "New"
+                };
+                await _cbeContext.PCECaseAssignments.AddAsync(pceCaseAssignment1);
+
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = production.PCECaseId,
+                    //Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {production.Type}.",
+                    Activity = $" <strong>A new Plant PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}. &nbsp; <i class='text-purple'>Plant Type</i>.{production.PlantName}",
+
+                    CurrentStage = "Relation Manager"
+                });
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return production;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("unable to upload file");
-            }
-
-            production.CreationDate = DateTime.Now;
-            production.CreatedById = userId;
-            production.CurrentStage = "Relation Manager";
-            production.CurrentStatus = "New";
-            //production.ProductionType = "Plant";
-            await _cbeContext.ProductionCapacities.AddAsync(production);
-            await _cbeContext.SaveChangesAsync();
-
-
-
-            // Create sample ProductionCaseAssignment instances
-            var productionCaseAssignment1 = new ProductionCaseAssignment
-            {
-                Id = Guid.NewGuid(),
-                ProductionCapacityId = production.Id,
-                UserId = userId,
-                AssignmentDate = new DateTime(2023, 6, 1),
-                CompletionDate = null,
-                Status = "New"
-            };
-            await _cbeContext.ProductionCaseAssignments.AddAsync(productionCaseAssignment1);
-            await _cbeContext.SaveChangesAsync();
-
-            await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
-            {
-                CaseId = production.PCECaseId,
-                //Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {production.Type}.",
-                Activity = $" <strong>A new Plant PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}. &nbsp; <i class='text-purple'>Plant Type</i>.{production.PlantName}",
-
-                CurrentStage = "Relation Manager"
-            });
-
-            return production;
+                _logger.LogError(ex, "Error creating plant");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while creating plant.");
+            } 
         }
 
-
-        public async Task<bool> DeleteProduction(Guid userId, Guid id)
+        public async Task<bool> DeleteProduction(Guid UserId, Guid id)
         {
-            var production = await _cbeContext.ProductionCapacities.Where(c => c.Id == id && c.CreatedById == userId && c.CurrentStage == "Relation Manager").FirstOrDefaultAsync();
-            if (production != null)
-            {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            { 
+                var production = await _cbeContext.ProductionCapacities.Where(c => c.Id == id && c.CreatedById == UserId && c.CurrentStage == "Relation Manager").FirstOrDefaultAsync();
+                if (production == null)
+                {
+                    return false;
+                }
 
                 //delete the assignment case if its new not starting the process or not completed yet
-                var deleteassignment = await _cbeContext.ProductionCaseAssignments.Where(c=>c.ProductionCapacityId == id && c.UserId == userId && c.Status == "New").ToListAsync();
+                var deleteassignment = await _cbeContext.PCECaseAssignments.Where(c=>c.ProductionCapacityId == id && c.UserId == UserId && c.Status == "New").ToListAsync();
                 if(deleteassignment.Any())
                 {
                     _cbeContext.RemoveRange(deleteassignment);
-                    await _cbeContext.SaveChangesAsync();
                 }
 
                 //delete the files if they are available
-                var deletedFiles = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id && c.userId == userId).ToListAsync();
+                var deletedFiles = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id && c.userId == UserId).ToListAsync();
                 if (deletedFiles.Any())
                 {
                     _cbeContext.UploadFiles.RemoveRange(deletedFiles);
-                    await _cbeContext.SaveChangesAsync();
                 }
 
-
                 _cbeContext.Remove(production);
-                await _cbeContext.SaveChangesAsync();
                 var Filrproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
                 if( Filrproduction != null)
                 {
                     _cbeContext.Remove(Filrproduction);
-                    await _cbeContext.SaveChangesAsync();
                 }
-                return true;
+                
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = production.PCECaseId,
+                    Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {production.Id} has been deleted. </strong>.",
+                    CurrentStage = "Relation Manager"
+                });
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;                
             }
-                return false;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting production");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while deleting production.");
+            } 
         }
 
     
 
-    public async Task<ProductionCapacity> EditProduction(Guid userId, Guid ProductionCapacityId, ProductionPostDto createProductionDto)
+        public async Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionPostDto createProductionDto)
         {
-            var Production = await _cbeContext.ProductionCapacities.FindAsync(ProductionCapacityId);
-            if (Production == null)
-            {
-                throw new Exception("PCE not Found");
-            }
-            if (Production.CreatedById != userId)
-            {
-                throw new Exception("you don't have permission");
-            }
-            if (Production.CurrentStage == "Relation Manager")
-            {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            { 
+                var Production = await _cbeContext.ProductionCapacities.FindAsync(ProductionCapacityId);
+                if (Production == null)
+                {
+                    throw new Exception("PCE not Found");
+                }
+                if (Production.CreatedById != UserId)
+                {
+                    throw new Exception("you don't have permission");
+                }
+                if (Production.CurrentStage != "Relation Manager")
+                {
+                 throw new Exception("unable to Edit PCE");
+                }
+
                 createProductionDto.PCECaseId = Production.PCECaseId;
                 createProductionDto.ProductionType = Production.ProductionType;
                 _mapper.Map(createProductionDto, Production);
                 _cbeContext.ProductionCapacities.Update(Production);
+
+                await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    CaseId = Production.PCECaseId,
+                    Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {Production.Id} has been Updated. </strong>.",
+
+
+                    CurrentStage = "Relation Manager"
+                });
+
                 await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
                 return Production;
             }
-            throw new Exception("unable to Edit PCE");
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating production");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while updating production.");
+            } 
         }
 
-
-
-
-        public async Task<ProductionCapacity> EditPlantProduction(Guid userId, Guid ProductionCapacityId, PlantEditPostDto createProductionDto)
+        public async Task<ProductionCapacity> EditPlantProduction(Guid UserId, Guid ProductionCapacityId, PlantEditPostDto createProductionDto)
         {
-            var Production = await _cbeContext.ProductionCapacities.FindAsync(ProductionCapacityId);
-            if (Production == null)
-            {
-                throw new Exception("PCE not Found");
-            }
-            if (Production.CreatedById != userId)
-            {
-                throw new Exception("you don't have permission");
-            }
-            if (Production.CurrentStage == "Relation Manager")
-            {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            { 
+                var Production = await _cbeContext.ProductionCapacities.FindAsync(ProductionCapacityId);
+                if (Production == null)
+                {
+                    throw new Exception("PCE not Found");
+                }
+                if (Production.CreatedById != UserId)
+                {
+                    throw new Exception("you don't have permission");
+                }
+                if (Production.CurrentStage != "Relation Manager")
+                {
+                    throw new Exception("unable to Edit PCE");
+                }
                 createProductionDto.PCECaseId = Production.PCECaseId;
                 createProductionDto.ProductionType = Production.ProductionType;
                 _mapper.Map(createProductionDto, Production);
                 _cbeContext.ProductionCapacities.Update(Production);
+
                 await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
                 return Production;
             }
-            throw new Exception("unable to Edit PCE");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating plant");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while updating the plant.");
+            } 
         }
 
 
@@ -266,13 +349,13 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
         return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
     }
-    public async Task<ReturnProductionDto> GetProduction(Guid userId, Guid id)
+    public async Task<ReturnProductionDto> GetProduction(Guid UserId, Guid id)
     {
         var product = await _cbeContext.ProductionCapacities
                         .FirstOrDefaultAsync(c => c.Id == id);
         return _mapper.Map<ReturnProductionDto>(product);
     }
-    public async Task<PlantEditPostDto> GetPlantProduction(Guid userId, Guid id)
+    public async Task<PlantEditPostDto> GetPlantProduction(Guid UserId, Guid id)
     {
         var product = await _cbeContext.ProductionCapacities
                         .FirstOrDefaultAsync(c => c.Id == id);
@@ -285,14 +368,14 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
 
 
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetRejectedProductions(Guid ProductionCaseId)
+        public async Task<IEnumerable<ReturnProductionDto>> GetRejectedProductions(Guid PCECaseId)
         {
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && (res.CurrentStatus == "Reject" && res.CurrentStage == "Relation Manager")).ToListAsync();
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "Reject" && res.CurrentStage == "Relation Manager")).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid userId, Guid PCECaseId)
+        public async Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid UserId, Guid PCECaseId)
         {
             var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStatus == "Rejected" && res.CurrentStage == "Relation Manager").ToListAsync();
             var productionDtos = _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
@@ -300,47 +383,80 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
 
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid ProductionCaseId)
+        public async Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid PCECaseId)
         {
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && (res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Completed")).ToListAsync();
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Completed")).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
-        public async  Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid ProductionCaseId)
+        public async  Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid PCECaseId)
         {
-            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == ProductionCaseId && res.CurrentStage == "Checker officer" && res.CurrentStatus == "Completed").ToListAsync();
+            var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Checker officer" && res.CurrentStatus == "Completed").ToListAsync();
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
-        public async Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid ProductionCaseId)
-        {
-            var userSupervised = await _cbeContext.CreateUsers.Where(res => res.SupervisorId == UserId).ToListAsync();
-            var ProductionAssigmentDtos = new List<ProductionAssignmentDto>();
+        // public async Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid PCECaseId)
+        // {
+        //     var userSupervised = await _cbeContext.CreateUsers.Where(res => res.SupervisorId == UserId).ToListAsync();
+        //     var ProductionAssigmentDtos = new List<ProductionAssignmentDto>();
 
-            foreach (var item in userSupervised)
-            {
-                var productionCaseAssignment = await _cbeContext.ProductionCaseAssignments.Include(x => x.User).Include(x => x.ProductionCapacity).Where(res => res.UserId == item.Id && res.ProductionCapacity.PCECaseId == ProductionCaseId).ToListAsync();
-                productionCaseAssignment = productionCaseAssignment.DistinctBy(res => res.ProductionCapacityId).ToList();
-                foreach (var items in productionCaseAssignment)
-                {
-                    var productionAssigmentDto = new ProductionAssignmentDto
-                    {
-                        ProductionCapacityId = items.ProductionCapacityId,
-                         PCECaseId = ProductionCaseId,
-                        PropertyOwner = items.ProductionCapacity.PropertyOwner,
-                        ProductionCaseAssignmentId = items.Id,
-                        Role = items.ProductionCapacity.Role,
-                        Type = EnumToDisplayName(items.ProductionCapacity.Type),
-                        Category = EnumToDisplayName(items.ProductionCapacity.Category),
-                        User = items.User.Name,
-                        AssignmentDate = items.AssignmentDate,
-                        Status = items.Status,
-                    };
-                    ProductionAssigmentDtos.Add(productionAssigmentDto);
-                }
-            }
-            return ProductionAssigmentDtos;
+        //     foreach (var item in userSupervised)
+        //     {
+        //         var pceCaseAssignment = await _cbeContext.PCECaseAssignments.Include(x => x.User).Include(x => x.ProductionCapacity).Where(res => res.UserId == item.Id && res.ProductionCapacity.PCECaseId == PCECaseId).ToListAsync();
+        //         pceCaseAssignment = pceCaseAssignment.DistinctBy(res => res.ProductionCapacityId).ToList();
+        //         foreach (var items in pceCaseAssignment)
+        //         {
+        //             var productionAssigmentDto = new ProductionAssignmentDto
+        //             {
+        //                 ProductionCapacityId = items.ProductionCapacityId,
+        //                 PCECaseId = PCECaseId,
+        //                 PropertyOwner = items.ProductionCapacity.PropertyOwner,
+        //                 PCECaseAssignmentId = items.Id,
+        //                 Role = items.ProductionCapacity.Role,
+        //                 Type = EnumToDisplayName(items.ProductionCapacity.Type),
+        //                 Category = EnumToDisplayName(items.ProductionCapacity.Category),
+        //                 User = items.User.Name,
+        //                 AssignmentDate = items.AssignmentDate,
+        //                 Status = items.Status,
+        //             };
+        //             ProductionAssigmentDtos.Add(productionAssigmentDto);
+        //         }
+        //     }
+        //     return ProductionAssigmentDtos;
+        // }
+
+        public async Task<IEnumerable<ProductionAssignmentDto>> GetMyAssignmentProductions(Guid UserId, Guid PCECaseId)
+        {
+            var supervisedUsers = await _cbeContext.CreateUsers.Where(user => user.SupervisorId == UserId).Select(user => user.Id).ToListAsync();
+
+            var productionAssignments = await _cbeContext.PCECaseAssignments
+                                                        .Include(x => x.User)
+                                                        .Include(x => x.ProductionCapacity)
+                                                        .Where(assignment => supervisedUsers.Contains(assignment.UserId) && assignment.ProductionCapacity.PCECaseId == PCECaseId)
+                                                        .ToListAsync();
+
+            var distinctAssignments = productionAssignments
+                                        // .DistinctBy(assignment => assignment.ProductionCapacityId)
+                                        .GroupBy(assignment => assignment.ProductionCapacityId)
+                                        .Select(g => g.OrderByDescending(assignment => assignment.AssignmentDate).FirstOrDefault()) 
+                                        .Select(assignment => new ProductionAssignmentDto
+                                        {
+                                            ProductionCapacityId = assignment.ProductionCapacityId,
+                                            PCECaseId = PCECaseId,
+                                            PropertyOwner = assignment.ProductionCapacity.PropertyOwner,
+                                            PCECaseAssignmentId = assignment.Id,
+                                            Role = assignment.ProductionCapacity.Role,
+                                            Type = assignment.ProductionCapacity.Type,
+                                            Category = "Test Category",
+                                            // Category = EnumToDisplayName(assignment.ProductionCapacity.Category),
+                                            User = assignment.User.Name,
+                                            AssignmentDate = assignment.AssignmentDate,
+                                            Status = assignment.Status,
+                                        }).ToList();
+
+            return distinctAssignments.ToList();
         }
+
         string EnumToDisplayName<TEnum>(TEnum enumValue)
         {
             return (typeof(TEnum).GetField(enumValue.ToString())
@@ -348,30 +464,6 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
         
-
-
-
-        public async Task<IEnumerable<ReturnProductionDto>> MyReturnedProductions(Guid userId)
-        {
-            List<ProductionCaseAssignment> caseAssignments = await _cbeContext.ProductionCaseAssignments.Where(ca => ca.UserId == userId && ca.Status == "Correction").ToListAsync();
-            List<ProductionCapacity> collaterals = await _cbeContext.ProductionCapacities.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus == "Correction").ToListAsync();
-
-            List<ReturnCollateralDto> mTLreturnCollateralDtos = new List<ReturnCollateralDto>();
-            if (collaterals != null)
-            {
-                foreach (var caseAssignment in caseAssignments)
-                {
-                    var collatearal = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.ProductionCapacityId && ca.CurrentStatus == "Correction");
-                    if (collatearal != null)
-                    {
-                        mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
-                    }
-                }
-            }
-            return _mapper.Map<List<ReturnProductionDto>>(collaterals);
-
-        }
-
         public async Task<IEnumerable<ProductionCapacityCorrectionReturnDto>> GetComments(Guid CollateralId)
         {
             var comments = await _cbeContext.ProductionCapacityCorrections.Where(ca => ca.ProductionCapacityId == CollateralId).ToListAsync();
@@ -384,10 +476,15 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
             return null;
         }
 
-        public async Task<IEnumerable<ReturnProductionDto>> GetRemarkProducts(Guid userId, Guid ProductionCaseId)
+        public async Task<IEnumerable<ReturnProductionDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId)
         {
-            var productioncaseAssignments = await _cbeContext.ProductionCaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == userId && res.ProductionCapacity.PCECaseId == ProductionCaseId && res.Status.Contains("Remark")).ToListAsync();
-            var productions = productioncaseAssignments.Select(res => res.ProductionCapacity);
+            var pceCaseAssignments = await _cbeContext.PCECaseAssignments
+                                                            .Include(res => res.ProductionCapacity)
+                                                            .Where(res => res.UserId == UserId 
+                                                                        && res.ProductionCapacity.PCECaseId == PCECaseId 
+                                                                        && res.Status.Contains("Remark"))
+                                                            .ToListAsync();
+            var productions = pceCaseAssignments.Select(res => res.ProductionCapacity);
             return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
         }
 
@@ -420,11 +517,11 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
        
 
 
-        private async Task UploadFile(Guid userId, string Category, ProductionCapacity production, IFormFile? file)
+        private async Task UploadFile(Guid UserId, string Category, ProductionCapacity production, IFormFile? file)
         {
             if (file != null)
             {
-                await _uploadFileService.CreateUploadFile(userId, new CreateFileDto()
+                await _uploadFileService.CreateUploadFile(UserId, new CreateFileDto()
                 {
                     File = file,
                     CaseId = production.PCECaseId,
@@ -435,14 +532,14 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
 
 
-        public async Task<bool> DeleteProductionFile(Guid userId, Guid Id)
+        public async Task<bool> DeleteProductionFile(Guid UserId, Guid Id)
         {
             var file = await _cbeContext.UploadFiles.FindAsync(Id);
             if (file == null)
             {
                 return false;
             }
-            if (file.userId != userId)
+            if (file.userId != UserId)
             {
                 return false;
             }
@@ -455,7 +552,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         
 
       
-        public async Task<bool> UploadProductionFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory)
+        public async Task<bool> UploadProductionFile(Guid UserId, IFormFile file, Guid caseId, string DocumentCatagory)
         {
             var collateral = await _cbeContext.ProductionCapacities.FindAsync(caseId);
             //var collateral = await _cbeContext.ProductionCapacities
@@ -473,7 +570,7 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 CaseId =collateral.PCECaseId,
 
             };
-            if (await _uploadFileService.CreateUploadFile(userId, CollateralFile) != Guid.Empty)
+            if (await _uploadFileService.CreateUploadFile(UserId, CollateralFile) != Guid.Empty)
             {
                 return true;
             }
@@ -486,4 +583,4 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
         }
     }
 }
-    
+

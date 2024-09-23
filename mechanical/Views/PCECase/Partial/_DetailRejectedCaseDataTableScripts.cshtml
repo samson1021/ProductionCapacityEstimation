@@ -13,7 +13,6 @@
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/toastr/toastr.min.js"></script>
 <script>
-    console.log("debug");
     $(document).ready(function () {
         $('#UpdateSchedule').on('click', function (event) {
             event.preventDefault();
@@ -26,7 +25,7 @@
             formData.append('Id', Id);
 
             $.ajax({
-                url: '/MOCase/UpdateSchedule',
+                url: '/MOPCECase/UpdateSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -46,7 +45,7 @@
             formData.append('Id', Id);
 
             $.ajax({
-                url: '/MOCase/ApproveSchedule',
+                url: '/MOPCECase/ApproveSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -196,7 +195,6 @@
                 method: 'POST',
                 data: requestData,
                 success: function (response) {
-                    console.log(response);
                     $('#messageinput').val('');
                     var chatMessages = $('.direct-chat-messages');
                     var scrollHeight = chatMessages[0].scrollHeight;
@@ -218,7 +216,7 @@
         function initializeDataTable(data) {
             caseCollateralsTable = $('#caseCollaterals').DataTable({
                 language: {
-                    emptyTable: "There is no Rejected Collaterals in this PCE case"
+                    emptyTable: "There is no Rejected productions in this PCE case"
                 },
                 responsive: true,
                 pageLength: 8,
@@ -252,7 +250,7 @@
 
         }
 
-        function loadCollaterals() {
+        function loadProductions() {
             $.ajax({
                 url: '/ProductionCapacity/GetRmRejectedProductions?PCECaseId=' + CaseId,
                 type: 'GET',
@@ -270,8 +268,8 @@
             });
         }
 
-        loadCollaterals();
-        loadCollaterals();
+        loadProductions();
+        loadProductions();
 
 
 
@@ -281,7 +279,7 @@
         chatMessages.scrollTop(scrollHeight);
 
         //$('#custom-tabs-four-profile-tab').on('shown.bs.tab', function (e) {
-        //    loadCollaterals();
+        //    loadProductions();
         //});
 
         // $("#IndusteryProp").hide();

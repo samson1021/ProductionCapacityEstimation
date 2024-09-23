@@ -17,14 +17,17 @@ using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
 
 /////
-using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PlantCapacityEstimationDto;
-using mechanical.Models.PCE.Dto.ProductionCaseAssignmentDto;
+using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 /////
 
 namespace mechanical.Mapper
@@ -170,9 +173,25 @@ namespace mechanical.Mapper
                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
-            CreateMap<ProductionCaseAssignmentDto, ProductionCaseAssignment>().ReverseMap();
+            CreateMap<PCECaseAssignmentDto, PCECaseAssignment>().ReverseMap();
             CreateMap<PlantPostDto, ProductionCapacity>().ReverseMap();
             CreateMap<PlantEditPostDto, ProductionCapacity>().ReverseMap();
+            ////////////
+            CreateMap<PCECase, PCECaseTerminateDto>()
+              .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+              .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+
+            CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>().ReverseMap();
+            CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>().ReverseMap();
+
+            CreateMap<PCECaseCommentPostDto, PCECaseComment>();
+            CreateMap<PCECaseComment, PCECaseCommentReturnDto>()
+                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
+            ////////////
+
+            CreateMap<PCECaseSchedulePostDto, PCECaseSchedule>();
+            CreateMap<PCECaseSchedule, PCECaseScheduleReturnDto>();
+
 
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();

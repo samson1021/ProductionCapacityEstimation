@@ -174,7 +174,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -196,7 +196,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -218,7 +218,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -240,7 +240,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCEEvaluation", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -265,7 +265,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -287,7 +287,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -309,7 +309,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -331,7 +331,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Reestimate" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Reestimate" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -353,7 +353,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -375,7 +375,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","PCEEvaluation", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -385,9 +385,9 @@
                  *@
 
                 <div class="row">
-                    <div class="card">
+                    <div class="card mx-2">
                         <div class="card-header border-transparent">
-                            <h3 class="card-title">Latest PCECases</h3>
+                            <h3 class="card-title">Latest PCE Cases</h3>
                         </div>
                                    
                         <div class="card-body p-0">
@@ -399,8 +399,9 @@
                                             <th>Creation Date</th>
                                             <th>Applicant Name</th>
                                             <th>Customer Id</th>
-                                            <th>New PCEs</th>
-                                            <th>Total PCEs</th>
+                                            @* <th>New PCEs</th> *@
+                                            @* <th>Total PCEs</th> *@
+                                            <th>Productions</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -436,9 +437,9 @@
 
         });
 
-        @* // production capacity estimation start
+        // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCEEvaluation/GetMyDashboardPCECaseCount")
+            fetch("/MOPCECase/GetMyDashboardPCECasesCount")
                 .then(response => response.json())
                 .then(data => {
 
@@ -452,12 +453,12 @@
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
-        }); *@
+        }); 
 
         
-        // production capacity estimation start
+        @*// production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCEEvaluation/GetMyDashboardPCECount")
+            fetch("/MOPCECase/GetMyDashboardPCECount")
                 .then(response => response.json())
                 .then(data => {
 
@@ -472,6 +473,7 @@
                     console.error("Error fetching card counts:", error);
                 });
         });
+        *@
 
         // Production capacity estimation case end
 
@@ -514,27 +516,35 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: "/PCEEvaluation/GetMyPCECases",
-                // url: "/PCEEvaluation/GetMyPCECases?Status=All",
+                url: "/MOPCECase/GetMyPCECases",
+                // url: "/MOPCECase/GetMyLatestPCECases",
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
                     var columns = [
-                        { data: 'CaseNo', width: '10%' },
+                        { 
+                            data: 'CaseNo', 
+                            width: '10%',
+                            render: function (data, type, row) {
+                                return '<a href="@Url.Action("PCECaseDetail", "MOPCECase")?Id=' + row.Id + '">' + data + '</a>';
+                            }                 
+                        },
                         {
                             data: 'CreationDate',
                             width: '15%',
                             render: function (data) {
                                 var date = new Date(data);
-                                return date.toLocaleString();
+                                return date.toISOString().split('T')[0];
+                                // return date.toLocaleString();
                             }
                         },
                         { data: 'ApplicantName', width: '15%' },
                         { data: 'CustomerUserId', width: '15%' },
-                        { data: 'NoOfCollateral', width: '10%' },
+                        @* { data: 'NoOfCollateral', width: '10%' }, *@
                         { data: 'TotalNoOfCollateral', width: '10%' },
                         {
-                            data: 'CurrentStatus',
+                            data: 'Status',
+                            // data: 'CurrentStatus',
                             width: '10%',
                             render: function (data) {
                                 var statusHtml = '';

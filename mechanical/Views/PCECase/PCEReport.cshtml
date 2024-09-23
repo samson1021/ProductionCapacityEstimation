@@ -1,3 +1,4 @@
+@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Entities;
 @using mechanical.Models.Dto.UploadFileDto
 
@@ -5,7 +6,29 @@
     var PCECase = ViewData["PCECase"] as PCECase;
     var productions = ViewData["productions"] as List<ProductionCapacity>;
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
-    var PCECaseSchedule = ViewData["PCECaseSchedule"] as ProductionCaseSchedule;
+    var PCECaseSchedule = ViewData["PCECaseSchedule"] as PCECaseSchedule;
+
+    // var  signaturefilename = ViewData["EvaluatorsignatureID"];
+    //  var EvaluatorName = ViewData["EvaluatorName"];
+    //  var EvaluatorDate = ViewData["EvaluatorDate"];
+
+    var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
+
+    DateTime? createdAt = null;
+    Guid? evaluatorId = null;
+    string evaluatorName = null;
+    Guid? pCEvaluationId = null;
+    Guid? signatureImageId = null;
+
+    if (evaluatorReport != null)
+    {
+        createdAt = evaluatorReport.CreatedAt;
+        evaluatorId = evaluatorReport.EvaluatorId;
+        evaluatorName = evaluatorReport.EvaluatorName;
+        pCEvaluationId = evaluatorReport.PCEvaluationId;
+        signatureImageId = evaluatorReport.SignatureImageId;
+    }
+
 
     var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>; 
 
@@ -24,41 +47,30 @@
     }
 
     var makers = PCEEvaluations.Select(m => m.Evaluator).Distinct();
-
     var PCECaseScheduleDate = DateTime.Now;
     if (PCECaseSchedule != null)
     {
         PCECaseScheduleDate = PCECaseSchedule.ScheduleDate;
     }
-    
-
     bool isPrinting = false;
-
 }
 
-
-
-
-
 <style>
-        
-
-        .printing #requieddoc {
-        display: none !important;
-        }
-        .printing .approvedby {
-            display: block !important;
-        }
-        .printing #print-btn {
-        display: none !important;
-        }
-
+    .printing #requieddoc {
+    display: none !important;
+    }
+    .printing .approvedby {
+        display: block !important;
+    }
+    .printing #print-btn {
+    display: none !important;
+    }
     .printing #download-btn {
         display: none !important;
     }
-        .printing footer {
-        display: none !important;
-       }
+    .printing footer {
+    display: none !important;
+    }
     @@media print {
          footer {
             display: none !important
@@ -77,11 +89,7 @@
             display:block !important;
         }
     }
-
 </style>
-
-
-
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -94,6 +102,7 @@
                     <li class="breadcrumb-item"><a href="@Url.Action("MyPCECases", "PCECase")">PCE Reports</a></li>
                     <li class="breadcrumb-item active">PCE Case Report</li>
                 </ol>
+              
             </div>
         </div>
     </div>
@@ -344,10 +353,25 @@
                     </div>
                 </div>
                 <div class="approvedby" style="display:block">
-                    <p>Capacity estimated by: - _______________________________________; Signature: _________________Date: ________________</p>
+             @*        <p>
+                        Capacity estimated by:-   <u> <strong>@EvaluatorName</strong></u> ; Signature:
+                        <div style="text-decoration: underline; display: inline-block;">
+                            <img src="/UploadFile/@($"{signaturefilename}.png")" alt="Signature" style="max-width: 60px; " />
+                        </div>
+                        Evaluated Date: <u><strong>@EvaluatorDate</strong></u>
+                    </p> *@
+
+
+                    <p >
+                        Capacity estimated by:- <u><strong>@evaluatorName</strong></u>; Signature:
+                        <span style="text-decoration: underline; margin: 0 5px;">
+                            <img src="/UploadFile/@($"{signatureImageId}.png")" alt="Signature" style="max-width: 60px;" />
+                        </span>
+                        Evaluated Date: <u><strong>@createdAt</strong></u>
+                    </p>  
                 </div>
+
                 
-              
                 <div class="requieddoc" id="requieddoc">
                     <br />
                     <h5 class="mt-1 pl-4">C.  Documents used for Plant Capacity Estimation</h5>
@@ -357,7 +381,7 @@
                                 <tr>
                                     <th style="width: 300px;">File Name</th>
                                     <th style="width: 300px;">File Category</th>
-                                    <th style="width: 250px;">Content Type</th>>
+                                    <th style="width: 250px;">Content Type</th>
                                     <th style="width: 250px;">Action</th>
                                 </tr>
                             </thead>

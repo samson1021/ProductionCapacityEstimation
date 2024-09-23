@@ -110,6 +110,17 @@ namespace mechanical.Services.UploadFileService
 
 
 
+        //public async Task<ReturnPCEReportFileDto> GetSignatureByEmployeeId(string? CollateralId)
+        //{
+        //    if (CollateralId == null) return null;
+
+        //    var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == CollateralId).Select(c => c.SignatureFileId).FirstOrDefault();
+
+        //    var uploadFiles = await _cbeContext.UploadFiles.Where(res => res.CaseId == CollateralId).ToListAsync();
+        //    return _mapper.Map<ReturnPCEReportFileDto>(uploadFiles);
+        //}
+
+
 
         public async Task<ReturnFileDto> UpdateFile(Guid Id, CreateFileDto file)
         {

@@ -3,9 +3,8 @@
 @* @model mechanical.Models.Dto.CollateralDto.CollateralPostDto; *@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 @{
-    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
+    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
 }
-
 
 <div class="card">
     <div class="Card-header">
@@ -15,16 +14,16 @@
                     <div class="btn-group">
 
                         <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Manufacturing Production Capacity Estimation Request
+                            <i class="fas fa-plus-circle"></i> Manufacturing PCE Request
                         </button>
                         </button>
-                        @* <button id="EstimatePlaneCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#EstimatePlaneCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Estimate Plant Production Capacity
+                        <button id="EstimatePlaneCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#EstimatePlaneCollateralModal">
+                            <i class="fas fa-plus-circle"></i> Plant PCE Request
                         </button>
 
                         <button  type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" >
                             <i class="fas fa-plus-circle"></i> Add any other
-                        </button>*@
+                        </button>
                         <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "PCECaseTimeLine", new { CaseId = @myCase.Id })">
                             <i class="nav-icon fas fa-sitemap"></i>
                         </a>
@@ -57,8 +56,7 @@
         </div>
     </div>
 </div>
-@*
- collateral delete modal  *@
+@* production delete modal  *@
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -69,7 +67,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this Collateral?
+                Are you sure you want to delete this production?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -79,34 +77,17 @@
     </div>
 </div>
 
-@* @await Html.PartialAsync("Partial/_PCECreateCollateral")
-@* @await Html.PartialAsync("CreateCivilCollateral") *@ 
-<script>
-    // const addMechanicalCollateralButton = document.getElementById("EstimatePlaneCollateralButton");
-    // // const addCivilCollateralButton = document.getElementById("addCivilCollateralButton");
-    // const myCaseId = "@myCase.Id";
-
-    addAgricultureCollateralButton.addEventListener("click", function () {
-        $('#EstimatePlaneCollateralButton').modal('show');
-    });
-
-    //     addCivilCollateralButton.addEventListener("click", function () {
-    //         $('#EstimatePlaneCollateralButton').modal('show');
-    //     });
-</script>
 <div class="modal fade" id="addMechanicalCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Manufacturing Production Capacity Estimation Collateral</h5>
+                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Manufacturing Production Capacity Estimation</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             @using (Html.BeginForm("Create", "ProductionCapacity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
             {
-            @* @using (Html.BeginForm("Create", "ProductionCapcity", FormMethod.Post, new { id = "addMechanicalCollateralForm" }))
-            { *@
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
                          <input asp-for="PCECaseId" value=@myCase.Id type="hidden" id="CaseId" /> 
@@ -166,7 +147,7 @@
                             </div>
                         </div>
                       
-@*                        industerial collateral attributes *@
+@*                        industerial production attributes *@
 
                         <div class="row" id="IndusteryProp">
                             <div class="form-group col-lg-4">
@@ -187,7 +168,7 @@
                             <div class="row">
                                 <div class="form-group col-lg-3">
                                     <label asp-for="ProductionBussinessLicence">Business License Number<i class="text-danger">*</i> </label>
-                                    <input asp-for="ProductionBussinessLicence" type="text" required class="form-control form-control-sm" id="ManufactureYear" placeholder="Business License Number">
+                                    <input asp-for="ProductionBussinessLicence" type="text" class="form-control form-control-sm" id="ProductionBussinessLicence" placeholder="Business License Number">
                                     <span id="ProductionBussinessLicence-error" asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-3">
@@ -365,7 +346,7 @@
                             </div>
                         </div>
                          <div class="row">
-                            <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Add</button>
+                            <button type="submit" class="col-xl-4  btn btn-sm bg-purple">Add</button>
                         </div>
                     </div>
                 </div>
@@ -395,7 +376,7 @@
                     </div>
                     <div class="row col-12">
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignButton">Assign</button>
+                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1">Assign</button>
                             <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -413,11 +394,10 @@
    
     document.getElementById("PropertyOwner").addEventListener("input", function () {
         var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
         if (!alphanumericRegex.test(input)) {
             this.setCustomValidity("Only alphanumeric characters are allowed.");
             document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
-            console.log("here");
         } else {
             this.setCustomValidity("");
             document.getElementById("PropertyOwner-error").textContent = "";
@@ -478,16 +458,6 @@
     function validateForm() {
         var isValid = true;
 
-        // Validate the required fields
-        // if (document.getElementById("PlantName").value.trim() === "") {
-        //     document.getElementById("PlantName-error").textContent = "Name of Plant is required.";
-        //     document.getElementById("PlantName").style.borderColor = "red";
-
-        //     isValid = false;
-        // } else {
-        //     document.getElementById("PlantName").style.borderColor = "";
-        //     document.getElementById("PlantName-error").textContent = "";
-        // }
         if (document.getElementById("PropertyOwner").value.trim() === "") {
             document.getElementById("PropertyOwner-error").textContent = "Property Owner is required.";
             document.getElementById("PropertyOwner").style.borderColor = "red";
@@ -564,11 +534,10 @@
 
     document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
         var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
         if (!alphanumericRegex.test(input)) {
             this.setCustomValidity("Only alphanumeric characters are allowed.");
             document.getElementById("MachineryInstalledPlace-error").textContent = "Only alphanumeric characters are allowed.";
-            console.log("here");
         } else {
             this.setCustomValidity("");
             document.getElementById("PropertyOwner-error").textContent = "";
@@ -587,7 +556,7 @@
             otherRegionInput.removeAttribute("name"); // Remove the name attribute
         }
     }
-    //this is to validate all collateral addresses
+    //this is to validate all production addresses
     function validateZoneInput(inputElement) {
         var zoneError = document.getElementById("Zone-error");
         var zoneValue = inputElement.value;
