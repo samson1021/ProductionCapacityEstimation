@@ -45,13 +45,21 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? ProductDescription { get; set; }
 
         public IFormFile? UploadLHC { get; set; }
-        public IFormFile? ploadshaderentagreement { get; set; }
-        [Required(ErrorMessage = "Please  upload business license document.")]
-        public IFormFile Uploadbusinesslicense { get; set; }
-        [Required(ErrorMessage = "Please upload machine specification document.")]
-        public IFormFile Machinespecificationdocumen { get; set; }
+        public IFormFile? ploadshaderentagreement { get; set; }        
+        public IFormFile? Uploadbusinesslicense { get; set; }        
+        public IFormFile? Machinespecificationdocumen { get; set; }
         public IFormFile? Machineoperationmanual { get; set; }
         public IEnumerable<IFormFile>? OtherDocument { get; set; }
+
+
+       
+
+       
+
+       
+      
+
+      
 
     }
 }

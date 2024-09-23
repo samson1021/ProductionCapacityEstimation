@@ -280,11 +280,17 @@
                 toastr.error("Please fill in all required fields.");
                 return;
             }
-            var MachineName = getAttributeByName(formDataArray, 'ManufactureYear').trim();
-            if (ManufactureYear === "") {
+            var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
+            if (MachineName === "") {
                 toastr.error("Please fill in all required fields.");
                 return;
             }
+            var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
+            if (ProductionBussinessLicence === "") {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+
             var Region = getAttributeByName(formDataArray, 'Region').trim();
             if (Region === "") {
                 toastr.error("Please fill in all required fields.");
@@ -323,9 +329,16 @@
                 }
             }
 
-
-
-
+            var Uploadbusinesslicense = $("#Uploadbusinesslicense");
+            if (Uploadbusinesslicense.get(0).files.length === 0) {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
+            var Machinespecificationdocumen = $("#Machinespecificationdocumen");
+            if (Machinespecificationdocumen.get(0).files.length === 0) {
+                toastr.error("Please fill in all required fields.");
+                return;
+            }
 
             var formData = new FormData(this);
             $.ajax({
