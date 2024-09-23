@@ -506,13 +506,17 @@ namespace mechanical.Services.PCE.PCECaseService
                 foreach (var c in cas.ProductionCapacities)
                 {
                     iterationcount = iterationcount + 1;
-
-                    if (c.CurrentStatus == "New")
+                    if (c.CurrentStatus == "New" && c.CurrentStage == "Relation Manager")
                     {
+                        
                     }
-                    else if(c.CurrentStatus == "Completed")
+                    else if(c.CurrentStatus == "Completed" && c.CurrentStage == "Relation Manager")
                     {
                         completcount = completcount + 1;
+                    }
+                    else if (c.CurrentStage != "Relation Manager")
+                    {
+                            status = "Pending";
                     }
                     else
                     {
