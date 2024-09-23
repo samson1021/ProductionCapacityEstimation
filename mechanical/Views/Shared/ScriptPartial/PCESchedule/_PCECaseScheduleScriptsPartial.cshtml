@@ -2,10 +2,19 @@
 <script>
     console.log("debug");
     $(document).ready(function () {
-        $('#UpdateSchedule').on('click', function (event) {
+
+        $('#UpdateSchedules').on('click', function (event) {
             event.preventDefault();
-            $('#datetimepicker-modal').modal('show');
+            $('#datetimepicker-modals').modal('show');
         });
+
+        $('#proposeNewScheduleButtons').on('click', function (event) {
+            event.preventDefault();
+            $('#proposeNewSchedule-modals').modal('show');
+        });
+
+
+
         $('#datetimepicker-form').submit(function (event) {
             event.preventDefault();
             var formData = new FormData(this);
@@ -72,10 +81,6 @@
         });
 
 
-        $('#proposeNewScheduleButton').click(function () {
-            $('#proposeNewSchedule-modal').modal('show');
-        });
-
 
 
         var CaseId = $('#CaseId').val();
@@ -93,6 +98,8 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
+
+                    $('#proposeNewSchedule-modals').modal('hide');
                     location.reload();
                     // Handle success response
                 },

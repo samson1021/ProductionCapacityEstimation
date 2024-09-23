@@ -6,7 +6,8 @@
     var caseId =  ViewData["PCECaseId"] as Guid? ?? Guid.Empty;
     var currentUser = ViewData["CurrentUser"] as CreateUser;
     var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
-    Guid userId = currentUser.Id;     
+    Guid userId = currentUser.Id;
+  
 }
 
 <section class="content-header">
@@ -59,11 +60,11 @@
                                         <span class="description">@caseSched.CreatedAt</span>
                                     </div>
                                     <p id="ScheduleDate">Schedule Date: @caseSched.ScheduleDate</p>
-                                    @if (@caseSched.Status == "Approved")
+                                    @if (@caseSched.Status == "Approved" || @caseSched.Status == "approved")
                                     {
                                         <p>Status: <span class="text-success">@caseSched.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
                                     }
-                                    else if (@caseSched.Status == "Rejected")
+                                    else if (@caseSched.Status == "Rejected" || @caseSched.Status == "rejected")
                                     {
                                         <p>Status: <span class="text-danger">Another date is Proposed</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                     }
@@ -79,30 +80,33 @@
                                     }
                                     @{
 
-                                        if (currentUser.Role.Name == "Maker Manager" || currentUser.Role.Name == "Checker TeamLeader" || currentUser.Role.Name == "District Valuation Manager" || currentUser.Role.Name == "Maker TeamLeader" || currentUser.Role.Name == "Checker Officer")
+                                        if (currentUser.Role.Name == "Maker Officer" || currentUser.Role.Name == "Relation Manager")
                                         {
-                                            // <p>Status: <span class="text-info">@caseSched.Status</span>  <i class="fas fa-spinner text-info"></i></p>
+
+
+                                            if (caseSched.User.Id != userId && (caseSched.Status == "proposed" || caseSched.Status == "Proposed"))
+                                            {
+                                                <div class="btn-group">
+                                                    <input type="hidden" id="CaseScheduleId" name="Id" value="@caseSched.Id" />
+                                                    <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal">
+                                                        <i class="fas fa-check-circle"></i> Accept
+                                                    </button>
+                                                    <button id="proposeNewScheduleButtons" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal">
+                                                        <i class="fas fa-plus-circle"></i> Propose New
+                                                    </button>
+                                                </div>
+                                            }
+                                            else if (caseSched.User.Id == userId && (caseSched.Status == "proposed" || caseSched.Status == "Proposed"))
+                                            {
+                                            
+                                                <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseSched.Id" />
+                                                <button id="UpdateSchedules" class="update-link btn btn-sm btn-outline-primary">Update</button>
+                                            }
 
                                         }
                                         else
                                         {
-                                            if (caseSched.User.Id != userId && caseSched.Status == "Proposed")
-                                                {
-                                                    <div class="btn-group">
-                                                        <input type="hidden" id="CaseScheduleId" name="Id" value="@caseSched.Id" />
-                                                        <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal">
-                                                            <i class="fas fa-check-circle"></i> Accept
-                                                        </button>
-                                                        <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal">
-                                                            <i class="fas fa-plus-circle"></i> Propose New
-                                                        </button>
-                                                    </div>
-                                                }
-                                                else if (caseSched.User.Id == userId && caseSched.Status == "Proposed")
-                                                {
-                                                    <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseSched.Id" />
-                                                    <button id="UpdateSchedule" class="update-link btn btn-sm btn-outline-primary">Update</button>
-                                                }
+                                            
                                         }
                                     
                                     }
@@ -120,7 +124,7 @@
 </section>
 
 
-<div class="modal" id="proposeNewSchedule-modal" tabindex="-1" role="dialog" aria-labelledby="proposeNewSchedule-modal-label" aria-hidden="true">
+<div class="modal" id="proposeNewSchedule-modals" tabindex="-1" role="dialog" aria-labelledby="proposeNewSchedule-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -152,7 +156,7 @@
 </div>
 
 
-<div class="modal" id="datetimepicker-modal" tabindex="-1" role="dialog" aria-labelledby="datetimepicker-modal-label" aria-hidden="true">
+<div class="modal" id="datetimepicker-modals" tabindex="-1" role="dialog" aria-labelledby="datetimepicker-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -179,5 +183,3 @@
         </div>
     </div>
 </div>
-
-
