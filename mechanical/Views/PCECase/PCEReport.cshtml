@@ -4,7 +4,7 @@
 
 @{
     var PCECase = ViewData["PCECase"] as PCECase;
-    var productions = ViewData["productions"] as List<ProductionCapacity>;
+    var productions = ViewData["Productions"] as List<ProductionCapacity>;
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
     var PCECaseSchedule = ViewData["PCECaseSchedule"] as PCECaseSchedule;
 
@@ -30,7 +30,7 @@
     }
 
 
-    var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>; 
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>; 
 
     var commaSeparatedRegions = "";
     var commaSeparatedPropertyof = "";
@@ -421,7 +421,10 @@
 </section>
 
 
-@section Scripts {
+@section Scripts { 
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
     <script src="~/js/jsPDF/jspdf.umd.min.js"></script>
     <script>
         // Your JavaScript code that uses the jsPDF library

@@ -1,32 +1,47 @@
 ﻿﻿@using mechanical.Models.PCE.Entities
 
 @{
-    var Status = ViewBag.Status as string;
-    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
-    var EmptyMessage = "There are no Productions found";
-    var FetchUrl = "/MOPCECase/GetPCEs?Status=" + Status;
-    var PCECaseId = ViewData["PCECaseId"] as Guid?; 
+    var pceCaseId = ViewData["PCECaseId"] as Guid?; 
+    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var emptyMessage = "There are no Productions found";
+    var contName = "MMCase";
+    var status = ViewBag.Status as string;
 
-    if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    if (currentUser.Role.Name == "Maker TeamLeader")
     {
-        EmptyMessage = "There are no " + Status + " Productions found";
+        contName = "MTLCase";
     }
-    if (PCECaseId.HasValue)
+    else if (currentUser.Role.Name == "District Valuation Manager")
     {
-        FetchUrl = FetchUrl + "&PCECaseId=" + PCECaseId;
-        EmptyMessage = EmptyMessage + " for this  PCE Case";
+        contName = "DVMPCECase";
+    }
+    else if (currentUser.Role.Name == "Maker Officer")
+    {
+        contName = "MOPCECase";
+    }
+    
+    @* var fetchUrl = "/ProductionCapacity/GetPCEs?Status=" + status; *@
+    var fetchUrl = "/" + contName + "/GetPCEs?Status=" + status;
+
+    if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        emptyMessage = "There are no " + status + " Productions found";
+    }
+    if (pceCaseId.HasValue)
+    {
+        fetchUrl = fetchUrl + "&PCECaseId=" + pceCaseId;
+        emptyMessage = emptyMessage + " for this  PCE Case";
     }
 }
 
 <script>
     $(document).ready(function () {
         
-        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
         function initializeDataTable(data) {
 
             $('#Productions').DataTable({
                 language: {
-                    emptyTable: '@EmptyMessage'
+                    emptyTable: '@emptyMessage'
                 },
                 responsive: true,
                 pageLength: 8,
@@ -50,7 +65,7 @@
                         render: function (data, type, row, meta) {
                                                        
                             const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
-                            const detailsUrl = '@Url.Action("PCEDetail", "MOPCECase")?PCEId=';
+                            const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
                             const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
 
                             const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
@@ -61,10 +76,17 @@
                                 ? ` | <a href="#" onclick="openRejectionModal('${data}')">Return</a>`
                                 : '';
 
-                            let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`;
+                            let link = `<a href="${detailsUrl}${data}">Details</a>`;
+                            @* let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`; *@
 
-                            if ('@CurrentUser.Role.Name' === "Maker Officer") {
-                                link = evaluateLink + link;
+                            @* if ('@currentUser.Role.Name' === "Maker Manager" ||'@currentUser.Role.Name' === "District Valuation Manager" || '@currentUser.Role.Name' === "Maker TeamLeader") {
+                                link = link + returnLink;
+                            }
+                            if ('@currentUser.Role.Name' === "Maker Officer") {
+                                link = evaluateLink + link; 
+                            } *@
+                            if ('@currentUser.Role.Name' === "Maker Officer") {
+                                link = evaluateLink + link + returnLink;
                             }
 
                             return link;
@@ -76,7 +98,7 @@
         }
         function loadProductions() {
             $.ajax({
-                url: fetchUrl,
+                url: '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

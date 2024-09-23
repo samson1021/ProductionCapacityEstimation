@@ -1,8 +1,10 @@
 ﻿@using mechanical.Models.PCE.Dto.ProductionCapacityDto
-@model ReturnProductionDto;
+@model ReturnProductionDto
+
 @{    
     ViewData["Title"] = ViewBag.Title as string;
 }
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -48,13 +50,13 @@
                 </div> 
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-                        @await Html.PartialAsync("_GeneralInfo")
+                        @await Html.PartialAsync("PCEScriptPartial/_PCEGeneralInfo")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @await Html.PartialAsync("PCEScriptPartial/_ProductionValuation")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                        @await Html.PartialAsync("PCEScriptPartial/_PreviousValuation")
+                        @await Html.PartialAsync("PCEScriptPartial/_PreviousValuations")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
                         @await Html.PartialAsync("PCEScriptPartial/_ProductionRemark")

@@ -32,17 +32,23 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
 
         }
 
-        public Task<List<PCECaseAssignmentDto>> AssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
+        public Task<List<PCECaseAssignmentDto>> AssignProduction(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
             AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, false);
 
-        public Task<List<PCECaseAssignmentDto>> ReAssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
+        public Task<List<PCECaseAssignmentDto>> ReAssignProduction(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
             AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, true);
 
-        public Task<List<PCECaseAssignmentDto>> AssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
-            AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, false);
+        // public Task<List<PCECaseAssignmentDto>> AssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
+        //     AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, false);
 
-        public Task<List<PCECaseAssignmentDto>> ReAssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
-            AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, true);
+        // public Task<List<PCECaseAssignmentDto>> ReAssignProductionMakerTeamleader(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
+        //     AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, true);
+
+        // public Task<List<PCECaseAssignmentDto>> AssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
+        //     AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, false);
+
+        // public Task<List<PCECaseAssignmentDto>> ReAssignProductionMakerOfficer(Guid UserId, string SelectedPCEIds, string EmployeeId) =>
+        //     AssignOrReAssignProduction(UserId, SelectedPCEIds, EmployeeId, true);
 
         public async Task<List<PCECaseAssignmentDto>> AssignOrReAssignProduction(Guid UserId, string SelectedPCEIds, string EmployeeId, bool isReassign)
         {

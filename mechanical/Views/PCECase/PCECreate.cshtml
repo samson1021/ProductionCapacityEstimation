@@ -2,10 +2,8 @@
 
 @{
     var empId = ViewData["EmployeeId"];
-
-
-
 }
+
 <link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
@@ -77,7 +75,8 @@
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");    
     }
     <script>
         document.getElementById('CustomerUserId').addEventListener('blur', function () {

@@ -48,7 +48,7 @@
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <input type="hidden" id="PCECaseId" name="PCECaseId" value="@myCase.Id" />
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-                        @await Html.PartialAsync("_PCEGeneralInfo") 
+                        @await Html.PartialAsync("PCEScriptPartial/_PCECaseGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @await Html.PartialAsync("Partial/_CreateManufacturingProductionCapacity")
@@ -66,12 +66,12 @@
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("Partial/_PCECreateCollateral");
-        await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");              
+        await Html.RenderPartialAsync("Partial/_PCECreateCollateral");              
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");    
         await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
-
     }
 
 } 

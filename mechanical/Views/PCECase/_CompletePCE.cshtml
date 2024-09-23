@@ -1,12 +1,9 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Entities
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto;
+
 @{
-    var myCase = ViewData["case"] as PCECaseReturntDto;
-    // var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
-    // var myCase = ViewData["case"] as CaseReturntDto;
-   // var motorVehicle = ViewData["production"] as List<ProductionCapacity>;
- 
+    var myCase = ViewData["PCECase"] as PCECaseReturntDto; 
 }
 
 <div class="card">

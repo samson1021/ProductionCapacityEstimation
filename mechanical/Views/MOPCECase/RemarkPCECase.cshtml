@@ -58,7 +58,9 @@
 
 @section Scripts {
     @{
+        @* await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial"); *@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEsTableDatatableSriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_RemarkPCECaseDatatableSriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");

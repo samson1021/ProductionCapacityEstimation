@@ -2,12 +2,12 @@
 @using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
+@model ReturnProductionDto
 
 @{
-    var LatestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
-    var Reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
-    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
+    var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+    var reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
+    var currentUser = ViewData["CurrentUser"] as CreateUser;
 
     ViewData["Title"] = ViewBag.Title as string;   
 }
@@ -16,15 +16,15 @@
     <section class="col-xl-12 connectedSortable">
          
         @{
-            if (Reestimation != null)
+            if (reestimation != null)
             {
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title text-warning">Reason for Reestimation</h3>
+                        <h3 class="card-title text-warning">Reason for reestimation</h3>
                     </div>
                     <div class="card-body">                              
                         <div>
-                            @Reestimation.Reason
+                            @reestimation.Reason
                         </div>                         
                     </div>
                 </div>
@@ -35,12 +35,11 @@
             <div class="card-header">
                 <h3 class="card-title text-success text-center">Valuation Result</h3>
             </div>
-            <div class="card-body">
                 @{
-                    if (LatestEvaluation != null)
+                    if (latestEvaluation != null)
                     {
                         <div class="row">
-                            @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
+                            @await Html.PartialAsync("PCEScriptPartial/Partial/_EvaluationDetailPartial", latestEvaluation)
                         </div>                                             
                     }
                     else
@@ -49,10 +48,10 @@
                             <h6 class="text-center">
                                 Not evaluated yet.                            
                     
-                                @* @if (Model.EvaluatorUserID == CurrentUser.Id && Model.CurrentStage == "Maker Officer")
-                                { *@
+                                @* @if (Model.EvaluatorUserID == currentUser.Id && Model.CurrentStage == "Maker Officer")
+                                { 
                                         <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>
-                                @* } *@  
+                                } *@  
                             </h6>                           
                         </div>
                     }                    

@@ -3,7 +3,7 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
-    var reject = ViewData["Reject"] as ProductionReject;
+    var rejectedProduction = ViewData["RejectedProduction"] as ProductionReject;
     var rejectedBy = ViewData["RejectedBy"] as CreateUser;
 }
 
@@ -13,7 +13,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Production Capcity Information</h3>
+                        <h3 class="card-title">Production Capacity Information</h3>
                     </div>
                     <div class="card-body">
                         @if (!string.IsNullOrEmpty(Model.PropertyOwner)){<h6><strong>Property Owner:</strong> @Model.PropertyOwner</h6> }
@@ -133,21 +133,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    @{
-                                    if (reject == null || rejectedBy == null)
+                                @{
+                                    if (rejectedProduction == null || rejectedBy == null)
                                     {
-
-                                        <tr class="text-center"> <td colspan="3"><h6>There is no document related to this PCE</h6></td></tr>
-                                        }
-                                        else
-                                    {
-                                            <tr>
-                                                <td><a href="@Url.Action("Profile","UserManagment")?id=@rejectedBy.Id">@rejectedBy.Name</a> (@rejectedBy.Role.Name)</td>
-                                            <td>@reject.RejectionComment</td>
-                                                
-                                            </tr>  
-                                        }
+                                        <tr class="text-center"> <td colspan="3"><h6>There is no rejection information related to this production.</h6></td></tr>
                                     }
+                                    else
+                                    {
+                                        <tr>
+                                            <td><a href="@Url.Action("Profile","UserManagment")?id=@rejectedBy.Id">@rejectedBy.Name</a> (@rejectedBy.Role.Name)</td>
+                                            <td>@rejectedProduction.RejectionComment</td>                                                
+                                        </tr>  
+                                    }
+                                }
                             </tbody>
                         </table>
 
@@ -155,7 +153,7 @@
                 </div>  
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Poduction Capcity Description</h3>
+                        <h3 class="card-title">Poduction Capacity Description</h3>
                     </div>
                     <div class="card-body">
                         @if (!string.IsNullOrEmpty(Model.ProductDescription))

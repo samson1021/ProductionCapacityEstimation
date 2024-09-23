@@ -1,25 +1,40 @@
 @using mechanical.Models.PCE.Entities
 
 @{
-    var CurrentUser = ViewData["CurrentUser"] as CreateUser;
-    var FetchSubbordinatesUrl = "GetMakerTeamleader";
+    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var contName = "MMCase";
+    var subbName = "GetMakerTeamleader";
+    var assiName = "PCEAssignTeamleader";
+    var seleName = "Team Leader";
 
-    if (CurrentUser.Role.Name == "Maker TeamLeader")
+    if (currentUser.Role.Name == "Maker TeamLeader")
     {
-        FetchSubbordinatesUrl = "GetMakerOfficer";
+        contName = "MTLCase";
+        subbName = "GetMakerOfficer";
+        assiName = "PCEAssignMakerOfficer";
+        seleName = "Maker Officer";
     }
+    else if (currentUser.Role.Name == "District Valuation Manager")
+    {
+        contName = "DVMPCECase";
+        subbName = "GetMakerTeamleader";
+        assiName = "PCEAssignTeamleader";
+        seleName = "Maker Officer";
+    }
+    
+    var getSubbordinateUrl = "/UserManagment/" + subbName;
+    var assignUrl = "/" + contName + "/" + assiName;
 }
 
 <script>
     $(document).ready(function () {   
-
         $.ajax({
-            url: '/UserManagment/' + '@FetchSubbordinatesUrl',
+            url: @getSubbordinateUrl,
             method: 'GET',
             dataType: 'json'
         })
             .done(function (data) {
-                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Team Leader');
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + @seleName);
                 $('#employeeDropdown').append(selectOption);
                 data.forEach(function (employee) {
                     var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
@@ -31,8 +46,6 @@
             });
 
         $('#assignButton').on('click', function () {
-
-            console.log("clicked");
             var checkedProductions = $('.purple-checkbox:checked');
             var SelectedPCEIds = [];
 
@@ -65,14 +78,14 @@
             var formData = new FormData(this);
 
             $.ajax({
-                url: '/MMCase/PCEAssignTeamleader',
+                url: @assignUrl,
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    loadProductions();
+                    location.reload();
                     $('#assignModal').modal('hide');
                 },
                 error: function (error) {
@@ -82,5 +95,4 @@
             });
         });
     });
-
 </script>

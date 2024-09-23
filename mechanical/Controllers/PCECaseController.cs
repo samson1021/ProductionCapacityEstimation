@@ -98,7 +98,6 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> PCECaseDetailReport(Guid id)
         {
             var pcecaseDto = _PCECaseService.GetPCECaseDetailReport(base.GetCurrentUserId(), id);
-            //ViewData["pcecaseDtos"] = pcecaseDto;
             return View(pcecaseDto);
         }
 
@@ -138,7 +137,7 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> PCERejectedDetail(Guid id)
         {
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-            ViewData["pcecaseDtos"] = pcecaseDto;
+            ViewData["PCECase"] = pcecaseDto;
             return View();
         }
         /////
@@ -211,7 +210,7 @@ namespace mechanical.Controllers.PCE
         {
             var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
             if (pceCase == null) { return RedirectToAction("GetPCECompleteCases"); }
-            ViewData["case"] = pceCase;
+            ViewData["PCECase"] = pceCase;
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
             if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
             var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
@@ -333,13 +332,13 @@ namespace mechanical.Controllers.PCE
 
             var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
             if (pceCase == null) { return RedirectToAction("GetPCECompleteCases"); }
-            ViewData["case"] = pceCase;
+            ViewData["PCECase"] = pceCase;
 
             var production = await _cbeContext.ProductionCapacities.ToListAsync();
             List<ProductionCapacity> productions = null;
             try { productions = await _cbeContext.ProductionCapacities.ToListAsync(); }
             catch (Exception ex) { Console.WriteLine($"An error occurred while retrieving productions vehicles: {ex.Message}"); }
-            ViewData["production"] = production;
+            ViewData["Production"] = production;
 
 
             var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
@@ -393,7 +392,7 @@ namespace mechanical.Controllers.PCE
             var caseTerminate = await _PCECaseService.GetCaseTerminates(id);
             var caseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(id);
             ViewData["PCECase"] = pcecaseDto;
-            ViewData["caseTerminate"] = caseTerminate;
+            ViewData["PCECaseTerminate"] = caseTerminate;
             ViewData["PCECaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
             ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
@@ -407,7 +406,7 @@ namespace mechanical.Controllers.PCE
         {
             var pceReportData = await _PCECaseService.GetPCEReportData(Id);
             var file = await _uploadFileService.GetUploadFileByCollateralId(Id);
-            ViewData["productionFiles"] = file;
+            ViewData["ProductionFiles"] = file;
 
 
             if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
@@ -436,10 +435,10 @@ namespace mechanical.Controllers.PCE
             }
 
 
-            ViewData["pceCase"] = pceReportData.PCESCase;
-            ViewData["productions"] = pceReportData.Productions;
-            ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;
-            ViewData["pceCaseSchedule"] = pceReportData.PCECaseSchedule;
+            ViewData["PCECase"] = pceReportData.PCESCase;
+            ViewData["Productions"] = pceReportData.Productions;
+            ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
+            ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;
 
             return View();
         }
@@ -474,11 +473,11 @@ namespace mechanical.Controllers.PCE
 
                 ViewData["EvaluatorReports"] = evaluatorReports;
             }
-            ViewData["productionFiles"] = file;
-            ViewData["pceCase"] = pceReportData.PCESCase;
-            ViewData["productions"] = pceReportData.Productions;
-            ViewData["pceEvaluations"] = pceReportData.PCEEvaluations;
-            ViewData["pceCaseSchedule"] = pceReportData.PCECaseSchedule;
+            ViewData["ProductionFiles"] = file;
+            ViewData["PCECase"] = pceReportData.PCESCase;
+            ViewData["Productions"] = pceReportData.Productions;
+            ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
+            ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;
 
             return View();
         }
@@ -518,7 +517,7 @@ namespace mechanical.Controllers.PCE
             {
                 return RedirectToAction("NewPCECases");
             }
-            ViewData["pcecaseDtos"] = pceCase;
+            ViewData["PCECase"] = pceCase;
             ViewData["PCECaseSchedule"] = PCECaseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
             return View();
@@ -542,9 +541,5 @@ namespace mechanical.Controllers.PCE
             ViewData["PCECase"] = pceCase;
             return View();
         }
-
-
-
-
     }
 }

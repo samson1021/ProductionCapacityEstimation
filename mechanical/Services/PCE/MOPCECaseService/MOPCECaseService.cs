@@ -260,15 +260,15 @@ namespace mechanical.Services.PCE.MOPCECaseService
 
             var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
             var reestimation = await _cbeContext.ProductionCapacityReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
-            var reject = await _cbeContext.ProductionRejects.AsNoTracking().FirstOrDefaultAsync(res => res.PCEId == PCEId);
+            var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().FirstOrDefaultAsync(res => res.PCEId == PCEId);
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
             var valuationHistory = await GetValuationHistory(UserId, PCEId);
      
             var remark = pce;   
             CreateUser user = null;     
-            if (reject != null)
+            if (rejectedProduction != null)
             {
-                user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == reject.RejectedBy);
+                user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedProduction.RejectedBy);
             }
 
             return new PCEDetailDto
@@ -278,7 +278,7 @@ namespace mechanical.Services.PCE.MOPCECaseService
                 PCEValuationHistory = valuationHistory,
                 Reestimation = reestimation,
                 RelatedFiles = relatedFiles,
-                Reject = reject,
+                RejectedProduction = rejectedProduction,
                 RejectedBy = user
 
             };

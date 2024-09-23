@@ -109,14 +109,19 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = await FindPCEEvaluation(Id);
-                await DeleteRelatedFiles(pceEvaluation.Id);
 
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);
-                await UpdatePCEStatusAfterDeletion(pceEvaluation);
 
+                // var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEvaluation.PCEId && res != pceEvaluation).ToListAsync();
+                // var currentStatus = previousValuation.Any() ? "Reestimate" : "New";
+                var currentStatus = "New";
+                UpdatePCEStatus(pceEvaluation.PCE, currentStatus, "Maker Officer");
+
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, currentStatus);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "The current production valuation is retracted.");
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                await DeleteRelatedFiles(pceEvaluation.Id);
 
                 return true;
             }
@@ -134,7 +139,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = await FindPCEEvaluation(Id);
-                UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Maker Officer");
+                UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
 
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
@@ -162,7 +167,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.ProductionRejects.AddAsync(returnPCE);
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
-                UpdatePCEStatus(pce, "Rejected", "Maker Officer");
+                UpdatePCEStatus(pce, "Rejected", "Relation Manager");
                 await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
 
                 await LogPCECaseTimeline(pce, "PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.");
@@ -188,7 +193,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEvaluation.Remark = Remark;
                 _cbeContext.Update(pceEvaluation);
 
-                UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Checker Officer");
+                UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
 
@@ -223,11 +228,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         private async Task<PCEEvaluation> FindPCEEvaluation(Guid Id)
         {
             var pceEntity = await _cbeContext.PCEEvaluations
-                .Include(e => e.ShiftHours)
-                .Include(e => e.TimeConsumedToCheck)
-                .Include(e => e.PCE)
-                .ThenInclude(e => e.PCECase)
-                .FirstOrDefaultAsync(e => e.Id == Id);
+                                            .Include(e => e.ShiftHours)
+                                            .Include(e => e.TimeConsumedToCheck)
+                                            .Include(e => e.PCE)
+                                            .ThenInclude(e => e.PCECase)
+                                            .FirstOrDefaultAsync(e => e.Id == Id);
 
             if (pceEntity == null)
             {
@@ -313,15 +318,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _cbeContext.ProductionCapacities.Update(PCE);
         }
 
-        private async Task UpdatePCEStatusAfterDeletion(PCEEvaluation pceEntity)
-        {
-            var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEntity.PCEId && res != pceEntity).ToListAsync();
-            var currentStatus = previousValuation.Any() ? "Reestimate" : "New";
-            UpdatePCEStatus(pceEntity.PCE, currentStatus, "Maker Officer");
-
-            await UpdateCaseAssignmentStatus(pceEntity.PCE.Id, pceEntity.EvaluatorId, currentStatus);
-        }
-
         private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid UserId, string Status, DateTime? CompletionDate = null)
         {
             var assignment = await _cbeContext.PCECaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
@@ -391,15 +387,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = await _cbeContext.PCEEvaluations
-                                                .AsNoTracking()
-                                                .Include(e => e.ShiftHours)
-                                                .Include(e => e.TimeConsumedToCheck)
-                                                .Include(e => e.PCE)
-                                                .ThenInclude(e => e.PCECase)
-                                                // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
-                                                .OrderByDescending(e => e.UpdatedAt)
-                                                .ThenByDescending(e => e.CreatedAt)
-                                                .FirstOrDefaultAsync(e => e.PCEId == PCEId);
+                                                    .AsNoTracking()
+                                                    .Include(e => e.ShiftHours)
+                                                    .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(e => e.PCE)
+                                                    .ThenInclude(e => e.PCECase)
+                                                    // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
+                                                    .OrderByDescending(e => e.UpdatedAt)
+                                                    .ThenByDescending(e => e.CreatedAt)
+                                                    .FirstOrDefaultAsync(e => e.PCEId == PCEId);
 
                 if (pceEvaluation == null)
                 {

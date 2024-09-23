@@ -1,10 +1,12 @@
 ﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
 @using mechanical.Models.Dto.UploadFileDto
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
+
 @{
-    var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>;
-    // var restimation = ViewData["restimation"] as ProductionCapacityReestimation;
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
+    // var reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
 }
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">

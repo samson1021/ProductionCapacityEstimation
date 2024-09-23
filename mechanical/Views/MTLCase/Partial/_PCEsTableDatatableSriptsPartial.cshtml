@@ -4,7 +4,7 @@
     var Status = ViewBag.Status as string;
     var CurrentUser = ViewData["CurrentUser"] as CreateUser;
     var EmptyMessage = "There are no Productions found";
-    var FetchUrl = "/MOPCECase/GetMyPCEs?Status=" + Status;
+    var FetchUrl = "/MOPCECase/GetPCEs?Status=" + Status;
     var PCECaseId = ViewData["PCECaseId"] as Guid?; 
 
     if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
@@ -13,7 +13,7 @@
     }
     if (PCECaseId.HasValue)
     {
-        FetchUrl = "/MOPCECase/GetPCEs?Status=" + Status + "&PCECaseId=" + PCECaseId;
+        FetchUrl = FetchUrl + "&PCECaseId=" + PCECaseId;
         EmptyMessage = EmptyMessage + " for this  PCE Case";
     }
 }

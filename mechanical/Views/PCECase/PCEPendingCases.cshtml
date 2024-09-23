@@ -37,7 +37,8 @@
 </section>
 @section Scripts {
     @{
+        await Html.RenderPartialAsync("Partial/_PCEPendingCasesDatatableSriptsPartial"); 
         await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial");
-        await Html.RenderPartialAsync("Partial/_PCEPendingCasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }

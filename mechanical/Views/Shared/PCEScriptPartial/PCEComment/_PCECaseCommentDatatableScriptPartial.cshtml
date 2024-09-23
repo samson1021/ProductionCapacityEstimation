@@ -17,24 +17,6 @@
             });
         }
 
-        @* function updateChatMessages(data) {
-            var currentUserID = data.userId;
-            var caseComments = data.caseComments;
-
-            $(".CommentBage").text(caseComments.length);
-            chatMessages.empty();
-
-            if (caseComments.length > 0) {
-                caseComments.forEach(function (comment) {
-                    var chatMsg = createChatMessage(comment, currentUserID);
-                    chatMessages.append(chatMsg);
-                });
-            } else {
-                chatMessages.append('<div class="no-comments-msg">There are no comments related to this PCE Case.</div>');
-            }
-
-            scrollToBottom();
-        } *@
         function updateChatMessages(data) {
             var currentUserID = data.userId;
             var caseComments = data.caseComments;
@@ -161,8 +143,7 @@
         padding: 2%; 
     }  
     .direct-chat-msg {
-        max-width: 50%; 
-        @* margin-bottom: 1rem;  *@
+        max-width: 75%; 
         margin-bottom: 1.25rem;
         border-radius: 0.625rem; 
         padding: 1rem; 
@@ -206,12 +187,19 @@
     }
     .chat-date {
         text-align: center; 
-        margin: 2% 0;
-        font-weight: bold; 
+        margin: 2% auto;
         color: #333; 
-        font-size: 1.2rem; 
-        padding: 0.625rem; 
-        border-radius: 0.3125rem; 
-        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1); 
+        font-weight: bold; 
+        font-size: 1rem; 
+        padding: 0.5rem 1rem;
+        letter-spacing: 0.05rem;
+        
+        background-color: #f9f9f9; 
+        border: none;
+        width: fit-content;        
+        border-radius: 1rem; 
+        display: block;   
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1),
+                    0 0.25rem 0 rgba(0, 0, 0, 0.1); 
     }
 </style>

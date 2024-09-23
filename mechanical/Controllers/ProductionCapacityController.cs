@@ -100,63 +100,29 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail(Guid id)
         {
-            var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var loanCase = await _pCECaseService.GetPCECaseDetail(response.PCECaseId);
+            var userId = base.GetCurrentUserId();
+            var pceDetail = await _MOPCECaseService.GetPCEDetails(userId, id);
 
-            var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
-            if (restimation != null)
+            if (pceDetail.ProductionCapacity == null)
             {
-                ViewData["restimation"] = restimation;
-            }
-            if (response == null) { 
-                return RedirectToAction("PCENewCases"); 
-            }
-            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
-            var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
-            var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
-            var PcevalutionDto = await _productionCapacityServices.GetValuationById(id);
-
-            if (rejectedProduction != null)
-            {
-                var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedProduction.RejectedBy);
-                ViewData["user"] = user;
-
-            }
-
-            if (PcevalutionDto != null)
-            {
-                ViewData["PcevalutionDto"] = PcevalutionDto;
-            }
-            if (response.ProductionType == "Manufacturing")
-            {
-                var Production = await _productionCapacityServices.GetManufuctringProductionCapacityEvalutionById(id);
-                ViewData["Mavaluation"] = Production;
-            }
-            else if (response.ProductionType == "Plant")
-            {
-                var Production = await _productionCapacityServices.GetPlantProductionCapacityEvalutionById(id);
-                ViewData["Pavaluation"] = Production;
+                if (pceDetail.PCECase != null)
+                {
+                    return RedirectToAction("PCECaseDetail", "MOPCECase", new { Id = pceDetail.PCECase.Id });   
+                }
+                return RedirectToAction("MyPCECases");
             }
             
-            ViewData["pcecaseDtos"] = loanCase;
-            ViewData["productionFiles"] = file;
-            ViewData["rejectedCollateral"] = rejectedProduction;
-            ViewData["CurrentUserId"] = base.GetCurrentUserId();
-            var userId = base.GetCurrentUserId();
-            var UserForRole = await _cbeContext.CreateUsers.Where(res => res.Id == userId).FirstOrDefaultAsync();
-            var role = await _cbeContext.CreateRoles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
-            ViewData["loggedRole"] = role;
-            ViewData["remarkTypeCollateral"] = remarkTypeProduction;
-
-            var pceDetail = await _MOPCECaseService.GetPCEDetails(base.GetCurrentUserId(), id);
-            var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
-            ViewData["CurrentUser"] = currentUser;
+            ViewData["CurrentUser"] = await _MOPCECaseService.GetUser(userId);
+            ViewData["Reestimation"] = pceDetail.Reestimation;
             ViewData["PCE"] = pceDetail.ProductionCapacity;
             ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
+            ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
+            ViewData["PCECase"] = pceDetail.PCECase;
+            ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
+            ViewData["RejectedProduction"] = pceDetail.RejectedProduction;
+            ViewData["RejectedBy"] = pceDetail.RejectedBy;
 
-
-            return View(response);
+            return View(pceDetail.ProductionCapacity);
 
         }
 
@@ -240,7 +206,7 @@ namespace mechanical.Controllers
         {
             var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
             var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            ViewData["productionFiles"] = file;
+            ViewData["ProductionFiles"] = file;
             if (response == null) { return RedirectToAction("PCENewCases"); }
             return View(response);
         }
@@ -251,7 +217,7 @@ namespace mechanical.Controllers
         {
             var response = await _productionCapacityServices.GetPlantProduction(base.GetCurrentUserId(), id);
             var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            ViewData["productionFiles"] = file;
+            ViewData["ProductionFiles"] = file;
             if (response == null) { return RedirectToAction("PCENewCases"); }
             return View(response);
         }
@@ -344,5 +310,31 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPCEs(Guid? PCECaseId = null, string Status = "All")
+        {
+            IEnumerable<ReturnProductionDto> productions = null;
+            if (PCECaseId == null)
+            {
+                productions = await _MOPCECaseService.GetPCEs(base.GetCurrentUserId(), Status: Status);
+            
+                if (productions == null)
+                {
+                    return BadRequest("Unable to load {Status} PCEs");
+                }
+            }
+            else
+            {
+                productions = await _MOPCECaseService.GetPCEs(base.GetCurrentUserId(), PCECaseId, Status: Status);
+            
+                if (productions == null)
+                {
+                    return BadRequest("Unable to load {Status} PCEs with PCECase ID: {PCECaseId}");
+                }
+            }
+
+            string jsonData = JsonConvert.SerializeObject(productions);
+            return Content(jsonData, "application/json");
+        }
     }
 }
