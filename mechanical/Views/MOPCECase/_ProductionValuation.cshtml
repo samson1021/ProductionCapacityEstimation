@@ -85,7 +85,7 @@
                                         if (Model.CurrentStatus == "Reestimate") {
                                             linkName = "Reestimate";                                                              
                                         } 
-                                        <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> linkName </a>
+                                        <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> @linkName </a>
                                         <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>
                                     }
                                  } 

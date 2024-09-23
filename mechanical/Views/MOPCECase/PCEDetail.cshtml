@@ -54,7 +54,7 @@
                         @await Html.PartialAsync("PCEScriptPartial/_PCEGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">                       
-                        @await Html.PartialAsync("PCEScriptPartial/_ProductionValuation")
+                        @await Html.PartialAsync("_ProductionValuation")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("PCEScriptPartial/_PreviousValuations")
@@ -71,8 +71,8 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEPartialScript");
+        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PrevousValuationDatatableScriptsPartial");
     }
 

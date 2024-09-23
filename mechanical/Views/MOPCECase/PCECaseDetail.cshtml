@@ -70,8 +70,8 @@
 @section Scripts {
 
     @{
+        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");
         await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_RejectModal");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEPartialScript");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
