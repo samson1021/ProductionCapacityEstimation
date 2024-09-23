@@ -36,7 +36,7 @@
                     if (LatestEvaluation != null)
                     {
                         <div class="row">
-                            @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
+                            @await Html.PartialAsync("PCEScriptPartial/Partial/_EvaluationDetailPartial", LatestEvaluation)
                         </div>
                         @* @if (CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == CurrentUser.Id) *@
                         @if ((CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == CurrentUser.Id)

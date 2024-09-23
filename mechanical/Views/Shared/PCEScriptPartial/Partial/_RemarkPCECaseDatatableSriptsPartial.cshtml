@@ -1,0 +1,53 @@
+<script>
+    $(document).ready(function () {
+        function initializeDataTable(data) {
+            $('#PCECaseProductions').DataTable({
+                language: {
+                    emptyTable: "There is no Production register for this PCECase"
+                },
+                responsive: true,
+                pageLength: 5,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCECase - pdf' }, { extend: 'print', title: 'My PCECase - Print' }, "colvis"],
+                data: data,
+                columns: [
+                    { data: 'PropertyOwner', width: '20%' },
+                    { data: 'Role', width: '15%' },
+                    { data: 'Category', width: '25%' },
+                    { data: 'Type', width: '25%' },
+                    {
+                        data: 'Id',
+                        width: '15%',
+                        render: function (data, type, row, meta) {
+                            return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details</a>';
+                        }
+                    }
+
+                ]
+            }).buttons().container().appendTo('#PCECaseProductions_wrapper .col-md-6:eq(0)');
+        }
+
+        function loadProductions() {
+
+            $.ajax({
+                url: '/ProductionCapacity/GetRemarkProductions?PCECaseId=' + '@ViewData["PCECaseId"]',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#PCECaseProductions')) {
+                        $('#PCECaseProductions').DataTable().destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load Productions");
+                    console.log(error);
+                }
+            });
+        }
+
+        loadProductions();
+        
+
+</script>

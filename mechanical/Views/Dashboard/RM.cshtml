@@ -337,9 +337,10 @@
     </div>
 </section>
 
-
-
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetDashboardCaseCount")

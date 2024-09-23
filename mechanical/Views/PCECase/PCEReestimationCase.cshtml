@@ -57,10 +57,10 @@
                         @await Html.PartialAsync("_ReEstimationCompletePCE")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
-                        @await Html.PartialAsync("ScriptPartial/PCESchedule/_PCECaseSchedule")
+                        @await Html.PartialAsync("PCEScriptPartial/PCESchedule/_PCECaseSchedule")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                        @await Html.PartialAsync("ScriptPartial/PCEComment/_PCECaseComment")
+                        @await Html.PartialAsync("PCEScriptPartial/PCEComment/_PCECaseComment")
                     </div>
 
                 </div>
@@ -231,9 +231,9 @@
     </script>
      @{
        
-        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
     }
 }

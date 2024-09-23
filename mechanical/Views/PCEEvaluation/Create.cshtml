@@ -91,12 +91,10 @@
 
 
 @section Scripts {
-
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_PCEPartialScript");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEPartialScript");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_RejectModal", ViewData["RejectPost"]);
     }
-
 }
