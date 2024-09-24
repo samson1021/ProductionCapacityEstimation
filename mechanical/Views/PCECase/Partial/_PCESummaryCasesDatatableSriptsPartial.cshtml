@@ -5,7 +5,7 @@
         var applicantNameElement = document.querySelector('#ApplicantName').innerText;
 
         function initializeDataTable(data) {
-            $('#PCECaseProductions').DataTable({
+            $('#Productions').DataTable({
                 language: {
                     emptyTable: "There is no production register for this PCE case please click the above add button to add Productions"
                 },
@@ -70,7 +70,7 @@
                     { data: 'EstimatedProductionCapacity', width: '10%' },
                     { data: 'SurveyRemark', width: '10%' },
                 ]
-            }).buttons().container().appendTo('#PCECaseProductions_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
         }
 
         function loadProductions() {
@@ -79,15 +79,15 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCECaseProductions')) {
-                        $('#PCECaseProductions').DataTable().destroy();
+                    if ($.fn.DataTable.isDataTable('#Productions')) {
+                        $('#Productions').DataTable().destroy();
                     }
 
                     if (data && data.length > 0) {
                         initializeDataTable(data);
                     } else {
                         // Display message when there are no Productions
-                        $('#PCECaseProductions').html('There are no Productions.');
+                        $('#Productions').html('There are no Productions.');
                     }
                 },
                 error: function (error) {

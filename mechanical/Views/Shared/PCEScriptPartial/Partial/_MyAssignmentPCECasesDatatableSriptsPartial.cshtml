@@ -3,6 +3,7 @@
 @{
     var currentUser = ViewData["CurrentUser"] as CreateUser;
     var contName = "MMCase";
+    var assiName = "GetMyAssignmentPCECases";
 
     if (currentUser.Role.Name == "Maker TeamLeader")
     {
@@ -12,6 +13,9 @@
     {
         contName = "DVMPCECase";
     }    
+    var myPCEAssignmentUrl = Url.Action("MyPCEAssignment", contName);
+    var pceCaseTimeLineUrl = Url.Action("Index", "PCECaseTimeLine");
+    var assignUrl = "/" + contName + "/" + assiName;
 }
 
 <script>
@@ -21,7 +25,7 @@
             $('#PCEFileModal').modal('show');
         });
         $.ajax({
-            url: '/' + '@contName' + '/GetMyAssignmentPCECases',
+            url: '@assignUrl',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -43,6 +47,7 @@
                         },
                         { data: 'CaseNo', width: '10%' },
                         { data: 'ApplicantName', width: '20%' },
+                        @* { data: 'RequestingUnit', width: '20%' }, *@
                         { data: 'CustomerUserId', width: '15%' },
                         { data: 'NoOfCollateral', width: '15%' },
                         { data: 'TotalNoOfCollateral', width: '15%' },
@@ -50,7 +55,8 @@
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                return '<a href="@Url.Action("MyPCEAssignment", "' + '@contName' + '")?Id=' + data + '">Details | </a>  <a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '"><i class="nav-icon fas fa-sitemap"></i></a>';
+                                return '<a href="@myPCEAssignmentUrl?Id=' + data + '">Details</a> | ' +
+                                       '<a href="@pceCaseTimeLineUrl?CaseId=' + data + '"><i class="nav-icon fas fa-sitemap"></i></a>';
                             }
                         }
 
