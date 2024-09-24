@@ -101,8 +101,8 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("Partial/_MyAssignmentPCECaseDatatableSriptsPartial");
+    @{  
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_MyAssignmentPCECaseDatatableSriptsPartial");
     }
 }

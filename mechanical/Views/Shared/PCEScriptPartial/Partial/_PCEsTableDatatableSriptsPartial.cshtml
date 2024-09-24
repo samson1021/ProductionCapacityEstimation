@@ -65,7 +65,6 @@
                         render: function (data, type, row, meta) {
                                                        
                             const baseUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
-                            const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
                             const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
 
                             const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
@@ -76,6 +75,7 @@
                                 ? ` | <a href="#" onclick="openRejectionModal('${data}')">Return</a>`
                                 : '';
 
+                            let detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
                             let link = `<a href="${detailsUrl}${data}">Details</a>`;
                             @* let link = `<a href="${detailsUrl}${data}">Details</a>${returnLink}`; *@
 
@@ -86,7 +86,8 @@
                                 link = evaluateLink + link; 
                             } *@
                             if ('@currentUser.Role.Name' === "Maker Officer") {
-                                link = evaluateLink + link + returnLink;
+                                @* detailsUrl = '@Url.Action("PCEDetail", "MOPCECase")?PCEId='; *@
+                                link = evaluateLink + `<a href="${detailsUrl}${data}">Details</a>` + returnLink;
                             }
 
                             return link;

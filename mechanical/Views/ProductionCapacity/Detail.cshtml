@@ -67,9 +67,30 @@
     </div>
 </section>
 @section Scripts {
-    @{
+    @{        
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEPartialScript");
+        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal", ViewData["RejectPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PrevousValuationDatatableScriptsPartial");
     }
+    
+    <Script>    
+        handleButtonClick(
+            "evaluate-btn",
+            "Are you sure you want to send this evaluation?",
+            "Evaluation sent to RM successfully. Redirecting...",
+            '@Url.Action("MyPCEs", "MOPCECase", new { Status = "Completed" })'
+            @* '@Url.Action("MyPCEs", "ProductionCapacity", new { Status = "Completed" })' *@
+        );
+
+        handleButtonClick(
+            "delete-btn",
+            "Are you sure you want to delete this evaluation?",
+            "Evaluation is deleted successfully. Redirecting...",
+            '@Url.Action("Detail", "ProductionCapacity")?PCEId=@Model.Id'
+            @* '@Url.Action("PCEDetail", "MOPCECase")?PCEId=@Model.Id' *@
+        );
+
+    </script> 
 }

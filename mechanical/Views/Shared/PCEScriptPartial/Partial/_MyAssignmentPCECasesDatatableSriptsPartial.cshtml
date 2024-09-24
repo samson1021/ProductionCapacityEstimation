@@ -1,11 +1,27 @@
-﻿<script>
+﻿@using mechanical.Models.PCE.Entities
+
+@{
+    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var contName = "MMCase";
+
+    if (currentUser.Role.Name == "Maker TeamLeader")
+    {
+        contName = "MTLCase";
+    }
+    else if (currentUser.Role.Name == "District Valuation Manager")
+    {
+        contName = "DVMPCECase";
+    }    
+}
+
+<script>
    
     $(document).ready(function () {
         $('#showPCEFile').click(function () {
             $('#PCEFileModal').modal('show');
         });
         $.ajax({
-            url: '/MMCase/GetMyAssignmentPCECases',
+            url: '/' + '@contName' + '/GetMyAssignmentPCECases',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -34,7 +50,7 @@
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                return '<a href="@Url.Action("MyPCEAssignment", "MMCase")?Id=' + data + '">Details | </a>  <a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '"><i class="nav-icon fas fa-sitemap"></i></a>';
+                                return '<a href="@Url.Action("MyPCEAssignment", "' + '@contName' + '")?Id=' + data + '">Details | </a>  <a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '"><i class="nav-icon fas fa-sitemap"></i></a>';
                             }
                         }
 

@@ -129,7 +129,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> PCEAssignMakerOfficer(string selectedPCEIds, string employeeId)
         {
             
-            await _pceCaseAssignmentServices.AssignProduction(base.GetCurrentUserId(),selectedPCEIds, employeeId);
+            await _pceCaseAssignmentServices.AssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
             var response = new { message = "Productions assigned to Maker Officer successfully" };
             return Ok(response);
         }

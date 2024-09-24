@@ -20,14 +20,13 @@
 </section>
 <section class="content">
     <div class="container-fluid">
-        @await Html.PartialAsync("_PCEsTable")
+        @await Html.PartialAsync("PCEScriptPartial/_PCEsTable")
     </div>
 </section>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");
-        @* await Html.RenderPartialAsync("Partial/_PCEsTableDatatableSriptsPartial"); *@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEsTableDatatableSriptsPartial");

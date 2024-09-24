@@ -119,12 +119,12 @@ namespace mechanical.Services.PCE.PCECaseAssignmentServices
                         _cbeContext.PCECaseAssignments.Update(previousCaseAssignment);
                     }
                 }
-
+Console.WriteLine("PCECaseTimeLinePostDto.Activity");
                 if (PCECaseTimeLinePostDto != null)
-                {
+                {Console.WriteLine("PCECaseTimeLinePostDto.Activity");Console.WriteLine(PCECaseTimeLinePostDto.Activity);Console.WriteLine("PCECaseTimeLinePostDto.Activity");
                     await _IPCECaseTimeLineService.PCECaseTimeLine(PCECaseTimeLinePostDto);
                 }
-
+Console.WriteLine("PCECaseTimeLinePostDto.Activity");
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 

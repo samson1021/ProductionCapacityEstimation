@@ -38,7 +38,7 @@ namespace mechanical.Controllers
         //// PCE Cases /////////
 
         [HttpPost]
-        public async Task<IActionResult> PCEAssignTeamleader(string selectedPCEIds, string employeeId)
+        public async Task<IActionResult> PCEAssignMakerOfficer(string selectedPCEIds, string employeeId)
         {
             await _pceCaseAssignmentServices.AssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
             var response = new { message = "Productions assigned to Maker Officer successfully" };
@@ -46,7 +46,7 @@ namespace mechanical.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> PCEReAssignTeamleader(string selectedPCEIds, string employeeId)
+        public async Task<IActionResult> PCEReAssignMakerOfficer(string selectedPCEIds, string employeeId)
         {
             await _pceCaseAssignmentServices.ReAssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
             var response = new { message = "Productions re-assigned to Maker Officer successfully" };

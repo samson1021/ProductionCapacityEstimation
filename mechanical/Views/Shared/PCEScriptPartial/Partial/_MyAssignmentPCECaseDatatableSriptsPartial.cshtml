@@ -1,9 +1,37 @@
-﻿<script>    
+﻿@using mechanical.Models.PCE.Entities
+
+@{
+    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var contName = "MMCase";
+    var subbName = "GetMakerTeamleader";
+    var assiName = "PCEReAssignMakerTeamleader";
+    var seleName = "Team Leader";
+
+    if (currentUser.Role.Name == "Maker TeamLeader")
+    {
+        contName = "MTLCase";
+        subbName = "GetMakerOfficer";
+        assiName = "PCEReAssignMakerOfficer";
+        seleName = "Maker Officer";
+    }
+    else if (currentUser.Role.Name == "District Valuation Manager")
+    {
+        contName = "DVMPCECase";
+        subbName = "GetMakerTeamleader";
+        assiName = "PCEReAssignMakerOfficer";
+        seleName = "Maker Officer";
+    }
+    
+    var getSubbordinateUrl = "/UserManagment/" + subbName;
+    var assignUrl = "/" + contName + "/" + assiName;
+}
+
+<script>    
     $(document).ready(function () {
-        fetch('/UserManagment/GetMakerTeamLeader')
+        fetch('@getSubbordinateUrl')
             .then(response => response.json())
             .then(data => {
-                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Team Leader');
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + seleName);
                 $('#employeeDropdown').append(selectOption);
                 data.forEach(function (employee) {
                     var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
@@ -53,7 +81,7 @@
             var formData = new FormData(this);
 
             $.ajax({
-                url: '/MMCase/PCEReAssignMakerTeamLeader',
+                url: '@assignUrl',
                 type: 'POST',
                 data: formData,
                 processData: false,

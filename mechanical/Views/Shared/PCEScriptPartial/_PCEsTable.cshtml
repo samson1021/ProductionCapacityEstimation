@@ -1,0 +1,89 @@
+@using mechanical.Models.PCE.Entities
+
+@{
+    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var contName = "MMCase";
+    var assiName = "PCEAssignTeamleader";
+
+    if (currentUser.Role.Name == "Maker TeamLeader")
+    {
+        contName = "MTLCase";
+        assiName = "PCEAssignMakerOfficer";
+    }
+    else if (currentUser.Role.Name == "District Valuation Manager")
+    {
+        contName = "DVMPCECase";
+        assiName = "PCEAssignMakerOfficer";
+    }
+}
+
+<div class="card">
+    <div class="Card-header">
+        <div class="col-12">
+            <div class="row">                
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+          <table id="Productions" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                    <th>Property Owner</th>
+                    <th>Role</th>
+                    <th>Production Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+        </table> 
+        </div>
+        @{
+            if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
+            {
+                <div class="row">
+                    <div class="col-xl-2 col-lg-4 col-sm-6">
+                        <button id="assignButton" class="col-12 btn btn-sm bg-purple">Assign</button>
+                    </div>
+                </div>  
+            }
+        }
+    </div>
+  
+</div>
+
+@{
+    if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
+    {
+        <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="assignModalLabel">Assign Case</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @using (Html.BeginForm(assiName, contName, FormMethod.Post, new { id = "assignForm" }))
+                        {
+                            <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
+                            <div class="form-group">
+                                <label for="employeeDropdown">Select Employee:</label>
+                                <select class="form-control" id="employeeDropdown" name="employeeId">
+                                </select>
+                            </div>
+                            <div class="row col-12">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-sm bg-purple col-6  ms-1">Assign</button>
+                                    <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

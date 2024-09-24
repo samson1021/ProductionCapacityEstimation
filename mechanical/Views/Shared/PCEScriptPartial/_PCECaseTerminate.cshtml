@@ -8,11 +8,10 @@
     var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
     var caseTerminate = ViewData["PCECaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
-   
 }
 
 <section class="content-header col-xl-6">
-    <h4 class="text-center text-danger">Case Termination Request</h4>
+    <h4 class="text-center text-danger">PCE Case Termination Request</h4>
 </section>
 
 <section class="content">
@@ -68,7 +67,7 @@
                                 }
 
                                 @{
-                                    if (caseTerm.RMUser.Id != userId && caseTerm.Status == "proposed")
+                                    if (caseTerm.RMUser.Id != userId && caseTerm.Status == "Proposed")
                                     {
                                         <div class="btn-group">
                                             <input type="hidden" id="CaseTerminationId" name="Id" value="@caseTerm.Id" />
@@ -83,15 +82,13 @@
                                             </button>
                                         </div>
                                     }
-                                    else if (caseTerm.RMUser.Id == userId && caseTerm.Status == "proposed")
+                                    else if (caseTerm.RMUser.Id == userId && caseTerm.Status == "Proposed")
                                     {
                                         <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseTerm.Id" />
                                         <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason" />
                                         <button id="UpdateTerminate" class="update-link btn btn-sm btn-outline-primary">Update</button>
                                     }
                                 }
-
-
                             </div>
                         }
                     }

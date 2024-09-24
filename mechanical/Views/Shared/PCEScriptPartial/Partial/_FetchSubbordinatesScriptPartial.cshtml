@@ -18,7 +18,7 @@
     {
         contName = "DVMPCECase";
         subbName = "GetMakerTeamleader";
-        assiName = "PCEAssignTeamleader";
+        assiName = "PCEAssignMakerOfficer";
         seleName = "Maker Officer";
     }
     
@@ -29,12 +29,12 @@
 <script>
     $(document).ready(function () {   
         $.ajax({
-            url: @getSubbordinateUrl,
+            url: '@getSubbordinateUrl',
             method: 'GET',
             dataType: 'json'
         })
             .done(function (data) {
-                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + @seleName);
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + '@seleName');
                 $('#employeeDropdown').append(selectOption);
                 data.forEach(function (employee) {
                     var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
@@ -78,7 +78,7 @@
             var formData = new FormData(this);
 
             $.ajax({
-                url: @assignUrl,
+                url: '@assignUrl',
                 type: 'POST',
                 data: formData,
                 processData: false,
