@@ -1,12 +1,10 @@
 ﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
 @using mechanical.Models.Dto.UploadFileDto
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
-
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 @{
-    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
-    // var reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
+    var productionFiles = ViewData["productionFiles"] as IEnumerable<ReturnFileDto>;
+    // var restimation = ViewData["restimation"] as ProductionCapacityReestimation;
 }
-
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -112,48 +110,43 @@
                         </div>
                         <div class="card">
                             <div class="card-body">
-                                <div class="row" id="MachineryInstalledPlace">
+                                <div class="row" id="MachineryInstalledPlaceRow">
                                     <div class="form-group col-lg-4">
                                         <label asp-for="MachineryInstalledPlace"> Machinery Installed Place  <i class="text-danger">*</i></label>
                                         <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
-                                            <option value="" disabled selected>Select Machinery Installed Place </option>
+                                            <option value="" disabled>Select Machinery Installed Place </option>
                                             <option value="Private Owned LHC">Private Owned LHC</option>
                                             <option value="Industrial Park">Industrial Park</option>
                                         </select>
                                         <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
 
                                     </div>
-                                    @if (Model.MachineryInstalledPlace == "Industrial Park")
-                                    {
+                                    @* <div id="IndustrialPark" style="display: none;"> *@
+                                    <div id="IndustrialParkRow" class="form-group col-lg-4" style="@(Model.MachineryInstalledPlace == "Industrial Park" ? "" : "display: none;")">
+                                        @* <div id="IndustrialPark" @(Model.Industrialpark != null ? "" : "style=\"display: none;\"")> *@
 
-                                        <div class="form-group col-lg-4" id="IndustrialPark">
-                                            <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
-                                            <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
-                                                    asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                                <option value="" disabled selected>Select Industrial Park </option>
-                                            </select>
-                                            <span asp-validation-for="Industrialpark" class="text-danger"></span>
+                                        <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
+                                        <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" selected disabled>Select Industrial Park </option>
+                                        </select>
+                                        <span asp-validation-for="Industrialpark" class="text-danger"></span>
 
-                                        </div>
-                                    }
-                                    else
-                                    {
+                                    </div>
+                                    @* <div id="PrivateownedLHC" @(Model.LHCNumber != null ? "" : "style=\"display: none;\"")> *@
+                                    <div id="PrivateownedLHCRow" class="form-group col-lg-8 row" style="@(Model.MachineryInstalledPlace == "Private Owned LHC" ? "" : "display: none;")">
 
-
-                                        <div class="form-group col-lg-4">
+                                        <div class="form-group col-lg-6">
                                             <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
                                             <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
                                             <span asp-validation-for="LHCNumber" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-lg-4">
+                                        <div class="form-group col-lg-6">
                                             <label asp-for="OwnerName">Owner Name in the LHC <i class="text-danger">*</i></label>
                                             <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
                                             <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
                                         </div>
-
-
-                                    }
-
+                                    </div>
                                 </div>
 
 
@@ -393,26 +386,6 @@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
     <script>
-        // //this is for the Machinery Installed Place
-
-        // function handleMachineryInstalledPlaceChange(selectElement) {
-        //     var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace");
-        //     var PrivateownedLHC = document.getElementById("PrivateownedLHC");
-        //     var IndustrialPark = document.getElementById("IndustrialPark");
-        //     if (selectElement.value === "Private Owned LHC") {
-        //         PrivateownedLHC.style.display = "block";
-        //         IndustrialPark.style.display = "none";
-
-        //     } else if (selectElement.value === "Industrial Park") {
-        //         IndustrialPark.style.display = "block";
-        //         PrivateownedLHC.style.display = "none";
-
-        //     } else {
-        //         PrivateownedLHC.style.display = "none";
-        //         IndustrialPark.style.display = "none";
-        //     }
-        // }
-
         $(function () {
             $('#sendEvaluationButtonModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
@@ -447,6 +420,29 @@
     </script>
     <script>
         $(document).ready(function () {
+
+            //handleMachineryInstalledPlaceChange();
+            var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace").value;
+            $("#MachineryInstalledPlace").change(function () {
+
+                var PrivateownedLHC = document.getElementById("PrivateownedLHC");
+                var IndustrialPark = document.getElementById("IndustrialPark");
+
+                console.log(MachineryInstalledPlace);
+                console.log('@Model.MachineryInstalledPlace');
+
+                if ($(this).val() === 'Private Owned LHC') {
+                    $("#IndustrialParkRow").hide();
+                    $("#PrivateownedLHCRow").show();
+                } else if ($(this).val() === 'Industrial Park') {
+                    $("#IndustrialParkRow").show();
+                    $("#PrivateownedLHCRow").hide();
+                }
+                else {
+                    $("#IndustrialPark").hide();
+                    $("#PrivateownedLHC").hide();
+                }
+            });
 
             $('.delete-link').on('click', function (e) {
                 e.preventDefault();
