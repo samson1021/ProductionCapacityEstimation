@@ -263,11 +263,21 @@ namespace mechanical.Services.PCE.ProductionCapacityServices
                 if (Production.CurrentStage != "Relation Manager")
                 {
                  throw new Exception("unable to Edit PCE");
-                }
-
+                }                
                 createProductionDto.PCECaseId = Production.PCECaseId;
-                createProductionDto.ProductionType = Production.ProductionType;
+                createProductionDto.ProductionType = Production.ProductionType;                
                 _mapper.Map(createProductionDto, Production);
+                //update MachineryInstalledPlace alternatively
+                if (createProductionDto.MachineryInstalledPlace == "Private Owned LHC")
+                {
+                    Production.Industrialpark = null;                     
+                }
+                else if(createProductionDto.MachineryInstalledPlace == "Industrial Park")
+                {
+                    Production.LHCNumber = null;
+                    Production.OwnerName = null;
+                }
+               
                 _cbeContext.ProductionCapacities.Update(Production);
 
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
