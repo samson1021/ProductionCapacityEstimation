@@ -118,13 +118,25 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).FirstOrDefaultAsync(res => res.Id == Id);
                
             return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);            
-        }        
+        }  
 
         public async Task<IEnumerable<PCECaseTerminateReturnDto>> GetCaseTerminates(Guid PCECaseId)
         {
             var pceCaseTerminates = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreationDate).ToListAsync();
             
             return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(pceCaseTerminates);            
+        }      
+
+        public async Task<IEnumerable<PCECaseTerminateDto>> GetPCECaseTerminates(Guid UserId)
+        {
+            var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities).Where(res => res.RMUserId == UserId && res.Status == "Terminate").ToListAsync();
+            var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(pceCases);
+            foreach (var pceCaseDto in pceCaseDtos)
+            {
+                var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Where(res => res.PCECaseId == pceCaseDto.Id).FirstOrDefaultAsync();
+                pceCaseDto.TerminationReason = pceCaseTerminate.Reason;
+            }
+            return pceCaseDtos;
         }
     }
 }

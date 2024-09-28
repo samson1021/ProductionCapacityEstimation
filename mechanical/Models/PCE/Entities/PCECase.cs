@@ -17,8 +17,9 @@ namespace mechanical.Models.PCE.Entities
         // public string CurrentStatus { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
-        public DateTime MakerAssignmentDate { get; set; }
+        public DateTime MakerAssignmentDate { get; set; }   // remove
         public DateTime CompletionDate { get; set; }
+        // public DateTime? CompletionDate { get; set; }
 
         public required Guid RMUserId { get; set; }
         public virtual District? District { get; set; }

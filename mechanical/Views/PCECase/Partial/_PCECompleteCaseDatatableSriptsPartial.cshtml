@@ -62,16 +62,16 @@
     $('#assignButton').on('click', function () {
 
         var checkedCollaterals = $('.purple-checkbox:checked');
-        var selectedCollateralIds = [];
+        var SelectedPCEIds = [];
 
         checkedCollaterals.each(function () {
             var collateralId = $(this).val();
-            selectedCollateralIds.push(collateralId);
+            SelectedPCEIds.push(collateralId);
         });
-        if (selectedCollateralIds.length === 0) {
+        if (SelectedPCEIds.length === 0) {
             toastr.error('Please select at least one PCE');
         } else {
-            $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+            $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
 
             $('#SendForEvaluationModal').modal('show');
         }
@@ -80,16 +80,16 @@
     $('#sendEvaluationButton').on('click', function () {
 
         var checkedCollaterals = $('.purple-checkbox:checked');
-        var selectedCollateralIds = [];
+        var SelectedPCEIds = [];
 
         checkedCollaterals.each(function () {
             var collateralId = $(this).val();
-            selectedCollateralIds.push(collateralId);
+            SelectedPCEIds.push(collateralId);
         });
-        if (selectedCollateralIds.length === 0) {
+        if (SelectedPCEIds.length === 0) {
             toastr.error('Please select at least one PCE');
         } else {
-            $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+            $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
 
             $('#SendForEvaluationModal').modal('show');
         }

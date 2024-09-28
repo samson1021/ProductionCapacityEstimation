@@ -133,6 +133,9 @@ namespace mechanical.Mapper
                     .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
             
+            CreateMap<CreateUser, ReturnUserDto>()
+                    .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src =>src.Role.Name))
+                    .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
             ///////
            
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();

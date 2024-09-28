@@ -1,0 +1,133 @@
+﻿﻿@using mechanical.Models.Dto.UserDto
+
+@{
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var status = ViewBag.Status as string;
+}
+
+<script>
+    
+    function loadProductions(fetchUrl, currentUserRoleName, emptyMessage) {
+        $.ajax({
+            url: fetchUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                const $productionsTable = $('#Productions');
+                
+                if ($.fn.DataTable.isDataTable($productionsTable)) {
+                    $productionsTable.DataTable().destroy();
+                }
+
+                initializeDataTable(data, currentUserRoleName, emptyMessage); 
+            },
+            error: function (error) {
+                const errorMessage = `Failed to load Productions (Status: ${error.status})`;
+                toastr.error(errorMessage);
+                console.log(error);
+            }
+        });
+    }
+    
+    function initializeDataTable(data, currentUserRoleName, emptyMessage) {
+
+        const $productionsTable = $('#Productions'); // Cache the table element
+        $productionsTable.DataTable({
+            language: {
+                emptyTable: emptyMessage 
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            buttons: [
+                "copy", "csv", "excel", 
+                { extend: 'pdf', title: 'My PCE Case - pdf' }, 
+                { extend: 'print', title: 'My PCE Case - Print' }, 
+                "colvis"
+            ],
+            data: data,
+            columns: [  
+
+                @if (status == "New" && currentUser.Role.Name != "Maker Officer")
+                {
+                    @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">'; } },
+                }
+                { data: 'PropertyOwner', width: '25%' },
+                { data: 'Role', width: '25%' },
+                { data: 'ProductionType', width: '35%' },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+
+                        const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=';
+                        const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
+                        const editUrl = row.ProductionType === 'Manufacturing' ? '@Url.Action("Edit", "ProductionCapacity")?Id=' : '@Url.Action("PlantEdit", "ProductionCapacity")?Id=';
+                        const deleteUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=';
+                        const evaluateText = row.CurrentStatus === "Reestimate" ? "Reestimate" : "Evaluate";
+                        
+                        const evaluateLink = (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")
+                            ? `<a class="text-success" href="${evaluateUrl}${data}">${evaluateText}</a> | `
+                            : '';
+                        const editLink = ` | <a class="text-info" href="${editUrl}${data}">Edit</a> `;
+                        const deleteLink = ` | <a class="delete-link text-danger" href="#" data-id=${data}><span>Delete</span></a>`;
+                        const returnLink = ["New", "Reestimate", "Pending"].includes(row.CurrentStatus)
+                            ? ` | <a class="text-warning" href="#" onclick="openRejectionModal('${data}')">Return</a>`
+                            : '';
+
+                        let link = `<a href="${detailsUrl}${data}">Details</a>`;
+
+                        if (currentUserRoleName === "Relation Manager") {
+                            link += editLink + deleteLink;
+                        }
+                        if (currentUserRoleName === "Maker Officer") {
+                            link = evaluateLink + link + returnLink ;
+                        }
+
+                        return link;
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
+    }
+
+    @if (currentUser.Role.Name == "Maker Officer")
+    {
+        <text>
+            function openRejectionModal(PCEId) {
+                document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
+                $('#rejectionModal1').modal('show');
+            }
+        </text>
+    }
+    else if (currentUser.Role.Name == "Relation Manager")
+    {
+        <text>           
+            $('#Productions').on('click', '.delete-link', function (e) {
+                e.preventDefault();
+                var itemId = $(this).data('id');
+                $('#deleteItem').data('id', itemId);
+                $('#deleteConfirmationModal').modal('show');
+            });   
+
+            $('#deleteItem').on('click', function () {
+                var itemId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("DeleteProduction", "ProductionCapacity")',
+                    type: 'POST',
+                    data: { id: itemId },
+                    success: function (result) {
+                        toastr.success('The production is deleted successfully.');
+                        loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error('unable to delete production.');
+                    }
+                });
+
+                $('#deleteConfirmationModal').modal('hide');
+            });  
+        </text>    
+    }      
+</script>

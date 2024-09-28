@@ -63,12 +63,13 @@ namespace mechanical.Models.PCE.Entities
         // public string? Remark { get; set; } = string.Empty;
         
         public Guid? EvaluatorUserID { get; set; }
-        public Guid? CheckerUserID { get; set; }
+        public Guid? CheckerUserID { get; set; } // remove
         public DateTime? CreationDate { get; set; }
         public Guid? CreatedById { get; set; }
         
         public virtual CreateUser? CreatedBy { get; set; }
         public virtual PCECase? PCECase { get; set; }
+        // public virtual PCECase PCECase { get; set; }
 
         // public Guid Id { get; set; }
         // public required Guid PCECaseId { get; set; }

@@ -49,7 +49,7 @@
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <input type="hidden" id="PCECaseId" name="PCECaseId" value="@myCase.Id" />
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-                        @await Html.PartialAsync("PCEScriptPartial/_PCECaseGeneralInfo")
+                        @await Html.PartialAsync("_PCECaseGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @await Html.PartialAsync("_ReEstimationCompletePCE")
@@ -131,16 +131,16 @@
             $('#assignButton').on('click', function () {
 
                 var checkedCollaterals = $('.purple-checkbox:checked');
-                var selectedCollateralIds = [];
+                var SelectedPCEIds = [];
 
                 checkedCollaterals.each(function () {
                     var collateralId = $(this).val();
-                    selectedCollateralIds.push(collateralId);
+                    SelectedPCEIds.push(collateralId);
                 });
-                if (selectedCollateralIds.length === 0) {
+                if (SelectedPCEIds.length === 0) {
                     toastr.error('Please select at least one PCE');
                 } else {
-                    $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+                    $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
 
                     $('#SendForEvaluationModal').modal('show');
                 }
@@ -148,16 +148,16 @@
             $('#sendEvaluationButton').on('click', function () {
 
                 var checkedCollaterals = $('.purple-checkbox:checked');
-                var selectedCollateralIds = [];
+                var SelectedPCEIds = [];
 
                 checkedCollaterals.each(function () {
                     var collateralId = $(this).val();
-                    selectedCollateralIds.push(collateralId);
+                    SelectedPCEIds.push(collateralId);
                 });
-                if (selectedCollateralIds.length === 0) {
+                if (SelectedPCEIds.length === 0) {
                     toastr.error('Please select at least one PCE');
                 } else {
-                    $('#selectedCollateralIds').val(selectedCollateralIds.join(','));
+                    $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
 
                     $('#SendForEvaluationModal').modal('show');
                 }

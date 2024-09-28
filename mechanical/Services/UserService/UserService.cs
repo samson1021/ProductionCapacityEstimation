@@ -25,15 +25,21 @@ namespace mechanical.Services.UserService
         public async Task<UserReturnDto> GetUser(Guid id)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var user = await _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(c => c.Id == id);
+            var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(c => c.Id == id);
             return _mapper.Map<UserReturnDto>(user);
         }
 
         public async Task<UserReturnDto> GetUser()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var user = await _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(c => c.Id == Guid.Parse(httpContext.Session.GetString("userId")));
+            var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(c => c.Id == Guid.Parse(httpContext.Session.GetString("userId")));
             return _mapper.Map<UserReturnDto>(user);
+        }
+
+        public async Task<ReturnUserDto> GetUserById(Guid Id)
+        {
+            var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).Include(res => res.District).FirstOrDefaultAsync(res => res.Id == Id);             
+            return _mapper.Map<ReturnUserDto>(user);
         }
     }
 }

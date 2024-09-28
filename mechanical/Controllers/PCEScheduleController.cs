@@ -7,7 +7,7 @@ using mechanical.Data;
 using mechanical.Models.Dto.MailDto;
 using mechanical.Services.MailService;
 using mechanical.Models.PCE.Entities;
-using mechanical.Services.PCE.MOPCECaseService;
+using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 
@@ -18,87 +18,110 @@ namespace mechanical.Controllers
         private readonly IMapper _mapper;
         private readonly CbeContext _cbeContext;
         private readonly IMailService _mailService;
-        private readonly IMOPCECaseService _MOPCECaseService;
+        private readonly IPCECaseService _PCECaseService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
 
-        public PCEScheduleController(CbeContext cbeContext, IMapper mapper, IMOPCECaseService IMOPCECaseService, IPCECaseScheduleService PCECaseScheduleService, IMailService mailService)
+        public PCEScheduleController(CbeContext cbeContext, IMapper mapper, IPCECaseService IPCECaseService, IPCECaseScheduleService PCECaseScheduleService, IMailService mailService)
         {
             _mapper = mapper;
             _cbeContext = cbeContext;
             _mailService = mailService;
-            _MOPCECaseService = IMOPCECaseService;
+            _PCECaseService = IPCECaseService;
             _PCECaseScheduleService = PCECaseScheduleService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateSchedule(PCECaseSchedulePostDto CaseSchedulePostDto)
+        public async Task<IActionResult> CreateSchedule(PCECaseSchedulePostDto PCECaseScheduleDto)
         {
      
-            var PCECaseSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), CaseSchedulePostDto);
+            var pceCaseSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), PCECaseScheduleDto);
 
-            if (PCECaseSchedule == null)
+            if (pceCaseSchedule == null)
             {
                 return BadRequest("Unable to create PCECase Schedule");
             }
 
-            await SendScheduleEmail(PCECaseSchedule, "Valuation Schedule for PCECase Number ");
+            await SendScheduleEmail(pceCaseSchedule, "Valuation Schedule for PCECase Number ");
             return Ok();
         }
 
 
      
         [HttpPost]
-        public async Task<IActionResult> CreateProposeSchedule(PCECaseSchedulePostDto CaseSchedulePostDto)
+        public async Task<IActionResult> CreateProposeSchedule(PCECaseSchedulePostDto PCECaseScheduleDto)
         {
-            var caseSche = await _cbeContext.PCECaseSchedules.FindAsync(CaseSchedulePostDto.Id);
-            caseSche.Status = "Rejected";
-            caseSche.Reason = CaseSchedulePostDto.Reason;
-            _cbeContext.Update(caseSche);
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.FindAsync(PCECaseScheduleDto.Id);
+            pceCaseSchedule.Status = "Rejected";
+            pceCaseSchedule.Reason = PCECaseScheduleDto.Reason;
+
+            _cbeContext.Update(pceCaseSchedule);            
             await _cbeContext.SaveChangesAsync();
-            CaseSchedulePostDto.Reason = null;
-            CaseSchedulePostDto.Id = Guid.Empty;
-            var PCECaseSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), CaseSchedulePostDto);
-            if (PCECaseSchedule == null) { return BadRequest("Unable to Create case Schdule"); }
+            
+            PCECaseScheduleDto.Reason = null;
+            PCECaseScheduleDto.Id = Guid.Empty;
+            
+            var PCECaseSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), PCECaseScheduleDto);
+            
+            if (PCECaseSchedule == null) 
+            {
+                return BadRequest("Unable to Create case Schdule"); 
+            }
+
             return await SendScheduleEmail(PCECaseSchedule, "Valuation Schedule for PCECase Number ");
         }
 
-
-
         [HttpPost]
-        public async Task<IActionResult> UpdateSchedule(Guid Id, PCECaseSchedulePostDto CaseSchedulePostDto)
+        public async Task<IActionResult> UpdateSchedule(Guid Id, PCECaseSchedulePostDto PCECaseScheduleDto)
         {
-            var caseSchedule = await _cbeContext.PCECaseSchedules.FindAsync(Id);
-            if (caseSchedule == null)  { throw new Exception("case Schedule not Found"); }
-            if (caseSchedule.UserId != base.GetCurrentUserId()) { throw new Exception("unauthorized user"); }
-            caseSchedule.CreatedAt = DateTime.Now;
-            caseSchedule.ScheduleDate = CaseSchedulePostDto.ScheduleDate;
-            _cbeContext.Update(caseSchedule);
-            var caseSchedules = await _cbeContext.SaveChangesAsync();
-            if (caseSchedules == null)  { return BadRequest("Unable to update case Schdule"); }
-            await SendScheduleEmail(_mapper.Map<PCECaseScheduleReturnDto>(caseSchedule), "Valuation Schedule for PCECase Number");
-            return Ok(caseSchedule);
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.FindAsync(Id);
+
+            if (pceCaseSchedule == null)  
+            { 
+                throw new Exception("case Schedule not Found"); 
+            }
+
+            if (pceCaseSchedule.UserId != base.GetCurrentUserId()) 
+            { 
+                throw new Exception("unauthorized user"); 
+            }
+
+            pceCaseSchedule.CreatedAt = DateTime.Now;
+            pceCaseSchedule.ScheduleDate = PCECaseScheduleDto.ScheduleDate;
+            _cbeContext.Update(pceCaseSchedule);
+
+            var pceCaseSchedules = await _cbeContext.SaveChangesAsync();
+
+            if (pceCaseSchedules == null)  
+            { 
+                return BadRequest("Unable to update case Schdule"); 
+            }
+
+            await SendScheduleEmail(_mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule), "Valuation Schedule for PCECase Number");
+            return Ok(pceCaseSchedule);
         }
 
         [HttpPost]
         public async Task<IActionResult> ApproveSchedule(Guid Id)
         {
-            var caseSchedule = await _cbeContext.PCECaseSchedules.FindAsync(Id);
-            if (caseSchedule == null)
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.FindAsync(Id);
+            
+            if (pceCaseSchedule == null)
             {
                 throw new Exception("case Schedule not Found");
             }
-            caseSchedule.Status = "Approved";
-            _cbeContext.Update(caseSchedule);
+
+            pceCaseSchedule.Status = "Approved";
+            _cbeContext.Update(pceCaseSchedule);
             await _cbeContext.SaveChangesAsync();
-            string jsonData = JsonConvert.SerializeObject(caseSchedule);
+            
+            string jsonData = JsonConvert.SerializeObject(pceCaseSchedule);
             return Ok(jsonData);
         }
 
-
-
         private async Task<IActionResult> SendScheduleEmail(PCECaseScheduleReturnDto PCECaseSchedule, string subjectPrefix)
         {
-            var pceCaseInfo = await _MOPCECaseService.GetPCECase(base.GetCurrentUserId(), PCECaseSchedule.PCECaseId);
+            var pceCaseInfo = await _PCECaseService.GetPCECase(PCECaseSchedule.PCECaseId);
+            
             await _mailService.SendEmail(new MailPostDto
             {
                 SenderEmail = "sender@cbe.com.et",
@@ -107,11 +130,9 @@ namespace mechanical.Controllers
                 Subject = $"{subjectPrefix}{pceCaseInfo.CaseNo}",
                 Body = $"Dear! Valuation Schedule For Applicant: {pceCaseInfo.ApplicantName} is {PCECaseSchedule.ScheduleDate}. For further details, please check the Production Valuation System."
             });
+
             string jsonData = JsonConvert.SerializeObject(PCECaseSchedule);
             return Ok(PCECaseSchedule);
         }
-
-
-
     }
 }

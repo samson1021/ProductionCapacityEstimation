@@ -42,24 +42,27 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _pceCaseTimeLineService = PCECaseTimeLineService;
         }
 
-        public async Task<PCEEvaluationReturnDto> CreatePCEEvaluation(Guid UserId, PCEEvaluationPostDto Dto)
+        public async Task<PCEEvaluationReturnDto> CreateValuation(Guid UserId, PCEEvaluationPostDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
-                InitializePCEEvaluation(pceEvaluation, UserId);
+                // pceEvaluation.Id = Guid.NewGuid();
+                pceEvaluation.EvaluatorId = UserId;
+                pceEvaluation.CreatedBy = UserId;
+                pceEvaluation.CreatedAt = DateTime.Now;
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEvaluation);
+
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
 
                 await HandleFileUploads(UserId, Dto.SupportingEvidences, "Supporting Evidence", pce.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.ProductionProcessFlowDiagrams, "Production Process Flow Diagram", pce.PCECaseId, pceEvaluation.Id);
-
-                UpdatePCEStatus(pce, "Pending", "Maker Officer");
+                await UpdatePCEStatus(pce, "Pending", "Maker Officer");
                 await UpdateCaseAssignmentStatus(pce.Id, pceEvaluation.EvaluatorId, "Pending");
-
                 await LogPCECaseTimeline(pce, "Production valuation is created and pending.");
+
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -67,80 +70,85 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating PCEEvaluation");
+                _logger.LogError(ex, "Error creating production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while creating the PCEEvaluation.");
+                throw new ApplicationException("An error occurred while creating the production capacity valuation.");
             }            
         }
 
-        public async Task<PCEEvaluationReturnDto> UpdatePCEEvaluation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
+        public async Task<PCEEvaluationReturnDto> UpdateValuation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                var pceEvaluation = await FindPCEEvaluation(Id);
+                var pceEvaluation = await FindValuation(Id);
                 _mapper.Map(Dto, pceEvaluation);
-                UpdatePCEEvaluation(pceEvaluation, UserId);
+                pceEvaluation.UpdatedBy = UserId;
+                pceEvaluation.UpdatedAt = DateTime.Now;
 
                 var filesToDelete = await HandleDeletedFiles(Dto.DeletedFileIds);
+
                 await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
-
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is updated.");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                DeleteFiles(filesToDelete);
+
+                await DeleteFiles(filesToDelete);
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
             }
 
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating PCEEvaluation");
+                _logger.LogError(ex, "Error updating production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while updating the PCEEvaluation.");
+                throw new ApplicationException("An error occurred while updating the production capacity valuation.");
             }
         }
 
-        public async Task<bool> DeletePCEEvaluation(Guid UserId, Guid Id)
+        public async Task<bool> DeleteValuation(Guid UserId, Guid Id)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                var pceEvaluation = await FindPCEEvaluation(Id);
+                var pceEvaluation = await FindValuation(Id);
 
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);
 
                 // var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEvaluation.PCEId && res != pceEvaluation).ToListAsync();
                 // var currentStatus = previousValuation.Any() ? "Reestimate" : "New";
                 var currentStatus = "New";
-                UpdatePCEStatus(pceEvaluation.PCE, currentStatus, "Maker Officer");
 
+                await UpdatePCEStatus(pceEvaluation.PCE, currentStatus, "Maker Officer");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, currentStatus);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "The current production valuation is retracted.");
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+
                 await DeleteRelatedFiles(pceEvaluation.Id);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting PCEEvaluation");
+                _logger.LogError(ex, "Error deleting production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while deleting the PCEEvaluation.");
+                throw new ApplicationException("An error occurred while deleting the production capacity valuation.");
             }
         }
 
-        public async Task<bool> EvaluatePCEEvaluation(Guid UserId, Guid Id)
+        public async Task<bool> CompleteValuation(Guid UserId, Guid Id)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                var pceEvaluation = await FindPCEEvaluation(Id);
-                UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
+                var pceEvaluation = await FindValuation(Id);
 
+                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
@@ -151,25 +159,52 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error evaluating PCEEvaluation");
+                _logger.LogError(ex, "Error evaluating production capacity.");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while evaluating the PCEEvaluation.");
+                throw new ApplicationException("An error occurred while evaluating the production capacity.");
             }
         }
 
-        public async Task<bool> RejectPCEEvaluation(Guid UserId, PCERejectPostDto Dto)
+        public async Task<bool> ReestimateValuation(Guid UserId, Guid Id)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {
+                var pceEvaluation = await FindValuation(Id);
+
+                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
+                await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error reevaluating production capacity");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while evaluating the production capacity.");
+            }
+        }
+
+        public async Task<bool> RejectValuation(Guid UserId, PCERejectPostDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 var returnPCE = _mapper.Map<ProductionReject>(Dto);
-                InitializeProductionReject(returnPCE, UserId);
+                returnPCE.RejectedBy = UserId;
+                returnPCE.CreationDate = DateTime.Now;
+
                 await _cbeContext.ProductionRejects.AddAsync(returnPCE);
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
-                UpdatePCEStatus(pce, "Rejected", "Relation Manager");
-                await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
 
+                await UpdatePCEStatus(pce, "Rejected", "Relation Manager");
+                await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
                 await LogPCECaseTimeline(pce, "PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.");
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -178,23 +213,54 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error rejecting PCEEvaluation");
+                _logger.LogError(ex, "Error rejecting production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while rejecting the PCEEvaluation.");
+                throw new ApplicationException("An error occurred while rejecting the production capacity valuation.");
             }
         } 
 
-        public async Task<PCEEvaluationReturnDto> RemarkReleasePCEEvaluation(Guid UserId, Guid Id, String Remark, Guid EvaluatorId)
+        public async Task<bool> HandleRemark(Guid UserId, Guid PCEId, String RemarkType, CreateFileDto FileDto, Guid EvaluatorId)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {             
-                var pceEvaluation = await FindPCEEvaluation(Id);       
+                var currentStatus = RemarkType == "Verfication" ? "Remark Verfication" : "Remark Justfication";
+            
+                var pce = await _cbeContext.ProductionCapacities.FindAsync(PCEId);
+
+                if (FileDto.File != null)
+                {
+                    FileDto.CaseId = pce.PCECaseId;
+                    await _UploadFileService.CreateUploadFile(UserId, FileDto);
+                }
+                await UpdatePCEStatus(pce, currentStatus, "Maker Officer");                
+                await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.Now);
+                await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling production capacity valuation");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while handling the production capacity valuation.");
+            }
+        }
+
+        public async Task<PCEEvaluationReturnDto> ReleaseRemark(Guid UserId, Guid Id, String Remark, Guid EvaluatorId)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {             
+                var pceEvaluation = await FindValuation(Id);       
                 pceEvaluation.Remark = Remark;
                 _cbeContext.Update(pceEvaluation);
 
-                UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
+                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");                
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -205,27 +271,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error evaluating PCEEvaluation");
+                _logger.LogError(ex, "Error releasing production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while evaluating the PCEEvaluation.");
+                throw new ApplicationException("An error occurred while releasing the production capacity valuation.");
             }
         }
 
-        private void InitializePCEEvaluation(PCEEvaluation pceEntity, Guid UserId)
-        {
-            pceEntity.Id = Guid.NewGuid();
-            pceEntity.EvaluatorId = UserId;
-            pceEntity.CreatedBy = UserId;
-            pceEntity.CreatedAt = DateTime.Now;
-        }
-
-        private void UpdatePCEEvaluation(PCEEvaluation pceEntity, Guid UserId)
-        {
-            pceEntity.UpdatedBy = UserId;
-            pceEntity.UpdatedAt = DateTime.Now;
-        }
-
-        private async Task<PCEEvaluation> FindPCEEvaluation(Guid Id)
+        private async Task<PCEEvaluation> FindValuation(Guid Id)
         {
             var pceEntity = await _cbeContext.PCEEvaluations
                                             .Include(e => e.ShiftHours)
@@ -236,8 +288,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             if (pceEntity == null)
             {
-                _logger.LogWarning("PCEEvaluation with Id {Id} not found", Id);
-                throw new KeyNotFoundException("PCEEvaluation not found");
+                _logger.LogWarning("Production capacity valuation with Id: {Id} not found", Id);
+                throw new KeyNotFoundException("Production capacity valuation not found");
             }
 
             return pceEntity;
@@ -285,7 +337,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             return filePaths;
         }
 
-        private void DeleteFiles(IEnumerable<string> filePaths)
+        private async Task DeleteFiles(IEnumerable<string> filePaths)
         {
             foreach (var filePath in filePaths)
             {
@@ -311,11 +363,23 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _cbeContext.UploadFiles.RemoveRange(relatedFiles);
         }
 
-        private void UpdatePCEStatus(ProductionCapacity PCE, string Status, string Stage)
+        private async Task UpdatePCEStatus(ProductionCapacity PCE, string Status, string Stage)
         {
             PCE.CurrentStage = Stage;
             PCE.CurrentStatus = Status;
             _cbeContext.ProductionCapacities.Update(PCE);
+        }
+
+        private async Task UpdatePCECaseStatusIfAllCompleted(ProductionCapacity PCE)
+        {
+            var allCompleted = PCE.PCECase.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed");
+
+            if (allCompleted)
+            {
+                PCE.PCECase.Status = "Completed";
+                PCE.PCECase.CompletionDate = DateTime.Now;
+                _cbeContext.PCECases.Update(PCE.PCECase);
+            }
         }
 
         private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid UserId, string Status, DateTime? CompletionDate = null)
@@ -330,12 +394,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private void InitializeProductionReject(ProductionReject Reject, Guid UserId)
-        {
-            Reject.CreationDate = DateTime.Now;
-            Reject.RejectedBy = UserId;
-        }
-
         private async Task LogPCECaseTimeline(ProductionCapacity PCE, string activity)
         {
             await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
@@ -347,7 +405,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
         ///////// PCE Evaluation //////////////
-        public async Task<PCEEvaluationReturnDto> GetPCEEvaluation(Guid UserId, Guid Id)
+        public async Task<PCEEvaluationReturnDto> GetValuation(Guid UserId, Guid Id)
         {
             try
             {
@@ -361,8 +419,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 if (pceEvaluation == null)
                 {
-                    _logger.LogWarning("PCEEvaluation with Id {Id} not found", Id);
-                    throw new KeyNotFoundException("PCEEvaluation not found");
+                    _logger.LogWarning("Production capacity valuation with Id {Id} not found", Id);
+                    throw new KeyNotFoundException("Production capacity valuation not found");
                 }
 
                 var uploadFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
@@ -377,12 +435,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching PCEEvaluation");
-                throw new ApplicationException("An error occurred while fetching the PCEEvaluation.");
+                _logger.LogError(ex, "Error fetching production capacity valuation");
+                throw new ApplicationException("An error occurred while fetching the production capacity valuation.");
             }
         }
 
-        public async Task<PCEEvaluationReturnDto> GetPCEEvaluationByPCEId(Guid UserId, Guid PCEId)
+        public async Task<PCEEvaluationReturnDto> GetValuationByPCEId(Guid UserId, Guid PCEId)
         {
             try
             {
@@ -413,12 +471,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching PCEEvaluation with PCEId {PCEId}");
-                throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEId {PCEId}.");
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
+                throw new ApplicationException("An error occurred while fetching the production capacity valuation with ID: {PCEId}.");
             }
         }
 
-        public async Task<IEnumerable<PCEEvaluationReturnDto>> GetPCEEvaluationsByPCECaseId(Guid UserId, Guid PCECaseId)
+        public async Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsByPCECaseId(Guid UserId, Guid PCECaseId)
         {
             try
             {
@@ -455,8 +513,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching PCEEvaluation with PCEId {PCEId}");
-                throw new ApplicationException("An error occurred while fetching the PCEEvaluation with PCEId {PCEId}.");
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
+                throw new ApplicationException("An error occurred while fetching the production capacity valuation with ID: {PCEId}.");
             }
         }                   
     
@@ -469,7 +527,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate")
             {  
-                latestEvaluation = await GetPCEEvaluationByPCEId(UserId, PCEId);
+                latestEvaluation = await GetValuationByPCEId(UserId, PCEId);
             }
 
             var previousEvaluations = await _cbeContext.PCEEvaluations
@@ -484,12 +542,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 LatestEvaluation = latestEvaluation,
                 PreviousEvaluations = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(previousEvaluations)
             };
-        }           
-
-        public async Task<CreateUser> GetUser(Guid UserId)
-        {
-            var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).Include(res => res.District).FirstOrDefaultAsync(res => res.Id == UserId);             
-            return _mapper.Map<CreateUser>(user);
-        }
+        }   
     }
 }

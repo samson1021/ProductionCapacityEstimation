@@ -1,5 +1,5 @@
 <script>
-    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, isReassign = false) {
+    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRoleName, emptyMessage, isReassign = false) {
         $.ajax({
             url: getSubordinateUrl,
             method: 'GET',
@@ -70,7 +70,7 @@
                 success: function (response) {
                     toastr.success(response.message);
                     $('#assignModal').modal('hide');
-                    loadProductions();
+                    loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
                 },
                 error: function (error) {
                     if (!isReassign){

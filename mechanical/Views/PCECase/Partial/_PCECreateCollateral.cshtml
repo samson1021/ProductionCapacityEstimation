@@ -1,24 +1,37 @@
-@using mechanical.Models.PCE.Dto.PCECaseDto;
+@using mechanical.Models.Dto.UserDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Enum.ProductionCapacity
+
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantPostDto
+
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var status = ViewBag.Status as string;
+    var emptyMessage = "There are no Productions found for this PCE Case.";
+    var fetchUrl = "/ProductionCapacity/GetProductions?Status=" + status + "&PCECaseId=" + myPCECase.Id;
+
+    if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        emptyMessage = "There are no " + status + " Productions found for this PCE Case.";
+    }
 }
 
-<div class="modal fade" id="EstimatePlaneCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+<div class="modal fade" id="addPlantModal" tabindex="-1" role="dialog" aria-labelledby="addPlantModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Plant Production Capacity Estimation</h5>
+                <h5 class="modal-title" id="addPlantModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Plant Production Capacity Estimation</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
-            @using (Html.BeginForm("PlantCreate", "ProductionCapacity", FormMethod.Post, new { id = "EstimatePlantCollateralForm", enctype = "multipart/form-data", onsubmit = "return validateForm();" }))
+            @using (Html.BeginForm("PlantCreate", "ProductionCapacity", FormMethod.Post, new { id = "addPlantForm", enctype = "multipart/form-data", onsubmit = "return validateForm();" }))
             {
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
-                        <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" id="CaseId" />
+                        <input asp-for="PCECaseId" value="@myPCECase.Id" type="hidden" id="PCECaseId" />
                         <input asp-for="ProductionType" value="Plant" hidden />
                         <div class="row">
                            <div class="form-group col-lg-4">
@@ -247,12 +260,38 @@
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+
 <script>
+    
+    var fetchUrl = '@Html.Raw(fetchUrl)';
+    @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))'; *@
+    var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
+    var emptyMessage = '@Html.Raw(emptyMessage)';
+    
+    $('#addPlantForm').submit(function (e) {
+        e.preventDefault();
+        var formDataArray = $(this).serializeArray();
+
+
+        var formData = new FormData(this);
+        $.ajax({
+            url: '/ProductionCapacity/PlantCreate',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                toastr.success(response.message);
+                loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+                $('#addPlantModal').modal('hide');
+                $('#addPlantForm')[0].reset();
+            },
+            error: function (error) {
+                toastr.error("Unable to create Plant PCE ");
+                console.log(error);
+            }
+        });
+    });
     document.getElementById('PlantMachinePurchased').addEventListener('change', function () {
         var supportDocumentRow = document.getElementById('SupportDocumentUpload');
         if (this.checked) {
@@ -285,23 +324,10 @@
             otherPlantNameInput.classList.add('d-none');
         }
     });
-    // document.getElementById('OtherPlantName').addEventListener('input', function () {
-    //     document.getElementById('PlantName').value = this.value;
-    // });
 
     function validateForm() {
         var isValid = true;
 
-        // Validate the required fields
-        // if (document.getElementById("PlantName").value.trim() === "") {
-        //     document.getElementById("PlantName-error").textContent = "Name of Plant is required.";
-        //     document.getElementById("PlantName").style.borderColor = "red";
-
-        //     isValid = false;
-        // } else {
-        //     document.getElementById("PlantName").style.borderColor = "";
-        //     document.getElementById("PlantName-error").textContent = "";
-        // }
         if (document.getElementById("PropertyOwner").value.trim() === "") {
             document.getElementById("PropertyOwner-error").textContent = "Property Ownert is required.";
             document.getElementById("PropertyOwner").style.borderColor = "red";
@@ -493,9 +519,6 @@
 
         return isValid;
     }
-
-
-
 
     document.getElementById("PlantName").addEventListener("input", function () {
         this.style.borderColor = "";

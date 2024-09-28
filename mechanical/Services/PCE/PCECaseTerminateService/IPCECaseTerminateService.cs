@@ -9,5 +9,6 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
         Task<PCECaseTerminateReturnDto> ApproveCaseTerminate(Guid Id);
         Task<PCECaseTerminateReturnDto> GetCaseTerminate(Guid Id);
         Task<IEnumerable<PCECaseTerminateReturnDto>> GetCaseTerminates(Guid PCECaseId);
+        Task<IEnumerable<PCECaseTerminateDto>> GetPCECaseTerminates(Guid UserId);
     }
 }

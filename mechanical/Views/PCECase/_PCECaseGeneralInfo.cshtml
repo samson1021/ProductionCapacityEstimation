@@ -1,0 +1,76 @@
+﻿﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+
+@{
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Applicant Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <h6><strong>Name:</strong> @myPCECase.ApplicantName</h6>
+                        <h6 style="margin-top:1.2rem;"><strong>Customer Id: </strong> @myPCECase.CustomerUserId</h6>
+                        <h6 style="margin-top:1.2rem;"><strong>Email:</strong> @myPCECase.CustomerEmail</h6>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Case Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <h6><strong>Segment:</strong> Production Capacity Estimation</h6>
+                        <h6 style="margin-top:1.2rem;"><strong>Case No:</strong> @myPCECase.CaseNo </h6>
+                        <h6 style="margin-top:1.2rem;"><strong>Center: </strong> @myPCECase.District </h6>
+                        @* <h6><strong>Segment:</strong> @myPCECase.Type</h6> *@
+                        <h6 style="margin-top:1.2rem;"><strong>Total Number of Productions: </strong> @myPCECase.TotalNoOfCollateral</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Attached Document</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>File Category</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (myPCECase.BussinessLicence == null)
+                                    {
+                                        <tr>
+                                            <td colspan="3">There is no document related to this case</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+
+                                            <td>@myPCECase.BussinessLicence.Name</td>
+                                            <td>@myPCECase.BussinessLicence.Catagory</td>
+                                            <td><a href="/UploadFile/ViewFile/' + @myPCECase.BussinessLicence.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + @myPCECase.BussinessLicence.Id+ '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -10,16 +10,27 @@ namespace mechanical.Controllers
     public class PCECaseCommentController : BaseController
     {
         private readonly IPCECaseCommentService _PCEcaseCommentService;
+        
         public PCECaseCommentController(IPCECaseCommentService PCEcaseCommentService)
         {
             _PCEcaseCommentService = PCEcaseCommentService;
         }
+
         [HttpPost]
-        public async Task<IActionResult> CreateCaseComment(string PCECaseId, PCECaseCommentPostDto caseCommentPostDto)
+        public async Task<IActionResult> CreateCaseComment([FromBody] PCECaseCommentPostDto caseCommentPostDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (caseCommentPostDto == null)
+            {
+                return BadRequest("Invalid data.");
+            }
             await _PCEcaseCommentService.CreateCaseComment(base.GetCurrentUserId(), caseCommentPostDto);
             return Ok();
         }
+
         [HttpGet]
         public async Task<IActionResult> GetCaseComments(Guid PCECaseId)
         {

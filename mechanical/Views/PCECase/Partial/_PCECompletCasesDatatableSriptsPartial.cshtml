@@ -27,7 +27,7 @@
                             render: function (data, type, row, meta) {
                                 return '<a href="@Url.Action("PCECompleteCase", "PCECase")?Id=' + data + 
                                         '">Details | </a><a href = "@Url.Action("PCESummary", "PCECase")?Id=' + data + 
-                                        '" > PCE Summary | </a>' + '<a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + 
+                                        '" > PCE Summary | </a>' + '<a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + 
                                         '">  <i class="nav-icon fas fa-sitemap ">  </i > </a>';
 
                                  

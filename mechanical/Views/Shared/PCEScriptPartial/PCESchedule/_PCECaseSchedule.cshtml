@@ -1,13 +1,15 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿@using mechanical.Models.Dto.UserDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
+
 @model mechanical.Models.PCE.Dto.PCECaseScheduleDto.PCECaseSchedulePostDto
+
 @{
     var myCase = ViewData["PCECase"] as PCECaseReturntDto;
     var caseId =  ViewData["PCECaseId"] as Guid? ?? Guid.Empty;
-    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
     Guid userId = currentUser.Id;
-  
 }
 
 <section class="content-header">
@@ -110,8 +112,6 @@
                                         }
                                     
                                     }
-
-
                                 </div>
                             }
                         }

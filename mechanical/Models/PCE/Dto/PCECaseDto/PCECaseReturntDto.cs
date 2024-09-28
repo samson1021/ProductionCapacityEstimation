@@ -16,7 +16,8 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
         // public string CurrentStatus { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
-        public DateTime MakerAssignmentDate { get; set; }
+        public DateTime? CompletionDate { get; set; }
+        public DateTime MakerAssignmentDate { get; set; } // remove
         public int TotalNoOfCollateral { get; set; } = 0;
         public virtual UploadFile? BussinessLicence { get; set; }
 

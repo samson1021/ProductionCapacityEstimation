@@ -1,4 +1,10 @@
-﻿<section class="content">
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+
+@{
+    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+}
+@model mechanical.Models.PCE.Dto.PCECaseCommentDto.PCECaseCommentPostDto
+<section class="content">
         <div class="card direct-chat direct-chat-purple">
             <div class="card-header">
                 <h3 class="card-title">PCE Case Comment</h3>
@@ -16,11 +22,14 @@
                 </div>
             </div>
             <div class="card-footer">
-                <form action="#" method="post">
-                    <div class="input-group">
-                        <input type="text" name="message" id="messageinput" placeholder="Type Message ..." class="form-control">
+                <form method="post" id="commentForm" onsubmit="return false;">
+                @* <form action="/PCECaseComment/CreateCaseComment" method="post" id="commentForm" onsubmit="return false;"> *@
+                    <div class="input-group">                        
+                        <input asp-for="PCECaseId" value='@myPCECase.Id' type="hidden" id="PCECaseId" /> 
+                        <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control">
                         <span class="input-group-append">
-                            <button type="button" class="btn btn-primary" id="SendButton">Send</button>
+                            @* <button type="submit" class="btn btn-primary" id="SendButton"><i class="fab fa-telegram-plane"></i></button> *@
+                            <button type="submit" class="btn btn-primary" id="SendButton"><i class="fas fa-arrow-right"></i></button>
                         </span>
                     </div>
                 </form>

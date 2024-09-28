@@ -7,7 +7,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
         Task<PCECaseTimeLinePostDto> PCECaseTimeLine(PCECaseTimeLinePostDto pCECaseTimeLinePostDto);
 
 
-        Task<IEnumerable<PCECaseTimeLineReturnDto>> GetPCECaseTimeLines(Guid CaseId);
+        Task<IEnumerable<PCECaseTimeLineReturnDto>> GetPCECaseTimeLines(Guid PCECaseId);
 
     }
 }

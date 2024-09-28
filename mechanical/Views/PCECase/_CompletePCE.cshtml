@@ -56,7 +56,7 @@
             <div class="modal-body">
                 @using (Html.BeginForm("SendProductionForReestimation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
-                    <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
+                    <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                     <div class="form-group">
                         <label for="CenterDropdown">Select Valuation Center:</label>
                         <select class="form-control" id="CenterDropdown" name="CenterId">

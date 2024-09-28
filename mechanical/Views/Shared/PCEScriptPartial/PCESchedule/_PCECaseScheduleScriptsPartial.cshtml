@@ -1,6 +1,5 @@
 ﻿
 <script>
-    console.log("debug");
     $(document).ready(function () {
 
         $('#UpdateSchedules').on('click', function (event) {
@@ -22,7 +21,6 @@
             formData.append('Id', Id);
 
             $.ajax({
-                //url: '/MOCase/UpdateSchedule',
                 url: '/PCESchedule/UpdateSchedule',
                 type: 'POST',
                 data: formData,
@@ -57,10 +55,6 @@
             });
         });
 
-
-
-
-
         fetch('/UserManagment/GetDistrict')
             .then(response => response.json())
             .then(data => {
@@ -79,9 +73,6 @@
         $('#addCollateralButton').click(function () {
             $('#addCollateralModal').modal('show');
         });
-
-
-
 
         var CaseId = $('#CaseId').val();
 

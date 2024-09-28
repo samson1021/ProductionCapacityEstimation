@@ -1,0 +1,77 @@
+﻿﻿@using mechanical.Models.Dto.UserDto
+
+@{
+    ViewData["Title"] = ViewBag.Title as string;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var status = ViewBag.Status as string;
+
+    var emptyMessage = "There are no Productions found.";
+    var fetchUrl = "/ProductionCapacity/GetProductions?Status=" + status;
+
+    if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        emptyMessage = "There are no " + status + " Productions found.";
+    }
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>@ViewData["Title"]</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCECases", "MMCase")">My PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyProductions", "ProductionCapacity")">My Productions</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <div class="col-12">
+                    <div class="row"></div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <table id="Productions" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                                <th>Property Owner</th>
+                                <th>Role</th>
+                                <th>Production Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                    </table> 
+                </div> 
+            </div> 
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionsTableDatatableSriptsPartial");
+    } 
+    <script>$(document).ready(function () {
+        
+            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
+            var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
+            var emptyMessage = '@Html.Raw(emptyMessage)';
+
+            loadProductions(fetchUrl, currentUser.Role.Name, emptyMessage);
+        });
+    </script>
+}
