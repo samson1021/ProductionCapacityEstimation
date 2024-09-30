@@ -208,11 +208,10 @@ namespace mechanical.Controllers.PCE
         }
         public async Task<IActionResult> PCEReestimationCase(Guid Id)
         {
-            var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
+            var pceCase = await _PCECaseService.GetCase(Id);
+            // var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
             if (pceCase == null) { return RedirectToAction("GetPCECompleteCases"); }
             ViewData["PCECase"] = pceCase;
-            var pcecaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
-            if (pcecaseDto == null) { return RedirectToAction("PCENewCases"); }
             var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
             ViewData["PCECaseSchedule"] = pceCaseSchedule; // Updated key
             ViewData["Id"] = base.GetCurrentUserId();

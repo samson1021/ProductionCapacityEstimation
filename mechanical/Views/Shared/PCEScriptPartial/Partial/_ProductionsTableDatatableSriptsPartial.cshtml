@@ -78,7 +78,7 @@
 
                         let link = `<a href="${detailsUrl}${data}">Details</a>`;
 
-                        if (currentUserRoleName === "Relation Manager") {
+                        if (currentUserRoleName === "Relation Manager" && '@status' === "New") {
                             link += editLink + deleteLink;
                         }
                         if (currentUserRoleName === "Maker Officer") {
@@ -101,7 +101,7 @@
             }
         </text>
     }
-    else if (currentUser.Role.Name == "Relation Manager")
+    else if (currentUser.Role.Name == "Relation Manager" && status == "New")
     {
         <text>           
             $('#Productions').on('click', '.delete-link', function (e) {

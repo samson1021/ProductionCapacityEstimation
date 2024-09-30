@@ -109,6 +109,7 @@ namespace mechanical.Controllers
                 ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
                 ViewData["RejectedProduction"] = pceDetail.RejectedProduction;
                 ViewData["RejectedBy"] = pceDetail.RejectedBy;
+                ViewData["Assignment_Status"] = pceDetail.Assignment_Status;
 
                 return View(pceDetail.ProductionCapacity);
             }

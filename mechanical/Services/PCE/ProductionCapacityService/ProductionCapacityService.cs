@@ -688,13 +688,16 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         {
 
             var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
+            var pceAssignment = await _cbeContext.PCECaseAssignments.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
             var reestimation = await _cbeContext.ProductionCapacityReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
             var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().FirstOrDefaultAsync(res => res.PCEId == PCEId);
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, PCEId);
      
-            var remark = pce;   
-            CreateUser user = null;     
+            var remark = pce;  
+            var assignment_Status = pceAssignment.Status; 
+            CreateUser user = null; 
+
             if (rejectedProduction != null)
             {
                 user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == rejectedProduction.RejectedBy);
@@ -708,7 +711,8 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 Reestimation = reestimation,
                 RelatedFiles = relatedFiles,
                 RejectedProduction = rejectedProduction,
-                RejectedBy = user
+                RejectedBy = user,
+                Assignment_Status = assignment_Status
 
             };
         }     

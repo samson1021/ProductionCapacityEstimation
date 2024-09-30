@@ -14,5 +14,6 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public PCEValuationHistoryDto PCEValuationHistory { get; set; }
         public ProductionReject RejectedProduction { get; set; }
         public CreateUser RejectedBy { get; set; }
+        public string Assignment_Status { get; set; }
     }    
 }

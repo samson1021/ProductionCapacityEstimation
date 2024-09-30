@@ -5,6 +5,7 @@
 
 @{    
     ViewData["Title"] = ViewBag.Title as string;
+    var Assignment_Status = ViewData["Assignment_Status"];
 }
 
 <section class="content-header">
@@ -48,7 +49,7 @@
             <div class="card-body">     
                 <div class="ribbon-wrapper ribbon-xl">
                     <div class="ribbon bg-warning">
-                        @Model.CurrentStatus
+                        '@Assignment_Status'
                     </div>
                 </div> 
                 <div class="tab-content" id="custom-tabs-four-tabContent">
