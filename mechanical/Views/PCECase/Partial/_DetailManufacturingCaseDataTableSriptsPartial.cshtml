@@ -1,9 +1,9 @@
-﻿@using mechanical.Models.Dto.UserDto
+﻿@* @using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Enum.ProductionCapacity
 
 @{
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
     var emptyMessage = "There are no Productions found for this PCE Case.";
@@ -13,12 +13,19 @@
     {
         emptyMessage = "There are no " + status + " Productions found for this PCE Case.";
     }
+
+    
+  fetchUrl, currentUserRoleName, emptyMessage
+        assignUrl: "SendForValuation",        
+        getSubordinateUrl = "/UserManagment/GetDistrict";
+        selectName = "Valuation Center";
+
 }
 
 <script>
 
     var fetchUrl = '@Html.Raw(fetchUrl)';
-    @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))'; *@
+    @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
     var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
     var emptyMessage = '@Html.Raw(emptyMessage)';
     
@@ -44,23 +51,7 @@
             selectedPCEIds.push($(this).val());
         });
         if (selectedPCEIds.length === 0) {
-            toastr.error('Please select at least one PCE');
-        } else {
-            $('#selectedPCEIds').val(selectedPCEIds.join(','));
-
-            $('#SendForEvaluationModal').modal('show');
-        }
-    });
-
-    $('#sendEvaluationButton').on('click', function () {
-
-        var selectedPCEIds = [];
-
-        $('.purple-checkbox:checked').each(function () {
-            selectedPCEIds.push($(this).val());
-        });
-        if (selectedPCEIds.length === 0) {
-            toastr.error('Please select at least one PCE');
+            toastr.error('Please select at least one production');
         } else {
             $('#selectedPCEIds').val(selectedPCEIds.join(','));
 
@@ -69,8 +60,7 @@
     });
 
     $('#selectAllCheckbox').on('click', function () {
-        var isChecked = $(this).prop('checked');
-        $('.purple-checkbox').prop('checked', isChecked);
+        $('.purple-checkbox').prop('checked', $(this).prop('checked'));
     });
 
     $('#Productions tbody').on('change', '.purple-checkbox', function () {
@@ -101,4 +91,4 @@
             }
         });
     });
-</script>
+</script> *@

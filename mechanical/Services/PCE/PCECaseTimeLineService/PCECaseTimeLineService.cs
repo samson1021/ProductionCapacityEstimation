@@ -28,22 +28,22 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<PCECaseTimeLinePostDto> PCECaseTimeLine(PCECaseTimeLinePostDto pCECaseTimeLinePostDto)
+        public async Task<PCECaseTimeLinePostDto> PCECaseTimeLine(PCECaseTimeLinePostDto Dto)
         {
             // using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             { 
                 var httpContext = _httpContextAccessor.HttpContext;
-                var caseTimeline = _mapper.Map<PCECaseTimeLine>(pCECaseTimeLinePostDto);
-                if (caseTimeline.UserId == Guid.Empty)
-                    caseTimeline.UserId = Guid.Parse(httpContext.Session.GetString("userId"));
-                caseTimeline.CreatedAt = DateTime.Now;
+                var pceCaseTimeline = _mapper.Map<PCECaseTimeLine>(Dto);
+                if (pceCaseTimeline.UserId == Guid.Empty)
+                    pceCaseTimeline.UserId = Guid.Parse(httpContext.Session.GetString("userId"));
+                pceCaseTimeline.CreatedAt = DateTime.Now;
 
-                await _cbeContext.PCECaseTimeLines.AddAsync(caseTimeline);
+                await _cbeContext.PCECaseTimeLines.AddAsync(pceCaseTimeline);
                 await _cbeContext.SaveChangesAsync(); 
                 // await transaction.CommitAsync();
 
-                return _mapper.Map<PCECaseTimeLinePostDto>(caseTimeline);  
+                return _mapper.Map<PCECaseTimeLinePostDto>(pceCaseTimeline);  
             }
 
             catch (Exception ex)

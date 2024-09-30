@@ -210,11 +210,18 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> PCEReestimationCase(Guid Id)
         {
             var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), Id);
-            if (pceCase == null) { return RedirectToAction("GetPCECompleteCases"); }
+            
+            if (pceCase == null) 
+            { 
+                return RedirectToAction("GetPCECompleteCases"); 
+            }
+
             var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
-            ViewData["PCECaseSchedule"] = pceCaseSchedule; 
-            ViewData["CurrentUser"] =  await _UserService.GetUserById(base.GetCurrentUserId());
+            
             ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["CurrentUser"] =  await _UserService.GetUserById(base.GetCurrentUserId());
+
             return View();
         }
         [HttpGet]
@@ -265,7 +272,7 @@ namespace mechanical.Controllers.PCE
         }
 
         [HttpPost]
-        public async Task<IActionResult> PCEEdit(PCECaseReturntDto caseDto)
+        public async Task<IActionResult> PCEEdit(PCECaseReturnDto caseDto)
         {
 
 
@@ -457,7 +464,16 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetPCECases(string Status)
         {
-            var pceCases = await _PCECaseService.GetPCECases(base.GetCurrentUserId(), Status);
+            IEnumerable<PCECaseReturnDto> pceCases = null;
+            
+            if (Status == "Reestimate")
+            {
+                pceCases = await _PCECaseService.GetPCECases(base.GetCurrentUserId(), "Completed");
+            }
+            else
+            {                
+                pceCases = await _PCECaseService.GetPCECases(base.GetCurrentUserId(), Status);
+            }
             
             if (pceCases == null)
             {
@@ -533,6 +549,11 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> MyPCECases(string Status = "All")
         {
+            if (Status == "Reestimate")
+            {
+                Status = "Completed";
+            }
+
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/PCECase/GetMyPCECases";
             ViewBag.Status = Status;
@@ -543,6 +564,13 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCECases(string Status = "All")
         {
+            IEnumerable<PCECaseReturnDto> pceCases = null;
+            
+            if (Status == "Reestimate")
+            {
+                Status = "Completed";
+            }
+
             ViewData["Title"] = Status + " PCE Cases";
             ViewBag.Url = "/PCECase/GetPCECases";
             ViewBag.Status = Status;
@@ -613,7 +641,16 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetMyPCECases(string Status = "All")
         {
-            var pceCases = await _PCECaseService.GetPCECases(base.GetCurrentUserId(), Status);
+            IEnumerable<PCECaseReturnDto> pceCases = null;
+            
+            if (Status == "Reestimate")
+            {
+                pceCases = await _PCECaseService.GetPCECases(base.GetCurrentUserId(), "Completed");
+            }
+            else
+            {                
+                pceCases = await _PCECaseService.GetPCECases(base.GetCurrentUserId(), Status);
+            }            
             
             if (pceCases == null)
             {

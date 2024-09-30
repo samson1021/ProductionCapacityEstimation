@@ -43,12 +43,12 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, employeeId, isReassign, "Assign");
         }
 
-        public async Task<List<PCECaseAssignmentDto>> SendProductionForReestimation(Guid UserId, string ReestimationReason, string SelectedPCEIds, string centerId)
+        public async Task<List<PCECaseAssignmentDto>> SendForReestimation(Guid UserId, string ReestimationReason, string SelectedPCEIds, string centerId)
         {
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Reestimation", ReestimationReason);
         }
 
-        public async Task<List<PCECaseAssignmentDto>> SendProductionForValuation(Guid UserId, string SelectedPCEIds, string centerId)
+        public async Task<List<PCECaseAssignmentDto>> SendForValuation(Guid UserId, string SelectedPCEIds, string centerId)
         {
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Valuation");
         }
@@ -318,7 +318,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         //     }
         // }
 
-        // public async Task<List<PCECaseAssignmentDto>> SendProductionForReestimation(string ReestimationReason, string SelectedPCEIds, string CenterId)
+        // public async Task<List<PCECaseAssignmentDto>> SendForReestimation(string ReestimationReason, string SelectedPCEIds, string CenterId)
         // {
         //     using var transaction = await _cbeContext.Database.BeginTransactionAsync();
         //     try
@@ -411,7 +411,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
 
 
-        // public async Task<List<PCECaseAssignmentDto>> SendProductionForValuation(string SelectedPCEIds, string CenterId) 
+        // public async Task<List<PCECaseAssignmentDto>> SendForValuation(string SelectedPCEIds, string CenterId) 
         // {    
         //     using var transaction = await _cbeContext.Database.BeginTransactionAsync();
         //     try

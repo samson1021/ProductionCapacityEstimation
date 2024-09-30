@@ -4,7 +4,7 @@
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
     var a = 3;
@@ -14,8 +14,10 @@
     var selectName = "";
 
     if (currentUser.Role.Name == "Relation Manager")
-    {
-        
+    {   
+        assiName ="SendForValuation";     
+        subbName = "GetDistrict";
+        selectName = "Valuation Center";  
     }
     else if (currentUser.Role.Name == "Maker Manager")
     {
@@ -112,6 +114,7 @@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionsTableDatatableSriptsPartial"); 
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
         @* await Html.RenderPartialAsync("Partial/_RemarkPCECaseDatatableSriptsPartial");  *@
             @* await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial"); *@
 
@@ -134,10 +137,6 @@
                 await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial"); 
                 @* await Html.RenderPartialAsync("Partial/_RemarkPCECaseDatatableSriptsPartial"); *@
             }
-            else
-            {
-                await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
-            }
         }                    
     }      
 
@@ -151,9 +150,7 @@
 
             loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
 
-            @if ((currentUser.Role.Name == "Maker Manager") || 
-                 (currentUser.Role.Name == "District Valuation Manager") || 
-                 (currentUser.Role.Name == "Maker TeamLeader"))
+            @if (currentUser.Role.Name != "Maker Officer")
             {
                 <text>initializeForAssignment('@Html.Raw(getSubordinateUrl)', '@Html.Raw(assignUrl)', '@Html.Raw(selectName)', '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))', '@Html.Raw(currentUser.Role.Name)', '@Html.Raw(emptyMessage)');</text>
             }

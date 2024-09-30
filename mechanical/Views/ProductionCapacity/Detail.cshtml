@@ -5,7 +5,7 @@
 
 @{    
     ViewData["Title"] = ViewBag.Title as string;
-    var Assignment_Status = ViewData["Assignment_Status"];
+    var Status = ViewData["Assignment_Status"] as string;
 }
 
 <section class="content-header">
@@ -47,11 +47,23 @@
                 </ul>
             </div>
             <div class="card-body">     
-                <div class="ribbon-wrapper ribbon-xl">
-                    <div class="ribbon bg-warning">
-                        '@Assignment_Status'
-                    </div>
-                </div> 
+                <div class="ribbon-wrapper ribbon-xl">                    
+                    @{
+                        var status = Status?.ToString().Trim();
+                        @* if (string.Equals(status, "New", StringComparison.OrdinalIgnoreCase)) { *@
+                        if (status == "New") {
+                            <div class="ribbon bg-success">@status</div>
+                        } else if (status == "Pending") {
+                            <div class="ribbon bg-warning">@status</div>
+                        } else if (status == "Rejected") {
+                            <div class="ribbon bg-danger">@status</div>
+                        } else if (status == "Completed") {
+                            <div class="ribbon bg-info">@status</div>
+                        } else {
+                            <div class="ribbon bg-dark">@status</div>
+                        }
+                    }
+                </div>                
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade show active" id="custom-tabs-four-general" role="tabpanel" aria-labelledby="custom-tabs-four-general-tab">
                         @await Html.PartialAsync("_PCEGeneralInfo")

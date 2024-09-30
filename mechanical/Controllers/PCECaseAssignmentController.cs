@@ -60,7 +60,7 @@ namespace mechanical.Controllers
             var userId = base.GetCurrentUserId();
             try
             {Console.WriteLine("hlkdhflkg");Console.WriteLine(selectedPCEIds);
-                await _PCECaseAssignmentService.SendProductionForValuation(base.GetCurrentUserId(), selectedPCEIds, CenterId);
+                await _PCECaseAssignmentService.SendForValuation(base.GetCurrentUserId(), selectedPCEIds, CenterId);
                 var response = new { message = "PCE Estimation assigned successfully" };
                 return Ok(response);
             }
@@ -72,12 +72,12 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendProductionForReestimation(string ReestimationReason, string selectedPCEIds, string CenterId)
+        public async Task<IActionResult> SendForReestimation(string ReestimationReason, string selectedPCEIds, string CenterId)
         {
             var userId = base.GetCurrentUserId();
             try
             {
-                await _PCECaseAssignmentService.SendProductionForReestimation(base.GetCurrentUserId(), ReestimationReason, selectedPCEIds, CenterId);
+                await _PCECaseAssignmentService.SendForReestimation(base.GetCurrentUserId(), ReestimationReason, selectedPCEIds, CenterId);
                 var response = new { message = "PCE Reestimation assigned successfully" };
                 return Ok(response);
             }

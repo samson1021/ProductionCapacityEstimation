@@ -43,8 +43,11 @@
                 <div class="row">
                     <table id="Productions" class="table table-bordered table-striped">
                         <thead>
-                            <tr>
-                                <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                            <tr>                                
+                                @if ((status == "New" || status == "Completed" || status == "Reestimate") && currentUser.Role.Name != "Maker Officer")
+                                {
+                                    <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
+                                } 
                                 <th>Property Owner</th>
                                 <th>Role</th>
                                 <th>Production Type</th>
@@ -71,7 +74,7 @@
             var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
             var emptyMessage = '@Html.Raw(emptyMessage)';
 
-            loadProductions(fetchUrl, currentUser.Role.Name, emptyMessage);
+            loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
         });
     </script>
 }

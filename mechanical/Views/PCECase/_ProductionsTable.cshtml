@@ -3,7 +3,7 @@
 @* @using mechanical.Models.PCE.Enum.ProductionCapacity *@
 
 @{
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
 
@@ -11,7 +11,14 @@
 
     if (currentUser.Role.Name == "Relation Manager")
     {
-        
+        if (status == "New")
+        {            
+            assiName = "SendForValuation";
+        }        
+        else if (status == "Reestimate" || status == "Completed")
+        {
+            assiName = "SendForReestimation";
+        }
     }
     else if (currentUser.Role.Name == "Maker Manager")
     {
@@ -61,7 +68,7 @@
             <table id="Productions" class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        @if (status == "New" && currentUser.Role.Name != "Maker Officer")
+                        @if ((status == "New" || status == "Completed" || status == "Reestimate") && currentUser.Role.Name != "Maker Officer")
                         {
                             <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
                         }        
@@ -74,17 +81,25 @@
             </table> 
         </div>
         @{
-            if (status == "New")
-            {
-                if (currentUser.Role.Name == "Relation Manager")
-                {                
+            if (currentUser.Role.Name == "Relation Manager")
+            {                
+                <div class="row">
                     <div class="row">
-                        <div class="row">
+                        @if (status == "New") 
+                        {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Send for Estimation<i class="fas fa-paper-plane"></i></button>
-                        </div>
+                        }
+                        else if (status == "Reestimate" || status == "Completed") 
+                        {
+                            <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm bg-purple">Request Re-estimation<i class="fas fa-paper-plane"></i></button>
+                        }
                     </div>
-                }
-                else if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
+                </div>
+            }
+            
+            else if (status == "New")
+            {
+                if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
                 {
                     <div class="row">
                         <div class="col-xl-2 col-lg-4 col-sm-6">
@@ -93,7 +108,7 @@
                     </div>                 
                 }
             }
-        }
+        }        
     </div>
   
 </div>
@@ -101,55 +116,98 @@
 @{
     if (currentUser.Role.Name == "Relation Manager")
     {
-        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">Are you sure you want to delete this production?</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="deleteItem">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="assignModalLabel">Send For Valuation</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        @using (Html.BeginForm("SendForValuation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
-                        {
-                            <input type="hidden" id="selectedPCEIds" name="selectedPCEIds">
-                            <div class="form-group">
-                                <label for="CenterDropdown">Select Valuation Center:</label>
-                                <select class="form-control" id="CenterDropdown" name="CenterId">
-                                </select>
-                            </div>
-                            <div class="row col-12">
-                                <div class="btn-group">
-                                    <button type="submit" class="btn btn-sm bg-purple col-6  ms-1">Assign</button>
-                                    <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+        if (status == "Reestimate" || status == "Completed") 
+        {       
+            <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="assignModalLabel">Send For Re-estimation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @using (Html.BeginForm(assiName, "PCECaseAssignment", FormMethod.Post, new { id = "assignForm" }))
+                            {
+                                <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
+                                <div class="form-group">
+                                    <label for="OptionDropdown">Select Valuation Center:</label>
+                                    <select class="form-control" id="OptionDropdown" name="CenterId">
+                                    </select>
                                 </div>
-                            </div>
-                        }
+                                <div class="form-group">
+                                    <label for="ReestimationReason">Re-estimation Reason:</label>
+                                    <select class="form-control" id="ReestimationReason" name="ReestimationReason" required>
+                                        <option value="" disabled selected>Select Re-estimation Reason </option>
+                                        <option value="Customer Appeal">Customer Appeal</option>
+                                        <option value="Customer Appeal">Re-estimation </option>
+                                    </select>
+                                </div>
+                                <div class="row col-12">
+                                    <div class="btn-group">
+                                        <button type="submit" class="btn btn-sm bg-purple col-6  ms-1">Assign</button>
+                                        <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    
+        }
+        else
+        {    
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Are you sure you want to delete this production?</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="deleteItem">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="assignModalLabel">Send For Valuation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @using (Html.BeginForm(assiName, "PCECaseAssignment", FormMethod.Post, new { id = "assignForm" }))
+                            {
+                                <input type="hidden" id="selectedPCEIds" name="selectedPCEIds">
+                                <div class="form-group">
+                                    <label for="OptionDropdown">Select Valuation Center:</label>
+                                    <select class="form-control" id="OptionDropdown" name="CenterId">
+                                    </select>
+                                </div>
+                                <div class="row col-12">
+                                    <div class="btn-group">
+                                        <button type="submit" class="btn btn-sm bg-purple col-6  ms-1">Assign</button>
+                                        <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        }
     }
+
     else if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
     {
         <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
@@ -166,8 +224,8 @@
                         {
                             <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                             <div class="form-group">
-                                <label for="employeeDropdown">Select Employee:</label>
-                                <select class="form-control" id="employeeDropdown" name="employeeId">
+                                <label for="OptionDropdown">Select Employee:</label>
+                                <select class="form-control" id="OptionDropdown" name="employeeId">
                                 </select>
                             </div>
                             <div class="row col-12">

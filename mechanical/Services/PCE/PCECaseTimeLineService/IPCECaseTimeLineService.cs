@@ -4,10 +4,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
 {
     public interface IPCECaseTimeLineService
     {
-        Task<PCECaseTimeLinePostDto> PCECaseTimeLine(PCECaseTimeLinePostDto pCECaseTimeLinePostDto);
-
-
+        Task<PCECaseTimeLinePostDto> PCECaseTimeLine(PCECaseTimeLinePostDto Dto);
         Task<IEnumerable<PCECaseTimeLineReturnDto>> GetPCECaseTimeLines(Guid PCECaseId);
-
     }
 }

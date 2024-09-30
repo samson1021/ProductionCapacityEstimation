@@ -552,7 +552,9 @@
                                 } else if (data === "Rejected") {
                                     statusHtml = '<span class="badge badge-danger">Returned</span>';
                                 } else if (data === "Completed") {
-                                    statusHtml = '<span class="badge badge-purple">Completed</span>';
+                                    statusHtml = '<span class="badge badge-info">Completed</span>';
+                                } else {
+                                    statusHtml = '<span class="badge badge-dark">Unknown</span>';
                                 }
                                 return statusHtml;
                             }

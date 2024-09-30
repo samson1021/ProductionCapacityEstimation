@@ -1,5 +1,6 @@
 <script>
-    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRoleName, emptyMessage, isReassign = false) {
+    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRoleName, emptyMessage) {
+        
         $.ajax({
             url: getSubordinateUrl,
             method: 'GET',
@@ -7,21 +8,27 @@
         })
         .done(function (data) {
             var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + selectName);
-            $('#employeeDropdown').append(selectOption);
-            data.forEach(function (employee) {
-                var option = $('<option></option>').attr('value', employee.Id).text(employee.Name);
-                $('#employeeDropdown').append(option);
+            $('#OptionDropdown').append(selectOption);
+            data.forEach(function (option) {
+                var option = $('<option></option>').attr('value', option.Id).text(option.Name);
+                $('#OptionDropdown').append(option);
             });
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
-            console.log('Error fetching employee data:', errorThrown);
+            if (currentUserRoleName == "Relation Manager"){
+                toastr.error('Error fetching district data');
+                console.log('Error fetching district data:', errorThrown);
+            }else{
+                toastr.error('Error fetching employee data');
+                console.log('Error fetching employee data:', errorThrown);
+            }
         });
 
         $('#assignButton').on('click', function () {
-            var checkedProductions = $('.purple-checkbox:checked');
+        
             var SelectedPCEIds = [];
 
-            checkedProductions.each(function () {
+            $('.purple-checkbox:checked').each(function () {
                 SelectedPCEIds.push($(this).val());
             });
             if (SelectedPCEIds.length === 0) {
@@ -70,15 +77,12 @@
                 success: function (response) {
                     toastr.success(response.message);
                     $('#assignModal').modal('hide');
+                    $('#assignForm')[0].reset();
                     loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
                 },
-                error: function (error) {
-                    if (!isReassign){
-                        toastr.error("Unable to assign Production");
-                    }else{
-                        toastr.error("Unable to re-assign Production");
-                    }                    
-                    console.log(error);
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
                 }
             });
         });

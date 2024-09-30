@@ -5,7 +5,7 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantPostDto
 
 @{
-    var myPCECase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
     var emptyMessage = "There are no Productions found for this PCE Case.";

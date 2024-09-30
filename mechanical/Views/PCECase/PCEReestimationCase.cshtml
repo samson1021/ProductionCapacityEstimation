@@ -2,8 +2,7 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
 
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
-    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+    var myCase = ViewData["PCECase"] as PCECaseReturnDto;
 }
 
 <section class="content-header">
@@ -67,6 +66,13 @@
     </div>
 </section>
 @section Scripts { 
+     @{
+       
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
+    }
     <script>
         $(document).ready(function () {
             var CaseId = $('#CaseId').val();
@@ -106,8 +112,6 @@
             }
 
             function loadProductions() {
-                console.log("sdfsdf");
-                console.log('@myCase.Id');
 
                 $.ajax({
                     url: '/ProductionCapacity/GetRMCompleteCollaterals?PCECaseId=' + '@myCase.Id',
@@ -214,11 +218,4 @@
 
 
     </script>
-     @{
-       
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
-    }
 }

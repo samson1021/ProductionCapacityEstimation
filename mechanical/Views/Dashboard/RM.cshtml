@@ -2,7 +2,7 @@
 @model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>;
 
     @{
-    var newCases = ViewData["NewCases"] as IEnumerable<PCENewCaseDto>;
+    var newCases = ViewData["NewCases"] as IEnumerable<PCECaseReturnDto>;
 }
 
 <style>
@@ -301,7 +301,6 @@
                                             @foreach (var item in newCases)
                                             {
                                                 <tr>
-                                                    @* <td><a href="@Url.Action("PCEDetail", "PCECase", new { Id = item.Id })">@item.CaseNo</a></td> *@
                                                     <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = "New" })">@item.CaseNo</a></td>
                                                     <td>@item.CreationDate</td>
                                                     <td>@item.ApplicantName</td>
@@ -318,7 +317,11 @@
                                                         }
                                                         else if (item.Status == "Completed")
                                                         {
-                                                            <span class="badge badge-info" style="padding: 10px 15px;">Complete</span>
+                                                            <span class="badge badge-info" style="padding: 10px 15px;">Completed</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-dark" style="padding: 10px 15px;">'@item.Status'</span>
                                                         }
                                                     
                                                     </td>

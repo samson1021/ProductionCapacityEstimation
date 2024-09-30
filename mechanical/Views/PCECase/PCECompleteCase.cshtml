@@ -2,7 +2,7 @@
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myCase = ViewData["PCECase"] as PCECaseReturnDto;
     var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
     var production = ViewData["Production"];

@@ -72,7 +72,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error creating production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while creating the production capacity valuation.");
+                throw new ApplicationException("An error occurred while creating production capacity valuation.");
             }            
         }
 
@@ -104,7 +104,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error updating production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while updating the production capacity valuation.");
+                throw new ApplicationException("An error occurred while updating production capacity valuation.");
             }
         }
 
@@ -136,7 +136,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error deleting production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while deleting the production capacity valuation.");
+                throw new ApplicationException("An error occurred while deleting production capacity valuation.");
             }
         }
 
@@ -148,8 +148,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEvaluation = await FindValuation(Id);
 
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
+                await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -161,7 +162,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error evaluating production capacity.");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while evaluating the production capacity.");
+                throw new ApplicationException("An error occurred while evaluating production capacity.");
             }
         }
 
@@ -173,8 +174,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEvaluation = await FindValuation(Id);
 
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
+                await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -186,7 +188,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error reevaluating production capacity");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while evaluating the production capacity.");
+                throw new ApplicationException("An error occurred while evaluating production capacity.");
             }
         }
 
@@ -205,6 +207,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 await UpdatePCEStatus(pce, "Rejected", "Relation Manager");
                 await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
+                await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Rejected");
                 await LogPCECaseTimeline(pce, "PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.");
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -215,7 +218,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error rejecting production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while rejecting the production capacity valuation.");
+                throw new ApplicationException("An error occurred while rejecting production capacity valuation.");
             }
         } 
 
@@ -246,7 +249,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error handling production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while handling the production capacity valuation.");
+                throw new ApplicationException("An error occurred while handling production capacity valuation.");
             }
         }
 
@@ -259,8 +262,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEvaluation.Remark = Remark;
                 _cbeContext.Update(pceEvaluation);
 
-                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");                
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now);
+                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");          
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now); 
+                await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");     
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -273,7 +277,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error releasing production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while releasing the production capacity valuation.");
+                throw new ApplicationException("An error occurred while releasing production capacity valuation.");
             }
         }
 
@@ -381,11 +385,31 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.PCECases.Update(PCE.PCECase);
             }
         }
-
-        private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid UserId, string Status, DateTime? CompletionDate = null)
+        
+        private async Task UpdatePCECaseAssignemntStatusForAll(ProductionCapacity PCE, Guid UserId, string Status = "Completed")
         {
-            var assignment = await _cbeContext.PCECaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
+            if (PCE.CreatedById != null)
+            {                
+                await UpdateCaseAssignmentStatus(PCE.Id, PCE.CreatedById, Status);
+            }
+            var MOUser = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
+            var MOSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOUser.SupervisorId);
+            
+            await UpdateCaseAssignmentStatus(PCE.Id, MOSupervisor.Id, Status);  
+            
+            if (MOSupervisor.Role.Name == "Maker TeamLeader")
+            {
+                var MTLSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
+                await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+            }  
+        }
 
+        private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid? UserId, string Status, DateTime? CompletionDate = null)
+        {
+            var assignment = await _cbeContext.PCECaseAssignments
+                                                .Where(pca => pca.ProductionCapacityId == PCEId && pca.UserId == UserId)
+                                                .OrderByDescending(pca => pca.AssignmentDate)
+                                                .FirstOrDefaultAsync();
             if (assignment != null)
             {
                 assignment.Status = Status;
@@ -436,7 +460,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching production capacity valuation");
-                throw new ApplicationException("An error occurred while fetching the production capacity valuation.");
+                throw new ApplicationException("An error occurred while fetching production capacity valuation.");
             }
         }
 
@@ -472,7 +496,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
-                throw new ApplicationException("An error occurred while fetching the production capacity valuation with ID: {PCEId}.");
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
             }
         }
 
@@ -514,7 +538,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
-                throw new ApplicationException("An error occurred while fetching the production capacity valuation with ID: {PCEId}.");
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
             }
         }                   
     

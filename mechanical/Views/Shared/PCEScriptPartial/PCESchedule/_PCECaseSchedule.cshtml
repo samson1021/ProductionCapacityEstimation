@@ -5,7 +5,7 @@
 @model mechanical.Models.PCE.Dto.PCECaseScheduleDto.PCECaseSchedulePostDto
 
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturntDto;
+    var myCase = ViewData["PCECase"] as PCECaseReturnDto;
     var caseId =  ViewData["PCECaseId"] as Guid? ?? Guid.Empty;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;

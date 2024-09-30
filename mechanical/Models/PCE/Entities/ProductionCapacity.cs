@@ -66,6 +66,7 @@ namespace mechanical.Models.PCE.Entities
         public Guid? CheckerUserID { get; set; } // remove
         public DateTime? CreationDate { get; set; }
         public Guid? CreatedById { get; set; }
+        // public Guid CreatedById { get; set; }
         
         public virtual CreateUser? CreatedBy { get; set; }
         public virtual PCECase? PCECase { get; set; }

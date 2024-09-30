@@ -19,6 +19,5 @@ namespace mechanical.Controllers
             var caseTimeline = await _PCECaseTimeLineService.GetPCECaseTimeLines(PCECaseId);
             return View(caseTimeline);
         }
-
     }
 }

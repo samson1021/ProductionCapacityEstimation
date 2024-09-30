@@ -49,7 +49,7 @@
             data: data,
             columns: [  
 
-                @if (status == "New" && currentUser.Role.Name != "Maker Officer")
+                @if ((status == "New" || status == "Completed" || status == "Reestimate") && currentUser.Role.Name != "Maker Officer")
                 {
                     @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">'; } },
                 }
