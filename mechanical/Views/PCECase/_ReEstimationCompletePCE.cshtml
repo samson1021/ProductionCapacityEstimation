@@ -39,7 +39,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("SendProductionForReestimation", "PCECase", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("PCEReestimationCase", "PCECase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                     <div class="form-group">
