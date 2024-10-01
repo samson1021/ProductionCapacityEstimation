@@ -134,7 +134,7 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             foreach (var pceCaseDto in pceCaseDtos)
             {
                 var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Where(res => res.PCECaseId == pceCaseDto.Id).FirstOrDefaultAsync();
-                pceCaseDto.TerminationReason = pceCaseTerminate.Reason;
+                pceCaseDto.TerminationReason = pceCaseTerminate?.Reason;
             }
             return pceCaseDtos;
         }

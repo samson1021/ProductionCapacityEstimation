@@ -183,6 +183,14 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             if (OperationType == "Reestimation" || OperationType == "Valuation")
             {
                 production.PCECase.Status = "Pending";
+                if (OperationType == "Reestimation")
+                {
+                    production.CurrentStatus = "Reestimate";
+                }
+                else
+                {
+                    production.CurrentStatus = "New";
+                }
             }
             _cbeContext.ProductionCapacities.Update(production);
         }
