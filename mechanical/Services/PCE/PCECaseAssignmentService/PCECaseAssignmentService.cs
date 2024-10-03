@@ -172,13 +172,13 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
             if (OperationType == "Reestimation")
             {
-                var reEstimation = new ProductionCapacityReestimation
+                var reEstimation = new ProductionReestimation
                 {
                     ProductionCapacityId = PCEId,
                     Reason = ReestimationReason,
                     CreatedAt = DateTime.Now
                 };
-                await _cbeContext.ProductionCapacityReestimations.AddAsync(reEstimation);
+                await _cbeContext.ProductionReestimations.AddAsync(reEstimation);
             }
         }
 

@@ -13,16 +13,16 @@ namespace mechanical.Controllers
         private readonly CbeContext _cbeContext;
 
         private readonly IPCECaseService _PCECaseService;
-        public DashboardController(ICaseService caseService, CbeContext cbeContext, IPCECaseService pCECaseService)
+        public DashboardController(ICaseService caseService, CbeContext cbeContext, IPCECaseService PCECaseService)
         {
             _caseService = caseService;
             _cbeContext = cbeContext;
-            _PCECaseService = pCECaseService;
+            _PCECaseService = PCECaseService;
         }
         public async Task<IActionResult> RM()
         {
             var latestCase = await _caseService.GetRmLatestCases(base.GetCurrentUserId());
-            var newCases = await _PCECaseService.GetRmLatestPCECases(base.GetCurrentUserId());
+            var newCases = await _PCECaseService.GetLatestPCECases(base.GetCurrentUserId());
             ViewData["NewCases"] = newCases;
             return View(latestCase);
         }

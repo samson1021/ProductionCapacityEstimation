@@ -6,7 +6,7 @@
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var emptyMessage = "There are no assigned Productions for this PCE Case.";
-    var fetchUrl = "/ProductionCapacity/GetMyAssigmentProduction?PCECaseId=" + myPCECase.Id; 
+    var fetchUrl = "/ProductionCapacity/GetAssignedProduction?PCECaseId=" + myPCECase.Id; 
     
     var subbName = "";
     var assiName = "";
@@ -44,7 +44,8 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("MyPCECases", "PCECase")">My PCE Case</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
                     <li class="breadcrumb-item active">My PCE Assignments</li>
                 </ol>
             </div>

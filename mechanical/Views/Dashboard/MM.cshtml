@@ -175,7 +175,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -197,7 +197,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -219,7 +219,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -241,7 +241,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -256,7 +256,7 @@
                         </div>                                   
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table id="MyPCECasesDatatable" class="table table-bordered table-striped m-0">
+                                <table id="PCECasesDatatable" class="table table-bordered table-striped m-0">
                                     <thead>
                                         <tr>
                                             <th>Case No</th>
@@ -301,7 +301,7 @@
  
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCECase/GetMyDashboardPCECasesCount")
+            fetch("/PCECase/GetDashboardPCECasesCount")
                 .then(response => response.json())
                 .then(data => {
 
@@ -376,7 +376,7 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: "/PCECase/GetMyLatestPCECases",
+                url: "/PCECase/GetLatestPCECases",
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -422,7 +422,7 @@
                         },
                     ];
 
-                    $('#MyPCECasesDatatable').DataTable({
+                    $('#PCECasesDatatable').DataTable({
                         language: {
                             emptyTable: "There are no new PCE Cases",
                             info: "",

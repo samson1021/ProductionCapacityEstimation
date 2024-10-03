@@ -40,14 +40,15 @@ namespace mechanical.Controllers
         }     
         public async Task<IActionResult> MyAssignment(Guid Id)
         {            
-            var pceCase = await _PCECaseService.GetPCECase(Id);
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _PCECaseService.GetPCECase(userId, Id);
             
             if (pceCase == null)
             {
-                return RedirectToAction("MyPCECases");
+                return RedirectToAction("PCECases");
             }
 
-            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
             ViewData["PCECase"] = pceCase;
 
             return View();

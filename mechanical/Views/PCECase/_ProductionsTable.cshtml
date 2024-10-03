@@ -15,7 +15,7 @@
         {            
             assiName = "SendForValuation";
         }        
-        else if (status == "Reestimate" || status == "Completed")
+        else if (status == "Reestimate")
         {
             assiName = "SendForReestimation";
         }
@@ -68,7 +68,7 @@
             <table id="Productions" class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        @if ((status == "New" || status == "Completed" || status == "Reestimate") && currentUser.Role.Name != "Maker Officer")
+                        @if ((status == "New" || status == "Reestimate" || status == "Reject") && currentUser.Role.Name != "Maker Officer")
                         {
                             <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
                         }        
@@ -89,7 +89,7 @@
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Send for Estimation<i class="fas fa-paper-plane"></i></button>
                         }
-                        else if (status == "Reestimate" || status == "Completed") 
+                        else if (status == "Reestimate") 
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm bg-purple">Request Re-estimation<i class="fas fa-paper-plane"></i></button>
                         }
@@ -116,7 +116,7 @@
 @{
     if (currentUser.Role.Name == "Relation Manager")
     {
-        if (status == "Reestimate" || status == "Completed") 
+        if (status == "Reestimate") 
         {       
             <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">

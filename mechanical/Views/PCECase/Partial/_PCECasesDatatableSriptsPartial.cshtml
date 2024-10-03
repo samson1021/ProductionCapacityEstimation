@@ -4,7 +4,7 @@
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var emptyMessage = "There are no PCE Cases";
     var status = ViewBag.Status as string;
-    var fetchUrl = "/PCECase/GetMyPCECases?Status=" + status;
+    var fetchUrl = "/PCECase/GetPCECases?Status=" + status;
 
     if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
     {
@@ -35,7 +35,7 @@
                 width: '10%',
                 render: function (data, type, row) {            
                     const detailUrl = '@Url.Action("Detail", "PCECase")?Id=' + data + '&Status=@ViewBag.Status';
-                    const editUrl = '@Url.Action("PCEEdit", "PCECase")?Id=' + data;
+                    const editUrl = '@Url.Action("Edit", "PCECase")?Id=' + data;
                     const deleteUrl = '@Url.Action("Delete", "PCECase")?Id=' + data;
                     const timeLineUrl = '@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data; // Correct URL construction
 
@@ -45,7 +45,7 @@
                     
                     let link = `<a href="${detailUrl}">Details</a>`;                
 
-                    if (currentUserRoleName === "Relation Manager" && row.Status == "New") {
+                    if (currentUserRoleName === "Relation Manager" && (row.Status == "New" || row.Status == "Rejected")) {
                         link += editLink;
                         @* link += editLink + deleteLink; *@
                     }
