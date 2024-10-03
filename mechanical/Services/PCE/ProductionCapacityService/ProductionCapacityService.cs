@@ -693,7 +693,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().FirstOrDefaultAsync(res => res.PCEId == PCEId);
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, PCEId);
-     
+
             var remark = pce;  
             var assignment_Status = pceAssignment.Status; 
             CreateUser user = null; 
