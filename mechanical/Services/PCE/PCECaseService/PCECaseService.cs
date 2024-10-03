@@ -374,27 +374,29 @@ namespace mechanical.Services.PCE.PCECaseService
         {
             var pceCaseAssignments = await _cbeContext.PCECaseAssignments.Include(res => res.ProductionCapacity).ThenInclude(res => res.PCECase).Where(pca => pca.UserId == UserId && pca.Status != "Terminate").ToListAsync();
             var uniquePCECases = pceCaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
+            var uniqueProductions = pceCaseAssignments.Select(ca => ca.ProductionCapacity).DistinctBy(c => c.Id).ToList();
             var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(uniquePCECases);
-            foreach (var PCEcaseDto in pceCaseDtos)
+            foreach (var pceCaseDto in pceCaseDtos)
             {
-                PCEcaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == PCEcaseDto.Id);
+                pceCaseDto.NoOfCollateral = pceCaseAssignments.Where(pca => pca.Status == "Pending").Select(ca => ca.ProductionCapacity).DistinctBy(c => c.Id).Count(pca => pca.PCECaseId == pceCaseDto.Id);
+                pceCaseDto.TotalNoOfCollateral = pceCaseAssignments.Select(ca => ca.ProductionCapacity).DistinctBy(c => c.Id).Count(pca => pca.PCECaseId == pceCaseDto.Id);
             }
             return pceCaseDtos;
         }
 
         public async Task<IEnumerable<PCECaseReturnDto>> GetRemarkedPCECases(Guid UserId)
         {
-            var PCECases = await _cbeContext.PCECases
+            var pceCases = await _cbeContext.PCECases
                                             .Include(pc => pc.ProductionCapacities.Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
                                             .Where(res => res.ProductionCapacities.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
                                             // .Where(res => res.PCECaseOriginatorId == UserId && (res.ProductionCapacities.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")))
                                             .ToListAsync();
-            var PCECaseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(PCECases);
-            foreach (var PCECaseDto in PCECaseDtos)
+            var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(pceCases);
+            foreach (var pceCaseDto in pceCaseDtos)
             {
-                PCECaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == PCECaseDto.Id);
+                pceCaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == pceCaseDto.Id);
             }
-            return PCECaseDtos;
+            return pceCaseDtos;
         }
 
         public async Task<PCECaseReturnDto> GetCaseDetail(Guid id)

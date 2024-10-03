@@ -25,7 +25,6 @@
         });
 
         $('#assignButton').on('click', function () {
-        
             var SelectedPCEIds = [];
 
             $('.purple-checkbox:checked').each(function () {
@@ -67,6 +66,20 @@
             e.preventDefault();
 
             var formData = new FormData(this);
+            var selectedPCEIds = formData.get('SelectedPCEIds');
+            var assignedId = formData.get('AssignedId');
+
+            if (!selectedPCEIds) {
+                toastr.error("Please, select at least one production to assign.");
+                return;
+            } else if (!assignedId) {
+                if (currentUserRoleName == "Relation Manager") {
+                    toastr.error("Please, select an evaluation center to assign.");
+                } else {
+                    toastr.error("Please, select a user to assign.");
+                }
+                return;
+            }            
 
             $.ajax({
                 url: assignUrl,

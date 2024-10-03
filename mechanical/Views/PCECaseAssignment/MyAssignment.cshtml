@@ -6,16 +6,17 @@
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var emptyMessage = "There are no assigned Productions for this PCE Case.";
-    var subbName = "GetMakerTeamleader";
-    var assiName = "PCEReAssignMakerTeamleader";
-    var selectName = "Team Leader";
-    var fetchUrl = "/ProductionCapacity/GetMyAssigmentProduction?PCECaseId=" + myPCECase.Id;              
+    var fetchUrl = "/ProductionCapacity/GetMyAssigmentProduction?PCECaseId=" + myPCECase.Id; 
+    
+    var subbName = "";
+    var assiName = "";
+    var selectName = "";             
 
-    if (currentUser.Role.Name == "Maker TeamLeader")
+    if (currentUser.Role.Name == "Maker Manager")
     {
-        subbName = "GetMakerOfficer";
-        assiName = "PCEReAssignMakerOfficer";
-        selectName = "Maker Officer";
+        subbName = "GetMakerTeamleader";
+        assiName = "PCEReAssignMakerTeamleader";
+        selectName = "Team Leader";  
     }
     else if (currentUser.Role.Name == "District Valuation Manager")
     {
@@ -23,11 +24,16 @@
         assiName = "PCEReAssignMakerOfficer";
         selectName = "Maker Officer";
     }
+    else if (currentUser.Role.Name == "Maker TeamLeader")
+    {
+        subbName = "GetMakerOfficer";
+        assiName = "PCEReAssignMakerOfficer";
+        selectName = "Maker Officer";
+    }
     
     var getSubordinateUrl = "/UserManagment/" + subbName;
     var assignUrl = "/PCECaseAssignment/" + assiName;
 }
-
 
 <section class="content-header">
     <div class="container-fluid">
@@ -77,18 +83,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="assignModalLabel">Assign PCE Case</h5>
+                <h5 class="modal-title" id="assignModalLabel">Re-Assign Production(s)</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("PCEReAssignTeamleader", "PCECaseAssignment", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm(assiName, "PCECaseAssignment", FormMethod.Post, new { id = "assignForm" }))
                 {
-                    <input type="hidden" id="selectedPCEIds" name="selectedPCEIds">
+                    <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                     <div class="form-group">
-                        <label for="employeeDropdown">Select Employee:</label>
-                        <select class="form-control" id="employeeDropdown" name="employeeId">
+                        <label for="OptionDropdown">Select Employee:</label>
+                        <select class="form-control" id="OptionDropdown" name="AssignedId">
                         </select>
                     </div>
                     <div class="row col-12">

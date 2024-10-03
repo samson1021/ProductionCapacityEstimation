@@ -22,7 +22,7 @@
     }
     else if (currentUser.Role.Name == "Maker Manager")
     {
-        assiName = "PCEAssignTeamleader";
+        assiName = "PCEAssignMakerTeamleader";
     }
     else if (currentUser.Role.Name == "Maker TeamLeader")
     {
@@ -133,7 +133,7 @@
                                 <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                                 <div class="form-group">
                                     <label for="OptionDropdown">Select Valuation Center:</label>
-                                    <select class="form-control" id="OptionDropdown" name="CenterId">
+                                    <select class="form-control" id="OptionDropdown" name="AssignedId">
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -188,10 +188,10 @@
                         <div class="modal-body">
                             @using (Html.BeginForm(assiName, "PCECaseAssignment", FormMethod.Post, new { id = "assignForm" }))
                             {
-                                <input type="hidden" id="selectedPCEIds" name="selectedPCEIds">
+                                <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                                 <div class="form-group">
                                     <label for="OptionDropdown">Select Valuation Center:</label>
-                                    <select class="form-control" id="OptionDropdown" name="CenterId">
+                                    <select class="form-control" id="OptionDropdown" name="AssignedId">
                                     </select>
                                 </div>
                                 <div class="row col-12">
@@ -214,7 +214,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="assignModalLabel">Assign Case</h5>
+                        <h5 class="modal-title" id="assignModalLabel">Assign Productions(s)</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -225,7 +225,7 @@
                             <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                             <div class="form-group">
                                 <label for="OptionDropdown">Select Employee:</label>
-                                <select class="form-control" id="OptionDropdown" name="employeeId">
+                                <select class="form-control" id="OptionDropdown" name="AssignedId">
                                 </select>
                             </div>
                             <div class="row col-12">

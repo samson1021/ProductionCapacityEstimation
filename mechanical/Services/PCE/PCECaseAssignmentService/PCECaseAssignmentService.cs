@@ -60,12 +60,28 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
+                if (string.IsNullOrEmpty(SelectedPCEIds))
+                {
+                    if (OperationType == "Assign"){
+                        throw new Exception("Please, select at least one production to assign.");
+                    }
+                    throw new Exception("Please, select at least one production to send for estimation.");
+                }
+
+                if (string.IsNullOrEmpty(EmployeeOrCenterId))
+                {
+                    if (OperationType == "Assign"){
+                        throw new Exception("Please, select a user to assign.");
+                    }
+                    throw new Exception("Please, select an evaluation center.");
+                }
+                
                 var assignedUser = await GetAssignedUser(EmployeeOrCenterId, OperationType);
                 if (assignedUser == null)
                 {
                     if (OperationType == "Assign"){
                         throw new Exception("The assigned user is not found.");
-                    }
+                    }                    
                     throw new Exception("The evaluation center is not ready.");
                 }
 
@@ -102,7 +118,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             {
                 _logger.LogError(ex, $"Error during {OperationType} operation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException($"An error occurred during {OperationType}.");
+                throw new ApplicationException(ex.Message);
             }
         }
 
@@ -120,7 +136,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 return await _cbeContext.CreateUsers
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
-                                        .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) && 
+                                        .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
+                                                            // res.Department == "Mechanical" && 
                                                             (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             }
         }
