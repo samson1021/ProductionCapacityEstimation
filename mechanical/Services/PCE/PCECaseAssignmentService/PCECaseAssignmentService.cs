@@ -172,13 +172,13 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
             if (OperationType == "Reestimation")
             {
-                var reEstimation = new ProductionReestimation
+                var reestimation = new ProductionReestimation
                 {
                     ProductionCapacityId = PCEId,
                     Reason = ReestimationReason,
                     CreatedAt = DateTime.Now
                 };
-                await _cbeContext.ProductionReestimations.AddAsync(reEstimation);
+                await _cbeContext.ProductionReestimations.AddAsync(reestimation);
             }
         }
 
@@ -200,13 +200,23 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             if (OperationType == "Reestimation" || OperationType == "Valuation")
             {
                 production.PCECase.Status = "Pending";
+             
                 if (OperationType == "Reestimation")
                 {
                     production.CurrentStatus = "Reestimate";
                 }
                 else
                 {
-                    production.CurrentStatus = "New";
+                    var previousEvaluations = await _cbeContext.PCEEvaluations.AsNoTracking().Where(res => res.PCEId == production.Id).ToListAsync();
+              
+                    if (previousEvaluations != null && previousEvaluations.Any())
+                    {
+                        production.CurrentStatus = "Reestimate";
+                    }
+                    else
+                    {                        
+                        production.CurrentStatus = "New";
+                    }
                 }
             }
             

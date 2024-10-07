@@ -76,19 +76,23 @@
                         const returnLink = ["New", "Reestimate", "Pending"].includes(row.CurrentStatus)
                             ? ` | <a class="text-warning" href="#" onclick="openRejectionModal('${data}')">Return</a>`
                             : '';
-
+                            
                         let link = `<a href="${detailsUrl}${data}">Details</a>`;
 
                         if (currentUserRoleName === "Relation Manager"){
-                            if (row.CurrentStatus === "New") {
+                            if ('@status' === "New" && row.CurrentStatus === "New") {
                                 link += editLink + deleteLink;
-                            } else if (row.CurrentStatus === "Rejected"){                                
+                            } else if ('@status' === "Rejected" && row.CurrentStatus === "Rejected"){                                
                                 link += editLink;
                             }
                         } else if ((currentUserRoleName === "Maker Manager") || (currentUserRoleName === "District Valuation Manager") || (currentUserRoleName === "Maker TeamLeader")){
+                            if (('@status' === "New" || '@status' === "Reestimate")  && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) { 
                                 link += returnLink ;
+                            }
                         } else if (currentUserRoleName === "Maker Officer") {
+                            if (('@status' === "New" || '@status' === "Reestimate") && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                 link = evaluateLink + link + returnLink ;
+                            }
                         }
                         return link;
                     }
@@ -97,7 +101,7 @@
         }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
     }
 
-    @if (currentUser.Role.Name == "Maker Officer")
+    @if (currentUser.Role.Name != "Relation Manager")
     {
         <text>
             function openRejectionModal(PCEId) {

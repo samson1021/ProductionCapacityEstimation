@@ -301,7 +301,8 @@
                                             @foreach (var item in newCases)
                                             {
                                                 <tr>
-                                                    <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = @item.Status })">@item.CaseNo</a></td>
+                                                    <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = "New" })">@item.CaseNo</a></td>
+                                                    @* <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = @item.Status })">@item.CaseNo</a></td> *@
                                                     <td>@item.CreationDate</td>
                                                     <td>@item.ApplicantName</td>
                                                     <td>@item.CustomerUserId</td>

@@ -57,6 +57,7 @@ namespace mechanical.Models.PCE.Entities
         public DateTime CreatedAt { get; set; }
         public Guid? UpdatedBy { get; set; } = null;
         public DateTime? UpdatedAt { get; set; } = null;
+        // here CompletionDate
     }
 
     public class TimeInterval

@@ -109,12 +109,12 @@
 
 @section Scripts {
     @{     
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
-        await Html.RenderPartialAsync("Partial/_ProductionsTableDatatableSriptsPartial"); 
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");  
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");            
+        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");    
+        await Html.RenderPartialAsync("~/Views/ProductionCapacity/Partial/_ProductionsTableDatatableSriptsPartial.cshtml");        
 
         if (currentUser.Role.Name == "Relation Manager"  && status == "New")
         {
