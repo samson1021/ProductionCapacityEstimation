@@ -21,7 +21,7 @@
     }
     else if (currentUser.Role.Name == "Maker Manager")
     {
-        assiName = "PCEAssignTeamleader";
+        assiName = "PCEAssignMakerTeamleader";
         subbName = "GetMakerTeamleader";
         selectName = "Team Leader";
     }
@@ -58,7 +58,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCECases", "PCECase")">My PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")"> PCE Cases</a></li>
                     <li class="breadcrumb-item active">@ViewData["Title"]</li>
                 </ol>
             </div>
@@ -93,7 +93,7 @@
                         @await Html.PartialAsync("_PCECaseGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-information" role="tabpanel" aria-labelledby="custom-tabs-four-information-tab">
-                        @await Html.PartialAsync("_ProductionsTable");                        
+                        @await Html.PartialAsync("_ProductionsTable")                        
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-schedule" role="tabpanel" aria-labelledby="custom-tabs-four-schedule-tab">
                         @await Html.PartialAsync("PCEScriptPartial/PCESchedule/_PCECaseSchedule")
@@ -109,33 +109,29 @@
 
 @section Scripts {
     @{     
-        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
+        await Html.RenderPartialAsync("Partial/_ProductionsTableDatatableSriptsPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial"); 
-        await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial"); 
-        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionsTableDatatableSriptsPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
-        @* await Html.RenderPartialAsync("Partial/_RemarkPCECaseDatatableSriptsPartial");  *@
-            @* await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial"); *@
+        await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");            
 
         if (currentUser.Role.Name == "Relation Manager"  && status == "New")
         {
             await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionScriptPartial");
-            await Html.RenderPartialAsync("Partial/_PCECreateCollateral");         
-            await Html.RenderPartialAsync("Partial/_CreateManufacturingProductionCapacity"); 
-            await Html.RenderPartialAsync("Partial/_DetailManufacturingCaseDataTableSriptsPartial"); 
+            await Html.RenderPartialAsync("Partial/_CreateProductionCapacityModal");
+            await Html.RenderPartialAsync("Partial/_CreatePCEPlantModal");
         }
         else if ((currentUser.Role.Name == "Maker Officer") || 
                  (currentUser.Role.Name == "Maker Manager") || 
                  (currentUser.Role.Name == "District Valuation Manager") || 
                  (currentUser.Role.Name == "Maker TeamLeader"))
-        {
-           
+        {  
+            await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");         
+            
             if (currentUser.Role.Name == "Maker Officer") 
             {
-                await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");
                 await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial"); 
-                @* await Html.RenderPartialAsync("Partial/_RemarkPCECaseDatatableSriptsPartial"); *@
             }
         }                    
     }      

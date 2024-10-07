@@ -40,28 +40,28 @@ namespace mechanical.Controllers
         }     
         public async Task<IActionResult> MyAssignment(Guid Id)
         {            
-            var pceCase = await _PCECaseService.GetPCECase(Id);
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _PCECaseService.GetPCECase(userId, Id);
             
             if (pceCase == null)
             {
-                return RedirectToAction("MyPCECases");
+                return RedirectToAction("PCECases");
             }
 
-            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
             ViewData["PCECase"] = pceCase;
 
             return View();
         }         
         
         [HttpPost]
-        public async Task<IActionResult> SendForValuation(string selectedPCEIds, string CenterId)
+        public async Task<IActionResult> SendForValuation(string SelectedPCEIds, string AssignedId)
         {
-
             var userId = base.GetCurrentUserId();
             try
-            {Console.WriteLine("hlkdhflkg");Console.WriteLine(selectedPCEIds);
-                await _PCECaseAssignmentService.SendForValuation(base.GetCurrentUserId(), selectedPCEIds, CenterId);
-                var response = new { message = "PCE Estimation assigned successfully" };
+            {
+                await _PCECaseAssignmentService.SendForValuation(base.GetCurrentUserId(), SelectedPCEIds, AssignedId);
+                var response = new { message = "Production is assigned for estimation successfully" };
                 return Ok(response);
             }
             catch (Exception ex)
@@ -72,13 +72,13 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendForReestimation(string ReestimationReason, string selectedPCEIds, string CenterId)
+        public async Task<IActionResult> SendForReestimation(string ReestimationReason, string SelectedPCEIds, string AssignedId)
         {
             var userId = base.GetCurrentUserId();
             try
             {
-                await _PCECaseAssignmentService.SendForReestimation(base.GetCurrentUserId(), ReestimationReason, selectedPCEIds, CenterId);
-                var response = new { message = "PCE Reestimation assigned successfully" };
+                await _PCECaseAssignmentService.SendForReestimation(base.GetCurrentUserId(), ReestimationReason, SelectedPCEIds, AssignedId);
+                var response = new { message = "Production is assigned for reestimation successfully" };
                 return Ok(response);
             }
             catch (Exception ex)
@@ -89,34 +89,34 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PCEAssignTeamleader(string selectedPCEIds, string employeeId)
+        public async Task<IActionResult> PCEAssignMakerTeamleader(string SelectedPCEIds, string AssignedId)
         {
-            await _PCECaseAssignmentService.AssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            await _PCECaseAssignmentService.AssignProduction(base.GetCurrentUserId(), SelectedPCEIds, AssignedId);
             var response = new { message = "Productions assigned to Maker Team Leader successfully" };
             return Ok(response);
         }
         
         [HttpPost]
-        public async Task<IActionResult> PCEReAssignTeamleader(string selectedPCEIds, string employeeId)
+        public async Task<IActionResult> PCEReAssignMakerTeamleader(string SelectedPCEIds, string AssignedId)
         {
-            await _PCECaseAssignmentService.ReAssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            await _PCECaseAssignmentService.ReAssignProduction(base.GetCurrentUserId(), SelectedPCEIds, AssignedId);
             var response = new { message = "Productions re-assigned to Maker Team Leader successfully" };
             return Ok(response);
         }
         
         [HttpPost]
-        public async Task<IActionResult> PCEAssignMakerOfficer(string selectedPCEIds, string employeeId)
+        public async Task<IActionResult> PCEAssignMakerOfficer(string SelectedPCEIds, string AssignedId)
         {
             
-            await _PCECaseAssignmentService.AssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            await _PCECaseAssignmentService.AssignProduction(base.GetCurrentUserId(), SelectedPCEIds, AssignedId);
             var response = new { message = "Productions assigned to Maker Officer successfully" };
             return Ok(response);
         }
             
         [HttpPost]
-        public async Task<IActionResult> PCEReAssignMakerOfficer(string selectedPCEIds, string employeeId)
+        public async Task<IActionResult> PCEReAssignMakerOfficer(string SelectedPCEIds, string AssignedId)
         {
-            await _PCECaseAssignmentService.ReAssignProduction(base.GetCurrentUserId(), selectedPCEIds, employeeId);
+            await _PCECaseAssignmentService.ReAssignProduction(base.GetCurrentUserId(), SelectedPCEIds, AssignedId);
             var response = new { message = "Productions re-assigned to Maker Officer successfully" };
             return Ok(response);
         }

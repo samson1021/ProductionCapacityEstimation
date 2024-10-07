@@ -113,6 +113,52 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             }
         }       
 
+        public async Task<PCECaseTerminateReturnDto> ApproveCaseTermination(Guid Id)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {  
+                var pceCaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(Id);
+                if (pceCaseTerminate == null)
+                {
+                    throw new Exception("case Schedule not Found");
+                }
+                pceCaseTerminate.Status = "Approved";
+                _cbeContext.Update(pceCaseTerminate);
+
+                var cases = await _cbeContext.PCECases.FindAsync(pceCaseTerminate.PCECaseId);
+                cases.Status = "Terminated";
+                var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == pceCaseTerminate.PCECaseId).ToListAsync();
+
+                foreach (var production in productions)
+                {
+                    production.CurrentStage = "Relation Manager";
+                    production.CurrentStatus = "Terminated";
+                    var caseAssignments = await _cbeContext.PCECaseAssignments.Where(res => res.ProductionCapacityId == production.Id).ToListAsync();
+                    foreach (var caseAssignment in caseAssignments)
+                    {
+                        caseAssignment.Status = "Terminated";
+
+                    }
+                    _cbeContext.PCECaseAssignments.UpdateRange(caseAssignments);
+                }
+
+                _cbeContext.ProductionCapacities.UpdateRange(productions);
+          
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);    
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error approving case termination");
+                await transaction.RollbackAsync();
+                throw new ApplicationException($"An error occurred while approving case termination. { ex.Message }");
+            }
+        }
+        
         public async Task<PCECaseTerminateReturnDto> GetCaseTerminate(Guid Id)
         {
             var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Include(res => res.RMUser).FirstOrDefaultAsync(res => res.Id == Id);
@@ -129,7 +175,7 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
 
         public async Task<IEnumerable<PCECaseTerminateDto>> GetPCECaseTerminates(Guid UserId)
         {
-            var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities).Where(res => res.RMUserId == UserId && res.Status == "Terminate").ToListAsync();
+            var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities).Where(res => res.RMUserId == UserId && res.Status == "Terminated").ToListAsync();
             var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(pceCases);
             foreach (var pceCaseDto in pceCaseDtos)
             {

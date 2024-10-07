@@ -43,14 +43,14 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, employeeId, isReassign, "Assign");
         }
 
-        public async Task<List<PCECaseAssignmentDto>> SendForReestimation(Guid UserId, string ReestimationReason, string SelectedPCEIds, string centerId)
-        {
-            return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Reestimation", ReestimationReason);
-        }
-
         public async Task<List<PCECaseAssignmentDto>> SendForValuation(Guid UserId, string SelectedPCEIds, string centerId)
         {
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Valuation");
+        }
+
+        public async Task<List<PCECaseAssignmentDto>> SendForReestimation(Guid UserId, string ReestimationReason, string SelectedPCEIds, string centerId)
+        {
+            return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Reestimation", ReestimationReason);
         }
 
         private async Task<List<PCECaseAssignmentDto>> ProcessProductionAssignments(
@@ -60,12 +60,28 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
+                if (string.IsNullOrEmpty(SelectedPCEIds))
+                {
+                    if (OperationType == "Assign"){
+                        throw new Exception("Please, select at least one production to assign.");
+                    }
+                    throw new Exception("Please, select at least one production to send for estimation.");
+                }
+
+                if (string.IsNullOrEmpty(EmployeeOrCenterId))
+                {
+                    if (OperationType == "Assign"){
+                        throw new Exception("Please, select a user to assign.");
+                    }
+                    throw new Exception("Please, select an evaluation center.");
+                }
+                
                 var assignedUser = await GetAssignedUser(EmployeeOrCenterId, OperationType);
                 if (assignedUser == null)
                 {
                     if (OperationType == "Assign"){
                         throw new Exception("The assigned user is not found.");
-                    }
+                    }                    
                     throw new Exception("The evaluation center is not ready.");
                 }
 
@@ -102,7 +118,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             {
                 _logger.LogError(ex, $"Error during {OperationType} operation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException($"An error occurred during {OperationType}.");
+                throw new ApplicationException(ex.Message);
             }
         }
 
@@ -120,7 +136,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 return await _cbeContext.CreateUsers
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
-                                        .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) && 
+                                        .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
+                                                            // res.Department == "Mechanical" && 
                                                             (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             }
         }
@@ -179,7 +196,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         private async Task UpdateProduction(ProductionCapacity production, CreateUser assignedUser, string OperationType)
         {
             production.CurrentStage = assignedUser.Role.Name;
-            production.CurrentStatus = "New";
+
             if (OperationType == "Reestimation" || OperationType == "Valuation")
             {
                 production.PCECase.Status = "Pending";
@@ -192,6 +209,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     production.CurrentStatus = "New";
                 }
             }
+            
             _cbeContext.ProductionCapacities.Update(production);
         }
 

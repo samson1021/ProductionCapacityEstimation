@@ -1,13 +1,24 @@
+
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCERejectPostDto
 
 @{
-    var Status = ViewBag.Status as string;
-    var RedirectUrl = Url.Action("Productions", "ProductionCapacity", new { Status = "All" });
-    // redirect to rejected pcecases
-    var PCECaseId = ViewData["PCECaseId"] as Guid?;  
-    if (PCECaseId.HasValue)
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
+    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var RedirectUrl = "";
+    
+    @if (myPCECase != null)
     {
-        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = PCECaseId.Value });
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCECase.Id, Status = "Rejected" });
+    }
+    else if (myPCE != null)
+    {
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCE.PCECaseId, Status = "Rejected" });
+    }
+    else
+    {
+        RedirectUrl = Url.Action("PCECases", "PCECase", new { Status = "Rejected" }); 
     }
 }
 

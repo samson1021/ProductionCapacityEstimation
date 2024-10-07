@@ -67,29 +67,20 @@ namespace mechanical.Data
         }
 
         //production capacity estimation
-        public DbSet<PCECase> PCECases { get; set; }
-        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
-
-        // public virtual DbSet<FileUpload> FileUploads { get; set; }
+        public DbSet<PCECase> PCECases { get; set; }  
+        public DbSet<ProductionCapacity> ProductionCapacities { get; set; } 
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }  
+        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }  
+        public DbSet<PCECaseSchedule> PCECaseSchedules { get; set; }
+        public DbSet<PCECaseTerminate> PCECaseTerminates { get; set; }
+        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }    
+        public DbSet<ProductionReject> ProductionRejects { get; set; }
+        public DbSet<PCECaseComment> PCECaseComments { get; set; }
         public DbSet<TimeInterval> TimeIntervals { get; set; }
         public DbSet<DateTimeRange> DateTimeRanges { get; set; }
-        // public DbSet<DateRange> DateRanges { get; set; }
-        ///////
-
-        // Manufacture
-        public DbSet<ProductionCapacity> ProductionCapacities { get; set; }     
-        public DbSet<PCECaseSchedule> PCECaseSchedules { get; set; }        
-        public DbSet<ProductionReject> ProductionRejects { get; set; }
-        public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }
-        public DbSet<ProductionCapacityReestimation> ProductionCapacityReestimations { get; set; }
         public DbSet<ProductionCapacityCorrection> ProductionCapacityCorrections { get; set; }
-        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
-        public DbSet<PCECaseTerminate> PCECaseTerminates { get; set; }
-        public DbSet<PCECaseComment> PCECaseComments { get; set; }
         
-
-
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }

@@ -6,7 +6,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
                     <li class="breadcrumb-item active">My PCE Reestimation Case</li>
                 </ol>
             </div>
@@ -23,8 +23,8 @@
                             <th>Created At</th>
                             <th>Case No</th>
                             <th>Aplicant Name</th>                      
-                            <th>Completed PCE</th>
-                            <th>Total PCE</th>
+                            <th>Completed Productions</th>
+                            <th>Total Productions</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -42,7 +42,7 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: '/PCECase/PCEReestimationCase',
+                url: '/PCECase/GetPCECases?Status=Completed',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -66,10 +66,8 @@
                                 width: '10%',
                                 render: function (data, type, row, meta) {
                                     return '<a href="@Url.Action("PCEReestimationCase", "PCECase")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
-
                                 }
                             }
-
                         ],
                         order: [[0, 'desc']],
                         responsive: true,

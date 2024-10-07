@@ -2,9 +2,9 @@
 
 @{
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;  
-    var myPCEAssignmentUrl = Url.Action("MyAssignment", "PCECaseAssignment");
+    var fetchUrl = Url.Action("MyAssignment", "PCECaseAssignment");
     var pceCaseTimeLineUrl = Url.Action("Index", "PCECaseTimeLine");
-    var assignUrl = "/PCECase/GetMyAssignmentPCECases";
+    var assignUrl = "/PCECase/GetAssignedPCECases";
 }
 
 <script>
@@ -44,7 +44,7 @@
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                return '<a href="@myPCEAssignmentUrl?Id=' + data + '">Details</a> | ' +
+                                return '<a href="@fetchUrl?Id=' + data + '">Details</a> | ' +
                                        '<a href="@pceCaseTimeLineUrl?PCECaseId=' + data + '"><i class="nav-icon fas fa-sitemap"></i></a>';
                             }
                         }

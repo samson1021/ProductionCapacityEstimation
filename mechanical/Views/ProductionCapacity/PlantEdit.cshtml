@@ -418,7 +418,6 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/lib/toastr/toastr.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
     <script>
 
         document.getElementById('PlantMachinePurchased').addEventListener('change', function () {
@@ -434,47 +433,6 @@
             otherPlantNameInput.classList.add('d-none');
         });
 
-
-
-   
-
-
-
-
-
-        $(function () {
-            $('#sendEvaluationButtonModal1').on('shown.bs.modal', function () {
-                $('#rejectionComment').focus();
-            });
-
-            $('#rejectionForm').submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
-
-                var rejectionComment = $('#rejectionComment').val();
-                var CollateralId = $('#CollateralId').val();
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: $(this).attr('method'),
-
-                    data: { rejectionComment: rejectionComment, CollateralId: CollateralId },
-                    success: function (response) {
-                        // Handle the response from the controller if needed
-                        toastr.success('Rejection comment saved successfully');
-                        $('#sendEvaluationButtonModal1').modal('hide');
-                        window.location.href = "https://localhost:7166/MOCase/MyCases";
-                    },
-                    error: function (error) {
-                        // Handle the error if needed
-                        toastr.error('Error saving rejection comment:', error);
-                    }
-                });
-            });
-        });
-
-
-    </script>
-    <script>
         $(document).ready(function () {
 
             $('.delete-link').on('click', function (e) {

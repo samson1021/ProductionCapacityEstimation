@@ -53,9 +53,8 @@ namespace mechanical.Controllers
             {
                 var userId = base.GetCurrentUserId();
                 var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
-
-                // if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
-                if (pceEvaluation != null)
+                
+                if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
                 {            
                     return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceEvaluation.PCEId });
                 }
@@ -64,7 +63,7 @@ namespace mechanical.Controllers
 
                 if (pceDetail.ProductionCapacity == null)
                 {
-                    return RedirectToAction("MyPCECases", "PCECase");
+                    return RedirectToAction("PCECases", "PCECase");
                 }
             
                 ViewData["Reestimation"] = pceDetail.Reestimation;
@@ -178,6 +177,30 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Detail(Guid Id)
+        {
+            try{                    
+                var pceValuation = await _PCEEvaluationService.GetValuation(base.GetCurrentUserId(), Id);
+
+                if (pceValuation == null)
+                {
+                    if (pceValuation.PCE == null)
+                    {
+                        return RedirectToAction("PCECases", "PCECase");
+                    }
+                    return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceValuation.PCEId, Status = "New" });   
+                }               
+
+                return View(pceValuation);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Production capacity valuation for ID: {Id}", Id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Evaluate(Guid Id)
         {
             var userId = base.GetCurrentUserId();
@@ -192,23 +215,6 @@ namespace mechanical.Controllers
                 // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
                 // return Json(new { success = false, message = ex.Message });
-            }
-        }
-        
-        [HttpGet]
-        public async Task<IActionResult> Reestimate(Guid Id)
-        {
-            var userId = base.GetCurrentUserId();
-            try
-            {
-                await _PCEEvaluationService.ReestimateValuation(userId, Id);
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error Resending production valuation of ID: {Id} to RM for review; User: {userId}", Id, userId);
-                // var error = new { message = ex.Message };
-                return Json(new { success = false, error = ex.Message });
             }
         }
 
@@ -240,8 +246,6 @@ namespace mechanical.Controllers
             // var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
             var pce = await _ProductionCapacityService.GetProduction(userId, Id);
 
-            // var comments = await _ProductionCapacityService.GetComments(Id);
-            // ViewData["Comments"] = comments;
             // var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(Id); 
             // ViewData["RelatedFiles"] = RelatedFiles;
             return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));          
@@ -284,6 +288,7 @@ namespace mechanical.Controllers
                 });
 
                 return RedirectToAction("RemarkPCECases", "PCECase");
+                return RedirectToAction("PCECases", "PCECase", new { Status = "Remark" });
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -303,7 +308,7 @@ namespace mechanical.Controllers
         } 
         
         [HttpGet]
-        public async Task<IActionResult> GetMyLatestValuation(Guid PCEId)
+        public async Task<IActionResult> GetLatestValuation(Guid PCEId)
         {
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(base.GetCurrentUserId(), PCEId);    
             string jsonData = JsonConvert.SerializeObject(valuationHistory.LatestEvaluation, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
@@ -311,7 +316,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyPreviousValuations(Guid PCEId)
+        public async Task<IActionResult> GetPreviousValuations(Guid PCEId)
         {
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(base.GetCurrentUserId(), PCEId);    
             string jsonData = JsonConvert.SerializeObject(valuationHistory.PreviousEvaluations, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});

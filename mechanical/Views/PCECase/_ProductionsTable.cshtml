@@ -15,14 +15,14 @@
         {            
             assiName = "SendForValuation";
         }        
-        else if (status == "Reestimate" || status == "Completed")
+        else if (status == "Reestimate")
         {
             assiName = "SendForReestimation";
         }
     }
     else if (currentUser.Role.Name == "Maker Manager")
     {
-        assiName = "PCEAssignTeamleader";
+        assiName = "PCEAssignMakerTeamleader";
     }
     else if (currentUser.Role.Name == "Maker TeamLeader")
     {
@@ -68,7 +68,7 @@
             <table id="Productions" class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        @if ((status == "New" || status == "Completed" || status == "Reestimate") && currentUser.Role.Name != "Maker Officer")
+                        @if ((status == "New" || status == "Reestimate" || status == "Reject") && currentUser.Role.Name != "Maker Officer")
                         {
                             <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
                         }        
@@ -89,7 +89,7 @@
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Send for Estimation<i class="fas fa-paper-plane"></i></button>
                         }
-                        else if (status == "Reestimate" || status == "Completed") 
+                        else if (status == "Reestimate") 
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm bg-purple">Request Re-estimation<i class="fas fa-paper-plane"></i></button>
                         }
@@ -116,7 +116,7 @@
 @{
     if (currentUser.Role.Name == "Relation Manager")
     {
-        if (status == "Reestimate" || status == "Completed") 
+        if (status == "Reestimate") 
         {       
             <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -133,7 +133,7 @@
                                 <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                                 <div class="form-group">
                                     <label for="OptionDropdown">Select Valuation Center:</label>
-                                    <select class="form-control" id="OptionDropdown" name="CenterId">
+                                    <select class="form-control" id="OptionDropdown" name="AssignedId">
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -191,7 +191,7 @@
                                 <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                                 <div class="form-group">
                                     <label for="OptionDropdown">Select Valuation Center:</label>
-                                    <select class="form-control" id="OptionDropdown" name="CenterId">
+                                    <select class="form-control" id="OptionDropdown" name="AssignedId">
                                     </select>
                                 </div>
                                 <div class="row col-12">
@@ -214,7 +214,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="assignModalLabel">Assign Case</h5>
+                        <h5 class="modal-title" id="assignModalLabel">Assign Productions(s)</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -225,7 +225,7 @@
                             <input type="hidden" id="SelectedPCEIds" name="SelectedPCEIds">
                             <div class="form-group">
                                 <label for="OptionDropdown">Select Employee:</label>
-                                <select class="form-control" id="OptionDropdown" name="employeeId">
+                                <select class="form-control" id="OptionDropdown" name="AssignedId">
                                 </select>
                             </div>
                             <div class="row col-12">

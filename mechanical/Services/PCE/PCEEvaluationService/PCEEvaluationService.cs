@@ -166,32 +166,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<bool> ReestimateValuation(Guid UserId, Guid Id)
-        {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
-            try
-            {
-                var pceEvaluation = await FindValuation(Id);
-
-                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
-                await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
-                await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
-
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error reevaluating production capacity");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while evaluating production capacity.");
-            }
-        }
-
         public async Task<bool> RejectValuation(Guid UserId, PCERejectPostDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -209,6 +183,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
                 await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Rejected");
                 await LogPCECaseTimeline(pce, "PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.");
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -239,7 +214,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdatePCEStatus(pce, currentStatus, "Maker Officer");                
                 await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.Now);
                 await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
-
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -266,7 +241,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now); 
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");     
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
-
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 

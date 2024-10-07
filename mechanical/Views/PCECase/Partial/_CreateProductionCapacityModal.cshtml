@@ -294,26 +294,6 @@
         e.preventDefault();
         var formDataArray = $(this).serializeArray();
 
-        
-        var formData = new FormData(this);
-        $.ajax({
-            url: '/ProductionCapacity/Create',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                toastr.success(response.message);
-                loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
-                $('#addProductionModal').modal('hide');
-                $('#addProductionForm')[0].reset();
-            },
-            error: function (error) {
-                toastr.error("Unable to create PCE Request");
-                console.log(error);
-            }
-        });
-
         var PropertyOwner = getAttributeByName(formDataArray, 'PropertyOwner').trim();
         if (PropertyOwner === "") {
             toastr.error("Please fill in all required fields.");
@@ -408,6 +388,26 @@
             toastr.error("Please fill in all required fields.");
             return;
         }
+
+        var formData = new FormData(this);
+        $.ajax({
+            url: '/ProductionCapacity/Create',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                toastr.success(response.message);
+                loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+                $('#addProductionModal').modal('hide');
+                $('#addProductionForm')[0].reset();
+            },
+            error: function (error) {
+                toastr.error("Unable to create PCE Request");
+                console.log(error);
+            }
+        });
+
     });
 
     document.getElementById("PropertyOwner").addEventListener("input", function () {
@@ -455,84 +455,6 @@
             document.getElementById("ModelNo-error").textContent = "";
         }
     });
-    //this is for the Machinery Installed Place
-    function handleMachineryInstalledPlaceChange(selectElement) {
-        var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace");
-        var PrivateownedLHC = document.getElementById("PrivateownedLHC");
-        var IndustrialPark = document.getElementById("IndustrialPark");
-        if (selectElement.value === "Private Owned LHC") {
-            PrivateownedLHC.style.display = "block";
-            IndustrialPark.style.display = "none";
-           
-        }else if (selectElement.value === "Industrial Park") {
-            IndustrialPark.style.display = "block";
-            PrivateownedLHC.style.display = "none";
-           
-        } else {
-            PrivateownedLHC.style.display = "none";
-            IndustrialPark.style.display = "none";
-        }
-    }
-    function validateForm() {
-        var isValid = true;
-
-        if (document.getElementById("PropertyOwner").value.trim() === "") {
-            document.getElementById("PropertyOwner-error").textContent = "Property Owner is required.";
-            document.getElementById("PropertyOwner").style.borderColor = "red";
-
-            isValid = false;
-        } else {
-            document.getElementById("PropertyOwner").style.borderColor = "";
-            document.getElementById("PropertyOwner-error").textContent = "";
-        }
-        if (document.getElementById("MachineryInstalledPlace").value.trim() === "") {
-            document.getElementById("MachineryInstalledPlace-error").textContent = "Machinery Installed Place is required.";
-            document.getElementById("MachineryInstalledPlace").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("MachineryInstalledPlace").style.borderColor = "";
-            document.getElementById("MachineryInstalledPlace-error").textContent = "";
-        }
-
-        if (document.getElementById("Region").value.trim() === "") {
-            document.getElementById("Region-error").textContent = "Region is required.";
-            document.getElementById("Region").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("Region").style.borderColor = "";
-            document.getElementById("Region-error").textContent = "";
-        }
-
-
-        
-        if (document.getElementById("Uploadbusinesslicense").value.trim() === "") {
-            document.getElementById("Uploadbusinesslicense-error").textContent = "Business license is required.";
-            document.getElementById("LHC").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("Uploadbusinesslicense").style.borderColor = "";
-            document.getElementById("Uploadbusinesslicense-error").textContent = "";
-        }
-
-
-        if (document.getElementById("Machinespecificationdocumen").value.trim() === "") {
-            document.getElementById("Machinespecificationdocumen-error").textContent = "Machine specification documen is required.";
-            document.getElementById("Machinespecificationdocumen").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("Machinespecificationdocumen").style.borderColor = "";
-            document.getElementById("Machinespecificationdocumen-error").textContent = "";
-        }
-        return isValid;
-    }
     document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
         this.style.borderColor = "";
         document.getElementById("MachineryInstalledPlace-error").textContent = "";

@@ -119,8 +119,9 @@ namespace mechanical.Controllers
         }
 
         private async Task<IActionResult> SendScheduleEmail(PCECaseScheduleReturnDto PCECaseSchedule, string subjectPrefix)
-        {
-            var pceCaseInfo = await _PCECaseService.GetPCECase(PCECaseSchedule.PCECaseId);
+        {            
+            var userId = base.GetCurrentUserId();
+            var pceCaseInfo = await _PCECaseService.GetPCECase(userId, PCECaseSchedule.PCECaseId);
             
             await _mailService.SendEmail(new MailPostDto
             {

@@ -15,7 +15,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("MyPCECases", "PCECase")">My PCECase</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCECase</a></li>
                     <li class="breadcrumb-item active">PCE Case Detail</li>
                 </ol>
             </div>
@@ -51,8 +51,7 @@
                         @await Html.PartialAsync("_PCECaseGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                        @await Html.PartialAsync("Partial/_CreateManufacturingProductionCapacity")
-                        @* @await Html.PartialAsync("PCEScriptPartial/_ProductionsTable") *@
+                        @await Html.PartialAsync("_ProductionsTable")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("PCEScriptPartial/PCESchedule/_PCECaseSchedule")
