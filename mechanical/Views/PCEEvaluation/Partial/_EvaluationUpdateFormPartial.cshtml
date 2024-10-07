@@ -65,13 +65,13 @@
                 <div class="row shift-hour col-sm-12" data-index="@i">
                     <div class="form-group col-sm-6">
                         <label>Shift @i Start</label>
-                        <input name="ShiftHours[@i].Start" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].Start.ToString("hh\\:mm")" />
-                        <span asp-validation-for="ShiftHours[@i].Start" class="text-danger"></span>
+                        <input name="ShiftHours[@i].Start" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[i].Start.ToString("hh\\:mm")" />
+                        <span asp-validation-for="ShiftHours[i].Start" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-6">
                         <label>Shift @i End</label>
-                        <input name="ShiftHours[@i].End" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[@i].End.ToString("hh\\:mm")" />
-                        <span asp-validation-for="ShiftHours[@i].End" class="text-danger"></span>
+                        <input name="ShiftHours[@i].End" class="form-control form-control-sm" type="time" value="@Model.ShiftHours[i].End.ToString("hh\\:mm")" />
+                        <span asp-validation-for="ShiftHours[i].End" class="text-danger"></span>
                     </div>
                 </div>
             }
