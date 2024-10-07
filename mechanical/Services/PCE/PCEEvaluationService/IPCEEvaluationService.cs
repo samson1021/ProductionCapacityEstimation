@@ -20,7 +20,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<bool> DeleteValuation(Guid UserId, Guid Id);
         Task<bool> RejectValuation(Guid UserId, PCERejectPostDto Dto);
         Task<bool> CompleteValuation(Guid UserId, Guid Id);
-        Task<bool> ReestimateValuation(Guid UserId, Guid Id);
 
         Task<bool> HandleRemark(Guid UserId, Guid PCEId, String RemarkType, CreateFileDto FileDto, Guid EvaluatorId);
         Task<PCEEvaluationReturnDto> ReleaseRemark(Guid UserId, Guid Id, String Remark, Guid EvaluatorId);

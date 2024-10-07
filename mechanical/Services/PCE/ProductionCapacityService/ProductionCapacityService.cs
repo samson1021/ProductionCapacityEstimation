@@ -527,7 +527,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 NewProductionsCount = counts[0],
                 PendingProductionsCount = counts[1],
                 CompletedProductionsCount = counts[2],
-                ResubmittedProductionsCount = counts[3],
+                ResubmittedProductionsCount = counts[3], // rejected 
                 ReestimatedProductionsCount = counts[4],
                 TotalProductionsCount = counts[5]
                 // TotalProductionsCount = await GetProductionsCountAsync(UserId, PCECaseId, Stage)

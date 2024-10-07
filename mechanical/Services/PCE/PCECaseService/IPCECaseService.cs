@@ -24,7 +24,6 @@ namespace mechanical.Services.PCE.PCECaseService
         PCEReportDataDto GetPCECaseDetailReport(Guid UserId, Guid Id);
         Task<IEnumerable<PCECaseReturnDto>> GetPCECasesReport(Guid UserId);
         
-
         // Task<IEnumerable<PCECaseReturnDto>> GetPCENewCases(Guid UserId);
         // Task<IEnumerable<PCECaseReturnDto>> GetPCEPendingCases(Guid UserId);
         // Task<IEnumerable<PCECaseReturnDto>> GetPCECompleteCases(Guid UserId);

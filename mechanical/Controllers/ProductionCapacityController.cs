@@ -219,7 +219,13 @@ namespace mechanical.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Productions(string Status = "All")
-        {
+        { 
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
+                return BadRequest("Invalid status.");
+            }
+            
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
             ViewData["Title"] = Status + " Productions";
             ViewData["Title"] = Status + " Productions";
@@ -229,7 +235,13 @@ namespace mechanical.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid? PCECaseId = null, string Status = "All")
-        {
+        { 
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
+                return BadRequest("Invalid status.");
+            }
+
             IEnumerable<ReturnProductionDto> productions = null;
             if (PCECaseId == null)
             {

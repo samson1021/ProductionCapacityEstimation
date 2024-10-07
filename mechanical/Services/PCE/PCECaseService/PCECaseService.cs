@@ -200,43 +200,89 @@ namespace mechanical.Services.PCE.PCECaseService
 
         public async Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId)
         {
-            var allProductions = await _cbeContext.PCECaseAssignments
-                                            .AsNoTracking()
-                                            .Include(res => res.ProductionCapacity)
-                                            .Where(res => res.UserId == UserId)
-                                            .ToListAsync();
+            var statuses = new[] { "New", "Pending", "Completed", "Reestimate", "Reestimated", "Rejected" };
+            
+            var tasks = statuses.Select(status => GetPCECasesCountAsync(UserId, status)).ToList();
 
-            var newProductions = allProductions.Where(res => res.Status == "New").ToList();
-            var pendingProductions = allProductions.Where(res => res.Status == "Pending").ToList();
-            var completedProductions = allProductions.Where(res => res.Status == "Completed").ToList();
-            var reestimatedProductions = allProductions.Where(res => res.Status == "Reestimated").ToList();
-            var resubmittedProductions = allProductions.Where(res => res.Status == "Reestimate").ToList();
-            var rejectedProductions = allProductions.Where(res => res.Status == "Rejected").ToList();
+            var counts = await Task.WhenAll(tasks);
 
             return new PCECasesCountDto()
             {
-                NewPCECasesCount = newProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                NewProductionsCount = newProductions.Count,
+                NewPCECasesCount = counts[0].DistinctPCECaseCount,
+                NewProductionsCount = counts[0].ProductionsCount,
 
-                PendingPCECasesCount = pendingProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                PendingProductionsCount = pendingProductions.Count,
+                PendingPCECasesCount = counts[1].DistinctPCECaseCount,
+                PendingProductionsCount = counts[1].ProductionsCount,
 
-                CompletedPCECasesCount = completedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                CompletedProductionsCount = completedProductions.Count,
+                CompletedPCECasesCount = counts[2].DistinctPCECaseCount,
+                CompletedProductionsCount = counts[2].ProductionsCount,
 
-                ReestimatedPCECasesCount = reestimatedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                ReestimatedProductionsCount = reestimatedProductions.Count,
+                ResubmittedPCECasesCount = counts[3].DistinctPCECaseCount, // Reestimate
+                ResubmittedProductionsCount = counts[3].ProductionsCount,
 
-                ResubmittedPCECasesCount = resubmittedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                ResubmittedProductionsCount = resubmittedProductions.Count,
+                ReestimatedPCECasesCount = counts[4].DistinctPCECaseCount,
+                ReestimatedProductionsCount = counts[4].ProductionsCount,
 
-                RejectedPCECasesCount = rejectedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                RejectedProductionsCount = rejectedProductions.Count,
+                RejectedPCECasesCount = counts[5].DistinctPCECaseCount,
+                RejectedProductionsCount = counts[5].ProductionsCount,
 
-                TotalPCECasesCount = allProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                TotalProductionsCount = allProductions.Count,
+                TotalPCECasesCount = counts.Sum(count => count.DistinctPCECaseCount),
+                TotalProductionsCount = counts.Sum(count => count.ProductionsCount),
             };
-        }  
+        }
+
+        private async Task<(int DistinctPCECaseCount, int ProductionsCount)> GetPCECasesCountAsync(Guid userId, string status)
+        {
+            var productions = await _cbeContext.PCECaseAssignments
+                                                .AsNoTracking()
+                                                .Include(res => res.ProductionCapacity)
+                                                .Where(res => res.UserId == userId && res.Status == status)
+                                                .ToListAsync();
+
+            var distinctPCECaseCount = productions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count();
+            var productionsCount = productions.Count;
+
+            return (distinctPCECaseCount, productionsCount);
+        }
+        // public async Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId)
+        // {
+        //     var allProductions = await _cbeContext.PCECaseAssignments
+        //                                     .AsNoTracking()
+        //                                     .Include(res => res.ProductionCapacity)
+        //                                     .Where(res => res.UserId == UserId)
+        //                                     .ToListAsync();
+
+        //     var newProductions = allProductions.Where(res => res.Status == "New").ToList();
+        //     var pendingProductions = allProductions.Where(res => res.Status == "Pending").ToList();
+        //     var completedProductions = allProductions.Where(res => res.Status == "Completed").ToList();
+        //     var reestimatedProductions = allProductions.Where(res => res.Status == "Reestimated").ToList();
+        //     var resubmittedProductions = allProductions.Where(res => res.Status == "Reestimate").ToList();
+        //     var rejectedProductions = allProductions.Where(res => res.Status == "Rejected").ToList();
+
+        //     return new PCECasesCountDto()
+        //     {
+        //         NewPCECasesCount = newProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         NewProductionsCount = newProductions.Count,
+
+        //         PendingPCECasesCount = pendingProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         PendingProductionsCount = pendingProductions.Count,
+
+        //         CompletedPCECasesCount = completedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         CompletedProductionsCount = completedProductions.Count,
+
+        //         ReestimatedPCECasesCount = reestimatedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         ReestimatedProductionsCount = reestimatedProductions.Count,
+
+        //         ResubmittedPCECasesCount = resubmittedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         ResubmittedProductionsCount = resubmittedProductions.Count,
+
+        //         RejectedPCECasesCount = rejectedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         RejectedProductionsCount = rejectedProductions.Count,
+
+        //         TotalPCECasesCount = allProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
+        //         TotalProductionsCount = allProductions.Count,
+        //     };
+        // }  
 
         public async Task<CreateNewCaseCountDto> GetDashboardPCECaseCount(Guid UserId)
         {
@@ -265,7 +311,7 @@ namespace mechanical.Services.PCE.PCECaseService
                 //PendingPCECollateralCount = await _cbeContext.PCECaseAssignments
                 //                            .Where(coll => coll.Status == "Pending" && coll.UserId== UserId)
                 //                            .CountAsync(),
-                CompletedPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == UserId && res.ProductionCapacities.Any(coll => coll.CurrentStage == "Relation Manager" && coll.CurrentStatus == "Completed")).CountAsync(),
+                CompletedPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == UserId && res.ProductionCapacities.Any(pce => pce.CurrentStage == "Relation Manager" && pce.CurrentStatus == "Completed")).CountAsync(),
                 CompletedPCECollateralCount = await _cbeContext.ProductionCapacities.Where(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Completed").CountAsync(),
                 TotalPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == UserId).CountAsync(),
                 TotalPCECollateralCount = await _cbeContext.ProductionCapacities.Where(res => res.CreatedById == UserId).CountAsync(),

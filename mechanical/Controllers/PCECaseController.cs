@@ -90,6 +90,17 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> Detail(Guid Id, string Status = "All")
         {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
+                // Error page
+                return BadRequest("Invalid status.");
+                // return Unauthorized("Authentication required.");
+                // return Forbid("You do not have permission to access this resource.");
+                // return NotFound("Resource not found.");
+                // return StatusCode(500, "An unexpected error occurred.");
+            }
+
             var userId = base.GetCurrentUserId();
             var pceCase = await _PCECaseService.GetPCECase(userId, Id);
 
@@ -150,7 +161,13 @@ namespace mechanical.Controllers.PCE
         
         [HttpGet]
         public async Task<IActionResult> PCECases(string Status = "All")
-        {            
+        {   
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
+                return BadRequest("Invalid status.");
+            }
+
             if (Status == "Reestimate")
             {
                 Status = "Completed";
@@ -205,6 +222,13 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetPCECases(string Status = "All", int? Limit = null)
         {
+            
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
+                return BadRequest("Invalid status.");
+            }
+
             IEnumerable<PCECaseReturnDto> pceCases = null;
 
             var userId = base.GetCurrentUserId();

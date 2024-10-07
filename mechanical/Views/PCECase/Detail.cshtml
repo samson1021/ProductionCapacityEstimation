@@ -126,10 +126,11 @@
                  (currentUser.Role.Name == "Maker Manager") || 
                  (currentUser.Role.Name == "District Valuation Manager") || 
                  (currentUser.Role.Name == "Maker TeamLeader"))
-        {           
+        {  
+            await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");         
+            
             if (currentUser.Role.Name == "Maker Officer") 
             {
-                await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal");
                 await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial"); 
             }
         }                    

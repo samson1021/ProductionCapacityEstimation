@@ -81,15 +81,14 @@
                         if (currentUserRoleName === "Relation Manager"){
                             if (row.CurrentStatus === "New") {
                                 link += editLink + deleteLink;
-                            }else if (row.CurrentStatus === "Rejected"){                                
+                            } else if (row.CurrentStatus === "Rejected"){                                
                                 link += editLink;
                             }
+                        } else if ((currentUserRoleName === "Maker Manager") || (currentUserRoleName === "District Valuation Manager") || (currentUserRoleName === "Maker TeamLeader")){
+                                link += returnLink ;
                         } else if (currentUserRoleName === "Maker Officer") {
-                            link = evaluateLink + link + returnLink ;
-                        } else if (currentUserRoleName === "Maker Officer") {
-                            link += returnLink ;
+                                link = evaluateLink + link + returnLink ;
                         }
-
                         return link;
                     }
                 }

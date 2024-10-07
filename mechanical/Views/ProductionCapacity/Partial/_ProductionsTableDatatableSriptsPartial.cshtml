@@ -79,13 +79,17 @@
 
                         let link = `<a href="${detailsUrl}${data}">Details</a>`;
 
-                        if (currentUserRoleName === "Relation Manager" && '@status' === "New") {
-                            link += editLink + deleteLink;
+                        if (currentUserRoleName === "Relation Manager"){
+                            if (row.CurrentStatus === "New") {
+                                link += editLink + deleteLink;
+                            } else if (row.CurrentStatus === "Rejected"){                                
+                                link += editLink;
+                            }
+                        } else if ((currentUserRoleName === "Maker Manager") || (currentUserRoleName === "District Valuation Manager") || (currentUserRoleName === "Maker TeamLeader")){
+                                link += returnLink ;
+                        } else if (currentUserRoleName === "Maker Officer") {
+                                link = evaluateLink + link + returnLink ;
                         }
-                        if (currentUserRoleName === "Maker Officer") {
-                            link = evaluateLink + link + returnLink ;
-                        }
-
                         return link;
                     }
                 }
