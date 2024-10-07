@@ -61,7 +61,7 @@ namespace mechanical.Controllers
             try
             {
                 await _PCECaseAssignmentService.SendForValuation(base.GetCurrentUserId(), SelectedPCEIds, AssignedId);
-                var response = new { message = "PCE Estimation assigned successfully" };
+                var response = new { message = "Production is assigned for estimation successfully" };
                 return Ok(response);
             }
             catch (Exception ex)
@@ -78,7 +78,7 @@ namespace mechanical.Controllers
             try
             {
                 await _PCECaseAssignmentService.SendForReestimation(base.GetCurrentUserId(), ReestimationReason, SelectedPCEIds, AssignedId);
-                var response = new { message = "PCE Reestimation assigned successfully" };
+                var response = new { message = "Production is assigned for reestimation successfully" };
                 return Ok(response);
             }
             catch (Exception ex)

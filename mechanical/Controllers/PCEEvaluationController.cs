@@ -53,9 +53,8 @@ namespace mechanical.Controllers
             {
                 var userId = base.GetCurrentUserId();
                 var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
-
-                // if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
-                if (pceEvaluation != null)
+                
+                if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
                 {            
                     return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceEvaluation.PCEId });
                 }
@@ -174,6 +173,30 @@ namespace mechanical.Controllers
                 _logger.LogError(ex, "Error deleting production valuation for ID {Id}; User: {userId}", Id, userId);
                 // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(Guid Id)
+        {
+            try{                    
+                var pceValuation = await _PCEEvaluationService.GetValuation(base.GetCurrentUserId(), Id);
+
+                if (pceValuation == null)
+                {
+                    if (pceValuation.PCE == null)
+                    {
+                        return RedirectToAction("PCECases", "PCECase");
+                    }
+                    return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceValuation.PCEId, Status = "New" });   
+                }               
+
+                return View(pceValuation);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Production capacity valuation for ID: {Id}", Id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 

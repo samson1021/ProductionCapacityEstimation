@@ -183,6 +183,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
                 await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Rejected");
                 await LogPCECaseTimeline(pce, "PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.");
+                
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -210,9 +211,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     FileDto.CaseId = pce.PCECaseId;
                     await _UploadFileService.CreateUploadFile(UserId, FileDto);
                 }
-                await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
                 await UpdatePCEStatus(pce, currentStatus, "Maker Officer");                
                 await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.Now);
+                await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
                 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -236,10 +237,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEvaluation.Remark = Remark;
                 _cbeContext.Update(pceEvaluation);
 
-                await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");          
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now); 
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");     
+                await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
                 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();

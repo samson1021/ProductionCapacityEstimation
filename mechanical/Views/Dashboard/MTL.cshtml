@@ -385,7 +385,7 @@
                             data: 'CaseNo', 
                             width: '10%',
                             render: function (data, type, row) {
-                                return '<a href="@Url.Action("Detail", "PCECase")?Id=' + row.Id + '&Status=New">' + data + '</a>';
+                                return '<a href="@Url.Action("Detail", "PCECase")?Id=' + row.Id + '&Status=' + row.Status + '">' + data + '</a>';
                             }                 
                         },
                         {

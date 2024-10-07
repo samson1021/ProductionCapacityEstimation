@@ -7,24 +7,24 @@
 @model ReturnProductionDto
 
 @{
-    var LatestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
-    var Reestimation = ViewData["Reestimation"] as ProductionReestimation;
-    var CurrentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+    var reestimation = ViewData["Reestimation"] as ProductionReestimation;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
 
     ViewData["Title"] = ViewBag.Title as string;   
 }
 
 <section class="content">
     <section class="col-xl-12 connectedSortable">         
-        @if (Reestimation != null)
+        @if (Model.CurrentStatus == "Reestimate" && reestimation != null)
         {
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title text-warning">Reason for Reestimation</h3>
+                    <h3 class="card-title text-warning">Reason for reestimation</h3>
                 </div>
                 <div class="card-body">                              
                     <div>
-                        @Reestimation.Reason
+                        @reestimation.Reason
                     </div>                         
                 </div>
             </div>        
@@ -35,25 +35,25 @@
             </div>
             <div class="card-body">
                 @{
-                    if (LatestEvaluation != null)
+                    if (latestEvaluation != null)
                     {
                         <div class="row">
-                            @await Html.PartialAsync("Partial/_EvaluationDetailPartial", LatestEvaluation)
+                            @await Html.PartialAsync("~/Views/PCEEvaluation/Partial/_EvaluationDetailPartial.cshtml", latestEvaluation)
                         </div>
-                        @* @if (CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == CurrentUser.Id) *@
-                        @if ((CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == CurrentUser.Id)
+                        @* @if (currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
+                        @if ((currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {
                                 <div class="row mt-3 mb-2">
                                     <div class="col-12 d-flex justify-content-around">
                                         <div id="update-btn-container">
-                                            <a href="@Url.Action("Update", "PCEEvaluation", new { Id = @LatestEvaluation.Id })" id="update-btn" class="btn btn-md btn-info">
+                                            <a href="@Url.Action("Update", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="update-btn" class="btn btn-md btn-info">
                                                 <i class="fas fa-pen mr-2"></i> Update
                                             </a>
                                         </div>
                                         <div id="delete-btn-container">
-                                            <a href="@Url.Action("Delete", "PCEEvaluation", new { Id = @LatestEvaluation.Id })" id="delete-btn" class="btn btn-md btn-dark">
+                                            <a href="@Url.Action("Delete", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="delete-btn" class="btn btn-md btn-dark">
                                                 <i class="fas fa-trash-alt mr-2"></i> Delete
                                             </a>
                                         </div>
@@ -63,7 +63,7 @@
                                             </button>
                                         </div>
                                         <div id="evaluate-btn-container">
-                                            <a href="@Url.Action("Evaluate", "PCEEvaluation", new { Id = @LatestEvaluation.Id })" id="evaluate-btn" class="btn btn-md btn-success">
+                                            <a href="@Url.Action("Evaluate", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="evaluate-btn" class="btn btn-md btn-success">
                                                 <i class="fas fa-paper-plane mr-2"></i> Complete
                                             </a>
                                         </div>
@@ -78,8 +78,8 @@
                             <h6 class="text-center">
                                 Not evaluated yet.                            
                     
-                                @* @if (CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == CurrentUser.Id) *@
-                                @if ((CurrentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == CurrentUser.Id)
+                                @* @if (currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
+                                @if ((currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
                                 { 
                                     @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
                                     {

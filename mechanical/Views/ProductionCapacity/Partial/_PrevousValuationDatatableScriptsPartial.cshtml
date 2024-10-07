@@ -22,11 +22,24 @@
             autoWidth: false,
             data: data,
             columns: [
-                { data: 'PCE.PropertyOwner', width: '25%' },
-                { data: 'ProductionLineOrEquipmentName', width: '25%' },
-                { data: 'PCE.ProductionType', width: '25%' },
-                { data: 'PCE.CurrentStatus', width: '35%' },
-                { data: 'CreatedAt', width: '35%' }
+                { data: 'PCE.PropertyOwner', width: '30%' },
+                { data: 'ProductionLineOrEquipmentName', width: '30%' },
+                { data: 'PCE.ProductionType', width: '15%' },
+                {                    
+                    data: 'CreatedAt',
+                    width: '15%',
+                    render: function (data) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {                 
+                        return `<a href="@Url.Action("Detail", "PCEEvaluation")?Id=${data}">Details</a>`;
+                    }
+                }
             ]
         });
     }

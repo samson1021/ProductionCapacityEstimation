@@ -43,14 +43,14 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, employeeId, isReassign, "Assign");
         }
 
-        public async Task<List<PCECaseAssignmentDto>> SendForReestimation(Guid UserId, string ReestimationReason, string SelectedPCEIds, string centerId)
-        {
-            return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Reestimation", ReestimationReason);
-        }
-
         public async Task<List<PCECaseAssignmentDto>> SendForValuation(Guid UserId, string SelectedPCEIds, string centerId)
         {
             return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Valuation");
+        }
+
+        public async Task<List<PCECaseAssignmentDto>> SendForReestimation(Guid UserId, string ReestimationReason, string SelectedPCEIds, string centerId)
+        {
+            return await ProcessProductionAssignments(UserId, SelectedPCEIds, centerId, false, "Reestimation", ReestimationReason);
         }
 
         private async Task<List<PCECaseAssignmentDto>> ProcessProductionAssignments(
@@ -196,7 +196,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         private async Task UpdateProduction(ProductionCapacity production, CreateUser assignedUser, string OperationType)
         {
             production.CurrentStage = assignedUser.Role.Name;
-            production.CurrentStatus = "New";
+
             if (OperationType == "Reestimation" || OperationType == "Valuation")
             {
                 production.PCECase.Status = "Pending";
@@ -209,6 +209,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     production.CurrentStatus = "New";
                 }
             }
+            
             _cbeContext.ProductionCapacities.Update(production);
         }
 

@@ -482,16 +482,16 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         public async Task<int> GetProductionsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
             var query = _cbeContext.ProductionCapacities
-                .AsNoTracking()
-                .Join(
-                    _cbeContext.PCECaseAssignments,
-                    pc => pc.Id,
-                    pca => pca.ProductionCapacityId,
-                    (pc, pca) => new { ProductionCapacity = pc, PCECaseAssignment = pca }
-                )
-                .Where(x => (x.PCECaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
-                        && (Status == null || Status == "All" || x.PCECaseAssignment.Status == Status))
-                .Select(x => x.ProductionCapacity); 
+                                    .AsNoTracking()
+                                    .Join(
+                                        _cbeContext.PCECaseAssignments,
+                                        pc => pc.Id,
+                                        pca => pca.ProductionCapacityId,
+                                        (pc, pca) => new { ProductionCapacity = pc, PCECaseAssignment = pca }
+                                    )
+                                    .Where(x => (x.PCECaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
+                                            && (Status == null || Status == "All" || x.PCECaseAssignment.Status == Status))
+                                    .Select(x => x.ProductionCapacity); 
 
             if (PCECaseId.HasValue)
             {

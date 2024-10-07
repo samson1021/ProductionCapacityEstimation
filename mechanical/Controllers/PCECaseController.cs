@@ -57,23 +57,23 @@ namespace mechanical.Controllers.PCE
         {
             if (ModelState.IsValid)
             {
-                var pceCases = await _PCECaseService.PCECase(base.GetCurrentUserId(), pceCaseDto);
+                var pceCase = await _PCECaseService.PCECase(base.GetCurrentUserId(), pceCaseDto);
                 // var pceCases = await _PCECaseService.PCECase(pceCaseDto);
-                return RedirectToAction("Detail", new { Id = pceCases.Id, Status = "New" });
+                return RedirectToAction("Detail", new { Id = pceCase.Id, Status = "New" });
             }
             return View();
         }
 
         public async Task<IActionResult> Edit(Guid Id)
         {
-            var editCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
             
-            if (editCase == null) 
+            if (pceCase == null) 
             { 
                 return RedirectToAction("PCECases");
             }
 
-            return View(editCase);
+            return View(pceCase);
         }
 
         [HttpPost]
@@ -81,10 +81,10 @@ namespace mechanical.Controllers.PCE
         {
             if (ModelState.IsValid)
             {
-                var pceCases = await _PCECaseService.Edit(pceCaseDto.Id, pceCaseDto);
-                return RedirectToAction("PCECases");
+                var pceCase = await _PCECaseService.Edit(pceCaseDto.Id, pceCaseDto);
+                return RedirectToAction("Detail", new { Id = pceCase.Id, Status = "New" });
             }
-            return View();
+            return View(pceCaseDto);
         }
 
         [HttpGet]
@@ -95,10 +95,10 @@ namespace mechanical.Controllers.PCE
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
                 // Error page
                 return BadRequest("Invalid status.");
-                // return Unauthorized("Authentication required.");
-                // return Forbid("You do not have permission to access this resource.");
                 // return NotFound("Resource not found.");
+                // return Unauthorized("Authentication required.");
                 // return StatusCode(500, "An unexpected error occurred.");
+                // return Forbid("You do not have permission to access this resource.");
             }
 
             var userId = base.GetCurrentUserId();

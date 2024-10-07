@@ -93,7 +93,7 @@
                         @await Html.PartialAsync("_PCECaseGeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-information" role="tabpanel" aria-labelledby="custom-tabs-four-information-tab">
-                        @await Html.PartialAsync("_ProductionsTable");                        
+                        @await Html.PartialAsync("_ProductionsTable")                        
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-schedule" role="tabpanel" aria-labelledby="custom-tabs-four-schedule-tab">
                         @await Html.PartialAsync("PCEScriptPartial/PCESchedule/_PCECaseSchedule")
@@ -118,9 +118,9 @@
 
         if (currentUser.Role.Name == "Relation Manager"  && status == "New")
         {
-            await Html.RenderPartialAsync("Partial/_CreatePCEPlantModal");
-            await Html.RenderPartialAsync("Partial/_CreateProductionCapacityModal");
             await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionScriptPartial");
+            await Html.RenderPartialAsync("Partial/_CreateProductionCapacityModal");
+            await Html.RenderPartialAsync("Partial/_CreatePCEPlantModal");
         }
         else if ((currentUser.Role.Name == "Maker Officer") || 
                  (currentUser.Role.Name == "Maker Manager") || 
