@@ -96,7 +96,7 @@
                         @await Html.PartialAsync("_ProductionsTable")                        
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-schedule" role="tabpanel" aria-labelledby="custom-tabs-four-schedule-tab">
-                        @await Html.PartialAsync("PCEScriptPartial/PCESchedule/_PCECaseSchedule")
+                        @await Html.PartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseSchedule")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-comments" role="tabpanel" aria-labelledby="custom-tabs-four-comments-tab">
                         @await Html.PartialAsync("PCEScriptPartial/PCEComment/_PCECaseComment")
@@ -112,7 +112,7 @@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");  
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/PCESchedule/_PCECaseScheduleScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseScheduleScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");    
         await Html.RenderPartialAsync("~/Views/ProductionCapacity/Partial/_ProductionsTableDatatableSriptsPartial.cshtml");        
 

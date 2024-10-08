@@ -48,7 +48,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
-                // pceEvaluation.Id = Guid.NewGuid();
+                pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
                 pceEvaluation.CreatedBy = UserId;
                 pceEvaluation.CreatedAt = DateTime.Now;
@@ -86,7 +86,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEvaluation.UpdatedBy = UserId;
                 pceEvaluation.UpdatedAt = DateTime.Now;
 
-                var filesToDelete = await HandleDeletedFiles(Dto.DeletedFileIds);
+                var filesToDelete = await GetFilesToDelete(FileIds: Dto.DeletedFileIds);
+                var filePathsToDelete = await GetFilePathsToDelete(filesToDelete);
 
                 await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
@@ -95,7 +96,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                await DeleteFiles(filesToDelete);
+                await DeleteFiles(filePathsToDelete);
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
             }
@@ -117,18 +118,20 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);
 
-                // var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEvaluation.PCEId && res != pceEvaluation).ToListAsync();
-                // var currentStatus = previousValuation.Any() ? "Reestimate" : "New";
-                var currentStatus = "New";
+                var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEvaluation.PCEId && res != pceEvaluation).ToListAsync();
+                var currentStatus = previousValuation.Any() ? "Reestimate" : "New";
 
                 await UpdatePCEStatus(pceEvaluation.PCE, currentStatus, "Maker Officer");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, currentStatus);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, "New");
                 await LogPCECaseTimeline(pceEvaluation.PCE, "The current production valuation is retracted.");
                 
+                var filesToDelete = await GetFilesToDelete(PCEEId: pceEvaluation.Id);
+                var filePathsToDelete = await GetFilePathsToDelete(filesToDelete);
+
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                await DeleteRelatedFiles(pceEvaluation.Id);
+                await DeleteFiles(filePathsToDelete);
 
                 return true;
             }
@@ -293,24 +296,36 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private async Task<List<string>> HandleDeletedFiles(string DeletedFileIds)
+        private async Task<ICollection<UploadFile>> GetFilesToDelete(Guid? PCEEId = null, string? FileIds = null)
         {
-            var filePaths = new List<string>();
-            if (!string.IsNullOrEmpty(DeletedFileIds))
+            ICollection<UploadFile> filesToDelete = null;
+            
+            if (PCEEId != null)
             {
-                var deletedFileGuids = DeletedFileIds.Split(',').Select(Guid.Parse).ToList();
-                var filesToDelete = await _cbeContext.UploadFiles.Where(file => deletedFileGuids.Contains(file.Id)).ToListAsync();
+                filesToDelete = await _cbeContext.UploadFiles.Where(file => file.CollateralId == PCEEId).ToListAsync();
+            }
+            else if (!string.IsNullOrEmpty(FileIds))
+            {
+                var fileGuids = FileIds.Split(',').Select(Guid.Parse).ToList();
+                filesToDelete = await _cbeContext.UploadFiles.Where(file => fileGuids.Contains(file.Id)).ToListAsync();        
+            }
+            
+            return filesToDelete;
+        }
 
-                foreach (var file in filesToDelete)
+        private async Task<List<string>> GetFilePathsToDelete(ICollection<UploadFile> FilesToDelete)
+        {      
+            var filePaths = new List<string>();
+
+            if (FilesToDelete != null){                    
+                foreach (var file in FilesToDelete)
                 {
                     if (File.Exists(file.Path))
                     {
-                        // File.Delete(file.Path);
                         filePaths.Add(file.Path);
                     }
                 }
-
-                _cbeContext.UploadFiles.RemoveRange(filesToDelete);
+                _cbeContext.UploadFiles.RemoveRange(FilesToDelete); 
             }
             
             return filePaths;
@@ -325,21 +340,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     File.Delete(filePath);
                 }
             }
-        }
-
-        private async Task DeleteRelatedFiles(Guid PCEEId)
-        {
-            var relatedFiles = await _cbeContext.UploadFiles.Where(file => file.CollateralId == PCEEId).ToListAsync();
-
-            foreach (var file in relatedFiles)
-            {
-                if (File.Exists(file.Path))
-                {
-                    File.Delete(file.Path);
-                }
-            }
-
-            _cbeContext.UploadFiles.RemoveRange(relatedFiles);
         }
 
         private async Task UpdatePCEStatus(ProductionCapacity PCE, string Status, string Stage)

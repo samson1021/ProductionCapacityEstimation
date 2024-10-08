@@ -26,7 +26,7 @@
             formData.append('Id', Id);
 
             $.ajax({
-                url: '/PCESchedule/UpdateSchedule',
+                url: '/PCECaseSchedule/UpdateSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -46,7 +46,7 @@
             formData.append('Id', Id);
 
             $.ajax({
-                url: '/PCESchedule/ApproveSchedule',
+                url: '/PCECaseSchedule/ApproveSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -88,7 +88,7 @@
             formData.append('id', Id);
 
             $.ajax({
-                url: '/PCESchedule/CreateProposeSchedule',
+                url: '/PCECaseSchedule/CreateProposeSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -114,7 +114,7 @@
             formData.append('id', Id);
 
             $.ajax({
-                url: '/PCESchedule/CreateReSchedule',
+                url: '/PCECaseSchedule/CreateReSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -143,14 +143,14 @@
 
         var CaseId = $('#CaseId').val();
 
-        $('#pcescheduleForm').submit(function (event) {
+        $('#pceCaseScheduleForm').submit(function (event) {
             event.preventDefault();
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
             formData.append('id', Id);
 
             $.ajax({
-                url: '/PCESchedule/CreateSchedule',
+                url: '/PCECaseSchedule/CreateSchedule',
                 type: 'POST',
                 data: formData,
                 processData: false,
