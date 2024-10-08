@@ -107,6 +107,38 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Production Process Flow Diagrams")] 
         public ICollection<IFormFile> ProductionProcessFlowDiagrams { get; set; }  
+
+
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (ShiftHours != null)
+            {
+                for (int i = 0; i < ShiftHours.Count; i++)
+                {
+                    var currentShift = ShiftHours[i];
+
+                    if (currentShift.Start >= currentShift.End)
+                    {
+                        yield return new ValidationResult(
+                            $"Start time must be before end time for Shift {i + 1}.",
+                            new[] { $"ShiftHours[{i}].Start", $"ShiftHours[{i}].End" });
+                    }
+
+                    for (int j = i + 1; j < ShiftHours.Count; j++)
+                    {
+                        var nextShift = ShiftHours[j];
+
+                        if (currentShift.Start < nextShift.End && currentShift.End > nextShift.Start)
+                        {
+                            yield return new ValidationResult(
+                                $"Shifts {i + 1} and {j + 1} overlap.",
+                                new[] { $"ShiftHours[{i}].Start", $"ShiftHours[{i}].End", $"ShiftHours[{j}].Start", $"ShiftHours[{j}].End" });
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public class TimeIntervalPostDto

@@ -46,7 +46,7 @@
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="Update">
+                <form method="post" enctype="multipart/form-data" asp-action="Update" id="evaluationForm">
                     
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)

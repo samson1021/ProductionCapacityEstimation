@@ -53,7 +53,23 @@
             if (targetTab.length) {
                 targetTab.tab('show'); 
             }
-        }
+        }                    
+
+        $('#ShiftsPerDay').on('input', function () {
+            renderShiftHours();
+            validateShiftHours();
+        });
+
+        $('#shiftHoursContainer').on('change', 'input[type="time"]', function () {
+            validateShiftHours();
+        });
+
+        $('#evaluationForm').on('submit', function (e) {
+            if (!validateShiftHours()) {
+                e.preventDefault(); 
+            }
+        });
+
     });
 
     function setDefaultTime() {
@@ -75,8 +91,9 @@
         $('#shiftHoursContainer .shift-hour').each(function (index) {
             $(this).attr('data-index', index);
             $(this).find('label').each(function () {
-                $(this).text($(this).text().replace(/Shift \d+/, `Shift ${index + 1}`));
-            });
+                const labelType = $(this).text().includes('Start') ? 'Start' : 'End';
+                $(this).html(`Shift ${index + 1} ${labelType} <i class="text-danger">*</i>`);
+            });            
             $(this).find('input').each(function () {
                 let name = $(this).attr('name');
                 let newName = name.replace(/\d+/, index);
@@ -110,15 +127,78 @@
                     <div class="form-group col-sm-6">
                         <label>Shift ${index + 1} Start <i class="text-danger">*</i></label>
                         <input name="ShiftHours[${index}].Start" class="form-control form-control-sm" type="time" />
-                        <span class="text-danger"></span>
+                        <span asp-validation-for="ShiftHours[${index}].Start" class="text-danger"></span>  
                     </div>
                     <div class="form-group col-sm-6">
                         <label>Shift ${index + 1} End <i class="text-danger">*</i></label>
                         <input name="ShiftHours[${index}].End" class="form-control form-control-sm" type="time" />
-                        <span class="text-danger"></span>
+                        <span asp-validation-for="ShiftHours[${index}].End" class="text-danger"></span>
                     </div>
                 </div>
             `;
+    }
+
+    function validateShiftHours() {
+        
+        var shifts = [];
+        var isValid = true;
+        var errorMsg = "Shifts should not overlap or be identical.";
+        var invalidTimeMsg = "Shift start time should be earlier than the end time.";
+        var firstInvalidElement = null;
+
+        $('#shiftHoursContainer .shift-hour').each(function () {
+            var startTime = $(this).find('input[name$="Start"]').val();
+            var endTime = $(this).find('input[name$="End"]').val();
+
+            if (startTime && endTime) {
+                shifts.push({ start: startTime, end: endTime });
+            }
+        });
+
+        // Reset previous error messages
+        $('.shift-hour').find('.text-danger').text('');
+
+        // Check for overlapping shifts
+        for (var i = 0; i < shifts.length; i++) {
+            var shift1 = shifts[i];
+
+            if (shift1.start >= shift1.end) {
+                isValid = false;
+                let startInput = $(shiftHoursContainer).find(`.shift-hour[data-index="${i}"] input[name$="Start"]`);
+                let endInput = $(shiftHoursContainer).find(`.shift-hour[data-index="${i}"] input[name$="End"]`);
+                $(shiftHoursContainer).find(`.shift-hour[data-index="${i}"] .text-danger`).text(invalidTimeMsg);
+
+                if (!firstInvalidElement) {
+                    firstInvalidElement = startInput; 
+                }
+            }
+
+            for (var j = i + 1; j < shifts.length; j++) {
+                var shift2 = shifts[j];
+
+                // Check if shift times overlap
+                if ((shift1.start < shift2.end && shift1.end > shift2.start) ||
+                    (shift1.start === shift2.start && shift1.end === shift2.end)) {
+                    // Mark as invalid
+                    isValid = false;
+                    let startInput1 = $(shiftHoursContainer).find(`.shift-hour[data-index="${i}"] input[name$="Start"]`);
+                    let startInput2 = $(shiftHoursContainer).find(`.shift-hour[data-index="${j}"] input[name$="Start"]`);
+                    
+                    $(shiftHoursContainer).find(`.shift-hour[data-index="${i}"] .text-danger`).text(errorMsg);
+                    $(shiftHoursContainer).find(`.shift-hour[data-index="${j}"] .text-danger`).text(errorMsg);
+
+                    if (!firstInvalidElement) {
+                        firstInvalidElement = startInput1; 
+                    }
+                }
+            }
+        }
+
+        if (firstInvalidElement) {
+            firstInvalidElement.focus();
+        }
+
+        return isValid;
     }
 
     function handleButtonClick(buttonId, confirmMessage, successMessage, redirectUrl) {
