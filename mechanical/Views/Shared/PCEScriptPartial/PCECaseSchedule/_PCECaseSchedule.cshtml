@@ -35,7 +35,7 @@
                             }
                             else
                             {
-                                @using (Html.BeginForm("CreateSchedule", "PCESchedule", FormMethod.Post, new { id = "pcescheduleForm" }))
+                                @using (Html.BeginForm("CreateSchedule", "PCECaseSchedule", FormMethod.Post, new { id = "pceCaseScheduleForm" }))
                                 {
                                     <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
                                     <div class="form-group">

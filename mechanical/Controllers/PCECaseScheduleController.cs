@@ -15,7 +15,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Controllers
 {
-    public class PCEScheduleController : BaseController
+    public class PCECaseScheduleController : BaseController
     {
         private readonly IMapper _mapper;
         private readonly CbeContext _cbeContext;
@@ -23,7 +23,7 @@ namespace mechanical.Controllers
         private readonly IPCECaseService _PCECaseService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
 
-        public PCEScheduleController(CbeContext cbeContext, IMapper mapper, IPCECaseService IPCECaseService, IPCECaseScheduleService PCECaseScheduleService, IMailService mailService)
+        public PCECaseScheduleController(CbeContext cbeContext, IMapper mapper, IPCECaseService IPCECaseService, IPCECaseScheduleService PCECaseScheduleService, IMailService mailService)
         {
             _mapper = mapper;
             _cbeContext = cbeContext;
@@ -47,8 +47,6 @@ namespace mechanical.Controllers
             return Ok();
         }
 
-
-     
         [HttpPost]
         public async Task<IActionResult> CreateProposeSchedule(PCECaseSchedulePostDto PCECaseScheduleDto)
         {
@@ -72,10 +70,6 @@ namespace mechanical.Controllers
             return await SendScheduleEmail(PCECaseSchedule, "Valuation Schedule for PCECase Number ");
         }
 
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> CreateReSchedule(PCECaseSchedulePostDto pceCaseScheduleDto)
         {
@@ -88,12 +82,6 @@ namespace mechanical.Controllers
                 }
                 return await SendScheduleEmail(newSchedule, "Valuation Re-Schedule for PCECase Number ");
         }
-
-
-
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> UpdateSchedule(Guid Id, PCECaseSchedulePostDto PCECaseScheduleDto)
