@@ -182,7 +182,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdatePCEStatus(pce, "Rejected", "Relation Manager");
                 await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
                 await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Rejected");
-                await LogPCECaseTimeline(pce, "PCE is rejected by MO as inadequate for evaluation and returned to Relation Manager for correction.");
+                await LogPCECaseTimeline(pce, "PCE is rejected as inadequate for evaluation and returned to Relation Manager for correction.");
                 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -262,7 +262,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                             .Include(e => e.ShiftHours)
                                             .Include(e => e.TimeConsumedToCheck)
                                             .Include(e => e.PCE)
-                                            .ThenInclude(e => e.PCECase)
+                                                .ThenInclude(e => e.PCECase)
                                             .FirstOrDefaultAsync(e => e.Id == Id);
 
             if (pceEntity == null)
@@ -413,7 +413,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .Include(e => e.ShiftHours)
                                                 .Include(e => e.TimeConsumedToCheck)
                                                 .Include(e => e.PCE)
-                                                .ThenInclude(e => e.PCECase)
+                                                    .ThenInclude(e => e.PCECase)
                                                 .FirstOrDefaultAsync(e => e.Id == Id);
 
                 if (pceEvaluation == null)
@@ -448,7 +448,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
                                                     .Include(e => e.PCE)
-                                                    .ThenInclude(e => e.PCECase)
+                                                        .ThenInclude(e => e.PCECase)
                                                     // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
@@ -484,7 +484,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
                                                     .Include(e => e.PCE)
-                                                    .ThenInclude(e => e.PCECase)
+                                                        .ThenInclude(e => e.PCECase)
                                                     .Where(e => e.PCE.PCECaseId == PCECaseId)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
@@ -524,7 +524,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             
             PCEEvaluationReturnDto latestEvaluation = null;
 
-            if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate")
+            if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Rejected")
             {  
                 latestEvaluation = await GetValuationByPCEId(UserId, PCEId);
             }
@@ -532,7 +532,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var previousEvaluations = await _cbeContext.PCEEvaluations
                                                         .AsNoTracking()
                                                         .Include(p => p.PCE)
-                                                        .ThenInclude(pc => pc.PCECase)
+                                                            .ThenInclude(pc => pc.PCECase)
                                                         .Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id))
                                                         .ToListAsync();
             
