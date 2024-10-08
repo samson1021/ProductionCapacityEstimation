@@ -25,7 +25,7 @@
                             <th>Case No</th>
                             <th>Aplicant Name</th>
                             <th>Customer Id</th>
-                            <th>Number of PCE</th>
+                            <th>No of Productions</th>
                             <th>Termination Reason</th>
                             <th>Status</th>
                         </tr>
@@ -36,19 +36,10 @@
         </div>
     </div>
 </section>
-@section Scripts {
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+@section Scripts {    
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
     <script>
         $(document).ready(function () {
             $.ajax({
@@ -73,7 +64,6 @@
                                 { data: 'CustomerUserId', width: '15%' },
                                 { data: 'NoOfCollateral', width: '15%' },
                                 { data: 'TerminationReason', width: '15%' },
-                                // { data: 'CurrentStatus', width: '15%' },
                                 { data: 'Status', width: '15%' },
                                 {
                                     data: 'Id',

@@ -1,11 +1,20 @@
-using System.Web.Services.Description;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
+
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net.WebSockets;
+using System.Collections.Concurrent;
+using System.Web.Services.Description;
 
 using mechanical;
 using mechanical.Data;
@@ -41,11 +50,10 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.UploadFileService;
-using mechanical.Services.PCE.ProductionCapacityServices;
+using mechanical.Services.PCE.ProductionCapacityService;
 using mechanical.Services.PCE.ProductionCorrectionService;
-using mechanical.Services.PCE.PCECaseAssignmentServices;
+using mechanical.Services.PCE.PCECaseAssignmentService;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
@@ -93,10 +101,10 @@ builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
-builder.Services.AddScoped<IProductionCapacityServices, ProductionCapacityServices>();
+builder.Services.AddScoped<IProductionCapacityService, ProductionCapacityService>();
 builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
-builder.Services.AddScoped<IPCECaseAssignmentServices, PCECaseAssignmentServices>();
+builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
 
@@ -129,7 +137,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 // builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
-builder.Services.AddScoped<IMOPCECaseService, MOPCECaseService>();
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -180,9 +187,7 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate(); // Apply migrations
     // Seed.SeedData(app);
     // SeedDistrict.SeedData(app);
-    Console.WriteLine("Initializing Districts, Roles and Users...");
     SeedUsersRolesAndDistricts.SeedData(app);
-    Console.WriteLine("Finished initializing Districts, Roles and Users.");
 }
 
 // Configure the HTTP request pipeline.
@@ -192,6 +197,90 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+/////////////////////////////// Chat web sockets //////////////////////////
+// Enable WebSocket support
+app.UseWebSockets();
+
+// Store connected clients
+var clients = new ConcurrentDictionary<WebSocket, string>();
+
+app.Map("/ws", async (HttpContext context) =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+        clients[webSocket] = ""; 
+        
+        await Receive(webSocket);
+    }
+});
+
+
+async Task Receive(WebSocket webSocket)
+{
+    var buffer = new byte[1024 * 4]; 
+    var receivedMessage = new StringBuilder(); 
+
+    try
+    {
+        while (webSocket.State == WebSocketState.Open)
+        {
+            WebSocketReceiveResult result;
+            do
+            {
+                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                var messageSegment = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                receivedMessage.Append(messageSegment);
+
+            } while (!result.EndOfMessage);
+
+            var message = receivedMessage.ToString();
+            receivedMessage.Clear();
+
+            if (result.MessageType == WebSocketMessageType.Close)
+            {
+                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+                clients.TryRemove(webSocket, out _);
+            }
+            else
+            {
+                // Broadcast message to all connected clients
+                foreach (var client in clients.Keys)
+                {
+                    // if (client != webSocket && client.State == WebSocketState.Open)
+                    if (client.State == WebSocketState.Open)                    
+                    {
+                        var msg = Encoding.UTF8.GetBytes(message);
+                        await client.SendAsync(new ArraySegment<byte>(msg), WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                }
+            }
+        }
+    }
+    catch (WebSocketException ex)
+    {
+        Console.WriteLine($"WebSocket error: {ex.Message}");
+        clients.TryRemove(webSocket, out _);
+    }
+}
+
+Task.Run(async () =>
+{
+    while (true)
+    {
+        foreach (var client in clients.Keys)
+        {
+            if (client.State == WebSocketState.Closed || client.State == WebSocketState.Aborted)
+            {
+                clients.TryRemove(client, out _);
+            }
+        }
+        await Task.Delay(TimeSpan.FromMinutes(1)); // Run cleanup every minute
+    }
+});
+///////////////////////////////////////////////////////////////////////////
+
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
 app.UseHttpsRedirection();

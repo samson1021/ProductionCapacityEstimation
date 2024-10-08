@@ -2,16 +2,18 @@
 @using mechanical.Models.PCE.Dto.PCECaseTerminateDto
 @using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 @using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
+
 @{
-    var myCase = ViewData["pcecaseDtos"] as PCECaseReturntDto;
-    var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
-    var caseTerminate = ViewData["caseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
+    var myCase = ViewData["PCECase"] as PCECaseReturnDto;
+    var caseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
+    var caseTerminate = ViewData["PCECaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
 }
 
 <section class="content-header col-xl-6">
-    <h4 class="text-center text-danger"> PCE Case Termination Request</h4>
+    <h4 class="text-center text-danger">PCE Case Termination Request</h4>
 </section>
 
 <section class="content">
@@ -47,21 +49,16 @@
                                     <span class="username"><a href="@Url.Action("Profile","UserManagment")?id=@caseTerm.RMUser.Id">@caseTerm.RMUser.Name</a> </span>
                                     <span class="description">@caseTerm.CreationDate</span>
                                 </div>
-                                @* @if (@caseTerm.CurrentStatus == "Approved") *@
                                 @if (@caseTerm.Status == "Approved")
                                 {
-                                    @* <p>Status: <span class="text-success">@caseTerm.CurrentStatus</span>  <i class="fas fa-check-circle text-success"></i></p> *@
                                     <p>Status: <span class="text-success">@caseTerm.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
                                 }
-                                @* else if (@caseTerm.CurrentStatus == "Rejected") *@
                                 else if (@caseTerm.Status == "Rejected")
                                 {
-                                    @* <p>Status: <span class="text-danger">@caseTerm.CurrentStatus</span>  <i class="fas fa-times-circle text-danger"></i></p> *@
-                                    <p>Status: <span class="text-danger">@caseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
+                                   <p>Status: <span class="text-danger">@caseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                 }
                                 else
                                 {
-                                    @* <p>Status: <span class="text-info">@caseTerm.CurrentStatus</span>  <i class="fas fa-spinner text-info"></i></p> *@
                                     <p>Status: <span class="text-info">@caseTerm.Status</span>  <i class="fas fa-spinner text-info"></i></p>
                                 }
                                 @{
@@ -72,28 +69,28 @@
                                 }
 
                                 @{
-                                    @* if (caseTerm.RMUser.Id != userId && caseTerm.CurrentStatus == "Proposed") *@
                                     if (caseTerm.RMUser.Id != userId && caseTerm.Status == "Proposed")
                                     {
                                         <div class="btn-group">
-                                            <input type="hidden" id="CaseScheduleId" name="Id" value="@caseTerm.Id" />
-                                            <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addCollateralModal">
+                                            <input type="hidden" id="CaseTerminationId" name="Id" value="@caseTerm.Id" />
+                                            <button id="AcceptcaseTerminationButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addProductionModal">
                                                 <i class="fas fa-check-circle"></i> Accept
                                             </button>
-                                            <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
-                                                <i class="fas fa-plus-circle"></i> Propose New
+                                            <button id="PendCaseTermination" type="button" class="btn btn-sm btn-outline-warning ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
+                                                <i class="fas fa-spinner"></i> Pend
+                                            </button>
+                                            <button id="DeclineCaseTermination" type="button" class="btn btn-sm btn-outline-danger ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
+                                                <i class="fas fa-ban"></i> Decline
                                             </button>
                                         </div>
                                     }
-                                    @* else if (caseTerm.RMUser.Id == userId && caseTerm.CurrentStatus == "Proposed") *@
                                     else if (caseTerm.RMUser.Id == userId && caseTerm.Status == "Proposed")
                                     {
                                         <input type="hidden" id="CaseSchedulleId" name="Id" value="@caseTerm.Id" />
-                                        <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason"/>
+                                        <input type="hidden" id="caseTerminateReason" value="@caseTerm.Reason" />
                                         <button id="UpdateTerminate" class="update-link btn btn-sm btn-outline-primary">Update</button>
                                     }
                                 }
-
                             </div>
                         }
                     }

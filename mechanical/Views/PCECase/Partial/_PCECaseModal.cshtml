@@ -68,8 +68,7 @@
                     {
                         data: null,
                         render: (data, type, row) => {
-                            return `
-    <input type="checkbox" class="select-row" data-id="${row.Id}">`;
+                            return `<input type="checkbox" class="select-row" data-id="${row.Id}">`;
                         }
                     },
                     { data: 'ApplicantName' },
@@ -81,8 +80,7 @@
                     // Re-add the search form and other UI elements
                     this.api().columns().every(function () {
                         var column = this;
-                        var searchInput = $(`
-    <input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
+                        var searchInput = $(`<input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
                             .appendTo($(column.footer()).empty())
                             .on('keyup change clear', function () {
                                 if (column.search() !== this.value) {

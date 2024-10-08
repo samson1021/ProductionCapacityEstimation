@@ -1,0 +1,68 @@
+﻿<script>        
+    function initializeDataTable(data, emptyMessage) {
+        $('#Productions').DataTable({
+            language: {
+                emptyTable: emptyMessage
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"],
+            data: data,
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row, meta) {
+                        if (data.Status == "New" || data.Status == "Remark"){
+                            return '<input class="purple-checkbox" type="checkbox"  value="' + data.PCECaseAssignmentId + '">';
+                        }
+                        else
+                        {
+                            return '<input disabled class="purple-checkbox" type="checkbox"  value="' + data.PCECaseAssignmentId + '">';
+                        }                        
+                    }
+                },
+                { data: 'PropertyOwner', width: '15%' },
+                { data: 'Role', width: '10%' },
+                { data: 'Category', width: '15%' },
+                { data: 'Type', width: '15%' },
+                { 
+                    data: 'AssignmentDate', 
+                    width: '10%',
+                    render: function(data) {
+                        const date = new Date(data);
+                        return date.toISOString().split('T')[0]; 
+                    } 
+                },
+                { data: 'User', width: '10%' },
+                { data: 'Status', width: '10%' },
+                {
+                    data: 'ProductionCapacityId',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details';
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadProductions(fetchUrl, emptyMessage) {
+        $.ajax({
+            url: fetchUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#Productions')) {
+                    $('#Productions').DataTable().destroy();
+                }
+                initializeDataTable(data, emptyMessage);
+            },
+            error: function (error) {
+                toastr.error("Failed to load Productions");
+                console.log(error);
+            }
+        });
+    }
+</script>

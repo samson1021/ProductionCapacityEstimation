@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+
 using mechanical.Models.Entities;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 
@@ -13,16 +14,10 @@ namespace mechanical.Controllers
             _PCECaseTimeLineService = pCECaseTimeLineService;
         }
 
-        //public IActionResult Index(Guid CaseId)
-        //{
-        //    return View();
-        //}
-
-        public async Task<IActionResult> Index(Guid CaseId)
+        public async Task<IActionResult> Index(Guid PCECaseId)
         {
-            var caseTimeline = await _PCECaseTimeLineService.GetPCECaseTimeLines(CaseId);
+            var caseTimeline = await _PCECaseTimeLineService.GetPCECaseTimeLines(PCECaseId);
             return View(caseTimeline);
         }
-
     }
 }

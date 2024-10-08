@@ -54,11 +54,23 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {  
+            {
+                var existingSchedule = await _cbeContext.PCECaseSchedules.FindAsync(caseCommentPostDto.Id);
+                if (existingSchedule == null)
+                {
+                    return _mapper.Map<PCECaseScheduleReturnDto>(existingSchedule);
+                }
+
+                existingSchedule.Status = "Reschedule";
+                existingSchedule.Reason= caseCommentPostDto.Reason;
+                _cbeContext.Update(existingSchedule); 
+                caseCommentPostDto.Reason = null;
+
                 var caseSchedule = _mapper.Map<Models.PCE.Entities.PCECaseSchedule>(caseCommentPostDto);
                 caseSchedule.UserId = UserId;
                 caseSchedule.CreatedAt = DateTime.Now;
-                caseSchedule.Status = "proposed";
+                caseSchedule.Status = "Proposed";
+                caseSchedule.Id = new Guid();
 
                 await _cbeContext.PCECaseSchedules.AddAsync(caseSchedule);
                 await _cbeContext.SaveChangesAsync();
@@ -66,7 +78,6 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
 
                 return _mapper.Map<PCECaseScheduleReturnDto>(caseSchedule);
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating case schedule");
@@ -75,6 +86,8 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
             }
         }
 
+      
+
         public async Task<IEnumerable<PCECaseScheduleReturnDto>> GetPCECaseSchedules(Guid PCECaseId)
         {
             var caseSchedules = await _cbeContext.PCECaseSchedules.Include(res => res.User).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreatedAt).ToListAsync();
@@ -82,11 +95,7 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
             return _mapper.Map<IEnumerable<PCECaseScheduleReturnDto>>(caseSchedules);
         }
 
-        //public async Task<IEnumerable<CaseScheduleReturnDto>> GetCaseSchedules(Guid caseId)
-        //{
-        //    var caseSchedules = await _cbeContext.CaseSchedules.Include(res => res.User).Where(res => res.CaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
-        //    return _mapper.Map<IEnumerable<CaseScheduleReturnDto>>(caseSchedules);
-        //}
+      
 
         public async Task<PCECaseScheduleReturnDto> UpdatePCECaseSchedule(Guid UserId, Guid id, PCECaseSchedulePostDto caseCommentPostDto)
         {

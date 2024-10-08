@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+using mechanical.Models.PCE.Entities;
+
 namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
 {
     public class ReturnProductionDto
@@ -50,7 +52,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         //other for remark
         public string? Remark { get; set; } = string.Empty;
         public Guid EvaluatorUserID { get; set; }
-        public Guid? CheckerUserID { get; set; }
+        public Guid? CheckerUserID { get; set; } // remove
         //plant
          public required string PlantName { get; set; }       
         public string? OwnerOfPlant { get; set; }
@@ -60,6 +62,9 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public DateTime? DateOfInspection { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? EndDate { get; set; }
+        
+        public virtual PCECase? PCECase { get; set; }
+        // public virtual PCECase PCECase { get; set; }
 
     }
 }
