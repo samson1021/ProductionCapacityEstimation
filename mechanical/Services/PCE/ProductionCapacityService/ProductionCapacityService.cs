@@ -406,16 +406,16 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
             var pceAssignment = await _cbeContext.PCECaseAssignments.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
             var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
-            var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().FirstOrDefaultAsync(res => res.PCEId == PCEId);
+            var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().Where(pr => pr.PCEId == PCEId).OrderByDescending(pr => pr.CreationDate).FirstOrDefaultAsync();
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, PCEId);
  
-            var assignment_Status = pceAssignment.Status; 
-            CreateUser user = null; 
+            var assignment_Status = pceAssignment?.Status; 
+            CreateUser rejectedBy = null; 
 
             if (rejectedProduction != null)
             {
-                user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == rejectedProduction.RejectedBy);
+                rejectedBy = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == rejectedProduction.RejectedBy);
             }
 
             return new PCEDetailDto
@@ -426,7 +426,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 Reestimation = reestimation,
                 RelatedFiles = relatedFiles,
                 RejectedProduction = rejectedProduction,
-                RejectedBy = user,
+                RejectedBy = rejectedBy,
                 Assignment_Status = assignment_Status
 
             };

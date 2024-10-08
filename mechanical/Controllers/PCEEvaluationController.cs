@@ -113,7 +113,7 @@ namespace mechanical.Controllers
 
                 if (pceEvaluation == null)
                 {
-                    return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceEvaluation.PCEId });
+                    return RedirectToAction("PCECases", "PCECase");
                 }
 
                 var pce = await _ProductionCapacityService.GetProduction(userId, pceEvaluation.PCEId);
@@ -184,11 +184,7 @@ namespace mechanical.Controllers
 
                 if (pceValuation == null)
                 {
-                    if (pceValuation.PCE == null)
-                    {
-                        return RedirectToAction("PCECases", "PCECase");
-                    }
-                    return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceValuation.PCEId, Status = "New" });   
+                    return RedirectToAction("PCECases", "PCECase");
                 }               
 
                 return View(pceValuation);
@@ -288,8 +284,8 @@ namespace mechanical.Controllers
                 });
 
                 return RedirectToAction("RemarkPCECases", "PCECase");
-                return RedirectToAction("PCECases", "PCECase", new { Status = "Remark" });
-                return Json(new { success = true });
+                // return RedirectToAction("PCECases", "PCECase", new { Status = "Remark" });
+                // return Json(new { success = true });
             }
             catch (Exception ex)
             {

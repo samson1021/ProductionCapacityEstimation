@@ -245,7 +245,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                     .Include(res => res.ProductionCapacity)
                                     .Where(res => res.UserId == UserId);
 
-            if (!string.IsNullOrEmpty(status) || status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            if (!(string.IsNullOrEmpty(status) || status.Equals("All", StringComparison.OrdinalIgnoreCase)))
             {
                 query = query.Where(res => res.Status == status);
             }
