@@ -18,6 +18,7 @@ using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
+using mechanical.Services.CaseServices;
 
 namespace mechanical.Controllers.PCE
 {
@@ -33,9 +34,12 @@ namespace mechanical.Controllers.PCE
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
-        public PCECaseController(CbeContext cbeContext, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
+        private readonly ICaseService _caseService;
+
+        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
+            _caseService = caseService;
             _mailService = mailService;
             _UserService = UserService;
             _PCECaseService = PCECaseService;
@@ -362,6 +366,17 @@ namespace mechanical.Controllers.PCE
         {
             var pceReportData = await _PCECaseService.GetPCEAllReportData(Id);
             var file = await _UploadFileService.GetAllUploadFileByCaseId(Id);
+            
+
+            double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
+
+            var customerinfo = await _caseService.GetCustomerName(customerId);
+            if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
+            ViewData["customerinfo"]  = customerinfo;
+            //string jsonData = JsonConvert.SerializeObject(myCase);
+            // return Content(jsonData, "application/json");
+
+
 
             if (pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Any())
             {

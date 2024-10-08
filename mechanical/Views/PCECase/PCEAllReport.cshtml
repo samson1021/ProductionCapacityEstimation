@@ -10,6 +10,8 @@
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnPCEReportFileDto>;
     var EvaluatorReports = ViewData["EvaluatorReports"] as IEnumerable<EvaluatorReportDto>;
     bool isPrinting = false;
+
+    var customerinfo = ViewData["customerinfo"];
 }
 
 <style>
@@ -148,14 +150,29 @@
                                             <u class=" ">@PCECase.ApplicantName</u>
                                         </p>
                                     </div>
-                                    <div class="form-group row my-0">
-                                        <p class="my-0 py-0 my-0">
-                                            <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
-                                            Town: <u class="   px-2">&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;;</u>
-                                            Sub-City: <u class="  px-2">&nbsp; &nbsp; &nbsp; &nbsp; ;</u>
-                                            Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
-                                        </p>
-                                    </div>
+                                    @{
+                                        if (customerinfo == "err")
+                                        {
+                                            <div class="form-group row my-0">
+                                                <p class="my-0 py-0 my-0">
+                                                    <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
+                                                    Unable to load the customer address based on the customer ID
+                                                </p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="form-group row my-0">
+                                                <p class="my-0 py-0 my-0">
+                                                    <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
+                                                    Town: <u class="   px-2">&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;;</u>
+                                                    Sub-City: <u class="  px-2">&nbsp; &nbsp; &nbsp; &nbsp; ;</u>
+                                                    Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
+                                                </p>
+                                            </div>
+                                        }
+                                    }
+                                  
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">3.&nbsp; &nbsp; Owner of the Machinery/Equipment:</label>
