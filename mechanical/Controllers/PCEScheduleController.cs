@@ -10,6 +10,8 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
+using mechanical.Models.Entities;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Controllers
 {
@@ -69,6 +71,29 @@ namespace mechanical.Controllers
 
             return await SendScheduleEmail(PCECaseSchedule, "Valuation Schedule for PCECase Number ");
         }
+
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateReSchedule(PCECaseSchedulePostDto pceCaseScheduleDto)
+        {
+              
+                var newSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), pceCaseScheduleDto);
+
+                if (newSchedule == null)
+                {
+                    return new BadRequestObjectResult("Unable to create case schedule");
+                }
+                return await SendScheduleEmail(newSchedule, "Valuation Re-Schedule for PCECase Number ");
+        }
+
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateSchedule(Guid Id, PCECaseSchedulePostDto PCECaseScheduleDto)

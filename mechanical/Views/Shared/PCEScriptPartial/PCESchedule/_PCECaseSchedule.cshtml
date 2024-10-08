@@ -65,11 +65,30 @@
                                     @if (@caseSched.Status == "Approved" || @caseSched.Status == "approved")
                                     {
                                         <p>Status: <span class="text-success">@caseSched.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
+
+                                        if(currentUser.Role.Name == "Maker Officer" || currentUser.Role.Name =="Relation Manager")
+                                        {
+                                      
+                                            <div class="btn-group">
+                                                <input type="hidden" id="CaseScheduleId" name="Id" value="@caseSched.Id" />
+                                                <button id="proposeReScheduleButtons" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeReSchedule-modal">
+                                                    <i class="fas fa-plus-circle"></i> Re-Schedule
+                                                </button>
+                                            </div>
+                                         }
                                     }
                                     else if (@caseSched.Status == "Rejected" || @caseSched.Status == "rejected")
                                     {
                                         <p>Status: <span class="text-danger">Another date is Proposed</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                     }
+
+                                    else if (@caseSched.Status == "reschedule" || @caseSched.Status == "Reschedule" || @caseSched.Status == "ReSchedule")
+
+                                    {
+                                        
+                                        <p>Status: <span class="text-warning">@caseSched.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
+                                    }
+
                                     else
                                     {
                                         <p>Status: <span class="text-info">@caseSched.Status</span>  <i class="fas fa-spinner text-info"></i></p>
@@ -79,8 +98,7 @@
                                         {
                                             <p>Reason: <span class="text-danger">@caseSched.Reason</span></p>
                                         }
-                                    }
-                                    @{
+                                   
 
                                         if (currentUser.Role.Name == "Maker Officer" || currentUser.Role.Name == "Relation Manager")
                                         {
@@ -113,6 +131,16 @@
                                     
                                     }
                                 </div>
+
+                         if (@caseSched.Status == "reschedule" || @caseSched.Status == "Reschedule" || @caseSched.Status == "ReSchedule")
+
+                                {<hr/>
+
+                                    <h3>The case is Re-Schedule again</h3>
+                                    <hr />
+
+                                    <hr />
+                                }
                             }
                         }
                     }
@@ -154,6 +182,45 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+<div class="modal" id="proposeReSchedule-modals" tabindex="-1" role="dialog" aria-labelledby="proposeReSchedule-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="proposeReSchedule-modal-label">Re Scheduled </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="proposeReSchedule-form">
+                    <input type="hidden" name="PCECaseId" value="@myCase.Id" />
+                    <div class="form-group">
+                        <label for=ScheduleDate>Schedule Date</label>
+                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for=Reason>Reason</label>
+                        <textarea id="Reason" name="Reason" class="form-control"></textarea>
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Submit" id="CaseReScheduleSubmitButton" class="btn bg-purple  btn-sm" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 
 <div class="modal" id="datetimepicker-modals" tabindex="-1" role="dialog" aria-labelledby="datetimepicker-modal-label" aria-hidden="true">

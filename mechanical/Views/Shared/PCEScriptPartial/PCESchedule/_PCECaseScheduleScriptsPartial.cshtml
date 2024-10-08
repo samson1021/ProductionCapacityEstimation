@@ -13,6 +13,11 @@
         });
 
 
+        $('#proposeReScheduleButtons').on('click', function (event) {
+            event.preventDefault();
+            $('#proposeReSchedule-modals').modal('show');
+        });
+
 
         $('#datetimepicker-form').submit(function (event) {
             event.preventDefault();
@@ -55,24 +60,24 @@
             });
         });
 
-        fetch('/UserManagment/GetDistrict')
-            .then(response => response.json())
-            .then(data => {
-                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Valuation Center');
-                $('#CenterDropdown').append(selectOption);
-                data.forEach(function (district) {
-                    var option = $('<option></option>').attr('value', district.Id).text(district.Name);
-                    $('#CenterDropdown').append(option);
-                });
-            })
-            .catch(error => {
-                console.log('Error fetching District data:', error);
-            });
+        // fetch('/UserManagment/GetDistrict')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Valuation Center');
+        //         $('#CenterDropdown').append(selectOption);
+        //         data.forEach(function (district) {
+        //             var option = $('<option></option>').attr('value', district.Id).text(district.Name);
+        //             $('#CenterDropdown').append(option);
+        //         });
+        //     })
+        //     .catch(error => {
+        //         console.log('Error fetching District data:', error);
+        //     });
 
-        var CaseId = $('#CaseId').val();
-        $('#addCollateralButton').click(function () {
-            $('#addCollateralModal').modal('show');
-        });
+        // var CaseId = $('#CaseId').val();
+        // $('#addCollateralButton').click(function () {
+        //     $('#addCollateralModal').modal('show');
+        // });
 
         var CaseId = $('#CaseId').val();
 
@@ -99,6 +104,43 @@
                 }
             });
         });
+
+        var CaseId = $('#CaseId').val();
+
+        $('#proposeReSchedule-form').submit(function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var Id = $('#CaseScheduleId').val();
+            formData.append('id', Id);
+
+            $.ajax({
+                url: '/PCESchedule/CreateReSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+
+                    $('#proposeReSchedule-modals').modal('hide');
+                    location.reload();
+                    // Handle success response
+                },
+                error: function () {
+                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                }
+            });
+        });
+
+
+
+
+
+
+
+
+
+
+
         var CaseId = $('#CaseId').val();
 
         $('#pcescheduleForm').submit(function (event) {
