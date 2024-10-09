@@ -77,11 +77,19 @@
                     {
                         <div>
                             <h6 class="text-center">
-                                Not evaluated yet.
+                                Not evaluated yet!
             
-                                @if (latestPCECaseSchedule == null || latestPCECaseSchedule.Status != "Approved" || latestPCECaseSchedule.ScheduleDate > DateTime.Today)
+                                @if (latestPCECaseSchedule == null)
                                 {
-                                    <i class="text-warning"> The Scheduled time is not ... .</i>
+                                    <i class="text-warning"> The Scheduled time is not set as of now.</i>
+                                }
+                                else if (latestPCECaseSchedule.Status != "Approved")
+                                {
+                                    <i class="text-warning"> The Scheduled time is not approved/confirmed.</i>
+                                }
+                                else if (latestPCECaseSchedule.ScheduleDate > DateTime.Today)
+                                {
+                                    <i class="text-warning"> The Scheduled time is not due.</i>
                                 }
                                 else
                                 {
