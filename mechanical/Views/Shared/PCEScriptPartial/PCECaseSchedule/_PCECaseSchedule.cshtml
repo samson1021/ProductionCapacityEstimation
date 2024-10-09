@@ -16,7 +16,9 @@
     <h4>Valuation Schedule</h4>
 </section>
 
-<section class="content">
+@* terminated and completed and date
+ *@
+ <section class="content">
     <div class="row">
         <div class="box box-primary col-xl-6">
             <div class="box-body" id="CaseSchedule">
@@ -35,19 +37,23 @@
                             }
                             else
                             {
+
                                 @using (Html.BeginForm("CreateSchedule", "PCECaseSchedule", FormMethod.Post, new { id = "pceCaseScheduleForm" }))
                                 {
-                                    <input asp-for="PCECaseId" value="@myCase.Id" />
+                                    <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input asp-for="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" required />
+                                            <input asp-for="ScheduleDate" id="ScheduleDate" type="datetime-local" class="form-control"
+                                                   value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" required />
                                         </div>
-                                        <span class="text-danger" id="dateError"></span>
+                                        <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
                                     </div>
                                     <div class="form-group">
                                         <button type="submit" class="btn bg-purple btn-sm">Submit</button>
                                     </div>
                                 }
+
+
                             }
                         
                         }
@@ -166,12 +172,13 @@
                     <input type="hidden" name="PCECaseId" value="@myCase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local"  value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
-                        <span class="text-danger"></span>
+                        <input id="proposeScheduleDate" name="ScheduleDate" type="datetime-local"  value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
+                        <span class="text-danger" id="proposedateError"></span> <!-- Error message will be displayed here -->
+
                     </div>
                     <div class="form-group">
                         <label for=Reason>Reason</label>
-                        <textarea id="Reason" name="Reason" class="form-control"></textarea>
+                        <textarea id="Reason" name="Reason" class="form-control" required></textarea>
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group">
@@ -203,11 +210,12 @@
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
                         <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
-                        <span class="text-danger"></span>
+                        <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
+
                     </div>
                     <div class="form-group">
                         <label for=Reason>Reason</label>
-                        <textarea id="Reason" name="Reason" class="form-control"></textarea>
+                        <textarea id="Reason" name="Reason" class="form-control" required></textarea>
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group">
@@ -218,8 +226,6 @@
         </div>
     </div>
 </div>
-
-
 
 
 
@@ -238,9 +244,10 @@
                     <div class="form-group">
 
                         <div class="input-group">
-                            <input name="ScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
+                            <input name="ScheduleDate" id="updateScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
                         </div>
-                        <span class="text-danger"></span>
+                        <span class="text-danger" id="updatedateError"></span> <!-- Error message will be displayed here -->
+
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Submit" class="btn bg-purple  btn-sm" />

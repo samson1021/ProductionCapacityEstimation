@@ -153,7 +153,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE.PCECase);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -349,15 +349,15 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _cbeContext.ProductionCapacities.Update(PCE);
         }
 
-        private async Task UpdatePCECaseStatusIfAllCompleted(ProductionCapacity PCE)
+        private async Task UpdatePCECaseStatusIfAllCompleted(PCECase PCECase)
         {
-            var allCompleted = PCE.PCECase.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed");
+            var allCompleted = PCECase.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed");
 
             if (allCompleted)
             {
-                PCE.PCECase.Status = "Completed";
-                PCE.PCECase.CompletionDate = DateTime.Now;
-                _cbeContext.PCECases.Update(PCE.PCECase);
+                PCECase.Status = "Completed";
+                PCECase.CompletionDate = DateTime.Now;
+                _cbeContext.PCECases.Update(PCECase);
             }
         }
         
