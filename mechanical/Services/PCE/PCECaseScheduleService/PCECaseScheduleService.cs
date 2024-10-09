@@ -121,6 +121,12 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
             return _mapper.Map<IEnumerable<PCECaseScheduleReturnDto>>(pceCaseSchedules);
         }
 
+        public async Task<PCECaseScheduleReturnDto> GetLatestPCECaseSchedule(Guid PCECaseId)
+        {
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.AsNoTracking().Include(pcs => pcs.User).Where(pcs => pcs.PCECaseId == PCECaseId).OrderByDescending(pcs => pcs.CreatedAt).FirstOrDefaultAsync();
+            return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
+        }
+
         public async Task<PCECaseScheduleReturnDto> UpdatePCECaseSchedule(Guid UserId, Guid id, PCECaseSchedulePostDto pceCaseScheduleDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();

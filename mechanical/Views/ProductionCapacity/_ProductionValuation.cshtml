@@ -2,16 +2,17 @@
 @using mechanical.Models.PCE.Entities
 @using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model ReturnProductionDto
 
 @{
-    var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
-    var reestimation = ViewData["Reestimation"] as ProductionReestimation;
+    ViewData["Title"] = ViewBag.Title as string; 
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
-
-    ViewData["Title"] = ViewBag.Title as string;   
+    var reestimation = ViewData["Reestimation"] as ProductionReestimation;
+    var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
 }
 
 <section class="content">
@@ -76,21 +77,25 @@
                     {
                         <div>
                             <h6 class="text-center">
-                                Not evaluated yet.                            
-                    
-                                @* @if (currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
-                                @if ((currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
-                                { 
-                                    @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
-                                    {
-                                        var linkName = "Evaluate";
-                                        if (Model.CurrentStatus == "Reestimate") {
-                                            linkName = "Reestimate";                                                              
-                                        } 
-                                        <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> @linkName </a>
-                                        <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>
-                                    }
-                                 } 
+                                Not evaluated yet.
+            
+                                @if (latestPCECaseSchedule == null || latestPCECaseSchedule.Status != "Approved" || latestPCECaseSchedule.ScheduleDate > DateTime.Today)
+                                {
+                                    <i class="text-warning"> The Scheduled time is not ... .</i>
+                                }
+                                else
+                                {
+                                    @* @if (currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
+                                    @if ((currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
+                                    { 
+                                        @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
+                                        {
+                                            var linkName = Model.CurrentStatus == "Reestimate" ? "Reestimate" : "Evaluate";                                                                                     
+                                            <a href="@Url.Action("Create", "PCEEvaluation", new { PCEId = Model.Id })"> @linkName </a>
+                                            <a href="#" data-toggle="modal" data-target="#rejectionModal1">| Return</a>                                
+                                        }
+                                    } 
+                                }
                             </h6>                           
                         </div>
                     }                    

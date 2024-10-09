@@ -18,7 +18,8 @@
     }
     else
     {
-        RedirectUrl = Url.Action("PCECases", "PCECase", new { Status = "New" }); 
+        @* RedirectUrl = Url.Action("PCECases", "PCECase", new { Status = "New" });  *@
+        RedirectUrl = Url.Action("Productions", "ProductionCapacity", new { Status = "All" }); 
     }
 }
 

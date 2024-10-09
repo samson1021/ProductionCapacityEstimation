@@ -18,6 +18,7 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
 using mechanical.Services.PCE.PCEEvaluationService;
@@ -409,7 +410,9 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().Where(pr => pr.PCEId == PCEId).OrderByDescending(pr => pr.CreationDate).FirstOrDefaultAsync();
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, PCEId);
- 
+            var latestPCECaseSchedule = await _cbeContext.PCECaseSchedules.AsNoTracking().Include(pcs => pcs.User).Where(pcs => pcs.PCECaseId == pce.PCECaseId).OrderByDescending(pcs => pcs.CreatedAt).FirstOrDefaultAsync();
+          
+
             var assignment_Status = pceAssignment?.Status; 
             CreateUser rejectedBy = null; 
 
@@ -421,6 +424,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             return new PCEDetailDto
             {
                 PCECase = pce.PCECase,
+                LatestPCECaseSchedule = _mapper.Map<PCECaseScheduleReturnDto>(latestPCECaseSchedule),
                 ProductionCapacity = _mapper.Map<ReturnProductionDto>(pce),
                 PCEValuationHistory = valuationHistory,
                 Reestimation = reestimation,
@@ -428,7 +432,6 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 RejectedProduction = rejectedProduction,
                 RejectedBy = rejectedBy,
                 Assignment_Status = assignment_Status
-
             };
         }                
 

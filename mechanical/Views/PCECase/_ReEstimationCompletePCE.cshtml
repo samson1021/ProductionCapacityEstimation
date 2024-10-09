@@ -2,12 +2,13 @@
 @using mechanical.Models.PCE.Enum.ProductionCapacity
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
+
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturnDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
 }
 
 <div class="card">
-    <input type="hidden" asp-for="PCECaseId" value="@myCase.Id" />
+    <input type="hidden" asp-for="PCECaseId" value="@myPCECase.Id" />
 
     <div class="card-body">
         <table id="caseCollaterals" class="table table-bordered table-striped">

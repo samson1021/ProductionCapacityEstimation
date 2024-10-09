@@ -9,6 +9,7 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
         Task<PCECaseScheduleReturnDto> UpdatePCECaseSchedule(Guid UserId, Guid Id, PCECaseSchedulePostDto Dto);
         Task<PCECaseScheduleReturnDto> ApprovePCECaseSchedule(Guid Id);
         Task<IEnumerable<PCECaseScheduleReturnDto>> GetPCECaseSchedules(Guid PCECaseId);
+        Task<PCECaseScheduleReturnDto> GetLatestPCECaseSchedule(Guid PCECaseId);
     }
 }
 

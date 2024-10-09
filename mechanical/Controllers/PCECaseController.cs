@@ -115,11 +115,13 @@ namespace mechanical.Controllers.PCE
 
             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
             var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
+            var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestPCECaseSchedule(Id);
 
             ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
             ViewData["PCECase"] = pceCase;
             ViewData["PCECaseTerminate"] = PCECaseTerminate;
             ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["LatestPCECaseSchedule"] = latestPCECaseSchedule;
             ViewData["Title"] = "PCE Case Details";             
             ViewBag.Status = Status;
 

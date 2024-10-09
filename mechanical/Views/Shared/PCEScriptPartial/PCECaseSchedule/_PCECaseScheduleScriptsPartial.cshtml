@@ -1,12 +1,9 @@
-﻿
 <script>
-
-
-    $(document).ready(function () {
+    $(document).ready(function () {        
 
         $('#UpdateSchedules').on('click', function (event) {
             event.preventDefault();
-            $('#datetimepicker-modals').modal('show');
+            $('#updateSchedule-modals').modal('show');
         });
 
         $('#proposeNewScheduleButtons').on('click', function (event) {
@@ -14,31 +11,29 @@
             $('#proposeNewSchedule-modals').modal('show');
         });
 
-
         $('#proposeReScheduleButtons').on('click', function (event) {
             event.preventDefault();
             $('#proposeReSchedule-modals').modal('show');
         });
-
-
-
-
-
-
-        $('#datetimepicker-form').submit(function (event) {
+      
+        $('#updateSchedule-form').submit(function (event) {
             event.preventDefault();
+
             var selectedDate = new Date($('#updateScheduleDate').val());
             var currentDate = new Date();
             $('#updatedateError').text('');
+
             if (selectedDate < currentDate) {
                 $('#updatedateError').text('The selected date must be greater than the current date.');
                 return; // Stop the submission
             }
             //// Show the spinner
             showLoadingIndicator();
+
             var formData = new FormData(this);
             var Id = $('#CaseSchedulleId').val();
             formData.append('Id', Id);
+
             $.ajax({
                 url: '/PCECaseSchedule/UpdateSchedule',
                 type: 'POST',
@@ -46,10 +41,11 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                   location.reload();
+                    location.reload();
                 },
                 error: function () {
-                    alert('Error occurred while updating the date.');
+                    alert('Error occurred while updating the schedule.');
+                    hideLoadingIndicator();
                 },
                 complete: function () {
                     // do some task here after responce
@@ -58,31 +54,23 @@
             });
         });
 
-
-
-
-
-        /////////////////////////////////////
-
-
         $('#AcceptButton').click(function (event) {
             event.preventDefault();
 
             var selectedDate = new Date($('#ScheduleDate').val());
-            var currentDate = new Date();
+            var currentDate = new Date();            
             $('#dateError').text('');
+
             if (selectedDate < currentDate) {
                 $('#dateError').text('The selected date must be greater than the current date.');
                 return; // Stop the submission
             }
 
-
             //// Show the spinner
             showLoadingIndicator();
 
-
             var formData = new FormData();
-            var Id = $('#CaseScheduleId').val();
+            var Id = $('#pceCaseScheduleId').val();
             formData.append('Id', Id);
 
             $.ajax({
@@ -95,7 +83,8 @@
                     location.reload();
                 },
                 error: function () {
-                    alert('Error occurred while updating the date.');
+                    alert('Error occurred while approving the schedule.');
+                    hideLoadingIndicator();
                 },
                 complete: function () {
                     // do some task here after responce
@@ -104,30 +93,23 @@
             });
         });
 
-   
-
-
-
-
-        var CaseId = $('#CaseId').val();
-
         $('#proposeNewSchedule-form').submit(function (event) {
             event.preventDefault();
 
             var selectedDate = new Date($('#proposeScheduleDate').val());
             var currentDate = new Date();
             $('#proposedateError').text('');
+            
             if (selectedDate < currentDate) {
                 $('#proposedateError').text('The selected date must be greater than the current date.');
                 return; // Stop the submission
             }
 
-
             //// Show the spinner
             showLoadingIndicator();
 
             var formData = new FormData(this);
-            var Id = $('#CaseScheduleId').val();
+            var Id = $('#pceCaseScheduleId').val();
             formData.append('id', Id);
 
             $.ajax({
@@ -143,39 +125,34 @@
                     // Handle success response
                 },
                 error: function () {
-                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                    alert('Error occurred while proposing a schedule.');
+                    hideLoadingIndicator();
+                    @* $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>'); *@
                 },
                 complete: function () {
                     // do some task here after responce
                     hideLoadingIndicator();
                 }
             });
-        });
-
-
-
-
-
-        var CaseId = $('#CaseId').val();
+        });       
 
         $('#proposeReSchedule-form').submit(function (event) {
             event.preventDefault();
 
-
             var selectedDate = new Date($('#ScheduleDate').val());
             var currentDate = new Date();
             $('#dateError').text('');
+            
             if (selectedDate < currentDate) {
                 $('#dateError').text('The selected date must be greater than the current date.');
                 return; // Stop the submission
             }
 
-
             //// Show the spinner
             showLoadingIndicator();
 
             var formData = new FormData(this);
-            var Id = $('#CaseScheduleId').val();
+            var Id = $('#pceCaseScheduleId').val();
             formData.append('id', Id);
 
             $.ajax({
@@ -191,17 +168,57 @@
                     // Handle success response
                 },
                 error: function () {
-                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                    alert('Error occurred while rescheduling the date.');
+                    hideLoadingIndicator();
+                    @* $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>'); *@
                 },
                 complete: function(){
                 // do some task here after responce
                     hideLoadingIndicator();
+                }
+            });
+        });       
 
+        $('#pceCaseScheduleForm').submit(function (event) {
+            event.preventDefault();
+
+            var selectedDate = new Date($('#ScheduleDate').val());
+            var currentDate = new Date();
+            $('#dateError').text('');
+            
+            if (selectedDate < currentDate) {
+                $('#dateError').text('The selected date must be greater than the current date.');
+                return; // Stop the submission
+            }
+
+            showLoadingIndicator();
+
+            var formData = new FormData(this);
+            var Id = $('#pceCaseScheduleId').val();
+            formData.append('id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/CreateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while creating a schedule.');
+                    hideLoadingIndicator();
+                    @* $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>'); *@
+                },
+                complete: function () {
+                    hideLoadingIndicator();
                 }
             });
         });
 
         function showLoadingIndicator() {
+
             // Disable the page
             document.body.style.pointerEvents = 'none';
             document.body.style.opacity = '0.5';
@@ -215,13 +232,14 @@
             loadingIndicator.appendChild(spinner);
 
             var loadingText = document.createElement('span');
-            loadingText.textContent = 'Please wait...';
+            loadingText.textContent = 'Setting up schedule, please wait...';
             loadingIndicator.appendChild(loadingText);
 
             document.body.appendChild(loadingIndicator);
         }
 
         function hideLoadingIndicator() {
+
             // Remove the loading indicator
             var loadingIndicator = document.querySelector('.loading-indicator');
             if (loadingIndicator) {
@@ -232,54 +250,27 @@
             document.body.style.pointerEvents = 'auto';
             document.body.style.opacity = '1';
         }
-
-
-
-
-
-
-
-
-        var CaseId = $('#CaseId').val();
-
-
-        $('#pceCaseScheduleForm').submit(function (event) {
-            event.preventDefault();
-
-            var selectedDate = new Date($('#ScheduleDate').val());
-            var currentDate = new Date();
-            $('#dateError').text('');
-            if (selectedDate < currentDate) {
-                $('#dateError').text('The selected date must be greater than the current date.');
-                return; // Stop the submission
-            }
-
-            showLoadingIndicator();
-
-            var formData = new FormData(this);
-            var Id = $('#CaseScheduleId').val();
-            formData.append('id', Id);
-
-            $.ajax({
-                url: '/PCECaseSchedule/CreateSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    location.reload();
-                },
-                error: function () {
-                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
-                },
-                complete: function () {
-                    hideLoadingIndicator();
-                }
-            });
-        });
-
-
-
-
     });
 </script>
+
+<style>
+    .loading-indicator {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        z-index: 9999; 
+        text-align: center;
+        border-radius: 10px;
+    }
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+</style>

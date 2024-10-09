@@ -158,10 +158,12 @@ namespace mechanical.Controllers
                 ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
                 ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
                 ViewData["PCECase"] = pceDetail.PCECase;
+                ViewData["LatestPCECaseSchedule"] = pceDetail.LatestPCECaseSchedule;
                 ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
                 ViewData["RejectedProduction"] = pceDetail.RejectedProduction;
                 ViewData["RejectedBy"] = pceDetail.RejectedBy;
                 ViewData["Assignment_Status"] = pceDetail.Assignment_Status;
+                ViewData["Title"] = "Production Detail";
                 
                 return View(pceDetail.ProductionCapacity);
             }
@@ -227,7 +229,6 @@ namespace mechanical.Controllers
             }
             
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-            ViewData["Title"] = Status + " Productions";
             ViewData["Title"] = Status + " Productions";
             ViewBag.Status = Status;
             return View();

@@ -1,8 +1,10 @@
 ﻿﻿@using mechanical.Models.Dto.UserDto
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto
 
 @{
-    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
 }
 
 <script>
@@ -87,11 +89,17 @@
                             }
                         } else if ((currentUserRoleName === "Maker Manager") || (currentUserRoleName === "District Valuation Manager") || (currentUserRoleName === "Maker TeamLeader")){
                             if (('@status' === "New" || '@status' === "Reestimate")  && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) { 
-                                link += returnLink ;
+                                link += returnLink;
                             }
                         } else if (currentUserRoleName === "Maker Officer") {
                             if (('@status' === "New" || '@status' === "Reestimate") && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
-                                link = evaluateLink + link + returnLink ;
+                                
+                                if ('@latestPCECaseSchedule' != null && '@latestPCECaseSchedule.Status' == "Approved" && '@latestPCECaseSchedule.ScheduleDate' <= '@DateTime.Today'){
+                                    link = evaluateLink + link + returnLink;
+                                }
+                                else{
+                                    link += returnLink;
+                                }
                             }
                         }
                         return link;
