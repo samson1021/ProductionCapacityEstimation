@@ -74,7 +74,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> CreateReSchedule(PCECaseSchedulePostDto pceCaseScheduleDto)
         {
               
-                var newSchedule = await _PCECaseScheduleService.CreatePCECaseSchedule(base.GetCurrentUserId(), pceCaseScheduleDto);
+                var newSchedule = await _PCECaseScheduleService.CreatePCECaseReSchedule(base.GetCurrentUserId(), pceCaseScheduleDto);
 
                 if (newSchedule == null)
                 {

@@ -37,7 +37,7 @@
                             {
                                 @using (Html.BeginForm("CreateSchedule", "PCECaseSchedule", FormMethod.Post, new { id = "pceCaseScheduleForm" }))
                                 {
-                                    <input asp-for="PCECaseId" value="@myCase.Id" type="hidden" />
+                                    <input asp-for="PCECaseId" value="@myCase.Id" />
                                     <div class="form-group">
                                         <div class="input-group">
                                             <input asp-for="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" required />

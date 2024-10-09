@@ -50,22 +50,49 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
             }
         }
 
-        public async Task<PCECaseScheduleReturnDto> CreatePCECaseSchedule(Guid UserId, PCECaseSchedulePostDto pceCaseScheduleDto)
+        public async Task<PCECaseScheduleReturnDto> CreatePCECaseReSchedule(Guid UserId, PCECaseSchedulePostDto pceCaseScheduleDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 var existingSchedule = await _cbeContext.PCECaseSchedules.FindAsync(pceCaseScheduleDto.Id);
-                
+
                 if (existingSchedule == null)
                 {
                     return _mapper.Map<PCECaseScheduleReturnDto>(existingSchedule);
                 }
 
                 existingSchedule.Status = "Reschedule";
-                existingSchedule.Reason= pceCaseScheduleDto.Reason;
-                _cbeContext.Update(existingSchedule); 
+                existingSchedule.Reason = pceCaseScheduleDto.Reason;
+                _cbeContext.Update(existingSchedule);
                 pceCaseScheduleDto.Reason = null;
+
+                var pceCaseSchedule = _mapper.Map<Models.PCE.Entities.PCECaseSchedule>(pceCaseScheduleDto);
+                pceCaseSchedule.Id = new Guid();
+                pceCaseSchedule.UserId = UserId;
+                pceCaseSchedule.Status = "Proposed";
+                pceCaseSchedule.CreatedAt = DateTime.Now;
+
+                await _cbeContext.PCECaseSchedules.AddAsync(pceCaseSchedule);
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating PCE case schedule");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while creating PCE case schedule.");
+            }
+        }
+
+
+        public async Task<PCECaseScheduleReturnDto> CreatePCECaseSchedule(Guid UserId, PCECaseSchedulePostDto pceCaseScheduleDto)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {
 
                 var pceCaseSchedule = _mapper.Map<Models.PCE.Entities.PCECaseSchedule>(pceCaseScheduleDto);
                 pceCaseSchedule.Id = new Guid();
