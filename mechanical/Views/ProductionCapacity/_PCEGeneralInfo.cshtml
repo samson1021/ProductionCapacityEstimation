@@ -1,13 +1,13 @@
 ﻿@using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Entities
-@using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.Entities
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 
 @{
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
     var rejectedProduction = ViewData["RejectedProduction"] as ProductionReject;
-    var rejectedBy = ViewData["RejectedBy"] as ReturnUserDto;
+    var rejectedBy = ViewData["RejectedBy"] as CreateUser;
 }
 
 <section class="content">
