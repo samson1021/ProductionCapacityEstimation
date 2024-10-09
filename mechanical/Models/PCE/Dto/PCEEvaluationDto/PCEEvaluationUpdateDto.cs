@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
+using mechanical.Validators;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
-
 
 namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
@@ -22,9 +22,11 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Phase of Output")]
         public OutputPhase OutputPhase { get; set; }
 
-        [Display(Name = "Shifts Per Day")]
+        [Display(Name = "Shifts Per Day")]        
+        [Range(1, 5, ErrorMessage = "Shifts per day must be between 1 and 5.")]
         public int? ShiftsPerDay { get; set; }
 
+        [ShiftHoursValidation]
         [Display(Name = "Shift Hours")]
         public virtual List<TimeIntervalReturnDto>? ShiftHours { get; set; } = new List<TimeIntervalReturnDto>();
 
@@ -108,35 +110,5 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         public string? DeletedFileIds { get; set; } 
         // public ICollection<Guid> DeletedFileIds { get; set; }         
-
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (ShiftHours != null)
-            {
-                for (int i = 0; i < ShiftHours.Count; i++)
-                {
-                    var currentShift = ShiftHours[i];
-                    if (currentShift.Start >= currentShift.End)
-                    {
-                        yield return new ValidationResult(
-                            $"Start time must be before end time for Shift {i + 1}.",
-                            new[] { $"ShiftHours[{i}].Start", $"ShiftHours[{i}].End" });
-                    }
-
-                    for (int j = i + 1; j < ShiftHours.Count; j++)
-                    {
-                        var nextShift = ShiftHours[j];
-
-                        if (currentShift.Start < nextShift.End && currentShift.End > nextShift.Start)
-                        {
-                            yield return new ValidationResult(
-                                $"Shifts {i + 1} and {j + 1} overlap.",
-                                new[] { $"ShiftHours[{i}].Start", $"ShiftHours[{i}].End", $"ShiftHours[{j}].Start", $"ShiftHours[{j}].End" });
-                        }
-                    }
-                }
-            }
-        }
     }
 }

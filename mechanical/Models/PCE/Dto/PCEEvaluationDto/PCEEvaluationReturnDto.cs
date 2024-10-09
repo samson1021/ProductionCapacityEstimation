@@ -112,10 +112,9 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 
-
     }
     
-    public class TimeIntervalReturnDto
+    public class TimeIntervalReturnDto: ITimeInterval
     {
         // public Guid Id { get; set; }    
         // public Guid PCEEId { get; set; } 

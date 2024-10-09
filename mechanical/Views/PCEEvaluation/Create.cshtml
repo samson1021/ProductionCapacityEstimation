@@ -93,6 +93,7 @@
 
 @section Scripts {
     @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal", ViewData["RejectPost"]);

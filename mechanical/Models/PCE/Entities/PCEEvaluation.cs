@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using mechanical.Validators;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 
@@ -23,7 +24,10 @@ namespace mechanical.Models.PCE.Entities
         public string OutputType { get; set; }
         public OutputPhase OutputPhase { get; set; }
 
+        [Range(1, 5, ErrorMessage = "Shifts per day must be between 1 and 5.")]
         public int? ShiftsPerDay { get; set; }
+        
+        [ShiftHoursValidation]
         public virtual List<TimeInterval>? ShiftHours { get; set; } = new List<TimeInterval>();
         public int? WorkingDaysPerMonth { get; set; }
         public ProductionHourType? EffectiveProductionHourType { get; set; }
@@ -59,8 +63,13 @@ namespace mechanical.Models.PCE.Entities
         public DateTime? UpdatedAt { get; set; } = null;
         // here CompletionDate
     }
+    public interface ITimeInterval
+    {
+        TimeSpan Start { get; set; }
+        TimeSpan End { get; set; }
+    }
 
-    public class TimeInterval
+    public class TimeInterval: ITimeInterval
     {
         [Key]
         public Guid Id { get; set; }

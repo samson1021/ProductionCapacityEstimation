@@ -42,7 +42,7 @@
         </div>
         <div class="form-group col-lg-4">
             <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour)</label>
-            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" />
+            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.5" />
             <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
         </div>
         <div class="form-group col-lg-4">
@@ -64,7 +64,11 @@
             <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
             <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
         </div>
-        <div class="form-group col-lg-6" id="shiftHoursContainer"></div>
+        <div class="form-group col-lg-6">
+            <label id="shiftHoursContainerLabel" style="display: none; text-align: center;">Shift Hours</label>
+            <div id="shiftHoursContainer"></div>
+            @* <span asp-validation-for="ShiftHours" class="text-danger"></span> *@
+        </div>
     </div>
 </div>
 
