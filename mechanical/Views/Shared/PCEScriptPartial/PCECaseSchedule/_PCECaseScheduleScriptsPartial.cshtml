@@ -1,5 +1,12 @@
 ﻿
+
+
+
 <script>
+
+
+
+
     $(document).ready(function () {
 
         $('#UpdateSchedules').on('click', function (event) {
@@ -21,6 +28,12 @@
 
         $('#datetimepicker-form').submit(function (event) {
             event.preventDefault();
+
+
+            //// Show the spinner
+            showLoadingIndicator();
+
+
             var formData = new FormData(this);
             var Id = $('#CaseSchedulleId').val();
             formData.append('Id', Id);
@@ -36,11 +49,21 @@
                 },
                 error: function () {
                     alert('Error occurred while updating the date.');
+                },
+                complete: function () {
+                    // do some task here after responce
+                    hideLoadingIndicator();
                 }
             });
         });
         $('#AcceptButton').click(function (event) {
             event.preventDefault();
+
+
+            //// Show the spinner
+            showLoadingIndicator();
+
+
             var formData = new FormData();
             var Id = $('#CaseScheduleId').val();
             formData.append('Id', Id);
@@ -56,33 +79,26 @@
                 },
                 error: function () {
                     alert('Error occurred while updating the date.');
+                },
+                complete: function () {
+                    // do some task here after responce
+                    hideLoadingIndicator();
                 }
             });
         });
 
-        // fetch('/UserManagment/GetDistrict')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Valuation Center');
-        //         $('#CenterDropdown').append(selectOption);
-        //         data.forEach(function (district) {
-        //             var option = $('<option></option>').attr('value', district.Id).text(district.Name);
-        //             $('#CenterDropdown').append(option);
-        //         });
-        //     })
-        //     .catch(error => {
-        //         console.log('Error fetching District data:', error);
-        //     });
-
-        // var CaseId = $('#CaseId').val();
-        // $('#addCollateralButton').click(function () {
-        //     $('#addCollateralModal').modal('show');
-        // });
+   
 
         var CaseId = $('#CaseId').val();
 
         $('#proposeNewSchedule-form').submit(function (event) {
             event.preventDefault();
+
+
+            //// Show the spinner
+            showLoadingIndicator();
+
+
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
             formData.append('id', Id);
@@ -101,6 +117,10 @@
                 },
                 error: function () {
                     $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                },
+                complete: function () {
+                    // do some task here after responce
+                    hideLoadingIndicator();
                 }
             });
         });
@@ -109,6 +129,10 @@
 
         $('#proposeReSchedule-form').submit(function (event) {
             event.preventDefault();
+
+            //// Show the spinner
+            showLoadingIndicator();
+
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
             formData.append('id', Id);
@@ -127,12 +151,45 @@
                 },
                 error: function () {
                     $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                },
+                complete: function(){
+                // do some task here after responce
+                    hideLoadingIndicator();
                 }
             });
         });
 
+        function showLoadingIndicator() {
+            // Disable the page
+            document.body.style.pointerEvents = 'none';
+            document.body.style.opacity = '0.5';
 
+            // Show a loading indicator
+            var loadingIndicator = document.createElement('div');
+            loadingIndicator.classList.add('loading-indicator');
 
+            var spinner = document.createElement('div');
+            spinner.classList.add('spinner');
+            loadingIndicator.appendChild(spinner);
+
+            var loadingText = document.createElement('span');
+            loadingText.textContent = 'Getting customer name, please wait...';
+            loadingIndicator.appendChild(loadingText);
+
+            document.body.appendChild(loadingIndicator);
+        }
+
+        function hideLoadingIndicator() {
+            // Remove the loading indicator
+            var loadingIndicator = document.querySelector('.loading-indicator');
+            if (loadingIndicator) {
+                document.body.removeChild(loadingIndicator);
+            }
+
+            // Enable the page
+            document.body.style.pointerEvents = 'auto';
+            document.body.style.opacity = '1';
+        }
 
 
 
@@ -145,6 +202,12 @@
 
         $('#pceCaseScheduleForm').submit(function (event) {
             event.preventDefault();
+
+
+            //// Show the spinner
+            showLoadingIndicator();
+
+
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
             formData.append('id', Id);
@@ -161,6 +224,10 @@
                 },
                 error: function () {
                     $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                },
+                complete: function () {
+                    // do some task here after responce
+                    hideLoadingIndicator();
                 }
             });
         });
