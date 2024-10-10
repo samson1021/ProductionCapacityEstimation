@@ -13,6 +13,8 @@
     var reestimation = ViewData["Reestimation"] as ProductionReestimation;
     var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
     var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
+
+    var currentUserRole = currentUser?.Role?.Name as string;
 }
 
 <section class="content">
@@ -41,8 +43,8 @@
                         <div class="row">
                             @await Html.PartialAsync("~/Views/PCEEvaluation/Partial/_EvaluationDetailPartial.cshtml", latestEvaluation)
                         </div>
-                        @* @if (currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
-                        @if ((currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
+                        @* @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
+                        @if ((currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {
@@ -93,8 +95,8 @@
                                 }
                                 else
                                 {
-                                    @* @if (currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
-                                    @if ((currentUser.Role.Name == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
+                                    @* @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
+                                    @if ((currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
                                     { 
                                         @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
                                         {

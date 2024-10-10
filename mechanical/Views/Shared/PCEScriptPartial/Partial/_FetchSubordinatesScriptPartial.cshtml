@@ -1,5 +1,5 @@
 <script>
-    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRoleName, emptyMessage) {
+    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage) {
         
         $.ajax({
             url: getSubordinateUrl,
@@ -15,7 +15,7 @@
             });
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
-            if (currentUserRoleName == "Relation Manager"){
+            if (currentUserRole == "Relation Manager"){
                 toastr.error('Error fetching district data');
                 console.log('Error fetching district data:', errorThrown);
             }else{
@@ -73,7 +73,7 @@
                 toastr.error("Please, select at least one production to assign.");
                 return;
             } else if (!assignedId) {
-                if (currentUserRoleName == "Relation Manager") {
+                if (currentUserRole == "Relation Manager") {
                     toastr.error("Please, select an evaluation center to assign.");
                 } else {
                     toastr.error("Please, select a user to assign.");
@@ -91,7 +91,7 @@
                     toastr.success(response.message);
                     $('#assignModal').modal('hide');
                     $('#assignForm')[0].reset();
-                    loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+                    loadProductions(fetchUrl, emptyMessage);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     var error = xhr.responseJSON;

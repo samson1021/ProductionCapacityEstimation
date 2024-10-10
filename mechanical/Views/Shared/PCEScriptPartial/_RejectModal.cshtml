@@ -10,15 +10,15 @@
     
     if (myPCECase != null)
     {
-        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCECase.Id, Status = "New" });
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCECase.Id, Status = "All" });
     }
     else if (myPCE != null)
     {
-        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCE.PCECaseId, Status = "New" });
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCE.PCECaseId, Status = "All" });
     }
     else
     {
-        @* RedirectUrl = Url.Action("PCECases", "PCECase", new { Status = "New" });  *@
+        @* RedirectUrl = Url.Action("PCECases", "PCECase", new { Status = "All" });  *@
         RedirectUrl = Url.Action("Productions", "ProductionCapacity", new { Status = "All" }); 
     }
 }

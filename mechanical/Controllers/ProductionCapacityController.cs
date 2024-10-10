@@ -14,6 +14,7 @@ using mechanical.Services.UploadFileService;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Enum.ProductionCapacity;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.ProductionCapacityService;
 
 namespace mechanical.Controllers
@@ -26,12 +27,14 @@ namespace mechanical.Controllers
         private readonly IUserService _UserService;
         private readonly IUploadFileService _UploadFileService;
         private readonly ILogger<ProductionCapacityController> _logger;
+        private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IProductionCapacityService _ProductionCapacityService;
 
-        public ProductionCapacityController(IUserService UserService, IProductionCapacityService ProductionCapacityService, IUploadFileService UploadFileService)
+        public ProductionCapacityController(IUserService UserService, IProductionCapacityService ProductionCapacityService, IPCECaseScheduleService PCECaseScheduleService, IUploadFileService UploadFileService)
         {
             _UserService = UserService;
             _UploadFileService = UploadFileService;
+            _PCECaseScheduleService = PCECaseScheduleService;
             _ProductionCapacityService = ProductionCapacityService;
         }
 
@@ -153,16 +156,15 @@ namespace mechanical.Controllers
                 }
                 
                 ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+                ViewData["LatestPCECaseSchedule"] = await _PCECaseScheduleService.GetLatestSchedule(pceDetail.PCECase.Id);
                 ViewData["Reestimation"] = pceDetail.Reestimation;
                 ViewData["PCE"] = pceDetail.ProductionCapacity;
                 ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
                 ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
                 ViewData["PCECase"] = pceDetail.PCECase;
-                ViewData["LatestPCECaseSchedule"] = pceDetail.LatestPCECaseSchedule;
                 ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
                 ViewData["RejectedProduction"] = pceDetail.RejectedProduction;
                 ViewData["RejectedBy"] = pceDetail.RejectedBy;
-                ViewData["Assignment_Status"] = pceDetail.Assignment_Status;
                 ViewData["Title"] = "Production Detail";
                 
                 return View(pceDetail.ProductionCapacity);

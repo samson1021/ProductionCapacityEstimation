@@ -18,7 +18,6 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
 using mechanical.Services.PCE.PCEEvaluationService;
@@ -397,23 +396,22 @@ namespace mechanical.Services.PCE.ProductionCapacityService
 
         public async Task<ReturnProductionDto> GetProduction(Guid UserId, Guid Id)
         {
-            var production = await _cbeContext.ProductionCapacities.Include(pc => pc.PCECase).FirstOrDefaultAsync(pc => pc.Id == Id);
-            return _mapper.Map<ReturnProductionDto>(production);
+            var production = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(pc => pc.Id == Id);
+            var pceAssignment = await _cbeContext.PCECaseAssignments.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id && res.UserId == UserId);
+            var productionDto = _mapper.Map<ReturnProductionDto>(production);
+            productionDto.AssignmentStatus = pceAssignment?.Status;
+            return productionDto;
         }  
 
-        public async Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid PCEId)
+        public async Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid Id)
         {
 
-            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(res => res.Id == PCEId);
-            var pceAssignment = await _cbeContext.PCECaseAssignments.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == UserId);
-            var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId); 
-            var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().Where(pr => pr.PCEId == PCEId).OrderByDescending(pr => pr.CreationDate).FirstOrDefaultAsync();
-            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(PCEId);          
-            var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, PCEId);
-            var latestPCECaseSchedule = await _cbeContext.PCECaseSchedules.AsNoTracking().Include(pcs => pcs.User).Where(pcs => pcs.PCECaseId == pce.PCECaseId).OrderByDescending(pcs => pcs.CreatedAt).FirstOrDefaultAsync();
-          
-
-            var assignment_Status = pceAssignment?.Status; 
+            var pce = await GetProduction(UserId, Id);
+            var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id); 
+            var rejectedProduction = await _cbeContext.ProductionRejects.AsNoTracking().Where(pr => pr.PCEId == Id).OrderByDescending(pr => pr.CreationDate).FirstOrDefaultAsync();
+            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);          
+            var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, Id);
+            
             CreateUser rejectedBy = null; 
 
             if (rejectedProduction != null)
@@ -424,57 +422,46 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             return new PCEDetailDto
             {
                 PCECase = pce.PCECase,
-                LatestPCECaseSchedule = _mapper.Map<PCECaseScheduleReturnDto>(latestPCECaseSchedule),
                 ProductionCapacity = _mapper.Map<ReturnProductionDto>(pce),
                 PCEValuationHistory = valuationHistory,
                 Reestimation = reestimation,
                 RelatedFiles = relatedFiles,
                 RejectedProduction = rejectedProduction,
-                RejectedBy = rejectedBy,
-                Assignment_Status = assignment_Status
+                RejectedBy = rejectedBy
             };
         }                
 
         public async Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
-            // var query = _cbeContext.ProductionCapacities.AsNoTracking()
-            //                                             .Where(pc => pc.PCECaseAssignments
-            //                                             .Any(pca => pca.UserId == UserId || pc.EvaluatorUserID == UserId));
+            var productions = await _cbeContext.PCECaseAssignments
+                                            .AsNoTracking()
+                                            .Where(a => a.UserId == UserId)
+                                            .Join(
+                                                _cbeContext.ProductionCapacities,
+                                                pca => pca.ProductionCapacityId,
+                                                pc => pc.Id,
+                                                (pca, pc) => new 
+                                                {
+                                                    ProductionCapacity = pc,
+                                                    AssignmentStatus = pca.Status,
+                                                    PCECase = pc.PCECase 
+                                                })
+                                            .Where(x => (x.AssignmentStatus != null || x.ProductionCapacity.EvaluatorUserID == UserId) 
+                                                && (PCECaseId == null || x.ProductionCapacity.PCECaseId == PCECaseId)
+                                                && (Stage == null || x.ProductionCapacity.CurrentStage == Stage) 
+                                                // && (Status == null || Status.Equals("All", StringComparison.OrdinalIgnoreCase) || x.ProductionCapacity.CurrentStatus == Status) 
+                                                // && (string.IsNullOrEmpty(Status) || x.ProductionCapacity.CurrentStatus != "Rejected")
+                                            )
+                                            .ToListAsync();
 
-            var query = _cbeContext.ProductionCapacities
-                                    .AsNoTracking()
-                                    .Include(pc => pc.PCECase)
-                                    .Join(
-                                        _cbeContext.PCECaseAssignments,
-                                        pc => pc.Id,
-                                        pca => pca.ProductionCapacityId,
-                                        (pc, pca) => new { ProductionCapacity = pc, PCECaseAssignment = pca }
-                                        )
-                                        .Where(x => (x.PCECaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
-                                                && (Status == null || Status == "All" || x.PCECaseAssignment.Status == Status))
-                                    .Select(x => x.ProductionCapacity); 
-
-            if (PCECaseId.HasValue)
+            // Map to ReturnProductionDto
+            return productions.Select(x => 
             {
-                query = query.Where(pc => pc.PCECaseId == PCECaseId.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Stage))
-            {
-                query = query.Where(pc => pc.CurrentStage == Stage);
-            }
-
-            // if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
-            // {
-            //     query = query.Where(pc => pc.CurrentStatus == Status);
-            // }
-            // else
-            // {
-            //     query = query.Where(pc => pc.CurrentStatus != "Rejected");
-            // }
-
-            var productions = await query.ToListAsync();
-            return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
+                var dto = _mapper.Map<ReturnProductionDto>(x.ProductionCapacity);
+                dto.AssignmentStatus = x.AssignmentStatus;
+                dto.PCECase = x.PCECase;                
+                return dto;
+            }).ToList();
         }
 
         // public async Task<int> GetProductionsCount(Guid UserId, Guid? PCECaseId, string Stage = null, string Status = null)
@@ -484,38 +471,25 @@ namespace mechanical.Services.PCE.ProductionCapacityService
 
         public async Task<int> GetProductionsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
-            var query = _cbeContext.ProductionCapacities
-                                    .AsNoTracking()
-                                    .Join(
-                                        _cbeContext.PCECaseAssignments,
-                                        pc => pc.Id,
-                                        pca => pca.ProductionCapacityId,
-                                        (pc, pca) => new { ProductionCapacity = pc, PCECaseAssignment = pca }
-                                    )
-                                    .Where(x => (x.PCECaseAssignment.UserId == UserId || x.ProductionCapacity.EvaluatorUserID == UserId)
-                                            && (Status == null || Status == "All" || x.PCECaseAssignment.Status == Status))
-                                    .Select(x => x.ProductionCapacity); 
-
-            if (PCECaseId.HasValue)
-            {
-                query = query.Where(x => x.PCECaseId == PCECaseId.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Stage))
-            {
-                query = query.Where(x => x.CurrentStage == Stage);
-            }
-
-            // if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
-            // {
-            //     query = query.Where(x => x.CurrentStatus == Status);
-            // }
-            // else
-            // {
-            //     query = query.Where(pc => pc.CurrentStatus != "Rejected");
-            // }
-
-            return await query.CountAsync();
+            return await _cbeContext.PCECaseAssignments
+                .AsNoTracking()
+                .Where(a => a.UserId == UserId)
+                .Join(
+                    _cbeContext.ProductionCapacities,
+                    pca => pca.ProductionCapacityId,
+                    pc => pc.Id,
+                    (pca, pc) => new 
+                    {
+                        ProductionCapacity = pc,
+                        AssignmentStatus = pca.Status
+                    })
+                .Where(x => (x.AssignmentStatus != null || x.ProductionCapacity.EvaluatorUserID == UserId) 
+                    && (PCECaseId == null || x.ProductionCapacity.PCECaseId == PCECaseId)
+                    && (Stage == null || x.ProductionCapacity.CurrentStage == Stage) 
+                    // && (Status == null || Status.Equals("All", StringComparison.OrdinalIgnoreCase) || x.ProductionCapacity.CurrentStatus == Status) 
+                    // && (string.IsNullOrEmpty(Status) || x.ProductionCapacity.CurrentStatus != "Rejected")
+                ) 
+                .CountAsync();
         }
 
         public async Task<ProductionsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null)

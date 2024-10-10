@@ -2,7 +2,6 @@
 
 @{    
     ViewData["Title"] = ViewBag.Title as string;
-    var Status = ViewData["Assignment_Status"] as string;
 }
 
 <section class="content-header">
@@ -46,7 +45,7 @@
             <div class="card-body">     
                 <div class="ribbon-wrapper ribbon-xl">                    
                     @{
-                        var status = Status?.ToString().Trim();
+                        var status = Model.AssignmentStatus?.ToString().Trim();
                         @* if (string.Equals(status, "New", StringComparison.OrdinalIgnoreCase)) { *@
                         if (status == "New") {
                             <div class="ribbon bg-success">@status</div>

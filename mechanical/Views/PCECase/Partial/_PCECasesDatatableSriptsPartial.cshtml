@@ -2,8 +2,10 @@
 
 @{
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
-    var emptyMessage = "There are no PCE Cases";
+    var currentUserRole = currentUser?.Role?.Name as string;
     var status = ViewBag.Status as string;
+
+    var emptyMessage = "There are no PCE Cases";
     var fetchUrl = "/PCECase/GetPCECases?Status=" + status;
 
     if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
@@ -12,7 +14,7 @@
     }
 }
 <script>
-    function initializePCECasesDataTable(data, currentUserRoleName, emptyMessage) {
+    function initializePCECasesDataTable(data, emptyMessage) {
         var columns = [
             {
                 data: 'CreationDate',
@@ -39,15 +41,20 @@
                     const deleteUrl = '@Url.Action("Delete", "PCECase")?Id=' + data;
                     const timeLineUrl = '@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data; // Correct URL construction
 
-                    const editLink = currentUserRoleName === "Relation Manager" ? ` | <a href="${editUrl}">Edit</a>` : '';
-                    @* const deleteLink = currentUserRoleName === "Relation Manager" ? ` | <a href="${deleteUrl}" onclick="openDeletionModal('${data}')">Delete</a>` : ''; *@
+                    const editLink = '@currentUserRole' === "Relation Manager" ? ` | <a href="${editUrl}">Edit</a>` : '';
+                    @* const deleteLink = '@currentUserRole' === "Relation Manager" ? ` | <a href="${deleteUrl}" onclick="openDeletionModal('${data}')">Delete</a>` : ''; *@
                     const timeLineLink = ` | <a href="${timeLineUrl}"><i class="nav-icon fas fa-sitemap"></i></a>`;
                     
                     let link = `<a href="${detailUrl}">Details</a>`;                
 
-                    if (currentUserRoleName === "Relation Manager" && (row.Status == "New" || row.Status == "Rejected")) {
-                        link += editLink;
-                        @* link += editLink + deleteLink; *@
+                    @if (currentUserRole == "Relation Manager")
+                    {
+                        <text>
+                            if (row.Status === "New" || row.Status === "Rejected") {
+                                link += editLink;
+                                @* link += editLink + deleteLink; *@
+                            }
+                        </text>
                     }
 
                     return link + timeLineLink;                        
@@ -71,7 +78,7 @@
         }).buttons().container().appendTo('#MyPCECasesDatatable_wrapper .col-md-6:eq(0)');
     }
 
-    function loadPCECases(fetchUrl, currentUserRoleName, emptyMessage) {
+    function loadPCECases(fetchUrl, emptyMessage) {
         $.ajax({
             url: fetchUrl,
             type: 'GET',
@@ -81,7 +88,7 @@
                 if ($.fn.DataTable.isDataTable($PCECasesTable)) {
                     $PCECasesTable.DataTable().destroy();
                 }
-                initializePCECasesDataTable(data, currentUserRoleName, emptyMessage);
+                initializePCECasesDataTable(data, emptyMessage);
             },
             error: function (error) {
                 toastr.error("Failed to load PCE Cases");

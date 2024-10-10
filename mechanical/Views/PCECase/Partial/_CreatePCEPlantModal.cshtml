@@ -1,4 +1,3 @@
-@using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Enum.ProductionCapacity
 
@@ -6,8 +5,8 @@
 
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
-    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
+
     var emptyMessage = "There are no Productions found for this PCE Case.";
     var fetchUrl = "/ProductionCapacity/GetProductions?Status=" + status + "&PCECaseId=" + myPCECase.Id;
 
@@ -265,7 +264,6 @@
     
     var fetchUrl = '@Html.Raw(fetchUrl)';
     @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))'; *@
-    var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
     var emptyMessage = '@Html.Raw(emptyMessage)';
     
     $('#addPlantForm').submit(function (e) {
@@ -282,7 +280,7 @@
             contentType: false,
             success: function (response) {
                 toastr.success(response.message);
-                loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+                loadProductions(fetchUrl, emptyMessage);
                 $('#addPlantModal').modal('hide');
                 $('#addPlantForm')[0].reset();
             },

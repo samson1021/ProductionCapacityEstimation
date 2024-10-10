@@ -4,13 +4,14 @@
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
-    var status = ViewBag.Status as string;
 
+    var currentUserRole = currentUser?.Role?.Name as string;
+    var status = ViewBag.Status as string;
     var assiName = "";
 
-    if (currentUser.Role.Name == "Relation Manager")
+    if (currentUserRole == "Relation Manager")
     {
-        if (status == "New" || status == "Rejected")
+        if (status == "New" || status == "All" || status == "Rejected")
         {            
             assiName = "SendForValuation";
         }        
@@ -19,15 +20,15 @@
             assiName = "SendForReestimation";
         }
     }
-    else if (currentUser.Role.Name == "Maker Manager")
+    else if (currentUserRole == "Maker Manager")
     {
         assiName = "PCEAssignMakerTeamleader";
     }
-    else if (currentUser.Role.Name == "Maker TeamLeader")
+    else if (currentUserRole == "Maker TeamLeader")
     {
         assiName = "PCEAssignMakerOfficer";
     }
-    else if (currentUser.Role.Name == "District Valuation Manager")
+    else if (currentUserRole == "District Valuation Manager")
     {
         assiName = "PCEAssignMakerOfficer";
     }
@@ -38,7 +39,7 @@
         <div class="col-12">
             <div class="row">                
                 @{
-                    if (status == "New" && currentUser.Role.Name == "Relation Manager")
+                    if (currentUserRole == "Relation Manager" && (status == "New" | status == "All"))
                     {                     
                         <div class="col-12 col-sm-6" style="margin-top:1rem;">
                             <div class="btn-group">
@@ -67,7 +68,7 @@
             <table id="Productions" class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        @if ((status == "New" || status == "Reestimate" || status == "Rejected") && currentUser.Role.Name != "Maker Officer")
+                        @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Rejected") && currentUserRole != "Maker Officer")
                         {
                             <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
                         }        
@@ -75,17 +76,18 @@
                         <th>Role</th>
                         <th>Production Type</th>
                         <th>Status</th>
+                        <th>Assignment Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
             </table> 
         </div>
         @{
-            if (currentUser.Role.Name == "Relation Manager")
+            if (currentUserRole == "Relation Manager")
             {                
                 <div class="row">
                     <div class="row">
-                        @if (status == "New") 
+                        @if (status == "New" || status == "All") 
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Send for Estimation <i class="fas fa-paper-plane"></i></button>
                         }
@@ -101,9 +103,9 @@
                 </div>
             }
             
-            else if (status == "New")
+            else if (status == "New" || status == "All")
             {
-                if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
+                if ((currentUserRole == "Maker Manager") || (currentUserRole == "Maker TeamLeader") || (currentUserRole == "District Valuation Manager"))
                 {
                     <div class="row">
                         <div class="col-xl-2 col-lg-4 col-sm-6">
@@ -118,7 +120,7 @@
 </div>
 
 @{
-    if (currentUser.Role.Name == "Relation Manager")
+    if (currentUserRole == "Relation Manager")
     {
         if (status == "Reestimate") 
         {       
@@ -212,7 +214,7 @@
         }
     }
 
-    else if ((currentUser.Role.Name == "Maker Manager") || (currentUser.Role.Name == "Maker TeamLeader") || (currentUser.Role.Name == "District Valuation Manager"))
+    else if ((currentUserRole == "Maker Manager") || (currentUserRole == "Maker TeamLeader") || (currentUserRole == "District Valuation Manager"))
     {
         <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">

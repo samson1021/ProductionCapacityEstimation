@@ -114,8 +114,8 @@ namespace mechanical.Controllers.PCE
             }
 
             var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
-            var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestPCECaseSchedule(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+            var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestSchedule(Id);
 
             ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
             ViewData["PCECase"] = pceCase;
@@ -197,7 +197,7 @@ namespace mechanical.Controllers.PCE
         {
             var userId = base.GetCurrentUserId();
             var pceCase = await _PCECaseService.GetPCECase(userId, Id);
-            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
             
             if (pceCase == null) 
             { 
@@ -507,7 +507,7 @@ namespace mechanical.Controllers.PCE
                 return RedirectToAction("PCECases"); 
             }
 
-            var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
             
             ViewData["PCECase"] = pceCase;
             ViewData["PCECaseSchedule"] = pceCaseSchedule;
@@ -605,7 +605,7 @@ namespace mechanical.Controllers.PCE
         //     ViewData["Id"] = base.GetCurrentUserId();
 
 
-        //     var pceCaseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(id);
+        //     var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(id);
         //     ViewData["PCECaseSchedule"] = pceCaseSchedule; // Updated key 
 
 
@@ -634,7 +634,7 @@ namespace mechanical.Controllers.PCE
         // {
         //     var pcepceCaseDto = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
         //     var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(id);
-        //     var caseSchedule = await _PCECaseScheduleService.GetPCECaseSchedules(id);
+        //     var caseSchedule = await _PCECaseScheduleService.GetSchedules(id);
         //     ViewData["PCECase"] = pcepceCaseDto;
         //     ViewData["PCECaseTerminate"] = pceCaseTerminate;
         //     ViewData["PCECaseSchedule"] = caseSchedule;

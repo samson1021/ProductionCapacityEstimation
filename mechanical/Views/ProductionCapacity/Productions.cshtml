@@ -1,10 +1,11 @@
 ﻿﻿@using mechanical.Models.Dto.UserDto
 
 @{
+    var status = ViewBag.Status as string;
     ViewData["Title"] = ViewBag.Title as string;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
-    var status = ViewBag.Status as string;
 
+    var currentUserRole = currentUser?.Role?.Name as string;
     var emptyMessage = "There are no Productions found.";
     var fetchUrl = "/ProductionCapacity/GetProductions?Status=" + status;
 
@@ -44,7 +45,7 @@
                     <table id="Productions" class="table table-bordered table-striped">
                         <thead>
                             <tr>                                
-                                @if ((status == "New" || status == "Reestimate" || status == "Rejected") && currentUser.Role.Name != "Maker Officer")
+                                @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Rejected") && currentUserRole != "Maker Officer")
                                 {
                                     <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
                                 } 
@@ -52,6 +53,7 @@
                                 <th>Role</th>
                                 <th>Production Type</th>
                                 <th>Status</th>
+                                <th>Assignment Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -72,10 +74,9 @@
     <script>$(document).ready(function () {
         
             var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
-            var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
             var emptyMessage = '@Html.Raw(emptyMessage)';
 
-            loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+            loadProductions(fetchUrl, emptyMessage);
         });
     </script>
 }

@@ -63,6 +63,8 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public DateTime? CreationDate { get; set; }
         public DateTime? EndDate { get; set; }
         
+        public string? AssignmentStatus { get; set; }
+        
         public virtual PCECase? PCECase { get; set; }
         // public virtual PCECase PCECase { get; set; }
 

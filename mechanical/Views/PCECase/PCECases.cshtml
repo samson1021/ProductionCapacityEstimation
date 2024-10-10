@@ -1,8 +1,5 @@
-﻿﻿@using mechanical.Models.Dto.UserDto
-
-@{
+﻿﻿@{
     ViewData["Title"] = ViewBag.Title ?? "PCE Cases";
-    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
     var emptyMessage = "There are no PCE Cases.";
     var fetchUrl = "/PCECase/GetPCECases?Status=" + status;
@@ -65,10 +62,9 @@
         $(document).ready(function () {
         
             var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
-            var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
             var emptyMessage = '@Html.Raw(emptyMessage)';
 
-            loadPCECases(fetchUrl, currentUserRoleName, emptyMessage);        
+            loadPCECases(fetchUrl, emptyMessage);        
         });
 
     </script>

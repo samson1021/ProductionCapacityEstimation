@@ -15,7 +15,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         Task<bool> DeleteProductionFile(Guid UserId, Guid Id);
         Task<bool> UploadProductionFile(Guid UserId, IFormFile file, Guid caseId, string DocumentCatagory);
         
-        Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid PCEId);
+        Task<PCEDetailDto> GetPCEDetails(Guid UserId, Guid Id);
         Task<ReturnProductionDto> GetProduction(Guid UserId, Guid Id);
         Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
         Task<int> GetProductionsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);

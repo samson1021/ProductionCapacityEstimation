@@ -1,12 +1,10 @@
-﻿@using mechanical.Models.Dto.UserDto
-@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Enum.ProductionCapacity
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
-    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var status = ViewBag.Status as string;
     var emptyMessage = "There are no Productions found for this PCE Case.";
     var fetchUrl = "/ProductionCapacity/GetProductions?Status=" + status + "&PCECaseId=" + myPCECase.Id;
@@ -232,7 +230,7 @@
                        
                         <div class="row">
                             <div class="form-group col-lg-12">
-                                <label asp-for="ProductDescription"> Manufacturing Production Capacity Description </label>
+                                <label asp-for="ProductDescription"> Manufacturing Production Capacity Description <i class="text-danger">*</i></label>
                                 <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="ProductDescription" placeholder="Write product description here ..." required> </textarea>
                                 <span id="ProductDescription-error" asp-validation-for="ProductDescription" class="text-danger"></span>
                             </div>
@@ -278,7 +276,6 @@
     
     var fetchUrl = '@Html.Raw(fetchUrl)';
     @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))'; *@
-    var currentUserRoleName = '@Html.Raw(currentUser.Role.Name)';
     var emptyMessage = '@Html.Raw(emptyMessage)';
 
     var typeDropdown = $("#typeDropdown");
@@ -398,7 +395,7 @@
             contentType: false,
             success: function (response) {
                 toastr.success(response.message);
-                loadProductions(fetchUrl, currentUserRoleName, emptyMessage);
+                loadProductions(fetchUrl, emptyMessage);
                 $('#addProductionModal').modal('hide');
                 $('#addProductionForm')[0].reset();
             },

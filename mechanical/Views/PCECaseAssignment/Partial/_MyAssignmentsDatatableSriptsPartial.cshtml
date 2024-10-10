@@ -1,7 +1,4 @@
-﻿@using mechanical.Models.Dto.UserDto
-
-@{
-    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;  
+﻿@{ 
     var fetchUrl = Url.Action("MyAssignment", "PCECaseAssignment");
     var pceCaseTimeLineUrl = Url.Action("Index", "PCECaseTimeLine");
     var assignUrl = "/PCECase/GetAssignedPCECases";
@@ -48,7 +45,6 @@
                                        '<a href="@pceCaseTimeLineUrl?PCECaseId=' + data + '"><i class="nav-icon fas fa-sitemap"></i></a>';
                             }
                         }
-
                     ],
                     order: [[1, 'desc']],
                     responsive: true,

@@ -15,11 +15,11 @@
                     data: null,
                     render: function (data, type, row, meta) {
                         if (data.Status == "New" || data.Status == "Remark"){
-                            return '<input class="purple-checkbox" type="checkbox"  value="' + data.PCECaseAssignmentId + '">';
+                            return '<input class="purple-checkbox" type="checkbox" value="' + data.PCECaseAssignmentId + '">';
                         }
                         else
                         {
-                            return '<input disabled class="purple-checkbox" type="checkbox"  value="' + data.PCECaseAssignmentId + '">';
+                            return '<input disabled class="purple-checkbox" type="checkbox" value="' + data.PCECaseAssignmentId + '">';
                         }                        
                     }
                 },

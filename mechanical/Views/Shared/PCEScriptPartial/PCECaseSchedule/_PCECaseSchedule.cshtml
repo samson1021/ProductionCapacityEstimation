@@ -8,6 +8,8 @@
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var pceCaseSchedule = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
+
+    var currentUserRole = currentUser?.Role?.Name as string;
 }
 
 <section class="content-header">
@@ -25,7 +27,7 @@
                     {
                         if (pceCaseSchedule.Count() == 0)
                         {
-                            if (@currentUser.Role.Name != "Maker Officer")
+                            if (@currentUserRole != "Maker Officer")
                             {
                                 <div class="text-center">
                                     <h6>Valuation Schedule Is Not Set Yet For This PCE Case </h6>
@@ -33,13 +35,12 @@
                             }
                             else
                             {
-                                @using (Html.BeginForm("CreateSchedule", "PCECaseSchedule", FormMethod.Post, new { id = "updateSchedule-form" }))
+                                @using (Html.BeginForm("CreateSchedule", "PCECaseSchedule", FormMethod.Post, new { id = "createSchedule-form" }))
                                 {
                                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input asp-for="ScheduleDate" id="ScheduleDate" type="datetime-local" class="form-control"
-                                                   value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" required />
+                                            <input asp-for="ScheduleDate" id="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
                                         </div>
                                         <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
                                     </div>
@@ -64,12 +65,12 @@
                                     {
                                         <p>Status: <span class="text-success">@pceCaseSched.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
 
-                                        if(currentUser.Role.Name == "Maker Officer" || currentUser.Role.Name =="Relation Manager")
+                                        if(currentUserRole == "Maker Officer" || currentUserRole =="Relation Manager")
                                         {
                                       
                                             <div class="btn-group">
-                                                <input type="hidden" id="pceCaseScheduleId" name="Id" value="@pceCaseSched.Id" />
-                                                <button id="proposeReScheduleButtons" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeReSchedule-modal">
+                                                <input type="hidden" id="ScheduleId" name="Id" value="@pceCaseSched.Id" />
+                                                <button id="rescheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#reschedule-modal">
                                                     <i class="fas fa-plus-circle"></i> Re-Schedule
                                                 </button>
                                             </div>
@@ -79,7 +80,7 @@
                                     {
                                         <p>Status: <span class="text-danger">Another date is Proposed</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                     }
-                                    else if (@pceCaseSched.Status == "reschedule" || @pceCaseSched.Status == "Reschedule" || @pceCaseSched.Status == "ReSchedule")
+                                    else if (@pceCaseSched.Status == "rescheduled" || @pceCaseSched.Status == "Rescheduled")
                                     {                                        
                                         <p>Status: <span class="text-warning">@pceCaseSched.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                     }
@@ -93,16 +94,16 @@
                                             <p>Reason: <span class="text-danger">@pceCaseSched.Reason</span></p>
                                         }                                 
 
-                                        if (currentUser.Role.Name == "Maker Officer" || currentUser.Role.Name == "Relation Manager")
+                                        if (currentUserRole == "Maker Officer" || currentUserRole == "Relation Manager")
                                         {
                                             if (pceCaseSched.User.Id != currentUser.Id && (pceCaseSched.Status == "proposed" || pceCaseSched.Status == "Proposed"))
                                             {
                                                 <div class="btn-group">
-                                                    <input type="hidden" id="pceCaseScheduleId" name="Id" value="@pceCaseSched.Id" />
-                                                    <button id="AcceptButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal">
+                                                    <input type="hidden" id="ScheduleId" name="Id" value="@pceCaseSched.Id" />
+                                                    <button id="acceptButton" type="button" class="btn btn-sm  btn-outline-primary" >
                                                         <i class="fas fa-check-circle"></i> Accept
                                                     </button>
-                                                    <button id="proposeNewScheduleButtons" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal">
+                                                    <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal">
                                                         <i class="fas fa-plus-circle"></i> Propose New
                                                     </button>
                                                 </div>
@@ -110,23 +111,16 @@
                                             else if (pceCaseSched.User.Id == currentUser.Id && (pceCaseSched.Status == "proposed" || pceCaseSched.Status == "Proposed"))
                                             {
                                             
-                                                <input type="hidden" id="CaseSchedulleId" name="Id" value="@pceCaseSched.Id" />
-                                                <button id="UpdateSchedules" class="update-link btn btn-sm btn-outline-primary">Update</button>
+                                                <input type="hidden" id="ScheduleId" name="Id" value="@pceCaseSched.Id" />
+                                                <button id="updateScheduleButton" class="update-link btn btn-sm btn-outline-primary">Update</button>
                                             }
                                         }
                                         else
                                         {
                                             
-                                        }
-                                    
+                                        }                                    
                                     }
                                 </div>
-                                if (@pceCaseSched.Status == "reschedule" || @pceCaseSched.Status == "Reschedule" || @pceCaseSched.Status == "ReSchedule")
-                                {
-                                    <hr/>
-                                        <h3>The case is Re-Schedule again</h3>
-                                    <hr />
-                                }
                             }
                         }
                     }
@@ -140,7 +134,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="proposeNewSchedule-modal-label">Update Scheduled Date</h5>
+                <h5 class="modal-title" id="proposeNewSchedule-modal-label">Propose Scheduled Date</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -150,9 +144,8 @@
                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="proposeScheduleDate" name="ScheduleDate" type="datetime-local"  value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
-                        <span class="text-danger" id="proposedateError"></span> <!-- Error message will be displayed here -->
-
+                        <input id="proposeScheduleDate" name="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                        <span class="text-danger" id="proposeDateError"></span>
                     </div>
                     <div class="form-group">
                         <label for=Reason>Reason</label>
@@ -168,22 +161,22 @@
     </div>
 </div>
 
-<div class="modal" id="proposeReSchedule-modals" tabindex="-1" role="dialog" aria-labelledby="proposeReSchedule-modal-label" aria-hidden="true">
+<div class="modal" id="reschedule-modals" tabindex="-1" role="dialog" aria-labelledby="reschedule-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="proposeReSchedule-modal-label">Re Scheduled </h5>
+                <h5 class="modal-title" id="reschedule-modal-label">Re Scheduled </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="proposeReSchedule-form">
+                <form id="reschedule-form">
                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
-                        <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
+                        <input id="rescheduleDate" name="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                        <span class="text-danger" id="rescheduleDateError"></span> <!-- Error message will be displayed here -->
 
                     </div>
                     <div class="form-group">
@@ -192,7 +185,7 @@
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="Submit" id="CaseReScheduleSubmitButton" class="btn bg-purple  btn-sm" />
+                        <input type="submit" value="Submit" id="rescheduleSubmitButton" class="btn bg-purple  btn-sm" />
                     </div>
                 </form>
             </div>
@@ -215,9 +208,9 @@
                     <div class="form-group">
 
                         <div class="input-group">
-                            <input name="ScheduleDate" id="updateScheduleDate" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control" />
+                            <input id="updateScheduleDate" name="ScheduleDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
                         </div>
-                        <span class="text-danger" id="updatedateError"></span> <!-- Error message will be displayed here -->
+                        <span class="text-danger" id="updateDateError"></span> <!-- Error message will be displayed here -->
 
                     </div>
                     <div class="form-group">

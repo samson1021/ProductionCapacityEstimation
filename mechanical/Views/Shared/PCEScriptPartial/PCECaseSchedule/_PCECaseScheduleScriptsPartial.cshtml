@@ -1,37 +1,76 @@
-<script>
-    $(document).ready(function () {        
+﻿<script>
+    $(document).ready(function () { 
 
-        $('#UpdateSchedules').on('click', function (event) {
+        $('#updateScheduleButton').on('click', function (event) {
             event.preventDefault();
             $('#updateSchedule-modals').modal('show');
         });
 
-        $('#proposeNewScheduleButtons').on('click', function (event) {
+        $('#proposeNewScheduleButton').on('click', function (event) {
             event.preventDefault();
             $('#proposeNewSchedule-modals').modal('show');
         });
 
-        $('#proposeReScheduleButtons').on('click', function (event) {
+        $('#rescheduleButton').on('click', function (event) {
             event.preventDefault();
-            $('#proposeReSchedule-modals').modal('show');
-        });
-      
-        $('#updateSchedule-form').submit(function (event) {
+            $('#reschedule-modals').modal('show');
+        });       
+
+        $('#createSchedule-form').submit(function (event) {
             event.preventDefault();
 
-            var selectedDate = new Date($('#updateScheduleDate').val());
             var currentDate = new Date();
-            $('#updatedateError').text('');
+            var selectedDate = new Date($('#ScheduleDate').val());
 
+            $('#dateError').text('');
+            
+            var Id = $('#ScheduleId').val();
             if (selectedDate < currentDate) {
-                $('#updatedateError').text('The selected date must be greater than the current date.');
-                return; // Stop the submission
+                $('#dateError').text('The selected date must be greater than the current date.');
+                return;
             }
-            //// Show the spinner
+
             showLoadingIndicator();
 
             var formData = new FormData(this);
-            var Id = $('#CaseSchedulleId').val();
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/CreateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while creating a schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
+        });    
+       
+        $('#updateSchedule-form').submit(function (event) {
+            event.preventDefault();
+            
+            var currentDate = new Date();
+            var selectedDate = new Date($('#updateScheduleDate').val());
+
+            $('#updateDateError').text('');
+            if (selectedDate < currentDate) {
+                $('#updateDateError').text('The selected date must be greater than the current date.');
+                return; 
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
             formData.append('Id', Id);
 
             $.ajax({
@@ -41,6 +80,8 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
+                    $('#updateSchedule-modals').modal('hide');
+                    hideLoadingIndicator();
                     location.reload();
                 },
                 error: function () {
@@ -48,29 +89,107 @@
                     hideLoadingIndicator();
                 },
                 complete: function () {
-                    // do some task here after responce
                     hideLoadingIndicator();
                 }
             });
         });
 
-        $('#AcceptButton').click(function (event) {
+        $('#proposeNewSchedule-form').submit(function (event) {
             event.preventDefault();
 
+            var currentDate = new Date();
+            var selectedDate = new Date($('#proposeScheduleDate').val());
+
+            $('#proposeDateError').text('');
+            
+            if (selectedDate < currentDate) {
+                $('#proposeDateError').text('The selected date must be greater than the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/ProposeSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#proposeNewSchedule-modals').modal('hide');
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while proposing a schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
+        }); 
+
+        $('#reschedule-form').submit(function (event) {
+            event.preventDefault();
+            
+            var currentDate = new Date();
+            var selectedDate = new Date($('#rescheduleDate').val());
+
+            $('#rescheduleDateError').text('');
+            if (selectedDate < currentDate) {
+                $('#rescheduleDateError').text('The selected date must be greater than the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/CreateReschedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#reschedule-modals').modal('hide');
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while rescheduling the date.');
+                    hideLoadingIndicator();
+                },
+                complete: function(){
+                    hideLoadingIndicator();
+                }
+            });
+        });    
+
+        $('#acceptButton').click(function (event) {
+            event.preventDefault();
+          
+            var currentDate = new Date();
             var selectedDate = new Date($('#ScheduleDate').val());
-            var currentDate = new Date();            
+
             $('#dateError').text('');
 
             if (selectedDate < currentDate) {
                 $('#dateError').text('The selected date must be greater than the current date.');
-                return; // Stop the submission
+                return;
             }
 
-            //// Show the spinner
             showLoadingIndicator();
 
+            var Id = $('#ScheduleId').val();
             var formData = new FormData();
-            var Id = $('#pceCaseScheduleId').val();
             formData.append('Id', Id);
 
             $.ajax({
@@ -80,136 +199,12 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
+                    hideLoadingIndicator();
                     location.reload();
                 },
                 error: function () {
                     alert('Error occurred while approving the schedule.');
                     hideLoadingIndicator();
-                },
-                complete: function () {
-                    // do some task here after responce
-                    hideLoadingIndicator();
-                }
-            });
-        });
-
-        $('#proposeNewSchedule-form').submit(function (event) {
-            event.preventDefault();
-
-            var selectedDate = new Date($('#proposeScheduleDate').val());
-            var currentDate = new Date();
-            $('#proposedateError').text('');
-            
-            if (selectedDate < currentDate) {
-                $('#proposedateError').text('The selected date must be greater than the current date.');
-                return; // Stop the submission
-            }
-
-            //// Show the spinner
-            showLoadingIndicator();
-
-            var formData = new FormData(this);
-            var Id = $('#pceCaseScheduleId').val();
-            formData.append('id', Id);
-
-            $.ajax({
-                url: '/PCECaseSchedule/CreateProposeSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-
-                    $('#proposeNewSchedule-modals').modal('hide');
-                    location.reload();
-                    // Handle success response
-                },
-                error: function () {
-                    alert('Error occurred while proposing a schedule.');
-                    hideLoadingIndicator();
-                    @* $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>'); *@
-                },
-                complete: function () {
-                    // do some task here after responce
-                    hideLoadingIndicator();
-                }
-            });
-        });       
-
-        $('#proposeReSchedule-form').submit(function (event) {
-            event.preventDefault();
-
-            var selectedDate = new Date($('#ScheduleDate').val());
-            var currentDate = new Date();
-            $('#dateError').text('');
-            
-            if (selectedDate < currentDate) {
-                $('#dateError').text('The selected date must be greater than the current date.');
-                return; // Stop the submission
-            }
-
-            //// Show the spinner
-            showLoadingIndicator();
-
-            var formData = new FormData(this);
-            var Id = $('#pceCaseScheduleId').val();
-            formData.append('id', Id);
-
-            $.ajax({
-                url: '/PCECaseSchedule/CreateReSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-
-                    $('#proposeReSchedule-modals').modal('hide');
-                    location.reload();
-                    // Handle success response
-                },
-                error: function () {
-                    alert('Error occurred while rescheduling the date.');
-                    hideLoadingIndicator();
-                    @* $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>'); *@
-                },
-                complete: function(){
-                // do some task here after responce
-                    hideLoadingIndicator();
-                }
-            });
-        });       
-
-        $('#pceCaseScheduleForm').submit(function (event) {
-            event.preventDefault();
-
-            var selectedDate = new Date($('#ScheduleDate').val());
-            var currentDate = new Date();
-            $('#dateError').text('');
-            
-            if (selectedDate < currentDate) {
-                $('#dateError').text('The selected date must be greater than the current date.');
-                return; // Stop the submission
-            }
-
-            showLoadingIndicator();
-
-            var formData = new FormData(this);
-            var Id = $('#pceCaseScheduleId').val();
-            formData.append('id', Id);
-
-            $.ajax({
-                url: '/PCECaseSchedule/CreateSchedule',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    location.reload();
-                },
-                error: function () {
-                    alert('Error occurred while creating a schedule.');
-                    hideLoadingIndicator();
-                    @* $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>'); *@
                 },
                 complete: function () {
                     hideLoadingIndicator();
@@ -232,7 +227,7 @@
             loadingIndicator.appendChild(spinner);
 
             var loadingText = document.createElement('span');
-            loadingText.textContent = 'Setting up schedule, please wait...';
+            loadingText.textContent = 'Setting up schedule date, please wait...';
             loadingIndicator.appendChild(loadingText);
 
             document.body.appendChild(loadingIndicator);
