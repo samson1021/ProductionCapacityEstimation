@@ -15,6 +15,7 @@ using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+using DocumentFormat.OpenXml.InkML;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
@@ -392,25 +393,32 @@ namespace mechanical.Services.PCE.PCECaseService
             return caseDtos;
         }
 
-        public PCEReportDataDto GetPCECaseDetailReport(Guid UserId, Guid id)
+
+        public async Task<PCEReportDataDto> GetPCECaseDetailReport(Guid UserId, Guid id)
         {
             try
             {
-                var pceCaseResult = _cbeContext.PCECases
-                                   .Include(res => res.District)
-                                   .Include(res => res.BussinessLicence)
-                                   .Where(c => c.Id == id && c.RMUserId == UserId)
-                                   .FirstOrDefault();
-                var productionCapacities = _cbeContext.ProductionCapacities
-                                            .Where(pc => pc.PCECaseId == id && pc.CreatedById == UserId)
-                                            .ToList();
-                var evaluation = _cbeContext.PCEEvaluations.ToList();
-               
+                var pceCaseResult = await _cbeContext.PCECases
+                    .Include(res => res.District)
+                    .Include(res => res.BussinessLicence)
+                    .FirstOrDefaultAsync(c => c.Id == id && c.RMUserId == UserId);
+
+                var productionCapacities = await _cbeContext.ProductionCapacities
+                    .Where(pc => pc.PCECaseId == id && pc.CreatedById == UserId)
+                    .ToListAsync();
+
+                // Adjust this to fetch evaluations related to the current case
+                var evaluations = await (from pc in _cbeContext.ProductionCapacities
+                                         join pe in _cbeContext.PCEEvaluations.Include(e => e.Evaluator)
+                                         on pc.Id equals pe.PCEId // Correct property
+                                         where pc.PCECaseId == id
+                                         select pe).ToListAsync();
+
                 var pceCaseDto = new PCEReportDataDto
                 {
                     PCESCase = pceCaseResult,
                     Productions = productionCapacities,
-                    PCEEvaluations = evaluation, // Set to null since not used
+                    PCEEvaluations = evaluations, // Use the evaluations retrieved from the join
                     PCECaseSchedule = null // Set to null since not used
                 };
 
@@ -418,7 +426,7 @@ namespace mechanical.Services.PCE.PCECaseService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, " my error");
+                _logger.LogError(ex, "Error retrieving PCE case detail report.");
                 throw;
             }
         }

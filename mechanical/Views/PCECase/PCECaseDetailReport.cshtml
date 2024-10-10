@@ -47,7 +47,7 @@
                 </div>
                 <h3></h3>
                 <table id="MyNewCase" class="table table-bordered table-striped">
-                    <thead>```````````````````````
+                    <thead>
                         <tr>
                             <th>Created At</th>
                             <th>PropertyOwner</th>
@@ -67,7 +67,20 @@
                                     <td>@item.PropertyOwner</td>
                                     <td>@item.Role</td>
                                     <td>@item.ProductionType</td>
-                                    <td>======</td>
+                                    @if (Model.PCEEvaluations.Count > 0)
+                                    {
+                                        @foreach (var f in Model.PCEEvaluations)
+                                        {
+                                            if(f.PCEId == item.Id )
+                                            {
+                                                <td> @f.Evaluator.Name </td>
+                                            }
+                                            else
+                                            {
+                                                <td> Not Evaluated yet  </td>
+                                            }
+                                        }
+                                    }
                                     <td>
                                         @if (@item.CurrentStatus == "Completed")
                                         {
@@ -78,10 +91,6 @@
                                             <a class="btn btn-primary" style="background-color:purple; color: white" href="" disabled>
                                                 <i class="fas fa-file-alt mr-2"></i>In Progress
                                             </a>
-
-                                          @*   <a class="btn btn-primary" style="background-color:purple; color: white" href="@Url.Action("PCEReport", "PCECase")?Id= @item.Id">
-                                                <i class="fas fa-file-alt mr-2"></i>PCE Report
-                                            </a> *@
                                         }
 
                                     </td>

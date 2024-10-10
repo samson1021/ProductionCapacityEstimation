@@ -317,15 +317,24 @@ namespace mechanical.Controllers.PCE
 
         public async Task<IActionResult> PCECaseDetailReport(Guid id)
         {
-            var pcepceCaseDto = _PCECaseService.GetPCECaseDetailReport(base.GetCurrentUserId(), id);
-            return View(pcepceCaseDto);
+            var pceCaseDto = await _PCECaseService.GetPCECaseDetailReport(base.GetCurrentUserId(), id);
+            return View(pceCaseDto);
         }
+
         [HttpGet]
         public async Task<IActionResult> PCEReport(Guid Id)
         {
             var pceReportData = await _PCECaseService.GetPCEReportData(Id);
             var file = await _UploadFileService.GetUploadFileByCollateralId(Id);
             ViewData["ProductionFiles"] = file;
+
+
+            double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
+
+            var customerinfo = await _caseService.GetCustomerName(customerId);
+            if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
+            ViewData["customerinfo"] = customerinfo;
+
 
 
             if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
@@ -350,7 +359,6 @@ namespace mechanical.Controllers.PCE
             {
                 var evaluatorReportDto = new EvaluatorReportDto();
                 ViewData["EvaluatorReport"] = evaluatorReportDto;
-
             }
 
 
