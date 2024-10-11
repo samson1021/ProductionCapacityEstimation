@@ -19,6 +19,7 @@ using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.CaseServices;
+using mechanical.Services.PCE.PCEEvaluationService;
 
 namespace mechanical.Controllers.PCE
 {
@@ -33,14 +34,16 @@ namespace mechanical.Controllers.PCE
         private readonly IUploadFileService _UploadFileService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
+        private readonly IPCEEvaluationService _PCEEvaluationService;
 
         private readonly ICaseService _caseService;
 
-        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IPCEEvaluationService PCEEvaluationService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _caseService = caseService;
             _mailService = mailService;
+            _PCEEvaluationService = PCEEvaluationService;
             _UserService = UserService;
             _PCECaseService = PCECaseService;
             _UploadFileService = UploadFileService;
@@ -426,6 +429,10 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> PCESummary(Guid Id)
         {
             var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
+
+            ViewData["pceEvaluations"] = pceEvaluations;
             ViewData["PCECase"] = pceCase;
             return View();
         }

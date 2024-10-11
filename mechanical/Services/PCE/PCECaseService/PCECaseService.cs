@@ -117,7 +117,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                                                 .Where(pca => pca.UserId == UserId && pca.ProductionCapacity.PCECaseId == Id)
                                                                 .Select(pca => pca.ProductionCapacityId)
                                                                 .ToListAsync();
-            var a = 54;
+     
 
             var pceCase = await _cbeContext.PCECases
                                             .AsNoTracking()
