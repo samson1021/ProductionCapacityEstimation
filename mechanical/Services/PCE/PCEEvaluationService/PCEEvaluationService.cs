@@ -267,10 +267,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .Include(pce => pce.PCE)
                                                     .ThenInclude(pc => pc.PCECase)
                                                         .ThenInclude(p=> p.ProductionCapacities)
-                                                .FirstOrDefaultAsync(pce => pce.Id == Id);
-                
-            // await _cbeContext.Entry(pceEvaluation.PCE.PCECase).Collection(pceCase => pceCase.ProductionCapacities).LoadAsync();
-
+                                                .FirstOrDefaultAsync(pce => pce.Id == Id);                
+            
             if (pceEvaluation == null)
             {
                 _logger.LogWarning("Production capacity valuation with Id: {Id} not found", Id);
@@ -354,19 +352,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         private async Task UpdatePCECaseStatusIfAllCompleted(PCECase PCECase)
         {            
-            // var pceCase = await _cbeContext.PCECases.Include(p => p.ProductionCapacities).FirstOrDefaultAsync(c => c.Id == PCECase.Id);
             // await _cbeContext.Entry(PCECase).Collection(p => p.ProductionCapacities).LoadAsync();
-            
-            if (PCECase?.ProductionCapacities != null)
-            {
-                Console.WriteLine($"Number of ProductionCapacities: {PCECase.ProductionCapacities.Count}");
-            }
-            else
-            {
-                Console.WriteLine("No ProductionCapacities found.");
-            }
-
-            var allCompleted = PCECase.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed");
+            var allCompleted = PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "Completed")?? false;
 
             if (allCompleted)
             {
