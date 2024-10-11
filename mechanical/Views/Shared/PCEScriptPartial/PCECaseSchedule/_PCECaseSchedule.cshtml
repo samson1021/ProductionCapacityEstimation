@@ -67,14 +67,22 @@
 
                                         if(currentUserRole == "Maker Officer" || currentUserRole =="Relation Manager")
                                         {
-                                      
+                                            if (myPCECase.Status == "Completed")
+                                            {
+                                                <p class=" btn-primary ms-1" style="cursor:none">The Case is Completed</p>
+                                            }
+                                            else
+                                            {
+                                                
                                             <div class="btn-group">
                                                 <input type="hidden" id="ScheduleId" name="Id" value="@pceCaseSchedule.Id" />
                                                 <button id="rescheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#reschedule-modal">
                                                     <i class="fas fa-plus-circle"></i> Re-Schedule
                                                 </button>
                                             </div>
-                                         }
+                                          }
+                                            }
+
                                     }
                                     else if (@pceCaseSchedule.Status == "Rejected" || @pceCaseSchedule.Status == "rejected")
                                     {
