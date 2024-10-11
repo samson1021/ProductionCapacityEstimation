@@ -7,6 +7,7 @@
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
     var pceCaseSchedules = ViewData["PCECaseSchedule"] as IEnumerable<PCECaseScheduleReturnDto>;
 
     var currentUserRole = currentUser?.Role?.Name as string;
@@ -40,7 +41,7 @@
                                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input asp-for="ScheduleDate" id="ScheduleDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required /> @* type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" *@
+                                            <input asp-for="ScheduleDate" id="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required /> @* type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" *@
                                         </div>
                                         <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
                                     </div>
@@ -51,7 +52,9 @@
                             }                        
                         }
                         else
-                        {
+                        {                            
+                            <input type="hidden" id="latestSchedule" value="@latestPCECaseSchedule?.ScheduleDate" />
+                                                       
                             @foreach (var pceCaseSchedule in pceCaseSchedules)
                             {
                                 <div class="post clearfix" style="border-bottom: 1px solid rgb(173, 181, 189); color: rgb(102, 102, 102); margin-bottom: 15px; padding-bottom: 15px;">
@@ -152,7 +155,8 @@
                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required />
+                        @* <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToUniversalTime().ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required /> *@
                         <span class="text-danger" id="proposeDateError"></span>
                     </div>
                     <div class="form-group">
@@ -183,7 +187,7 @@
                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="rescheduleDate" name="ScheduleDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        <input id="rescheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required />
                         <span class="text-danger" id="rescheduleDateError"></span> <!-- Error message will be displayed here -->
 
                     </div>
@@ -216,7 +220,7 @@
                     <div class="form-group">
 
                         <div class="input-group">
-                            <input id="updateScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                            <input id="updateScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required />
                         </div>
                         <span class="text-danger" id="updateDateError"></span> <!-- Error message will be displayed here -->
 

@@ -188,7 +188,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pceNewCasesCount">-</h4>
+                                        <h4 class="text-white" id="newPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">New PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -211,7 +211,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pcePendingCasesCount">-</h4>
+                                        <h4 class="text-white" id="pendingPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Pending PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -234,7 +234,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pceCompletedCasesCount">-</h4>
+                                        <h4 class="text-white" id="completedPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Completed PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -256,7 +256,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pceTotalCasesCount">-</h4>
+                                        <h4 class="text-white" id="totalPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">All PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -307,8 +307,8 @@
                                                     <td>@item.CreationDate</td>
                                                     <td>@item.ApplicantName</td>
                                                     <td>@item.CustomerUserId</td>
-                                                    @* { data: 'NoOfCollateral', width: '10%' }, *@
-                                                    <td>@item.TotalNoOfCollateral</td>
+                                                    @* { data: 'NoOfProductions', width: '10%' }, *@
+                                                    <td>@item.TotalNoOfProductions</td>
                                                     <td>
                                                         @if (item.Status == "New")
                                                         {
@@ -396,35 +396,15 @@
             }
         });
 
-
-
-
-
-
-
-
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            // fetch("/PCECase/GetDashboardPCECaseCount")
-            //     .then(response => response.json())
-            //     .then(data => {
-            //         animateCount("pceNewCasesCount", data.PCSNewCaseCount);
-            //         animateCount("pcePendingCasesCount", data.PCSPendingCaseCount);
-            //         animateCount("pceCompletedCasesCount", data.PCSCompletedCaseCount);
-            //         animateCount("pceTotalCasesCount", data.PCSTotalCaseCount);
-            //     })
-            //     .catch(error => {
-            //         console.error("Error fetching card counts:", error);
-            //     });
-
-
             fetch("/PCECase/GetDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
-                    animateCountWithCollaterals("pceNewCasesCount", data.NewPCECaseCount, data.NewPCECollateralCount);
-                    animateCountWithCollaterals("pcePendingCasesCount", data.PendingPCECaseCount, data.PendingPCECollateralCount);
-                    animateCountWithCollaterals("pceCompletedCasesCount", data.CompletedPCECaseCount, data.CompletedPCECollateralCount);
-                    animateCount("pceTotalCasesCount", data.TotalPCECaseCount, data.TotalPCECollateralCount);
+                    animateCountWithCollaterals("newPCECaseCount", data.NewPCECaseCount, data.NewProductionCount);
+                    animateCountWithCollaterals("pendingPCECaseCount", data.PendingPCECaseCount, data.PendingProductionCount);
+                    animateCountWithCollaterals("completedPCECaseCount", data.CompletedPCECaseCount, data.CompletedProductionCount);
+                    animateCount("totalPCECaseCount", data.TotalPCECaseCount, data.TotalProductionCount);
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);

@@ -465,12 +465,12 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             }).ToList();
         }
 
-        // public async Task<int> GetProductionsCount(Guid UserId, Guid? PCECaseId, string Stage = null, string Status = null)
+        // public async Task<int> GetProductionCount(Guid UserId, Guid? PCECaseId, string Stage = null, string Status = null)
         // {
         //     return (await GetProductions(UserId, PCECaseId, Stage, Status)).Count();
         // }
 
-        public async Task<int> GetProductionsCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
+        public async Task<int> GetProductionCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
             return await _cbeContext.PCECaseAssignments
                 .AsNoTracking()
@@ -493,22 +493,22 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 .CountAsync();
         }
 
-        public async Task<ProductionsCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null)
+        public async Task<ProductionCountDto> GetDashboardPCECount(Guid UserId, Guid? PCECaseId = null, string Stage = null)
         {
             var Statuses = new[] { "New", "Pending", "Completed", "Reestimate", "Reestimated", "All" };
-            var tasks = Statuses.Select(Status => GetProductionsCountAsync(UserId, PCECaseId, Stage, Status)).ToList();
+            var tasks = Statuses.Select(Status => GetProductionCountAsync(UserId, PCECaseId, Stage, Status)).ToList();
 
             var counts = await Task.WhenAll(tasks);
 
-            return new ProductionsCountDto()
+            return new ProductionCountDto()
             {
-                NewProductionsCount = counts[0],
-                PendingProductionsCount = counts[1],
-                CompletedProductionsCount = counts[2],
-                ResubmittedProductionsCount = counts[3], // rejected 
-                ReestimatedProductionsCount = counts[4],
-                TotalProductionsCount = counts[5]
-                // TotalProductionsCount = await GetProductionsCountAsync(UserId, PCECaseId, Stage)
+                NewProductionCount = counts[0],
+                PendingProductionCount = counts[1],
+                CompletedProductionCount = counts[2],
+                ResubmittedProductionCount = counts[3], // rejected 
+                ReestimatedProductionCount = counts[4],
+                TotalProductionCount = counts[5]
+                // TotalProductionCount = await GetProductionCountAsync(UserId, PCECaseId, Stage)
             };
         }
     
@@ -578,77 +578,6 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 .GetCustomAttributes(typeof(DisplayAttribute), false)
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
-
-        // public async Task<IEnumerable<ProductionCapacityCorrectionReturnDto>> GetComments(Guid ProductionCapacityId)
-        // {
-        //     var comments = await _cbeContext.ProductionCapacityCorrections.Where(ca => ca.ProductionCapacityId == ProductionCapacityId).ToListAsync();
-            
-        //     if (comments != null)
-        //     {
-        //         return _mapper.Map<IEnumerable<ProductionCapacityCorrectionReturnDto>>(comments);
-        //     }
-
-        //     return null;
-        // }
-
-        // public async Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager")).ToListAsync();
-        //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        // }
-
-        // public async Task<IEnumerable<ReturnProductionDto>> GetPendingProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "New" && res.CurrentStage != "Relation Manager")).ToListAsync();
-        //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        // }
-        // public async Task<IEnumerable<ReturnProductionDto>> GetRejectedProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStatus == "Reject" && res.CurrentStage == "Relation Manager")).ToListAsync();
-        //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        // }
-
-
-        // public async Task<IEnumerable<ReturnProductionDto>> GetRmRejectedProductions(Guid UserId, Guid PCECaseId)
-        // {
-        //     var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStatus == "Rejected" && res.CurrentStage == "Relation Manager").ToListAsync();
-        //     var productionDtos = _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        //     return productionDtos;
-        // }
-
-
-        // public async Task<IEnumerable<ReturnProductionDto>> GetPendProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && (res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Completed")).ToListAsync();
-        //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        // }
-
-        // public async Task<IEnumerable<ReturnProductionDto>> GetRmComProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == PCECaseId && res.CurrentStage == "Relation Manager" && res.CurrentStatus == "Completed").ToListAsync();
-        //     return _mapper.Map<IEnumerable<ReturnProductionDto>>(productions);
-        // }
-
-        // public async Task<ReturnProductionDto> GetManufuctringProductionCapacityEvalutionById(Guid productionId)       {
- 
-        //     var productionById = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(res => res.Id == productionId);
-        //     return _mapper.Map<ReturnProductionDto> (productionById);
-
-        // }
-        // public async Task<PlantEditPostDto> GetPlantProductionCapacityEvalutionById(Guid productionId)
-        // {
-
-        //     var productionById = await _cbeContext.PCEEvaluations.Include(res => res.PCE).FirstOrDefaultAsync(res => res.PCEId == productionId);
-        //     return _mapper.Map<PlantEditPostDto>(productionById);
-
-        // }
-        // public async Task<PCEEvaluationReturnDto> GetValuationById(Guid productionId)
-        // {
-
-        //     var productionById = await _cbeContext.PCEEvaluations.Include(res => res.PCE).FirstOrDefaultAsync(res => res.PCEId == productionId);
-        //     return _mapper.Map<PCEEvaluationReturnDto>(productionById);
-
-        // }
     }
 }
 

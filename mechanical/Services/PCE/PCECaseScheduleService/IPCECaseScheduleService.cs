@@ -11,7 +11,7 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
         Task<PCECaseScheduleReturnDto> ApproveSchedule(Guid UserId, Guid Id);
 
         Task<PCECaseScheduleReturnDto> GetSchedule(Guid Id);
-        Task<IEnumerable<PCECaseScheduleReturnDto>> GetSchedules(Guid PCECaseId);
         Task<PCECaseScheduleReturnDto> GetLatestSchedule(Guid PCECaseId);
+        Task<IEnumerable<PCECaseScheduleReturnDto>> GetSchedules(Guid PCECaseId);
     }
 }

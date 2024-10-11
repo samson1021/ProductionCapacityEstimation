@@ -286,60 +286,6 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-        //  //////////
-        // [HttpGet]
-        // public async Task<IActionResult> GetPendingProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetPendingProductions(PCECaseId);
-        //     string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetRMCompleteProduction(Guid CaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetRmComProductions(CaseId);
-        //     string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetRmRejectedProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetRmRejectedProductions(base.GetCurrentUserId(), PCECaseId);
-        //     string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetRMCompleteCollaterals(Guid PCECaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetRmComProductions(PCECaseId);
-        //     string jsonData = JsonConvert.SerializeObject(productions);
-        //     return Content(jsonData, "application/json");
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetRejectProducts(Guid CaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetRejectedProductions(CaseId);
-        //     string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-        // }
-        // public async Task<IActionResult> GetPendProductions(Guid CaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetPendProductions(CaseId);
-        //     string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-        // }
-        // ///////////
-
-        // [HttpGet]
-        // public async Task<IActionResult> GetProductions(Guid PCECaseId)
-        // {
-        //     var productions = await _ProductionCapacityService.GetProductions(PCECaseId);
-            // string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-
-        // }
-
         // [HttpGet]
         // public async Task<IActionResult> GetMyDashboardPCECount()
         // {

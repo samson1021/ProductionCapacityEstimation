@@ -1,4 +1,3 @@
-using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Entities;
 
@@ -14,10 +13,9 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<IEnumerable<PCECaseReturnDto>> GetRemarkedPCECases(Guid UserId);
 
         Task<PCECaseReturnDto> GetPCECase(Guid UserId, Guid Id);
+        Task<PCECaseCountDto> GetDashboardPCECaseCount(Guid UserId);
         Task<IEnumerable<PCECaseReturnDto>> GetPCECases(Guid UserId, string Status = null, int? Limit = null);
 
-        Task<CreateNewCaseCountDto> GetDashboardPCECaseCount(Guid UserId);
-        Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId);
 
         Task<PCEReportDataDto> GetPCEReportData(Guid Id);
         Task<PCEReportDataDto> GetPCEAllReportData(Guid Id);

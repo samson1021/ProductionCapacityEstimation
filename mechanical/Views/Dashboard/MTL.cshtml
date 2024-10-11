@@ -164,7 +164,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="newPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="newPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">New PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -186,7 +186,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pendingPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="pendingPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Pending PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -208,7 +208,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="completedPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="completedPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Completed PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -230,7 +230,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="totalPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="totalPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Total PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -301,40 +301,21 @@
  
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCECase/GetDashboardPCECasesCount")
+            fetch("/PCECase/GetDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
 
-                    animateCountWithCollateral("newPCECasesCount", data.NewPCECasesCount, data.NewProductionsCount);
-                    animateCountWithCollateral("pendingPCECasesCount", data.PendingPCECasesCount, data.PendingProductionsCount);
-                    animateCountWithCollateral("completedPCECasesCount", data.CompletedPCECasesCount + data.ReestimatedPCECasesCount, data.CompletedProductionsCount + data.ReestimatedProductionsCount);
-                    animateCountWithCollateral("returnedPCECasesCount", data.ReturnedPCECasesCount, data.ReturnedProductionsCount);
-                    animateCount("totalPCECasesCount", data.TotalPCECasesCount);
+                    animateCountWithCollateral("newPCECaseCount", data.NewPCECaseCount, data.NewProductionCount);
+                    animateCountWithCollateral("pendingPCECaseCount", data.PendingPCECaseCount, data.PendingProductionCount);
+                    animateCountWithCollateral("completedPCECaseCount", data.CompletedPCECaseCount + data.ReestimatedPCECaseCount, data.CompletedProductionCount + data.ReestimatedProductionCount);
+                    animateCountWithCollateral("returnedPCECaseCount", data.ReturnedPCECaseCount, data.ReturnedProductionCount);
+                    animateCount("totalPCECaseCount", data.TotalPCECaseCount);
 
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
         }); 
-
-        
-        @* // production capacity estimation start
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch("/PCECase/GetDashboardPCECount")
-                .then(response => response.json())
-                .then(data => {
-
-                    animateCount("newProductionsCount", data.NewProductionsCount);
-                    animateCount("pendingProductionsCount", data.PendingProductionsCount);
-                    animateCount("completedProductionsCount", data.CompletedProductionsCount + data.ReestimatedProductionsCount);
-                    animateCount("resubmittedProductionsCount", data.ResubmittedProductionsCount);
-                    animateCount("totalProductionsCount", data.TotalProductionsCount);
-
-                })
-                .catch(error => {
-                    console.error("Error fetching card counts:", error);
-                });
-        }); *@
 
         // Production capacity estimation case end
 
@@ -398,8 +379,8 @@
                         },
                         { data: 'ApplicantName', width: '15%' },
                         { data: 'CustomerUserId', width: '15%' },
-                        @* { data: 'NoOfCollateral', width: '10%' }, *@
-                        { data: 'TotalNoOfCollateral', width: '10%' },
+                        @* { data: 'NoOfProductions', width: '10%' }, *@
+                        { data: 'TotalNoOfProductions', width: '10%' },
                         {
                             data: 'Status',
                             width: '10%',

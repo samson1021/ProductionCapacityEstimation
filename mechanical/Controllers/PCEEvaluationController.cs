@@ -236,14 +236,13 @@ namespace mechanical.Controllers
         {                       
             var userId = base.GetCurrentUserId();
             var pceEvaluation = await _PCEEvaluationService.GetValuation(userId, Id);
-            // var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
             var pce = await _ProductionCapacityService.GetProduction(userId, Id);
 
             // var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(Id); 
-            // ViewData["RelatedFiles"] = RelatedFiles;
-            return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));          
+            // ViewData["RelatedFiles"] = RelatedFiles;        
             // string jsonData = JsonConvert.SerializeObject(pce, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            // return Content(jsonData, "application/json");            
+            // return Content(jsonData, "application/json");  
+            return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));            
         }
 
         [HttpPost]

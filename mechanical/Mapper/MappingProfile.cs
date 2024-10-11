@@ -160,8 +160,8 @@ namespace mechanical.Mapper
             CreateMap<PCECase, PCECaseReturnDto>()
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c => c.ProductionType)))
-                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
-                .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+                .ForMember(dest => dest.NoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
+                .ForMember(dest => dest.TotalNoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
             //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>();
@@ -176,7 +176,7 @@ namespace mechanical.Mapper
             ////////////
             CreateMap<PCECase, PCECaseTerminateDto>()
               .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-              .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+              .ForMember(dest => dest.TotalNoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
             CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>().ReverseMap();
             CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>().ReverseMap();

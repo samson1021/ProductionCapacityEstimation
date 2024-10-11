@@ -80,11 +80,10 @@
                             {
                                 if (status == "New" || status == "All" || status == "Reestimate")
                                 {                                 
-                                    // if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Now)
                                     if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
                                     {                           
                                         <text>
-                                            if (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate") {
+                                            if (row.EvaluatorUserID === '@currentUser?.Id' && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                                 const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=' + data;
                                                 const evaluateLink = `<a class="text-success" href="${evaluateUrl}">${row.CurrentStatus == "Reestimate" ? "Reestimate" : "Evaluate"}</a> | `;
                                                 link =  evaluateLink + link;

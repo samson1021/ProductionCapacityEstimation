@@ -1,5 +1,14 @@
-﻿<script>
+﻿@* @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
+
+@{
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
+} *@
+
+<script>
     $(document).ready(function () { 
+
+        const currentDate = stripTime(new Date());
+        var latestSchedule = new Date($('#latestSchedule').val());
 
         $('#updateScheduleButton').on('click', function (event) {
             event.preventDefault();
@@ -19,19 +28,22 @@
         $('#createSchedule-form').submit(function (event) {
             event.preventDefault();
 
-            var currentDate = new Date();
             var selectedDate = new Date($('#ScheduleDate').val());
-
+            
             $('#dateError').text('');
             
-            var Id = $('#ScheduleId').val();
-            if (selectedDate < currentDate) {
-                $('#dateError').text('The selected date must be greater than the current date.');
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#dateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#dateError').text('The selected date must be different from the current date.');
                 return;
             }
 
             showLoadingIndicator();
 
+            var Id = $('#ScheduleId').val();
             var formData = new FormData(this);
             formData.append('Id', Id);
 
@@ -58,13 +70,17 @@
         $('#updateSchedule-form').submit(function (event) {
             event.preventDefault();
             
-            var currentDate = new Date();
             var selectedDate = new Date($('#updateScheduleDate').val());
 
             $('#updateDateError').text('');
-            if (selectedDate < currentDate) {
-                $('#updateDateError').text('The selected date must be greater than the current date.');
+
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#updateDateError').text("The selected date must be greater than the today's date.");
                 return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#updateDateError').text('The selected date must be different from the current date.');
+                return;
             }
 
             showLoadingIndicator();
@@ -97,13 +113,16 @@
         $('#proposeNewSchedule-form').submit(function (event) {
             event.preventDefault();
 
-            var currentDate = new Date();
             var selectedDate = new Date($('#proposeScheduleDate').val());
 
             $('#proposeDateError').text('');
             
-            if (selectedDate < currentDate) {
-                $('#proposeDateError').text('The selected date must be greater than the current date.');
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#proposeDateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#proposeDateError').text('The selected date must be different from the current date.');
                 return;
             }
 
@@ -137,12 +156,16 @@
         $('#reschedule-form').submit(function (event) {
             event.preventDefault();
             
-            var currentDate = new Date();
             var selectedDate = new Date($('#rescheduleDate').val());
-
+            
             $('#rescheduleDateError').text('');
-            if (selectedDate < currentDate) {
-                $('#rescheduleDateError').text('The selected date must be greater than the current date.');
+
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#rescheduleDateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#rescheduleDateError').text('The selected date must be different from the current date.');
                 return;
             }
 
@@ -176,13 +199,16 @@
         $('#acceptButton').click(function (event) {
             event.preventDefault();
           
-            var currentDate = new Date();
             var selectedDate = new Date($('#ScheduleDate').val());
-
+            
             $('#dateError').text('');
 
-            if (selectedDate < currentDate) {
-                $('#dateError').text('The selected date must be greater than the current date.');
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#dateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#dateError').text('The selected date must be different from the current date.');
                 return;
             }
 
@@ -212,40 +238,50 @@
             });
         });
 
-        function showLoadingIndicator() {
-
-            // Disable the page
-            document.body.style.pointerEvents = 'none';
-            document.body.style.opacity = '0.5';
-
-            // Show a loading indicator
-            var loadingIndicator = document.createElement('div');
-            loadingIndicator.classList.add('loading-indicator');
-
-            var spinner = document.createElement('div');
-            spinner.classList.add('spinner');
-            loadingIndicator.appendChild(spinner);
-
-            var loadingText = document.createElement('span');
-            loadingText.textContent = 'Setting up schedule date, please wait...';
-            loadingIndicator.appendChild(loadingText);
-
-            document.body.appendChild(loadingIndicator);
-        }
-
-        function hideLoadingIndicator() {
-
-            // Remove the loading indicator
-            var loadingIndicator = document.querySelector('.loading-indicator');
-            if (loadingIndicator) {
-                document.body.removeChild(loadingIndicator);
-            }
-
-            // Enable the page
-            document.body.style.pointerEvents = 'auto';
-            document.body.style.opacity = '1';
-        }
     });
+    function showLoadingIndicator() {
+
+        // Disable the page
+        document.body.style.pointerEvents = 'none';
+        document.body.style.opacity = '0.5';
+
+        // Show a loading indicator
+        var loadingIndicator = document.createElement('div');
+        loadingIndicator.classList.add('loading-indicator');
+
+        var spinner = document.createElement('div');
+        spinner.classList.add('spinner');
+        loadingIndicator.appendChild(spinner);
+
+        var loadingText = document.createElement('span');
+        loadingText.textContent = 'Setting up schedule date, please wait...';
+        loadingIndicator.appendChild(loadingText);
+
+        document.body.appendChild(loadingIndicator);
+    }
+
+    function hideLoadingIndicator() {
+
+        // Remove the loading indicator
+        var loadingIndicator = document.querySelector('.loading-indicator');
+        if (loadingIndicator) {
+            document.body.removeChild(loadingIndicator);
+        }
+
+        // Enable the page
+        document.body.style.pointerEvents = 'auto';
+        document.body.style.opacity = '1';
+    }
+
+    function isSameDate(date1, date2) {
+        return date1.getUTCFullYear() === date2.getUTCFullYear() &&
+            date1.getUTCMonth() === date2.getUTCMonth() &&
+            date1.getUTCDate() === date2.getUTCDate();
+    }
+
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
 </script>
 
 <style>

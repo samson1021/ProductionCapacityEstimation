@@ -35,22 +35,22 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
             try
             {     
                 var httpContext = _httpContextAccessor.HttpContext;
-                var loanCase = _mapper.Map<ProductionCapacityCorrection>(createCorrectionDto);
+                var pceCase = _mapper.Map<ProductionCapacityCorrection>(createCorrectionDto);
                 var getcaseId = _cbeContext.Collaterals.Where(c => c.Id == createCorrectionDto.ProductionCapacityId).Select(c => c.CaseId).FirstOrDefault();
-                loanCase.ProductionCapacityId = getcaseId;
-                loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
-                loanCase.CreationDate = DateTime.Now;
-                await _cbeContext.ProductionCapacityCorrections.AddAsync(loanCase);
+                pceCase.ProductionCapacityId = getcaseId;
+                pceCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
+                pceCase.CreationDate = DateTime.Now;
+                await _cbeContext.ProductionCapacityCorrections.AddAsync(pceCase);
 
                 await _cbeContext.SaveChangesAsync();  
                 await transaction.CommitAsync();
 
-                return _mapper.Map<ProductionCapacityCorrectionReturnDto>(loanCase);
+                return _mapper.Map<ProductionCapacityCorrectionReturnDto>(pceCase);
 
                 //await _IPCECaseTimeLineService.GetPCECaseTimeLines(new PCECaseTimeLinePostDto
                 //{
-                //    CaseId = loanCase.PCECaseId,
-                //    Activity = $"<strong>A case with ID {loanCase.PCECaseId} out of the collaterals list one collateral wiht ID {createCorrectionDto.ProductionCapacityId} has been Returned to Maker  For correction</strong>",
+                //    CaseId = pceCase.PCECaseId,
+                //    Activity = $"<strong>A PCE case with ID {pceCase.PCECaseId} out of the productions list one production wiht ID {createCorrectionDto.ProductionCapacityId} has been Returned to Maker  For correction</strong>",
                 //    CurrentStage = "Relation Manager"
                 //});
             }
@@ -64,8 +64,8 @@ namespace mechanical.Services.PCE.ProductionCorrectionService
 
         public async Task<ProductionCapacityCorrectionPostDto> GetProductionCorrection(Guid Id)
         {
-            var loanCase = await _cbeContext.ProductionCapacityCorrections.Include(res => res.ProductionCapacityId).FirstOrDefaultAsync(c => c.Id == Id);
-            return _mapper.Map<ProductionCapacityCorrectionPostDto>(loanCase);
+            var pceCase = await _cbeContext.ProductionCapacityCorrections.Include(res => res.ProductionCapacityId).FirstOrDefaultAsync(c => c.Id == Id);
+            return _mapper.Map<ProductionCapacityCorrectionPostDto>(pceCase);
         }
 
 
