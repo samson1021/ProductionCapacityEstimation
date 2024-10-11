@@ -1,17 +1,10 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
-@using mechanical.Models.PCE.Enum.ProductionCapacity
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 
-@{
-    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
-}
-
 <div class="card">
-    <input type="hidden" asp-for="PCECaseId" value="@myPCECase.Id" />
-
     <div class="card-body">
-        <table id="caseCollaterals" class="table table-bordered table-striped">
+        <table id="Productions" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>

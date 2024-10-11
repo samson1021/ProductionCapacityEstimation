@@ -261,20 +261,23 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         private async Task<PCEEvaluation> FindValuation(Guid Id)
         {
-            var pceEntity = await _cbeContext.PCEEvaluations
-                                            .Include(e => e.ShiftHours)
-                                            .Include(e => e.TimeConsumedToCheck)
-                                            .Include(e => e.PCE)
-                                                .ThenInclude(e => e.PCECase)
-                                            .FirstOrDefaultAsync(e => e.Id == Id);
+            var pceEvaluation = await _cbeContext.PCEEvaluations
+                                                .Include(pce => pce.ShiftHours)
+                                                .Include(pce => pce.TimeConsumedToCheck)
+                                                .Include(pce => pce.PCE)
+                                                    .ThenInclude(pc => pc.PCECase)
+                                                        .ThenInclude(p=> p.ProductionCapacities)
+                                                .FirstOrDefaultAsync(pce => pce.Id == Id);
+                
+            // await _cbeContext.Entry(pceEvaluation.PCE.PCECase).Collection(pceCase => pceCase.ProductionCapacities).LoadAsync();
 
-            if (pceEntity == null)
+            if (pceEvaluation == null)
             {
                 _logger.LogWarning("Production capacity valuation with Id: {Id} not found", Id);
                 throw new KeyNotFoundException("Production capacity valuation not found");
             }
 
-            return pceEntity;
+            return pceEvaluation;
         }
 
         private async Task HandleFileUploads(Guid UserId, ICollection<IFormFile> Files, string Category, Guid PCECaseId, Guid PCEEId)
@@ -350,7 +353,19 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
         private async Task UpdatePCECaseStatusIfAllCompleted(PCECase PCECase)
-        {
+        {            
+            // var pceCase = await _cbeContext.PCECases.Include(p => p.ProductionCapacities).FirstOrDefaultAsync(c => c.Id == PCECase.Id);
+            // await _cbeContext.Entry(PCECase).Collection(p => p.ProductionCapacities).LoadAsync();
+            
+            if (PCECase?.ProductionCapacities != null)
+            {
+                Console.WriteLine($"Number of ProductionCapacities: {PCECase.ProductionCapacities.Count}");
+            }
+            else
+            {
+                Console.WriteLine("No ProductionCapacities found.");
+            }
+
             var allCompleted = PCECase.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed");
 
             if (allCompleted)
@@ -397,7 +412,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {
             await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
             {
-                Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.PlantName}",
+                Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.ProductionType}",
                 CurrentStage = PCE.CurrentStage,
                 CaseId = PCE.PCECaseId
             });

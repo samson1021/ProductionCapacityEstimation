@@ -2,7 +2,7 @@
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
 
 @{
-    var myCase = ViewData["PCECase"] as PCECaseReturnDto;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
 }
 
 <section class="content-header">
@@ -46,7 +46,6 @@
             </div>
             <div class="card-body">
                 <div class="tab-content" id="custom-tabs-four-tabContent">
-                    <input type="hidden" id="PCECaseId" name="PCECaseId" value="@myCase.Id" />
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @await Html.PartialAsync("_PCECaseGeneralInfo")
                     </div>
@@ -75,11 +74,10 @@
     }
     <script>
         $(document).ready(function () {
-            var CaseId = $('#CaseId').val();
-            var caseCollateralsTable;
 
             function initializeDataTable(data) {
-                caseCollateralsTable = $('#caseCollaterals').DataTable({
+                const $ProductionsTable = $('#Productions'); 
+                ProductionsTable = $('#Productions').DataTable({
                     language: {
                         emptyTable: "No data available in table"
                     },
@@ -108,19 +106,18 @@
                             }
                         }
                     ]
-                }).buttons().container().appendTo('#caseCollaterals_wrapper .col-md-6:eq(0)');
+                }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
             }
 
             function loadProductions() {
 
                 $.ajax({
-                    url: '/ProductionCapacity/GetProductions?PCECaseId=' + '@myCase.Id' + '&Status=Completed',
+                    url: '/ProductionCapacity/GetProductions?PCECaseId=' + '@myPCECase.Id' + '&Status=Completed',
                     type: 'GET',
                     dataType: 'json',
                     success: function (data) {
-                        if ($.fn.DataTable.isDataTable('#caseCollaterals')) {
-                            var caseCollateralsTable = $('#caseCollaterals').DataTable();
-                            caseCollateralsTable.destroy();
+                        if ($.fn.DataTable.isDataTable('#Productions')) {
+                            $('#Productions').DataTable().destroy();
                         }
                         initializeDataTable(data);
                     },
@@ -187,7 +184,7 @@
                 $('.purple-checkbox').prop('checked', isChecked);
             });
 
-            $('#caseCollaterals tbody').on('change', '.purple-checkbox', function () {
+            $('#Productions tbody').on('change', '.purple-checkbox', function () {
                 var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
                 $('#selectAllCheckbox').prop('checked', allChecked);
             });

@@ -163,11 +163,6 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
                 .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
-            // CreateMap<PCENewCaseDto, PCECase>();
-            // CreateMap<PCECase, PCENewCaseDto>()
-            //     .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
-            //     .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
-
             //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>();
             CreateMap<PlantCapacityEstimationPostDto, ProductionCapacity>();

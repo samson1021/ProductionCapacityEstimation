@@ -16,6 +16,7 @@ using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.CaseServices;
@@ -31,12 +32,13 @@ namespace mechanical.Controllers.PCE
         private readonly IPCECaseService _PCECaseService;
         private readonly ILogger<PCECaseController> _logger;
         private readonly IUploadFileService _UploadFileService;
+        private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
 
         private readonly ICaseService _caseService;
 
-        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCEEvaluationService PCEEvaluationService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _caseService = caseService;
@@ -44,6 +46,7 @@ namespace mechanical.Controllers.PCE
             _UserService = UserService;
             _PCECaseService = PCECaseService;
             _UploadFileService = UploadFileService;
+            _PCEEvaluationService = PCEEvaluationService;
             _PCECaseScheduleService = PCECaseScheduleService;
             _PCECaseTerminateService = PCECaseTerminateService;
         }
@@ -430,7 +433,15 @@ namespace mechanical.Controllers.PCE
             return View();
         }
 
-// PCE Terminate Cases
+        [HttpGet]
+        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
+        {
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        } 
+
+        // PCE Terminate Cases
         [HttpGet]
         public async Task<IActionResult> PCETerminatedCases()
         {
