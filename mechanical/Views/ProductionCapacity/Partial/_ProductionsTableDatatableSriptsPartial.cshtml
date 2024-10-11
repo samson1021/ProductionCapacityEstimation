@@ -28,7 +28,15 @@
                 
                 @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Rejected") && currentUserRole != "Maker Officer")
                 {
-                    @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate" && data.AssignmentStatus !== "Rejected") ? ' disabled' : '') + '>'; } },
+                    if (currentUserRole == "Relation Manager")
+                    {
+                        @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate" && data.AssignmentStatus !== "Rejected") ? ' disabled' : '') + '>'; } },
+
+                    }
+                    else
+                    {
+                        @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate") ? ' disabled' : '') + '>'; } },
+                    }
                 }                
                 { data: 'PropertyOwner', width: '25%' },
                 { data: 'Role', width: '25%' },

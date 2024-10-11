@@ -425,7 +425,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCESummary(Guid Id)
         {
-            var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
             ViewData["PCECase"] = pceCase;
             return View();
         }

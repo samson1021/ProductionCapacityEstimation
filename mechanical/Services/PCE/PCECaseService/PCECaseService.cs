@@ -117,11 +117,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                                                 .Where(pca => pca.UserId == UserId && pca.ProductionCapacity.PCECaseId == Id)
                                                                 .Select(pca => pca.ProductionCapacityId)
                                                                 .ToListAsync();
-
-            // if (!assignedProductionCapacities.Any())
-            // {
-            //     return null; 
-            // }
+            var a = 54;
 
             var pceCase = await _cbeContext.PCECases
                                             .AsNoTracking()
@@ -143,13 +139,6 @@ namespace mechanical.Services.PCE.PCECaseService
                                                         .ThenInclude(pc => pc.PCECase)
                                                     .Where(pca => pca.UserId == UserId)       
                                                     .ToListAsync();
-              
-            //  res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")                                      
-            // if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
-            // {
-            //     pceCaseAssignmentsQuery = pceCaseAssignmentsQuery.Where(ca => ca.Status == Status);
-            // }
-            // var pceCaseAssignments = await pceCaseAssignmentsQuery .ToListAsync();
 
             var uniquePCECases = pceCaseAssignments
                                                 .Select(pca => pca.ProductionCapacity.PCECase)
@@ -178,10 +167,7 @@ namespace mechanical.Services.PCE.PCECaseService
             var returnDtos = filteredPCECases.Select(pceCase =>
             {
                 var Dto = _mapper.Map<PCECaseReturnDto>(pceCase);
-                // Dto.NoOfCollateral = string.IsNullOrEmpty(Status) || Status.Equals("All", StringComparison.OrdinalIgnoreCase)
-                //                     ? productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id)
-                //                     : productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id && pc.CurrentStatus == Status);
-                // Dto.TotalNoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id);
+
                 Dto.NoOfCollateral = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCase.Id && 
                                                                         (string.IsNullOrEmpty(Status) || 
                                                                         Status.Equals("All", StringComparison.OrdinalIgnoreCase) || 
