@@ -11,9 +11,6 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 
 using mechanical.Data;
 using mechanical.Models;
@@ -294,14 +291,6 @@ namespace mechanical.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }  
-
-        [HttpGet]
-        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
-        {
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            return Content(jsonData, "application/json");
-        } 
         
         [HttpGet]
         public async Task<IActionResult> GetLatestValuation(Guid PCEId)

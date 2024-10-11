@@ -293,7 +293,8 @@
                                             <th>Creation Date</th>
                                             <th>Applicant Name</th>
                                             <th>Customer Id</th>
-                                            <th>Total PCE </th>
+                                            @* <th>New Productions</th> *@
+                                            <th>Total Productions</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -306,6 +307,7 @@
                                                     <td>@item.CreationDate</td>
                                                     <td>@item.ApplicantName</td>
                                                     <td>@item.CustomerUserId</td>
+                                                    @* { data: 'NoOfCollateral', width: '10%' }, *@
                                                     <td>@item.TotalNoOfCollateral</td>
                                                     <td>
                                                         @if (item.Status == "New")

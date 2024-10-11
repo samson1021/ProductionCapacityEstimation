@@ -16,6 +16,7 @@ using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.CaseServices;
@@ -38,7 +39,7 @@ namespace mechanical.Controllers.PCE
 
         private readonly ICaseService _caseService;
 
-        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IPCEEvaluationService PCEEvaluationService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, IPCEEvaluationService PCEEvaluationService, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _caseService = caseService;
@@ -437,7 +438,15 @@ namespace mechanical.Controllers.PCE
             return View();
         }
 
-// PCE Terminate Cases
+        [HttpGet]
+        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
+        {
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        } 
+
+        // PCE Terminate Cases
         [HttpGet]
         public async Task<IActionResult> PCETerminatedCases()
         {

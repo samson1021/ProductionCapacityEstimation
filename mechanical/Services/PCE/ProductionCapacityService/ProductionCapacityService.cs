@@ -435,7 +435,8 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         {
             var productions = await _cbeContext.PCECaseAssignments
                                             .AsNoTracking()
-                                            .Where(a => a.UserId == UserId)
+                                            .Where(a => a.UserId == UserId 
+                                                && (Status == null || Status == "All" || a.Status == Status))                                            
                                             .Join(
                                                 _cbeContext.ProductionCapacities,
                                                 pca => pca.ProductionCapacityId,
