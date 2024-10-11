@@ -80,6 +80,7 @@
                             {
                                 if (status == "New" || status == "All" || status == "Reestimate")
                                 {                                 
+                                    // if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Now)
                                     if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
                                     {                           
                                         <text>

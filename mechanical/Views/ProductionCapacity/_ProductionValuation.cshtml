@@ -43,8 +43,7 @@
                         <div class="row">
                             @await Html.PartialAsync("~/Views/PCEEvaluation/Partial/_EvaluationDetailPartial.cshtml", latestEvaluation)
                         </div>
-                        @* @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
-                        @if ((currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
+                        @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id)
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {
@@ -89,14 +88,14 @@
                                 {
                                     <i class="text-warning"> The Scheduled time is not approved/confirmed.</i>
                                 }
+                                @* else if (latestPCECaseSchedule.ScheduleDate > DateTime.Now) *@
                                 else if (latestPCECaseSchedule.ScheduleDate > DateTime.Today)
                                 {
                                     <i class="text-warning"> The Scheduled time is not due.</i>
                                 }
                                 else
                                 {
-                                    @* @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id) *@
-                                    @if ((currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer") || Model.EvaluatorUserID == currentUser.Id)
+                                    @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id)
                                     { 
                                         @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
                                         {

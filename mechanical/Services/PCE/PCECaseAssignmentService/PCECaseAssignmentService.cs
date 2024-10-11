@@ -219,6 +219,13 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     }
                 }
             }
+            else
+            {                
+                if (assignedUser.Role.Name == "Maker Officer")
+                {
+                    production.EvaluatorUserID = assignedUser.Id;
+                }
+            }
             
             _cbeContext.ProductionCapacities.Update(production);
         }
