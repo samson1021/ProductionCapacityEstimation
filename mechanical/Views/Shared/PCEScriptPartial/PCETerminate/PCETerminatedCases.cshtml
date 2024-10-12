@@ -1,0 +1,152 @@
+﻿
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>My Terminated PCE Case</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">My Terminated PCE Case</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="MyNewCase" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Created At</th>
+                            <th>Case No</th>
+                            <th>Aplicant Name</th>
+                            <th>Customer Id</th>
+                            <th>No of Productions</th>
+                            <th>Termination Reason</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {    
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/PCECase/GetPCETerminatedCases',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#MyNewCase').DataTable({
+                        data: data,
+                        columns:
+                            [
+                                {
+                                    data: 'CreationDate',
+                                    width: '15%',
+                                    render: function (data, type, row, meta) {
+                                        var date = new Date(data);
+                                        return date.toLocaleString();
+                                    }
+                                },
+                                { data: 'CaseNo', width: '10%' },
+                                { data: 'ApplicantName', width: '20%' },
+                                { data: 'CustomerUserId', width: '15%' },
+                                { data: 'TotalNoOfProductions', width: '15%' },
+                                { data: 'TerminationReason', width: '15%' },
+                                { data: 'Status', width: '15%' },
+                                {
+                                    data: 'Id',
+                                    width: '10%',
+                                    render: function (data, type, row, meta) {
+                                        return '<span class="text-danger">Terminated</span>';
+                                    }
+                                }
+
+                            ],
+                        order: [[0, 'desc']],
+                        responsive: true,
+                        lengthChange: false,
+                        autoWidth: false,
+                        buttons: [{ extend: 'copy', title: 'RM New Case' }, { extend: 'csv', title: 'RM New Case' }, { extend: 'excel', title: 'RM New Case' }, { extend: 'pdf', title: 'RM New Case - pdf' }, { extend: 'print', title: 'RM New Case - Print' }, 'colvis']
+                    }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
+                }
+            });
+
+
+
+        });
+       
+        // $(document).ready(function () {
+        //     $('#terminationForm').submit(function (event) {
+        //         event.preventDefault();
+        //         var formData = $(this).serialize();
+
+        //         var submitButton = $(this).find('button[type="submit"]');
+        //         submitButton.prop('disabled', true);
+        //         submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+        //         $.ajax({
+        //             url: $(this).attr('action'),
+        //             type: $(this).attr('method'),
+        //             data: formData,
+        //             success: function (response) {
+        //                 location.reload();
+        //             },
+        //             error: function () {
+        //                 $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+        //             },
+        //             complete: function () {
+        //                 submitButton.prop('disabled', false);
+        //                 submitButton.html('<i class="fas fa-ban"></i> Terminate');
+        //             }
+        //         });
+        //     });
+
+        //     $('#UpdateTerminate').on('click', function (event) {
+        //         event.preventDefault();
+        //         $('#modalReason').val($('#caseTerminateReason').val());
+        //         $('#updateModal').modal('show');
+        //     });
+
+        //     $('#updateForm').submit(function (event) {
+        //         event.preventDefault();
+
+        //         $('#updateButton').prop('disabled', true);
+
+        //         var formData = new FormData(this);
+        //         var Id = $('#CaseSchedulleId').val();
+        //         formData.append('Id', Id);
+        //         $.ajax({
+        //             url: '/PCECase/UpdateTermination',
+        //             type: 'POST',
+        //             data: formData,
+        //             processData: false,
+        //             contentType: false,
+        //             success: function (response) {
+        //                 toastr.success('Successfuly update case termination request');
+        //                 setTimeout(function () {
+        //                     location.reload();
+        //                 }, 1200);
+        //             },
+        //             error: function () {
+        //                 $('#updateButton').prop('disabled', false);
+        //                 toastr.error('Error occurred while updating the date.');
+        //             }
+        //         });
+        //     });
+
+        // });
+   
+    </script>
+}

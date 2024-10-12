@@ -1,11 +1,13 @@
 ﻿﻿@using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.PCECaseTerminateDto
 @* @using mechanical.Models.PCE.Enum.ProductionCapacity *@
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var PCEcaseTerminate = ViewData["PCECaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
 
     var currentUserRole = currentUser?.Role?.Name as string;
     var status = ViewBag.Status as string;
@@ -86,6 +88,34 @@
                             <i class="fas fa-comments"> </i>  Comments <span class="badge badge-warning right CommentBage"> </span>
                         </a>
                     </li>
+                    @if (currentUserRole == "Relation Manager" && (myPCECase.Status == "Pending" || status == "Pending"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
+                                <i class="fas fa-ban"> </i>
+                                Terminate @{
+                                    if (PCEcaseTerminate.Count() > 0)
+                                    {
+                                        <span class="right badge badge-danger">New</span>
+                                    }
+                                }
+                            </a>
+                        </li>
+                    }
+                    @if ((currentUserRole == "Maker Manager" || currentUserRole == "Maker TeamLeader" || currentUserRole == "District Valuation Manager" || currentUserRole == "Maker Officer") && (myPCECase.Status == "New" || status == "New"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
+                                <i class="fas fa-ban"> </i>
+                                Terminate @{
+                                    if (PCEcaseTerminate.Count() > 0)
+                                    {
+                                        <span class="right badge badge-danger">New</span>
+                                    }
+                                }
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
             <div class="card-body">
@@ -101,20 +131,112 @@
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-comments" role="tabpanel" aria-labelledby="custom-tabs-four-comments-tab">
                         @await Html.PartialAsync("PCEScriptPartial/PCEComment/_PCECaseComment")
-                    </div>
+                    </div>                    
+                        <div class="tab-pane fade" id="custom-tabs-four-Terminate" role="tabpanel" aria-labelledby="custom-tabs-four-Terminate-tab">
+                            @await Html.PartialAsync("_PCECaseTerminate")
+                        </div>                       
+                   
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-@section Scripts {
+@section Scripts {    
+    <script>
+        $(document).ready(function () {
+            $('#terminationForm').submit(function (event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+
+                var submitButton = $(this).find('button[type="submit"]');
+                submitButton.prop('disabled', true);
+                submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: formData,
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function () {
+                        $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                    },
+                    complete: function () {
+                        submitButton.prop('disabled', false);
+                        submitButton.html('<i class="fas fa-ban"></i> Terminate');
+                    }
+                });
+            });
+
+            $('#UpdateTerminate').on('click', function (event) {
+                event.preventDefault();
+                $('#modalReason').val($('#caseTerminateReason').val());
+                $('#updateModal').modal('show');
+            });
+
+            $('#updateForm').submit(function (event) {
+                event.preventDefault();
+
+                $('#updateButton').prop('disabled', true);
+
+                var formData = new FormData(this);
+                var Id = $('#CaseSchedulleId').val();
+                formData.append('Id', Id);
+                $.ajax({
+                    url: '/PCECase/UpdateTermination',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        toastr.success('Successfuly update case termination request');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1200);
+                    },
+                    error: function () {
+                        $('#updateButton').prop('disabled', false);
+                        toastr.error('Error occurred while updating the date.');
+                    }
+                });
+            });
+
+        });
+
+        $('#AcceptcaseTerminationButton').click(function (event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var Id = $('#CaseTerminationId').val();
+            formData.append('Id', Id);
+
+            var submitButton = $('#AcceptcaseTerminationButton');
+            submitButton.prop('disabled', true);
+            submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+            $.ajax({
+                url: '/PCECase/ApproveCaseTermination',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
+            });
+        });
+    </script>
+
     @{     
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");  
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseScheduleScriptsPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");    
+        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");         
         await Html.RenderPartialAsync("~/Views/ProductionCapacity/Partial/_ProductionsTableDatatableSriptsPartial.cshtml");        
 
         if (currentUserRole == "Relation Manager" && (status == "New" || status == "All"))
@@ -159,4 +281,4 @@
         });
 
     </script>
-}
+   }
