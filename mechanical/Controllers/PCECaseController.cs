@@ -326,7 +326,8 @@ namespace mechanical.Controllers.PCE
 
             double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
 
-            var customerinfo = await _caseService.GetCustomerName(customerId);
+            //var customerinfo = await _caseService.GetCustomerName(customerId);
+            var customerinfo = "err";
             if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
             ViewData["customerinfo"] = customerinfo;
 
@@ -375,7 +376,10 @@ namespace mechanical.Controllers.PCE
 
             double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
 
-            var customerinfo = await _caseService.GetCustomerName(customerId);
+            //var customerinfo = await _caseService.GetCustomerName(customerId);
+            var customerinfo = "err";
+
+
             if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
             ViewData["customerinfo"]  = customerinfo;
             //string jsonData = JsonConvert.SerializeObject(myCase);

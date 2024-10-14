@@ -119,7 +119,11 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                var production = await _cbeContext.ProductionCapacities.Where(c => c.Id == id && c.CreatedById == UserId && c.CurrentStage == "Relation Manager" && c.CurrentStatus == "New").FirstOrDefaultAsync();
+                var production = await _cbeContext.ProductionCapacities
+                                                    .Include(p => p.PCECase)
+                                                        .ThenInclude(p => p.ProductionCapacities)
+                                                    .Where(c => c.Id == id && c.CreatedById == UserId && c.CurrentStage == "Relation Manager" && c.CurrentStatus == "New")
+                                                    .FirstOrDefaultAsync();
                 if (production == null)
                 {
                     return false;
@@ -138,6 +142,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 }
 
                 _cbeContext.Remove(production);
+
                 var Fileproduction = await _cbeContext.UploadFiles.Where(c => c.CollateralId == id).FirstOrDefaultAsync();
                 if( Fileproduction != null)
                 {
@@ -150,6 +155,22 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                     Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {production.Id} has been deleted. </strong>.",
                     CurrentStage = "Relation Manager"
                 });
+
+
+                var allCompleted = production.PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "Completed") ?? false;
+
+                if (allCompleted)
+                {
+                    production.PCECase.Status = "Completed";
+                    _cbeContext.PCECases.Update(production.PCECase);
+                }
+
+                //var allNew = production.PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "New") ?? false;
+                //if (allNew)
+                //{
+                //    production.PCECase.Status = "New";
+                //    _cbeContext.PCECases.Update(production.PCECase);
+                //}
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
