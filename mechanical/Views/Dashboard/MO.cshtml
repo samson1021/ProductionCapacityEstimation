@@ -7,7 +7,7 @@
 <div class="content-header"></div>
 <section class="content">
     <div class="container-fluid">
-        <div class="card">
+        @* <div class="card">
             <div class="card-body">
                 <div class="row">
                     <div class="col-xl-3 col-md-6">
@@ -152,7 +152,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
           @*  Production capacity case   *@
         <div class="card">
             <div class="card-body">
@@ -421,7 +421,7 @@
     }
         
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        @* document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetDashboardCaseCount")
                 .then(response => response.json())
                 .then(data => {
@@ -434,7 +434,7 @@
                     console.error("Error fetching card counts:", error);
                 });
 
-        });
+        }); *@
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
