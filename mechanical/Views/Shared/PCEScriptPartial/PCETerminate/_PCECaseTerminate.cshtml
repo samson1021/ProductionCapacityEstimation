@@ -55,7 +55,7 @@
                                 }
                                 else if (@pceCaseTerm.Status == "Rejected")
                                 {
-                                   <p>Status: <span class="text-danger">@pceCaseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
+                                    <p>Status: <span class="text-danger">@pceCaseTerm.Status</span>  <i class="fas fa-times-circle text-danger"></i></p>
                                 }
                                 else
                                 {
@@ -73,7 +73,7 @@
                                     {
                                         <div class="btn-group">
                                             <input type="hidden" id="CaseTerminationId" name="Id" value="@pceCaseTerm.Id" />
-                                            <button id="AcceptpceCaseTerminationButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addProductionModal">
+                                            <button id="AcceptcaseTerminationButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addProductionModal">
                                                 <i class="fas fa-check-circle"></i> Accept
                                             </button>
                                             <button id="PendCaseTermination" type="button" class="btn btn-sm btn-outline-warning ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
@@ -111,17 +111,17 @@
                 </button>
             </div>
             <form id="updateForm">
-            <div class="modal-body">
+                <div class="modal-body">
                     <div class="form-group">
                         <label for="Reason" class="form-label">Reason *</label>
                         <textarea name="Reason" id="modalReason" rows="4" placeholder="Please enter case termination reason" class="form-control" required></textarea>
                         <span for="Reason" class="text-danger"></span>
                     </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn bg-purple btn-sm" id="updateButton">Update</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn bg-purple btn-sm" id="updateButton">Update</button>
+                </div>
             </form>
         </div>
     </div>
