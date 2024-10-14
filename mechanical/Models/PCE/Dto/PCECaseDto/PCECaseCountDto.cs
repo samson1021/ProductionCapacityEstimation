@@ -12,8 +12,8 @@
         public int ResubmittedProductionCount { get; set; }
         public int ReestimatedPCECaseCount { get; set; }
         public int ReestimatedProductionCount { get; set; }
-        public int RejectedPCECaseCount { get; set; }
-        public int RejectedProductionCount { get; set; }
+        public int ReturnedPCECaseCount { get; set; }
+        public int ReturnedProductionCount { get; set; }
         public int TotalPCECaseCount { get; set; }
         public int TotalProductionCount { get; set; }
     }
@@ -25,7 +25,7 @@
         public int CompletedProductionCount { get; set; }
         public int ResubmittedProductionCount { get; set; }
         public int ReestimatedProductionCount { get; set; }
-        public int RejectedProductionCount { get; set; }
+        public int ReturnedProductionCount { get; set; }
         public int TotalProductionCount { get; set; }
     }    
 }

@@ -5,7 +5,7 @@
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
 @{
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ReturnProductionDto;
 }
 
 <!-- General Information -->
@@ -14,11 +14,11 @@
     <div class="row mt-3">
         <div class="form-group col-lg-3">
             <label>Machine/Plant Name</label>
-            <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.MachineName?? myPCE.PlantName)" readonly required>
+            <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.MachineName?? myProduction.PlantName)" readonly required>
         </div>
         <div class="form-group col-lg-3">
             <label>Country of Origin</label>
-            <input id="OriginCountry" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required />
+            <input id="OriginCountry" type="text" class="form-control form-control-sm" value="@(myProduction.CountryOfOrgin ?? "Unknown country")" readonly required />
         </div>
         <div class="form-group col-lg-3">
             <label>@Html.DisplayNameFor(model => model.OutputType) <i class="text-danger">*</i></label>
@@ -39,7 +39,7 @@
         </div>
         <div class="form-group col-lg-4">
             <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour)</label>
-            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.5" />
+            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" />
             <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
         </div>
         <div class="form-group col-lg-4">

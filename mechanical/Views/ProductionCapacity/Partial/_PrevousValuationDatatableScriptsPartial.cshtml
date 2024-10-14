@@ -1,9 +1,9 @@
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @{
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ReturnProductionDto;
     var EmptyMessage = "No Previous Evaluation / Valuation History.";
-    var FetchUrl = "/PCEEvaluation/GetPreviousValuations?PCEId=" + myPCE.Id;
+    var FetchUrl = "/PCEEvaluation/GetPreviousValuations?PCEId=" + myProduction.Id;
 }
 
 <script>
@@ -64,8 +64,8 @@
         });
     }
 
-    function openRejectionModal(PCEId) {
-        document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
-        $('#rejectionModal1').modal('show');
+    function openReturnModal(PCEId) {
+        document.querySelector('#returnModal1 input[name="PCEId"]').value = PCEId;
+        $('#returnModal1').modal('show');
     }
 </script>

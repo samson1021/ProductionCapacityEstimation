@@ -53,7 +53,8 @@
                     @if (currentUserRole == "Relation Manager")
                     {
                             <text>
-                                if (row.Status === "New" || row.Status === "Rejected") {
+                                @* if (row.Status === "New" || row.Status === "Returned" || row.Status === "Pending") { *@                              
+                                if (row.Status === "New") {
                                     link += editLink;
                                     @* link += editLink + deleteLink; *@
                                 }

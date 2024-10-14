@@ -1,12 +1,14 @@
 @using mechanical.Models.PCE.Entities
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
 
 @{
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ReturnProductionDto;
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
 }
 
 <!-- General Information -->
@@ -15,11 +17,11 @@
     <div class="row mt-3">
         <div class="form-group col-lg-3">
             <label>Machine/Plant Name</label>
-            <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.MachineName?? myPCE.PlantName)" readonly required>
+            <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.MachineName?? myProduction.PlantName)" readonly required>
         </div>
         <div class="form-group col-lg-3">
             <label>Country of Origin</label>
-            <input id="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required>
+            <input id="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.CountryOfOrgin ?? "Unknown country")" readonly required>
         </div>
         <div class="form-group col-lg-3">
             <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
@@ -42,7 +44,7 @@
         </div>
         <div class="form-group col-lg-4">
             <label>@Html.DisplayNameFor(model => model.EffectiveProductionHour)</label>
-            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.5" />
+            <input asp-for="EffectiveProductionHour" class="form-control form-control-sm" type="number" step="0.01" />
             <span asp-validation-for="EffectiveProductionHour" class="text-danger"></span>
         </div>
         <div class="form-group col-lg-4">
@@ -218,7 +220,7 @@
         <div class="form-group col-lg-3"></div>
         <div class="form-group col-lg-3">
             <label>@Html.DisplayNameFor(model => model.InspectionDate) <i class="text-danger">*</i></label>
-            <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+            <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" required />
             <span asp-validation-for="InspectionDate" class="text-danger"></span>
         </div>
     </div>

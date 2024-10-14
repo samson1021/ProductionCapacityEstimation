@@ -308,7 +308,7 @@
                     animateCountWithCollateral("newPCECaseCount", data.NewPCECaseCount, data.NewProductionCount);
                     animateCountWithCollateral("pendingPCECaseCount", data.PendingPCECaseCount, data.PendingProductionCount);
                     animateCountWithCollateral("completedPCECaseCount", data.CompletedPCECaseCount + data.ReestimatedPCECaseCount, data.CompletedProductionCount + data.ReestimatedProductionCount);
-                    animateCountWithCollateral("returnedPCECaseCount", data.ReturnedPCECaseCount, data.ReturnedProductionCount);
+                    // animateCountWithCollateral("returnedPCECaseCount", data.ReturnedPCECaseCount, data.ReturnedProductionCount);
                     animateCount("totalPCECaseCount", data.TotalPCECaseCount);
 
                 })
@@ -391,8 +391,8 @@
                                     statusHtml = '<span class="badge badge-success">New</span>';
                                 } else if (data === "Pending") {
                                     statusHtml = '<span class="badge badge-warning">Pending</span>';
-                                } else if (data === "Rejected") {
-                                    statusHtml = '<span class="badge badge-danger">Returned</span>';
+                                } else if (data === "Terminated") {
+                                    statusHtml = '<span class="badge badge-danger">Terminated</span>';
                                 } else if (data === "Completed") {
                                     statusHtml = '<span class="badge badge-info">Completed</span>';
                                 } else {

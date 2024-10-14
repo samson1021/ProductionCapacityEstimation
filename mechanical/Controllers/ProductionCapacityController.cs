@@ -144,34 +144,33 @@ namespace mechanical.Controllers
             try{
                     
                 var userId = base.GetCurrentUserId();
-                var pceDetail = await _ProductionCapacityService.GetPCEDetails(userId, Id);
+                var productionDetail = await _ProductionCapacityService.GetProductionDetails(userId, Id);
 
-                if (pceDetail.ProductionCapacity == null)
+                if (productionDetail.ProductionCapacity == null)
                 {
-                    if (pceDetail.PCECase == null)
+                    if (productionDetail.PCECase == null)
                     {
-                        return RedirectToAction("PCECases", "PCECase");
+                        return RedirectToAction("Detail", "PCECase", new { Id = productionDetail.PCECase.Id, Status = "New" });   
                     }
-                    return RedirectToAction("Detail", "PCECase", new { Id = pceDetail.PCECase.Id, Status = "New" });   
+                    return RedirectToAction("PCECases", "PCECase");
                 }
                 
                 ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
-                ViewData["LatestPCECaseSchedule"] = await _PCECaseScheduleService.GetLatestSchedule(pceDetail.PCECase.Id);
-                ViewData["Reestimation"] = pceDetail.Reestimation;
-                ViewData["PCE"] = pceDetail.ProductionCapacity;
-                ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
-                ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
-                ViewData["PCECase"] = pceDetail.PCECase;
-                ViewData["ProductionFiles"] = pceDetail.RelatedFiles;
-                ViewData["RejectedProduction"] = pceDetail.RejectedProduction;
-                ViewData["RejectedBy"] = pceDetail.RejectedBy;
+                ViewData["LatestPCECaseSchedule"] = await _PCECaseScheduleService.GetLatestSchedule(productionDetail.PCECase.Id);
+                ViewData["Reestimation"] = productionDetail.Reestimation;
+                ViewData["Production"] = productionDetail.ProductionCapacity;
+                ViewData["LatestEvaluation"] = productionDetail.PCEValuationHistory.LatestEvaluation;
+                ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
+                ViewData["PCECase"] = productionDetail.PCECase;
+                ViewData["ProductionFiles"] = productionDetail.RelatedFiles;
+                ViewData["ReturnedProductions"] = productionDetail.ReturnedProductions;
                 ViewData["Title"] = "Production Detail";
                 
-                return View(pceDetail.ProductionCapacity);
+                return View(productionDetail.ProductionCapacity);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching Production capacity details for ID: {Id}", Id);
+                // _logger.LogError(ex, "Error fetching Production capacity details for ID: {Id}", Id);
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
@@ -224,7 +223,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Productions(string Status = "All")
         { 
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
                 return BadRequest("Invalid status.");
@@ -239,7 +238,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductions(Guid? PCECaseId = null, string Status = "All")
         { 
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
                 return BadRequest("Invalid status.");

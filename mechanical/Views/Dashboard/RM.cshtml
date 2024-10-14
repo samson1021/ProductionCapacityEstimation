@@ -302,7 +302,7 @@
                                             @foreach (var item in newCases)
                                             {
                                                 <tr>
-                                                    <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = "New" })">@item.CaseNo</a></td>
+                                                    <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = "All" })">@item.CaseNo</a></td>
                                                     @* <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = @item.Status })">@item.CaseNo</a></td> *@
                                                     <td>@item.CreationDate</td>
                                                     <td>@item.ApplicantName</td>
@@ -317,6 +317,10 @@
                                                         else if (item.Status == "Pending")
                                                         {
                                                             <span class="badge badge-warning" style="padding: 10px 15px;">Pending</span>
+                                                        }
+                                                        else if (item.Status == "Terminated") 
+                                                        {
+                                                            <span class="badge badge-danger" style="padding: 10px 15px;">Terminated</span>
                                                         }
                                                         else if (item.Status == "Completed")
                                                         {

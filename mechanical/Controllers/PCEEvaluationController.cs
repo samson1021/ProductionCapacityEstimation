@@ -51,23 +51,29 @@ namespace mechanical.Controllers
                 var userId = base.GetCurrentUserId();
                 var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
                 
-                if (pceEvaluation != null && pceEvaluation.PCE.CurrentStatus != "Reestimate")
-                {            
-                    return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceEvaluation.PCEId });
+                if (pceEvaluation != null){                    
+                    if (pceEvaluation.PCE.EvaluatorUserID != userId)
+                    {            
+                        return BadRequest("Unauthorized access!");
+                    }
+                    if (pceEvaluation.PCE.CurrentStatus != "Reestimate")
+                    {            
+                        return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceEvaluation.PCEId });
+                    }
                 }
                 
-                var pceDetail = await _ProductionCapacityService.GetPCEDetails(userId, PCEId);     
+                var productionDetail = await _ProductionCapacityService.GetProductionDetails(userId, PCEId);     
 
-                if (pceDetail.ProductionCapacity == null)
+                if (productionDetail.ProductionCapacity == null)
                 {
                     return RedirectToAction("PCECases", "PCECase");
                 }
             
-                ViewData["Reestimation"] = pceDetail.Reestimation;
-                ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
-                ViewData["PreviousEvaluations"] = pceDetail.PCEValuationHistory.PreviousEvaluations;
-                ViewData["PCECase"] = pceDetail.PCECase;
-                ViewData["PCE"] = pceDetail.ProductionCapacity;
+                ViewData["Reestimation"] = productionDetail.Reestimation;
+                ViewData["LatestEvaluation"] = productionDetail.PCEValuationHistory.LatestEvaluation;
+                ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
+                ViewData["PCECase"] = productionDetail.PCECase;
+                ViewData["Production"] = productionDetail.ProductionCapacity;
 
                 return View();
             }
@@ -115,7 +121,7 @@ namespace mechanical.Controllers
 
                 var pce = await _ProductionCapacityService.GetProduction(userId, pceEvaluation.PCEId);
 
-                ViewData["PCE"] = pce;
+                ViewData["Production"] = pce;
                 ViewData["PCECase"] = pce.PCECase;
 
                 return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));
@@ -213,17 +219,17 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reject(PCERejectPostDto Dto)
+        public async Task<IActionResult> Return(ProductionReturnPostDto Dto)
         {
             var userId = base.GetCurrentUserId();
             try
             {
-                await _PCEEvaluationService.RejectValuation(userId, Dto);
+                await _PCEEvaluationService.ReturnValuation(userId, Dto);
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Rejecting production valuation for user {userId}", userId);
+                _logger.LogError(ex, "Error returning production valuation for user {userId}", userId);
                 // var error = new { message = ex.Message };
                 return Json(new { success = false, error = ex.Message });
             }

@@ -51,7 +51,7 @@
                             <div class="ribbon bg-success">@status</div>
                         } else if (status == "Pending") {
                             <div class="ribbon bg-warning">@status</div>
-                        } else if (status == "Rejected") {
+                        } else if (status == "Returned") {
                             <div class="ribbon bg-danger">@status</div>
                         } else if (status == "Completed") {
                             <div class="ribbon bg-info">@status</div>
@@ -83,7 +83,7 @@
     @{      
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("Partial/_PrevousValuationDatatableScriptsPartial");
     }

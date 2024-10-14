@@ -189,14 +189,18 @@ namespace mechanical.Mapper
             CreateMap<PCECaseSchedulePostDto, PCECaseSchedule>();
             CreateMap<PCECaseSchedule, PCECaseScheduleReturnDto>();
 
-
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();
             CreateMap<TimeInterval, TimeIntervalPostDto>().ReverseMap();
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
             CreateMap<TimeInterval, TimeIntervalReturnDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
-            CreateMap<PCERejectPostDto, ProductionReject>();
+            CreateMap<ProductionReturnPostDto, ProductionReject>();
+                // .ForMember(dest => dest.RejectionComment, opt => opt.MapFrom(src => src.ReturnComment));            
+            CreateMap<ProductionReject, ProductionReturnDto>();
+            //     .ForMember(dest => dest.ReturnedBy, opt => opt.MapFrom(src => src.ReturnedByUser))
+                // .ForMember(dest => dest.ReturnComment, opt => opt.MapFrom(src => src.RejectionComment));
+
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
 

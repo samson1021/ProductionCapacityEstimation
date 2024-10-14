@@ -26,11 +26,11 @@
             data: data,
             columns: [  
                 
-                @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Rejected") && currentUserRole != "Maker Officer")
+                @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Returned") && currentUserRole != "Maker Officer")
                 {
                     if (currentUserRole == "Relation Manager")
                     {
-                        @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate" && data.AssignmentStatus !== "Rejected") ? ' disabled' : '') + '>'; } },
+                        @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate" && data.AssignmentStatus !== "Returned") ? ' disabled' : '') + '>'; } },
 
                     }
                     else
@@ -41,7 +41,7 @@
                 { data: 'PropertyOwner', width: '25%' },
                 { data: 'Role', width: '25%' },
                 { data: 'ProductionType', width: '35%' },
-                { data: 'CurrentStatus', width: '35%' },
+                @* { data: 'CurrentStatus', width: '35%' }, *@
                 { data: 'AssignmentStatus', width: '35%' },
                 {
                     data: 'Id',
@@ -53,10 +53,10 @@
                         @{
                             if (currentUserRole == "Relation Manager")
                             {
-                                if (status == "New" || status == "All")
+                                if (status == "New" || status == "All"|| status == "Returned")
                                 {
                                     <text>
-                                        if (row.AssignmentStatus === "New"){
+                                        if (row.AssignmentStatus === "New" || row.AssignmentStatus === "Returned"){
                                             const editUrl = '@Url.Action("Edit", "ProductionCapacity")?Id=' + data;
                                             const deleteUrl = '#';
                                             link += ` | <a class="text-info" href="${editUrl}">Edit</a>`;
@@ -70,8 +70,8 @@
                                 if (status == "New" || status == "All" || status == "Reestimate")
                                 {
                                     <text>
-                                        if (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate") {
-                                            link += ` | <a class="text-warning" href="#" onclick="openRejectionModal('${data}')">Return</a>`;
+                                        if (row.AssignmentStatus == "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
+                                            link += ` | <a class="text-warning" href="#" onclick="openReturnModal('${data}')">Return</a>`;
                                         }
                                     </text>
                                 }
@@ -83,7 +83,7 @@
                                     if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
                                     {                           
                                         <text>
-                                            if (row.EvaluatorUserID === '@currentUser?.Id' && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
+                                            if (row.EvaluatorUserID === '@currentUser?.Id'&& row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                                 const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=' + data;
                                                 const evaluateLink = `<a class="text-success" href="${evaluateUrl}">${row.CurrentStatus == "Reestimate" ? "Reestimate" : "Evaluate"}</a> | `;
                                                 link =  evaluateLink + link;
@@ -92,7 +92,7 @@
                                     }                                                    
                                     <text>
                                         if (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate") {
-                                            const returnLink = ` | <a class="text-warning" href="#" onclick="openRejectionModal('${data}')">Return</a>`;
+                                            const returnLink = ` | <a class="text-warning" href="#" onclick="openReturnModal('${data}')">Return</a>`;
                                             link += returnLink;
                                         }
                                     </text>
@@ -129,9 +129,9 @@
         if (currentUserRole != "Relation Manager")
         {
             <text>
-                function openRejectionModal(PCEId) {
-                    document.querySelector('#rejectionModal1 input[name="PCEId"]').value = PCEId;
-                    $('#rejectionModal1').modal('show');
+                function openReturnModal(PCEId) {
+                    document.querySelector('#returnModal1 input[name="PCEId"]').value = PCEId;
+                    $('#returnModal1').modal('show');
                 }
             </text>
         }

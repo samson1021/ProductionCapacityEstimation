@@ -98,7 +98,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> Detail(Guid Id, string Status = "All")
         {
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
                 // Error page
@@ -172,7 +172,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCECases(string Status = "All")
         {   
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
                 return BadRequest("Invalid status.");
@@ -233,7 +233,7 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> GetPCECases(string Status = "All", int? Limit = null)
         {
             
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
                 return BadRequest("Invalid status.");
