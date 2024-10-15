@@ -1,0 +1,87 @@
+﻿<script>
+    $(document).ready(function () {
+        $('#terminationForm').submit(function (event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            var submitButton = $(this).find('button[type="submit"]');
+            submitButton.prop('disabled', true);
+            submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                },
+                complete: function () {
+                    submitButton.prop('disabled', false);
+                    submitButton.html('<i class="fas fa-ban"></i> Terminate');
+                }
+            });
+        });
+
+        $('#UpdateTerminate').on('click', function (event) {
+            event.preventDefault();
+            $('#modalReason').val($('#caseTerminateReason').val());
+            $('#updateModal').modal('show');
+        });
+
+        $('#updateForm').submit(function (event) {
+            event.preventDefault();
+
+            $('#updateButton').prop('disabled', true);
+
+            var formData = new FormData(this);
+            var Id = $('#CaseSchedulleId').val();
+            formData.append('Id', Id);
+            $.ajax({
+                url: '/PCECase/UpdateTermination',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success('Successfuly update case termination request');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1200);
+                },
+                error: function () {
+                    $('#updateButton').prop('disabled', false);
+                    toastr.error('Error occurred while updating the date.');
+                }
+            });
+        });
+
+    });
+
+    $('#AcceptcaseTerminationButton').click(function (event) {
+        event.preventDefault();
+        var formData = new FormData();
+        var Id = $('#CaseTerminationId').val();
+        formData.append('Id', Id);
+
+        var submitButton = $('#AcceptcaseTerminationButton');
+        submitButton.prop('disabled', true);
+        submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+        $.ajax({
+            url: '/PCECase/ApproveCaseTermination',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                location.reload();
+            },
+            error: function () {
+                alert('Error occurred while updating the date.');
+            }
+        });
+    });
+</script>

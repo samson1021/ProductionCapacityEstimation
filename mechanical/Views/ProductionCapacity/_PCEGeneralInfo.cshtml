@@ -1,13 +1,13 @@
-﻿@using mechanical.Models.Dto.UserDto
+﻿@using mechanical.Models.Entities
+@using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Entities
-@using mechanical.Models.Entities
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
 
 @{
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
-    var rejectedProduction = ViewData["RejectedProduction"] as ProductionReject;
-    var rejectedBy = ViewData["RejectedBy"] as CreateUser;
+    var returnedProductions = ViewData["ReturnedProductions"] as IEnumerable<ProductionReturnDto>;
 }
 
 <section class="content">
@@ -137,16 +137,23 @@
                             </thead>
                             <tbody>
                                 @{
-                                    if (rejectedProduction == null || rejectedBy == null)
+                                    if (returnedProductions == null || returnedProductions.Count() == 0)
                                     {
-                                        <tr class="text-center"> <td colspan="3"><h6>There is no rejection information related to this production.</h6></td></tr>
+                                        <tr class="text-center"> <td colspan="3"><h6>There is no return information related to this production.</h6></td></tr>
                                     }
                                     else
                                     {
-                                        <tr>
-                                            <td><a href="@Url.Action("Profile","UserManagment")?id=@rejectedBy.Id">@rejectedBy.Name</a> (@rejectedBy.Role.Name)</td>
-                                            <td>@rejectedProduction.RejectionComment</td>                                                
-                                        </tr>  
+                                        
+                                        foreach (var returnedProduction in returnedProductions)
+                                        {                                            
+                                            if (returnedProduction != null)
+                                            {
+                                                <tr>
+                                                    <td><a href="@Url.Action("Profile","UserManagment")?id=@returnedProduction?.ReturnedBy?.Id">@returnedProduction?.ReturnedBy?.Name</a> (@returnedProduction?.ReturnedBy?.Role?.Name)</td>
+                                                    <td>@returnedProduction.RejectionComment</td>                                                
+                                                </tr>  
+                                            }
+                                        }
                                     }
                                 }
                             </tbody>

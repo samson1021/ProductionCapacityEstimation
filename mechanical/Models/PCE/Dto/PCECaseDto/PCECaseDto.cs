@@ -8,7 +8,5 @@
         public required string CustomerUserId { get; set; }
         public string CustomerEmail { get; set; } = string.Empty;
         public Guid DistrictId { get; set; }
-
-
     }
 }

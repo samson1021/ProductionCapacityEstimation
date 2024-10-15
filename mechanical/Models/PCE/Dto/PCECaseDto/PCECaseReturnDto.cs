@@ -19,8 +19,8 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
 
         public string Status { get; set; } = string.Empty; 
         public  string? District { get; set; }
-        public int NoOfCollateral { get; set; } = 0;
-        public int TotalNoOfCollateral { get; set; } = 0;
+        public int NoOfProductions { get; set; } = 0;
+        public int TotalNoOfProductions { get; set; } = 0;
 
         public virtual UploadFile? BussinessLicence { get; set; }
     }

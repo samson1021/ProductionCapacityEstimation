@@ -15,7 +15,7 @@
     <div class="sidebar">
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="~/img/user8-128x128.jpg" class="img-circle elevation-2" alt="User Image" />
+                <img src="~/img/avatar5.png" class="img-circle elevation-2" alt="User Image" />
             </div>
             <div class="info">
                 <a href="@Url.Action("MyProfile","UserManagment")" class="d-block">@userName</a>
@@ -25,14 +25,14 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false"> 
                 <li class="nav-item has-treeview">
-                    <a href="@Url.Action("Index", "Dashboard", new { Role = userRole })" class="nav-link active">                         <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <a href="@Url.Action("Index", "Dashboard", new { Role = userRole })" class="nav-link active"> <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p> Dashboard </p>
                     </a>
                 </li>  
 
                 @if (@userRole == "Relation Manager")
                 {   
-                    <li class="nav-item has-treeview">
+                    @* <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> Collateral Valuation<i class="fas fa-angle-left right"></i> </p>
@@ -93,7 +93,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> *@
                     
                     @* Start Production Capacity Estimation *@
                     <li class="nav-item has-treeview">
@@ -110,27 +110,24 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                @* <a href="@Url.Action("PCENewCases", "PCECase")" class="nav-link"> *@
                                 <a href="@Url.Action("PCECases", "PCECase", new { Status = "New" })" class="nav-link">
                                     <i class="fas fa-grip-lines nav-icon"></i>
                                     <p> New PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                @* <a href="@Url.Action("PCEPendingCases", "PCECase", new { Status = "All" })" class="nav-link"> *@
                                 <a href="@Url.Action("PCECases", "PCECase", new { Status = "Pending" })" class="nav-link">
                                     <i class="fas fa-spinner nav-icon"></i>
                                     <p> Pending PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("PCECases", "PCECase", new { Status = "Rejected" })" class="nav-link">
+                                <a href="@Url.Action("PCECases", "PCECase", new { Status = "Returned" })" class="nav-link">
                                     <i class="fas fa-undo nav-icon"></i>
                                     <p> Returned  PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                @* <a href="@Url.Action("PCECompleteCases", "PCECase")" class="nav-link"> *@
                                 <a href="@Url.Action("PCECases", "PCECase", new { Status = "Completed" })" class="nav-link">
                                     <i class="fas fa-check nav-icon"></i>
                                     <p> Completed PCE Cases </p>
@@ -155,7 +152,6 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                @* <a href="@Url.Action("PCETotalCases", "PCECase")" class="nav-link"> *@
                                 <a href="@Url.Action("PCECases", "PCECase")" class="nav-link">
                                     <i class="fas fa-circle nav-icon"></i>
                                     <p> All PCE Cases </p>
@@ -172,7 +168,7 @@
                 }
                 else if (@userRole == "Maker Manager")
                 {
-                    <li class="nav-item has-treeview">
+                    @* <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> Collateral Valuation<i class="fas fa-angle-left right"></i> </p>
@@ -209,7 +205,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> *@
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
@@ -247,7 +243,7 @@
                 }
                 else if (@userRole == "District Valuation Manager")
                 {
-                    <li class="nav-item has-treeview">
+                    @* <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> Collateral Valuation<i class="fas fa-angle-left right"></i> </p>
@@ -284,7 +280,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> *@
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
@@ -319,7 +315,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item has-treeview">
+                    @* <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> Checker Cases<i class="fas fa-angle-left right"></i> </p>
@@ -356,11 +352,11 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>        
+                    </li>         *@
                 }
                 else if (@userRole == "Maker TeamLeader")
                 {
-                    <li class="nav-item has-treeview">
+                    @* <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> Collateral Valuation<i class="fas fa-angle-left right"></i> </p>
@@ -398,7 +394,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> *@
             
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -437,7 +433,7 @@
                 }
                 else if (@userRole == "Maker Officer")
                 {
-                    <li class="nav-item has-treeview">
+                    @* <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> Collateral Valuation<i class="fas fa-angle-left right"></i> </p>
@@ -481,7 +477,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> *@
 
                     @* Start Production Capacity Estimation *@
                     
@@ -520,7 +516,7 @@
                         </ul>
                     </li>             
                 }
-                else if (@userRole == "Checker Manager")
+                @* else if (@userRole == "Checker Manager")
                 {
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -643,7 +639,7 @@
                             </li>
                         </ul>
                     </li>
-                }
+                } *@
                 else if (@userRole == "Admin")
                 {
                     <li class="nav-item has-treeview">

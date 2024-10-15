@@ -1,10 +1,10 @@
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCERejectPostDto
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.ProductionReturnPostDto
 
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ReturnProductionDto;
     var status = ViewBag.Status as string;
     var RedirectUrl = "";
     
@@ -12,9 +12,9 @@
     {
         RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCECase.Id, Status = "All" });
     }
-    else if (myPCE != null)
+    else if (myProduction != null)
     {
-        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCE.PCECaseId, Status = "All" });
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myProduction.PCECaseId, Status = "All" });
     }
     else
     {
@@ -24,17 +24,17 @@
 }
 
 <!-- Return Modal -->
-<div class="modal fade" id="rejectionModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+<div class="modal fade" id="returnModal1" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rejectionModalLabel">Return PCE</h5>
+                <h5 class="modal-title" id="returnModalLabel">Return PCE</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="@Url.Action("Reject", "PCEEvaluation")" id="RejectionForm">
+                <form method="post" action="@Url.Action("Return", "PCEEvaluation")" id="ReturnForm">
                     @Html.AntiForgeryToken()
                     <input asp-for="PCEId" type="hidden" />
                     <div class="form-group">
@@ -53,23 +53,23 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var rejectionModal = document.getElementById('rejectionModal1');
-        var rejectionForm = document.getElementById('RejectionForm');
+        var returnModal = document.getElementById('returnModal1');
+        var returnForm = document.getElementById('ReturnForm');
         var commentField = document.getElementById('RejectionComment');
 
-        rejectionModal.addEventListener('shown.bs.modal', function () {
+        returnModal.addEventListener('shown.bs.modal', function () {
             commentField.focus();
         });
 
 
-        rejectionForm.addEventListener('submit', function (event) {
+        returnForm.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var formData = new FormData(rejectionForm);
-            var actionUrl = rejectionForm.action;
+            var formData = new FormData(returnForm);
+            var actionUrl = returnForm.action;
 
             fetch(actionUrl, {
-                method: rejectionForm.method,
+                method: returnForm.method,
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -79,7 +79,7 @@
                 .then(data => {
                     if (data.success) {
                         toastr.success('Return Comment saved successfully');
-                        $(rejectionModal).modal('hide');
+                        $(returnModal).modal('hide');
 
                         setTimeout(function () {
                             window.location.href = '@RedirectUrl';

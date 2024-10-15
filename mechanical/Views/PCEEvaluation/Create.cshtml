@@ -7,14 +7,14 @@
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ReturnProductionDto;
     var Reestimation = ViewData["Reestimation"] as ProductionReestimation;
-    var RejectPost = new PCERejectPostDto
+    var ReturnPost = new ProductionReturnPostDto
                     {
-                        PCEId = myPCE.Id,
+                        PCEId = myProduction.Id,
                         RejectionComment = ""
                     };
-    ViewData["RejectPost"] = RejectPost;
+    ViewData["ReturnPost"] = ReturnPost;
 }
 <section class="content-header">
     <div class="container-fluid">
@@ -63,7 +63,7 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create" id="evaluationForm">
 
                     @Html.AntiForgeryToken()
-                    <input asp-for="PCEId" value=@myPCE.Id type="hidden" />  
+                    <input asp-for="PCEId" value=@myProduction.Id type="hidden" />  
 
                     @await Html.PartialAsync("Partial/_EvaluationCreateFormPartial")
 
@@ -75,7 +75,7 @@
                                 <button type="submit" class="btn btn-md btn-primary" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-save mr-2"></i> Save
                                 </button>
-                                <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1" style="margin-top:2rem;margin-bottom:1rem;">
+                                <button type="button" id="return-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#returnModal1" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-undo mr-2"></i> Return
                                 </button>
                             </div>
@@ -95,7 +95,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }

@@ -169,7 +169,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<bool> RejectValuation(Guid UserId, PCERejectPostDto Dto)
+        public async Task<bool> ReturnValuation(Guid UserId, ProductionReturnPostDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
@@ -182,10 +182,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
 
-                await UpdatePCEStatus(pce, "Rejected", "Relation Manager");
-                await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Rejected");
-                await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Rejected");
-                await LogPCECaseTimeline(pce, "PCE is rejected as inadequate for evaluation and returned to Relation Manager for correction.");
+                await UpdatePCEStatus(pce, "Returned", "Relation Manager");
+                await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Returned");
+                await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Returned");
+                await LogPCECaseTimeline(pce, "PCE is returned as inadequate for evaluation and returned to Relation Manager for correction.");
                 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -194,9 +194,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error rejecting production capacity valuation");
+                _logger.LogError(ex, "Error returning production capacity valuation");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while rejecting production capacity valuation.");
+                throw new ApplicationException("An error occurred while returning production capacity valuation.");
             }
         } 
 
@@ -261,20 +261,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         private async Task<PCEEvaluation> FindValuation(Guid Id)
         {
-            var pceEntity = await _cbeContext.PCEEvaluations
-                                            .Include(e => e.ShiftHours)
-                                            .Include(e => e.TimeConsumedToCheck)
-                                            .Include(e => e.PCE)
-                                                .ThenInclude(e => e.PCECase)
-                                            .FirstOrDefaultAsync(e => e.Id == Id);
-
-            if (pceEntity == null)
+            var pceEvaluation = await _cbeContext.PCEEvaluations
+                                                .Include(pce => pce.ShiftHours)
+                                                .Include(pce => pce.TimeConsumedToCheck)
+                                                .Include(pce => pce.PCE)
+                                                    .ThenInclude(pc => pc.PCECase)
+                                                        .ThenInclude(p=> p.ProductionCapacities)
+                                                .FirstOrDefaultAsync(pce => pce.Id == Id);                
+            
+            if (pceEvaluation == null)
             {
                 _logger.LogWarning("Production capacity valuation with Id: {Id} not found", Id);
                 throw new KeyNotFoundException("Production capacity valuation not found");
             }
 
-            return pceEntity;
+            return pceEvaluation;
         }
 
         private async Task HandleFileUploads(Guid UserId, ICollection<IFormFile> Files, string Category, Guid PCECaseId, Guid PCEEId)
@@ -350,8 +351,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
         private async Task UpdatePCECaseStatusIfAllCompleted(PCECase PCECase)
-        {
-            var allCompleted = PCECase.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed");
+        {            
+            // await _cbeContext.Entry(PCECase).Collection(p => p.ProductionCapacities).LoadAsync();
+            var allCompleted = PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "Completed")?? false;
 
             if (allCompleted)
             {
@@ -397,7 +399,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {
             await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
             {
-                Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.PlantName}",
+                Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.ProductionType}",
                 CurrentStage = PCE.CurrentStage,
                 CaseId = PCE.PCECaseId
             });
@@ -524,7 +526,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             
             PCEEvaluationReturnDto latestEvaluation = null;
 
-            if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Rejected")
+            if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Returned")
             {  
                 latestEvaluation = await GetValuationByPCEId(UserId, PCEId);
             }

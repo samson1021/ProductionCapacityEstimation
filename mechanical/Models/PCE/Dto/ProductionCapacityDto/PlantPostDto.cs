@@ -5,7 +5,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
     public class PlantPostDto
     {
         public required Guid PCECaseId { get; set; }
-        [Display(Name = "Collateral type")]
+        [Display(Name = "Plant type")]
 
         public required string ProductionType { get; set; }
         [Display(Name = "Propery Owner")]
@@ -28,7 +28,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         // [Range(1900,DateTime())]
         [Display(Name = "Year of manufacturing")]
         public int YearOfManifacturing { get; set; }
-        [Display(Name = "Purose of the Collateral")]
+        [Display(Name = "Purose of the Plant")]
         public required string PurposeOfCollateral { get; set; }
         public string? ProductDescription { get; set; }
         [Display(Name = "Obsolescence status")]

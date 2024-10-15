@@ -50,16 +50,5 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public IFormFile? Machinespecificationdocumen { get; set; }
         public IFormFile? Machineoperationmanual { get; set; }
         public IEnumerable<IFormFile>? OtherDocument { get; set; }
-
-
-       
-
-       
-
-       
-      
-
-      
-
     }
 }

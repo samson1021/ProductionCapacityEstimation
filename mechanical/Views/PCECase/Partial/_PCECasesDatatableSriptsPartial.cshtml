@@ -29,9 +29,9 @@
             { data: 'CustomerUserId', width: '15%' },            
             @if (status != "All")
             {
-                @: { data: 'NoOfCollateral', width: '10%' },
+                @: { data: 'NoOfProductions', width: '10%' },
             }
-            { data: 'TotalNoOfCollateral', width: '10%' },      
+            { data: 'TotalNoOfProductions', width: '10%' },      
             {
                 data: 'Id',
                 width: '10%',
@@ -39,21 +39,28 @@
                     const detailUrl = '@Url.Action("Detail", "PCECase")?Id=' + data + '&Status=@ViewBag.Status';
                     const editUrl = '@Url.Action("Edit", "PCECase")?Id=' + data;
                     const deleteUrl = '@Url.Action("Delete", "PCECase")?Id=' + data;
-                    const timeLineUrl = '@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data; // Correct URL construction
+                    const summaryUrl = '@Url.Action("PCESummary", "PCECase")?Id=' + data;
+                    const timeLineUrl = '@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data;
 
                     const editLink = '@currentUserRole' === "Relation Manager" ? ` | <a href="${editUrl}">Edit</a>` : '';
                     @* const deleteLink = '@currentUserRole' === "Relation Manager" ? ` | <a href="${deleteUrl}" onclick="openDeletionModal('${data}')">Delete</a>` : ''; *@
-                    const timeLineLink = ` | <a href="${timeLineUrl}"><i class="nav-icon fas fa-sitemap"></i></a>`;
-                    
+                    const summaryLink = ` | <a href="${summaryUrl}">Summary</i></a>`;
+                    const timeLineLink = ` | <a href="${timeLineUrl}"><i class="nav-icon fas fa-sitemap"></i></a>`;                   
+
+
                     let link = `<a href="${detailUrl}">Details</a>`;                
 
                     @if (currentUserRole == "Relation Manager")
                     {
-                        <text>
-                            if (row.Status === "New" || row.Status === "Rejected") {
-                                link += editLink;
-                                @* link += editLink + deleteLink; *@
-                            }
+                            <text>
+                                @* if (row.Status === "New" || row.Status === "Returned" || row.Status === "Pending") { *@                              
+                                if (row.Status === "New") {
+                                    link += editLink;
+                                    @* link += editLink + deleteLink; *@
+                                }
+                                else if (row.Status === "Completed") {
+                                    link += summaryLink;
+                                }
                         </text>
                     }
 

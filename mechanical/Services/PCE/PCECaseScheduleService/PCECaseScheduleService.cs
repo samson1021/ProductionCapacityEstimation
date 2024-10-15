@@ -180,22 +180,22 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
 
         public async Task<PCECaseScheduleReturnDto> GetSchedule(Guid Id)
         {
-            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.Include(res => res.User).FirstOrDefaultAsync(res => res.Id == Id);
+            var pceCaseSchedule = await _cbeContext.PCECaseSchedules.AsNoTracking().Include(res => res.User).FirstOrDefaultAsync(res => res.Id == Id);
             
             return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
-        }
-
-        public async Task<IEnumerable<PCECaseScheduleReturnDto>> GetSchedules(Guid PCECaseId)
-        {
-            var pceCaseSchedules = await _cbeContext.PCECaseSchedules.Include(res => res.User).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreatedAt).ToListAsync();
-            
-            return _mapper.Map<IEnumerable<PCECaseScheduleReturnDto>>(pceCaseSchedules);
         }
 
         public async Task<PCECaseScheduleReturnDto> GetLatestSchedule(Guid PCECaseId)
         {
             var pceCaseSchedule = await _cbeContext.PCECaseSchedules.AsNoTracking().Include(pcs => pcs.User).Where(pcs => pcs.PCECaseId == PCECaseId).OrderByDescending(pcs => pcs.CreatedAt).FirstOrDefaultAsync();
             return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
+        }
+
+        public async Task<IEnumerable<PCECaseScheduleReturnDto>> GetSchedules(Guid PCECaseId)
+        {
+            var pceCaseSchedules = await _cbeContext.PCECaseSchedules.AsNoTracking().Include(res => res.User).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            
+            return _mapper.Map<IEnumerable<PCECaseScheduleReturnDto>>(pceCaseSchedules);
         }
     }
 }               

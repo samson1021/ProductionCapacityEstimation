@@ -11,7 +11,7 @@
 
     if (currentUserRole == "Relation Manager")
     {
-        if (status == "New" || status == "All" || status == "Rejected")
+        if (status == "New" || status == "All" || status == "Returned")
         {            
             assiName = "SendForValuation";
         }        
@@ -68,7 +68,7 @@
             <table id="Productions" class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Rejected") && currentUserRole != "Maker Officer")
+                        @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Returned") && currentUserRole != "Maker Officer")
                         {
                             <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>  
                         }        
@@ -76,7 +76,7 @@
                         <th>Role</th>
                         <th>Production Type</th>
                         <th>Status</th>
-                        <th>Assignment Status</th>
+                        @* <th>Assignment Status</th> *@
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -91,7 +91,7 @@
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Send for Estimation <i class="fas fa-paper-plane"></i></button>
                         }
-                        else if (status == "Rejected") 
+                        else if (status == "Returned") 
                         {
                             <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">Resend for Estimation <i class="fas fa-paper-plane"></i></button>
                         }
@@ -115,8 +115,7 @@
                 }
             }
         }        
-    </div>
-  
+    </div> 
 </div>
 
 @{

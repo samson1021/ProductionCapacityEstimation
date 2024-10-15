@@ -16,9 +16,11 @@ using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.CaseServices;
+using mechanical.Services.PCE.PCEEvaluationService;
 
 namespace mechanical.Controllers.PCE
 {
@@ -33,14 +35,16 @@ namespace mechanical.Controllers.PCE
         private readonly IUploadFileService _UploadFileService;
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IPCECaseTerminateService _PCECaseTerminateService;
+        private readonly IPCEEvaluationService _PCEEvaluationService;
 
         private readonly ICaseService _caseService;
 
-        public PCECaseController(CbeContext cbeContext, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
+        public PCECaseController(CbeContext cbeContext, IPCEEvaluationService PCEEvaluationService, ICaseService caseService, IUserService UserService, IPCECaseService PCECaseService, IPCECaseScheduleService PCECaseScheduleService, IPCECaseTerminateService PCECaseTerminateService, IUploadFileService UploadFileService, IMailService mailService)
         {
             _cbeContext = cbeContext;
             _caseService = caseService;
             _mailService = mailService;
+            _PCEEvaluationService = PCEEvaluationService;
             _UserService = UserService;
             _PCECaseService = PCECaseService;
             _UploadFileService = UploadFileService;
@@ -94,7 +98,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> Detail(Guid Id, string Status = "All")
         {
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
                 // Error page
@@ -168,7 +172,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCECases(string Status = "All")
         {   
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
                 return BadRequest("Invalid status.");
@@ -229,7 +233,7 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> GetPCECases(string Status = "All", int? Limit = null)
         {
             
-            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Rejected", "Terminated", "Remarked", "Reestimate" };         
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
             
             if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) {
                 return BadRequest("Invalid status.");
@@ -283,22 +287,13 @@ namespace mechanical.Controllers.PCE
             
             string jsonData = JsonConvert.SerializeObject(myPCECases, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
             return Content(jsonData, "application/json");
-        }
-          
-
+        }     
+   
         [HttpGet]
         public async Task<IActionResult> GetDashboardPCECaseCount()
         {
-            var myCase = await _PCECaseService.GetDashboardPCECaseCount(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(myCase, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-            return Content(jsonData, "application/json");
-        }
-   
-        [HttpGet]
-        public async Task<IActionResult> GetDashboardPCECasesCount()
-        {
-            var pceCasesCount = await _PCECaseService.GetDashboardPCECasesCount(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(pceCasesCount, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+            var pceCaseCount = await _PCECaseService.GetDashboardPCECaseCount(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(pceCaseCount, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
             return Content(jsonData, "application/json");
         }
 
@@ -331,7 +326,8 @@ namespace mechanical.Controllers.PCE
 
             double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
 
-            var customerinfo = await _caseService.GetCustomerName(customerId);
+            //var customerinfo = await _caseService.GetCustomerName(customerId);
+            var customerinfo = "err";
             if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
             ViewData["customerinfo"] = customerinfo;
 
@@ -380,7 +376,10 @@ namespace mechanical.Controllers.PCE
 
             double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
 
-            var customerinfo = await _caseService.GetCustomerName(customerId);
+            //var customerinfo = await _caseService.GetCustomerName(customerId);
+            var customerinfo = "err";
+
+
             if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
             ViewData["customerinfo"]  = customerinfo;
             //string jsonData = JsonConvert.SerializeObject(myCase);
@@ -425,12 +424,24 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> PCESummary(Guid Id)
         {
-            var pceCase = _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+            var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
+
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
+
+            ViewData["pceEvaluations"] = pceEvaluations;
             ViewData["PCECase"] = pceCase;
             return View();
         }
 
-// PCE Terminate Cases
+        [HttpGet]
+        public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
+        {
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        } 
+
+        // PCE Terminate Cases
         [HttpGet]
         public async Task<IActionResult> PCETerminatedCases()
         {
@@ -515,134 +526,5 @@ namespace mechanical.Controllers.PCE
 
             return View();
         }
-        
-
-        
-        // [HttpGet]
-        // public async Task<IActionResult> PCENewCases()
-        // {
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     return View();
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetPCENewCases()
-        // {
-        //     var newCases = await _PCECaseService.GetPCENewCases(base.GetCurrentUserId());
-        //     return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore}), "application/json");
-        // }
-
-        // [HttpGet]
-        // public async Task<IActionResult> PCEPendingCases()
-        // {
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     return View();
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetPCEPendingCases()
-        // {
-        //     var newCases = await _PCECaseService.GetPCEPendingCases(base.GetCurrentUserId());
-        //     return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore}), "application/json");
-        // }
-
-        // [HttpGet]
-        // public async Task<IActionResult> PCECompleteCases()
-        // {
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     return View();
-        // }
-
-        // ////////
-        // [HttpGet]
-        // public async Task<IActionResult> PCERejectedCases()
-        // {
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     return View();
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetPCERejectedCases()
-        // {
-        //     var newCases = await _PCECaseService.GetPCERejectedCases(base.GetCurrentUserId());
-        //     return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore}), "application/json");
-        // }
-
-        // [HttpGet]
-        // public async Task<IActionResult> PCERejectedDetail(Guid id)
-        // {
-        //     var pcepceCaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-        //     ViewData["PCECase"] = pcepceCaseDto;
-        //     return View();
-        // }
-        /////
-
-
-
-        // [HttpGet]
-        // public async Task<IActionResult> PCETotalCases()
-        // {
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     return View();
-        // }
-        // [HttpGet]
-        // public async Task<IActionResult> GetPCETotalCases()
-        // {
-        //     var newCases = await _PCECaseService.GetPCETotalCases(base.GetCurrentUserId());
-        //     return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore}), "application/json");
-        // }
-
-        // // abdu start
-        // [HttpGet]
-        // public async Task<IActionResult> GetPCECompleteCases()
-        // {
-        //     var myCase = await _PCECaseService.GetPCECompleteCases(base.GetCurrentUserId());
-        //     string jsonData = JsonConvert.SerializeObject(myCase, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //     return Content(jsonData, "application/json");
-        // }
-
-        // [HttpGet]
-        // public async Task<IActionResult> PCECompleteCase(Guid id)
-        // {
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     ViewData["Id"] = base.GetCurrentUserId();
-
-
-        //     var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(id);
-        //     ViewData["PCECaseSchedule"] = pceCaseSchedule; // Updated key 
-
-
-        //     var pceCase = await _PCECaseService.GetCase(base.GetCurrentUserId(), id);
-        //     if (pceCase == null) { return RedirectToAction("GetPCECompleteCases"); }
-        //     ViewData["PCECase"] = pceCase;
-
-        //     var production = await _cbeContext.ProductionCapacities.ToListAsync();
-        //     List<ProductionCapacity> productions = null;
-        //     try { productions = await _cbeContext.ProductionCapacities.ToListAsync(); }
-        //     catch (Exception ex) { Console.WriteLine($"An error occurred while retrieving productions vehicles: {ex.Message}"); }
-        //     ViewData["Production"] = production;
-
-
-        //     var pcepceCaseDto = _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-        //     if (pcepceCaseDto == null) { return RedirectToAction("PCENewCases"); }
-        //     ViewData["PCECase"] = pcepceCaseDto;
-
-        //     ViewData["PCECaseId"] = pcepceCaseDto.Id;
-
-        //     return View();
-        // }
-
-        // [HttpGet]
-        // public async Task<IActionResult> PCEPendingDetail(Guid id)
-        // {
-        //     var pcepceCaseDto = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), id);
-        //     var pceCaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(id);
-        //     var caseSchedule = await _PCECaseScheduleService.GetSchedules(id);
-        //     ViewData["PCECase"] = pcepceCaseDto;
-        //     ViewData["PCECaseTerminate"] = pceCaseTerminate;
-        //     ViewData["PCECaseSchedule"] = caseSchedule;
-        //     ViewData["Id"] = base.GetCurrentUserId();
-        //     ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-        //     ViewData["PCECaseId"] = pcepceCaseDto.Id;
-
-        //     return View();
-        // }
     }
 }

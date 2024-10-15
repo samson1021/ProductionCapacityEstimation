@@ -6,12 +6,12 @@
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var RejectPost = new PCERejectPostDto
+    var ReturnPost = new ProductionReturnPostDto
     {
         PCEId = Model.PCEId,
         RejectionComment = ""
     };
-    ViewData["RejectPost"] = RejectPost;
+    ViewData["ReturnPost"] = ReturnPost;
 }
 
 <section class="content-header">
@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
-                            <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1">
+                            <button type="button" id="return-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#returnModal1">
                                 <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
@@ -86,7 +86,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }

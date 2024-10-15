@@ -93,9 +93,30 @@ namespace mechanical.Services.UploadFileService
         public async Task<IEnumerable<ReturnFileDto>> GetUploadFileByCollateralId(Guid? CollateralId)
         {
             if (CollateralId == null) return null;
+        
 
-            var uploadFiles = await _cbeContext.UploadFiles.Where(res=>res.CollateralId == CollateralId).ToListAsync();
-            return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
+            var evaluationId = await _cbeContext.PCEEvaluations
+                            .Where(r => r.PCEId == CollateralId)
+                            .Select(r => r.Id) // Select only the PCEId
+                            .FirstOrDefaultAsync(); 
+
+            if (evaluationId != null)
+            {
+                var uploadFiles = await _cbeContext.UploadFiles
+                    .Where(res => res.CollateralId == CollateralId || res.CollateralId == evaluationId) 
+                    .ToListAsync();
+                return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
+
+            }
+            else
+            {
+               
+                var uploadFiles = await _cbeContext.UploadFiles
+                    .Where(res => res.CollateralId == CollateralId)
+                    .ToListAsync();
+                return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
+
+            }
         }
 
 

@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using mechanical.Data;
 using mechanical.Models.Dto.DashboardDto;
 using mechanical.Models.PCE.Entities;
-using mechanical.Models.PCE.Dto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
@@ -28,11 +27,11 @@ namespace mechanical.Services.PCE.PCECaseService
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<PCECaseService> _logger;
 
-        public PCECaseService(ILogger<PCECaseService> logger, IHttpContextAccessor httpContextAccessor, CbeContext cbeContext, IMapper mapper, IPCECaseTimeLineService caseTimeLineService)
+        public PCECaseService(ILogger<PCECaseService> logger, IHttpContextAccessor httpContextAccessor, CbeContext cbeContext, IMapper mapper, IPCECaseTimeLineService PCECaseTimeLineService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
-            _IPCECaseTimeLineService = caseTimeLineService;
+            _IPCECaseTimeLineService = PCECaseTimeLineService;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
@@ -56,7 +55,7 @@ namespace mechanical.Services.PCE.PCECaseService
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     CaseId = pceCase.Id,
-                    Activity = $"<strong>A new case with ID {pceCase.CaseNo} has been created</strong>",
+                    Activity = $"<strong>A new PCE case with ID {pceCase.CaseNo} has been created</strong>",
                     CurrentStage = "Relation Manager"
                 });   
 
@@ -68,14 +67,14 @@ namespace mechanical.Services.PCE.PCECaseService
 
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating case");
+                _logger.LogError(ex, "Error creating PCE case");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while creating case.");
+                throw new ApplicationException("An error occurred while creating PCE case.");
             }
 
         }
 
-        public async Task<PCECaseReturnDto> Edit(Guid UserId, PCECaseReturnDto caseDto)
+        public async Task<PCECaseReturnDto> Edit(Guid UserId, PCECaseReturnDto pceCasesDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
@@ -84,14 +83,14 @@ namespace mechanical.Services.PCE.PCECaseService
 
                 if (pceCase != null)
                 {
-                    pceCase.ApplicantName = caseDto.ApplicantName;
-                    pceCase.CustomerEmail = caseDto.CustomerEmail;
-                    pceCase.CustomerUserId = caseDto.CustomerUserId;
+                    pceCase.ApplicantName = pceCasesDto.ApplicantName;
+                    pceCase.CustomerEmail = pceCasesDto.CustomerEmail;
+                    pceCase.CustomerUserId = pceCasesDto.CustomerUserId;
 
                     await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                     {
                         CaseId = pceCase.Id,
-                        Activity = $"<strong>The case with case number {pceCase.CaseNo} has been edited</strong>",
+                        Activity = $"<strong>The PCE case with case number {pceCase.CaseNo} has been edited</strong>",
                         CurrentStage = "Relation Manager"
                     });
                 }                
@@ -104,9 +103,9 @@ namespace mechanical.Services.PCE.PCECaseService
 
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating the case");
+                _logger.LogError(ex, "Error updating the PCE case");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while updating the case.");
+                throw new ApplicationException("An error occurred while updating the PCE case.");
             }
         }
 
@@ -117,11 +116,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                                                 .Where(pca => pca.UserId == UserId && pca.ProductionCapacity.PCECaseId == Id)
                                                                 .Select(pca => pca.ProductionCapacityId)
                                                                 .ToListAsync();
-
-            // if (!assignedProductionCapacities.Any())
-            // {
-            //     return null; 
-            // }
+     
 
             var pceCase = await _cbeContext.PCECases
                                             .AsNoTracking()
@@ -136,226 +131,168 @@ namespace mechanical.Services.PCE.PCECaseService
         }
 
         public async Task<IEnumerable<PCECaseReturnDto>> GetPCECases(Guid UserId, string Status = null, int? Limit = null)
-        {            
-            var pceCaseAssignments = await _cbeContext.PCECaseAssignments
-                                                    .AsNoTracking()
-                                                    .Include(pca => pca.ProductionCapacity)
-                                                        .ThenInclude(pc => pc.PCECase)
-                                                    .Where(pca => pca.UserId == UserId)       
-                                                    .ToListAsync();
-              
-            //  res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")                                      
-            // if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
-            // {
-            //     pceCaseAssignmentsQuery = pceCaseAssignmentsQuery.Where(ca => ca.Status == Status);
-            // }
-            // var pceCaseAssignments = await pceCaseAssignmentsQuery .ToListAsync();
+        {
+            var unfilteredQuery = _cbeContext.PCECaseAssignments
+                                            .AsNoTracking()
+                                            .Include(pca => pca.ProductionCapacity)
+                                                .ThenInclude(pc => pc.PCECase)
+                                            .Where(pca => pca.UserId == UserId);
 
-            var uniquePCECases = pceCaseAssignments
-                                                .Select(pca => pca.ProductionCapacity.PCECase)
-                                                .DistinctBy(pc => pc.Id)
-                                                .OrderByDescending(pc => pc.CreationDate)
-                                                .ToList();
+            IQueryable<PCECaseAssignment> filteredQuery = unfilteredQuery;
+
+            if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                filteredQuery = filteredQuery.Where(pca => pca.Status == Status || pca.Status.Contains(Status));
+            }
+
+            var distinctPCECases = await filteredQuery
+                                                .GroupBy(pca => pca.ProductionCapacity.PCECase)
+                                                .Select(p => new
+                                                {
+                                                    PCECase = p.Key,
+                                                    LatestAssignmentDate = p.Max(x => x.AssignmentDate),
+                                                    NoOfProductions = p.Count(),
+                                                    TotalNoOfProductions = unfilteredQuery
+                                                                            .Where(unfPca => unfPca.ProductionCapacity.PCECaseId == p.Key.Id)
+                                                                            .Select(ca => ca.ProductionCapacity.Id)
+                                                                            .Distinct()
+                                                                            .Count()
+                                                })
+                                                .OrderByDescending(x => x.LatestAssignmentDate)
+                                                .ToListAsync();
 
             var additionalPCECases = await _cbeContext.PCECases
                                                     .AsNoTracking()
                                                     .Where(pc => pc.RMUserId == UserId && !pc.ProductionCapacities.Any() &&
-                                                                (string.IsNullOrEmpty(Status) ||                                                                 
-                                                                Status.Equals("All", StringComparison.OrdinalIgnoreCase) || 
-                                                                Status.Equals("New", StringComparison.OrdinalIgnoreCase)))
+                                                                (string.IsNullOrEmpty(Status) ||
+                                                                    Status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
+                                                                    Status.Equals("New", StringComparison.OrdinalIgnoreCase)))
                                                     .ToListAsync();
 
-            var filteredPCECases = uniquePCECases
-                                                .Where(pceCase => pceCaseAssignments
-                                                    .Any(pca => pca.ProductionCapacity.PCECaseId == pceCase.Id && 
-                                                            (string.IsNullOrEmpty(Status) || 
-                                                            Status.Equals("All", StringComparison.OrdinalIgnoreCase) || 
-                                                            pca.Status == Status || pca.Status.Contains(Status))))
-                                                .Concat(additionalPCECases)
-                                                .DistinctBy(pc => pc.Id)
-                                                .ToList();
+            var allPCECases = distinctPCECases
+                                        .Select(x => x.PCECase)
+                                        .Concat(additionalPCECases)
+                                        .DistinctBy(pc => pc.Id)
+                                        .OrderByDescending(pc => pc.CreationDate)
+                                        .ToList();
 
-            var returnDtos = filteredPCECases.Select(pceCase =>
+            var returnDtos = allPCECases.Select(pceCase =>
             {
-                var Dto = _mapper.Map<PCECaseReturnDto>(pceCase);
-                // Dto.NoOfCollateral = string.IsNullOrEmpty(Status) || Status.Equals("All", StringComparison.OrdinalIgnoreCase)
-                //                     ? productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id)
-                //                     : productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id && pc.CurrentStatus == Status);
-                // Dto.TotalNoOfCollateral = productionCapacities.Count(pc => pc.PCECaseId == pceCase.Id);
-                Dto.NoOfCollateral = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCase.Id && 
-                                                                        (string.IsNullOrEmpty(Status) || 
-                                                                        Status.Equals("All", StringComparison.OrdinalIgnoreCase) || 
-                                                                        pca.Status == Status || pca.Status.Contains(Status)));
-                Dto.TotalNoOfCollateral = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCase.Id);
-                return Dto;
-            });    
+                var dto = _mapper.Map<PCECaseReturnDto>(pceCase);
+
+                var pceCaseCounts = distinctPCECases.FirstOrDefault(x => x.PCECase.Id == pceCase.Id);
+
+                if (pceCaseCounts != null)
+                {
+                    dto.NoOfProductions = pceCaseCounts.NoOfProductions;
+                    dto.TotalNoOfProductions = pceCaseCounts.TotalNoOfProductions;
+                }
+                else
+                {
+                    dto.NoOfProductions = 0;
+                    dto.TotalNoOfProductions = 0;
+                }
+
+                return dto;
+            });
 
             if (Limit.HasValue && Limit.Value > 0)
             {
-                returnDtos = returnDtos.Take(Limit.Value);
+                returnDtos = returnDtos.Take(Limit.Value).ToList();
             }
 
             return returnDtos.ToList();
         }
 
-        public async Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId)
+        public async Task<PCECaseCountDto> GetDashboardPCECaseCount(Guid UserId)
         {
-            var statuses = new[] { "New", "Pending", "Completed", "Reestimate", "Reestimated", "Rejected", "All" };
-            // var tasks = statuses.Select(status => GetPCECasesCountAsync(UserId, status)).ToList();
+            var statuses = new[] { "New", "Pending", "Completed", "Reestimate", "Reestimated", "Returned", "All" };
+            // var tasks = statuses.Select(status => GetPCECaseCountAsync(UserId, status)).ToList();
             // var counts = await Task.WhenAll(tasks);
 
-            var counts = new List<(int DistinctPCECaseCount, int ProductionsCount)>();
+            var counts = new List<(int DistinctPCECaseCount, int ProductionCount)>();
 
             foreach (var status in statuses)
             {
-                var count = await GetPCECasesCountAsync(UserId, status);
+                var count = await GetPCECaseCountAsync(UserId, status);
                 counts.Add(count);
             }
 
-            return new PCECasesCountDto()
+            return new PCECaseCountDto()
             {
-                NewPCECasesCount = counts[0].DistinctPCECaseCount,
-                NewProductionsCount = counts[0].ProductionsCount,
+                NewPCECaseCount = counts[0].DistinctPCECaseCount,
+                NewProductionCount = counts[0].ProductionCount,
 
-                PendingPCECasesCount = counts[1].DistinctPCECaseCount,
-                PendingProductionsCount = counts[1].ProductionsCount,
+                PendingPCECaseCount = counts[1].DistinctPCECaseCount,
+                PendingProductionCount = counts[1].ProductionCount,
 
-                CompletedPCECasesCount = counts[2].DistinctPCECaseCount,
-                CompletedProductionsCount = counts[2].ProductionsCount,
+                CompletedPCECaseCount = counts[2].DistinctPCECaseCount,
+                CompletedProductionCount = counts[2].ProductionCount,
 
-                ResubmittedPCECasesCount = counts[3].DistinctPCECaseCount, // Reestimate
-                ResubmittedProductionsCount = counts[3].ProductionsCount,
+                ResubmittedPCECaseCount = counts[3].DistinctPCECaseCount, // Reestimate
+                ResubmittedProductionCount = counts[3].ProductionCount,
 
-                ReestimatedPCECasesCount = counts[4].DistinctPCECaseCount,
-                ReestimatedProductionsCount = counts[4].ProductionsCount,
+                ReestimatedPCECaseCount = counts[4].DistinctPCECaseCount,
+                ReestimatedProductionCount = counts[4].ProductionCount,
 
-                RejectedPCECasesCount = counts[5].DistinctPCECaseCount,
-                RejectedProductionsCount = counts[5].ProductionsCount,
+                ReturnedPCECaseCount = counts[5].DistinctPCECaseCount,
+                ReturnedProductionCount = counts[5].ProductionCount,
 
-                TotalPCECasesCount = counts[6].DistinctPCECaseCount,
-                TotalProductionsCount = counts[6].ProductionsCount,
-                // TotalPCECasesCount = counts.Sum(count => count.DistinctPCECaseCount),
-                // TotalProductionsCount = counts.Sum(count => count.ProductionsCount),
+                TotalPCECaseCount = counts[6].DistinctPCECaseCount,
+                TotalProductionCount = counts[6].ProductionCount,
             };
         }
 
-        private async Task<(int DistinctPCECaseCount, int ProductionsCount)> GetPCECasesCountAsync(Guid UserId, string status)
+        private async Task<(int DistinctPCECaseCount, int ProductionCount)> GetPCECaseCountAsync(Guid UserId, string status)
         {
-            var query = _cbeContext.PCECaseAssignments
-                                    .AsNoTracking()
-                                    .Include(res => res.ProductionCapacity)
-                                    .Where(res => res.UserId == UserId);
+            var assignmentsQuery = _cbeContext.PCECaseAssignments
+                                            .AsNoTracking()
+                                            .Where(res => res.UserId == UserId);
 
             if (!(string.IsNullOrEmpty(status) || status.Equals("All", StringComparison.OrdinalIgnoreCase)))
             {
-                query = query.Where(res => res.Status == status);
+                assignmentsQuery = assignmentsQuery.Where(res => res.Status == status);
             }
 
-            var productions = await query.ToListAsync();
+            var distinctPCECaseIds = await assignmentsQuery.Select(res => res.ProductionCapacity.PCECaseId).Distinct().ToListAsync();
 
-            var distinctPCECaseCount = productions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count();
-            var productionsCount = productions.Count;
+            var productionCount = await assignmentsQuery.CountAsync();
 
-            return (distinctPCECaseCount, productionsCount);
+            var additionalPCECaseCount = await _cbeContext.PCECases
+                                                        .AsNoTracking()
+                                                        .Where(pc => pc.RMUserId == UserId && !pc.ProductionCapacities.Any() &&
+                                                                    (string.IsNullOrEmpty(status) ||
+                                                                        status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
+                                                                        status.Equals("New", StringComparison.OrdinalIgnoreCase)))                                                       
+                                                        .CountAsync();          
+                                                    
+            var distinctPCECaseCount = distinctPCECaseIds.Count + additionalPCECaseCount;
+
+            return (distinctPCECaseCount, productionCount);
         }
-        
-        // public async Task<PCECasesCountDto> GetDashboardPCECasesCount(Guid UserId)
-        // {
-        //     var allProductions = await _cbeContext.PCECaseAssignments
-        //                                     .AsNoTracking()
-        //                                     .Include(res => res.ProductionCapacity)
-        //                                     .Where(res => res.UserId == UserId)
-        //                                     .ToListAsync();
 
-        //     var newProductions = allProductions.Where(res => res.Status == "New").ToList();
-        //     var pendingProductions = allProductions.Where(res => res.Status == "Pending").ToList();
-        //     var completedProductions = allProductions.Where(res => res.Status == "Completed").ToList();
-        //     var reestimatedProductions = allProductions.Where(res => res.Status == "Reestimated").ToList();
-        //     var resubmittedProductions = allProductions.Where(res => res.Status == "Reestimate").ToList();
-        //     var rejectedProductions = allProductions.Where(res => res.Status == "Rejected").ToList();
-
-        //     return new PCECasesCountDto()
-        //     {
-        //         NewPCECasesCount = newProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         NewProductionsCount = newProductions.Count,
-
-        //         PendingPCECasesCount = pendingProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         PendingProductionsCount = pendingProductions.Count,
-
-        //         CompletedPCECasesCount = completedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         CompletedProductionsCount = completedProductions.Count,
-
-        //         ReestimatedPCECasesCount = reestimatedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         ReestimatedProductionsCount = reestimatedProductions.Count,
-
-        //         ResubmittedPCECasesCount = resubmittedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         ResubmittedProductionsCount = resubmittedProductions.Count,
-
-        //         RejectedPCECasesCount = rejectedProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         RejectedProductionsCount = rejectedProductions.Count,
-
-        //         TotalPCECasesCount = allProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         TotalProductionsCount = allProductions.Count,
-        //     };
-        // }  
-
-        public async Task<CreateNewCaseCountDto> GetDashboardPCECaseCount(Guid UserId)
-        {
-            var newPCECaseCount = await _cbeContext.PCECases
-                                                    .Where(res => res.RMUserId == UserId &&
-                                                        (res.ProductionCapacities.Any(pc => pc.CurrentStage == "Relation Manager" && 
-                                                                                            pc.CurrentStatus == "New")
-                                                         || !res.ProductionCapacities.Any()))
-                                                    .CountAsync();
-
-            var allProductions = await _cbeContext.PCECaseAssignments
-                                          .AsNoTracking()
-                                          .Include(res => res.ProductionCapacity)
-                                          .Where(res => res.UserId == UserId)
-                                          .ToListAsync();
-            var pendingProductions = allProductions.Where(res => res.Status == "Pending").ToList();
-
-            return new CreateNewCaseCountDto()
-            {
-                NewPCECaseCount = newPCECaseCount,
-                NewPCECollateralCount = await _cbeContext.ProductionCapacities
-                                                .Where(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "New").CountAsync(),
-                PendingPCECaseCount = pendingProductions.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-                PendingPCECollateralCount = pendingProductions.Count,
-
-                //PendingPCECollateralCount = await _cbeContext.PCECaseAssignments
-                //                            .Where(coll => coll.Status == "Pending" && coll.UserId== UserId)
-                //                            .CountAsync(),
-                CompletedPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == UserId && res.ProductionCapacities.Any(pce => pce.CurrentStage == "Relation Manager" && pce.CurrentStatus == "Completed")).CountAsync(),
-                CompletedPCECollateralCount = await _cbeContext.ProductionCapacities.Where(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Completed").CountAsync(),
-                TotalPCECaseCount = await _cbeContext.PCECases.Where(res => res.RMUserId == UserId).CountAsync(),
-                TotalPCECollateralCount = await _cbeContext.ProductionCapacities.Where(res => res.CreatedById == UserId).CountAsync(),
-            };
-
-        }         
-     
         public async Task<IEnumerable<PCECaseReturnDto>> GetAssignedPCECases(Guid UserId)
         {
             var pceCaseAssignments = await _cbeContext.PCECaseAssignments
+                                                        .AsNoTracking()
                                                         .Include(res => res.ProductionCapacity)
                                                             .ThenInclude(res => res.PCECase)
                                                         .Where(pca => pca.UserId == UserId && pca.Status != "Terminated")
+                                                        .OrderByDescending(pca => pca.AssignmentDate)
                                                         .ToListAsync();
             var uniquePCECases = pceCaseAssignments.Select(ca => ca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
-            var uniqueProductions = pceCaseAssignments.Select(ca => ca.ProductionCapacity).DistinctBy(c => c.Id).ToList();
             var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(uniquePCECases);
             
             foreach (var pceCaseDto in pceCaseDtos)
             {
-                pceCaseDto.NoOfCollateral = pceCaseAssignments
-                                                    .Where(pca => pca.Status == "Pending")
+                var uniqueProductions = pceCaseAssignments
+                                                    .Where(ca => ca.ProductionCapacity.PCECaseId == pceCaseDto.Id)
                                                     .Select(ca => ca.ProductionCapacity)
-                                                    .DistinctBy(c => c.Id)
-                                                    .Count(pca => pca.PCECaseId == pceCaseDto.Id);
-                pceCaseDto.TotalNoOfCollateral = pceCaseAssignments
-                                                    .Select(ca => ca.ProductionCapacity)
-                                                    .DistinctBy(c => c.Id)
-                                                    .Count(pca => pca.PCECaseId == pceCaseDto.Id);
+                                                    .DistinctBy(c => c.Id);
+                pceCaseDto.NoOfProductions = uniqueProductions
+                                                    .Count(pc => pceCaseAssignments
+                                                        .Any(pca => pca.ProductionCapacityId == pc.Id && pca.Status == "Pending"));
+                pceCaseDto.TotalNoOfProductions = uniqueProductions.Count();
             }
 
             return pceCaseDtos;
@@ -363,34 +300,36 @@ namespace mechanical.Services.PCE.PCECaseService
 
         public async Task<IEnumerable<PCECaseReturnDto>> GetLatestPCECases(Guid UserId)
         {
-            var cases = await _cbeContext.PCECases
-                    .Include(x => x.ProductionCapacities)
-                    .Include(x => x.District)
-                    .Where(res => res.RMUserId == UserId)
-                    .OrderByDescending(res => res.CreationDate).Take(5).ToListAsync();          
+            var pceCases = await _cbeContext.PCECases
+                                            .Include(x => x.ProductionCapacities)
+                                            .Include(x => x.District)
+                                            .Where(res => res.RMUserId == UserId)
+                                            .OrderByDescending(res => res.CreationDate)
+                                            .Take(5)
+                                            .ToListAsync();          
 
-            return  _mapper.Map<IEnumerable<PCECaseReturnDto>>(cases);
+            return  _mapper.Map<IEnumerable<PCECaseReturnDto>>(pceCases);
         }
         
         public async Task<IEnumerable<PCECaseReturnDto>> GetPCECasesReport(Guid UserId)
         {
-            var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStage == "Relation Manager"))
+            var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStage == "Relation Manager"))
                 .Where(res => res.RMUserId == UserId).ToListAsync();
 
-            var caseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(cases);
-            foreach (var caseDto in caseDtos)
+            var pceCasesDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(pceCases);
+            foreach (var pceCasesDto in pceCasesDtos)
             {
-                caseDto.NoOfCollateral = _cbeContext.ProductionCapacities
-                    .Where(pc => pc.PCECaseId == caseDto.Id && pc.CurrentStage == "Relation Manager")
+                pceCasesDto.NoOfProductions = _cbeContext.ProductionCapacities
+                    .Where(pc => pc.PCECaseId == pceCasesDto.Id && pc.CurrentStage == "Relation Manager")
                     .Count();
             }
-            foreach (var caseDto in caseDtos)
+            foreach (var pceCasesDto in pceCasesDtos)
             {
-                caseDto.TotalNoOfCollateral = _cbeContext.ProductionCapacities
-                    .Where(pc => pc.PCECaseId == caseDto.Id)
+                pceCasesDto.TotalNoOfProductions = _cbeContext.ProductionCapacities
+                    .Where(pc => pc.PCECaseId == pceCasesDto.Id)
                     .Count();
             }
-            return caseDtos;
+            return pceCasesDtos;
         }
 
 
@@ -399,15 +338,15 @@ namespace mechanical.Services.PCE.PCECaseService
             try
             {
                 var pceCaseResult = await _cbeContext.PCECases
-                    .Include(res => res.District)
-                    .Include(res => res.BussinessLicence)
-                    .FirstOrDefaultAsync(c => c.Id == id && c.RMUserId == UserId);
+                                                    .Include(res => res.District)
+                                                    .Include(res => res.BussinessLicence)
+                                                    .FirstOrDefaultAsync(c => c.Id == id && c.RMUserId == UserId);
 
                 var productionCapacities = await _cbeContext.ProductionCapacities
                     .Where(pc => pc.PCECaseId == id && pc.CreatedById == UserId)
                     .ToListAsync();
 
-                // Adjust this to fetch evaluations related to the current case
+                // Adjust this to fetch evaluations related to the current pce case
                 var evaluations = await (from pc in _cbeContext.ProductionCapacities
                                          join pe in _cbeContext.PCEEvaluations.Include(e => e.Evaluator)
                                          on pc.Id equals pe.PCEId // Correct property
@@ -493,109 +432,10 @@ namespace mechanical.Services.PCE.PCECaseService
             
             foreach (var pceCaseDto in pceCaseDtos)
             {
-                pceCaseDto.NoOfCollateral = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id && pca.Status.Contains("Remark"));
-                pceCaseDto.TotalNoOfCollateral = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id);
+                pceCaseDto.NoOfProductions = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id && pca.Status.Contains("Remark"));
+                pceCaseDto.TotalNoOfProductions = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id);
             }
             return pceCaseDtos;
         }
-
-        // public async Task<IEnumerable<PCECaseReturnDto>> GetRemarkedPCECases(Guid UserId)
-        // {
-        //     var PCECases = await _cbeContext.PCECases
-        //                                     .Include(pc => pc.ProductionCapacities
-        //                                         .Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
-        //                                     .Where(res => res.ProductionCapacities.Any(res => res.CurrentStatus.Contains("Remark") && 
-        //                                                                                       res.CurrentStage == "Maker Officer"))
-        //                                     // .Where(res => res.RMUserId == UserId)
-        //                                     .ToListAsync();
-        //     var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(PCECases);
-        //     foreach (var pceCaseDto in pceCaseDtos)
-        //     {
-        //         pceCaseDto.NoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == pceCaseDto.Id);
-        //         pceCaseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == pceCaseDto.Id);
-        //     }
-        //     return pceCaseDtos;
-        // }
-
-        // public async Task<IEnumerable<PCECaseReturnDto>> GetPCENewCases(Guid UserId)
-        // {
-        //     var cases = await _cbeContext.PCECases
-        //                                   .Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
-        //                                   .Where(res => res.RMUserId == UserId &&
-        //                                       (res.ProductionCapacities.Any(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "New")
-        //                                        || !res.ProductionCapacities.Any()))
-        //                                    .ToListAsync();
-
-        //     var caseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(cases);
-        //     foreach (var caseDto in caseDtos)
-        //     {
-        //         caseDto.NoOfCollateral = _cbeContext.ProductionCapacities
-        //             .Where(pc => pc.PCECaseId == caseDto.Id && pc.CurrentStage == "Relation Manager")
-        //             .Count();
-        //     }
-        //     foreach (var caseDto in caseDtos)
-        //     {
-        //         caseDto.TotalNoOfCollateral = _cbeContext.ProductionCapacities
-        //             .Where(pc => pc.PCECaseId == caseDto.Id)
-        //             .Count();
-        //     }
-        //     return caseDtos;
-        // }
-
-        // public async Task<IEnumerable<PCECaseReturnDto>> GetPCEPendingCases(Guid UserId)
-        // {
-        //     var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => ( res.CurrentStage != "Relation Manager" && res.CurrentStatus != "Completed" )))
-        //                .Where(res => res.RMUserId == UserId && (res.ProductionCapacities.Any(pc => ( pc.CurrentStage != "Relation Manager" && pc.CurrentStatus != "Completed"))))
-
-        //                .ToListAsync();
-        //     var caseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(cases);
-        //     //foreach (var caseDto in caseDtos)
-        //     //{
-        //     //    caseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id);
-        //     //    caseDto.NoOfCollateral = await _cbeContext.ProductionCaseAssignments.CountAsync(res => res.UserId == caseDto.Id && res.Status == "Pending");
-        //     //}
-        //     return caseDtos;
-        // }       
-
-        // public async Task<IEnumerable<PCECaseReturnDto>> GetPCECompleteCases(Guid UserId)
-        // {
-        //     var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStatus == "Completed" && res.CurrentStage == "Relation Manager"))
-        //                         .Where(res => res.RMUserId == UserId && (res.ProductionCapacities.Any(res => res.CurrentStatus == "Completed" && res.CurrentStage == "Relation Manager"))).ToListAsync();
-        //     var caseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(cases);
-        //     foreach (var caseDto in caseDtos)
-        //     {
-        //         caseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id);
-        //     }
-        //     return caseDtos;
-        // }
-
-        // public async Task<IEnumerable<PCECaseReturnDto>> GetPCETotalCases(Guid UserId)
-        // {
-        //     var cases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => (res.CurrentStage != "Relation Manager") && ((res.CurrentStatus != "Completed" && res.CurrentStage != "Checker Officer"))))
-        //                .Where(res => res.RMUserId == UserId)
-        //                .ToListAsync();
-        //     var caseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(cases);
-            
-        //     foreach (var caseDto in caseDtos)
-        //     {
-        //         caseDto.TotalNoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(res => res.PCECaseId == caseDto.Id);
-        //         caseDto.NoOfCollateral = await _cbeContext.ProductionCapacities.CountAsync(a=>a.CurrentStatus=="Completed" && a.PCECaseId == caseDto.Id);
-        //     }
-
-        //     return caseDtos;
-        // }
-
-        // public async Task<CreateNewCaseCountDto> GetMyDashboardCaseCount()
-        // {
-        //     var httpContext = _httpContextAccessor.HttpContext;
-        //     var CompProduction = await _cbeContext.PCECaseAssignments.Include(res => res.ProductionCapacity).Where(res => res.UserId == Guid.Parse(httpContext.Session.GetString("UserId")) && res.Status == "Completed").ToListAsync();
-     
-
-        //     return new CreateNewCaseCountDto()
-        //     {
-        //         PCSCompletedCaseCount = CompProduction.Select(res => res.ProductionCapacity.PCECaseId).Distinct().Count(),
-        //         CompletedPCECollateralCount = await _cbeContext.PCECaseAssignments.Where(res => res.UserId == Guid.Parse(httpContext.Session.GetString("UserId")) && res.Status == "Completed").CountAsync(),
-        //     };
-        // }
     }
 }
