@@ -28,8 +28,77 @@
                 <form method="post" enctype="multipart/form-data" asp-action="EditConstMngAgrMachinery" asp-route-Id="@Model.Id">
                     <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
 
-
                     <div class="row">
+                        <div class="form-group col-xl-4">
+                            <div class="form-group">
+                                <label asp-for="constructionMiningAgriculturalMachineryType"> Cons, Min & Agri Machinery Type</label>
+                                <div class="input-group">
+
+                                    <select asp-for="constructionMiningAgriculturalMachineryType" class="form-control"
+                                            asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                        <option value="" disabled selected>Select Cons, Min & Agri Machinery Type</option>
+                                    </select>
+                                    <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
+                                    @{
+                                        try
+                                        {
+                                            if (comment?["IndustrialBuildingMachineryType"] != null && comment["IndustrialBuildingMachineryType"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndustrialBuildingMachineryType" data-comment="@comment["IndustrialBuildingMachineryType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
+                                        }
+                                        catch (Exception) { }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <div class="form-group">
+                                <label asp-for="EngineType">Engine/Motor Type</label>
+                                <div class="input-group">
+                                    <select asp-for="EngineType" class="form-control"
+                                            asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                        <option value="" disabled selected>Select Engine/Motor Type</option>
+                                    </select>
+                                    <span asp-validation-for="EngineType" class="text-danger"></span>
+                                    @{
+                                        try
+                                        {
+                                            if (comment?["EngineType"] != null && comment["EngineType"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment["EngineType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
+                                        }
+                                        catch (Exception) { }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <div class="form-group">
+                                <label asp-for="PowerSupply">Power Supply</label>
+                                <div class="input-group">
+                                    <select asp-for="PowerSupply" class="form-control"
+                                            asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                        <option value="" disabled selected>Select Engine/Motor Type</option>
+                                    </select>
+                                    <span asp-validation-for="PowerSupply" class="text-danger"></span>
+                                    @{
+                                        try
+                                        {
+                                            if (comment?["PowerSupply"] != null && comment["PowerSupply"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment["PowerSupply"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
+                                        }
+                                        catch (Exception) { }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                       
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="NoOfCylinder"> No. Cylinder</label>
