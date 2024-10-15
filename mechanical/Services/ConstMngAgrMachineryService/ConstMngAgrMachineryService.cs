@@ -85,6 +85,20 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);
             return _mapper.Map<ConstMngAgMachineryReturnDto>(constMngAgrMachinery);
         }
+        public async Task<Dictionary<string, string>> GetCollateralComment(Guid Id)
+        {
+            var comments = await _cbeContext.Corrections.Where(c => c.CollateralID == Id).ToListAsync();
+
+            Dictionary<string, string> chekerComment = new Dictionary<string, string>();
+
+            foreach (var comment in comments)
+            {
+                chekerComment[comment.CommentedAttribute] = comment.Comment;
+            }
+
+            return chekerComment;
+        }
+
         public async Task<ConstMngAgrMachineryPostDto> GetReturnedEvaluatedConstMngAgrMachinery(Guid Id)
         {
             var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);

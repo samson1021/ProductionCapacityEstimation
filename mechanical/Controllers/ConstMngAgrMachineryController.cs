@@ -135,24 +135,18 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> GetEvaluatedconstMngAgriMachinery(Guid Id)
         {
+           
             var constMngAgMachinery = await _constMngAgriMachineryService.GetEvaluatedConstMngAgrMachinery(Id);
-            //ViewData["EvaluatedMOV"] = motorVehicleDto;
+            var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
+            ViewData["comments"] = comments;
 
             return View(constMngAgMachinery);
         }
-        //public async Task<IActionResult> GetReturnedEvaluatedconstMngAgriMachinery(Guid Id)
-        //{
-        //    var constMngAgMachinery = await _constMngAgriMachineryService.GetEvaluatedConstMngAgrMachinery(Id);
-        //    var com = await _collateralService.GetComments(Id);
-        //    ViewData["Comments"] = com;
-        //    ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
-        //    return View(constMngAgMachinery);
-        //}
         public async Task<IActionResult> GetReturnedEvaluatedConstMngAgrMachinery(Guid Id)
         {
             var constMngAgMachinery = await _constMngAgriMachineryService.GetEvaluatedConstMngAgrMachinery(Id);
-            var com = await _collateralService.GetComments(Id);
-            ViewData["Comments"] = com;
+            var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
+            ViewData["comments"] = comments;
             ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
             return View(constMngAgMachinery);
 

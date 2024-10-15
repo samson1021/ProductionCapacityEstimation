@@ -1,7 +1,7 @@
 ﻿@model mechanical.Models.Dto.ConstMngAgrMachineryDto.ConstMngAgMachineryReturnDto;
 @{
     // var collateral = ViewData["collateral"] as ReturnCollateralDto;
-    var Comments = ViewData["Comments"] as List<mechanical.Models.Dto.Correction.CorrectionRetunDto>;
+    var comment = ViewData["comments"] as Dictionary<string, string>;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
 }
 <div class="content-header">
@@ -24,94 +24,6 @@
 <section class="content">
     <section class="col-xl-12 connectedSortable">
         <div class="card">
-          @*   <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="EditConstMngAgrMachinery">
-
-                    <input asp-for="Id" value=@Model.Id type="hidden" />
-
-                    <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="constructionMiningAgriculturalMachineryType">Cons, Min & Agri Machinery Type</label>
-                                <div class="input-group">
-                                    <select asp-for="constructionMiningAgriculturalMachineryType" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Cons, Min & Agri Machinery Type</option>
-                                    </select>
-                                    <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "constructionMiningAgriculturalMachineryType");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="constructionMiningAgriculturalMachineryType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="EngineType"> Engine/Motor Type </label>
-                                <div class="input-group">
-
-                                    <select asp-for="EngineType" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected> Select Engine/Motor Type </option>
-                                    </select>
-                                    <span asp-validation-for="EngineType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "EngineType");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="PowerSupply">Power Supply</label>
-                                <div class="input-group">
-
-                                    <select asp-for="PowerSupply" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Power Supply</option>
-                                    </select>
-                                    <span asp-validation-for="PowerSupply" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "PowerSupply");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div> *@
-          
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="EditConstMngAgrMachinery" asp-route-Id="@Model.Id">
                     <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
@@ -128,18 +40,15 @@
                                         <option value="" disabled selected>Select No. Cylinder</option>
                                     </select>
                                     <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "NoOfCylinder");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="NoOfCylinder" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["NoOfCylinder"] != null && comment["NoOfCylinder"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NoOfCylinder" data-comment="@comment["NoOfCylinder"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception){}
                                     }
                                 </div>
                             </div>
@@ -154,18 +63,15 @@
                                         <option value="" disabled selected>Select Transmission Type</option>
                                     </select>
                                     <span asp-validation-for="TransmissionType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "TransmissionType");
-                                        if (comment != null)
+                                      @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="TransmissionType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["TransmissionType"] != null && comment["TransmissionType"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TransmissionType" data-comment="@comment["TransmissionType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception){}
                                     }
                                 </div>
                             </div>
@@ -180,18 +86,15 @@
                                         <option value="" disabled selected>Select Ignition System</option>
                                     </select>
                                     <span asp-validation-for="IgnitionSystem" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "IgnitionSystem");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="IgnitionSystem" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["IgnitionSystem"] != null && comment["IgnitionSystem"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IgnitionSystem" data-comment="@comment["IgnitionSystem"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -208,18 +111,15 @@
                                         <option value="" disabled selected>Select Cooling System</option>
                                     </select>
                                     <span asp-validation-for="CoolingType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CoolingType");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CoolingType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["CoolingType"] != null && comment["CoolingType"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CoolingType" data-comment="@comment["CoolingType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -231,18 +131,15 @@
 
                                     <input asp-for="EnginePower" type="text" class="form-control" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
                                     <span asp-validation-for="EnginePower" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "EnginePower");
-                                        if (comment != null)
+                                     @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="EnginePower" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["EnginePower"] != null && comment["EnginePower"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EnginePower" data-comment="@comment["EnginePower"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -254,18 +151,15 @@
 
                                     <input asp-for="WorkingProductionCapacity" type="text" class="form-control" id="enginePower" placeholder="Working/Production Capacity" required>
                                     <span asp-validation-for="WorkingProductionCapacity" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "WorkingProductionCapacity");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="WorkingProductionCapacity" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["WorkingProductionCapacity"] != null && comment["WorkingProductionCapacity"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="WorkingProductionCapacity" data-comment="@comment["WorkingProductionCapacity"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -282,18 +176,15 @@
                                         <option value="" disabled selected>Select Technology Standard</option>
                                     </select>
                                     <span asp-validation-for="TechnologyStandard" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "TechnologyStandard");
-                                        if (comment != null)
+                                     @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="TechnologyStandard" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["TechnologyStandard"] != null && comment["TechnologyStandard"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TechnologyStandard" data-comment="@comment["TechnologyStandard"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -309,18 +200,15 @@
                                         <option value="Exceptional Preference">Exceptional Preference</option>
                                     </select>
                                     <span asp-validation-for="MakerPreferenceType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "MakerPreferenceType");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="MakerPreferenceType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["MakerPreferenceType"] != null && comment["MakerPreferenceType"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MakerPreferenceType" data-comment="@comment["MakerPreferenceType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -335,18 +223,15 @@
                                         <option value="" disabled selected>Select Cabin Type</option>
                                     </select>
                                     <span asp-validation-for="CabinType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CabinType");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CabinType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["CabinType"] != null && comment["CabinType"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CabinType" data-comment="@comment["CabinType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -363,18 +248,15 @@
                                         <option value="" disabled selected>Select Number of Axles</option>
                                     </select>
                                     <span asp-validation-for="NumberOfAxle" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "NumberOfAxle");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="NumberOfAxle" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["NumberOfAxle"] != null && comment["NumberOfAxle"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NumberOfAxle" data-comment="@comment["NumberOfAxle"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -386,18 +268,15 @@
 
                                     <input asp-for="Color" list="carColors" type="text" class="form-control" placeholder="Select Car Color" required>
                                     <span asp-validation-for="Color" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "Color");
-                                        if (comment != null)
+                                      @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="Color" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["Color"] != null && comment["Color"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Color" data-comment="@comment["Color"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -409,18 +288,15 @@
 
                                     <input asp-for="MakerCompany" type="text" class="form-control" id="MakerCompany" placeholder="Insert Maker Company" required>
                                     <span asp-validation-for="MakerCompany" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "MakerCompany");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="MakerCompany" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["MakerCompany"] != null && comment["MakerCompany"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MakerCompany" data-comment="@comment["MakerCompany"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -437,18 +313,15 @@
                                         <option value="" disabled selected>Select Current Equipment Condition</option>
                                     </select>
                                     <span asp-validation-for="CurrentEqpmntCondition" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CurrentEqpmntCondition");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["CurrentEqpmntCondition"] != null && comment["CurrentEqpmntCondition"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition" data-comment="@comment["CurrentEqpmntCondition"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -463,18 +336,15 @@
                                         <option value="" disabled selected>Select Current Equipment Condition</option>
                                     </select>
                                     <span asp-validation-for="AllocatedPointsRange" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "AllocatedPointsRange");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["AllocatedPointsRange"] != null && comment["AllocatedPointsRange"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange" data-comment="@comment["AllocatedPointsRange"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -486,18 +356,15 @@
 
                                     <input asp-for="ModelNo" type="text" value="@Model.ModelNo" class="form-control" placeholder="Model Number" required>
                                     <span asp-validation-for="ModelNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "ModelNo");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="ModelNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["ModelNo"] != null && comment["ModelNo"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ModelNo" data-comment="@comment["ModelNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -511,18 +378,15 @@
 
                                     <input asp-for="EngineNo" type="text" value="@Model.ModelNo" class="form-control" placeholder="Engine Number" required>
                                     <span asp-validation-for="EngineNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "EngineNo");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="EngineNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["EngineNo"] != null && comment["EngineNo"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineNo" data-comment="@comment["EngineNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -534,18 +398,15 @@
 
                                     <input asp-for="ChassisNo" type="text" value="@Model.ChassisNo" class="form-control" placeholder="Chassis Number" required>
                                     <span asp-validation-for="ChassisNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "ChassisNo");
-                                        if (comment != null)
+                                     @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="ChassisNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["ChassisNo"] != null && comment["ChassisNo"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ChassisNo" data-comment="@comment["ChassisNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -557,18 +418,15 @@
 
                                     <input asp-for="SerialNo" type="text" value="@Model.SerialNo" class="form-control" placeholder="Serial Number" required>
                                     <span asp-validation-for="SerialNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "SerialNo");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="SerialNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["SerialNo"] != null && comment["SerialNo"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="SerialNo" data-comment="@comment["SerialNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -582,18 +440,15 @@
 
                                     <input asp-for="PlateNo" type="text" value="@Model.PlateNo" class="form-control" placeholder="Plate Number" required>
                                     <span asp-validation-for="PlateNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "PlateNo");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="PlateNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["PlateNo"] != null && comment["PlateNo"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PlateNo" data-comment="@comment["PlateNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -605,18 +460,15 @@
 
                                     <input asp-for="TDNo" type="text" class="form-control" placeholder="TD Number" required>
                                     <span asp-validation-for="TDNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "TDNo");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="TDNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["TDNo"] != null && comment["TDNo"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TDNo" data-comment="@comment["TDNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -628,18 +480,15 @@
 
                                     <input asp-for="YearOfManufacture" value="@Model.YearOfManufacture" type="number" class="form-control" min="1900" max="2099" step="1" required>
                                     <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "YearOfManufacture");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="YearOfManufacture" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["YearOfManufacture"] != null && comment["YearOfManufacture"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="YearOfManufacture" data-comment="@comment["YearOfManufacture"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -653,18 +502,15 @@
 
                                     <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
                                     <span asp-validation-for="Remark" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "Remark");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="Remark" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["Remark"] != null && comment["Remark"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Remark" data-comment="@comment["Remark"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -676,18 +522,15 @@
 
                                     <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
                                     <span asp-validation-for="PhysicalAndInstallationAssesment" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "PhysicalAndInstallationAssesment");
-                                        if (comment != null)
+                                   @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["PhysicalAndInstallationAssesment"] != null && comment["PhysicalAndInstallationAssesment"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment" data-comment="@comment["PhysicalAndInstallationAssesment"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -699,18 +542,15 @@
 
                                     <textarea asp-for="OverallSurveyAssesment" class="form-control" placeholder="Overall Survey Assessment" rows="3" required></textarea>
                                     <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "OverallSurveyAssesment");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["OverallSurveyAssesment"] != null && comment["OverallSurveyAssesment"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment" data-comment="@comment["OverallSurveyAssesment"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -724,18 +564,15 @@
 
                                     <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
                                     <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CountryOfOrigin");
-                                        if (comment != null)
+                                   @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CountryOfOrigin" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["CountryOfOrigin"] != null && comment["CountryOfOrigin"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CountryOfOrigin" data-comment="@comment["CountryOfOrigin"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -747,18 +584,15 @@
 
                                     <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                                     <span asp-validation-for="InvoiceValue" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "InvoiceValue");
-                                        if (comment != null)
+                                   @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="InvoiceValue" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["InvoiceValue"] != null && comment["InvoiceValue"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="InvoiceValue" data-comment="@comment["InvoiceValue"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -770,18 +604,15 @@
 
                                     <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
                                     <span asp-validation-for="Currency" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "Currency");
-                                        if (comment != null)
+                                     @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="Currency" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["Currency"] != null && comment["Currency"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Currency" data-comment="@comment["Currency"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>
@@ -792,18 +623,15 @@
                                 <div class="input-group">
                                     <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control" placeholder="Enter Exchange Rate" required>
                                     <span asp-validation-for="ExchangeRate" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "ExchangeRate");
-                                        if (comment != null)
+                                    @{
+                                        try
                                         {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="ExchangeRate" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
+                                            if (comment?["ExchangeRate"] != null && comment["ExchangeRate"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ExchangeRate" data-comment="@comment["ExchangeRate"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
                                         }
+                                        catch (Exception) { }
                                     }
                                 </div>
                             </div>

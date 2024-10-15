@@ -27,21 +27,38 @@ namespace mechanical.Services.CorrectionServices
         {
             var httpContext = _httpContextAccessor.HttpContext;  
             var loanCase = _mapper.Map<Correction>(createCorrectionDto);
-            var getcaseId = _cbeContext.Collaterals.Where(c=>c.Id==createCorrectionDto.CollateralID).Select(c=>c.CaseId).FirstOrDefault();
-            loanCase.CaseId= getcaseId;
-            loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
-            loanCase.CreationDate = DateTime.Now;
-            await _cbeContext.Corrections.AddAsync(loanCase);
-            await _cbeContext.SaveChangesAsync();
 
-            await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == loanCase.CollateralID && res.CommentedAttribute == loanCase.CommentedAttribute);
+            if(correction != null)
             {
-                CaseId = loanCase.CaseId,
-                Activity = $"<strong>A case with ID {loanCase.CaseId} out of the collaterals list one collateral wiht ID {createCorrectionDto.CollateralID} has been Returned to Maker  For correction</strong>",
-                CurrentStage = "Relation Manager"
-            });
+                correction.Comment = loanCase.Comment;
+                correction.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
+                correction.CreationDate = DateTime.Now;
+                _cbeContext.Corrections.Update(correction);
+                await _cbeContext.SaveChangesAsync();
 
-            return loanCase;
+                return correction;
+            }
+            else
+            {
+                var getcaseId = _cbeContext.Collaterals.Where(c => c.Id == createCorrectionDto.CollateralID).Select(c => c.CaseId).FirstOrDefault();
+                loanCase.CaseId = getcaseId;
+                loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
+                loanCase.CreationDate = DateTime.Now;
+                await _cbeContext.Corrections.AddAsync(loanCase);
+                await _cbeContext.SaveChangesAsync();
+                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                {
+                    CaseId = loanCase.CaseId,
+                    Activity = $"<strong>A case with ID {loanCase.CaseId} out of the collaterals list one collateral wiht ID {createCorrectionDto.CollateralID} has been Returned to Maker  For correction</strong>",
+                    CurrentStage = "Relation Manager"
+                });
+
+                return loanCase;
+            }
+          
+
+           
         }
         public async Task<CorrectionPostDto>GetCorrection(Guid Id)
         {

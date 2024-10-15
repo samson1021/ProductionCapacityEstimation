@@ -22,6 +22,8 @@
         $('.show-comment-box').click(function () {
             var modal = $(this).data('target');
             var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
             $(modal).modal('show');
             $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
         });

@@ -36,6 +36,6 @@ namespace mechanical
 
             // Continue to the next middleware if session is available or if on login page
             await _next(context);
-        }
+        ;}
     }
 }
