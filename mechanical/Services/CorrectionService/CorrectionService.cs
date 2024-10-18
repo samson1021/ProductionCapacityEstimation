@@ -31,11 +31,20 @@ namespace mechanical.Services.CorrectionServices
             var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == loanCase.CollateralID && res.CommentedAttribute == loanCase.CommentedAttribute);
             if(correction != null)
             {
-                correction.Comment = loanCase.Comment;
-                correction.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
-                correction.CreationDate = DateTime.Now;
-                _cbeContext.Corrections.Update(correction);
-                await _cbeContext.SaveChangesAsync();
+                if(loanCase.Comment == "" || loanCase.Comment == null)
+                {
+                     _cbeContext.Corrections.Remove(correction);
+                    await _cbeContext.SaveChangesAsync();
+                }
+                else
+                {
+                    correction.Comment = loanCase.Comment;
+                    correction.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
+                    correction.CreationDate = DateTime.Now;
+                    _cbeContext.Corrections.Update(correction);
+                    await _cbeContext.SaveChangesAsync();
+                }
+            
 
                 return correction;
             }

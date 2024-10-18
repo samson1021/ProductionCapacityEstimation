@@ -1,16 +1,11 @@
-﻿using mechanical.Models.Dto.CaseDto;
-using mechanical.Models.Entities;
+﻿using mechanical.Models.Entities;
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CollateralService;
 using mechanical.Services.UploadFileService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.IO;
 using mechanical.Models.Enum;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection;
-using Microsoft.CodeAnalysis.Operations;
 using mechanical.Services.MotorVehicleService;
 using mechanical.Services.ConstMngAgrMachineryService;
 using mechanical.Services.IndBldgF;

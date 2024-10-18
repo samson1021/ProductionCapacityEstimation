@@ -59,7 +59,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
             constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
-            constMngAgrMachinery.ReplacementCost = constMngAgrMachineryPostDto.InvoiceValue;
+            constMngAgrMachinery.ReplacementCost = constMngAgrMachinery.InvoiceValue;
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
             var constMngAgrMachineryCheck = _mapper.Map<ConstMngAgMachineryReturnDto>(constMngAgrMachinery);
             constMngAgrMachineryCheck.Id = Id;

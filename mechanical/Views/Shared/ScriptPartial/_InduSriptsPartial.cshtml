@@ -20,6 +20,32 @@
     });
     //this method is to give comment for maker and change the status of collateral 
     $(document).ready(function () {
+        $('#checkAssessmentForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.redirectUrl) {
+                        $('#CheckAssesmentModal').modal('hide');
+                        window.open(response.redirectUrl, '_blank');
+                    } else {
+                        alert('Unexpected response');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred: ' + error);
+                }
+            });
+        });
+
+
         $('.show-comment-box').click(function () {
             console.log("show comment"); 
             var modal = $(this).data('target');

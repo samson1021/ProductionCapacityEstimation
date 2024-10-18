@@ -109,10 +109,10 @@ namespace mechanical.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckAssessment(Guid Id, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto)
         {
-            //var indBldgFacility = await _indBldgFacilityEquipment.CheckIndBldgFacilityEquipment(base.GetCurrentUserId(), Id, indBldgFacilityEquipment);
-            var constMngAgrMachinery = await _constMngAgriMachineryService.CheckConstMngAgrMachinery(base.GetCurrentUserId(),Id, constMngAgrMachineryPostDto);
+            var constMngAgrMachinery = await _constMngAgriMachineryService.CheckConstMngAgrMachinery(base.GetCurrentUserId(), Id, constMngAgrMachineryPostDto);
 
-            return RedirectToAction("GetCheckConstMngAgrMachinery", "ConstMngAgrMachinery", constMngAgrMachinery);
+            var redirectUrl = Url.Action("GetCheckConstMngAgrMachinery", "ConstMngAgrMachinery", constMngAgrMachinery);
+            return Json(new { redirectUrl });
         }
         [HttpGet]
         public async Task<IActionResult> GetCheckConstMngAgrMachinery(ConstMngAgMachineryReturnDto constMngAgMachineryReturnDto)

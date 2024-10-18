@@ -33,12 +33,10 @@
                             <div class="form-group">
                                 <label asp-for="constructionMiningAgriculturalMachineryType"> Cons, Min & Agri Machinery Type</label>
                                 <div class="input-group">
-
                                     <select asp-for="constructionMiningAgriculturalMachineryType" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Cons, Min & Agri Machinery Type</option>
+                                        <option value="" disabled >Select Cons, Min & Agri Machinery Type</option>
                                     </select>
-                                    <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -50,6 +48,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
@@ -58,9 +57,8 @@
                                 <div class="input-group">
                                     <select asp-for="EngineType" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Engine/Motor Type</option>
+                                        <option value="" disabled >Select Engine/Motor Type</option>
                                     </select>
-                                    <span asp-validation-for="EngineType" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -72,17 +70,19 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="EngineType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="PowerSupply">Power Supply</label>
                                 <div class="input-group">
+
                                     <select asp-for="PowerSupply" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Engine/Motor Type</option>
+                                        <option value="" disabled>Select Power Supply</option>
                                     </select>
-                                    <span asp-validation-for="PowerSupply" class="text-danger"></span>
+                                  
                                     @{
                                         try
                                         {
@@ -94,11 +94,11 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="PowerSupply" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                       
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="NoOfCylinder"> No. Cylinder</label>
@@ -106,9 +106,8 @@
 
                                     <select asp-for="NoOfCylinder" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select No. Cylinder</option>
+                                        <option value="" disabled>Select No of Cylinder</option>
                                     </select>
-                                    <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -120,18 +119,18 @@
                                         catch (Exception){}
                                     }
                                 </div>
+                                 <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="TransmissionType">Transmission Type</label>
                                 <div class="input-group">
-
                                     <select asp-for="TransmissionType" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Transmission Type</option>
+                                        <option value="" disabled >Select Transmission Type</option>
                                     </select>
-                                    <span asp-validation-for="TransmissionType" class="text-danger"></span>
+                             
                                       @{
                                         try
                                         {
@@ -143,18 +142,18 @@
                                         catch (Exception){}
                                     }
                                 </div>
+                                <span asp-validation-for="TransmissionType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="IgnitionSystem">Ignition System </label>
                                 <div class="input-group">
-
                                     <select asp-for="IgnitionSystem" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(IgnitionSystem)).Cast<IgnitionSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Ignition System</option>
+                                            asp-items="@(new SelectList(Enum.GetValues(typeof(IgnitionSystem)).Cast<IgnitionSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = e.ToString() == Model.IgnitionSystem.ToString()}), "Value", "Text"))">
+                                        <option value="" disabled >Select Ignition System</option>
                                     </select>
-                                    <span asp-validation-for="IgnitionSystem" class="text-danger"></span>
+                                   
                                     @{
                                         try
                                         {
@@ -166,6 +165,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="IgnitionSystem" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -174,12 +174,10 @@
                             <div class="form-group">
                                 <label asp-for="CoolingType">Cooling System</label>
                                 <div class="input-group">
-
                                     <select asp-for="CoolingType" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(CoolingSystem)).Cast<CoolingSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Cooling System</option>
+                                        <option value="" disabled>Select Cooling System</option>
                                     </select>
-                                    <span asp-validation-for="CoolingType" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -191,15 +189,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="CoolingType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
                                 <div class="input-group">
-
                                     <input asp-for="EnginePower" type="text" class="form-control" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
-                                    <span asp-validation-for="EnginePower" class="text-danger"></span>
                                      @{
                                         try
                                         {
@@ -211,15 +208,15 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="EnginePower" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="WorkingProductionCapacity">Working/Production Capacity</label>
                                 <div class="input-group">
-
                                     <input asp-for="WorkingProductionCapacity" type="text" class="form-control" id="enginePower" placeholder="Working/Production Capacity" required>
-                                    <span asp-validation-for="WorkingProductionCapacity" class="text-danger"></span>
+                                  
                                     @{
                                         try
                                         {
@@ -231,6 +228,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="WorkingProductionCapacity" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -239,12 +237,10 @@
                             <div class="form-group">
                                 <label asp-for="TechnologyStandard">Technology Standard</label>
                                 <div class="input-group">
-
                                     <select asp-for="TechnologyStandard" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(MachineryTechnologyStandard)).Cast<MachineryTechnologyStandard>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Technology Standard</option>
+                                        <option value="" disabled>Select Technology Standard</option>
                                     </select>
-                                    <span asp-validation-for="TechnologyStandard" class="text-danger"></span>
                                      @{
                                         try
                                         {
@@ -256,19 +252,18 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="TechnologyStandard" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="MakerPreferenceType">Type of Maker Preference</label>
                                 <div class="input-group">
-
                                     <select asp-for="MakerPreferenceType" class="form-control" id="enginePower" required>
-                                        <option value="">Select the preference</option>
+                                        <option value="" disabled>Select the preference</option>
                                         <option value="Normal Preference">Normal Preference</option>
                                         <option value="Exceptional Preference">Exceptional Preference</option>
                                     </select>
-                                    <span asp-validation-for="MakerPreferenceType" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -280,18 +275,17 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="MakerPreferenceType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="CabinType">Cabin Type</label>
                                 <div class="input-group">
-
                                     <select asp-for="CabinType" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(CabinType)).Cast<CabinType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Cabin Type</option>
+                                        <option value="" disabled>Select Cabin Type</option>
                                     </select>
-                                    <span asp-validation-for="CabinType" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -303,6 +297,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="CabinType" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -311,12 +306,10 @@
                             <div class="form-group">
                                 <label asp-for="NumberOfAxle">Number of Axles</label>
                                 <div class="input-group">
-
                                     <select asp-for="NumberOfAxle" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfAxles)).Cast<NoOfAxles>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Number of Axles</option>
+                                        <option value="" disabled >Select Number of Axles</option>
                                     </select>
-                                    <span asp-validation-for="NumberOfAxle" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -328,15 +321,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="NumberOfAxle" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="Color">Color</label>
                                 <div class="input-group">
-
                                     <input asp-for="Color" list="carColors" type="text" class="form-control" placeholder="Select Car Color" required>
-                                    <span asp-validation-for="Color" class="text-danger"></span>
                                       @{
                                         try
                                         {
@@ -348,15 +340,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="Color" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="MakerCompany">Insert Maker Company </label>
                                 <div class="input-group">
-
                                     <input asp-for="MakerCompany" type="text" class="form-control" id="MakerCompany" placeholder="Insert Maker Company" required>
-                                    <span asp-validation-for="MakerCompany" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -368,6 +359,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="MakerCompany" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -376,12 +368,10 @@
                             <div class="form-group">
                                 <label asp-for="CurrentEqpmntCondition">Current Equipment Condition</label>
                                 <div class="input-group">
-
                                     <select asp-for="CurrentEqpmntCondition" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(EquipmentCondition)).Cast<EquipmentCondition>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Current Equipment Condition</option>
+                                        <option value="" disabled >Select Current Equipment Condition</option>
                                     </select>
-                                    <span asp-validation-for="CurrentEqpmntCondition" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -393,18 +383,17 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="CurrentEqpmntCondition" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
                                 <div class="input-group">
-
                                     <select asp-for="AllocatedPointsRange" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Current Equipment Condition</option>
+                                        <option value="" disabled>Select Current Equipment Condition</option>
                                     </select>
-                                    <span asp-validation-for="AllocatedPointsRange" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -416,15 +405,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="AllocatedPointsRange" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="ModelNo">Model Number</label>
                                 <div class="input-group">
-
                                     <input asp-for="ModelNo" type="text" value="@Model.ModelNo" class="form-control" placeholder="Model Number" required>
-                                    <span asp-validation-for="ModelNo" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -436,6 +424,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="ModelNo" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -444,9 +433,7 @@
                             <div class="form-group">
                                 <label asp-for="EngineNo">Engine Number</label>
                                 <div class="input-group">
-
                                     <input asp-for="EngineNo" type="text" value="@Model.ModelNo" class="form-control" placeholder="Engine Number" required>
-                                    <span asp-validation-for="EngineNo" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -458,15 +445,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="EngineNo" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="ChassisNo">Chassis Number</label>
                                 <div class="input-group">
-
                                     <input asp-for="ChassisNo" type="text" value="@Model.ChassisNo" class="form-control" placeholder="Chassis Number" required>
-                                    <span asp-validation-for="ChassisNo" class="text-danger"></span>
                                      @{
                                         try
                                         {
@@ -478,15 +464,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="ChassisNo" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="SerialNo">Serial Number</label>
                                 <div class="input-group">
-
                                     <input asp-for="SerialNo" type="text" value="@Model.SerialNo" class="form-control" placeholder="Serial Number" required>
-                                    <span asp-validation-for="SerialNo" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -498,6 +483,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="SerialNo" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -506,9 +492,7 @@
                             <div class="form-group">
                                 <label asp-for="PlateNo">Plate Number</label>
                                 <div class="input-group">
-
                                     <input asp-for="PlateNo" type="text" value="@Model.PlateNo" class="form-control" placeholder="Plate Number" required>
-                                    <span asp-validation-for="PlateNo" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -520,15 +504,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="PlateNo" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="TDNo">TD Number</label>
                                 <div class="input-group">
-
                                     <input asp-for="TDNo" type="text" class="form-control" placeholder="TD Number" required>
-                                    <span asp-validation-for="TDNo" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -540,15 +523,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="TDNo" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="YearOfManufacture">Year of Manufacture</label>
                                 <div class="input-group">
-
                                     <input asp-for="YearOfManufacture" value="@Model.YearOfManufacture" type="number" class="form-control" min="1900" max="2099" step="1" required>
-                                    <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -560,6 +542,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -568,9 +551,8 @@
                             <div class="form-group">
                                 <label asp-for="Remark">Remark</label>
                                 <div class="input-group">
-
                                     <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
-                                    <span asp-validation-for="Remark" class="text-danger"></span>
+                                  
                                     @{
                                         try
                                         {
@@ -582,15 +564,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="Remark" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="PhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
                                 <div class="input-group">
-
                                     <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
-                                    <span asp-validation-for="PhysicalAndInstallationAssesment" class="text-danger"></span>
                                    @{
                                         try
                                         {
@@ -602,15 +583,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="PhysicalAndInstallationAssesment" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group col-xl-4">
                             <div class="form-group">
                                 <label asp-for="OverallSurveyAssesment">Overall Survey Assessment</label>
                                 <div class="input-group">
-
                                     <textarea asp-for="OverallSurveyAssesment" class="form-control" placeholder="Overall Survey Assessment" rows="3" required></textarea>
-                                    <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -622,17 +602,16 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-3">
                             <div class="form-group">
                                 <label asp-for="CountryOfOrigin">Country of Origin</label>
                                 <div class="input-group">
-
                                     <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
-                                    <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                                    @{
                                         try
                                         {
@@ -644,15 +623,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-3">
                             <div class="form-group">
                                 <label asp-for="InvoiceValue">Invoice Value</label>
                                 <div class="input-group">
-
                                     <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
-                                    <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                                    @{
                                         try
                                         {
@@ -664,15 +642,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-3">
                             <div class="form-group">
                                 <label asp-for="Currency">Currency</label>
                                 <div class="input-group">
-
                                     <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
-                                    <span asp-validation-for="Currency" class="text-danger"></span>
                                      @{
                                         try
                                         {
@@ -684,14 +661,14 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                 <span asp-validation-for="Currency" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-3">
                             <div class="form-group">
                                 <label asp-for="ExchangeRate">Exchange Rate</label>
                                 <div class="input-group">
                                     <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control" placeholder="Enter Exchange Rate" required>
-                                    <span asp-validation-for="ExchangeRate" class="text-danger"></span>
                                     @{
                                         try
                                         {
@@ -703,6 +680,7 @@
                                         catch (Exception) { }
                                     }
                                 </div>
+                                <span asp-validation-for="ExchangeRate" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -735,7 +713,7 @@
                 <form>
                     <div class="form-group">
                         <label for="comment">Comment:</label>
-                        <textarea id="CommentModal" class="form-control" rows="4"></textarea>
+                        <textarea readonly id="comment" class="form-control" rows="4"></textarea>
                     </div>
                 </form>
             </div>
