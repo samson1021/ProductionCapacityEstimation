@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ using mechanical.Services.PCE.PCEEvaluationService;
 
 namespace mechanical.Controllers.PCE
 {
+    [Authorize]
     public class PCECaseController : BaseController
     {
 

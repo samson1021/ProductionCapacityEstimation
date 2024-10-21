@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using DocumentFormat.OpenXml.Bibliography;
 
@@ -21,7 +22,7 @@ namespace mechanical.Controllers
 {
 
     // [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
-
+    [Authorize]
     public class ProductionCapacityController : BaseController
     {
         private readonly IUserService _UserService;

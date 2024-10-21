@@ -1,12 +1,15 @@
-﻿using mechanical.Models.Dto.CaseCommentDto;
+﻿using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
+using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 using mechanical.Services.CaseCommentService;
 using mechanical.Services.PCE.PCECaseCommentService;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace mechanical.Controllers
 {
+    [Authorize]
     public class PCECaseCommentController : BaseController
     {
         private readonly IPCECaseCommentService _PCEcaseCommentService;

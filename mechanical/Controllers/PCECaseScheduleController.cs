@@ -2,6 +2,7 @@
 using AutoMapper;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 using mechanical.Data;
 using mechanical.Models.Dto.MailDto;
@@ -15,6 +16,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Controllers
 {
+    [Authorize]
     public class PCECaseScheduleController : BaseController
     {
         private readonly IMapper _mapper;
