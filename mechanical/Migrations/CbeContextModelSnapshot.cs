@@ -1014,6 +1014,33 @@ namespace mechanical.Migrations
                     b.ToTable("Rejects");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.ReturnedProduction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("PCEId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReturnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ReturnedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReturnedById");
+
+                    b.ToTable("ReturnedProductions");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Signatures", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1129,34 +1156,31 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("BussinessLicenceId")
+                    b.Property<Guid?>("BusinessLicenseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CaseNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CompletionDate")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerUserId")
+                    b.Property<string>("CustomerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("DistrictId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("MakerAssignmentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("RMUserId")
+                    b.Property<Guid>("PCECaseOriginatorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -1165,11 +1189,11 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BussinessLicenceId");
+                    b.HasIndex("BusinessLicenseId");
 
                     b.HasIndex("DistrictId");
 
-                    b.HasIndex("RMUserId");
+                    b.HasIndex("PCECaseOriginatorId");
 
                     b.ToTable("PCECases");
                 });
@@ -1184,7 +1208,7 @@ namespace mechanical.Migrations
                     b.Property<DateTime>("AssignmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("CompletionDate")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ProductionCapacityId")
@@ -1277,13 +1301,10 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("PCECaseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RMUserId")
+                    b.Property<Guid>("PCECaseOriginatorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
@@ -1292,11 +1313,14 @@ namespace mechanical.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("TerminatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PCECaseId");
 
-                    b.HasIndex("RMUserId");
+                    b.HasIndex("PCECaseOriginatorId");
 
                     b.ToTable("PCECaseTerminates");
                 });
@@ -1312,9 +1336,6 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("CaseId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1322,7 +1343,7 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("NewCaseId")
+                    b.Property<Guid>("PCECaseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
@@ -1330,7 +1351,7 @@ namespace mechanical.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NewCaseId");
+                    b.HasIndex("PCECaseId");
 
                     b.HasIndex("UserId");
 
@@ -1353,6 +1374,9 @@ namespace mechanical.Migrations
 
                     b.Property<string>("BottleneckProductionLineCapacity")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1409,7 +1433,7 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OverallActualCurrentPlantCapacity")
+                    b.Property<string>("OverallActualCurrentCapacity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1464,11 +1488,14 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<Guid?>("AssignedEvaluatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BusinessLicenseNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Category")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("CheckerUserID")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
@@ -1476,26 +1503,17 @@ namespace mechanical.Migrations
                     b.Property<string>("CountryOfOrgin")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("CreatedById")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreationDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CurrentStage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CurrentStatus")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DateOfInspection")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EvaluatorUserID")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("HouseNo")
                         .HasColumnType("nvarchar(max)");
@@ -1524,9 +1542,6 @@ namespace mechanical.Migrations
                     b.Property<string>("ModelNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ObsolescenceStatus")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OwnerName")
                         .HasColumnType("nvarchar(max)");
 
@@ -1539,16 +1554,7 @@ namespace mechanical.Migrations
                     b.Property<string>("PlaceOfInspection")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PlantDepreciationRate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PlantName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProductDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductionBussinessLicence")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductionType")
@@ -1561,10 +1567,10 @@ namespace mechanical.Migrations
                     b.Property<string>("Purpose")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PurposeOfCollateral")
+                    b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
@@ -1577,17 +1583,17 @@ namespace mechanical.Migrations
                     b.Property<string>("SubCity")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TradeLicenseNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Wereda")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("YearOfManifacturing")
-                        .HasColumnType("int");
 
                     b.Property<string>("Zone")
                         .HasColumnType("nvarchar(max)");
@@ -1599,46 +1605,6 @@ namespace mechanical.Migrations
                     b.HasIndex("PCECaseId");
 
                     b.ToTable("ProductionCapacities");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityCorrection", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CommentedAttribute")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CommentedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CommentedByUserIdsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EquipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PCECaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductionCapacityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentedByUserIdsId");
-
-                    b.ToTable("ProductionCapacityCorrections");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>
@@ -1662,31 +1628,6 @@ namespace mechanical.Migrations
                     b.HasIndex("ProductionCapacityId");
 
                     b.ToTable("ProductionReestimations");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PCEId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RejectedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RejectionComment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductionRejects");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.TimeInterval", b =>
@@ -1980,6 +1921,17 @@ namespace mechanical.Migrations
                     b.Navigation("EvaluatorUser");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.ReturnedProduction", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "ReturnedBy")
+                        .WithMany()
+                        .HasForeignKey("ReturnedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReturnedBy");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Signatures", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.UploadFile", "SignatureFile")
@@ -2002,9 +1954,9 @@ namespace mechanical.Migrations
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECase", b =>
                 {
-                    b.HasOne("mechanical.Models.Entities.UploadFile", "BussinessLicence")
+                    b.HasOne("mechanical.Models.Entities.UploadFile", "BusinessLicense")
                         .WithMany()
-                        .HasForeignKey("BussinessLicenceId");
+                        .HasForeignKey("BusinessLicenseId");
 
                     b.HasOne("mechanical.Models.Entities.District", "District")
                         .WithMany()
@@ -2012,17 +1964,17 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "RMUser")
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "PCECaseOriginator")
                         .WithMany()
-                        .HasForeignKey("RMUserId")
+                        .HasForeignKey("PCECaseOriginatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BussinessLicence");
+                    b.Navigation("BusinessLicense");
 
                     b.Navigation("District");
 
-                    b.Navigation("RMUser");
+                    b.Navigation("PCECaseOriginator");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseAssignment", b =>
@@ -2090,22 +2042,24 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "RMUser")
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "PCECaseOriginator")
                         .WithMany()
-                        .HasForeignKey("RMUserId")
+                        .HasForeignKey("PCECaseOriginatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("PCECase");
 
-                    b.Navigation("RMUser");
+                    b.Navigation("PCECaseOriginator");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.PCECaseTimeLine", b =>
                 {
-                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "NewCase")
+                    b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
                         .WithMany()
-                        .HasForeignKey("NewCaseId");
+                        .HasForeignKey("PCECaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("mechanical.Models.Entities.CreateUser", "User")
                         .WithMany()
@@ -2113,7 +2067,7 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("NewCase");
+                    b.Navigation("PCECase");
 
                     b.Navigation("User");
                 });
@@ -2141,7 +2095,9 @@ namespace mechanical.Migrations
                 {
                     b.HasOne("mechanical.Models.Entities.CreateUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById");
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("mechanical.Models.PCE.Entities.PCECase", "PCECase")
                         .WithMany("ProductionCapacities")
@@ -2152,15 +2108,6 @@ namespace mechanical.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("PCECase");
-                });
-
-            modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionCapacityCorrection", b =>
-                {
-                    b.HasOne("mechanical.Models.Entities.CreateUser", "CommentedByUserIds")
-                        .WithMany()
-                        .HasForeignKey("CommentedByUserIdsId");
-
-                    b.Navigation("CommentedByUserIds");
                 });
 
             modelBuilder.Entity("mechanical.Models.PCE.Entities.ProductionReestimation", b =>

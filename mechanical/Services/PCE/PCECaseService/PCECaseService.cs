@@ -47,14 +47,14 @@ namespace mechanical.Services.PCE.PCECaseService
                 pceCase.Id = Guid.NewGuid();
                 pceCase.Status = "New";
                 pceCase.DistrictId = user.DistrictId;
-                pceCase.RMUserId = UserId;
-                pceCase.CreationDate = DateTime.Now;
+                pceCase.PCECaseOriginatorId = UserId;
+                pceCase.CreatedAt = DateTime.Now;
 
                 await _cbeContext.PCECases.AddAsync(pceCase);
 
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
-                    CaseId = pceCase.Id,
+                    PCECaseId = pceCase.Id,
                     Activity = $"<strong>A new PCE case with ID {pceCase.CaseNo} has been created</strong>",
                     CurrentStage = "Relation Manager"
                 });   
@@ -85,11 +85,11 @@ namespace mechanical.Services.PCE.PCECaseService
                 {
                     pceCase.ApplicantName = pceCasesDto.ApplicantName;
                     pceCase.CustomerEmail = pceCasesDto.CustomerEmail;
-                    pceCase.CustomerUserId = pceCasesDto.CustomerUserId;
+                    pceCase.CustomerId = pceCasesDto.CustomerId;
 
                     await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                     {
-                        CaseId = pceCase.Id,
+                        PCECaseId = pceCase.Id,
                         Activity = $"<strong>The PCE case with case number {pceCase.CaseNo} has been edited</strong>",
                         CurrentStage = "Relation Manager"
                     });
@@ -120,12 +120,12 @@ namespace mechanical.Services.PCE.PCECaseService
 
             var pceCase = await _cbeContext.PCECases
                                             .AsNoTracking()
-                                            .Include(res => res.BussinessLicence)
                                             .Include(res => res.District)
+                                            .Include(res => res.BusinessLicense)
                                             .Include(res => res.ProductionCapacities
                                                 .Where(pc => assignedProductionCapacities.Contains(pc.Id)))
                                             .FirstOrDefaultAsync(c => c.Id == Id && 
-                                                (assignedProductionCapacities.Any() || c.RMUserId == UserId));
+                                                (assignedProductionCapacities.Any() || c.PCECaseOriginatorId == UserId));
 
             return _mapper.Map<PCECaseReturnDto>(pceCase);
         }
@@ -163,7 +163,7 @@ namespace mechanical.Services.PCE.PCECaseService
 
             var additionalPCECases = await _cbeContext.PCECases
                                                     .AsNoTracking()
-                                                    .Where(pc => pc.RMUserId == UserId && !pc.ProductionCapacities.Any() &&
+                                                    .Where(pc => pc.PCECaseOriginatorId == UserId && !pc.ProductionCapacities.Any() &&
                                                                 (string.IsNullOrEmpty(Status) ||
                                                                     Status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
                                                                     Status.Equals("New", StringComparison.OrdinalIgnoreCase)))
@@ -173,7 +173,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                         .Select(x => x.PCECase)
                                         .Concat(additionalPCECases)
                                         .DistinctBy(pc => pc.Id)
-                                        .OrderByDescending(pc => pc.CreationDate)
+                                        .OrderByDescending(pc => pc.CreatedAt)
                                         .ToList();
 
             var returnDtos = allPCECases.Select(pceCase =>
@@ -260,7 +260,7 @@ namespace mechanical.Services.PCE.PCECaseService
 
             var additionalPCECaseCount = await _cbeContext.PCECases
                                                         .AsNoTracking()
-                                                        .Where(pc => pc.RMUserId == UserId && !pc.ProductionCapacities.Any() &&
+                                                        .Where(pc => pc.PCECaseOriginatorId == UserId && !pc.ProductionCapacities.Any() &&
                                                                     (string.IsNullOrEmpty(status) ||
                                                                         status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
                                                                         status.Equals("New", StringComparison.OrdinalIgnoreCase)))                                                       
@@ -301,10 +301,11 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<IEnumerable<PCECaseReturnDto>> GetLatestPCECases(Guid UserId)
         {
             var pceCases = await _cbeContext.PCECases
-                                            .Include(x => x.ProductionCapacities)
                                             .Include(x => x.District)
-                                            .Where(res => res.RMUserId == UserId)
-                                            .OrderByDescending(res => res.CreationDate)
+                                            .Include(res => res.BusinessLicense)
+                                            .Include(x => x.ProductionCapacities)
+                                            .Where(res => res.PCECaseOriginatorId == UserId)
+                                            .OrderByDescending(res => res.CreatedAt)
                                             .Take(5)
                                             .ToListAsync();          
 
@@ -314,7 +315,7 @@ namespace mechanical.Services.PCE.PCECaseService
         public async Task<IEnumerable<PCECaseReturnDto>> GetPCECasesReport(Guid UserId)
         {
             var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStage == "Relation Manager"))
-                .Where(res => res.RMUserId == UserId).ToListAsync();
+                .Where(res => res.PCECaseOriginatorId == UserId).ToListAsync();
 
             var pceCasesDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(pceCases);
             foreach (var pceCasesDto in pceCasesDtos)
@@ -339,8 +340,8 @@ namespace mechanical.Services.PCE.PCECaseService
             {
                 var pceCaseResult = await _cbeContext.PCECases
                                                     .Include(res => res.District)
-                                                    .Include(res => res.BussinessLicence)
-                                                    .FirstOrDefaultAsync(c => c.Id == id && c.RMUserId == UserId);
+                                                    .Include(res => res.BusinessLicense)
+                                                    .FirstOrDefaultAsync(c => c.Id == id && c.PCECaseOriginatorId == UserId);
 
                 var productionCapacities = await _cbeContext.ProductionCapacities
                     .Where(pc => pc.PCECaseId == id && pc.CreatedById == UserId)
@@ -355,7 +356,7 @@ namespace mechanical.Services.PCE.PCECaseService
 
                 var pceCaseDto = new PCEReportDataDto
                 {
-                    PCESCase = pceCaseResult,
+                    PCECases = pceCaseResult,
                     Productions = productionCapacities,
                     PCEEvaluations = evaluations, // Use the evaluations retrieved from the join
                     PCECaseSchedule = null // Set to null since not used
@@ -379,8 +380,8 @@ namespace mechanical.Services.PCE.PCECaseService
                                             .ToListAsync();            
             var pceCase = _cbeContext.PCECases
                                     .Include(res => res.District)
+                                    .Include(res => res.BusinessLicense)
                                     .Include(res => res.ProductionCapacities)
-                                    .Include(res => res.BussinessLicence)
                                     .Where(c => productions.Select(p => p.PCECaseId).Contains(c.Id))
                                     .FirstOrDefault();
             var pceEvaluations = await _cbeContext.PCEEvaluations
@@ -393,7 +394,7 @@ namespace mechanical.Services.PCE.PCECaseService
 
             return new PCEReportDataDto
             {
-                PCESCase = pceCase,
+                PCECases = pceCase,
                 Productions = productions,
                 PCEEvaluations = pceEvaluations,
                 PCECaseSchedule = pceCaseSchedule
@@ -412,7 +413,7 @@ namespace mechanical.Services.PCE.PCECaseService
             var pceCaseSchedule = await _cbeContext.PCECaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
             return new PCEReportDataDto
             {
-                PCESCase = pceCase,
+                PCECases = pceCase,
                 Productions = productions,
                 PCEEvaluations = pceEvaluations,
                 PCECaseSchedule = pceCaseSchedule

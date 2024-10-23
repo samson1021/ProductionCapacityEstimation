@@ -41,9 +41,9 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-xl-10">
-                                <label asp-for="CustomerUserId">Customer ID</label>
-                                <input asp-for="CustomerUserId" type="number" class="form-control" id="CustomerUserId" maxlength="10" required>
-                                <span id="CustomerUserId-error" asp-validation-for="CustomerUserId" class="text-danger"></span>
+                                <label asp-for="CustomerId">Customer ID</label>
+                                <input asp-for="CustomerId" type="number" class="form-control" id="CustomerId" maxlength="10" required>
+                                <span id="CustomerId-error" asp-validation-for="CustomerId" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -58,7 +58,7 @@
                         <div class="row">
                             <div class="form-group col-xl-10">
                                 <label asp-for="CustomerEmail">Customer Email</label>
-                                <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerUserId">
+                                <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerId">
                                 <span asp-validation-for="CustomerEmail" class="text-danger"></span>
                             </div>
                         </div>
@@ -98,14 +98,14 @@
             }
         });
         //validate the customer Id length
-        document.getElementById("CustomerUserId").addEventListener("input", function () {
+        document.getElementById("CustomerId").addEventListener("input", function () {
             var input = this.value;
             if (input.length !== 10) {
                 this.setCustomValidity("Customer ID must be exactly 10 digits.");
-                document.getElementById("CustomerUserId-error").textContent = "Customer ID must be exactly 10 digits.";
+                document.getElementById("CustomerId-error").textContent = "Customer ID must be exactly 10 digits.";
             } else {
                 this.setCustomValidity("");
-                document.getElementById("CustomerUserId-error").textContent = "";
+                document.getElementById("CustomerId-error").textContent = "";
             }
         });
         var applicantNameLabel = document.getElementById('applicantNameLabel');

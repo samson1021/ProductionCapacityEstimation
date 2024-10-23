@@ -56,7 +56,7 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
 
         public async Task<IEnumerable<PCECaseTimeLineReturnDto>> GetPCECaseTimeLines(Guid PCECaseId)
         {
-            var pceCaseTimelines = await _cbeContext.PCECaseTimeLines.Where(a=>a.CaseId == PCECaseId).Include(res => res.User).ThenInclude(res => res.Role).OrderBy(res => res.CreatedAt).ToListAsync(); 
+            var pceCaseTimelines = await _cbeContext.PCECaseTimeLines.Where(a=>a.PCECaseId == PCECaseId).Include(res => res.User).ThenInclude(res => res.Role).OrderBy(res => res.CreatedAt).ToListAsync(); 
 
             return _mapper.Map<IEnumerable<PCECaseTimeLineReturnDto>> (pceCaseTimelines); 
         }

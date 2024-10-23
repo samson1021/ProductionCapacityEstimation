@@ -7,12 +7,12 @@
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var myProduction = ViewData["Production"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
     var Reestimation = ViewData["Reestimation"] as ProductionReestimation;
-    var ReturnPost = new ProductionReturnPostDto
+    var ReturnPost = new ReturnedProductionPostDto
                     {
                         PCEId = myProduction.Id,
-                        RejectionComment = ""
+                        Reason = ""
                     };
     ViewData["ReturnPost"] = ReturnPost;
 }

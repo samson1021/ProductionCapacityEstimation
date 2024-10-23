@@ -19,9 +19,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Phase of Output")]
         public OutputPhase OutputPhase { get; set; }
 
-        //[Display(Name = "Phase of Output")]
-        //public OutputPhase? OutputPhase { get; set; }
-
         [Display(Name = "Country of Origin")]
         public string? OriginCountry { get; set; }
 
@@ -55,7 +52,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? BottleneckProductionLineCapacity { get; set; }
 
         [Display(Name = "Overall Actual Current Capacity")]
-        public string OverallActualCurrentPlantCapacity { get; set; }
+        public string OverallActualCurrentCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
         public virtual DateTimeRangePostDto TimeConsumedToCheck { get; set; }

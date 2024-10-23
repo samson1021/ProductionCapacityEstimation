@@ -169,16 +169,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<bool> ReturnValuation(Guid UserId, ProductionReturnPostDto Dto)
+        public async Task<bool> ReturnValuation(Guid UserId, ReturnedProductionPostDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                var returnPCE = _mapper.Map<ProductionReject>(Dto);
-                returnPCE.RejectedBy = UserId;
-                returnPCE.CreationDate = DateTime.Now;
+                var returnPCE = _mapper.Map<ReturnedProduction>(Dto);
+                returnPCE.ReturnedById = UserId;
+                returnPCE.ReturnedAt = DateTime.Now;
 
-                await _cbeContext.ProductionRejects.AddAsync(returnPCE);
+                await _cbeContext.ReturnedProductions.AddAsync(returnPCE);
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
 
@@ -358,7 +358,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (allCompleted)
             {
                 PCECase.Status = "Completed";
-                PCECase.CompletionDate = DateTime.Now;
+                PCECase.CompletedAt = DateTime.Now;
                 _cbeContext.PCECases.Update(PCECase);
             }
         }
@@ -381,7 +381,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }  
         }
 
-        private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid? UserId, string Status, DateTime? CompletionDate = null)
+        private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid? UserId, string Status, DateTime? CompletedAt = null)
         {
             var assignment = await _cbeContext.PCECaseAssignments
                                                 .Where(pca => pca.ProductionCapacityId == PCEId && pca.UserId == UserId)
@@ -390,7 +390,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (assignment != null)
             {
                 assignment.Status = Status;
-                assignment.CompletionDate = CompletionDate;
+                assignment.CompletedAt = CompletedAt;
                 _cbeContext.PCECaseAssignments.Update(assignment);
             }
         }
@@ -401,7 +401,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.ProductionType}",
                 CurrentStage = PCE.CurrentStage,
-                CaseId = PCE.PCECaseId
+                PCECaseId = PCE.PCECaseId
             });
         }
 

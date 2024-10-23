@@ -2,7 +2,6 @@
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.PCE.Dto.ProductionCapacityCorrectionDto;
 
 namespace mechanical.Services.PCE.ProductionCapacityService
 {
@@ -16,15 +15,11 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         Task<bool> UploadProductionFile(Guid UserId, IFormFile file, Guid caseId, string DocumentCatagory);
         
         Task<ProductionDetailDto> GetProductionDetails(Guid UserId, Guid Id);
-        Task<ReturnProductionDto> GetProduction(Guid UserId, Guid Id);
-        Task<IEnumerable<ReturnProductionDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
+        Task<ProductionReturnDto> GetProduction(Guid UserId, Guid Id);
+        Task<IEnumerable<ProductionReturnDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
         Task<int> GetProductionCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
        
-        Task<PlantEditPostDto> GetPlantProduction(Guid UserId, Guid Id);
-        Task<ProductionCapacity> CreatePlantProduction(Guid UserId, Guid caseId, PlantPostDto createplantDto);
-        Task<ProductionCapacity> EditPlantProduction(Guid UserId, Guid ProductionCapacityId, PlantEditPostDto createProductionDto);
-
-        Task<IEnumerable<ReturnProductionDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId);
+        Task<IEnumerable<ProductionReturnDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId);
         Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId);        
     }
 }

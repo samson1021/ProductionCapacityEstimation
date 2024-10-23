@@ -1,11 +1,5 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @model PCEReportDataDto
-@* 
-<h1>@Model.PCESCase.Title</h1>
-<p>@Model.PCESCase.Description</p>
-
-<h2>Production Capacities</h2>
- *@
 
 <section class="content-header">
     <div class="container-fluid">
@@ -32,13 +26,13 @@
                         <div class="row align-items-center">
                             <div class="col-md-8">
                                 <div class="d-flex flex-column ">
-                                    <h5 class="card-title me-3 text-muted">Case Number: @Model.PCESCase.CaseNo</h5>
-                                    <h5 class="card-subtitle mb-2 text-muted">Applicant Name: @Model.PCESCase.ApplicantName</h5>
+                                    <h5 class="card-title me-3 text-muted">Case Number: @Model.PCECases.CaseNo</h5>
+                                    <h5 class="card-subtitle mb-2 text-muted">Applicant Name: @Model.PCECases.ApplicantName</h5>
                                 </div>
                             </div>
                             <div class="col-md-4 text-end">
-                               @*  <button class="btn btn-primary" style="background-color:purple; color: white">Case Report</button> *@
-                                <a class="btn btn-primary" style="background-color:purple; color: white" href="@Url.Action("PCEAllReport", "PCECase")?Id= @Model.PCESCase.Id">
+                                <!-- <button class="btn btn-primary" style="background-color:purple; color: white">Case Report</button> -->
+                                <a class="btn btn-primary" style="background-color:purple; color: white" href="@Url.Action("PCEAllReport", "PCECase")?Id= @Model.PCECases.Id">
                                     <i class="fas fa-file-alt mr-2"></i>PCE Report
                                 </a>
                             </div>
@@ -63,7 +57,7 @@
                             @foreach (var item in Model.Productions)
                             {
                                 <tr>
-                                    <td>@item.CreationDate</td>
+                                    <td>@item.CreatedAt</td>
                                     <td>@item.PropertyOwner</td>
                                     <td>@item.Role</td>
                                     <td>@item.ProductionType</td>

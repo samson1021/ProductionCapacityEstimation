@@ -83,9 +83,9 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-lg-3">
-                                    <label asp-for="ProductionBussinessLicence">Business License Number<i class="text-danger">*</i> </label>
-                                    <input asp-for="ProductionBussinessLicence" type="text" class="form-control form-control-sm" id="ProductionBussinessLicence" placeholder="Business License Number">
-                                    <span id="ProductionBussinessLicence-error" asp-validation-for="ProductionBussinessLicence" class="text-danger"></span>
+                                    <label asp-for="BusinessLicense">Business License Number<i class="text-danger">*</i> </label>
+                                    <input asp-for="BusinessLicense" type="text" class="form-control form-control-sm" id="BusinessLicense" placeholder="Business License Number">
+                                    <span id="BusinessLicense-error" asp-validation-for="BusinessLicense" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-3">
                                     <label asp-for="ManufactureYear">Manufactuing Year</label>
@@ -135,9 +135,9 @@
                                 <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label asp-for="UploadLHC">Upload LHC Document<i class="text-danger">*</i></label>
-                                    <input asp-for="UploadLHC" type="file" class="form-control  form-control-sm" id="UploadLHC" required>
-                                    <span id="UploadLHC-error" asp-validation-for="UploadLHC" class="text-danger"></span>
+                                <label asp-for="LHCDocument">Upload LHC Document<i class="text-danger">*</i></label>
+                                    <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument" required>
+                                    <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
                             </div>
                            </div>
                         </div>
@@ -154,9 +154,9 @@
 
                             </div>
                             <div class="form-group col-lg-4">
-                                <label asp-for="ploadshaderentagreement">Upload Shade Rent Agreement Document<i class="text-danger">*</i></label>
-                                    <input asp-for="ploadshaderentagreement" type="file" class="form-control  form-control-sm" id="ploadshaderentagreement" required>
-                                    <span id="ploadshaderentagreement-error" asp-validation-for="ploadshaderentagreement" class="text-danger"></span>
+                                <label asp-for="ShadeRentAgreement">Upload Shade Rent Agreement Document<i class="text-danger">*</i></label>
+                                    <input asp-for="ShadeRentAgreement" type="file" class="form-control  form-control-sm" id="ShadeRentAgreement" required>
+                                    <span id="ShadeRentAgreement-error" asp-validation-for="ShadeRentAgreement" class="text-danger"></span>
                             </div>
                                 </div>
                         </div>
@@ -238,27 +238,27 @@
 
                         <div class="row">
                             <div class="form-group col-lg-6">
-                                <label asp-for="Uploadbusinesslicense"> Upload business license <i class="text-danger">*</i></label>
-                                <input asp-for="Uploadbusinesslicense" type="file" class="form-control  form-control-sm" id="Uploadbusinesslicense" required>
-                                <span id="Uploadbusinesslicense-error" asp-validation-for="Uploadbusinesslicense" class="text-danger"></span>
+                                <label asp-for="BusinessLicense"> Upload Business License <i class="text-danger">*</i></label>
+                                <input asp-for="BusinessLicense" type="file" class="form-control  form-control-sm" id="BusinessLicense" required>
+                                <span id="BusinessLicense-error" asp-validation-for="BusinessLicense" class="text-danger"></span>
                             </div> 
                             <div class="form-group col-lg-6">
-                                <label asp-for="Machinespecificationdocumen">Machine specification document <i class="text-danger">*</i></label>
-                                <input asp-for="Machinespecificationdocumen" type="file" class="form-control  form-control-sm" id="Machinespecificationdocumen" required>
-                                <span id="Machinespecificationdocumen-error" asp-validation-for="Machinespecificationdocumen" class="text-danger"></span>
+                                <label asp-for="MachineSpecificationDocument">Machine specification document <i class="text-danger">*</i></label>
+                                <input asp-for="MachineSpecificationDocument" type="file" class="form-control  form-control-sm" id="MachineSpecificationDocument" required>
+                                <span id="MachineSpecificationDocument-error" asp-validation-for="MachineSpecificationDocument" class="text-danger"></span>
                             </div>
                             </div>
 
                         <div class="row">
                             <div class="form-group col-lg-6">
-                                <label asp-for="Machineoperationmanual"> Machine operation manual <i class="text-danger"></i></label>
-                                <input asp-for="Machineoperationmanual" type="file" class="form-control  form-control-sm" id="Machineoperationmanual">
-                                <span id="Machineoperationmanual-error" asp-validation-for="Machineoperationmanual" class="text-danger"></span>
+                                <label asp-for="MachineOperationManual"> Machine operation manual <i class="text-danger"></i></label>
+                                <input asp-for="MachineOperationManual" type="file" class="form-control  form-control-sm" id="MachineOperationManual">
+                                <span id="MachineOperationManual-error" asp-validation-for="MachineOperationManual" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label asp-for="OtherDocument">Other supporting Document</label>
-                                <input asp-for="OtherDocument" type="file" class="form-control form-control-sm" id="OtherDocument" multiple>
-                                <span id="OtherDocument-error" asp-validation-for="OtherDocument" class="text-danger"></span>
+                                <label asp-for="OtherDocuments">Other Supporting Documents</label>
+                                <input asp-for="OtherDocuments" type="file" class="form-control form-control-sm" id="OtherDocuments" multiple>
+                                <span id="OtherDocuments-error" asp-validation-for="OtherDocuments" class="text-danger"></span>
                             </div>
                         </div>
                          <div class="row">
@@ -331,8 +331,8 @@
             toastr.error("Please fill in all required fields.");
             return;
         }
-        var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-        if (ProductionBussinessLicence === "") {
+        var BusinessLicense = getAttributeByName(formDataArray, 'BusinessLicense').trim();
+        if (BusinessLicense === "") {
             toastr.error("Please fill in all required fields.");
             return;
         }
@@ -347,12 +347,6 @@
             toastr.error("Please fill in all required fields.");
             return;
         }
-        // var ProductionBussinessLicence = getAttributeByName(formDataArray, 'ProductionBussinessLicence').trim();
-        // if (ProductionBussinessLicence === "") {
-        //     toastr.error("Please fill in all required fields.");
-        //     return;
-        // }
-
         var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace');
         if (MachineryInstalledPlace === "") {
             toastr.error("Please fill in all required fields.");
@@ -361,27 +355,27 @@
         if (MachineryInstalledPlace == "Private Owned LHC") {
             var LHCNumber = getAttributeByName(formDataArray, 'LHCNumber').trim();
             var OwnerName = getAttributeByName(formDataArray, 'OwnerName').trim();                
-            var UploadLHC = $("#UploadLHC");
-            if (LHCNumber === "" || OwnerName === "" || (UploadLHC.get(0).files.length === 0)) {
+            var LHCDocument = $("#LHCDocument");
+            if (LHCNumber === "" || OwnerName === "" || (LHCDocument.get(0).files.length === 0)) {
                 toastr.error("Please fill in all required fields.");
                 return;
             }
         } else {
             var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
-            var ploadshaderentagreement = $("#ploadshaderentagreement");
-            if (Industrialpark === "" || (ploadshaderentagreement.get(0).files.length === 0)) {
+            var ShadeRentAgreement = $("#ShadeRentAgreement");
+            if (Industrialpark === "" || (ShadeRentAgreement.get(0).files.length === 0)) {
                 toastr.error("Please fill in all required fields.");
                 return;
             }
         }
 
-        var Uploadbusinesslicense = $("#Uploadbusinesslicense");
-        if (Uploadbusinesslicense.get(0).files.length === 0) {
+        var BusinessLicense = $("#BusinessLicense");
+        if (BusinessLicense.get(0).files.length === 0) {
             toastr.error("Please fill in all required fields.");
             return;
         }
-        var Machinespecificationdocumen = $("#Machinespecificationdocumen");
-        if (Machinespecificationdocumen.get(0).files.length === 0) {
+        var MachineSpecificationDocument = $("#MachineSpecificationDocument");
+        if (MachineSpecificationDocument.get(0).files.length === 0) {
             toastr.error("Please fill in all required fields.");
             return;
         }
@@ -456,13 +450,13 @@
         this.style.borderColor = "";
         document.getElementById("MachineryInstalledPlace-error").textContent = "";
     });
-    document.getElementById("Uploadbusinesslicense").addEventListener("input", function () {
+    document.getElementById("BusinessLicense").addEventListener("input", function () {
         this.style.borderColor = "";
-        document.getElementById("Uploadbusinesslicense-error").textContent = "";
+        document.getElementById("BusinessLicense-error").textContent = "";
     });
-    document.getElementById("Machinespecificationdocumen").addEventListener("input", function () {
+    document.getElementById("MachineSpecificationDocument").addEventListener("input", function () {
         this.style.borderColor = "";
-        document.getElementById("Machinespecificationdocumen-error").textContent = "";
+        document.getElementById("MachineSpecificationDocument-error").textContent = "";
     });
    
     document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {

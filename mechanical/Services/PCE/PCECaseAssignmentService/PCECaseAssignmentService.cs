@@ -137,7 +137,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
-                                                            // res.Department == "Mechanical" && 
+                                                             res.Department == "Mechanical" && 
                                                             (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             }
         }
@@ -223,7 +223,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             {                
                 if (assignedUser.Role.Name == "Maker Officer")
                 {
-                    production.EvaluatorUserID = assignedUser.Id;
+                    production.AssignedEvaluatorId = assignedUser.Id;
                 }
             }
             
@@ -240,7 +240,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
             return new PCECaseTimeLinePostDto
             {
-                CaseId = PCECaseId,
+                PCECaseId = PCECaseId,
                 Activity = activity,
                 CurrentStage = assignedUser.Role.Name
             };

@@ -3,14 +3,12 @@
 @using mechanical.Models.PCE.Dto.PCECaseDto
 
 @{
-    var PCECase = ViewData["PCECase"] as PCECase;
+    var pceCase = ViewData["PCECase"] as PCECase;
     var productions = ViewData["Productions"] as List<ProductionCapacity>;
-    var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
-    var PCECaseSchedule = ViewData["PCECaseSchedule"] as PCECaseSchedule;
+    var pceEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnPCEReportFileDto>;
-    var EvaluatorReports = ViewData["EvaluatorReports"] as IEnumerable<EvaluatorReportDto>;
+    var evaluatorReports = ViewData["EvaluatorReports"] as IEnumerable<EvaluatorReportDto>;
     bool isPrinting = false;
-
     var customerinfo = ViewData["customerinfo"];
 }
 
@@ -87,16 +85,16 @@
         <div class="card-body d-flex justify-content-end">
             <div>
                 <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
-                @* <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button> *@
+                <!-- <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button> -->
             </div>
         </div>
     </div>
 
     @foreach (var pce in productions)
     {
-        @if (PCEEvaluations != null && PCEEvaluations.Any(e => e.PCEId == pce.Id))
+        @if (pceEvaluations != null && pceEvaluations.Any(e => e.PCEId == pce.Id))
         {
-            @foreach (var evaluate in PCEEvaluations.Where(e => e.PCEId == pce.Id))
+            @foreach (var evaluation in pceEvaluations.Where(e => e.PCEId == pce.Id))
             {
                 <div class="container-fluid page-break-after" style=" padding: 5mm 20mm;">
                     <div class="card py-4 ">
@@ -127,7 +125,7 @@
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <p class="mb-1 mr-4 " style="font-weight:500">
-                                            Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@PCECase.CaseNo</u>
+                                            Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@pceCase.CaseNo</u>
                                         </p>
                                     </div>
                                     <div class="d-flex justify-content-end">                                      
@@ -147,7 +145,7 @@
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">1.&nbsp; &nbsp;Applicant name:</label>
-                                            <u class=" ">@PCECase.ApplicantName</u>
+                                            <u class=" ">@pceCase.ApplicantName</u>
                                         </p>
                                     </div>
                                     @{
@@ -181,34 +179,23 @@
                                     </div>
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Plant Machine Purchased by CBE's partial Financing?</label>
+                                            <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Production Machine Purchased by CBE's partial Financing?</label>
                                             <u class="  "> &nbsp;&nbsp;&nbsp;</u>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0 my-0">
-                                            <label class="col-form-label pr-2">4.&nbsp; &nbsp; Plant Location:</label> &nbsp;
+                                            <label class="col-form-label pr-2">4.&nbsp; &nbsp; Production Machine Location:</label> &nbsp;
                                             Town: <u class="   px-2">@pce.Region &nbsp; ;</u>
                                             Sub-City: <u class="  px-2">@pce.SubCity &nbsp; ;</u>
                                             Woreda: <u class="   px-2"> @pce.Wereda</u>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0">
-                                        @if (pce.ProductionType == "Manufacturing")
-                                        {
-                                            <p class="my-0 py-0">
-                                                <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                                <u class="  ">@pce.TradeLicenseNumber</u>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p class="my-0 py-0">
-                                                <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                                <u class="  "> @pce.TradeLicenseNumber</u>
-                                            </p>
-
-                                        }
+                                        <p class="my-0 py-0">
+                                            <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
+                                            <u class="  ">@pce.BusinessLicenseNumber</u>
+                                        </p>
                                     </div>
 
                                     <div class="form-group row my-0">
@@ -223,56 +210,30 @@
                                             <u class="  "> @pce.OwnerName</u>
                                         </p>
                                     </div>
-                                    <div class="form-group row my-0">
-                                       
-                                  
-                                    @if (pce.ProductionType == "Manufacturing")
-                                    {
+                                    <div class="form-group row my-0">                                    
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
                                             <u class="  ">@pce.Type</u>
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                                <u class="  "> @pce.PlantName</u>
-                                        </p>
-
-                                    }  
-                                    
-                                </div>
-
+                                        </p>   
+                                    </div>
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
-                                            <u class="  "> @pce.YearOfManifacturing &nbsp; </u>
+                                            <u class="  "> @pce.ManufactureYear &nbsp; </u>
                                             <label class="col-form-label pl-2">Country of Origin:</label>
                                             <u class="  ">@pce.CountryOfOrgin</u>
-                                        </p>
-
-                                        @if (pce.ProductionType == "Manufacturing")
-                                        {
-                                            <p class="my-0 py-0">
-                                                <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                                <u class="  ">Ethiopia</u>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p class="my-0 py-0">
-                                                <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                                <u class="  "> @pce.CountryOfOrgin</u>
-                                            </p>
-                                        }
+                                        </p>                                        
+                                        <p class="my-0 py-0">
+                                            <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
+                                            <u class="  "> @pce.CountryOfOrgin</u>
+                                        </p>                                        
                                     </div>
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">9.&nbsp; &nbsp; Place of inspection:</label>
-                                            <u class="  ">@evaluate.InspectionPlace  </u>
+                                            <u class="  ">@evaluation.InspectionPlace  </u>
                                             <label class="col-form-label pl-2"> Date of inspection: </label>
-                                            <u class="  ">@evaluate.InspectionDate </u>
+                                            <u class="  ">@evaluation.InspectionDate </u>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0">
@@ -281,75 +242,64 @@
                                             <u class="  "> &nbsp; &nbsp; Relational Manager  </u>
                                         </p>
                                     </div>
-                                    <div class="form-group row my-0">
-                                        @if (pce.ProductionType == "Manufacturing")
-                                        {
-                                            <p class="my-0 py-0">
-                                                <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
-                                                <u class="  "> @pce.PurposeOfCollateral  </u>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p class="my-0 py-0">
-                                                <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
-                                                <u class="  "> @pce.Purpose  </u>
-                                            </p>
-
-                                        }
+                                    <div class="form-group row my-0">                                       
+                                        <p class="my-0 py-0">
+                                            <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
+                                            <u class="  "> @pce.Purpose  </u>
+                                        </p>                                        
                                     </div>
 
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">A.&nbsp; &nbsp; Time Consumed to Check Production Process: &nbsp; &nbsp; To</label>
-                                             <u class="  "> @evaluate.TimeConsumedToCheck.Start</u>
+                                             <u class="  "> @evaluation.TimeConsumedToCheck.Start</u>
                                             <label class="col-form-label pl-2"> From   </label>
-                                            <u class="  ">@evaluate.TimeConsumedToCheck.End</u> 
+                                            <u class="  ">@evaluation.TimeConsumedToCheck.End</u> 
                                         </p>
                                     </div>
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment/Plant Machinery Status:</label>
+                                            <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment Machinery Status:</label>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">A.&nbsp; &nbsp; Technical obsolescence status</label>
-                                            <u class="  "> @evaluate.TechnicalObsolescenceStatus</u>
+                                            <u class="  "> @evaluation.TechnicalObsolescenceStatus</u>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">B.&nbsp; &nbsp; Depreciation Rate Applied:</label>
-                                            <u class="  ">@evaluate.DepreciationRateApplied</u>
+                                            <u class="  ">@evaluation.DepreciationRateApplied</u>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
-                                            <u class="  ">  @evaluate.Discrepancies </u>
+                                            <u class="  ">  @evaluation.Discrepancies </u>
                                         </p>
                                     </div>
                                 </div>
                                 <div class="form-group mb-1">
                                     <label class=" col-form-label font-weight-bold">Survey remark:</label>
-                                    <u class="pl-4"> @evaluate.SurveyRemark </u>
+                                    <u class="pl-4"> @evaluation.SurveyRemark </u>
                                 </div>
                                 <br />
 
-                                <h5 class="mt-1 pl-4">B. Plant Capacity Estimation Summary</h5>
+                                <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
 
                                 <div class="pl-4">
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">A.&nbsp; &nbsp;Type of Output it Produces</label>
-                                            <u class="  "> @evaluate.OutputType </u>
+                                            <u class="  "> @evaluation.OutputType </u>
                                         </p>
                                     </div>
                                     <div class="form-group row my-0 pl-4">
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">B.&nbsp; &nbsp; Phase of the Output, (Finished Product, Raw Material for Next Line)</label>
-                                            <u class="  "> @evaluate.OutputPhase </u>
+                                            <u class="  "> @evaluation.OutputPhase </u>
                                         </p>
                                     </div>
                                     <table class="table table-border-none table-responsive">
@@ -366,19 +316,11 @@
                                         <tbody>
                                             <tr>
                                                 <td>1</td>
-                                                <td>@evaluate.ProductionLineOrEquipmentName</td>
-                                                @if (@pce.ProductionType == "Manufacturing")
-                                                    {
-                                                    <td>@pce.ManufactureYear</td>
-                                                    }
-                                                    else
-                                                    {
-                                                     <td>@pce.YearOfManifacturing</td>
-                                                    }
-
-                                                <td>@evaluate.ProductionUnit</td>
-                                                <td>@evaluate.ProductionMeasurement</td>
-                                                <td>@evaluate.ActualProductionCapacity</td>
+                                                <td>@evaluation.ProductionLineOrEquipmentName</td>
+                                                <td>@pce.ManufactureYear</td>                                                   
+                                                <td>@evaluation.ProductionUnit</td>
+                                                <td>@evaluation.ProductionMeasurement</td>
+                                                <td>@evaluation.ActualProductionCapacity</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -388,16 +330,16 @@
                                     </div>
                                 </div>
                                 <div class="approvedby" style="display:block">
-                                    @foreach (var EvaluatorReport in EvaluatorReports)
+                                    @foreach (var evaluatorReport in evaluatorReports)
                                     {
-                                        @if (evaluate.EvaluatorId == EvaluatorReport.EvaluatorId)
+                                        @if (evaluation.EvaluatorId == evaluatorReport.EvaluatorId)
                                         {
                                               <p>
-                                                Capacity estimated by:- &nbsp;&nbsp;<u><strong>@(EvaluatorReport.EvaluatorName)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                                                Capacity estimated by:- &nbsp;&nbsp;<u><strong>@(evaluatorReport.EvaluatorName)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
                                                     <span style="text-decoration: underline; margin: 0 5px;">
-                                                    <img src="/UploadFile/@($"{EvaluatorReport.SignatureImageId}.png")" alt="Signature" style="max-width: 70px; min-width:60px; min-height:50px ; max-height:60px" />
+                                                    <img src="/UploadFile/@($"{evaluatorReport.SignatureImageId}.png")" alt="Signature" style="max-width: 70px; min-width:60px; min-height:50px ; max-height:60px" />
                                                     </span>
-                                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@(EvaluatorReport.CreatedAt)</strong></u>
+                                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluationd Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@(evaluatorReport.CreatedAt)</strong></u>
                                                 </p> 
                                         }
                                         else
@@ -408,7 +350,7 @@
                                 </div>
                                 <div class="requieddoc" id="requieddoc">
                                     <br />
-                                    <h5 class="mt-1 pl-4">C.  Documents used for Plant Capacity Estimation</h5>
+                                    <h5 class="mt-1 pl-4">C.  Documents used for Production Capacity Estimation</h5>
                                     <table class="table table-border-none table-responsive">
                                         <thead style="border-bottom: 3px solid #6f42c1;">
                                             <tr>
@@ -419,9 +361,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if (productionFiles != null && productionFiles.Any(e => e.CollateralId == pce.Id || e.CollateralId == evaluate.Id))
+                                            @if (productionFiles != null && productionFiles.Any(e => e.CollateralId == pce.Id || e.CollateralId == evaluation.Id))
                                             {
-                                                @foreach (var productionFile in productionFiles.Where(e => e.CollateralId == pce.Id || e.CollateralId == evaluate.Id))
+                                                @foreach (var productionFile in productionFiles.Where(e => e.CollateralId == pce.Id || e.CollateralId == evaluation.Id))
                                                 {
                                                     <tr>
                                                         <td>@productionFile.Name</td>
@@ -473,7 +415,7 @@
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <p class="mb-1 mr-4 " style="font-weight:500">
-                                        Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@PCECase.CaseNo</u>
+                                        Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@pceCase.CaseNo</u>
                                     </p>
                                 </div>
                                 <div class="d-flex justify-content-end">
@@ -493,7 +435,7 @@
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">1.&nbsp; &nbsp;Applicant name:</label>
-                                        <u class=" ">@PCECase.ApplicantName</u>
+                                        <u class=" ">@pceCase.ApplicantName</u>
                                     </p>
                                 </div>
                                 <div class="form-group row my-0">
@@ -512,13 +454,13 @@
                                 </div>
                                 <div class="form-group row my-0 pl-4">
                                     <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Plant Machine Purchased by CBE's partial Financing?</label>
+                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Production Machine Purchased by CBE's partial Financing?</label>
                                         <u class="  "> &nbsp;&nbsp;No </u>
                                     </p>
                                 </div>
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0 my-0">
-                                        <label class="col-form-label pr-2">4.&nbsp; &nbsp; Plant Location:</label> &nbsp;
+                                        <label class="col-form-label pr-2">4.&nbsp; &nbsp; Production Machine Location:</label> &nbsp;
                                         Town: <u class="   px-2">@pce.Region &nbsp; ;</u>
                                         Sub-City: <u class="  px-2">@pce.SubCity &nbsp; ;</u>
                                         Woreda: <u class="   px-2"> @pce.Wereda</u>
@@ -527,7 +469,7 @@
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                        <u class="  "> @pce.TradeLicenseNumber</u>
+                                        <u class="  "> @pce.BusinessLicenseNumber</u>
                                     </p>
                                 </div>
                                 <div class="form-group row my-0">
@@ -544,27 +486,16 @@
                                 </div>
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">7.&nbsp; &nbsp; Name/Type of the equipment or plant:</label>
-                                        <u class="  "> @pce.PlantName </u>
+                                        <label class="col-form-label pr-2">7.&nbsp; &nbsp; Name/Type of the equipment or machine:</label>
+                                        <u class="  "> @pce.MachineName </u>
                                     </p>
                                 </div>
                                 <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-
-                                        @if (pce.ProductionType == "Manufacturing")
-                                        {
-                                            <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
-                                            <u class="  "> @pce.ManufactureYear &nbsp; </u>
-                                            <label class="col-form-label pl-2">Country of Origin:</label>
-                                            <u class="  ">Ethiopia</u>
-                                        }
-                                        else
-                                        {
-                                            <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
-                                            <u class="  "> @pce.YearOfManifacturing &nbsp; </u>
-                                            <label class="col-form-label pl-2">Country of Origin:</label>
-                                            <u class="  ">@pce.CountryOfOrgin</u>
-                                        }
+                                    <p class="my-0 py-0">                                        
+                                        <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
+                                        <u class="  "> @pce.ManufactureYear &nbsp; </u>
+                                        <label class="col-form-label pl-2">Country of Origin:</label>
+                                        <u class="  ">@pce.CountryOfOrgin</u>                                        
                                     </p>
                                 </div>
                                 <div class="form-group row my-0">
@@ -584,7 +515,7 @@
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
-                                        <u class="  "> @pce.PurposeOfCollateral  </u>
+                                        <u class="  "> @pce.Purpose  </u>
                                     </p>
                                 </div>
                                 <div class="form-group row my-0 pl-4">
@@ -597,10 +528,10 @@
                                 </div>
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment/Plant Machinery Status:</label>
+                                        <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment Machinery Status:</label>
                                     </p>
                                 </div>
-                                <div class="form-group row my-0 pl-4">
+                                @* <div class="form-group row my-0 pl-4">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">A.&nbsp; &nbsp; Technical obsolescence status</label>
                                         <u class="  "> @pce.ObsolescenceStatus</u>
@@ -611,7 +542,7 @@
                                         <label class="col-form-label pr-2">B.&nbsp; &nbsp; Depreciation Rate Applied:</label>
                                         <u class="  ">@pce.PlantDepreciationRate</u>
                                     </p>
-                                </div>
+                                </div> *@
                                 <div class="form-group row my-0 pl-4">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
@@ -624,7 +555,7 @@
                                 <u class="pl-4">  =============  ============= ============= ============= ============= </u>
                             </div>
                             <br />
-                            <h5 class="mt-1 pl-4">B. Plant Capacity Estimation Summary</h5>
+                            <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
 
                             <div class="pl-4">
                                 <div class="form-group row my-0 pl-4">
@@ -654,7 +585,7 @@
                                         <tr>
                                             <td>1</td>
                                             <td>   ============= </td>
-                                            <td>@pce.YearOfManifacturing</td>
+                                            <td>@pce.ManufactureYear</td>
                                             <td> =============</td>
                                             <td> =============</td>
                                             <td> =============</td>
@@ -671,7 +602,7 @@
                             </div>
                             <div class="requieddoc" id="requieddoc">
                                 <br />
-                                <h5 class="mt-1 pl-4">C.  Documents used for Plant Capacity Estimation</h5>
+                                <h5 class="mt-1 pl-4">C.  Documents used for Production Capacity Estimation</h5>
 
                                 <table class="table table-border-none table-responsive">
                                     <thead style="border-bottom: 3px solid #6f42c1;">
@@ -725,37 +656,29 @@
                 doc.save('document.pdf');
             });
         });
-    </script>
-}
+   
+        document.getElementById('print-btn').addEventListener('click', function () {
+            document.querySelector('footer').style.display = 'none';
+            document.getElementById('requieddoc').style.display = 'none';
 
-<script>
-    document.getElementById('print-btn').addEventListener('click', function () {
-        document.querySelector('footer').style.display = 'none';
-        document.getElementById('requieddoc').style.display = 'none';
-    @{
-        isPrinting = true;
-    }
+            @{ isPrinting = true; }
             document.body.classList.add('printing');
-        window.print();
-    @{
-        isPrinting = false;
-    }
+            window.print();
+
+            @{ isPrinting = false; }
             document.body.classList.remove('printing');
-        document.querySelector('footer').style.display = 'block';
-        document.getElementById('custom-footer').style.display = 'none';
-        document.getElementById('requieddoc').style.display = 'block';
-    });
-</script>
-
-<script>
-    window.addEventListener('beforeprint', function () {
-        var pageNumbers = document.querySelectorAll('.page-number');
-        var totalPages = pageNumbers.length;
-        for (var i = 0; i < pageNumbers.length; i++) {
-            pageNumbers[i].textContent = 'Page ' + (i + 1) + ' of ' + totalPages;
-        }
-    });
-
+            document.querySelector('footer').style.display = 'block';
+            document.getElementById('custom-footer').style.display = 'none';
+            document.getElementById('requieddoc').style.display = 'block';
+        });
+  
+        window.addEventListener('beforeprint', function () {
+            var pageNumbers = document.querySelectorAll('.page-number');
+            var totalPages = pageNumbers.length;
+            for (var i = 0; i < pageNumbers.length; i++) {
+                pageNumbers[i].textContent = 'Page ' + (i + 1) + ' of ' + totalPages;
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', function() {
             var pageNumbers = document.querySelectorAll('.page-number');
@@ -764,5 +687,5 @@
                 pageNumbers[i].textContent = 'Page ' + (i + 1) + ' of ' + totalPages;
             }
         });
-
-</script>
+    </script>
+}

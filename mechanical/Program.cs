@@ -53,7 +53,6 @@ using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityService;
-using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
@@ -107,7 +106,6 @@ builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 //manufacturing
 builder.Services.AddScoped<IProductionCapacityService, ProductionCapacityService>();
 builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
-builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();

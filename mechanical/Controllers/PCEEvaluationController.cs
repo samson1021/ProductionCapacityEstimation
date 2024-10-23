@@ -53,7 +53,7 @@ namespace mechanical.Controllers
                 var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
                 
                 if (pceEvaluation != null){                    
-                    if (pceEvaluation.PCE.EvaluatorUserID != userId)
+                    if (pceEvaluation.PCE.AssignedEvaluatorId != userId)
                     {            
                         return BadRequest("Unauthorized access!");
                     }
@@ -220,7 +220,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Return(ProductionReturnPostDto Dto)
+        public async Task<IActionResult> Return(ReturnedProductionPostDto Dto)
         {
             var userId = base.GetCurrentUserId();
             try

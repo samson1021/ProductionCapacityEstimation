@@ -5,7 +5,7 @@ using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
 {
-    public class ReturnProductionDto
+    public class ProductionReturnDto
     {
 
         public Guid Id { get; set; }
@@ -32,10 +32,10 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Purpose { get; set; }
         
         [Display(Name = "Model Number")]
-        public string? ModelNo { get; set; }
-        
-        [Display(Name = "Production Business Licence")]
-        public string? ProductionBussinessLicence { get; set; }
+        public string? ModelNo { get; set; }  
+
+        [Display(Name = "Business License Number")]
+        public string? BusinessLicenseNumber { get; set; }      
         
         [Display(Name = "Country of Origin")]
         public string? CountryOfOrgin { get; set; }
@@ -99,25 +99,10 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Remark { get; set; } = string.Empty;
         
         [Display(Name = "Evaluator User ID")]
-        public Guid EvaluatorUserID { get; set; }
-
-        [Display(Name = "Plant Name")]
-        public required string PlantName { get; set; }
+        public Guid EvaluatorUserID { get; set; }      
         
-        [Display(Name = "Owner of Plant")]
-        public string? OwnerOfPlant { get; set; }
-        
-        [Display(Name = "Obsolescence Status")]
-        public string? ObsolescenceStatus { get; set; }
-        
-        [Display(Name = "Plant Depreciation Rate")]
-        public string? PlantDepreciationRate { get; set; }
-        
-        [Display(Name = "Date of Inspection")]
-        public DateTime? DateOfInspection { get; set; }
-        
-        [Display(Name = "Creation Date")]
-        public DateTime? CreationDate { get; set; }
+        [Display(Name = "Created At")]
+        public DateTime? CreatedAt { get; set; }
         
         [Display(Name = "End Date")]
         public DateTime? EndDate { get; set; }
@@ -126,7 +111,6 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? AssignmentStatus { get; set; }
         
         [Display(Name = "PCE Case")]
-        public virtual PCECase? PCECase { get; set; }
-        // public virtual PCECase PCECase { get; set; }
+        public virtual PCECase PCECase { get; set; }
     }
 }

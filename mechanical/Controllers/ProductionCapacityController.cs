@@ -57,26 +57,7 @@ namespace mechanical.Controllers
             }
             return BadRequest();
 
-        }
-
-        [HttpPost]
-        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantDto)
-        {
-            if (ModelState.IsValid)
-            {
-
-                if (PlantDto.PlantName == "Others, please specify")
-                {
-                    PlantDto.PlantName = PlantDto.OtherPlantName;
-                }
-
-                await _ProductionCapacityService.CreatePlantProduction(base.GetCurrentUserId(), caseId, PlantDto);
-                var response = new { message = "Plant PCE created successfully" };
-                return Ok(response);
-            }
-            return BadRequest();
-        }
+        }       
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -104,38 +85,6 @@ namespace mechanical.Controllers
             ViewData["ProductionFiles"] = file;
 
             return View(response);
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> PlantEdit(Guid id)
-        {
-            var response = await _ProductionCapacityService.GetPlantProduction(base.GetCurrentUserId(), id);
-            
-            if (response == null) 
-            { 
-                return RedirectToAction("PCECases", "PCECase"); 
-            }
-
-            var file = await _UploadFileService.GetUploadFileByCollateralId(id);
-            ViewData["ProductionFiles"] = file;
-            return View(response);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlantEdit(Guid id, PlantEditPostDto PlantDto)
-        {
-            if (ModelState.IsValid)
-            {
-                if (PlantDto.PlantName == "Others, please specify")
-                {
-                    PlantDto.PlantName = PlantDto.OtherPlantName;
-                }
-                var plant = await _ProductionCapacityService.EditPlantProduction(base.GetCurrentUserId(), id, PlantDto);
-                return RedirectToAction("Detail", "PCECase", new { Id = plant.PCECaseId, Status = "New" });
-            }
-            return View();
         }
 
         // [HttpGet("{Id}")]
@@ -245,7 +194,7 @@ namespace mechanical.Controllers
                 return BadRequest("Invalid status.");
             }
 
-            IEnumerable<ReturnProductionDto> productions = null;
+            IEnumerable<ProductionReturnDto> productions = null;
             if (PCECaseId == null)
             {
                 productions = await _ProductionCapacityService.GetProductions(base.GetCurrentUserId(), Status: Status);

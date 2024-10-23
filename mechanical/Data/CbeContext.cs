@@ -75,11 +75,10 @@ namespace mechanical.Data
         public DbSet<PCECaseSchedule> PCECaseSchedules { get; set; }
         public DbSet<PCECaseTerminate> PCECaseTerminates { get; set; }
         public DbSet<ProductionReestimation> ProductionReestimations { get; set; }    
-        public DbSet<ProductionReject> ProductionRejects { get; set; }
+        public DbSet<ReturnedProduction> ReturnedProductions { get; set; }
         public DbSet<PCECaseComment> PCECaseComments { get; set; }
         public DbSet<TimeInterval> TimeIntervals { get; set; }
         public DbSet<DateTimeRange> DateTimeRanges { get; set; }
-        public DbSet<ProductionCapacityCorrection> ProductionCapacityCorrections { get; set; }
         
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }

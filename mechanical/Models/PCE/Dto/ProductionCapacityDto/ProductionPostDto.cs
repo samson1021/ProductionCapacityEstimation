@@ -15,7 +15,8 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? MachineName { get; set; }
         public string? Purpose { get; set; }
         public string? ModelNo { get; set; }
-        public string ProductionBussinessLicence { get; set; }
+        public string BusinessLicenseNumber { get; set; }
+        // public string TradeLicenseNumber { get; set; }
 
         [Display(Name = "Country of Orgin")]
         public string? CountryOfOrgin { get; set; }
@@ -27,13 +28,9 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? SerialNo { get; set; }
 
         public string? MachineryInstalledPlace { get; set; }
-        //private Owned LHC
         public string? LHCNumber { get; set; }
         public string? OwnerName { get; set; }
-        //upload LHC---> file
-        //Industrial park 
         public string? Industrialpark { get; set; }
-        // upload shade rent agreement -->file
 
         public string? Region { get; set; }
         public string? Zone { get; set; }
@@ -44,11 +41,11 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
          public string? HouseNo { get; set; }
         public string? ProductDescription { get; set; }
 
-        public IFormFile? UploadLHC { get; set; }
-        public IFormFile? ploadshaderentagreement { get; set; }        
-        public IFormFile? Uploadbusinesslicense { get; set; }        
-        public IFormFile? Machinespecificationdocumen { get; set; }
-        public IFormFile? Machineoperationmanual { get; set; }
-        public IEnumerable<IFormFile>? OtherDocument { get; set; }
+        public IFormFile? LHCDocument { get; set; }
+        public IFormFile? ShadeRentAgreement { get; set; }        
+        public IFormFile? BusinessLicense { get; set; }        
+        public IFormFile? MachineSpecificationDocument { get; set; }
+        public IFormFile? MachineOperationManual { get; set; }
+        public IEnumerable<IFormFile>? OtherDocuments { get; set; }
     }
 }

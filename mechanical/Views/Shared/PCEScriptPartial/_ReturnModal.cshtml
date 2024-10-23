@@ -1,10 +1,10 @@
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.ProductionReturnPostDto
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.ReturnedProductionPostDto
 
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
-    var myProduction = ViewData["Production"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
     var status = ViewBag.Status as string;
     var RedirectUrl = "";
     
@@ -38,8 +38,8 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="PCEId" type="hidden" />
                     <div class="form-group">
-                        <label for="RejectionComment">Comment:</label>
-                        <textarea class="form-control" asp-for="RejectionComment" rows="3"></textarea>
+                        <label for="Reason">Comment:</label>
+                        <textarea class="form-control" asp-for="Reason" rows="3"></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -55,7 +55,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         var returnModal = document.getElementById('returnModal1');
         var returnForm = document.getElementById('ReturnForm');
-        var commentField = document.getElementById('RejectionComment');
+        var commentField = document.getElementById('Reason');
 
         returnModal.addEventListener('shown.bs.modal', function () {
             commentField.focus();

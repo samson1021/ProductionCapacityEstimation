@@ -185,7 +185,6 @@
         {
             await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionScriptPartial");
             await Html.RenderPartialAsync("Partial/_CreateProductionCapacityModal");
-            await Html.RenderPartialAsync("Partial/_CreatePCEPlantModal");
         }
         else if ((currentUserRole == "Maker Officer") ||
                  (currentUserRole == "Maker Manager") ||
