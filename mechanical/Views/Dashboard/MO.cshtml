@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 @model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>
 @{
 
@@ -424,7 +424,7 @@
     }
         
     <script>
-        @* document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetDashboardCaseCount")
                 .then(response => response.json())
                 .then(data => {
@@ -437,7 +437,7 @@
                     console.error("Error fetching card counts:", error);
                 });
 
-        }); *@
+        });
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
