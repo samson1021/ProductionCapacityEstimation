@@ -1,20 +1,11 @@
 ﻿﻿using AutoMapper;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
 using mechanical.Data;
-using mechanical.Models.Dto.DashboardDto;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
-using DocumentFormat.OpenXml.InkML;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
