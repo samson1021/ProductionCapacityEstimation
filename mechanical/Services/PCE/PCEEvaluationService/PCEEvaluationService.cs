@@ -286,7 +286,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 {
                     var fileDto = new CreateFileDto
                     {
-                        File = file,
+                        File = file ?? throw new ArgumentNullException(nameof(file)),
                         Catagory = Category,
                         CaseId = PCECaseId,
                         CollateralId = PCEEId

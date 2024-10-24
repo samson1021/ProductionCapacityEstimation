@@ -7,12 +7,12 @@ namespace mechanical.Services.PCE.ProductionCapacityService
 {
     public interface IProductionCapacityService
     {
-        Task<ProductionCapacity> CreateProductionCapacity(Guid UserId, Guid caseId, ProductionPostDto createProductionDto);
+        Task<ProductionCapacity> CreateProductionCapacity(Guid UserId, Guid PCECaseId, ProductionPostDto createProductionDto);
         Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionPostDto createProductionDto);
         Task<bool> DeleteProduction(Guid UserId, Guid Id);
         
         Task<bool> DeleteProductionFile(Guid UserId, Guid Id);
-        Task<bool> UploadProductionFile(Guid UserId, IFormFile file, Guid caseId, string DocumentCatagory);
+        Task<bool> UploadProductionFile(Guid UserId, IFormFile File, Guid ProductionId, string DocumentCategory);
         
         Task<ProductionDetailDto> GetProductionDetails(Guid UserId, Guid Id);
         Task<ProductionReturnDto> GetProduction(Guid UserId, Guid Id);

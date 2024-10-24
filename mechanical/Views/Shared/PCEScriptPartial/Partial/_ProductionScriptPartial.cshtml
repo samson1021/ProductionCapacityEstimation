@@ -60,17 +60,15 @@
             document.getElementById("Region-error").textContent = "";
         }
 
-
-
-        if (document.getElementById("BusinessLicense").value.trim() === "") {
-            document.getElementById("BusinessLicense-error").textContent = "Business License is required.";
+        if (document.getElementById("BusinessLicenseNumber").value.trim() === "") {
+            document.getElementById("BusinessLicenseNumber-error").textContent = "Business License is required.";
             document.getElementById("LHC").style.borderColor = "red";
             isValid = false;
 
         }
         else {
-            document.getElementById("BusinessLicense").style.borderColor = "";
-            document.getElementById("BusinessLicense-error").textContent = "";
+            document.getElementById("BusinessLicenseNumber").style.borderColor = "";
+            document.getElementById("BusinessLicenseNumber-error").textContent = "";
         }
 
 

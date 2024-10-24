@@ -157,11 +157,10 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadProductionFile(IFormFile BussinessLicence, Guid caseId, string DocumentCatagory)
+        public async Task<ActionResult> UploadProductionFile(IFormFile File, Guid ProductionId, string DocumentCategory)
         {
 
-
-            if (await _ProductionCapacityService.UploadProductionFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCatagory))
+            if (await _ProductionCapacityService.UploadProductionFile(base.GetCurrentUserId(), File, ProductionId, DocumentCategory))
             {
                 return Ok();
             }

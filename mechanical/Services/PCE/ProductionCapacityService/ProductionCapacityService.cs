@@ -57,9 +57,9 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 {
                     await this.UploadFile(UserId, "PCE Owner LHC Certificate", production, createProductionDto.LHCDocument);
                     await this.UploadFile(UserId, "PCE Shade Rent Agreement", production, createProductionDto.ShadeRentAgreement);
-                    await this.UploadFile(UserId, "PCE Business license", production, createProductionDto.BusinessLicense);
-                    await this.UploadFile(UserId, "PCE Machine specification document", production, createProductionDto.MachineSpecificationDocument);
-                    await this.UploadFile(UserId, "PCE Machine operation manual", production, createProductionDto.MachineOperationManual);
+                    await this.UploadFile(UserId, "PCE Business License", production, createProductionDto.BusinessLicense);
+                    await this.UploadFile(UserId, "PCE Machine Specification Document", production, createProductionDto.MachineSpecificationDocument);
+                    await this.UploadFile(UserId, "PCE Machine Operation Manual", production, createProductionDto.MachineOperationManual);
                     
                     if (createProductionDto.OtherDocuments != null)
                     {
@@ -275,9 +275,10 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             return false;
         }
               
-        public async Task<bool> UploadProductionFile(Guid UserId, IFormFile file, Guid caseId, string DocumentCatagory)
+        public async Task<bool> UploadProductionFile(Guid UserId, IFormFile File, Guid ProductionId, string DocumentCategory)
         {
-            var production = await _cbeContext.ProductionCapacities.FindAsync(caseId); //        .FirstOrDefaultAsync(pc => pc.PCECaseId == caseId);
+            var production = await _cbeContext.ProductionCapacities.FindAsync(ProductionId); 
+
             if (production == null)
             {
                 return false;
@@ -285,16 +286,18 @@ namespace mechanical.Services.PCE.ProductionCapacityService
 
             var productionFile = new CreateFileDto()
             {
-                File = file ?? throw new ArgumentNullException(nameof(file)),
-                CollateralId = caseId,
-                Catagory = DocumentCatagory,
+                File = File ?? throw new ArgumentNullException(nameof(File)),
+                CollateralId = production.Id,
+                Catagory = DocumentCategory,
                 CaseId =production.PCECaseId,
 
             };
+            
             if (await _UploadFileService.CreateUploadFile(UserId, productionFile) != Guid.Empty)
             {
                 return true;
             }
+
             return false;
         }
 
