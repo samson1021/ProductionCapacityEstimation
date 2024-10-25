@@ -66,20 +66,25 @@
 @*                        industerial production attributes *@
 
                         <div class="row" id="IndusteryProp">
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-3">
                                 <label asp-for="MachineName">Machine Name <i class="text-danger">*</i></label>
                                 <input asp-for="MachineName" type="text" class="form-control form-control-sm"  placeholder="Enter Machine Name" id="MachineName" required>
                                 <span id="MachineName-error" asp-validation-for="MachineName" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-3">
                                 <label asp-for="Purpose">Purpose <i class="text-danger">*</i></label>
                                 <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose" required>
                                 <span id="Purpose-error" asp-validation-for="Purpose" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="ModelNo">Model Number</label>
-                                <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
+                            <div class="form-group col-lg-3">
+                                <label asp-for="ModelNo">Model Number <i class="text-danger">*</i></label>
+                                <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number" required>
                                 <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
+                            </div>
+                             <div class="form-group col-lg-3">
+                                <label asp-for="CountryOfOrgin">Country Of Orgin <i class="text-danger">*</i></label>
+                                <input asp-for="CountryOfOrgin" type="text" class="form-control form-control-sm" id="CountryOfOrgin" placeholder="Enter Country Of Orgin" required>
+                                <span id="CountryOfOrgin-error" asp-validation-for="CountryOfOrgin" class="text-danger"></span>
                             </div>
                             <div class="row">
                                 <div class="form-group col-lg-3">
@@ -326,8 +331,13 @@
             toastr.error("Please fill in all required fields.");
             return;
         }
-        var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-        if (MachineName === "") {
+        var ModelNo = getAttributeByName(formDataArray, 'ModelNo').trim();
+        if (ModelNo === "") {
+            toastr.error("Please fill in all required fields.");
+            return;
+        }
+        var CountryOfOrgin = getAttributeByName(formDataArray, 'CountryOfOrgin').trim();
+        if (CountryOfOrgin === "") {
             toastr.error("Please fill in all required fields.");
             return;
         }

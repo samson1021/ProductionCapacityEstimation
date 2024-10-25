@@ -26,6 +26,7 @@
                         @if (!string.IsNullOrEmpty(Model.MachineName))  { <h6 style="margin-top:1.2rem;"><strong>Machine Name:</strong> @Model.MachineName</h6>  }
                         @if (!string.IsNullOrEmpty(Model.Purpose)) { <h6 style="margin-top:1.2rem;"><strong>Purpose:</strong> @Model.Purpose</h6>  }
                         @if (!string.IsNullOrEmpty(Model.ModelNo)) { <h6 style="margin-top:1.2rem;"><strong>Model Number:</strong> @Model.ModelNo</h6> }
+                        @if (!string.IsNullOrEmpty(Model.ModelNo)){ <h6 style="margin-top:1.2rem;"><strong>Country Of Orgin:</strong> @Model.CountryOfOrgin</h6>}
                         @if (!string.IsNullOrEmpty(Model.BusinessLicenseNumber)) { <h6 style="margin-top:1.2rem;"><strong>Business License Number:</strong> @Model.BusinessLicenseNumber</h6> }    
                         @if (Model.ManufactureYear.HasValue) {<h6 style="margin-top:1.2rem;"><strong>Manufacturing Year:</strong> @Model.ManufactureYear.Value.ToString()</h6> }
                         @if (!string.IsNullOrEmpty(Model.InvoiceNo)){<h6 style="margin-top:1.2rem;"><strong>Invoice Number:</strong> @Model.InvoiceNo</h6> }

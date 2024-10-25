@@ -66,20 +66,25 @@
                         <div class="card">
                             <div class="card-body" style="padding-bottom:0px;">
                                 <div class="row">
-                                    <div class="form-group col-lg-4">
+                                    <div class="form-group col-lg-3">
                                         <label asp-for="MachineName">Machine Name <i class="text-danger">*</i></label>
                                         <input asp-for="MachineName" type="text" class="form-control form-control-sm" placeholder="Enter Machine Name" id="MachineName" required>
                                         <span asp-validation-for="MachineName" class="text-danger"></span>
                                     </div>
-                                    <div class="form-group col-lg-4">
+                                    <div class="form-group col-lg-3">
                                         <label asp-for="Purpose">Purpose <i class="text-danger">*</i></label>
                                         <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose" required>
                                         <span asp-validation-for="Purpose" class="text-danger"></span>
                                     </div>
-                                    <div class="form-group col-lg-4">
+                                    <div class="form-group col-lg-3">
                                         <label asp-for="ModelNo">Model Number</label>
                                         <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
                                         <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="CountryOfOrgin">Country Of Orgin</label>
+                                        <input asp-for="CountryOfOrgin" type="text" class="form-control form-control-sm" id="CountryOfOrgin" placeholder="Enter Model Number">
+                                        <span id="CountryOfOrgin-error" asp-validation-for="CountryOfOrgin" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row">

@@ -44,9 +44,7 @@ namespace mechanical.Models.PCE.Entities
 
         public string? BusinessLicenseNumber { get; set; }
         // public string? TradeLicenseNumber { get; set; }
-        public string? OwnerOfMachinery { get; set; }        
-        
-        public string? PlaceOfInspection { get; set; }
+        [Display(Name = "Country of Orgin")]
         public string? CountryOfOrgin { get; set; }
 
         public string? CurrentStage { get; set; }
