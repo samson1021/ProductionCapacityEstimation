@@ -99,7 +99,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Remark { get; set; } = string.Empty;
         
         [Display(Name = "Evaluator User ID")]
-        public Guid EvaluatorUserID { get; set; }      
+        public Guid AssignedEvaluatorId { get; set; }      
         
         [Display(Name = "Created At")]
         public DateTime? CreatedAt { get; set; }
