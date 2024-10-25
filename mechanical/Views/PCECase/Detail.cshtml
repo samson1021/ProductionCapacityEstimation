@@ -95,12 +95,13 @@
                             <li class="nav-item">
                                 <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
                                     <i class="fas fa-ban"> </i>
-                                    Terminate @{
+                                    Terminate 
+                                    @* @{
                                         if (PCEcaseTerminate.Count() > 0)
                                         {
                                             <span class="right badge badge-danger">New</span>
                                         }
-                                    }
+                                    } *@
                                 </a>
                             </li>
                         }

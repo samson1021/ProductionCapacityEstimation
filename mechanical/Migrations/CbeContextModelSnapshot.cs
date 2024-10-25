@@ -1545,14 +1545,8 @@ namespace mechanical.Migrations
                     b.Property<string>("OwnerName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OwnerOfMachinery")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PCECaseId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PlaceOfInspection")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductDescription")
                         .HasColumnType("nvarchar(max)");

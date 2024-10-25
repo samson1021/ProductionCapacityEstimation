@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Encodings.Web;
 using System.Collections.Generic;
 
 using AutoMapper;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
 using mechanical.Data;
+using mechanical.Utils;
 using mechanical.Models;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
@@ -47,6 +49,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
+                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
+                EncodingHelper.EncodeObject(Dto);
+                // SanitizerHelper.SanitizeObject(Dto)
+
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
                 pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
@@ -395,13 +401,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private async Task LogPCECaseTimeline(ProductionCapacity PCE, string activity)
+        private async Task LogPCECaseTimeline(ProductionCapacity Production, string Activity)
         {
             await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
             {
-                Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.ProductionType}",
-                CurrentStage = PCE.CurrentStage,
-                PCECaseId = PCE.PCECaseId
+                Activity = $"<strong class=\"text-info\">{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}. &nbsp; <i class='text-purple'>Production Type</i>.{HtmlEncoder.Default.Encode(Production.ProductionType)}",
+                CurrentStage = Production.CurrentStage,
+                PCECaseId = Production.PCECaseId
             });
         }
 

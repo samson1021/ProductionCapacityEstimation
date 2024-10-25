@@ -7,7 +7,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
 {
     public class ProductionReturnDto
     {
-
+        [Display(Name = "Production ID")]
         public Guid Id { get; set; }
         
         [Display(Name = "PCE Case ID")]
@@ -26,7 +26,10 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Type { get; set; }
         
         [Display(Name = "Machine Name")]
-        public string? MachineName { get; set; }
+        public string? MachineName { get; set; }     
+        
+        [Display(Name = "Country of Origin")]
+        public string? CountryOfOrgin { get; set; }
         
         [Display(Name = "Purpose")]
         public string? Purpose { get; set; }
@@ -35,10 +38,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? ModelNo { get; set; }  
 
         [Display(Name = "Business License Number")]
-        public string? BusinessLicenseNumber { get; set; }      
-        
-        [Display(Name = "Country of Origin")]
-        public string? CountryOfOrgin { get; set; }
+        public string? BusinessLicenseNumber { get; set; } 
         
         [Display(Name = "Manufacture Year")]
         [Range(1900, 2024)]
@@ -98,19 +98,15 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         [Display(Name = "Remark")]
         public string? Remark { get; set; } = string.Empty;
         
-        [Display(Name = "Evaluator User ID")]
+        [Display(Name = "Assigned Evaluator ID")]
         public Guid AssignedEvaluatorId { get; set; }      
         
         [Display(Name = "Created At")]
-        public DateTime? CreatedAt { get; set; }
-        
-        [Display(Name = "End Date")]
-        public DateTime? EndDate { get; set; }
+        public DateTime? CreatedAt { get; set; }        
         
         [Display(Name = "Assignment Status")]
         public string? AssignmentStatus { get; set; }
         
-        [Display(Name = "PCE Case")]
         public virtual PCECase PCECase { get; set; }
     }
 }

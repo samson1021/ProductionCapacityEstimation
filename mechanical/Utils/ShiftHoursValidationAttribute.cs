@@ -4,8 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 using mechanical.Models.PCE.Entities;
 
-namespace mechanical.Validators
-{    public class ShiftHoursValidationAttribute : ValidationAttribute
+namespace mechanical.Utils
+{    
+    public class ShiftHoursValidationAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
@@ -14,7 +15,7 @@ namespace mechanical.Validators
             if (shiftHours == null || shiftHours.Count == 0)
                 return ValidationResult.Success;
 
-    Console.WriteLine("Shift Hours validation triggered");
+            Console.WriteLine("Shift Hours validation triggered");
             for (int i = 0; i < shiftHours.Count; i++)
             {
                 var currentShift = shiftHours[i];

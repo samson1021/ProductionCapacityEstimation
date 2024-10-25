@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.CodeAnalysis.Operations;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+
+using System.Text.Encodings.Web;
+using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 using mechanical.Data;
+using mechanical.Utils;
 using mechanical.Models;
 using mechanical.Models.Entities;
 using mechanical.Models.Dto.UploadFileDto;
@@ -45,14 +48,20 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             _UploadFileService = uploadFileService;
 
         }
+        
         public async Task<ProductionCapacity> CreateProductionCapacity(Guid UserId, Guid PCECaseId, ProductionPostDto createProductionDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             { 
+                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
+                EncodingHelper.EncodeObject(createProductionDto);
+                // SanitizerHelper.SanitizeObject(createProductionDto);
+
                 var production = _mapper.Map<ProductionCapacity>(createProductionDto);
                 production.Id = Guid.NewGuid();
                 production.PCECaseId = PCECaseId;
+                
                 try
                 {
                     await this.UploadFile(UserId, "PCE Owner LHC Certificate", production, createProductionDto.LHCDocument);
@@ -90,13 +99,20 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                     CompletedAt = null,
                     Status = "New"
                 };
-                await _cbeContext.PCECaseAssignments.AddAsync(pceCaseAssignment);         
+                await _cbeContext.PCECaseAssignments.AddAsync(pceCaseAssignment);        
             
+                // Sanitize `Activity` field to avoid any XSS issues when storing user-generated content
+                // Using HtmlEncoder to encode activity content
+                var activity = $"<strong>A new Manufacturing PCE has been added. </strong> <br> " +
+                                    $"<i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(production.PropertyOwner)}. &nbsp; " +
+                                    $"<i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(production.Role)}. &nbsp; " +
+                                    $"<i class='text-purple'>Manufacturing Main Sector:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; " +
+                                    $"<i class='text-purple'>Manufacturing Sub Sector:</i> {HtmlEncoder.Default.Encode(production.Type)}.";
+
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     PCECaseId = production.PCECaseId,
-                    Activity = $" <strong>A new Manufacturing PCE has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {production.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {production.Role}.&nbsp; <i class='text-purple'>Manufacturing Main Sector:</i> {EnumHelper.GetEnumDisplayName(production.Category)}. &nbsp; <i class='text-purple'>Manufacturing Sub Sector:</i> {production.Type}.",
-
+                    Activity = activity,
                     CurrentStage = "Relation Manager"
                 });
 
@@ -151,7 +167,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     PCECaseId = production.PCECaseId,
-                    Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {production.Id} has been deleted. </strong>.",
+                    Activity = $" <strong>A Manufacturing production with <class='text-purple'>Id: {production.Id} has been deleted. </strong>.",
                     CurrentStage = "Relation Manager"
                 });
 
@@ -223,7 +239,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                 {
                     PCECaseId = production.PCECaseId,
-                    Activity = $" <strong>A PCE Manufacturing with <class='text-purple'>Id: {production.Id} has been Updated. </strong>.",
+                    Activity = $" <strong>A Manufacturing production with <class='text-purple'>Id: {production.Id} has been Updated. </strong>.",
 
 
                     CurrentStage = "Relation Manager"
