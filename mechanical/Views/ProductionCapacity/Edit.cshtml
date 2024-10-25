@@ -29,14 +29,14 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <input asp-for="Id" hidden />
-                                <label asp-for="PropertyOwner">Property Owner *</label>
+                                <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner *" required>
                                 <span asp-validation-for="PropertyOwner" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label asp-for="Role">Role *</label>
+                                <label asp-for="Role">Role <i class="text-danger">*</i></label>
                                 <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
-                                    <option value="" disabled selected>Select Role *</option>
+                                    <option value="" disabled selected>Select Role</option>
                                     <option value="Applicant">Applicant</option>
                                     <option value="Guarantor">Guarantor</option>
                                 </select>
@@ -47,7 +47,7 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <input type="hidden" id="selectedCategory" value="@Model.Category" />
-                                <label asp-for="Category"> Manufacturing Main Sector *</label>
+                                <label asp-for="Category"> Manufacturing Main Sector <i class="text-danger">*</i></label>
                                 <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
                                         asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                     <option value="" disabled selected>Select Manufacturing Main Sector</option>
@@ -55,9 +55,9 @@
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label asp-for="Type">Manufacturing Sub Sector *</label>
+                                <label asp-for="Type">Manufacturing Sub Sector <i class="text-danger">*</i></label>
                                 <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
-                                    <option value="" selected>Select Manufacturing Sub Sector  *</option>
+                                    <option value="" selected>Select Manufacturing Sub Sector</option>
                                 </select>
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
@@ -72,8 +72,8 @@
                                         <span asp-validation-for="MachineName" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-lg-3">
-                                        <label asp-for="Purpose">Purpose <i class="text-danger">*</i></label>
-                                        <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose" required>
+                                        <label asp-for="Purpose">Purpose</label>
+                                        <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose">
                                         <span asp-validation-for="Purpose" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-lg-3">
@@ -82,15 +82,15 @@
                                         <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-lg-3">
-                                        <label asp-for="CountryOfOrgin">Country Of Orgin</label>
-                                        <input asp-for="CountryOfOrgin" type="text" class="form-control form-control-sm" id="CountryOfOrgin" placeholder="Enter Model Number">
+                                        <label asp-for="CountryOfOrgin">Country Of Orgin <i class="text-danger">*</i></label>
+                                        <input asp-for="CountryOfOrgin" type="text" class="form-control form-control-sm" id="CountryOfOrgin" placeholder="Enter Model Number" required>
                                         <span id="CountryOfOrgin-error" asp-validation-for="CountryOfOrgin" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-lg-3">
-                                        <label asp-for="BusinessLicenseNumber">Business License Number<i class="text-danger">*</i> </label>
-                                        <input asp-for="BusinessLicenseNumber" type="text" class="form-control form-control-sm" id="BusinessLicenseNumber" placeholder="Business License Number">
+                                        <label asp-for="BusinessLicenseNumber">Business License Number <i class="text-danger">*</i></label>
+                                        <input asp-for="BusinessLicenseNumber" type="text" class="form-control form-control-sm" id="BusinessLicenseNumber" placeholder="Business License Number" required>
                                         <span asp-validation-for="BusinessLicenseNumber" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-lg-3">
@@ -115,7 +115,7 @@
                             <div class="card-body">
                                 <div class="row" id="MachineryInstalledPlaceRow">
                                     <div class="form-group col-lg-4">
-                                        <label asp-for="MachineryInstalledPlace"> Machinery Installed Place  <i class="text-danger">*</i></label>
+                                        <label asp-for="MachineryInstalledPlace"> Machinery Installed Place <i class="text-danger">*</i></label>
                                         <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
                                             <option value="" disabled>Select Machinery Installed Place </option>
                                             <option value="Private Owned LHC">Private Owned LHC</option>
@@ -128,10 +128,10 @@
                                     <div id="IndustrialParkRow" class="form-group col-lg-4" style="@(Model.MachineryInstalledPlace == "Industrial Park" ? "" : "display: none;")">
                                         @* <div id="IndustrialPark" @(Model.Industrialpark != null ? "" : "style=\"display: none;\"")> *@
 
-                                        <label asp-for="Industrialpark"> Industrial Park  <i class="text-danger">*</i></label>
+                                        <label asp-for="Industrialpark"> Industrial Park <i class="text-danger">*</i></label>
                                         <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
                                                 asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                            <option value="" selected disabled>Select Industrial Park </option>
+                                            <option value="" selected disabled>Select Industrial Park</option>
                                         </select>
                                         <span asp-validation-for="Industrialpark" class="text-danger"></span>
 
@@ -151,9 +151,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-
                             </div>
                         </div>
 
@@ -163,8 +160,8 @@
                                 @*  <h5 class="text-center">Property Address</h5> *@
                                 <div class="row">
                                     <div class="form-group col-lg-4">
-                                        <label asp-for="Region">Region</label>
-                                        <input asp-for="Region" type="text" class="form-control form-control-sm" id="Region" placeholder="Enter Region">
+                                        <label asp-for="Region">Region <i class="text-danger">*</i></label>
+                                        <input asp-for="Region" type="text" class="form-control form-control-sm" id="Region" placeholder="Enter Region" required>
                                         <span asp-validation-for="Region" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-lg-4">
@@ -207,7 +204,7 @@
                             <div class="card-body" style="padding-bottom:0px;">
                                 <div class="row">
                                     <div class="form-group col-lg-12">
-                                        <label asp-for="ProductDescription">Production Capacity Description</label>
+                                        <label asp-for="ProductDescription">Production Capacity Description <i class="text-danger">*</i></label>
                                         <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..." required> </textarea>
                                         <span asp-validation-for="ProductDescription" class="text-danger"></span>
                                     </div>

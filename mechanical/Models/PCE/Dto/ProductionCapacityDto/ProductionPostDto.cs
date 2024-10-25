@@ -15,27 +15,27 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public required string Role { get; set; }
         
         [Display(Name = "Manufacturing Main-Sector")]
-        public string? Category { get; set; }
+        public string Category { get; set; }
         
         [Display(Name = "Manufacturing Sub-Sector")]
-        public string? Type { get; set; }
+        public string Type { get; set; }
         
         [Display(Name = "Machine Name")]
-        public string? MachineName { get; set; }     
+        public string MachineName { get; set; }     
         
         [Display(Name = "Country of Origin")]
-        public string? CountryOfOrgin { get; set; }
+        public string CountryOfOrgin { get; set; }
+
+        [Display(Name = "Business License Number")]
+        public string BusinessLicenseNumber { get; set; }  
+        // [Display(Name = "Trade License Number")]
+        // public string TradeLicenseNumber { get; set; }
         
         [Display(Name = "Purpose")]
         public string? Purpose { get; set; }
         
         [Display(Name = "Model Number")]
         public string? ModelNo { get; set; }  
-
-        [Display(Name = "Business License Number")]
-        public string? BusinessLicenseNumber { get; set; }  
-        // [Display(Name = "Trade License Number")]
-        // public string TradeLicenseNumber { get; set; }
         
         [Display(Name = "Manufacture Year")]
         [Range(1900, 2024)]
@@ -48,19 +48,19 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? SerialNo { get; set; }
         
         [Display(Name = "Machinery Installed Place")]
-        public string? MachineryInstalledPlace { get; set; }
+        public string MachineryInstalledPlace { get; set; }
         
         [Display(Name = "LHC Number")]
         public string? LHCNumber { get; set; }
         
-        [Display(Name = "Owner Name")]
+        [Display(Name = "LHC Owner Name")]
         public string? OwnerName { get; set; }
         
         [Display(Name = "Industrial Park")]
         public string? Industrialpark { get; set; }
         
         [Display(Name = "Region")]
-        public string? Region { get; set; }
+        public string Region { get; set; }
         
         [Display(Name = "Zone")]
         public string? Zone { get; set; }
@@ -81,10 +81,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? HouseNo { get; set; }
         
         [Display(Name = "Product Description")]
-        public string? ProductDescription { get; set; }        
-        
-        [Display(Name = "Production Type")]
-        public string? ProductionType { get; set; }
+        public string ProductDescription { get; set; }       
         
         [Display(Name = "Remark")]
         public string? Remark { get; set; } = string.Empty;        
@@ -94,9 +91,9 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         [Display(Name = "Shade Rent Agreement")]
         public IFormFile? ShadeRentAgreement { get; set; } 
         [Display(Name = "Business License")]       
-        public IFormFile? BusinessLicense { get; set; }  
+        public IFormFile BusinessLicense { get; set; }  
         [Display(Name = "Machine Specification Document")]      
-        public IFormFile? MachineSpecificationDocument { get; set; }
+        public IFormFile MachineSpecificationDocument { get; set; }
         [Display(Name = "Machine Operation Manual")]
         public IFormFile? MachineOperationManual { get; set; }
         [Display(Name = "Other Supporting Documents")]

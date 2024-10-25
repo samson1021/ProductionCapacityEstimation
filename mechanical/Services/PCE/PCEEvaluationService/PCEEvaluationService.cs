@@ -405,7 +405,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         {
             await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
             {
-                Activity = $"<strong class=\"text-info\">{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}. &nbsp; <i class='text-purple'>Production Type</i>.{HtmlEncoder.Default.Encode(Production.ProductionType)}",
+                Activity = $"<strong class=\"text-info\">{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}.",
                 CurrentStage = Production.CurrentStage,
                 PCECaseId = Production.PCECaseId
             });

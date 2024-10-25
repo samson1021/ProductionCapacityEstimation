@@ -87,7 +87,6 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 production.CreatedById = UserId;
                 production.CurrentStage = "Relation Manager";
                 production.CurrentStatus = "New";
-                production.ProductionType = "Manufacturing";
 
                 await _cbeContext.ProductionCapacities.AddAsync(production);
 
@@ -218,8 +217,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 {
                  throw new Exception("unable to Edit PCE");
                 }                
-                createProductionDto.PCECaseId = production.PCECaseId;
-                createProductionDto.ProductionType = production.ProductionType;                
+                createProductionDto.PCECaseId = production.PCECaseId;               
                 _mapper.Map(createProductionDto, production);
                 
                 if (createProductionDto.MachineryInstalledPlace == "Private Owned LHC")

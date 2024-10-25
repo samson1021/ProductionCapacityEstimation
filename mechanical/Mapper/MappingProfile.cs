@@ -158,7 +158,6 @@ namespace mechanical.Mapper
             CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
             CreateMap<PCECase, PCECaseReturnDto>()
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c => c.ProductionType)))
                 .ForMember(dest => dest.NoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Select(c=>c.CurrentStatus).Count()))
                 .ForMember(dest => dest.TotalNoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
