@@ -9,7 +9,6 @@
     var collateral = ViewData["collateral"] as ReturnEvaluatedCaseDto;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
     var comment = ViewData["comments"] as Dictionary<string, string>;
-    Console.WriteLine(collateral);
 }
 <div class="content-header">
     <div class="container-fluid">
@@ -1127,32 +1126,7 @@
         $('#CheckAssesmentModal').modal('show');
     });
 
-    $(document).ready(function () {
-       $('#checkAssessmentForm').on('submit', function (e) {
-            e.preventDefault(); 
-
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: $(this).attr('action'), 
-                type: 'POST',
-                data: formData,
-                processData: false, 
-                contentType: false, 
-                success: function (response) {
-                    if (response.redirectUrl) {
-                           $('#CheckAssesmentModal').modal('hide');
-                        window.open(response.redirectUrl, '_blank');
-                    } else {
-                        alert('Unexpected response');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    alert('An error occurred: ' + error);
-                }
-            });
-        });
-    });
+    
 </script>
 <!--this is file Box modal code-->
 <div class="modal fade" id="CollateralFileModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">

@@ -87,13 +87,13 @@
                     // Delay the page refresh by 2 seconds (adjust the delay as needed)
                     setTimeout(function () {
                         location.reload();
-                    }, 500);
+                    }, 20);
                 },
                 error: function (error) {
                     toastr.error("Failed to Post Correction");
                     setTimeout(function () {
                         location.reload();
-                    }, 500);
+                    }, 20);
                     console.log(error);
                 }
             });
@@ -128,14 +128,14 @@
                             location.reload();
                             window.location.href = '/CO/Mycases';
 
-                        }, 2000);
+                        }, 20);
                     },
                     error: function (xhr, status, error) {
                         // Handle the error response from the server
                         console.log("Request failed: " + error);
                         setTimeout(function () {
                             location.reload();
-                        }, 2000);
+                        }, 20);
                     }
                 });
             }

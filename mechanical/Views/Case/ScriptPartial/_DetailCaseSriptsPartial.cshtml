@@ -23,7 +23,7 @@
             var formData = new FormData(this);
             var Id = $('#CaseSchedulleId').val();
             formData.append('Id', Id);
-
+            console.log(Id);
             $.ajax({
                 url: '/MOCase/UpdateSchedule',
                 type: 'POST',
@@ -682,7 +682,7 @@
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
             formData.append('id', Id);
-
+            console.log(Id);
             $.ajax({
                 url: '/Case/CreateSchedule',
                 type: 'POST',

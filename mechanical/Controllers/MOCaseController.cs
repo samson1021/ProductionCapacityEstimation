@@ -60,12 +60,6 @@ namespace mechanical.Controllers
             ViewData["Id"] = base.GetCurrentUserId();
             return View();
         }
-        //[HttpGet]
-        //public async Task<IActionResult> ReAssignment(Guid Id)
-        //{   
-
-
-        //}
         [HttpGet]
         public async Task<IActionResult> GetRemarkedCases()
         {
@@ -85,7 +79,6 @@ namespace mechanical.Controllers
         [HttpGet]
         public IActionResult MypendingCase()
         {
-
             return View();
         }
         [HttpGet]
@@ -100,17 +93,33 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Evaluation(Guid Id)
         {
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+
+            var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
+
+            if (scheduledDate == null)
+            {
+                return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
+            }
+            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            {
+                return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
+            }
+
             if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
             {
-                return RedirectToAction("Create", "MotorVehicle", new { Id = Id });
+                var redirectUrl = Url.Action("Create", "MotorVehicle", new { Id = Id });
+                return Json(new { success = true, redirectUrl });
             }
-            else if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
+            else  if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
             {
-                return RedirectToAction("Create", "ConstMngAgrMachinery", new { Id = Id });
+               
+                var redirectUrl = Url.Action("Create", "ConstMngAgrMachinery", new { Id = Id });
+                return Json(new { success = true, redirectUrl });
             }
             else if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.IBFEqupment))
             {
-                return RedirectToAction("Create", "IndBldgFacilityEquipment", new { Id = Id });
+                var redirectUrl = Url.Action("Create", "IndBldgFacilityEquipment", new { Id = Id });
+                return Json(new { success = true, redirectUrl });
             }
             string jsonData = JsonConvert.SerializeObject(collateral);
             return Content(jsonData, "application/json");
@@ -118,6 +127,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> ReEvaluation(Guid Id)
         {
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
+
             if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
             {
                 return RedirectToAction("GetReturnedEvaluatedMoterVehicle", "MotorVehicle", new { Id = Id });
@@ -202,13 +212,6 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(caseSchedule);
             return Ok(caseSchedule);
         }
-        //public async Task<IActionResult> MyReturnedCases()
-        //{
-        //    var collaterals = _caseService.MyReturnedCases();
-        //    return View(collaterals);
-
-
-        //}MyReturnedCollaterals
         public async Task<IActionResult> MyReturnedCollaterals(Guid CollateralId)
         {
             var collaterals = await _collateralService.MyReturnedCollaterals(base.GetCurrentUserId());
@@ -220,19 +223,6 @@ namespace mechanical.Controllers
             var collaterals =await _collateralService.MyReturnedCollateral( base.GetCurrentUserId(), CollateralId);
             return View(collaterals);
         }
-        //public async Task<IActionResult> MyResubmitedCases()
-        //{
-        //    var collaterals = _caseService.MyResubmitedCases();
-        //    return View(collaterals);
-
-
-        //}
-        //public async Task<IActionResult> MyResubmitedCase(Guid CollateralId)
-        //{
-        //    var collaterals = _caseService.MyReturnedCase(CollateralId);
-        //    return View(collaterals);
-        //}
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

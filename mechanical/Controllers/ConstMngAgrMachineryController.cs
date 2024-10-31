@@ -4,6 +4,7 @@ using mechanical.Models.Dto.ConstMngAgrMachineryDto;
 using mechanical.Models.Dto.IndBldgFacilityEquipmentDto;
 using mechanical.Models.Dto.MotorVehicleDto;
 using mechanical.Models.Entities;
+using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CollateralService;
 using mechanical.Services.ConstMngAgrMachineryService;
@@ -23,22 +24,31 @@ namespace mechanical.Controllers
         private readonly CbeContext _cbeContext;
         private readonly IUploadFileService _uploadFileService;
         private readonly IMailService _mailService;
+        private readonly ICaseScheduleService _caseScheduleService;
 
-
-        public ConstMngAgrMachineryController(ICollateralService collateralService, IMailService mailService, IConstMngAgrMachineryService constMngAgrMachineryService,CbeContext cbeContext, IUploadFileService uploadFileService)
+        public ConstMngAgrMachineryController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IMailService mailService, IConstMngAgrMachineryService constMngAgrMachineryService,CbeContext cbeContext, IUploadFileService uploadFileService)
         {
             _collateralService = collateralService;
             _constMngAgriMachineryService = constMngAgrMachineryService;
             _cbeContext = cbeContext;
             _uploadFileService = uploadFileService;
             _mailService = mailService;
+            _caseScheduleService = caseScheduleService;
         }
-
-
         [HttpGet]
         public async Task<IActionResult> Create(Guid Id)
         {
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+            var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
+
+            if (scheduledDate == null)
+            {
+                return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
+            }
+            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            {
+                return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
+            }
             if (collateral == null)
             {
                 return RedirectToAction("MyCase", "MOCase");

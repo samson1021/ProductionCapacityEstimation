@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6 col-xl-8">
-                <h3 class="m-0">Industrial (Mfg) & Building Facility Machinery Type Evaluation Form</h3>
+                <h5 class="m-0">Industrial (Mfg) & Building Facility Machinery Type Evaluation Form</h5>
             </div>
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
@@ -26,7 +26,7 @@
         <div class="card">
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
-                    <input asp-for="CollateralId" value=@collateral.Id type="hidden" />
+                    <input asp-for="CollateralId" value=@collateral?.Id type="hidden" />
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
-                            <label asp-for="MakerCompany" >Insert Maker Company </label>
+                            <label asp-for="MakerCompany"> Insert Maker Company </label>
                             <input asp-for="MakerCompany" type="text" class="form-control" id="MakerCompany" placeholder="Insert Other Tech. Spec.(if any)" required oninput="validateMakeCompanyInput(this)" >
                             <span id="Make-error" asp-validation-for="MakerCompany" class="text-danger"></span>
                         </div>
@@ -113,30 +113,29 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ModelNo">Model Number</label>
-                            <input asp-for="ModelNo" id="ModelNo" type="text" value="@collateral.ModelNo" class="form-control" placeholder="Model Number" required oninput="validateModelNoInput(this)">
-
+                            <input asp-for="ModelNo" id="ModelNo" type="text" value="@collateral?.ModelNo" class="form-control" placeholder="Model Number" required oninput="validateModelNoInput(this)">
                             <span id="model-error" asp-validation-for="ModelNo" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                        <div class="form-group col-xl-4">
                             <label asp-for="EngineNo">Motor Number</label>
-                            <input asp-for="EngineNo" id="EngineNo" type="text" value="@collateral.EngineMotorNo" class="form-control" placeholder="Engine Number" required oninput="validateMotorNoInput(this)">
+                            <input asp-for="EngineNo" id="EngineNo" type="text" value="@collateral?.EngineMotorNo" class="form-control" placeholder="Engine Number" required oninput="validateMotorNoInput(this)">
                             <span id="motor-error" asp-validation-for="EngineNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="SerialNo">Serial Number</label>
-                            <input asp-for="SerialNo" id="SerialNo" type="text" value="@collateral.SerialNo" class="form-control" placeholder="Serial Number" required oninput="validateSerialNoInput(this)">
+                            <input asp-for="SerialNo" id="SerialNo" type="text" value="@collateral?.SerialNo" class="form-control" placeholder="Serial Number" required oninput="validateSerialNoInput(this)">
                             <span id="serial-error" asp-validation-for="SerialNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="YearOfManufacture">Year of Manufacture</label>
-                            <input asp-for="YearOfManufacture" value="@collateral.ManufactureYear" type="number" class="form-control" min="1900" max="2099" step="1" required>
+                            <input asp-for="YearOfManufacture" value="@collateral?.ManufactureYear" type="number" class="form-control" min="1900" max="2099" step="1" required>
                             <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-6">
+                        <div class="form-group col-xl-4">
                             <label asp-for="ScaleOfOperation">Scale of Operation</label>
                             <select asp-for="ScaleOfOperation" class="form-control" required>
                                 <option value="" disabled selected>Scale of Operation</option>
@@ -145,10 +144,15 @@
                             </select>
                             <span id="ScaleOfOperation-error" asp-validation-for="ScaleOfOperation" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-6">
+                        <div class="form-group col-xl-4">
                             <label asp-for="NoOfProductionLine">Number of Production Line</label>
                             <input asp-for="NoOfProductionLine" id="NoOfProductionLine" type="text" class="form-control" placeholder="Number of Production Line" required oninput="validateSerialNoInput(this)">
                             <span id="NoOfProductionLine-error" asp-validation-for="NoOfProductionLine" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="CountryOfOrigin">Country of Origin</label>
+                            <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
+                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                         </div>
                     </div>
                      <div class="row">
@@ -169,12 +173,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-3">
-                            <label asp-for="CountryOfOrigin">Country of Origin</label>
-                            <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
-                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-xl-3">
+                        <div class="form-group col-xl-4">
                             <label asp-for="InvoiceValue">Invoice Value</label>
                             <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
@@ -191,13 +190,16 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 ">
-                            <button type="submit" class="btn bg-purple col-xl-3">Save</button>
-                        </div>
-                        <div class="col-md-6 ">
-                            <button type="button" id="RejectButton" class="btn btn-sm btn-danger col-3" data-toggle="modal" data-target="#rejectionModal1">
-                                Return <i class="fas fa-backward"></i>
-                            </button>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn bg-purple mr-2">Save <i class="fas fa-save"></i></button>
+
+                                    <button type="button" id="RejectButton" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectionModal1">
+                                        Return <i class="fas fa-backward"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

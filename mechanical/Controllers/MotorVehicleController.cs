@@ -1,10 +1,13 @@
 ﻿using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
+using mechanical.Models.Dto.ConstMngAgrMachineryDto;
 using mechanical.Models.Dto.MailDto;
 using mechanical.Models.Dto.MotorVehicleDto;
 using mechanical.Models.Entities;
+using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CollateralService;
+using mechanical.Services.ConstMngAgrMachineryService;
 using mechanical.Services.MailService;
 using mechanical.Services.MotorVehicleService;
 using mechanical.Services.UploadFileService;
@@ -19,24 +22,36 @@ namespace mechanical.Controllers
     {
         private readonly ICollateralService _collateralService;
         private readonly IMotorVehicleService _motorVehicleService;
+        private readonly IConstMngAgrMachineryService _constMngAgriMachineryService;
         private readonly CbeContext _cbeContext;
         private readonly IUploadFileService _uploadFileService;
         private readonly IMailService _mailService;
-        public MotorVehicleController(ICollateralService collateralService , IMailService mailService ,IMotorVehicleService motorVehicleService,CbeContext cbeContext,IUploadFileService uploadFileService)
+        private readonly ICaseScheduleService _caseScheduleService;
+        public MotorVehicleController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IConstMngAgrMachineryService constMngAgriMachineryService, IMailService mailService ,IMotorVehicleService motorVehicleService,CbeContext cbeContext,IUploadFileService uploadFileService)
         {
             _collateralService = collateralService;
             _motorVehicleService = motorVehicleService;
             _cbeContext = cbeContext;
             _uploadFileService= uploadFileService;
             _mailService = mailService;
-
+            _constMngAgriMachineryService = constMngAgriMachineryService;
+            _caseScheduleService = caseScheduleService;
         }
-
-
         [HttpGet]
         public async Task<IActionResult> Create(Guid Id)
         {
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
+            var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
+
+            if (scheduledDate == null)
+            {
+                return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
+            }
+            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            {
+                return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
+            }
+
             if (collateral == null)
             {
                 return RedirectToAction("MyCase", "MOCase");
@@ -79,7 +94,8 @@ namespace mechanical.Controllers
         public async Task<IActionResult> CheckAssesment(Guid Id, CreateMotorVehicleDto createMotorVehicleDto)
         {
             var motorVehicle = await _motorVehicleService.CheckMotorVehicle(base.GetCurrentUserId(), Id, createMotorVehicleDto);
-            return RedirectToAction("GetCheckMotorVehicle", "MotorVehicle", motorVehicle );
+            var redirectUrl = Url.Action("GetCheckMotorVehicle", "MotorVehicle", motorVehicle);
+            return Json(new { redirectUrl });
         }
         [HttpGet]
         public async Task<IActionResult> GetCheckMotorVehicle(ReturnMotorVehicleDto returnMotorVehicleDto)
@@ -105,7 +121,8 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetEvaluatedMoterVehicle(Guid Id)
         {
             var motorVehicleDto = await _motorVehicleService.GetEvaluatedMotorVehicle(Id);
-            //ViewData["EvaluatedMOV"] = motorVehicleDto;
+            var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
+            ViewData["comments"] = comments;
 
             return View(motorVehicleDto);
         }
@@ -130,9 +147,9 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetReturnedEvaluatedMoterVehicle(Guid Id)
         {
             var motorVehicleDto = await _motorVehicleService.GetEvaluatedMotorVehicle(Id);
-            var  com= await _collateralService.GetComments(Id);
-            ViewData["Comments"] = com;
-           ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
+            var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
+            ViewData["comments"] = comments;
+            ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
             return View(motorVehicleDto);
         }
         [HttpPost]

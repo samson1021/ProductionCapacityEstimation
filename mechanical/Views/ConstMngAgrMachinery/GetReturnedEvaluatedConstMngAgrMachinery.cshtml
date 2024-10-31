@@ -77,12 +77,10 @@
                             <div class="form-group">
                                 <label asp-for="PowerSupply">Power Supply</label>
                                 <div class="input-group">
-
                                     <select asp-for="PowerSupply" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                         <option value="" disabled>Select Power Supply</option>
                                     </select>
-                                  
                                     @{
                                         try
                                         {
@@ -103,7 +101,6 @@
                             <div class="form-group">
                                 <label asp-for="NoOfCylinder"> No. Cylinder</label>
                                 <div class="input-group">
-
                                     <select asp-for="NoOfCylinder" class="form-control"
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                         <option value="" disabled>Select No of Cylinder</option>
@@ -130,7 +127,6 @@
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                         <option value="" disabled >Select Transmission Type</option>
                                     </select>
-                             
                                       @{
                                         try
                                         {
@@ -153,7 +149,6 @@
                                             asp-items="@(new SelectList(Enum.GetValues(typeof(IgnitionSystem)).Cast<IgnitionSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = e.ToString() == Model.IgnitionSystem.ToString()}), "Value", "Text"))">
                                         <option value="" disabled >Select Ignition System</option>
                                     </select>
-                                   
                                     @{
                                         try
                                         {
@@ -216,7 +211,6 @@
                                 <label asp-for="WorkingProductionCapacity">Working/Production Capacity</label>
                                 <div class="input-group">
                                     <input asp-for="WorkingProductionCapacity" type="text" class="form-control" id="enginePower" placeholder="Working/Production Capacity" required>
-                                  
                                     @{
                                         try
                                         {
@@ -685,7 +679,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <button type="submit" class="btn bg-purple col-xl-3">Save</button>
+                        <button type="submit" class="btn bg-purple col-xl-3">Send for Checker</button>
                     </div>
                 </form>
             </div>
