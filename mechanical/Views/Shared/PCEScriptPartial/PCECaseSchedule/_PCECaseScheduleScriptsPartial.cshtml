@@ -1,0 +1,307 @@
+﻿@* @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
+
+@{
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
+} *@
+
+<script>
+    $(document).ready(function () { 
+
+        const currentDate = stripTime(new Date());
+        var latestSchedule = new Date($('#latestSchedule').val());
+
+        $('#updateScheduleButton').on('click', function (event) {
+            event.preventDefault();
+            $('#updateSchedule-modals').modal('show');
+        });
+
+        $('#proposeNewScheduleButton').on('click', function (event) {
+            event.preventDefault();
+            $('#proposeNewSchedule-modals').modal('show');
+        });
+
+        $('#rescheduleButton').on('click', function (event) {
+            event.preventDefault();
+            $('#reschedule-modals').modal('show');
+        });       
+
+        $('#createSchedule-form').submit(function (event) {
+            event.preventDefault();
+
+            var selectedDate = new Date($('#ScheduleDate').val());
+            
+            $('#dateError').text('');
+            
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#dateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#dateError').text('The selected date must be different from the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/CreateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while creating a schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
+        });    
+       
+        $('#updateSchedule-form').submit(function (event) {
+            event.preventDefault();
+            
+            var selectedDate = new Date($('#updateScheduleDate').val());
+
+            $('#updateDateError').text('');
+
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#updateDateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#updateDateError').text('The selected date must be different from the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/UpdateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#updateSchedule-modals').modal('hide');
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
+        });
+
+        $('#proposeNewSchedule-form').submit(function (event) {
+            event.preventDefault();
+
+            var selectedDate = new Date($('#proposeScheduleDate').val());
+
+            $('#proposeDateError').text('');
+            
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#proposeDateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#proposeDateError').text('The selected date must be different from the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/ProposeSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#proposeNewSchedule-modals').modal('hide');
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while proposing a schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
+        }); 
+
+        $('#reschedule-form').submit(function (event) {
+            event.preventDefault();
+            
+            var selectedDate = new Date($('#rescheduleDate').val());
+            
+            $('#rescheduleDateError').text('');
+
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#rescheduleDateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#rescheduleDateError').text('The selected date must be different from the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData(this);
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/CreateReschedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#reschedule-modals').modal('hide');
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while rescheduling the date.');
+                    hideLoadingIndicator();
+                },
+                complete: function(){
+                    hideLoadingIndicator();
+                }
+            });
+        });    
+
+        $('#acceptButton').click(function (event) {
+            event.preventDefault();
+          
+            var selectedDate = new Date($('#ScheduleDate').val());
+            
+            $('#dateError').text('');
+
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#dateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#dateError').text('The selected date must be different from the current date.');
+                return;
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData();
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/ApproveSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    hideLoadingIndicator();
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while approving the schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
+        });
+
+    });
+    function showLoadingIndicator() {
+
+        // Disable the page
+        document.body.style.pointerEvents = 'none';
+        document.body.style.opacity = '0.5';
+
+        // Show a loading indicator
+        var loadingIndicator = document.createElement('div');
+        loadingIndicator.classList.add('loading-indicator');
+
+        var spinner = document.createElement('div');
+        spinner.classList.add('spinner');
+        loadingIndicator.appendChild(spinner);
+
+        var loadingText = document.createElement('span');
+        loadingText.textContent = 'Setting up schedule date, please wait...';
+        loadingIndicator.appendChild(loadingText);
+
+        document.body.appendChild(loadingIndicator);
+    }
+
+    function hideLoadingIndicator() {
+
+        // Remove the loading indicator
+        var loadingIndicator = document.querySelector('.loading-indicator');
+        if (loadingIndicator) {
+            document.body.removeChild(loadingIndicator);
+        }
+
+        // Enable the page
+        document.body.style.pointerEvents = 'auto';
+        document.body.style.opacity = '1';
+    }
+
+    function isSameDate(date1, date2) {
+        return date1.getUTCFullYear() === date2.getUTCFullYear() &&
+            date1.getUTCMonth() === date2.getUTCMonth() &&
+            date1.getUTCDate() === date2.getUTCDate();
+    }
+
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+</script>
+
+<style>
+    .loading-indicator {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        z-index: 9999; 
+        text-align: center;
+        border-radius: 10px;
+    }
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+</style>

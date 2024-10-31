@@ -6,7 +6,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
                     <li class="breadcrumb-item active">My PCE Reestimation Case</li>
                 </ol>
             </div>
@@ -22,9 +22,9 @@
                         <tr>
                             <th>Created At</th>
                             <th>Case No</th>
-                            <th>Aplicant Name</th>                      
-                            <th>Completed PCE</th>
-                            <th>Total PCE</th>
+                            <th>Applicant Name</th>                      
+                            <th>Completed Productions</th>
+                            <th>Total Productions</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -34,24 +34,15 @@
         </div>
     </div>
 </section>
-@section Scripts {
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+@section Scripts { 
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
 
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: '/PCECase/PCEReestimationCase',
+                url: '/PCECase/GetPCECases?Status=Completed',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -59,7 +50,7 @@
                         data: data,
                         columns: [
                             {
-                                data: 'CreationDate',
+                                data: 'CreatedAt',
                                 width: '15%',
                                 render: function (data, type, row, meta) {
                                     var date = new Date(data);
@@ -68,17 +59,15 @@
                             },
                             { data: 'CaseNo', width: '10%' },
                             { data: 'ApplicantName', width: '20%' },                            
-                            { data: 'NoOfCollateral', width: '15%' },
-                            { data: 'TotalNoOfCollateral', width: '15%' },
+                            { data: 'NoOfProductions', width: '15%' },
+                            { data: 'TotalNoOfProductions', width: '15%' },
                             {
                                 data: 'Id',
                                 width: '10%',
                                 render: function (data, type, row, meta) {
-                                    return '<a href="@Url.Action("PCEReestimationCase", "PCECase")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
-
+                                    return '<a href="@Url.Action("PCEReestimationCase", "PCECase")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
                                 }
                             }
-
                         ],
                         order: [[0, 'desc']],
                         responsive: true,

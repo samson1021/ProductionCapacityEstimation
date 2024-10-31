@@ -57,7 +57,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? BottleneckProductionLineCapacity { get; set; }
 
         [Display(Name = "Overall Actual Current Capacity")]
-        public string OverallActualCurrentPlantCapacity { get; set; }
+        public string OverallActualCurrentCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
         public virtual DateTimeRangeReturnDto TimeConsumedToCheck { get; set; }
@@ -112,14 +112,10 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } 
-
     }
     
-    public class TimeIntervalReturnDto
+    public class TimeIntervalReturnDto: ITimeInterval
     {
-        // public Guid Id { get; set; }    
-        // public Guid PCEEId { get; set; } 
-
         [Display(Name = "Start Time")]
         public TimeSpan Start { get; set; }
 
@@ -129,9 +125,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
     public class DateTimeRangeReturnDto
     {
-        // public Guid Id { get; set; }
-        // public Guid PCEEId { get; set; }
-
         [Display(Name = "Start DateTime")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime Start { get; set; }

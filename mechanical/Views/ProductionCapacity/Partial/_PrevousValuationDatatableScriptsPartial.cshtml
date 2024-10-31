@@ -1,55 +1,71 @@
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @{
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
     var EmptyMessage = "No Previous Evaluation / Valuation History.";
-    var FetchUrl = "/MOPCECase/GetMyPreviousValuations?PCEId=" + myPCE.Id;
+    var FetchUrl = "/PCEEvaluation/GetPreviousValuations?PCEId=" + myProduction.Id;
 }
 
 <script>
     $(document).ready(function () {
-
-        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
-        function initializeDataTable(data) {
-
-            PreviousValuationsTable = $('#PreviousValuations').DataTable({
-                language: {
-                    emptyTable: '@EmptyMessage'
-                },
-                responsive: true,
-                pageLength: 8,
-                lengthChange: false,
-                autoWidth: false,
-                data: data,
-                columns: [
-                    { data: 'PCE.PropertyOwner', width: '25%' },
-                    { data: 'ProductionLineOrEquipmentName', width: '25%' },
-                    { data: 'PCE.ProductionType', width: '25%' },
-                    { data: 'PCE.CurrentStatus', width: '35%' },
-                    { data: 'CreatedAt', width: '35%' }
-                ]
-            });
-        }
-        function loadPreviousValuations() {
-            $.ajax({
-                url: fetchUrl,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PreviousValuations')) {
-                        var PreviousValuationsTable = $('#PreviousValuations').DataTable();
-                        PreviousValuationsTable.destroy();
-                    }
-                    initializeDataTable(data);
-                },
-                error: function (error) {
-                    toastr.error("Failed to load Previous Valuations");
-                    console.log(error);
-                }
-            });
-        }
         loadPreviousValuations();
     });
+    function initializeDataTable(data) {
 
+        $('#PreviousValuations').DataTable({
+            language: {
+                emptyTable: '@EmptyMessage'
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            data: data,
+            columns: [
+                { data: 'PCE.PropertyOwner', width: '30%' },
+                { data: 'ProductionLineOrEquipmentName', width: '30%' },
+                { data: 'PCE.ProductionType', width: '15%' },
+                {                    
+                    data: 'CreatedAt',
+                    width: '15%',
+                    render: function (data) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {                 
+                        return `<a href="@Url.Action("Detail", "PCEEvaluation")?Id=${data}">Details</a>`;
+                    }
+                }
+            ]
+        });
+    }
 
+    function loadPreviousValuations() {
+
+        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
+        $.ajax({
+            url: fetchUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#PreviousValuations')) {
+                    $('#PreviousValuations').DataTable().destroy();
+                }
+                initializeDataTable(data);
+            },
+            error: function (error) {
+                toastr.error("Failed to load Previous Valuations");
+                console.log(error);
+            }
+        });
+    }
+
+    function openReturnModal(PCEId) {
+        document.querySelector('#returnModal1 input[name="PCEId"]').value = PCEId;
+        $('#returnModal1').modal('show');
+    }
 </script>

@@ -4,6 +4,7 @@ using mechanical.Models.Dto.IndBldgFacilityEquipmentDto;
 using mechanical.Models.Dto.MailDto;
 using mechanical.Models.Dto.MotorVehicleDto;
 using mechanical.Models.Entities;
+using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CollateralService;
 using mechanical.Services.IndBldgF;
@@ -23,20 +24,32 @@ namespace mechanical.Controllers
         private readonly IUploadFileService _uploadFileService;
         private readonly CbeContext _cbeContext;
         private readonly IMailService _mailService;
-        public IndBldgFacilityEquipmentController(IUploadFileService uploadFileService, IMailService mailService, ICollateralService collateralService,IIndBldgFacilityEquipmentService indBldgFacilityEquipment , IMotorVehicleService motorVehicleService,CbeContext cbeContext)
+        private readonly ICaseScheduleService _caseScheduleService;
+        public IndBldgFacilityEquipmentController(IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, IMailService mailService, ICollateralService collateralService,IIndBldgFacilityEquipmentService indBldgFacilityEquipment , IMotorVehicleService motorVehicleService,CbeContext cbeContext)
         {
             _collateralService = collateralService;
             _indBldgFacilityEquipment = indBldgFacilityEquipment;
             _cbeContext = cbeContext;
             _uploadFileService = uploadFileService;
             _mailService = mailService;
+            _caseScheduleService = caseScheduleService;
         }
 
 
         [HttpGet]
         public async Task<IActionResult> Create(Guid Id)
         {
-            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),    Id);
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+            var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
+
+            if (scheduledDate == null)
+            {
+                return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
+            }
+            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            {
+                return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
+            }
             if (collateral == null)
             {
                 return RedirectToAction("MyCase", "MOCase");
@@ -48,9 +61,9 @@ namespace mechanical.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckAssessment(Guid Id, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipment)
         {
-            //var motorVehicle = await _indBldgFacilityEquipment.Check(base.GetCurrentUserId(), Id, createMotorVehicleDto);
-            var indBldgFacility = await _indBldgFacilityEquipment.CheckIndBldgFacilityEquipment(base.GetCurrentUserId(),Id, indBldgFacilityEquipment);
-            return RedirectToAction("GetCheckIndBldgFacilityEquipment", "IndBldgFacilityEquipment", indBldgFacility);
+            var indBldgFacility = await _indBldgFacilityEquipment.CheckIndBldgFacilityEquipment(base.GetCurrentUserId(), Id, indBldgFacilityEquipment);
+            var redirectUrl = Url.Action("GetCheckIndBldgFacilityEquipment", "IndBldgFacilityEquipment", indBldgFacility);
+            return Json(new { redirectUrl });
         }
         [HttpGet]
         public async Task<IActionResult> GetCheckIndBldgFacilityEquipment(IndBldgFacilityEquipmentReturnDto indBldgFacilityEquipmentReturnDto)
@@ -123,7 +136,8 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetEvaluatedIndBldgFacilityEquipment(Guid Id)
         {
             var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetEvaluatedIndBldgFacilityEquipment(Id);
-            //ViewData["EvaluatedMOV"] = motorVehicleDto;
+            var comments = await _indBldgFacilityEquipment.GetCollateralComment(Id);
+            ViewData["comments"] = comments;
 
             return View(indBldgFacilityEquipment);
         }
@@ -148,8 +162,8 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetReturnedEvaluatedIndBldgFacilityEquipment(Guid Id)
         {
             var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetReturnedEvaluatedIndBldgFacilityEquipment(Id);
-            var com = await _collateralService.GetComments(Id);
-            ViewData["Comments"] = com;
+            var comments = await _indBldgFacilityEquipment.GetCollateralComment(Id);
+            ViewData["comments"] = comments;
             ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
             return View(indBldgFacilityEquipment);
         }

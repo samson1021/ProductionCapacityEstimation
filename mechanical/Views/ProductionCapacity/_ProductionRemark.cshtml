@@ -1,10 +1,13 @@
-﻿@using mechanical.Models.PCE.Entities
+﻿@using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto
+
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionReturnDto
 
 @{
-    var currentUser = ViewData["CurrentUser"] as CreateUser;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+
+    var currentUserRole = currentUser?.Role?.Name as string;
 }
 
 <section class="content">
@@ -31,7 +34,7 @@
                         </div>
                     </div>
 
-                    @if (currentUser.Role.Name == "Relation Manager")
+                    @if (currentUserRole == "Relation Manager")
                     {
                         <form action="/ProductionCapacity/HandleRemark" method="post" enctype="multipart/form-data">
                             <input name="PCEId" type="hidden" value="@latestEvaluation.Id" />
@@ -64,7 +67,7 @@
                             <button type="submit" class="btn btn-primary">Send Remark Release</button>
                         </form>
                     }
-                    else if (currentUser.Role.Name == "Maker Officer")
+                    else if (currentUserRole == "Maker Officer")
                     {
                         string formAction = Model.CurrentStatus == "Remark Justification" ? "/PCEEvaluation/RemarkRelease" : "/PCEEvaluation/Reevaluate";
                         string buttonLabel = Model.CurrentStatus == "Remark Justification" ? "Release Remark" : "Edit";

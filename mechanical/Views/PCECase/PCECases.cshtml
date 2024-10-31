@@ -1,0 +1,71 @@
+﻿﻿@{
+    ViewData["Title"] = ViewBag.Title ?? "PCE Cases";
+    var status = ViewBag.Status as string;
+    var emptyMessage = "There are no PCE Cases.";
+    var fetchUrl = "/PCECase/GetPCECases?Status=" + status;
+
+    if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        emptyMessage = "There are no " + status + " PCE Cases.";
+    }
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>@ViewData["Title"]</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="MyPCECasesDatatable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Created At</th>
+                            <th>Case No</th>
+                            <th>Applicant Name</th>
+                            <th>Customer Id</th>
+                            @if (status != "All"){
+                                <th>@status Productions</th>
+                            }
+                            <th>Total Productions</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("Partial/_PCECasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
+    
+    <script>
+        $(document).ready(function () {
+        
+            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
+            var emptyMessage = '@Html.Raw(emptyMessage)';
+
+            loadPCECases(fetchUrl, emptyMessage);        
+        });
+
+    </script>
+}

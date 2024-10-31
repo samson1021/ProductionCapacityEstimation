@@ -1,0 +1,103 @@
+<script>
+    function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage) {
+        
+        $.ajax({
+            url: getSubordinateUrl,
+            method: 'GET',
+            dataType: 'json'
+        })
+        .done(function (data) {
+            var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + selectName);
+            $('#OptionDropdown').append(selectOption);
+            data.forEach(function (option) {
+                var option = $('<option></option>').attr('value', option.Id).text(option.Name);
+                $('#OptionDropdown').append(option);
+            });
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            if (currentUserRole == "Relation Manager"){
+                toastr.error('Error fetching district data');
+                console.log('Error fetching district data:', errorThrown);
+            }else{
+                toastr.error('Error fetching employee data');
+                console.log('Error fetching employee data:', errorThrown);
+            }
+        });
+
+        $('#assignButton').on('click', function () {
+            var SelectedPCEIds = [];
+
+            $('.purple-checkbox:checked').each(function () {
+                SelectedPCEIds.push($(this).val());
+            });
+            if (SelectedPCEIds.length === 0) {
+                toastr.error('Please select at least one Production');
+            } else {
+                $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
+
+                $('#assignModal').modal('show');
+            }
+        });
+
+        $('#selectAllCheckbox').on('click', function () {
+            if ($(this).is(':disabled')) {
+                return;
+            }
+
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').each(function () {
+                if (!$(this).is(':disabled')) {
+                    $(this).prop('checked', isChecked);
+                }
+            });
+        });
+
+        @* $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        }); *@
+
+        $('#Productions tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+
+        $('#assignForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var selectedPCEIds = formData.get('SelectedPCEIds');
+            var assignedId = formData.get('AssignedId');
+
+            if (!selectedPCEIds) {
+                toastr.error("Please, select at least one production to assign.");
+                return;
+            } else if (!assignedId) {
+                if (currentUserRole == "Relation Manager") {
+                    toastr.error("Please, select an evaluation center to assign.");
+                } else {
+                    toastr.error("Please, select a user to assign.");
+                }
+                return;
+            }            
+
+            $.ajax({
+                url: assignUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('#assignModal').modal('hide');
+                    $('#assignForm')[0].reset();
+                    loadProductions(fetchUrl, emptyMessage);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
+                }
+            });
+        });
+    }
+</script>

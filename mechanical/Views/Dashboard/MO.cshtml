@@ -1,4 +1,8 @@
-﻿@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>;
+﻿
+@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>
+@{
+
+}
 <style>
     .small-box-footer:hover {
         text-decoration: underline;
@@ -163,7 +167,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="newPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="newPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">New PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -174,7 +178,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -185,7 +189,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pendingPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="pendingPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Pending PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -196,7 +200,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -207,7 +211,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="completedPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="completedPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Completed PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -218,7 +222,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -229,7 +233,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="totalPCECasesCount">-</h4>
+                                        <h4 class="text-white" id="totalPCECaseCount">-</h4>
                                         <h6 class="text-white m-b-0">Total PCE Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -240,7 +244,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCECases","MOPCECase", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("PCECases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -254,8 +258,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="newPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">New PCEs</h6>
+                                        <h4 class="text-white" id="newProductionCount">-</h4>
+                                        <h6 class="text-white m-b-0">New Productions</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -265,7 +269,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("Productions","ProductionCapacity", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -276,8 +280,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="pendingPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">Pending PCEs</h6>
+                                        <h4 class="text-white" id="pendingProductionCount">-</h4>
+                                        <h6 class="text-white m-b-0">Pending Productions</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -287,7 +291,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("Productions","ProductionCapacity", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -298,8 +302,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="completedPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">Completed PCEs</h6>
+                                        <h4 class="text-white" id="completedProductionCount">-</h4>
+                                        <h6 class="text-white m-b-0">Completed Productions</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -309,7 +313,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("Productions","ProductionCapacity", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -320,8 +324,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="resubmittedPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">Resubmitted PCEs</h6>
+                                        <h4 class="text-white" id="resubmittedProductionCount">-</h4>
+                                        <h6 class="text-white m-b-0">Resubmitted Productions</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -331,7 +335,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Reestimate" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("Productions","ProductionCapacity", new { Status = "Reestimate" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -342,8 +346,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="completedPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">Completed PCEs</h6>
+                                        <h4 class="text-white" id="completedProductionCount">-</h4>
+                                        <h6 class="text-white m-b-0">Completed Productions</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -353,7 +357,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("Productions","ProductionCapacity", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -364,8 +368,8 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="totalPCEsCount">-</h4>
-                                        <h6 class="text-white m-b-0">Total PCEs</h6>
+                                        <h4 class="text-white" id="totalProductionCount">-</h4>
+                                        <h6 class="text-white m-b-0">Total Productions</h6>
                                     </div>
                                     <div class="col-4 text-right">
                                         <div class="icon col-12">
@@ -375,15 +379,14 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPCEs","MOPCECase", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("Productions","ProductionCapacity", new { Status = "All" })" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
-                </div>
-                 *@
-
+                </div> *@
+                
                 <div class="row">
                     <div class="card mx-2">
                         <div class="card-header border-transparent">
@@ -392,16 +395,15 @@
                                    
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table id="MyPCECasesDatatable" class="table table-bordered table-striped m-0">
+                                <table id="PCECasesDatatable" class="table table-bordered table-striped m-0">
                                     <thead>
                                         <tr>
                                             <th>Case No</th>
                                             <th>Creation Date</th>
                                             <th>Applicant Name</th>
                                             <th>Customer Id</th>
-                                            @* <th>New PCEs</th> *@
-                                            @* <th>Total PCEs</th> *@
-                                            <th>Productions</th>
+                                            @* <th>New Productions</th> *@
+                                            <th>Total Productions</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -418,7 +420,7 @@
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
         
     <script>
@@ -439,15 +441,15 @@
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/MOPCECase/GetMyDashboardPCECasesCount")
+            fetch("/PCECase/GetDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
 
-                    animateCountWithCollateral("newPCECasesCount", data.NewPCECasesCount, data.NewPCEsCount);
-                    animateCountWithCollateral("pendingPCECasesCount", data.PendingPCECasesCount, data.PendingPCEsCount);
-                    animateCountWithCollateral("completedPCECasesCount", data.CompletedPCECasesCount + data.ReestimatedPCECasesCount, data.CompletedPCEsCount + data.ReestimatedPCEsCount);
-                    animateCountWithCollateral("returnedPCECasesCount", data.ReturnedPCECasesCount, data.ReturnedPCEsCount);
-                    animateCount("totalPCECasesCount", data.TotalPCECasesCount);
+                    animateCountWithCollateral("newPCECaseCount", data.NewPCECaseCount, data.NewProductionCount);
+                    animateCountWithCollateral("pendingPCECaseCount", data.PendingPCECaseCount, data.PendingProductionCount);
+                    animateCountWithCollateral("completedPCECaseCount", data.CompletedPCECaseCount + data.ReestimatedPCECaseCount, data.CompletedProductionCount + data.ReestimatedProductionCount);
+                    // animateCountWithCollateral("returnedPCECaseCount", data.ReturnedPCECaseCount, data.ReturnedProductionCount);
+                    animateCount("totalPCECaseCount", data.TotalPCECaseCount);
 
                 })
                 .catch(error => {
@@ -458,15 +460,15 @@
         
         @*// production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/MOPCECase/GetMyDashboardPCECount")
+            fetch("/ProductionCapacity/GetDashboardPCECount")
                 .then(response => response.json())
                 .then(data => {
 
-                    animateCount("newPCEsCount", data.NewPCEsCount);
-                    animateCount("pendingPCEsCount", data.PendingPCEsCount);
-                    animateCount("completedPCEsCount", data.CompletedPCEsCount + data.ReestimatedPCEsCount);
-                    animateCount("resubmittedPCEsCount", data.ResubmittedPCEsCount);
-                    animateCount("totalPCEsCount", data.TotalPCEsCount);
+                    animateCount("newProductionCount", data.NewProductionCount);
+                    animateCount("pendingProductionCount", data.PendingProductionCount);
+                    animateCount("completedProductionCount", data.CompletedProductionCount + data.ReestimatedProductionCount);
+                    animateCount("resubmittedProductionCount", data.ResubmittedProductionCount);
+                    animateCount("totalProductionCount", data.TotalProductionCount);
 
                 })
                 .catch(error => {
@@ -516,8 +518,7 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: "/MOPCECase/GetMyPCECases",
-                // url: "/MOPCECase/GetMyLatestPCECases",
+                url: "/PCECase/GetPCECases?Limit=5",
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -526,11 +527,11 @@
                             data: 'CaseNo', 
                             width: '10%',
                             render: function (data, type, row) {
-                                return '<a href="@Url.Action("PCECaseDetail", "MOPCECase")?Id=' + row.Id + '">' + data + '</a>';
+                                return '<a href="@Url.Action("Detail", "PCECase")?Id=' + row.Id + '&Status=All">' + data + '</a>';
                             }                 
                         },
                         {
-                            data: 'CreationDate',
+                            data: 'CreatedAt',
                             width: '15%',
                             render: function (data) {
                                 var date = new Date(data);
@@ -539,12 +540,11 @@
                             }
                         },
                         { data: 'ApplicantName', width: '15%' },
-                        { data: 'CustomerUserId', width: '15%' },
-                        @* { data: 'NoOfCollateral', width: '10%' }, *@
-                        { data: 'TotalNoOfCollateral', width: '10%' },
+                        { data: 'CustomerId', width: '15%' },
+                        @* { data: 'NoOfProductions', width: '10%' }, *@
+                        { data: 'TotalNoOfProductions', width: '10%' },
                         {
                             data: 'Status',
-                            // data: 'CurrentStatus',
                             width: '10%',
                             render: function (data) {
                                 var statusHtml = '';
@@ -552,17 +552,19 @@
                                     statusHtml = '<span class="badge badge-success">New</span>';
                                 } else if (data === "Pending") {
                                     statusHtml = '<span class="badge badge-warning">Pending</span>';
-                                } else if (data === "Rejected") {
-                                    statusHtml = '<span class="badge badge-danger">Returned</span>';
+                                } else if (data === "Terminated") {
+                                    statusHtml = '<span class="badge badge-danger">Terminated</span>';
                                 } else if (data === "Completed") {
-                                    statusHtml = '<span class="badge badge-purple">Completed</span>';
+                                    statusHtml = '<span class="badge badge-info">Completed</span>';
+                                } else {
+                                    statusHtml = '<span class="badge badge-dark">Unknown</span>';
                                 }
                                 return statusHtml;
                             }
                         },
                     ];
 
-                    $('#MyPCECasesDatatable').DataTable({
+                    $('#PCECasesDatatable').DataTable({
                         language: {
                             emptyTable: "There are no new PCE Cases",
                             info: "",

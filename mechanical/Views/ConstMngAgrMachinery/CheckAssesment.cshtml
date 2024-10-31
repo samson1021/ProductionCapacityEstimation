@@ -1,860 +1,320 @@
 ﻿@model mechanical.Models.Dto.ConstMngAgrMachineryDto.ConstMngAgMachineryReturnDto;
-@{
-    // var collateral = ViewData["collateral"] as ReturnCollateralDto;
-    var Comments = ViewData["Comments"] as List<mechanical.Models.Dto.Correction.CorrectionRetunDto>;
-    var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
-}
 <div class="modal fade" id="CheckAssesmentModal" tabindex="-1" role="dialog" aria-labelledby="CheckAssesmentModalLabel" aria-hidden="true">
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6 col-xl-8">
-                <h3 class="m-0">Construction, Minning & Agricultural Machinery  Evaluation Form</h3>
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CollateralFileModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">Construction, Minning & Agricultural Machinery  Evaluation Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="col-sm-6 col-xl-4">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">My Case</li>
-                    <li class="breadcrumb-item active">Detail</li>
-                    <li class="breadcrumb-item active">Collateral evaluation</li>
-                </ol>
-            </div>
+            <section class="col-xl-12 connectedSortable">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" id="checkAssessmentForm" enctype="multipart/form-data" asp-action="CheckAssessment" asp-route-Id="@Model.Id">
+                            <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="constructionMiningAgriculturalMachineryType"> Cons, Min & Agri Machinery Type</label>
+                                        <select asp-for="constructionMiningAgriculturalMachineryType" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Cons, Min & Agri Machinery Type</option>
+                                        </select>
+                                        <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="EngineType">Engine/Motor Type</label>
+                                        <select asp-for="EngineType" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Engine/Motor Type</option>
+                                        </select>
+                                        <span asp-validation-for="EngineType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="PowerSupply">Power Supply</label>
+                                        <select asp-for="PowerSupply" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Power Supply</option>
+                                        </select>
+                                        <span asp-validation-for="PowerSupply" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="NoOfCylinder"> No. Cylinder</label>
+                                        <select asp-for="NoOfCylinder" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select No. Cylinder</option>
+                                        </select>
+                                        <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="TransmissionType">Transmission Type</label>
+                                        <select asp-for="TransmissionType" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Transmission Type</option>
+                                        </select>
+                                        <span asp-validation-for="TransmissionType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="IgnitionSystem">Ignition System </label>
+                                        <select asp-for="IgnitionSystem" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(IgnitionSystem)).Cast<IgnitionSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Ignition System</option>
+                                        </select>
+                                        <span asp-validation-for="IgnitionSystem" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="CoolingType">Cooling System</label>
+                                        <select asp-for="CoolingType" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(CoolingSystem)).Cast<CoolingSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Cooling System</option>
+                                        </select>
+                                        <span asp-validation-for="CoolingType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
+                                        <input asp-for="EnginePower" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
+                                        <span asp-validation-for="EnginePower" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="WorkingProductionCapacity">Working/Production Capacity</label>
+                                        <input asp-for="WorkingProductionCapacity" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Working/Production Capacity" required>
+                                        <span asp-validation-for="WorkingProductionCapacity" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="TechnologyStandard">Technology Standard</label>
+                                        <select asp-for="TechnologyStandard" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(MachineryTechnologyStandard)).Cast<MachineryTechnologyStandard>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Technology Standard</option>
+                                        </select>
+                                        <span asp-validation-for="TechnologyStandard" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="MakerPreferenceType">Type of Maker Preference</label>
+                                        <select asp-for="MakerPreferenceType" class="form-control form-control-sm" id="enginePower" required>
+                                            <option value="">Select the preference</option>
+                                            <option value="Normal Preference">Normal Preference</option>
+                                            <option value="Exceptional Preference">Exceptional Preference</option>
+                                        </select>
+                                        <span asp-validation-for="MakerPreferenceType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group  form-group-sm col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="CabinType">Cabin Type</label>
+                                        <select asp-for="CabinType" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(CabinType)).Cast<CabinType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Cabin Type</option>
+                                        </select>
+                                        <span asp-validation-for="CabinType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="NumberOfAxle">Number of Axles</label>
+                                        <select asp-for="NumberOfAxle" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfAxles)).Cast<NoOfAxles>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Number of Axles</option>
+                                        </select>
+                                        <span asp-validation-for="NumberOfAxle" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="Color">Color</label>
+                                        <input asp-for="Color" list="carColors" type="text" class="form-control form-control-sm" placeholder="Select Car Color" required>
+                                        <span asp-validation-for="Color" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="MakerCompany">Insert Maker Company </label>
+                                        <input asp-for="MakerCompany" type="text" class="form-control form-control-sm" id="MakerCompany" placeholder="Insert Maker Company" required>
+                                        <span asp-validation-for="MakerCompany" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group  col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="CurrentEqpmntCondition">Current Equipment Condition</label>
+                                        <select asp-for="CurrentEqpmntCondition" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(EquipmentCondition)).Cast<EquipmentCondition>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Current Equipment Condition</option>
+                                        </select>
+                                        <span asp-validation-for="CurrentEqpmntCondition" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
+                                        <select asp-for="AllocatedPointsRange" class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" disabled>Select Current Equipment Condition</option>
+                                        </select>
+                                        <span asp-validation-for="AllocatedPointsRange" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="ModelNo">Model Number</label>
+                                        <input asp-for="ModelNo" type="text" value="@Model.ModelNo" class="form-control form-control-sm" placeholder="Model Number" required>
+                                        <span asp-validation-for="ModelNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="EngineNo">Engine Number</label>
+                                        <input asp-for="EngineNo" type="text" value="@Model.ModelNo" class="form-control form-control-sm" placeholder="Engine Number" required>
+                                        <span asp-validation-for="EngineNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="ChassisNo">Chassis Number</label>
+                                        <input asp-for="ChassisNo" type="text" value="@Model.ChassisNo" class="form-control form-control-sm" placeholder="Chassis Number" required>
+                                        <span asp-validation-for="ChassisNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="SerialNo">Serial Number</label>
+                                        <input asp-for="SerialNo" type="text" value="@Model.SerialNo" class="form-control form-control-sm" placeholder="Serial Number" required>
+                                        <span asp-validation-for="SerialNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="PlateNo">Plate Number</label>
+                                        <input asp-for="PlateNo" type="text" value="@Model.PlateNo" class="form-control" placeholder="Plate Number" required>
+                                        <span asp-validation-for="PlateNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="TDNo">TD Number</label>
+                                        <input asp-for="TDNo" type="text" class="form-control form-control-sm" placeholder="TD Number" required>
+                                        <span asp-validation-for="TDNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="YearOfManufacture">Year of Manufacture</label>
+                                        <input asp-for="YearOfManufacture" value="@Model.YearOfManufacture" type="number" class="form-control form-control-sm" min="1900" max="2099" step="1" required>
+                                        <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="Remark">Remark</label>
+                                        <textarea asp-for="Remark" class="form-control form-control-sm" placeholder="Remark" rows="3" required></textarea>
+                                        <span asp-validation-for="Remark" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-group-sm col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="PhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
+                                        <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control form-control-sm" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
+                                        <span asp-validation-for="PhysicalAndInstallationAssesment" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-4">
+                                    <div class="form-group">
+                                        <label asp-for="OverallSurveyAssesment">Overall Survey Assessment</label>
+                                        <textarea asp-for="OverallSurveyAssesment" class="form-control form-control-sm" placeholder="Overall Survey Assessment" rows="3" required></textarea>
+                                        <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xl-3">
+                                    <div class="form-group">
+                                        <label asp-for="CountryOfOrigin">Country of Origin</label>
+                                        <input asp-for="CountryOfOrigin" type="text" class="form-control form-control-sm" placeholder="Select Country of Origin" list="country" required>
+                                        <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-3">
+                                    <div class="form-group">
+                                        <label asp-for="InvoiceValue">Invoice Value</label>
+                                        <input asp-for="InvoiceValue" type="number" class="form-control form-control-sm" placeholder="Invoice Value" required>
+                                        <span asp-validation-for="InvoiceValue" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-3">
+                                    <div class="form-group">
+                                        <label asp-for="Currency">Currency</label>
+                                        <input asp-for="Currency" list="currencyList" type="text" class="form-control form-control-sm" placeholder="Select Currency" required>
+                                        <span asp-validation-for="Currency" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xl-3">
+                                    <div class="form-group">
+                                        <label asp-for="ExchangeRate">Exchange Rate</label>
+                                        <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control form-control-sm" placeholder="Enter Exchange Rate" required>
+                                        <span asp-validation-for="ExchangeRate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-append">
+                                            <button type="submit" id="btnSaveForResubmiting" class="  btn bg-purple mr-2">Evaluate <i class="fas fa-toolbox"></i></button>
+                                            <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </div>
-<section class="content">
-    <section class="col-xl-12 connectedSortable">
-        <div class="card">
-            @*   <div class="card-body">
-            <form method="post" enctype="multipart/form-data" asp-action="EditConstMngAgrMachinery">
 
-            <input asp-for="Id" value=@Model.Id type="hidden" />
-
-            <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
-            <div class="row">
-            <div class="form-group col-xl-4">
-            <div class="form-group">
-            <label asp-for="constructionMiningAgriculturalMachineryType">Cons, Min & Agri Machinery Type</label>
-            <div class="input-group">
-            <select asp-for="constructionMiningAgriculturalMachineryType" class="form-control"
-            asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-            <option value="" disabled selected>Select Cons, Min & Agri Machinery Type</option>
-            </select>
-            <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
-            @if (ViewData["Comments"] != null)
-            {
-            var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "constructionMiningAgriculturalMachineryType");
-            if (comment != null)
-            {
-            <div class="input-group-append">
-            <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-            data-target="#CommentBoxModal" data-field-id="constructionMiningAgriculturalMachineryType" data-comment="@comment.Comment">
-            <i class="fas fa-exclamation-triangle"></i>
-            </button>
-            </div>
-            }
-            }
-            </div>
-            </div>
-            </div>
-            <div class="form-group col-xl-4">
-            <div class="form-group">
-            <label asp-for="EngineType"> Engine/Motor Type </label>
-            <div class="input-group">
-
-            <select asp-for="EngineType" class="form-control"
-            asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-            <option value="" disabled selected> Select Engine/Motor Type </option>
-            </select>
-            <span asp-validation-for="EngineType" class="text-danger"></span>
-            @if (ViewData["Comments"] != null)
-            {
-            var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "EngineType");
-            if (comment != null)
-            {
-            <div class="input-group-append">
-            <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-            data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment.Comment">
-            <i class="fas fa-exclamation-triangle"></i>
-            </button>
-            </div>
-            }
-            }
-            </div>
-            </div>
-            </div>
-            <div class="form-group col-xl-4">
-            <div class="form-group">
-            <label asp-for="PowerSupply">Power Supply</label>
-            <div class="input-group">
-
-            <select asp-for="PowerSupply" class="form-control"
-            asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-            <option value="" disabled selected>Select Power Supply</option>
-            </select>
-            <span asp-validation-for="PowerSupply" class="text-danger"></span>
-            @if (ViewData["Comments"] != null)
-            {
-            var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "PowerSupply");
-            if (comment != null)
-            {
-            <div class="input-group-append">
-            <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-            data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment.Comment">
-            <i class="fas fa-exclamation-triangle"></i>
-            </button>
-            </div>
-            }
-            }
-            </div>
-            </div>
-            </div>
-            </div>
-            </form>
-            </div> *@
-
-            <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" asp-action="CheckAssessment" asp-route-Id="@Model.Id">
-                    <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
-
-
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="NoOfCylinder"> No. Cylinder</label>
-                                <div class="input-group">
-
-                                    <select asp-for="NoOfCylinder" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select No. Cylinder</option>
-                                    </select>
-                                    <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "NoOfCylinder");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="NoOfCylinder" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="TransmissionType">Transmission Type</label>
-                                <div class="input-group">
-
-                                    <select asp-for="TransmissionType" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Transmission Type</option>
-                                    </select>
-                                    <span asp-validation-for="TransmissionType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "TransmissionType");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="TransmissionType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="IgnitionSystem">Ignition System </label>
-                                <div class="input-group">
-
-                                    <select asp-for="IgnitionSystem" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(IgnitionSystem)).Cast<IgnitionSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Ignition System</option>
-                                    </select>
-                                    <span asp-validation-for="IgnitionSystem" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "IgnitionSystem");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="IgnitionSystem" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="CoolingType">Cooling System</label>
-                                <div class="input-group">
-
-                                    <select asp-for="CoolingType" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(CoolingSystem)).Cast<CoolingSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Cooling System</option>
-                                    </select>
-                                    <span asp-validation-for="CoolingType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CoolingType");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CoolingType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
-                                <div class="input-group">
-
-                                    <input asp-for="EnginePower" type="text" class="form-control" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
-                                    <span asp-validation-for="EnginePower" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "EnginePower");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="EnginePower" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="WorkingProductionCapacity">Working/Production Capacity</label>
-                                <div class="input-group">
-
-                                    <input asp-for="WorkingProductionCapacity" type="text" class="form-control" id="enginePower" placeholder="Working/Production Capacity" required>
-                                    <span asp-validation-for="WorkingProductionCapacity" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "WorkingProductionCapacity");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="WorkingProductionCapacity" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="TechnologyStandard">Technology Standard</label>
-                                <div class="input-group">
-
-                                    <select asp-for="TechnologyStandard" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(MachineryTechnologyStandard)).Cast<MachineryTechnologyStandard>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Technology Standard</option>
-                                    </select>
-                                    <span asp-validation-for="TechnologyStandard" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "TechnologyStandard");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="TechnologyStandard" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="MakerPreferenceType">Type of Maker Preference</label>
-                                <div class="input-group">
-
-                                    <select asp-for="MakerPreferenceType" class="form-control" id="enginePower" required>
-                                        <option value="">Select the preference</option>
-                                        <option value="Normal Preference">Normal Preference</option>
-                                        <option value="Exceptional Preference">Exceptional Preference</option>
-                                    </select>
-                                    <span asp-validation-for="MakerPreferenceType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "MakerPreferenceType");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="MakerPreferenceType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="CabinType">Cabin Type</label>
-                                <div class="input-group">
-
-                                    <select asp-for="CabinType" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(CabinType)).Cast<CabinType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Cabin Type</option>
-                                    </select>
-                                    <span asp-validation-for="CabinType" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CabinType");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CabinType" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="NumberOfAxle">Number of Axles</label>
-                                <div class="input-group">
-
-                                    <select asp-for="NumberOfAxle" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfAxles)).Cast<NoOfAxles>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Number of Axles</option>
-                                    </select>
-                                    <span asp-validation-for="NumberOfAxle" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "NumberOfAxle");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="NumberOfAxle" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="Color">Color</label>
-                                <div class="input-group">
-
-                                    <input asp-for="Color" list="carColors" type="text" class="form-control" placeholder="Select Car Color" required>
-                                    <span asp-validation-for="Color" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "Color");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="Color" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="MakerCompany">Insert Maker Company </label>
-                                <div class="input-group">
-
-                                    <input asp-for="MakerCompany" type="text" class="form-control" id="MakerCompany" placeholder="Insert Maker Company" required>
-                                    <span asp-validation-for="MakerCompany" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "MakerCompany");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="MakerCompany" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="CurrentEqpmntCondition">Current Equipment Condition</label>
-                                <div class="input-group">
-
-                                    <select asp-for="CurrentEqpmntCondition" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(EquipmentCondition)).Cast<EquipmentCondition>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Current Equipment Condition</option>
-                                    </select>
-                                    <span asp-validation-for="CurrentEqpmntCondition" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CurrentEqpmntCondition");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
-                                <div class="input-group">
-
-                                    <select asp-for="AllocatedPointsRange" class="form-control"
-                                            asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                        <option value="" disabled selected>Select Current Equipment Condition</option>
-                                    </select>
-                                    <span asp-validation-for="AllocatedPointsRange" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "AllocatedPointsRange");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="ModelNo">Model Number</label>
-                                <div class="input-group">
-
-                                    <input asp-for="ModelNo" type="text" value="@Model.ModelNo" class="form-control" placeholder="Model Number" required>
-                                    <span asp-validation-for="ModelNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "ModelNo");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="ModelNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="EngineNo">Engine Number</label>
-                                <div class="input-group">
-
-                                    <input asp-for="EngineNo" type="text" value="@Model.ModelNo" class="form-control" placeholder="Engine Number" required>
-                                    <span asp-validation-for="EngineNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "EngineNo");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="EngineNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="ChassisNo">Chassis Number</label>
-                                <div class="input-group">
-
-                                    <input asp-for="ChassisNo" type="text" value="@Model.ChassisNo" class="form-control" placeholder="Chassis Number" required>
-                                    <span asp-validation-for="ChassisNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "ChassisNo");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="ChassisNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="SerialNo">Serial Number</label>
-                                <div class="input-group">
-
-                                    <input asp-for="SerialNo" type="text" value="@Model.SerialNo" class="form-control" placeholder="Serial Number" required>
-                                    <span asp-validation-for="SerialNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "SerialNo");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="SerialNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="PlateNo">Plate Number</label>
-                                <div class="input-group">
-
-                                    <input asp-for="PlateNo" type="text" value="@Model.PlateNo" class="form-control" placeholder="Plate Number" required>
-                                    <span asp-validation-for="PlateNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "PlateNo");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="PlateNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="TDNo">TD Number</label>
-                                <div class="input-group">
-
-                                    <input asp-for="TDNo" type="text" class="form-control" placeholder="TD Number" required>
-                                    <span asp-validation-for="TDNo" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "TDNo");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="TDNo" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="YearOfManufacture">Year of Manufacture</label>
-                                <div class="input-group">
-
-                                    <input asp-for="YearOfManufacture" value="@Model.YearOfManufacture" type="number" class="form-control" min="1900" max="2099" step="1" required>
-                                    <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "YearOfManufacture");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="YearOfManufacture" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="Remark">Remark</label>
-                                <div class="input-group">
-
-                                    <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
-                                    <span asp-validation-for="Remark" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "Remark");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="Remark" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="PhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
-                                <div class="input-group">
-
-                                    <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
-                                    <span asp-validation-for="PhysicalAndInstallationAssesment" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "PhysicalAndInstallationAssesment");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="OverallSurveyAssesment">Overall Survey Assessment</label>
-                                <div class="input-group">
-
-                                    <textarea asp-for="OverallSurveyAssesment" class="form-control" placeholder="Overall Survey Assessment" rows="3" required></textarea>
-                                    <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "OverallSurveyAssesment");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="CountryOfOrigin">Country of Origin</label>
-                                <div class="input-group">
-
-                                    <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
-                                    <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "CountryOfOrigin");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="CountryOfOrigin" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="InvoiceValue">Invoice Value</label>
-                                <div class="input-group">
-
-                                    <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
-                                    <span asp-validation-for="InvoiceValue" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "InvoiceValue");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="InvoiceValue" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="Currency">Currency</label>
-                                <div class="input-group">
-
-                                    <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
-                                    <span asp-validation-for="Currency" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "Currency");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="Currency" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-xl-4">
-                            <div class="form-group">
-                                <label asp-for="ExchangeRate">Exchange Rate</label>
-                                <div class="input-group">
-                                    <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control" placeholder="Enter Exchange Rate" required>
-                                    <span asp-validation-for="ExchangeRate" class="text-danger"></span>
-                                    @if (ViewData["Comments"] != null)
-                                    {
-                                        var comment = Comments.FirstOrDefault(c => c.CommentedAttribute == "ExchangeRate");
-                                        if (comment != null)
-                                        {
-                                            <div class="input-group-append">
-                                                <button type="button" id="btnComment" class="btn btn-outline-danger motion-button show-comment-box" data-toggle="modal"
-                                                        data-target="#CommentBoxModal" data-field-id="ExchangeRate" data-comment="@comment.Comment">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        <div class="row">
-                            <div class="form-group col-xl-6">
-                                <button type="submit" id="btnSaveForResubmiting" class="col-xl-2  btn btn-sm  bg-purple">Check Assessment <i class="fas fa-paper-plane"></i></button>
-                            </div>
-                            <div class="form-group col-xl-6">
-                                <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                </form>
-            </div>
-        </div>
-    </section>
-</section>
-</div>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ConstSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
 }
-<!-- this is the updated comment box modal code-->
-<div class="modal fade" id="CommentBoxModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="commentModalLabel">Read your Comment</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="comment">Comment:</label>
-                        <textarea id="CommentModal" class="form-control" rows="4"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 <style>

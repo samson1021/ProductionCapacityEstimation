@@ -49,7 +49,11 @@ namespace mechanical.Services.CaseScheduleService
             var caseSchedules = await _cbeContext.CaseSchedules.Include(res=>res.User).Where(res => res.CaseId == caseId).OrderBy(res=>res.CreatedAt).ToListAsync();
             return _mapper.Map<IEnumerable<CaseScheduleReturnDto>>(caseSchedules);
         }
-
+        public async Task<CaseScheduleReturnDto> GetApprovedCaseSchedule(Guid caseId)
+        {
+            var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == caseId && res.Status == "Approved").FirstOrDefaultAsync();
+            return _mapper.Map<CaseScheduleReturnDto>(caseSchedule);
+        }
         public async Task<CaseScheduleReturnDto> UpdateCaseSchedule(Guid userId, Guid Id, CaseSchedulePostDto caseCommentPostDto)
         {
             var caseSchedule = await _cbeContext.CaseSchedules.FindAsync(Id);

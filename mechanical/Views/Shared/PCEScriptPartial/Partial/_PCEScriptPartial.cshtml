@@ -1,0 +1,339 @@
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+
+<script>
+
+    $(document).ready(function () {
+
+        var outputPhaseElement = document.getElementById("OutputPhase");
+
+        if (outputPhaseElement) {
+            outputPhaseElement.addEventListener("change", function () {
+                handleDropdownChange(this, "OtherOutputPhase");
+            });
+        }              
+
+        $('#ShiftsPerDay').attr({
+            "min": 1,
+            "max": 5
+        }).on('input', function () {
+            if ($(this).val()) {
+                $('#shiftHoursContainerLabel').css('display', 'block');
+                renderShiftHours();
+                validateShiftHours();
+            }
+        });
+
+        if ($('#ShiftsPerDay').val()) {
+            $('#shiftHoursContainerLabel').css('display', 'block');
+            renderShiftHours();
+            validateShiftHours();
+        }
+
+        $('#shiftHoursContainer').on('change', 'input[type="time"]', function () {
+            renderShiftHours();
+            validateShiftHours();
+        });
+
+        $("#MachineFunctionalityStatus").change(function () {
+            var selectedStatus = $(this).val();
+            if (selectedStatus === '@((int)MachineFunctionalityStatus.NotFunctional)') {
+                $("#functionalityReasonRow").show();
+            } else {
+                $("#functionalityReasonRow").hide();
+                $("#otherReasonRow").hide();
+            }
+        });
+
+        $("#MachineNonFunctionalityReason").change(function () {
+            var selectedReason = $(this).val();
+            if (selectedReason === '@((int)MachineNonFunctionalityReason.Other)') {
+                $("#otherReasonRow").show();
+            } else {
+                $("#otherReasonRow").hide();
+            }
+        });        
+
+        $('#evaluationForm').on('submit', function (e) {
+            if (!validateShiftHours()) {
+                e.preventDefault(); 
+            }
+        });
+    });
+
+    function setDefaultTime() {
+
+        var now = new Date();
+        var hours = String(now.getHours()).padStart(2, '0');
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        var currentTime = hours + ':' + minutes;
+
+        $('#shiftHoursContainer .shift-hour').each(function () {
+            $(this).find('input[type="time"]').each(function () {
+                if (!$(this).val()) { // Only set if no value is present
+                    $(this).val(currentTime);
+                }
+            });
+        });
+    }
+
+    function reindexShiftHours() {
+
+        $('#shiftHoursContainer .shift-hour').each(function (index) {
+            $(this).attr('data-index', index);
+            $(this).find('label').each(function () {
+                const labelType = $(this).text().includes('Start') ? 'Start' : 'End';
+                $(this).html(`Shift ${index + 1} ${labelType} <i class="text-danger">*</i>`);
+            });
+            $(this).find('input').each(function () {
+                let name = $(this).attr('name');
+                let newName = name.replace(/\d+/, index);
+                $(this).attr('name', newName);
+            });
+        });
+    }
+
+    function renderShiftHours() {
+
+        var shiftCount = Math.max(1, Math.min(5, parseInt($('#ShiftsPerDay').val()) || 0));
+        var existingShiftCount = $('#shiftHoursContainer').children('.shift-hour').length;
+
+        // Add new shifts if needed
+        for (var i = existingShiftCount; i < shiftCount; i++) {
+            $('#shiftHoursContainer').append(createShiftHourRow(i));
+        }
+
+        // Remove excess shifts if needed
+        if (shiftCount < existingShiftCount) {
+            $('#shiftHoursContainer').children('.shift-hour').slice(shiftCount).remove();
+        }
+
+        // Reindex shift hours
+        reindexShiftHours();
+        setDefaultTime();
+    }
+
+    function createShiftHourRow(index) {
+        return `
+            <div class="row shift-hour col-sm-12" data-index="${index}">
+                <div class="form-group col-sm-6">
+                    <label style="display: block; text-align: center;">Shift ${index + 1} Start <i class="text-danger">*</i></label>
+                    <input name="ShiftHours[${index}].Start" class="form-control form-control-sm" type="time" />
+                        @* <span asp-validation-for="ShiftHours[${index}].Start" class="text-danger"></span>   *@
+                </div>
+                <div class="form-group col-sm-6">
+                    <label style="display: block; text-align: center;">Shift ${index + 1} End <i class="text-danger">*</i></label>
+                    <input name="ShiftHours[${index}].End" class="form-control form-control-sm" type="time" />
+                        @* <span asp-validation-for="ShiftHours[${index}].End" class="text-danger"></span> *@
+                </div>
+                <span class="text-danger col-sm-12"></span>
+                @* <span asp-validation-for="ShiftHours[${index}]" class="text-danger col-sm-12"></span> *@
+            </div>
+        `;
+    }
+
+    function validateShiftHours() {
+
+        var shifts = [];
+        var isValid = true;
+        var firstInvalidElement = null;
+        var errorMsg = "* Shifts should not overlap or be identical.";
+        var invalidTimeMsg = "* Shift start time should be earlier than the end time.";
+
+        // Reset previous error messages for all rows
+        $('#shiftHoursContainer .shift-hour span.text-danger').text('');
+
+        // Collect shift times
+        $('#shiftHoursContainer .shift-hour').each(function () {
+            var startTime = $(this).find('input[name$="Start"]').val();
+            var endTime = $(this).find('input[name$="End"]').val();
+
+            if (startTime && endTime) {
+                shifts.push({ start: startTime, end: endTime });
+            }
+        });
+
+        // Initialize an array to store error messages for each shift
+        var errorMessagesArray = new Array(shifts.length).fill('');
+
+        for (var i = 0; i < shifts.length; i++) {
+            
+            var shift1 = shifts[i];
+
+            // Check if the start time is not earlier than the end time
+            if (shift1.start >= shift1.end) {
+                
+                isValid = false;
+                errorMessagesArray[i] += invalidTimeMsg + '<br>';
+
+                if (!firstInvalidElement) {
+                    firstInvalidElement = $(`#shiftHoursContainer .shift-hour[data-index="${i}"] input[name$="Start"]`);
+                }
+            }
+
+            for (var j = i + 1; j < shifts.length; j++) {
+                var shift2 = shifts[j];
+
+                // Check for overlapping or identical shifts
+                if ((shift1.start < shift2.end && shift1.end > shift2.start) ||
+                    (shift1.start === shift2.start && shift1.end === shift2.end)) {
+
+                    isValid = false;
+                    errorMessagesArray[j] += errorMsg + '<br>'; 
+
+                    if (!firstInvalidElement) {
+                        firstInvalidElement = $(`#shiftHoursContainer .shift-hour[data-index="${j}"] input[name$="Start"]`);
+                    }
+
+                    break;
+                }
+            }
+        }
+        
+        for (var k = 0; k < errorMessagesArray.length; k++) {
+            if (errorMessagesArray[k]) {
+                $(`#shiftHoursContainer .shift-hour[data-index="${k}"] span.text-danger`).html(errorMessagesArray[k]);
+            }
+        }
+
+        if (firstInvalidElement) {
+            firstInvalidElement.focus();
+        }
+
+        return isValid;
+    }
+
+
+    function handleButtonClick(buttonId, confirmMessage, successMessage, redirectUrl) {
+        
+        var buttonElement = document.getElementById(buttonId);
+
+        if (buttonElement) {
+            buttonElement.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                fetch(this.href, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success(successMessage);
+                        setTimeout(function () {
+                            window.location.href = redirectUrl;
+                        }, 1000);
+                    } else {
+                        toastr.error('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error: ' + error);
+                });
+            });
+        }
+    }
+
+    // Alphanumeric validation
+    function addAlphanumericValidation(elementId, errorElementId) {
+        
+        var element = document.getElementById(buttonId);
+
+        if (element) {
+
+            element.addEventListener("input", function () {
+                var input = this.value;
+                var alphanumericRegex = /^[A-Za-z0-9]+$/;
+                if (!alphanumericRegex.test(input)) {
+                    this.setCustomValidity("Only alphanumeric characters are allowed.");
+                    document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
+                } else {
+                    this.setCustomValidity("");
+                    document.getElementById(errorElementId).textContent = "";
+                }
+            });
+        }
+    }
+    // addAlphanumericValidation("ProductionLineOrEquipmentName", "ProductionLineOrEquipmentName-error");
+    // addAlphanumericValidation("OutputType", "OutputType-error");
+
+    // Function for handling dropdown value changes
+    function handleDropdownChange(selectElement, otherInputId) {
+
+        var otherInput = document.getElementById(otherInputId);
+
+        if (otherInput) {
+            if (selectElement.value === "Other") {
+                otherInput.style.display = "block";
+                otherInput.setAttribute("required", "required");
+            } else {
+                otherInput.style.display = "none";
+                otherInput.removeAttribute("required");
+            }
+        }
+    }
+
+    function deleteFile(fileId, event) {
+
+        event.preventDefault();
+
+        if (confirm("Are you sure you want to delete this file?")) {
+
+            // Add the fileId to the hidden input for deleted files
+            var deletedFileIdsInput = document.getElementById('DeletedFileIds');
+            
+            if (deletedFileIdsInput){
+                
+                var deletedFileIds = deletedFileIdsInput.value ? deletedFileIdsInput.value.split(',') : [];
+                deletedFileIds.push(fileId);
+                deletedFileIdsInput.value = deletedFileIds.join(',');
+
+                // Remove the file row from the view
+                $(`#file-${fileId}`).remove();
+
+                // Check if there are no more files and add the appropriate message
+                if ($("#file-list1 .file-row").length == 0) {
+                    $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
+                }
+                if ($("#file-list2 .file-row").length == 0) {
+                    $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
+                }
+            }
+        }
+    }
+
+</script>
+
+<style>
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold; 
+        color: #080808; 
+        text-align: center; 
+        margin: 0; 
+        padding: 10px;
+    }
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    }
+    .card-header {
+        background-color: #f8f9fa; 
+        border-bottom: 1px solid #dee2e6; 
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%; 
+    }
+</style>

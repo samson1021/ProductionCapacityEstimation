@@ -114,8 +114,6 @@
 
         $(document).ready(function () {
            
-
-
             $('#evaluationForm').submit(function (event) {
                 event.preventDefault();
 
@@ -207,7 +205,7 @@
                 var formData = new FormData(this);
                 var Id = $('#CaseSchedulleId').val();
                 formData.append('Id', Id);
-
+                console.log(formData)
                 $.ajax({
                     url: '/MOCase/UpdateSchedule',
                     type: 'POST',

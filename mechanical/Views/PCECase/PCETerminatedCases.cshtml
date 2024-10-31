@@ -3,12 +3,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>My PCE Terminated Case</h4>
+                <h4>My Terminated PCE Case</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">My PCE Terminated Case</li>
+                    <li class="breadcrumb-item active">My Terminated PCE Case</li>
                 </ol>
             </div>
         </div>
@@ -25,7 +25,7 @@
                             <th>Case No</th>
                             <th>Aplicant Name</th>
                             <th>Customer Id</th>
-                            <th>Number of PCE</th>
+                            <th>No of Productions</th>
                             <th>Termination Reason</th>
                             <th>Status</th>
                         </tr>
@@ -36,19 +36,10 @@
         </div>
     </div>
 </section>
-@section Scripts {
-    <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-    <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-    <script src="~/lib/datatable/js/jszip.min.js"></script>
-    <script src="~/lib/datatable/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatable/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.print.min.js"></script>
-    <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+@section Scripts {    
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
     <script>
         $(document).ready(function () {
             $.ajax({
@@ -61,7 +52,7 @@
                         columns:
                             [
                                 {
-                                    data: 'CreationDate',
+                                    data: 'TerminatedAt',
                                     width: '15%',
                                     render: function (data, type, row, meta) {
                                         var date = new Date(data);
@@ -70,10 +61,9 @@
                                 },
                                 { data: 'CaseNo', width: '10%' },
                                 { data: 'ApplicantName', width: '20%' },
-                                { data: 'CustomerUserId', width: '15%' },
-                                { data: 'NoOfCollateral', width: '15%' },
+                                { data: 'CustomerId', width: '15%' },
+                                { data: 'TotalNoOfProductions', width: '15%' },
                                 { data: 'TerminationReason', width: '15%' },
-                                // { data: 'CurrentStatus', width: '15%' },
                                 { data: 'Status', width: '15%' },
                                 {
                                     data: 'Id',
@@ -94,8 +84,4 @@
             });
         });
     </script>
-
-    @{
-
-    }
 }

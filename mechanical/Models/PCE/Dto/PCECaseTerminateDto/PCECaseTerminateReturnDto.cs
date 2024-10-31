@@ -7,12 +7,11 @@ namespace mechanical.Models.PCE.Dto.PCECaseTerminateDto
         public Guid Id { get; set; }
         public string? Reason { get; set; }
         public string? Status { get; set; }
-        // public string? CurrentStatus { get; set; }
-        public DateTime CreationDate { get; set; }
-
+        public DateTime TerminatedAt { get; set; }
+        
         public Guid PCECaseId { get; set; }
 
-        public virtual CreateUser? RMUser { get; set; }
+        public virtual CreateUser? PCECaseOriginator { get; set; }
 
 
     }

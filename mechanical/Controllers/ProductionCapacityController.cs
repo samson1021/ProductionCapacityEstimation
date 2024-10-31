@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using DocumentFormat.OpenXml.Bibliography;
 
@@ -7,38 +9,34 @@ using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Enum;
 using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Services.UserService;
 using mechanical.Services.UploadFileService;
 
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Enum.ProductionCapacity;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-// using mechanical.Controllers.PCE;
-using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.MOPCECaseService;
-using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.PCE.ProductionCapacityServices;
-
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.ProductionCapacityService;
 
 namespace mechanical.Controllers
 {
+
+    // [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
+    [Authorize]
     public class ProductionCapacityController : BaseController
     {
-        private readonly IPCECaseService _pCECaseService;
-        private readonly IProductionCapacityServices _productionCapacityServices;
+        private readonly IUserService _UserService;
+        private readonly IUploadFileService _UploadFileService;
         private readonly ILogger<ProductionCapacityController> _logger;
-        private readonly CbeContext _cbeContext;
+        private readonly IPCECaseScheduleService _PCECaseScheduleService;
+        private readonly IProductionCapacityService _ProductionCapacityService;
 
-        private readonly IUploadFileService _uploadFileService;
-        private readonly IMOPCECaseService _MOPCECaseService;
-
-
-        public ProductionCapacityController(CbeContext cbeContext, IPCECaseService pCECaseService, IMOPCECaseService MOPCECaseService, IProductionCapacityServices productionCapacityServices, IUploadFileService uploadFileService)
+        public ProductionCapacityController(IUserService UserService, IProductionCapacityService ProductionCapacityService, IPCECaseScheduleService PCECaseScheduleService, IUploadFileService UploadFileService)
         {
-            _cbeContext = cbeContext;
-            _productionCapacityServices = productionCapacityServices;
-            _MOPCECaseService = MOPCECaseService;
-            _pCECaseService = pCECaseService;
-            _uploadFileService = uploadFileService;
+            _UserService = UserService;
+            _UploadFileService = UploadFileService;
+            _PCECaseScheduleService = PCECaseScheduleService;
+            _ProductionCapacityService = ProductionCapacityService;
         }
 
         public IActionResult Index()
@@ -53,184 +51,22 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productionCapacityServices.CreateProductionCapacity(base.GetCurrentUserId(), PCECaseId, productionDto);
+                await _ProductionCapacityService.CreateProductionCapacity(base.GetCurrentUserId(), PCECaseId, productionDto);
                 var response = new { message = "Manufacturing PCE created successfully" };
                 return Ok(response);
             }
             return BadRequest();
 
-        }
-
-        [HttpPost]
-        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlantCreate(Guid caseId, PlantPostDto PlantCollateralDto)
-        {
-            if (ModelState.IsValid)
-            {
-
-                if (PlantCollateralDto.PlantName == "Others, please specify")
-                {
-                    PlantCollateralDto.PlantName = PlantCollateralDto.OtherPlantName;
-                }
-
-                await _productionCapacityServices.CreatePlantProduction(base.GetCurrentUserId(), caseId, PlantCollateralDto);
-                var response = new { message = "Plant PCE created successfully" };
-                return Ok(response);
-            }
-            return BadRequest();
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetProductions(Guid PCECaseId)
-        {
-            var products = await _productionCapacityServices.GetProductions(PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(products);
-            return Content(jsonData, "application/json");
-
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetPendingProductions(Guid PCECaseId)
-        {
-            //PCECaseId = Guid.Parse("C847C43F-958C-456A-B46F-043A6E22DD5B");
-            var products = await _productionCapacityServices.GetPendingProductions(PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(products);
-            return Content(jsonData, "application/json");
-
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Detail(Guid id)
-        {
-            var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var loanCase = await _pCECaseService.GetPCECaseDetail(response.PCECaseId);
-
-            var restimation = await _cbeContext.ProductionReestimations.Where(res => res.ProductionCapacityId == id).FirstOrDefaultAsync();
-            if (restimation != null)
-            {
-                ViewData["restimation"] = restimation;
-            }
-            if (response == null) { 
-                return RedirectToAction("PCENewCases"); 
-            }
-            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            var rejectedProduction = await _cbeContext.ProductionRejects.Where(res => res.PCEId == id).FirstOrDefaultAsync();
-            var remarkTypeProduction = await _cbeContext.ProductionCapacities.Where(res => res.Id == id).FirstAsync();
-            var productionById = await _productionCapacityServices.GetProductionCapacityById(id);
-            var PcevalutionDto = await _productionCapacityServices.GetValuationById(id);
-
-            if (rejectedProduction != null)
-            {
-                var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedProduction.RejectedBy);
-                ViewData["user"] = user;
-
-            }
-
-            if (PcevalutionDto != null)
-            {
-                ViewData["PcevalutionDto"] = PcevalutionDto;
-            }
-            if (response.ProductionType == "Manufacturing")
-            {
-                var Production = await _productionCapacityServices.GetManufuctringProductionCapacityEvalutionById(id);
-                ViewData["Mavaluation"] = Production;
-            }
-            else if (response.ProductionType == "Plant")
-            {
-                var Production = await _productionCapacityServices.GetPlantProductionCapacityEvalutionById(id);
-                ViewData["Pavaluation"] = Production;
-            }
-            
-            ViewData["pcecaseDtos"] = loanCase;
-            ViewData["productionFiles"] = file;
-            ViewData["rejectedCollateral"] = rejectedProduction;
-            ViewData["CurrentUserId"] = base.GetCurrentUserId();
-            var userId = base.GetCurrentUserId();
-            var UserForRole = await _cbeContext.CreateUsers.Where(res => res.Id == userId).FirstOrDefaultAsync();
-            var role = await _cbeContext.CreateRoles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
-            ViewData["loggedRole"] = role;
-            ViewData["remarkTypeCollateral"] = remarkTypeProduction;
-
-            var pceDetail = await _MOPCECaseService.GetPCEDetails(base.GetCurrentUserId(), id);
-            var currentUser = await _MOPCECaseService.GetUser(base.GetCurrentUserId());
-            ViewData["CurrentUser"] = currentUser;
-            ViewData["PCE"] = pceDetail.ProductionCapacity;
-            ViewData["LatestEvaluation"] = pceDetail.PCEValuationHistory.LatestEvaluation;
-
-
-            return View(response);
-
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> GetRejectProducts(Guid CaseId)
-        {
-            var products = await _productionCapacityServices.GetRejectedProductions(CaseId);
-            string jsonData = JsonConvert.SerializeObject(products);
-            return Content(jsonData, "application/json");
-        }
-        public async Task<IActionResult> GetPendProductions(Guid CaseId)
-        {
-            var products = await _productionCapacityServices.GetPendProductions(CaseId);
-            string jsonData = JsonConvert.SerializeObject(products);
-            return Content(jsonData, "application/json");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteProduction(Guid id)
-        {
-
-            if (await _productionCapacityServices.DeleteProduction(base.GetCurrentUserId(), id))
-
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetRMCompleteProduction(Guid CaseId)
-        {
-            var production = await _productionCapacityServices.GetRmComProductions(CaseId);
-            string jsonData = JsonConvert.SerializeObject(production);
-            return Content(jsonData, "application/json");
-        }
-
-        //////////
-        [HttpGet]
-        public async Task<IActionResult> GetRmRejectedProductions(Guid PCECaseId)
-        {
-            var production = await _productionCapacityServices.GetRmRejectedProductions(base.GetCurrentUserId(), PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(production);
-            return Content(jsonData, "application/json");
-        }
-        ///////////
-
-        [HttpGet]
-        public async Task<IActionResult> CheckCategory(Guid CaseId)
-        {
-            var production = await _productionCapacityServices.GetProductions(CaseId);
-            string jsonData = JsonConvert.SerializeObject(production);
-            return Content(jsonData, "application/json");
-        }
-
-
-
-        [HttpGet]
-        public async Task<IActionResult> GetMyAssigmentProduction(Guid CaseId)
-        {
-            var Production = await _productionCapacityServices.GetMyAssignmentProductions(base.GetCurrentUserId(), CaseId);
-            string jsonData = JsonConvert.SerializeObject(Production);
-            return Content(jsonData, "application/json");
-        }
-
+        }       
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ProductionPostDto collateralPostDto)
+        public async Task<IActionResult> Edit(Guid id, ProductionPostDto ProductionDto)
         {
             if (ModelState.IsValid)
             {
-                var collateral = await _productionCapacityServices.EditProduction(base.GetCurrentUserId(), id, collateralPostDto);
-                return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
+                var production = await _ProductionCapacityService.EditProduction(base.GetCurrentUserId(), id, ProductionDto);
+                return RedirectToAction("Detail", "PCECase", new { Id = production.PCECaseId, Status = "New" });
             }
             return View();
         }
@@ -238,46 +74,82 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response = await _productionCapacityServices.GetProduction(base.GetCurrentUserId(), id);
-            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            ViewData["productionFiles"] = file;
-            if (response == null) { return RedirectToAction("PCENewCases"); }
+            var response = await _ProductionCapacityService.GetProduction(base.GetCurrentUserId(), id);
+            
+            if (response == null) 
+            { 
+                return RedirectToAction("PCECases", "PCECase");
+            }
+
+            var file = await _UploadFileService.GetUploadFileByCollateralId(id);
+            ViewData["ProductionFiles"] = file;
+
             return View(response);
+        }
+
+        // [HttpGet("{Id}")]
+        [HttpGet]
+        public async Task<IActionResult> Detail(Guid Id)
+        {
+            try{
+                    
+                var userId = base.GetCurrentUserId();
+                var productionDetail = await _ProductionCapacityService.GetProductionDetails(userId, Id);
+
+                if (productionDetail.ProductionCapacity == null)
+                {
+                    if (productionDetail.PCECase == null)
+                    {
+                        return RedirectToAction("Detail", "PCECase", new { Id = productionDetail.PCECase.Id, Status = "New" });   
+                    }
+                    return RedirectToAction("PCECases", "PCECase");
+                }
+                
+                ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+                ViewData["LatestPCECaseSchedule"] = await _PCECaseScheduleService.GetLatestSchedule(productionDetail.PCECase.Id);
+                ViewData["Reestimation"] = productionDetail.Reestimation;
+                ViewData["Production"] = productionDetail.ProductionCapacity;
+                ViewData["LatestEvaluation"] = productionDetail.PCEValuationHistory.LatestEvaluation;
+                ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
+                ViewData["PCECase"] = productionDetail.PCECase;
+                ViewData["ProductionFiles"] = productionDetail.RelatedFiles;
+                ViewData["ReturnedProductions"] = productionDetail.ReturnedProductions;
+                ViewData["Title"] = "Production Detail";
+                
+                return View(productionDetail.ProductionCapacity);
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError(ex, "Error fetching Production capacity details for ID: {Id}", Id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteProduction(Guid id)
+        {
+            if (await _ProductionCapacityService.DeleteProduction(base.GetCurrentUserId(), id))
+
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> PlantEdit(Guid id)
+        public async Task<IActionResult> CheckCategory(Guid CaseId)
         {
-            var response = await _productionCapacityServices.GetPlantProduction(base.GetCurrentUserId(), id);
-            var file = await _uploadFileService.GetUploadFileByCollateralId(id);
-            ViewData["productionFiles"] = file;
-            if (response == null) { return RedirectToAction("PCENewCases"); }
-            return View(response);
+            var productions = await _ProductionCapacityService.GetProductions(CaseId);
+            string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+            return Content(jsonData, "application/json");
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlantEdit(Guid id, PlantEditPostDto collateralPostDto)
-        {
-            if (ModelState.IsValid)
-            {
-                if (collateralPostDto.PlantName == "Others, please specify")
-                {
-                    collateralPostDto.PlantName = collateralPostDto.OtherPlantName;
-                }
-                var collateral = await _productionCapacityServices.EditPlantProduction(base.GetCurrentUserId(), id, collateralPostDto);
-                return RedirectToAction("PCEDetail", "PCECase", new { Id = collateral.PCECaseId });
-            }
-            return View();
-        }
-
 
 
         [HttpPost]
         public async Task<ActionResult> DeleteProductionFile(Guid Id)
         {
-            if (await _productionCapacityServices.DeleteProductionFile(base.GetCurrentUserId(), Id))
+            if (await _ProductionCapacityService.DeleteProductionFile(base.GetCurrentUserId(), Id))
             {
                 return Ok();
             }
@@ -285,11 +157,10 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadProductionFile(IFormFile BussinessLicence, Guid caseId, string DocumentCatagory)
+        public async Task<ActionResult> UploadProductionFile(IFormFile File, Guid ProductionId, string DocumentCategory)
         {
 
-
-            if (await _productionCapacityServices.UploadProductionFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCatagory))
+            if (await _ProductionCapacityService.UploadProductionFile(base.GetCurrentUserId(), File, ProductionId, DocumentCategory))
             {
                 return Ok();
             }
@@ -297,52 +168,78 @@ namespace mechanical.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> HandleRemark(Guid ProductionCapacityId, Guid EvaluatorId, String RemarkType, CreateFileDto UploadFile)
-        {
-            var pceCaseAssignment = await _cbeContext.PCECaseAssignments.Where(res => res.ProductionCapacityId == ProductionCapacityId && res.UserId == EvaluatorId).FirstOrDefaultAsync();
-            pceCaseAssignment.Status = "Remark";
-            _cbeContext.Update(pceCaseAssignment);
 
-            var production = await _cbeContext.ProductionCapacities.Where(res => res.Id == ProductionCapacityId).FirstOrDefaultAsync();
-            if (RemarkType == "Verfication")
+        [HttpGet]
+        public async Task<IActionResult> Productions(string Status = "All")
+        { 
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
+                return BadRequest("Invalid status.");
+            }
+            
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            ViewData["Title"] = Status + " Productions";
+            ViewBag.Status = Status;
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProductions(Guid? PCECaseId = null, string Status = "All")
+        { 
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };         
+            
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase))) { 
+                return BadRequest("Invalid status.");
+            }
+
+            IEnumerable<ProductionReturnDto> productions = null;
+            if (PCECaseId == null)
             {
-                production.CurrentStatus = "Remark Verfication";
+                productions = await _ProductionCapacityService.GetProductions(base.GetCurrentUserId(), Status: Status);
+            
+                if (productions == null)
+                {
+                    return BadRequest("Unable to load {Status} Productions");
+                }
             }
             else
             {
-                production.CurrentStatus = "Remark Justfication";
+                productions = await _ProductionCapacityService.GetProductions(base.GetCurrentUserId(), PCECaseId, Status: Status);
+            
+                if (productions == null)
+                {
+                    return BadRequest("Unable to load {Status} Productions with PCECase ID: {PCECaseId}");
+                }
             }
-            if (UploadFile.File != null)
-            {
-                UploadFile.CaseId = production.PCECaseId;
-                await _uploadFileService.CreateUploadFile(base.GetCurrentUserId(), UploadFile);
-            }
 
-            production.CurrentStage = "Maker Officer";
-
-            _cbeContext.Update(production);
-            _cbeContext.SaveChanges();
-
-            return RedirectToAction("PCENewCases", "PCECase");
+            string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+            return Content(jsonData, "application/json");
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetRemarkProductions(Guid PCECaseId)
         {
-            var collaterals = await _productionCapacityServices.GetRemarkProductions(base.GetCurrentUserId(), PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(collaterals);
+            var productions = await _ProductionCapacityService.GetRemarkProductions(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
             return Content(jsonData, "application/json");
         }
-
 
         [HttpGet]
-        public async Task<IActionResult> GetRMCompleteCollaterals(Guid PCECaseId)
+        public async Task<IActionResult> GetAssignedProduction(Guid PCECaseId)
         {
-            var collaterals = await _productionCapacityServices.GetRmComCollaterals(PCECaseId);
-            string jsonData = JsonConvert.SerializeObject(collaterals);
+            var productions = await _ProductionCapacityService.GetAssignedProductions(base.GetCurrentUserId(), PCECaseId);
+            string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
             return Content(jsonData, "application/json");
         }
 
+        // [HttpGet]
+        // public async Task<IActionResult> GetMyDashboardPCECount()
+        // {
+        //     var productions = await _ProductionCapacityService.GetDashboardPCECount(base.GetCurrentUserId());
+            // string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+        //     return Content(jsonData, "application/json");
+        // }               
     }
 }

@@ -20,10 +20,39 @@
     });
     //this method is to give comment for maker and change the status of collateral 
     $(document).ready(function () {
+        $('#checkAssessmentForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.redirectUrl) {
+                        $('#CheckAssesmentModal').modal('hide');
+                        window.open(response.redirectUrl, '_blank');
+                    } else {
+                        alert('Unexpected response');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred: ' + error);
+                }
+            });
+        });
+
+
         $('.show-comment-box').click(function () {
+            console.log("show comment"); 
             var modal = $(this).data('target');
             var fieldId = $(this).data('field-id');
-            $(modal).modal('show');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
             $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
         });
 
@@ -58,13 +87,13 @@
                     // Delay the page refresh by 2 seconds (adjust the delay as needed)
                     setTimeout(function () {
                         location.reload();
-                    }, 2000);
+                    }, 20);
                 },
                 error: function (error) {
                     toastr.error("Failed to Post Correction");
                     setTimeout(function () {
                         location.reload();
-                    }, 2000);
+                    }, 20);
                     console.log(error);
                 }
             });
@@ -99,14 +128,14 @@
                             location.reload();
                             window.location.href = '/CO/Mycases';
 
-                        }, 2000);
+                        }, 20);
                     },
                     error: function (xhr, status, error) {
                         // Handle the error response from the server
                         console.log("Request failed: " + error);
                         setTimeout(function () {
                             location.reload();
-                        }, 2000);
+                        }, 20);
                     }
                 });
             }

@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
+using mechanical.Utils;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
-
 
 namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
@@ -22,9 +22,11 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Phase of Output")]
         public OutputPhase OutputPhase { get; set; }
 
-        [Display(Name = "Shifts Per Day")]
+        [Display(Name = "Shifts Per Day")]        
+        [Range(1, 5, ErrorMessage = "Shifts per day must be between 1 and 5.")]
         public int? ShiftsPerDay { get; set; }
 
+        [ShiftHoursValidation]
         [Display(Name = "Shift Hours")]
         public virtual List<TimeIntervalReturnDto>? ShiftHours { get; set; } = new List<TimeIntervalReturnDto>();
 
@@ -50,7 +52,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? BottleneckProductionLineCapacity { get; set; }
 
         [Display(Name = "Overall Actual Current Capacity")]
-        public string OverallActualCurrentPlantCapacity { get; set; }
+        public string OverallActualCurrentCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
         public virtual DateTimeRangeReturnDto TimeConsumedToCheck { get; set; }
@@ -106,7 +108,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public ICollection<IFormFile>? NewSupportingEvidences { get; set; }
         public ICollection<IFormFile>? NewProductionProcessFlowDiagrams { get; set; }
 
-        public string? DeletedFileIds { get; set; } 
-        // public ICollection<Guid> DeletedFileIds { get; set; }         
+        public string? DeletedFileIds { get; set; }       
     }
 }

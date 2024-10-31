@@ -1,186 +1,51 @@
 <script>
     $(document).ready(function () {
-        function initializeDataTable(data) {
-            $('#PCECasePCEs').DataTable({
-                language: {
-                    emptyTable: "There is no Production register for this PCE Case"
-                },
-                responsive: true,
-                pageLength: 5,
-                lengthChange: false,
-                autoWidth: false,
-                buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"],
-                data: data,
-                columns: [
-                    { data: 'PropertyOwner', width: '20%' },
-                    { data: 'Role', width: '15%' },
-                    { data: 'Category', width: '25%' },
-                    { data: 'Type', width: '25%' },
-                    {
-                        data: 'Id',
-                        width: '15%',
-                        render: function (data, type, row, meta) {
-                            return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details</a>';
-                        }
-                    }
-
-                ]
-            }).buttons().container().appendTo('#PCECasePCEs_wrapper .col-md-6:eq(0)');
-        }
-
-        function loadProductions() {
-
-            $.ajax({
-                url: '/ProductionCapacity/GetRemarkProductions?PCECaseId=' + '@ViewData["PCECaseId"]',
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#PCECasePCEs')) {
-                        $('#PCECasePCEs').DataTable().destroy();
-                    }
-                    initializeDataTable(data);
-                },
-                error: function (error) {
-                    toastr.error("Failed to load Productions");
-                    console.log(error);
-                }
-            });
-        }
-
         loadProductions();
-        function loadComments() {
-            $.ajax({
-                url: '/PCECaseComment/GetPCECaseComments?PCECaseId=' + '@ViewData["PCECaseId"]',
-                method: 'GET',
-                success: function (data) {
-                    var currentUserID = data.userId;
-                    var PCECaseComments = data.PCECaseComments;
-                    var countComment = data.PCECaseComments.length;
-                    $(".CommentBage").text(countComment);
-                    var users = [];
-
-                    if (PCECaseComments && PCECaseComments.length > 0) {
-                        PCECaseComments.forEach(function (comment) {
-                            var chatMsg = $('<div>').addClass('direct-chat-msg');
-                            var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
-                            var chatName = $('<a>');
-
-                            var chatImg = $('<a>');
-                            var chatImgInner = $('<img>').attr('src', '/img/avatar5.png').addClass('direct-chat-img');
-                            var chatText = $('<div>').addClass('direct-chat-text');
-
-                            chatName.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
-                            chatImg.attr('href', '/UserManagment/Profile/' + comment.AuthorId);
-                            chatImg.append(chatImgInner);
-
-                            var createdAt = new Date(comment.CreatedAt);
-
-
-                            chatText.text(comment.Content);
-
-                            if (comment.AuthorId === currentUserID) {
-                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp');
-                                $('<span>').addClass('direct-chat-name float-right').text(comment.AuthorName).appendTo(chatName);
-                                chatMsg.addClass('right');
-                            } else {
-                                var chatTimestamp = $('<span>').addClass('direct-chat-timestamp float-right');
-                                $('<span>').addClass('direct-chat-name').text(comment.AuthorName).appendTo(chatName);
-                            }
-                            var formattedDate = formatDate(createdAt);
-                            chatTimestamp.text(formattedDate);
-
-                            chatInfos.append(chatName, chatTimestamp);
-                            chatMsg.append(chatInfos, chatImg, chatText);
-                            $('.direct-chat-messages').append(chatMsg);
-
-                            var existingUser = users.find(function (user) {
-                                return user.id === comment.AuthorId;
-                            });
-
-                            if (!existingUser) {
-                                var newUser = {
-                                    id: comment.AuthorId,
-                                    name: comment.AuthorName,
-                                    avatar: '/img/avatar5.png',
-                                    lastMessage: comment.Content,
-                                    date: formattedDate
-                                };
-                                users.push(newUser);
-                            }
-                        });
-                        populateContactList(users);
-                    } else {
-                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this PCE Case.');
-                        $('.direct-chat-messages').append(noCommentsMsg);
-                    }
-                },
-                error: function () {
-                    console.log('An error occurred while retrieving PCE Case comments.');
-                }
-            });
-        }
-        function populateContactList(users) {
-            var contactList = $('.contacts-list');
-            contactList.empty();
-
-            users.forEach(function (user) {
-                var listItem = $('<li>');
-                var link = $('<a>').attr('href', '/UserManagment/Profile/' + user.id);
-                var avatarImg = $('<img>').addClass('contacts-list-img').attr('src', user.avatar);
-                var infoDiv = $('<div>').addClass('contacts-list-info');
-                var nameSpan = $('<span>').addClass('contacts-list-name').text(user.name);
-                var dateSpan = $('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date));
-                var messageSpan = $('<span>').addClass('contacts-list-msg').text(user.lastMessage);
-
-                infoDiv.append(nameSpan, dateSpan);
-                link.append(avatarImg, infoDiv, messageSpan);
-                listItem.append(link);
-                contactList.append(listItem);
-            });
-        }
-        function formatDate(date) {
-            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-            return date.toLocaleString('en-US', options);
-        }
-
-        loadComments();
-
-        function sendMessage(message, PCECaseId) {
-            var requestData = {
-                Content: message,
-                PCECaseId: PCECaseId
-            };
-
-            $.ajax({
-                url: '/PCECaseComment/CreatePCECaseComment',
-                method: 'POST',
-                data: requestData,
-                success: function (response) {
-                    $('#messageinput').val('');
-                    var chatMessages = $('.direct-chat-messages');
-                    var scrollHeight = chatMessages[0].scrollHeight;
-                    chatMessages.scrollTop(scrollHeight);
-                },
-                error: function () {
-                    console.log('Error while sending the message.');
-                }
-            });
-        }
-
-        $('#SendButton').click(function (e) {
-            e.preventDefault();
-            var message = $('input[name="message"]').val();
-            if (message.trim() !== '') {
-                // Send the message
-                sendMessage(message, PCECaseId);
-                location.reload();
-                $('.nav-tabs a[href="#custom-tabs-four-settings"]').tab('show');
-                // loadComments();
-                var chatMessages = $('.direct-chat-messages');
-                var scrollHeight = chatMessages[0].scrollHeight;
-                chatMessages.scrollTop(scrollHeight);
-            }
-        });
     });
 
+    function initializeDataTable(data) {
+        $('#Productions').DataTable({
+            language: {
+                emptyTable: "There is no Production register for this PCECase"
+            },
+            responsive: true,
+            pageLength: 5,
+            lengthChange: false,
+            autoWidth: false,
+            buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCECase - pdf' }, { extend: 'print', title: 'My PCECase - Print' }, "colvis"],
+            data: data,
+            columns: [
+                { data: 'PropertyOwner', width: '20%' },
+                { data: 'Role', width: '15%' },
+                { data: 'Category', width: '25%' },
+                { data: 'Type', width: '25%' },
+                {
+                    data: 'Id',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        return '<a href="@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '">Details</a>';
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadProductions() {
+
+        $.ajax({
+            url: '/ProductionCapacity/GetRemarkProductions?PCECaseId=' + '@ViewData["PCECaseId"]',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#Productions')) {
+                    $('#Productions').DataTable().destroy();
+                }
+                initializeDataTable(data);
+            },
+            error: function (error) {
+                toastr.error("Failed to load Productions");
+                console.log(error);
+            }
+        });
+    }
 </script>

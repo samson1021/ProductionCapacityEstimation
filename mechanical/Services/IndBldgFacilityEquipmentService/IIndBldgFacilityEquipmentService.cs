@@ -14,6 +14,7 @@ namespace mechanical.Services.IndBldgF
         Task<IndBldgFacilityEquipment> CreateIndBldgFacilityEquipment(Guid userId, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipmentPostDto );
         Task<IndBldgFacilityEquipmentReturnDto> CheckIndBldgFacilityEquipment(Guid userId,Guid Id, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipmentPostDto);
         Task<IndBldgFacilityEquipmentReturnDto> GetIndBldgFacilityEquipment(Guid Id);
+        Task<Dictionary<string, string>> GetCollateralComment(Guid Id);
         Task<IndBldgFacilityEquipmentReturnDto> GetIndBldgFacilityEquipmentByCollateralId(Guid collateralId);
         Task<IndBldgFacilityEquipmentReturnDto> GetEvaluatedIndBldgFacilityEquipment(Guid Id);
         Task<IndBldgFacilityEquipmentPostDto> GetReturnedEvaluatedIndBldgFacilityEquipment(Guid Id);

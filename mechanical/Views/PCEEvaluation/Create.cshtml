@@ -7,14 +7,14 @@
 
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
-    var Reestimation = ViewData["Reestimation"] as ProductionCapacityReestimation;
-    var RejectPost = new PCERejectPostDto
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
+    var Reestimation = ViewData["Reestimation"] as ProductionReestimation;
+    var ReturnPost = new ReturnedProductionPostDto
                     {
-                        PCEId = myPCE.Id,
-                        RejectionComment = ""
+                        PCEId = myProduction.Id,
+                        Reason = ""
                     };
-    ViewData["RejectPost"] = RejectPost;
+    ViewData["ReturnPost"] = ReturnPost;
 }
 <section class="content-header">
     <div class="container-fluid">
@@ -25,7 +25,8 @@
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCEs", "MOPCECase")">My PCEs</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
                     <li class="breadcrumb-item active">Evaluation</li>
                 </ol>
             </div>
@@ -33,9 +34,8 @@
     </div>
 </section>
 
-<section class="content">
-    <section class="col-xl-10 offset-xl-1 connectedSortable">
-    
+<section class="content-header">
+    <div class="container-fluid">
         @{
             if (Reestimation != null)
             {
@@ -60,10 +60,10 @@
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="Create" id="form">
+                <form method="post" enctype="multipart/form-data" asp-action="Create" id="evaluationForm">
 
                     @Html.AntiForgeryToken()
-                    <input asp-for="PCEId" value=@myPCE.Id type="hidden" />  
+                    <input asp-for="PCEId" value=@myProduction.Id type="hidden" />  
 
                     @await Html.PartialAsync("Partial/_EvaluationCreateFormPartial")
 
@@ -75,7 +75,7 @@
                                 <button type="submit" class="btn btn-md btn-primary" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-save mr-2"></i> Save
                                 </button>
-                                <button type="button" id="reject-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#rejectionModal1" style="margin-top:2rem;margin-bottom:1rem;">
+                                <button type="button" id="return-btn" class="btn btn-md btn-danger" data-toggle="modal" data-target="#returnModal1" style="margin-top:2rem;margin-bottom:1rem;">
                                     <i class="fas fa-undo mr-2"></i> Return
                                 </button>
                             </div>
@@ -86,17 +86,16 @@
                 </form>
             </div>
         </div>
-    </section>
+    </div>
 </section>
 
 
 @section Scripts {
-
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_PCEPartialScript");
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
-
 }

@@ -24,60 +24,9 @@
 <section class="content">
     <section class="col-xl-12 connectedSortable">
         <div class="card">
-            @*             <div class="card-header">
-            <div class="col-12" style="margin-top:0.5em;">
-            <div class="row">
-            <div class="col-12 col-sm-2">
-            <div class="info-box bg-light">
-            <div class="info-box-content">
-            <span class="info-box-text text-center text-muted">Property Owner</span>
-            <span class="info-box-number text-center text-muted mb-0">@collateral.PropertyOwner</span>
-            </div>
-            </div>
-            </div>
-            <div class="col-12 col-sm-2">
-            <div class="info-box bg-light">
-            <div class="info-box-content">
-            <span class="info-box-text text-center text-muted">Role</span>
-            <span class="info-box-number text-center text-muted mb-0">@collateral.Role</span>
-            </div>
-            </div>
-            </div>
-            <div class="col-12 col-sm-3">
-            <div class="info-box bg-light">
-            <div class="info-box-content">
-            <span class="info-box-text text-center text-muted">Equipment Catagory</span>
-            <span class="info-box-number text-center text-muted mb-0">@collateral.Category</span>
-            </div>
-            </div>
-            </div>
-            <div class="col-12 col-sm-3">
-            <div class="info-box bg-light">
-            <div class="info-box-content">
-            <span class="info-box-text text-center text-muted">Equipment Type</span>
-            <span class="info-box-number text-center text-muted mb-0">@collateral.Type</span>
-            </div>
-            </div>
-            </div>
-            <div class="col-12 col-sm-2">
-            <div class="info-box bg-light">
-            <div class="info-box-content">
-            <span class="info-box-text text-center text-muted">Related document</span>
-            <span class="info-box-number text-center text-muted mb-0">
-            <button id="showCollateralFile" type="button" class="btn btn-sm bg-purple col-12" data-toggle="modal" data-target="#CollateralFileModal">
-            Show <i class="fas fa-eye"></i>
-            </button>
-            </span>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            *@
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
-                    <input asp-for="CollateralId" value=@collateral.Id type="hidden" />
+                    <input asp-for="CollateralId" value=@collateral?.Id type="hidden" />
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineType">Engine Type</label>
@@ -178,35 +127,35 @@
                             <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
                             <select asp-for="AllocatedPointsRange" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                                <option value="" disabled selected>Select Current Equipment Condition</option>
+                                <option value="" disabled selected>Select Allocated Points Range</option>
                             </select>
                             <span asp-validation-for="AllocatedPointsRange" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ModelNo">Model Number</label>
-                            <input asp-for="ModelNo" type="text" value="@collateral.ModelNo" class="form-control" placeholder="Model Number" required>
+                            <input asp-for="ModelNo" type="text" value="@collateral?.ModelNo" class="form-control" placeholder="Model Number" required>
                             <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineNo">Engine Number</label>
-                            <input asp-for="EngineNo" type="text" value="@collateral.EngineMotorNo" class="form-control" placeholder="Engine Number" required>
+                            <input asp-for="EngineNo" type="text" value="@collateral?.EngineMotorNo" class="form-control" placeholder="Engine Number" required>
                             <span id="EngineNo-error" asp-validation-for="EngineNo" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="ChassisNo">Chassis Number</label>
-                            <input asp-for="ChassisNo" type="text" value="@collateral.ChassisNo" class="form-control" placeholder="Chassis Number" required>
+                            <input asp-for="ChassisNo" type="text" value="@collateral?.ChassisNo" class="form-control" placeholder="Chassis Number" required>
                             <span asp-validation-for="ChassisNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="SerialNo">Serial Number</label>
-                            <input asp-for="SerialNo" type="text" value="@collateral.SerialNo" class="form-control" placeholder="Serial Number" required>
+                            <input asp-for="SerialNo" type="text" value="@collateral?.SerialNo" class="form-control" placeholder="Serial Number" required>
                             <span id="SerialNo-error" asp-validation-for="SerialNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="PlateNo">Plate Number</label>
-                            <input asp-for="PlateNo" type="text" value="@collateral.PlateNo" class="form-control" placeholder="Plate Number" required>
+                            <input asp-for="PlateNo" type="text" value="@collateral?.PlateNo" class="form-control" placeholder="Plate Number" required>
                             <span asp-validation-for="PlateNo" class="text-danger"></span>
                         </div>
                     </div>
@@ -218,7 +167,7 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="YearOfManufacture">Year of Manufacture</label>
-                            <input asp-for="YearOfManufacture" value="@collateral.ManufactureYear" type="number" class="form-control" min="1900" max="2099" step="1" required>
+                            <input asp-for="YearOfManufacture" value="@collateral?.ManufactureYear" type="number" class="form-control" min="1900" max="2099" step="1" required>
                             <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
@@ -250,7 +199,6 @@
                             <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                         </div>
-
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
                             <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
@@ -261,33 +209,15 @@
                             <input asp-for="ExchangeRate" Id="ExchangeRate" type="number" class="form-control" readonly required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>
                         </div>
-
-                        @* <div class="form-group col-xl-4">
-                        <label asp-for="Currency">Currency</label>
-                        <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
-                        <span asp-validation-for="Currency" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group col-xl-4">
-                        <label asp-for="ExchangeRate">Exchange Rate</label>
-                        <input asp-for="ExchangeRate" type="number" class="form-control" readonly required>
-                        <span asp-validation-for="ExchangeRate" class="text-danger"></span>
-                        </div> *@
-
-                        @* <div class="form-group col-xl-4">
-                        <label asp-for="ExchangeRate">Exchange Rate</label>
-                        <input asp-for="ExchangeRate" type="number" class="form-control"  required>
-                        <span asp-validation-for="ExchangeRate" class="text-danger"></span>
-                        </div> *@
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <button type="submit" class="btn  btn-sm bg-purple col-3">Save <i class="fas fa-save"></i></button>
-                        </div>
-                        <div class="col-md-6 ">
-                            <button type="button" id="RejectButton" class="btn btn-sm btn-danger col-3" data-toggle="modal" data-target="#rejectionModal1">
-                                Return <i class="fas fa-backward"></i>
-                            </button>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn  btn-sm bg-purple mr-2">Save <i class="fas fa-save"></i></button>
+                                    <button type="button" id="RejectButton" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectionModal1">Return <i class="fas fa-backward"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

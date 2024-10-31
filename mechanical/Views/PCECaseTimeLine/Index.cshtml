@@ -1,7 +1,5 @@
 ﻿@model IEnumerable<mechanical.Models.PCE.Dto.PCECaseTimeLineDto.PCECaseTimeLineReturnDto>
 
-@{
-}
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -23,55 +21,27 @@
             <div class="col-md-12">
                 <div class="timeline">
                     @{
-                        var rmCounter = 0;
-                        var MMCounter = 0;
-                        var CMCounter = 0;
-                        @foreach (var item in Model)
+                        string previousStage = null;
+                        foreach (var item in Model)
                         {
-                            if (item.CurrentStage == "Relation Manager")
-                            @* if (item.Stage == "Relation Manager") *@
+                            if (item.CurrentStage != previousStage)
                             {
-                                if (rmCounter == 0)
-                                {
-                                    <div class="time-label">
-                                        <span class="bg-purple">RM Unit</span>
-                                    </div>
-                                    rmCounter++;
-                                }
-                                <div>
-                                    <i class="fas fa-user bg-purple"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
-                                        <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
+                                <div class="time-label">
+                                    <span class="bg-purple">@item.CurrentStage Unit</span>
+                                </div>
+                                previousStage = item.CurrentStage;
+                            }
+                            <div>
+                                <i class="fas fa-user bg-purple"></i>
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
+                                    <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
-                                        <div class="timeline-body">
-                                            @Html.Raw(item.Activity)
-                                        </div>
+                                    <div class="timeline-body">
+                                        @Html.Raw(item.Activity)
                                     </div>
                                 </div>
-                            }
-                            else if (item.CurrentStage == "Maker Manager")
-                            @* else if (item.Stage == "Maker Manager") *@
-                            {
-                                if (MMCounter == 0)
-                                {
-                                    <div class="time-label">
-                                        <span class="bg-purple">Maker Unit</span>
-                                    </div>
-                                    MMCounter++;
-                                }
-                                <div>
-                                    <i class="fas fa-user bg-purple"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
-                                        <h3 class="timeline-header"> <a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
-
-                                        <div class="timeline-body">
-                                            @Html.Raw(item.Activity)
-                                        </div>
-                                    </div>
-                                </div>
-                            }
+                            </div>
                         }
                     }
 

@@ -59,7 +59,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
             constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
-            constMngAgrMachinery.ReplacementCost = constMngAgrMachineryPostDto.InvoiceValue;
+            constMngAgrMachinery.ReplacementCost = constMngAgrMachinery.InvoiceValue;
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
             var constMngAgrMachineryCheck = _mapper.Map<ConstMngAgMachineryReturnDto>(constMngAgrMachinery);
             constMngAgrMachineryCheck.Id = Id;
@@ -85,6 +85,20 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);
             return _mapper.Map<ConstMngAgMachineryReturnDto>(constMngAgrMachinery);
         }
+        public async Task<Dictionary<string, string>> GetCollateralComment(Guid Id)
+        {
+            var comments = await _cbeContext.Corrections.Where(c => c.CollateralID == Id).ToListAsync();
+
+            Dictionary<string, string> chekerComment = new Dictionary<string, string>();
+
+            foreach (var comment in comments)
+            {
+                chekerComment[comment.CommentedAttribute] = comment.Comment;
+            }
+
+            return chekerComment;
+        }
+
         public async Task<ConstMngAgrMachineryPostDto> GetReturnedEvaluatedConstMngAgrMachinery(Guid Id)
         {
             var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);

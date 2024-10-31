@@ -36,7 +36,11 @@
                                 <p id="ScheduleDate">Schedule Date: @caseSched.ScheduleDate</p>
                                 @if (@caseSched.Status == "Approved")
                                 {
+                                    <input type="hidden" id="CaseScheduleId" name="Id" value="@caseSched.Id" />
                                     <p>Status: <span class="text-success">@caseSched.Status</span>  <i class="fas fa-check-circle text-success"></i></p>
+                                    <button id="proposeNewScheduleButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modal-modal">
+                                        <i class="fas fa-plus-circle"></i> Propose New
+                                    </button>
                                 }
                                 else if (@caseSched.Status == "Rejected")
                                 {

@@ -1,8 +1,8 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>;
 
-    @{
-    var newCases = ViewData["NewCases"] as IEnumerable<PCENewCaseDto>;
+@{
+    var newCases = ViewData["NewCases"] as IEnumerable<PCECaseReturnDto>;
 }
 
 <style>
@@ -10,6 +10,7 @@
         text-decoration: underline;
     }
 </style>
+
 <div class="content-header"></div>
 <section class="content">
     <div class="container-fluid">
@@ -105,15 +106,11 @@
                         </div>
                     </div>
                 </div>
-
-
-
                 <div class="row">
                     <div class="card">
                         <div class="card-header border-transparent">
                             <h3 class="card-title">Latest Collateral Case</h3>
                         </div>
-
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table m-0">
@@ -149,321 +146,260 @@
                                                     {
                                                         <span class="badge badge-success" style="padding: 10px 15px; font-size: 1rem; border-radius: 5px; background-color: #343a40; color: #fff;">Complete</span>
                                                     }
-                                                    else 
+                                                    else
                                                     {
                                                         <span class="badge badge-dark" style="padding: 10px 15px; font-size: 1rem; border-radius: 5px; background-color: #343a40; color: #fff;">Unknown</span>
                                                     }
                                                 </td>
                                             </tr>
-
-
                                         }
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
-
-                       @*  <div class="card-footer clearfix">
+                        <!-- <div class="card-footer clearfix">
                             <a href="@Url.Action("Create", "Case")" class="btn btn-sm btn-info float-left">Place New Case</a>
                             <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Cases</a>
-                        </div>
- *@
+                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="container-fluid">
-    @*  Production capacity case   *@
+        @*  Production capacity case   *@
 
 
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
+        <div class="card">
+            <div class="card-body">
                 <div class="row">
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-green update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pceNewCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">New PCE Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1><i class="fas fa-plus"></i></h1>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-green update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="newPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">New PCE Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1><i class="fas fa-plus"></i></h1>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCENewCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info<i class="fas fa-arrow-circle-right"></i>
-                                </a>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("PCECases","PCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info<i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-yellow update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pcePendingCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">Pending PCE Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1><i class="fas fa-spinner"></i></h1>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-yellow update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="pendingPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">Pending PCE Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1><i class="fas fa-spinner"></i></h1>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCEPendingCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("PCECases","PCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-pink update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pceCompletedCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">Completed PCE Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-pink update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="completedPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">Completed PCE Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCECompleteCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("PCECases","PCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card bg-c-blue update-card">
-                            <div class="card-block">
-                                <div class="row align-items-end">
-                                    <div class="col-8">
-                                        <h4 class="text-white" id="pceTotalCasesCount">-</h4>
-                                        <h6 class="text-white m-b-0">Total PCE Cases</h6>
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        <div class="icon col-12">
-                                            <h1> <i class="fas fa-grip-lines"></i></h1>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-blue update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="totalPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">All PCE Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1> <i class="fas fa-grip-lines"></i></h1>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="@Url.Action("PCETotalCases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
-                                    More info <i class="fas fa-arrow-circle-right"></i>
-                                </a>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("PCECases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-               
-               
-                <div class="row">
-                    <div class="card mx-2">
-                        <div class="card-header border-transparent">
-                            <h3 class="card-title">Latest PCE Cases</h3>
-                        </div>
 
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table  class="table m-0">
-                                    <thead>
-                                        <tr>
-                                        <tr>
-                                            <th>Case No</th>
-                                            <th>Creation Date</th>
-                                            <th>Applicant Name</th>
-                                            <th>Customer Id</th>
-                                            <th>Total PCE </th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
+
+                    <div class="row">
+                        <div class="card mx-2">
+                            <div class="card-header border-transparent">
+                                <h3 class="card-title">Latest PCE Cases</h3>
+                            </div>
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                            <tr>
+                                            <tr>
+                                                <th>Case No</th>
+                                                <th>Creation Date</th>
+                                                <th>Applicant Name</th>
+                                                <th>Customer Id</th>
+                                                    @* <th>New Productions</th> *@
+                                                <th>Total Productions</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             @foreach (var item in newCases)
                                             {
                                                 <tr>
-                                                    <td><a href="@Url.Action("PCEDetail", "PCECase", new { Id = item.Id })">@item.CaseNo</a></td>
-                                                    <td>@item.CreationDate</td>
+                                                    <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = "All" })">@item.CaseNo</a></td>
+                                                    @* <td><a href="@Url.Action("Detail", "PCECase", new { Id = item.Id, Status = @item.Status })">@item.CaseNo</a></td> *@
+                                                    <td>@item.CreatedAt</td>
                                                     <td>@item.ApplicantName</td>
-                                                    <td>@item.CustomerUserId</td>
-                                                    <td>@item.TotalNoOfCollateral</td>
+                                                    <td>@item.CustomerId</td>
+                                                    @* { data: 'NoOfProductions', width: '10%' }, *@
+                                                    <td>@item.TotalNoOfProductions</td>
                                                     <td>
-                                                        @* @if (item.CurrentStatus == "New") *@
                                                         @if (item.Status == "New")
                                                         {
                                                             <span class="badge badge-success" style="padding: 10px 15px;">New</span>
                                                         }
-                                                        @* else if (item.CurrentStatus == "Pending") *@
                                                         else if (item.Status == "Pending")
                                                         {
                                                             <span class="badge badge-warning" style="padding: 10px 15px;">Pending</span>
                                                         }
-                                                        @* else if (item.CurrentStatus == "Completed") *@
+                                                        else if (item.Status == "Terminated")
+                                                        {
+                                                            <span class="badge badge-danger" style="padding: 10px 15px;">Terminated</span>
+                                                        }
                                                         else if (item.Status == "Completed")
                                                         {
-                                                            <span class="badge badge-info" style="padding: 10px 15px;">Complete</span>
+                                                            <span class="badge badge-info" style="padding: 10px 15px;">Completed</span>
                                                         }
-                                                    
+                                                        else
+                                                        {
+                                                            <span class="badge badge-dark" style="padding: 10px 15px;">'@item.Status'</span>
+                                                        }
+
                                                     </td>
                                                 </tr>
                                             }
                                         </tbody>
-                                </table>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            @* Production Estimation Capacity Estimation *@
         </div>
-        @* Production Estimation Capacity Estimation *@
-    </div>
     </div>
 </section>
 
-
-
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetDashboardCaseCount")
-                .then(response => response.json())
-                .then(data => {
-                    animateCountWithCollateral("newCasesCount", data.NewCaseCount, data.NewCollateralCount);
-                    animateCountWithCollateral("pendingCasesCount", data.PendingCaseCount, data.PendingCollateralCount);
-                    animateCountWithCollateral("completedCasesCount", data.CompletedCaseCount, data.CompletedCollateralCount);
-                    animateCount("totalCasesCount", data.TotalCaseCount, data.TotalCollateralCount);
-                })
-                .catch(error => {
-                    console.error("Error fetching card counts:", error);
-                });
-
-            function animateCount(elementId, targetCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(targetCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= targetCount) {
-                        clearInterval(animationInterval);
-                        currentCount = targetCount;
-                    }
-                    element.textContent = currentCount;
-                }, 20);
-            }
-
-            function animateCountWithCollateral(elementId, caseCount, collateralCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(caseCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= caseCount) {
-                        clearInterval(animationInterval);
-                        currentCount = caseCount;
-                    }
-                    element.textContent = `${currentCount} (${collateralCount})`;
-                }, 20);
-            }
+            .then(response => response.json())
+            .then(data => {
+                animateCountWithCollateral("newCasesCount", data.NewCaseCount, data.NewCollateralCount);
+                animateCountWithCollateral("pendingCasesCount", data.PendingCaseCount, data.PendingCollateralCount);
+                animateCountWithCollateral("completedCasesCount", data.CompletedCaseCount, data.CompletedCollateralCount);
+                animateCount("totalCasesCount", data.TotalCaseCount, data.TotalCollateralCount);
+            })
+            .catch(error => {
+                console.error("Error fetching card counts:", error);
+            });
         });
-
-
-
-
-
-
-
 
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
-            // fetch("/PCECase/GetDashboardPCECaseCount")
-            //     .then(response => response.json())
-            //     .then(data => {
-            //         animateCount("pceNewCasesCount", data.PCSNewCaseCount);
-            //         animateCount("pcePendingCasesCount", data.PCSPendingCaseCount);
-            //         animateCount("pceCompletedCasesCount", data.PCSCompletedCaseCount);
-            //         animateCount("pceTotalCasesCount", data.PCSTotalCaseCount);
-            //     })
-            //     .catch(error => {
-            //         console.error("Error fetching card counts:", error);
-            //     });
-
-
             fetch("/PCECase/GetDashboardPCECaseCount")
                 .then(response => response.json())
                 .then(data => {
-                    animateCountWithCollaterals("pceNewCasesCount", data.NewPCECaseCount, data.NewPCECollateralCount);
-                    animateCountWithCollaterals("pcePendingCasesCount", data.PendingPCECaseCount, data.PendingPCECollateralCount);
-                    animateCountWithCollaterals("pceCompletedCasesCount", data.CompletedPCECaseCount, data.CompletedPCECollateralCount);
-                    animateCount("pceTotalCasesCount", data.TotalPCECaseCount, data.TotalPCECollateralCount);
+                    animateCountWithCollateral("newPCECaseCount", data.NewPCECaseCount, data.NewProductionCount);
+                    animateCountWithCollateral("pendingPCECaseCount", data.PendingPCECaseCount, data.PendingProductionCount);
+                    animateCountWithCollateral("completedPCECaseCount", data.CompletedPCECaseCount, data.CompletedProductionCount);
+                    animateCount("totalPCECaseCount", data.TotalPCECaseCount, data.TotalProductionCount);
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
-
-            function animateCount(elementId, targetCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(targetCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= targetCount) {
-                        clearInterval(animationInterval);
-                        currentCount = targetCount;
-                    }
-                    element.textContent = currentCount;
-                }, 20);
-            }
-
-
-            function animateCountWithCollaterals(elementId, caseCount, collateralCount) {
-                const element = document.getElementById(elementId);
-                const duration = 2000;
-                const startCount = 1;
-                const step = Math.ceil(caseCount / (duration / 20));
-
-                let currentCount = startCount;
-                const animationInterval = setInterval(() => {
-                    currentCount += step;
-                    if (currentCount >= caseCount) {
-                        clearInterval(animationInterval);
-                        currentCount = caseCount;
-                    }
-                    element.textContent = `${currentCount} (${collateralCount})`;
-                }, 20);
-            }
-
         });
 
-        // Production capacity estimation case end
+        function animateCount(elementId, targetCount) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startCount = 1;
+            const step = Math.ceil(targetCount / (duration / 20));
 
+            let currentCount = startCount;
+            const animationInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= targetCount) {
+                    clearInterval(animationInterval);
+                    currentCount = targetCount;
+                }
+                element.textContent = currentCount;
+            }, 20);
+        }
 
+        function animateCountWithCollateral(elementId, caseCount, collateralCount) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startCount = 1;
+            const step = Math.ceil(caseCount / (duration / 20));
 
+            let currentCount = startCount;
+            const animationInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= caseCount) {
+                    clearInterval(animationInterval);
+                    currentCount = caseCount;
+                }
+                element.textContent = `${currentCount} (${collateralCount})`;
+            }, 20);
+        }
     </script>
 }
-

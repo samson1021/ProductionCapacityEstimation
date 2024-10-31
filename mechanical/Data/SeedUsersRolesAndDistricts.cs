@@ -197,6 +197,36 @@ namespace mechanical.Data
                             // SupervisorId = context.CreateUsers.Single(r => r.Name == "CTL").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
+                        },
+                        new CreateUser()
+                        {                            
+                            Name = "DVM",
+                            emp_ID = "050122",
+                            Email = "DVM@GMAIL.COM",
+                            PhoneNO = "0925473240",
+                            Branch = "Adama",
+                            RoleId = context.CreateRoles.Single(r => r.Name == "District Valuation Manager").Id,
+                            DistrictId = context.Districts.Single(d => d.Name == "Adama").Id, 
+                            Password = "1234",
+                            Status = "Activated",
+                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "RM").Id,
+                            SupervisorId = null,
+                            Department = "Mechanical"
+                        },
+                        new CreateUser()
+                        {                            
+                            Name = "DMO",
+                            emp_ID = "050123",
+                            Email = "DMO@GMAIL.COM",
+                            PhoneNO = "0925473240",
+                            Branch = "Adama",
+                            RoleId = context.CreateRoles.Single(r => r.Name == "Maker Officer").Id,
+                            DistrictId = context.Districts.Single(d => d.Name == "Adama").Id, 
+                            Password = "1234",
+                            Status = "Activated",
+                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "MTL").Id,
+                            SupervisorId = null,
+                            Department = "Mechanical"
                         }
                     });
 
@@ -205,6 +235,7 @@ namespace mechanical.Data
                                 
                 var rmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "RM");
                 var mmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "MM");
+                var dvmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "DVM");
                 var mtlUser = context.CreateUsers.SingleOrDefault(u => u.Name == "MTL");
                 var cmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "CM");
                 var ctlUser = context.CreateUsers.SingleOrDefault(u => u.Name == "CTL");
@@ -231,16 +262,22 @@ namespace mechanical.Data
                     if (userToUpdate4 != null)  userToUpdate4.SupervisorId = cmUser.Id;                    
                 }
 
+                if (dvmUser != null)
+                {
+                    var userToUpdate5 = context.CreateUsers.SingleOrDefault(u => u.Name == "DMO");
+                    if (userToUpdate5 != null) userToUpdate5.SupervisorId = dvmUser.Id;                    
+                }
+
                 if (mtlUser != null)
                 {
-                    var userToUpdate5 = context.CreateUsers.SingleOrDefault(u => u.Name == "MO");
-                    if (userToUpdate5 != null) userToUpdate5.SupervisorId = mtlUser.Id;                    
+                    var userToUpdate6 = context.CreateUsers.SingleOrDefault(u => u.Name == "MO");
+                    if (userToUpdate6 != null) userToUpdate6.SupervisorId = mtlUser.Id;                    
                 }
 
                 if (ctlUser != null)
                 {
-                    var userToUpdate6 = context.CreateUsers.SingleOrDefault(u => u.Name == "CO");
-                    if (userToUpdate6 != null) userToUpdate6.SupervisorId = ctlUser.Id;                    
+                    var userToUpdate7 = context.CreateUsers.SingleOrDefault(u => u.Name == "CO");
+                    if (userToUpdate7 != null) userToUpdate7.SupervisorId = ctlUser.Id;                    
                 }
 
                 context.SaveChanges();

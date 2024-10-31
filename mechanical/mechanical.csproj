@@ -6,14 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PublishExcludeFiles>appsettings.Development.json</PublishExcludeFiles>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.2" />
-    <PackageReference Include="iText7" Version="8.0.5" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.2" />
+    <!-- <PackageReference Include="Ganss.XSS" Version="4.4.0" /> -->
     <PackageReference Include="iText7" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.1.39" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
@@ -31,26 +35,27 @@
     <PackageReference Include="OpenCVSharp" Version="2.4.0.1" />
     <PackageReference Include="PdfSharp" Version="6.1.1" />
     <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.8.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.8.1" />    
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.8.1" />
+
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.14" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Signature management\Signature management.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <Content Update="Views\PCEEvaluation\PCECases.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\Shared\ScriptPartial\PCEComment\_PCECaseCommentDatatableScriptPartial.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="UploadFile\" />
   </ItemGroup>
   
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

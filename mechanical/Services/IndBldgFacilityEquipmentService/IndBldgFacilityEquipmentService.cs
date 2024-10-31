@@ -82,6 +82,19 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
             return _mapper.Map<IndBldgFacilityEquipmentReturnDto>(indBldgFacilityEquipment);
 
         }
+        public async Task<Dictionary<string, string>> GetCollateralComment(Guid Id)
+        {
+            var comments = await _cbeContext.Corrections.Where(c => c.CollateralID == Id).ToListAsync();
+
+            Dictionary<string, string> chekerComment = new Dictionary<string, string>();
+
+            foreach (var comment in comments)
+            {
+                chekerComment[comment.CommentedAttribute] = comment.Comment;
+            }
+
+            return chekerComment;
+        }
         public async Task<IndBldgFacilityEquipmentReturnDto> GetEvaluatedIndBldgFacilityEquipment(Guid Id)
         {
             CaseCommenAttributeDto caseCommenAttributeDto = new CaseCommenAttributeDto();

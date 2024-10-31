@@ -224,10 +224,6 @@ namespace mechanical.Services.CollateralService
             }
                 throw new Exception("unable to Edit collateral");
         }
-
-
-
-
         public async Task<IEnumerable<ReturnCollateralDto>> GetCollaterals(Guid CaseId)
         {
             var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && (res.CurrentStatus=="New" && res.CurrentStage=="Relation Manager")).ToListAsync();
@@ -436,8 +432,6 @@ namespace mechanical.Services.CollateralService
                     }
                     else if (Status == "Complete")
                     {
-
-
                         if (collateral.Category == MechanicalCollateralCategory.MOV)
                         {
                             //this is to set the user who made it 

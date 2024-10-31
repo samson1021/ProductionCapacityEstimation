@@ -1,14 +1,24 @@
-using System.Web.Services.Description;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net.WebSockets;
+using System.Collections.Concurrent;
+using System.Web.Services.Description;
+
 using mechanical;
 using mechanical.Data;
+using mechanical.WebSockets;
 using mechanical.Controllers;
 using mechanical.Models.Entities;
 
@@ -41,11 +51,9 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.MOPCECaseService;
 using mechanical.Services.UploadFileService;
-using mechanical.Services.PCE.ProductionCapacityServices;
-using mechanical.Services.PCE.ProductionCorrectionService;
-using mechanical.Services.PCE.PCECaseAssignmentServices;
+using mechanical.Services.PCE.ProductionCapacityService;
+using mechanical.Services.PCE.PCECaseAssignmentService;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
@@ -80,7 +88,10 @@ builder.Services.AddControllers()
             // Add any other serialization options you need
 
         });
-
+////////////////////
+builder.Services.AddSwaggerGen();
+////////////////////
+///
 //builder.Services.AddDbContext<CbeCreditContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
 //            throw new InvalidOperationException("Connection string 'CbeCreditContext' not found.")));
@@ -93,10 +104,9 @@ builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
 //manufacturing
-builder.Services.AddScoped<IProductionCapacityServices, ProductionCapacityServices>();
+builder.Services.AddScoped<IProductionCapacityService, ProductionCapacityService>();
 builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
-builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
-builder.Services.AddScoped<IPCECaseAssignmentServices, PCECaseAssignmentServices>();
+builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
 
@@ -129,7 +139,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 // builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
-builder.Services.AddScoped<IMOPCECaseService, MOPCECaseService>();
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -180,9 +189,7 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate(); // Apply migrations
     // Seed.SeedData(app);
     // SeedDistrict.SeedData(app);
-    Console.WriteLine("Initializing Districts, Roles and Users...");
     SeedUsersRolesAndDistricts.SeedData(app);
-    Console.WriteLine("Finished initializing Districts, Roles and Users.");
 }
 
 // Configure the HTTP request pipeline.
@@ -192,6 +199,25 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+/////////////////////////////// Chat web sockets //////////////////////////
+// Enable WebSocket support
+app.UseWebSockets();
+
+
+// Create an instance of your WebSocket handler
+var webSocketHandler = new WebSocketHandler();
+
+// Map the WebSocket endpoint
+app.Map("/ws", async context =>
+{
+    await webSocketHandler.HandleWebSocket(context);
+});
+
+// Start cleanup task for disconnected clients
+_ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
+///////////////////////////////////////////////////////////////////////////
+
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
 app.UseHttpsRedirection();
@@ -206,14 +232,27 @@ app.UseStaticFiles(new StaticFileOptions()
     RequestPath = new PathString("/UploadFile")
 });
 
+///////////////////////////////
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+});
 
+// app.UseRouting();
+// app.UseAuthorization();
+// app.UseEndpoints(endpoints =>
+// {
+//     endpoints.MapControllers();
+// });
+//////////////////////////////
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseMiddleware<SessionTimeoutMiddleware>();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

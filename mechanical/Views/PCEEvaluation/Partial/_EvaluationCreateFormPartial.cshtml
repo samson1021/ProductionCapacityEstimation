@@ -1,12 +1,14 @@
 @using mechanical.Models.PCE.Entities
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
 
 @{
-    var myPCE = ViewData["PCE"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
 }
 
 <!-- General Information -->
@@ -14,12 +16,12 @@
     <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>General Information </h6></div>
     <div class="row mt-3">
         <div class="form-group col-lg-3">
-            <label>Machine/Plant Name</label>
-            <input id="MachineOrPlantName" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.MachineName?? myPCE.PlantName)" readonly required>
+            <label>Machine Name</label>
+            <input id="MachineName" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.MachineName)" readonly required>
         </div>
         <div class="form-group col-lg-3">
             <label>Country of Origin</label>
-            <input id="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myPCE.CountryOfOrgin ?? "Unknown country")" readonly required>
+            <input id="OriginCountry" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.CountryOfOrgin ?? "Unknown country")" readonly required>
         </div>
         <div class="form-group col-lg-3">
             <label>@Html.DisplayNameFor(model => model.ProductionLineOrEquipmentName) <i class="text-danger">*</i></label>
@@ -64,7 +66,11 @@
             <input asp-for="ShiftsPerDay" id="ShiftsPerDay" class="form-control form-control-sm" type="number" min="1" max="5" />
             <span asp-validation-for="ShiftsPerDay" class="text-danger"></span>
         </div>
-        <div class="form-group col-lg-6" id="shiftHoursContainer"></div>
+        <div class="form-group col-lg-6">
+            <label id="shiftHoursContainerLabel" style="display: none; text-align: center;">Shift Hours</label>
+            <div id="shiftHoursContainer"></div>
+            @* <span asp-validation-for="ShiftHours" class="text-danger"></span> *@
+        </div>
     </div>
 </div>
 
@@ -100,9 +106,9 @@
             <span asp-validation-for="BottleneckProductionLineCapacity" class="text-danger"></span>
         </div>
         <div class="form-group col-lg-4">
-            <label>@Html.DisplayNameFor(model => model.OverallActualCurrentPlantCapacity) <i class="text-danger">*</i></label>
-            <input asp-for="OverallActualCurrentPlantCapacity" class="form-control form-control-sm" required />
-            <span asp-validation-for="OverallActualCurrentPlantCapacity" class="text-danger"></span>
+            <label>@Html.DisplayNameFor(model => model.OverallActualCurrentCapacity) <i class="text-danger">*</i></label>
+            <input asp-for="OverallActualCurrentCapacity" class="form-control form-control-sm" required />
+            <span asp-validation-for="OverallActualCurrentCapacity" class="text-danger"></span>
         </div>
     </div>
     <div class="row">
@@ -214,7 +220,7 @@
         <div class="form-group col-lg-3"></div>
         <div class="form-group col-lg-3">
             <label>@Html.DisplayNameFor(model => model.InspectionDate) <i class="text-danger">*</i></label>
-            <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+            <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" required />
             <span asp-validation-for="InspectionDate" class="text-danger"></span>
         </div>
     </div>

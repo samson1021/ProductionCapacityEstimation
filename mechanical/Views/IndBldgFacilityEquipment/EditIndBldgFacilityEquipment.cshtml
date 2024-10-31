@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6 col-xl-8">
-                <h3 class="m-0">Industrial (Mfg) & Building Facility Machinery Type Evaluation Form</h3>
+                <h5 class="m-0">Industrial (Mfg) & Building Facility Machinery Type Evaluation Form</h5>
             </div>
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
@@ -127,6 +127,27 @@
                             <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label asp-for="ScaleOfOperation">Scale of Operation</label>
+                            <select asp-for="ScaleOfOperation" class="form-control" required>
+                                <option value="" disabled>Scale of Operation</option>
+                                <option value="Small">Small</option>
+                                <option value="large">Large</option>
+                            </select>
+                            <span id="ScaleOfOperation-error" asp-validation-for="ScaleOfOperation" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="NoOfProductionLine">Number of Production Line</label>
+                            <input asp-for="NoOfProductionLine" id="NoOfProductionLine" type="text" class="form-control" placeholder="Number of Production Line" required oninput="validateSerialNoInput(this)">
+                            <span id="NoOfProductionLine-error" asp-validation-for="NoOfProductionLine" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="CountryOfOrigin">Country of Origin</label>
+                            <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
+                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
+                        </div>
+                    </div>
                      <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="Remark">Remark</label>
@@ -145,22 +166,17 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-3">
-                            <label asp-for="CountryOfOrigin">Country of Origin</label>
-                            <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
-                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-xl-3">
+                        <div class="form-group col-xl-4">
                             <label asp-for="InvoiceValue">Invoice Value</label>
                             <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-3">
+                        <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
                             <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-3">
+                        <div class="form-group col-xl-4">
                             <label asp-for="ExchangeRate">Exchange Rate</label>
                             <input asp-for="ExchangeRate"  type="number" class="form-control" placeholder="Enter Exchange Rate" required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>

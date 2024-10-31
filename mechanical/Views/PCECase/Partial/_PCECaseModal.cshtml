@@ -1,8 +1,8 @@
-﻿<div class="modal fade" id="checkApplicantNameModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+﻿<div class="modal fade" id="checkApplicantNameModal" tabindex="-1" role="dialog" aria-labelledby="addProductionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addCollateralModalLabel">
+                <h5 class="modal-title" id="addProductionModalLabel">
                     <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Search and Select the Applicant
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -68,21 +68,19 @@
                     {
                         data: null,
                         render: (data, type, row) => {
-                            return `
-    <input type="checkbox" class="select-row" data-id="${row.Id}">`;
+                            return `<input type="checkbox" class="select-row" data-id="${row.Id}">`;
                         }
                     },
                     { data: 'ApplicantName' },
                     { data: 'CustomerEmail' },
-                    { data: 'CustomerUserId' },
+                    { data: 'CustomerId' },
                     { data: 'CaseNo' }
                 ],
                 initComplete: function () {
                     // Re-add the search form and other UI elements
                     this.api().columns().every(function () {
                         var column = this;
-                        var searchInput = $(`
-    <input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
+                        var searchInput = $(`<input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
                             .appendTo($(column.footer()).empty())
                             .on('keyup change clear', function () {
                                 if (column.search() !== this.value) {
@@ -119,10 +117,10 @@
             if (selectedRows.length > 0) {
                 var selectedRow = selectedRows[0];
 
-                selectedRow.CustomerUserId = 1234;
+                selectedRow.CustomerId = 1234;
                 $('#applicantName').val(selectedRow.ApplicantName);
                 $('#customerEmail').val(selectedRow.CustomerEmail);
-                $('#CustomerId').val(selectedRow.CustomerUserId);
+                $('#CustomerId').val(selectedRow.CustomerId);
                 $('#caseNumber').val(selectedRow.CaseNo);
 
                 $('#checkApplicantNameModal').modal('hide');

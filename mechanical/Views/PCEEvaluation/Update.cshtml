@@ -6,12 +6,12 @@
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
 @{
     ViewData["Title"] = ViewBag.Title as string;
-    var RejectPost = new PCERejectPostDto
+    var ReturnPost = new ReturnedProductionPostDto
     {
         PCEId = Model.PCEId,
-        RejectionComment = ""
+        Reason = ""
     };
-    ViewData["RejectPost"] = RejectPost;
+    ViewData["ReturnPost"] = ReturnPost;
 }
 
 <section class="content-header">
@@ -27,16 +27,17 @@
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Action("MyPCEs", "MOPCECase")">My PCEs</a></li>
-                    <li class="breadcrumb-item active">Update</li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
+                   <li class="breadcrumb-item active">Update</li>
                 </ol>
             </div>
         </div>
     </div>
 </section>
 
-<section class="content">
-    <section class="col-xl-10 offset-xl-1 connectedSortable">
+<section class="content-header">
+    <div class="container-fluid">
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
@@ -45,7 +46,7 @@
                 </h3>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="Update">
+                <form method="post" enctype="multipart/form-data" asp-action="Update" id="evaluationForm">
                     
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)
@@ -56,13 +57,13 @@
 
                     <div class="form-group row justify-content-center">
                         <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
-                            <a href="@Url.Action("PCEDetail", "MOPCECase", new { PCEId = @Model.PCEId })" class="btn btn-secondary btn-block">
+                            <a href="@Url.Action("Detail", "ProductionCapacity", new { Id = @Model.PCEId })" class="btn btn-secondary btn-block">
                                 <i class="fas fa-times mr-2"></i> Cancel
                             </a>
                         </div>
                         <div class="col-xl-3"></div>
                         <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
-                            <button type="button" id="reject-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#rejectionModal1">
+                            <button type="button" id="return-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#returnModal1">
                                 <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
@@ -76,16 +77,16 @@
                 </form>
             </div>
         </div>
-    </section>
+    </div>
 </section>
 
 
 @section Scripts {
-
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_PCEPartialScript");
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("ScriptPartial/_RejectModal", ViewData["RejectPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }

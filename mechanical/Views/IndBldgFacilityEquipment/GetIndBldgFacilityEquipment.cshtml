@@ -15,7 +15,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6 col-xl-6">
-                <h1 class="m-0">Industerial and Building Equipment Evaluation Form</h1>
+                <h5 class="m-0">Industerial and Building Equipment Evaluation Form</h5>
             </div>
             <div class="col-sm-6 col-xl-6">
                 <ol class="breadcrumb float-sm-right">
@@ -31,266 +31,273 @@
 <section class="content">
     <section class="col-xl-12 connectedSortable">
         <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="container col-12">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <h4 class="text-center">General Information</h4>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>MachineryType:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.IndustrialBuildingMachineryType </div>
-                                </div>
-                            </div>
-                           
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Year Of Manufacture:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.YearOfManufacture</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Country Of Origin:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.CountryOfOrigin</div>
-                                </div>
-                            </div>
-                           
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Model No:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.ModelNo</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Engine No:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.EngineNo</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Serial No:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.SerialNo</div>
-                                </div>
-                            </div>
-                          
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Engine Type:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.EngineType </div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Power Supply :</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.PowerSupply</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Motor Power:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.MotorPower</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Maker Company:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.MakerCompany</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Technology Standard:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.TechnologyStandard</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Maker Preference Type:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.MakerPreferenceType</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-6">
-                                <div class="col-lg-6">
-                                    <label>Working Production Capacity:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.WorkingProductionCapacity</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-6">
-                                <div class="col-lg-6">
-                                    <label>Other Tech Specification:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.OtherTechSpec</div>
-                                </div>
-                            </div>
-                        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 class="text-center">General Information</h4>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Indu(Mfg) & Bud Facility Machinery Type:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.IndustrialBuildingMachineryType </div>
                     </div>
                 </div>
-                <hr />
-                <div class="row">
-                    <div class="container col-12">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <h4 class="text-center">Assessment Information</h4>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Current Equipment Condition:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.CurrentEqpmntCondition</div>
-                                </div>
-                            </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Power Source & Fuel Type:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.EngineType</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Power Supply:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.PowerSupply</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Motor Power (Cc/Kw/Hp):</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.MotorPower</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Working/Production Capacity:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.WorkingProductionCapacity</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Insert Other Tech. Spec.(if any):</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.OtherTechSpec</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Insert Maker Company:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.MakerCompany </div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Technology Standard:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.TechnologyStandard</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Type of Maker Preference:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.MakerPreferenceType</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Current Equipment Condition:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.CurrentEqpmntCondition</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Allocated Points Range:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.AllocatedPointsRange</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Model Number:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.ModelNo</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Motor Number:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.EngineNo</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Serial Number:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.SerialNo</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Year of Manufacture:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.YearOfManufacture</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Scale of Operation:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.ScaleOfOperation</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Number of Production Line:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.NoOfProductionLine</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Country of Origin:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.CountryOfOrigin</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Remark:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.Remark</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Physical and Installation Assessment:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.PhysicalAndInstallationAssesment</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Overall Survey Assessment:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.OverallSurveyAssesment</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Invoice Value:</label>
+                    </div>
+                    <div class="col-lg-6">
+                            <div id="InvoiceValue">@Model.InvoiceValue</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Currency:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.Currency</div>
+                    </div>
+                </div>
+                <div class="row col-lg-4">
+                    <div class="col-lg-6">
+                        <label>Exchange Rate:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.ExchangeRate</div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 class="text-center">Assessment Information</h4>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-6">
+                    <div class="col-lg-6">
+                        <label>Market Share Factor:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.MarketShareFactor</div>
+                    </div>
+                </div>
+                <div class="row col-lg-6">
+                    <div class="col-lg-6">
+                        <label>Depreciation Rate:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.DepreciationRate</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-6">
+                    <div class="col-lg-6">
+                        <label>Equipment Condition Factor:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div>@Model.EqpmntConditionFactor</div>
+                    </div>
+                </div>
+                <div class="row col-lg-6">
+                    <div class="col-lg-6">
+                        <label>Replacement Cost:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div id="ReplacementCost">@Model.ReplacementCost</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:1.25rem;">
+                <div class="row col-lg-6">
+                    <div class="col-lg-6">
+                        <label class="text-purple">Net Estimation Value:</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="text-puprle" id="NetEstimationValue">@Model.NetEstimationValue</div>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Allocated Points Range:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.AllocatedPointsRange </div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Market Share Factor:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.MarketShareFactor</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Depreciation Rate:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.DepreciationRate</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Equipment Condition Factor:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.EqpmntConditionFactor</div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                    <label>Replacement Cost:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div id="ReplacementCost">@Model.ReplacementCost</div>
-                                </div>
-                        </div>
-                        <div class="row" style="margin-top:1.25rem;">
-                                <div class="row col-lg-4">
-                                    <div class="col-lg-6">
-                                        <label class="text-purple">Net Estimation Value:</label>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="text-puprle" id="NetEstimationValue">@Model.NetEstimationValue</div>
-                                    </div>
-                                </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                     <label>Physical and Installation Assessment:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.PhysicalAndInstallationAssesment </div>
-                                </div>
-                            </div>
-                            <div class="row col-lg-4">
-                                <div class="col-lg-6">
-                                     <label>Overall Survey Assessment:</label>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div>@Model.OverallSurveyAssesment</div>
-                                </div>
-                            </div>
-                        </div>
-                            <div class="row" style="margin-top:1.25rem;">
-                                <div class="row col-lg-3">
-                                    <div class="col-lg-6">
-                                        <label>Remark:</label>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div>@Model.Remark </div>
-                                    </div>
-                                </div>
-                                <div class="row col-lg-3">
-                                    <div class="col-lg-6">
-                                        <label>Invoice Value:</label>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div id="InvoiceValue">@Model.InvoiceValue </div>
-                                    </div>
-                                </div>
-                                <div class="row col-lg-3">
-                                    <div class="col-lg-6">
-                                        <label>Currency:</label>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div></div>@Model.Currency
-                                    </div>
-                                </div>
-                                <div class="row col-lg-3">
-                                    <div class="col-lg-6">
-                                        <label>Exchange Rate:</label>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div></div>@Model.ExchangeRate
-                                    </div>
-                                </div>
-                            </div>
-                           
-                            </div>
-                    </div>
-                </div>
-                
                 <div class="row col-12">
                     <div style="margin-top:1.25rem;" class="col-2">
                         @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post))
@@ -308,9 +315,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
-           
+        </div>
     </section>
 </section>
 <script>

@@ -12,6 +12,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
         Task<ConstMngAgMachineryReturnDto> GetConstMngAgrMachinery(Guid Id);
         Task<ConstMngAgMachineryReturnDto> GetConstMngAgrMachineryByCollateralId(Guid collateralId);
         Task<ConstMngAgMachineryReturnDto> GetEvaluatedConstMngAgrMachinery(Guid Id);
+        Task<Dictionary<string, string>> GetCollateralComment(Guid Id);
         Task<ConstMngAgrMachineryPostDto> GetReturnedEvaluatedConstMngAgrMachinery(Guid Id);
         Task<ConstMngAgrMachinery> EditConstMngAgrMachinery(Guid userId, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto);
     }

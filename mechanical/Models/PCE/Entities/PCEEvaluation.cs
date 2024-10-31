@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using mechanical.Utils;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 
@@ -23,7 +24,10 @@ namespace mechanical.Models.PCE.Entities
         public string OutputType { get; set; }
         public OutputPhase OutputPhase { get; set; }
 
+        [Range(1, 5, ErrorMessage = "Shifts per day must be between 1 and 5.")]
         public int? ShiftsPerDay { get; set; }
+        
+        [ShiftHoursValidation]
         public virtual List<TimeInterval>? ShiftHours { get; set; } = new List<TimeInterval>();
         public int? WorkingDaysPerMonth { get; set; }
         public ProductionHourType? EffectiveProductionHourType { get; set; }
@@ -33,7 +37,7 @@ namespace mechanical.Models.PCE.Entities
         public ProductionMeasurement ProductionMeasurement { get; set; }
         public string EstimatedProductionCapacity { get; set; }
         public string? BottleneckProductionLineCapacity { get; set; }
-        public string OverallActualCurrentPlantCapacity { get; set; }
+        public string OverallActualCurrentCapacity { get; set; }
         public virtual DateTimeRange TimeConsumedToCheck { get; set; }
 
         public string TechnicalObsolescenceStatus { get; set; }
@@ -53,13 +57,19 @@ namespace mechanical.Models.PCE.Entities
         public string? SurveyRemark { get; set; }
         public string? Remark { get; set; } = string.Empty;
     
+        public DateTime? CompletedAt { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid? UpdatedBy { get; set; } = null;
         public DateTime? UpdatedAt { get; set; } = null;
     }
+    public interface ITimeInterval
+    {
+        TimeSpan Start { get; set; }
+        TimeSpan End { get; set; }
+    }
 
-    public class TimeInterval
+    public class TimeInterval: ITimeInterval
     {
         [Key]
         public Guid Id { get; set; }

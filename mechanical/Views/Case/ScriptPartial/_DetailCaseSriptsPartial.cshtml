@@ -23,7 +23,7 @@
             var formData = new FormData(this);
             var Id = $('#CaseSchedulleId').val();
             formData.append('Id', Id);
-
+            console.log(Id);
             $.ajax({
                 url: '/MOCase/UpdateSchedule',
                 type: 'POST',
@@ -658,9 +658,9 @@
                     $("#MVprop").show();
                     break;
                 case "IBFEqupment":
-                    typeDropdown.append('<option value="Industrial (Mfg.) Process Line Equipment">Industrial (Mfg.) Process Line Equipment</option>');
-                    typeDropdown.append('<option value="HVAC system, Fuel Station and Security Apparatus etc">HVAC system, Fuel Station and Security Apparatus etc</option>');
-                    typeDropdown.append('<option value="Hotel, Office, Laboratory Equipment etc">Hotel, Office, Laboratory Equipment etc</option>');
+                    typeDropdown.append('<option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>');
+                    typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>');
+                    typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>');
                     $("#IndusteryProp").show();
                     $("#MVprop").hide();
                     break;
@@ -682,7 +682,7 @@
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
             formData.append('id', Id);
-
+            console.log(Id);
             $.ajax({
                 url: '/Case/CreateSchedule',
                 type: 'POST',

@@ -9,7 +9,7 @@
                     data: data,
                     columns: [
                         {
-                            data: 'CreationDate',
+                            data: 'CreatedAt',
                             width: '15%',
                             render: function (data, type, row, meta) {
                                 var date = new Date(data);
@@ -19,14 +19,14 @@
                         },
                         { data: 'CaseNo', width: '10%' },
                         { data: 'ApplicantName', width: '20%' },
-                        { data: 'CustomerUserId', width: '15%' },
-                        { data: 'NoOfCollateral', width: '15%' },
-                        { data: 'TotalNoOfCollateral', width: '15%' },
+                        { data: 'CustomerId', width: '15%' },
+                        { data: 'NoOfProductions', width: '15%' },
+                        { data: 'TotalNoOfProductions', width: '15%' },
                         {
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                return '<a href="@Url.Action("RemarkPCECase", "PCECase")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                                return '<a href="@Url.Action("RemarkPCECase", "PCECase")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
                             }
                         }
 
