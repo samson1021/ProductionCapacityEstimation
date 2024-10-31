@@ -1,7 +1,7 @@
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @{
-    var myProduction = ViewData["Production"] as ReturnProductionDto;
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
     var EmptyMessage = "No Previous Evaluation / Valuation History.";
     var FetchUrl = "/PCEEvaluation/GetPreviousValuations?PCEId=" + myProduction.Id;
 }

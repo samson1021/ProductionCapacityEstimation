@@ -3,11 +3,11 @@
 @using mechanical.Models.PCE.Entities
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ReturnProductionDto;
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionReturnDto;
 
 @{
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
-    var returnedProductions = ViewData["ReturnedProductions"] as IEnumerable<ProductionReturnDto>;
+    var returnedProductions = ViewData["ReturnedProductions"] as IEnumerable<ReturnedProductionDto>;
 }
 
 <section class="content">
@@ -26,7 +26,8 @@
                         @if (!string.IsNullOrEmpty(Model.MachineName))  { <h6 style="margin-top:1.2rem;"><strong>Machine Name:</strong> @Model.MachineName</h6>  }
                         @if (!string.IsNullOrEmpty(Model.Purpose)) { <h6 style="margin-top:1.2rem;"><strong>Purpose:</strong> @Model.Purpose</h6>  }
                         @if (!string.IsNullOrEmpty(Model.ModelNo)) { <h6 style="margin-top:1.2rem;"><strong>Model Number:</strong> @Model.ModelNo</h6> }
-                        @if (!string.IsNullOrEmpty(Model.ProductionBussinessLicence)) { <h6 style="margin-top:1.2rem;"><strong>Business License Number:</strong> @Model.ProductionBussinessLicence</h6> }    
+                        @if (!string.IsNullOrEmpty(Model.ModelNo)){ <h6 style="margin-top:1.2rem;"><strong>Country Of Orgin:</strong> @Model.CountryOfOrgin</h6>}
+                        @if (!string.IsNullOrEmpty(Model.BusinessLicenseNumber)) { <h6 style="margin-top:1.2rem;"><strong>Business License Number:</strong> @Model.BusinessLicenseNumber</h6> }    
                         @if (Model.ManufactureYear.HasValue) {<h6 style="margin-top:1.2rem;"><strong>Manufacturing Year:</strong> @Model.ManufactureYear.Value.ToString()</h6> }
                         @if (!string.IsNullOrEmpty(Model.InvoiceNo)){<h6 style="margin-top:1.2rem;"><strong>Invoice Number:</strong> @Model.InvoiceNo</h6> }
                         @if (!string.IsNullOrEmpty(Model.SerialNo))  { <h6 style="margin-top:1.2rem;"><strong>Serial Number:</strong> @Model.SerialNo</h6> }
@@ -131,7 +132,7 @@
                             <thead>
                                 <tr>
                                     <th>Returned  By</th>
-                                    <th>Reason for return </th>
+                                    <th>Reason</th>
                                     
                                 </tr>
                             </thead>
@@ -150,7 +151,7 @@
                                             {
                                                 <tr>
                                                     <td><a href="@Url.Action("Profile","UserManagment")?id=@returnedProduction?.ReturnedBy?.Id">@returnedProduction?.ReturnedBy?.Name</a> (@returnedProduction?.ReturnedBy?.Role?.Name)</td>
-                                                    <td>@returnedProduction.RejectionComment</td>                                                
+                                                    <td>@returnedProduction.Reason</td>                                                
                                                 </tr>  
                                             }
                                         }

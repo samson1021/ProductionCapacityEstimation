@@ -10,41 +10,20 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Only letters and spaces are allowed.")]
         public string ApplicantName { get; set; }
-        public string CustomerUserId { get; set; } = string.Empty;
+        public string CustomerId { get; set; } = string.Empty;
         public string CustomerEmail { get; set; } = string.Empty;
-        public Guid DistrictId { get; set; }
-        // public string CurrentStage { get; set; } = string.Empty;
-        // public string CurrentStatus { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
-        public DateTime CreationDate { get; set; }
-        public DateTime MakerAssignmentDate { get; set; }   // remove
-        public DateTime CompletionDate { get; set; }
-        // public DateTime? CompletionDate { get; set; }
-
-        public required Guid RMUserId { get; set; }
-        public virtual District? District { get; set; }
-        public virtual CreateUser? RMUser { get; set; }
-        public virtual UploadFile? BussinessLicence { get; set; }       
-        public virtual ICollection<ProductionCapacity>? ProductionCapacities { get; set; }
-
-        // public Guid Id { get; set; }
-        // public required string CaseNo { get; set; }
-        // [Required]
-        // [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Only letters and spaces are allowed.")]
-        // public string ApplicantName { get; set; }
-        // public string CustomerId { get; set; } = string.Empty;
-        // public string CustomerEmail { get; set; } = string.Empty;
         // public required string Segment { get; set; }
-        // public string Status { get; set; } = string.Empty;
-        // public DateTime CreationDate { get; set; }
-       
-        // public Guid DistrictId { get; set; }
-        // public Guid? BussinessLicenceId { get; set; }
-        // public required Guid CaseOriginatorId { get; set; }
-        
-        // public virtual District? District { get; set; }
-        // public virtual CreateUser? CaseOriginator { get; set; }
-        // public virtual UploadFile? BussinessLicence { get; set; }       
-        // public virtual ICollection<ProductionCapacity>? ProductionCapacities { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+
+        public Guid DistrictId { get; set; }
+        public Guid? BusinessLicenseId { get; set; }
+        public required Guid PCECaseOriginatorId { get; set; }
+
+        public virtual District? District { get; set; }
+        public virtual CreateUser? PCECaseOriginator { get; set; }
+        public virtual UploadFile? BusinessLicense { get; set; }       
+        public virtual ICollection<ProductionCapacity>? ProductionCapacities { get; set; }        
     }
 }

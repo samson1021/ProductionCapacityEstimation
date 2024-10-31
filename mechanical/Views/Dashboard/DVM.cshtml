@@ -1,4 +1,8 @@
-﻿@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>;
+﻿
+@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>
+@{
+
+}
 <style>
     .small-box-footer:hover {
         text-decoration: underline;
@@ -7,7 +11,7 @@
 <div class="content-header"></div>
 <section class="content">
     <div class="container-fluid">
-        @* <div class="card">
+        <div class="card">
             <div class="card-body">
                 <div class="row">
                     <div class="col-xl-3 col-md-6">
@@ -152,7 +156,7 @@
                     </div>
                 </div>
             </div>
-        </div> *@
+        </div>
 
         @*  Production capacity case   *@
         <div class="card">
@@ -285,7 +289,7 @@
     }
  
     <script>
-        @* document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetMyDashboardCaseCount")
                 .then(response => response.json())
                 .then(data => {
@@ -297,7 +301,7 @@
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
-        }); *@
+        });
  
         // production capacity estimation start
         document.addEventListener("DOMContentLoaded", function () {
@@ -369,7 +373,7 @@
                             }                 
                         },
                         {
-                            data: 'CreationDate',
+                            data: 'CreatedAt',
                             width: '15%',
                             render: function (data) {
                                 var date = new Date(data);
@@ -378,7 +382,7 @@
                             }
                         },
                         { data: 'ApplicantName', width: '15%' },
-                        { data: 'CustomerUserId', width: '15%' },
+                        { data: 'CustomerId', width: '15%' },
                         @* { data: 'NoOfProductions', width: '10%' }, *@
                         { data: 'TotalNoOfProductions', width: '10%' },
                         {

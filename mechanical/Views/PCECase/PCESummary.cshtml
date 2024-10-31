@@ -6,19 +6,18 @@
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var pceEvaluations = ViewData["pceEvaluations"] ;
 
-    var dh = 9;
 }
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>PCE Case Detail</h1>
+                <h1>PCE Case Summary</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
                     <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
-                    <li class="breadcrumb-item active">PCE Case Detail</li>
+                    <li class="breadcrumb-item active">PCE Case Summary</li>
                 </ol>
             </div>
         </div>
@@ -32,7 +31,7 @@
                 <table id="headertable" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em;">
                     <thead>
                         <tr>
-                            <th colspan="14" class="text-center" style="font-size: 1.5em;"><h2>Commercial Bank Of Ethiopia</h2></th>
+                            <th colspan="14" class="text-center" style="font-size: 1.5em;"><h3>Commercial Bank Of Ethiopia</h3></th>
                         </tr>
                         <tr>
                             <th colspan="4">Applicant Name</th>
@@ -47,15 +46,16 @@
                         <tr>
                             <td colspan="4" id="ApplicantName">@myPCECase.ApplicantName</td>
                             <td colspan="3">Unable to load the address of the Customer</td>
-                            <td colspan="3">@myPCECase.CompletionDate</td>
-                            <td colspan="4">Motor Vehicle</td>
-                        </tr>
-                        <tr>
-                            <th colspan="14">PART II: SUMMARY OF VALUATION</th>
+                            <td colspan="3">@myPCECase.CompletedAt</td>
+                            <td colspan="4">Mechanical Manufacturing Production</td>
                         </tr>
                     </tbody>
                 </table>
-                <table id="Productions" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
+
+                <br />
+                <h5>PART II: Summary Of Valuation</h5>
+                
+                <table id="summaryProductions" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
                     <thead>
                         <tr>
                             <th>S/No.</th>

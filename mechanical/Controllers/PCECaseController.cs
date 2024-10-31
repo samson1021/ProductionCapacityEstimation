@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ using mechanical.Services.PCE.PCEEvaluationService;
 
 namespace mechanical.Controllers.PCE
 {
+    [Authorize]
     public class PCECaseController : BaseController
     {
 
@@ -144,7 +146,7 @@ namespace mechanical.Controllers.PCE
                     c.Id,
                     c.CaseNo,
                     c.ApplicantName,
-                    c.CustomerUserId,
+                    c.CustomerId,
                     c.CustomerEmail
                 })
             .ToList();
@@ -159,7 +161,7 @@ namespace mechanical.Controllers.PCE
                     c.Id,
                     c.CaseNo,
                     c.ApplicantName,
-                    c.CustomerUserId,
+                    c.CustomerId,
                     c.CustomerEmail
                 })
             .ToList();
@@ -324,7 +326,7 @@ namespace mechanical.Controllers.PCE
             ViewData["ProductionFiles"] = file;
 
 
-            double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
+            double customerId = Convert.ToDouble(pceReportData.PCECases.CustomerId);
 
             //var customerinfo = await _caseService.GetCustomerName(customerId);
             var customerinfo = "err";
@@ -358,7 +360,7 @@ namespace mechanical.Controllers.PCE
             }
 
 
-            ViewData["PCECase"] = pceReportData.PCESCase;
+            ViewData["PCECase"] = pceReportData.PCECases;
             ViewData["Productions"] = pceReportData.Productions;
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
             ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;
@@ -374,7 +376,7 @@ namespace mechanical.Controllers.PCE
             var file = await _UploadFileService.GetAllUploadFileByCaseId(Id);
             
 
-            double customerId = Convert.ToDouble(pceReportData.PCESCase.CustomerUserId);
+            double customerId = Convert.ToDouble(pceReportData.PCECases.CustomerId);
 
             //var customerinfo = await _caseService.GetCustomerName(customerId);
             var customerinfo = "err";
@@ -412,7 +414,7 @@ namespace mechanical.Controllers.PCE
                 ViewData["EvaluatorReports"] = evaluatorReports;
             }
             ViewData["ProductionFiles"] = file;
-            ViewData["PCECase"] = pceReportData.PCESCase;
+            ViewData["PCECase"] = pceReportData.PCECases;
             ViewData["Productions"] = pceReportData.Productions;
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
             ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;

@@ -17,7 +17,7 @@
     function initializePCECasesDataTable(data, emptyMessage) {
         var columns = [
             {
-                data: 'CreationDate',
+                data: 'CreatedAt',
                 width: '15%',
                 render: function (data) {
                     var date = new Date(data);
@@ -26,7 +26,7 @@
             },
             { data: 'CaseNo', width: '10%' },
             { data: 'ApplicantName', width: '15%' },
-            { data: 'CustomerUserId', width: '15%' },            
+            { data: 'CustomerId', width: '15%' },            
             @if (status != "All")
             {
                 @: { data: 'NoOfProductions', width: '10%' },

@@ -18,6 +18,7 @@ using System.Web.Services.Description;
 
 using mechanical;
 using mechanical.Data;
+using mechanical.WebSockets;
 using mechanical.Controllers;
 using mechanical.Models.Entities;
 
@@ -52,7 +53,6 @@ using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityService;
-using mechanical.Services.PCE.ProductionCorrectionService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
@@ -88,7 +88,10 @@ builder.Services.AddControllers()
             // Add any other serialization options you need
 
         });
-
+////////////////////
+builder.Services.AddSwaggerGen();
+////////////////////
+///
 //builder.Services.AddDbContext<CbeCreditContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
 //            throw new InvalidOperationException("Connection string 'CbeCreditContext' not found.")));
@@ -103,7 +106,6 @@ builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 //manufacturing
 builder.Services.AddScoped<IProductionCapacityService, ProductionCapacityService>();
 builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
-builder.Services.AddScoped<IProductionCorrectionService, ProductionCorrectionService>();
 builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
@@ -202,83 +204,18 @@ if (!app.Environment.IsDevelopment())
 // Enable WebSocket support
 app.UseWebSockets();
 
-// Store connected clients
-var clients = new ConcurrentDictionary<WebSocket, string>();
 
-app.Map("/ws", async (HttpContext context) =>
+// Create an instance of your WebSocket handler
+var webSocketHandler = new WebSocketHandler();
+
+// Map the WebSocket endpoint
+app.Map("/ws", async context =>
 {
-    if (context.WebSockets.IsWebSocketRequest)
-    {
-        WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        clients[webSocket] = ""; 
-        
-        await Receive(webSocket);
-    }
+    await webSocketHandler.HandleWebSocket(context);
 });
 
-
-async Task Receive(WebSocket webSocket)
-{
-    var buffer = new byte[1024 * 4]; 
-    var receivedMessage = new StringBuilder(); 
-
-    try
-    {
-        while (webSocket.State == WebSocketState.Open)
-        {
-            WebSocketReceiveResult result;
-            do
-            {
-                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                var messageSegment = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                receivedMessage.Append(messageSegment);
-
-            } while (!result.EndOfMessage);
-
-            var message = receivedMessage.ToString();
-            receivedMessage.Clear();
-
-            if (result.MessageType == WebSocketMessageType.Close)
-            {
-                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                clients.TryRemove(webSocket, out _);
-            }
-            else
-            {
-                // Broadcast message to all connected clients
-                foreach (var client in clients.Keys)
-                {
-                    // if (client != webSocket && client.State == WebSocketState.Open)
-                    if (client.State == WebSocketState.Open)                    
-                    {
-                        var msg = Encoding.UTF8.GetBytes(message);
-                        await client.SendAsync(new ArraySegment<byte>(msg), WebSocketMessageType.Text, true, CancellationToken.None);
-                    }
-                }
-            }
-        }
-    }
-    catch (WebSocketException ex)
-    {
-        Console.WriteLine($"WebSocket error: {ex.Message}");
-        clients.TryRemove(webSocket, out _);
-    }
-}
-
-Task.Run(async () =>
-{
-    while (true)
-    {
-        foreach (var client in clients.Keys)
-        {
-            if (client.State == WebSocketState.Closed || client.State == WebSocketState.Aborted)
-            {
-                clients.TryRemove(client, out _);
-            }
-        }
-        await Task.Delay(TimeSpan.FromMinutes(1)); // Run cleanup every minute
-    }
-});
+// Start cleanup task for disconnected clients
+_ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
 ///////////////////////////////////////////////////////////////////////////
 
 app.UseSession(); // Add the session middleware
@@ -295,14 +232,27 @@ app.UseStaticFiles(new StaticFileOptions()
     RequestPath = new PathString("/UploadFile")
 });
 
+///////////////////////////////
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+});
 
+// app.UseRouting();
+// app.UseAuthorization();
+// app.UseEndpoints(endpoints =>
+// {
+//     endpoints.MapControllers();
+// });
+//////////////////////////////
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseMiddleware<SessionTimeoutMiddleware>();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

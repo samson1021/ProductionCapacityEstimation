@@ -1,15 +1,33 @@
 ﻿<script>
     $(document).ready(function () {
-        var selectedCategory = document.getElementById("selectedCategory").value;
 
+        var typeDropdown = $("#typeDropdown");
+        var selectedType = "@Model.Type";
+        var selectedCategory = document.getElementById("selectedCategory").value;
         var categoryDropdown = document.getElementById("categoryDropdown");
+        var TypeDropDowns = document.getElementById("typeDropdown");
+        
+        $("#categoryDropdown").change(function () {
+            typeDropdown.prop("disabled", false);
+            populateTypeDropdown();
+        });
+
         for (var i = 0; i < categoryDropdown.options.length; i++) {
             if (categoryDropdown.options[i].text === selectedCategory) {
                 categoryDropdown.selectedIndex = i;
                 break;
             }
         }
-        var typeDropdown = $("#typeDropdown");
+
+        populateTypeDropdown();
+        for (var i = 0; i < TypeDropDowns.options.length; i++) {
+            if (TypeDropDowns.options[i].text === selectedType) {
+                TypeDropDowns.selectedIndex = i;
+              
+                break;
+            }
+        }
+
         function populateTypeDropdown() {
             var category = $("#categoryDropdown").val();
             typeDropdown = $("#typeDropdown");
@@ -831,21 +849,5 @@
                    
             }
         }
-       
-        $("#categoryDropdown").change(function () {
-            typeDropdown.prop("disabled", false);
-            populateTypeDropdown();
-        });
-        populateTypeDropdown();
-        var selectedType = "@Model.Type";
-        var TypeDropDowns = document.getElementById("typeDropdown");
-        for (var i = 0; i < TypeDropDowns.options.length; i++) {
-            if (TypeDropDowns.options[i].text === selectedType) {
-                TypeDropDowns.selectedIndex = i;
-              
-                break;
-            }
-        }
-
     });
 </script>

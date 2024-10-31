@@ -1,10 +1,9 @@
 ﻿@using mechanical.Models.Dto.UserDto
 @using mechanical.Models.PCE.Dto.PCECaseDto
-@using mechanical.Models.PCE.Dto.PCECaseTerminateDto
 @using mechanical.Models.PCE.Dto.PCECaseTimeLineDto
+@using mechanical.Models.PCE.Dto.PCECaseTerminateDto
 
-@model mechanical.Models.PCE.Dto.ProductionCapacityDto.PlantCapacityEstimationPostDto
-
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
@@ -46,8 +45,8 @@
                             <div class="post clearfix" style="border-bottom: 1px solid rgb(173, 181, 189); color: rgb(102, 102, 102); margin-bottom: 15px; padding-bottom: 15px;">
                                 <div class="user-block">
                                     <img class="img-circle img-bordered-sm" src="/img/avatar5.png" alt="User Image">
-                                    <span class="username"><a href="@Url.Action("Profile","UserManagment")?id=@pceCaseTerm.RMUser.Id">@pceCaseTerm.RMUser.Name</a> </span>
-                                    <span class="description">@pceCaseTerm.CreationDate</span>
+                                    <span class="username"><a href="@Url.Action("Profile","UserManagment")?id=@pceCaseTerm.PCECaseOriginator.Id">@pceCaseTerm.PCECaseOriginator.Name</a> </span>
+                                    <span class="description">@pceCaseTerm.TerminatedAt</span>
                                 </div>
                                 @if (@pceCaseTerm.Status == "Approved")
                                 {
@@ -69,7 +68,7 @@
                                 }
 
                                 @{
-                                    if (pceCaseTerm.RMUser.Id != userId && pceCaseTerm.Status == "Proposed")
+                                    if (pceCaseTerm.PCECaseOriginator.Id != userId && pceCaseTerm.Status == "Proposed")
                                     {
                                         <div class="btn-group">
                                             <input type="hidden" id="CaseTerminationId" name="Id" value="@pceCaseTerm.Id" />
@@ -85,7 +84,7 @@
                         *@
                                         </div>
                                     }
-                                    else if (pceCaseTerm.RMUser.Id == userId && pceCaseTerm.Status == "Proposed")
+                                    else if (pceCaseTerm.PCECaseOriginator.Id == userId && pceCaseTerm.Status == "Proposed")
                                     {
                                         <input type="hidden" id="CaseSchedulleId" name="Id" value="@pceCaseTerm.Id" />
                                         <input type="hidden" id="pceCaseTerminateReason" value="@pceCaseTerm.Reason" />

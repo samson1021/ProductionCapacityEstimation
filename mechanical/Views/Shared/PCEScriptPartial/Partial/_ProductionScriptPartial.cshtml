@@ -60,29 +60,27 @@
             document.getElementById("Region-error").textContent = "";
         }
 
-
-
-        if (document.getElementById("Uploadbusinesslicense").value.trim() === "") {
-            document.getElementById("Uploadbusinesslicense-error").textContent = "Business license is required.";
+        if (document.getElementById("BusinessLicenseNumber").value.trim() === "") {
+            document.getElementById("BusinessLicenseNumber-error").textContent = "Business License is required.";
             document.getElementById("LHC").style.borderColor = "red";
             isValid = false;
 
         }
         else {
-            document.getElementById("Uploadbusinesslicense").style.borderColor = "";
-            document.getElementById("Uploadbusinesslicense-error").textContent = "";
+            document.getElementById("BusinessLicenseNumber").style.borderColor = "";
+            document.getElementById("BusinessLicenseNumber-error").textContent = "";
         }
 
 
-        if (document.getElementById("Machinespecificationdocumen").value.trim() === "") {
-            document.getElementById("Machinespecificationdocumen-error").textContent = "Machine specification documen is required.";
-            document.getElementById("Machinespecificationdocumen").style.borderColor = "red";
+        if (document.getElementById("MachineSpecificationDocument").value.trim() === "") {
+            document.getElementById("MachineSpecificationDocument-error").textContent = "Machine Specification Document is required.";
+            document.getElementById("MachineSpecificationDocument").style.borderColor = "red";
             isValid = false;
 
         }
         else {
-            document.getElementById("Machinespecificationdocumen").style.borderColor = "";
-            document.getElementById("Machinespecificationdocumen-error").textContent = "";
+            document.getElementById("MachineSpecificationDocument").style.borderColor = "";
+            document.getElementById("MachineSpecificationDocument-error").textContent = "";
         }
         return isValid;
     }

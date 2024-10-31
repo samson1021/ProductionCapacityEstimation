@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 using mechanical.Data;
 using mechanical.Models;
@@ -25,7 +26,7 @@ using mechanical.Services.PCE.ProductionCapacityService;
 namespace mechanical.Controllers
 {
     // [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
-
+    [Authorize]
     public class PCEEvaluationController : BaseController
     {
         private readonly IMapper _mapper;
@@ -52,7 +53,7 @@ namespace mechanical.Controllers
                 var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
                 
                 if (pceEvaluation != null){                    
-                    if (pceEvaluation.PCE.EvaluatorUserID != userId)
+                    if (pceEvaluation.PCE.AssignedEvaluatorId != userId)
                     {            
                         return BadRequest("Unauthorized access!");
                     }
@@ -219,7 +220,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Return(ProductionReturnPostDto Dto)
+        public async Task<IActionResult> Return(ReturnedProductionPostDto Dto)
         {
             var userId = base.GetCurrentUserId();
             try

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-using mechanical.Validators;
+using mechanical.Utils;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
@@ -52,7 +52,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? BottleneckProductionLineCapacity { get; set; }
 
         [Display(Name = "Overall Actual Current Capacity")]
-        public string OverallActualCurrentPlantCapacity { get; set; }
+        public string OverallActualCurrentCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
         public virtual DateTimeRangeReturnDto TimeConsumedToCheck { get; set; }
@@ -108,7 +108,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public ICollection<IFormFile>? NewSupportingEvidences { get; set; }
         public ICollection<IFormFile>? NewProductionProcessFlowDiagrams { get; set; }
 
-        public string? DeletedFileIds { get; set; } 
-        // public ICollection<Guid> DeletedFileIds { get; set; }         
+        public string? DeletedFileIds { get; set; }       
     }
 }

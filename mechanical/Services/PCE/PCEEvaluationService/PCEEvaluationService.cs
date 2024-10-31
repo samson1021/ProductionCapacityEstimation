@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Encodings.Web;
 using System.Collections.Generic;
 
 using AutoMapper;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
 using mechanical.Data;
+using mechanical.Utils;
 using mechanical.Models;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
@@ -47,6 +49,10 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
+                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
+                EncodingHelper.EncodeObject(Dto);
+                // SanitizerHelper.SanitizeObject(Dto)
+
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
                 pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
@@ -169,16 +175,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        public async Task<bool> ReturnValuation(Guid UserId, ProductionReturnPostDto Dto)
+        public async Task<bool> ReturnValuation(Guid UserId, ReturnedProductionPostDto Dto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                var returnPCE = _mapper.Map<ProductionReject>(Dto);
-                returnPCE.RejectedBy = UserId;
-                returnPCE.CreationDate = DateTime.Now;
+                var returnPCE = _mapper.Map<ReturnedProduction>(Dto);
+                returnPCE.ReturnedById = UserId;
+                returnPCE.ReturnedAt = DateTime.Now;
 
-                await _cbeContext.ProductionRejects.AddAsync(returnPCE);
+                await _cbeContext.ReturnedProductions.AddAsync(returnPCE);
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
 
@@ -286,7 +292,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 {
                     var fileDto = new CreateFileDto
                     {
-                        File = file,
+                        File = file ?? throw new ArgumentNullException(nameof(file)),
                         Catagory = Category,
                         CaseId = PCECaseId,
                         CollateralId = PCEEId
@@ -358,7 +364,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (allCompleted)
             {
                 PCECase.Status = "Completed";
-                PCECase.CompletionDate = DateTime.Now;
+                PCECase.CompletedAt = DateTime.Now;
                 _cbeContext.PCECases.Update(PCECase);
             }
         }
@@ -381,7 +387,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }  
         }
 
-        private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid? UserId, string Status, DateTime? CompletionDate = null)
+        private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid? UserId, string Status, DateTime? CompletedAt = null)
         {
             var assignment = await _cbeContext.PCECaseAssignments
                                                 .Where(pca => pca.ProductionCapacityId == PCEId && pca.UserId == UserId)
@@ -390,18 +396,18 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (assignment != null)
             {
                 assignment.Status = Status;
-                assignment.CompletionDate = CompletionDate;
+                assignment.CompletedAt = CompletedAt;
                 _cbeContext.PCECaseAssignments.Update(assignment);
             }
         }
 
-        private async Task LogPCECaseTimeline(ProductionCapacity PCE, string activity)
+        private async Task LogPCECaseTimeline(ProductionCapacity Production, string Activity)
         {
             await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
             {
-                Activity = $"<strong class=\"text-info\">{activity}</strong><br><i class='text-purple'>Property Owner:</i> {PCE.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {PCE.Role}. &nbsp; <i class='text-purple'>Production Type</i>.{PCE.ProductionType}",
-                CurrentStage = PCE.CurrentStage,
-                CaseId = PCE.PCECaseId
+                Activity = $"<strong class=\"text-info\">{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}.",
+                CurrentStage = Production.CurrentStage,
+                PCECaseId = Production.PCECaseId
             });
         }
 

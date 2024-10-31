@@ -73,7 +73,7 @@
                     },
                     { data: 'ApplicantName' },
                     { data: 'CustomerEmail' },
-                    { data: 'CustomerUserId' },
+                    { data: 'CustomerId' },
                     { data: 'CaseNo' }
                 ],
                 initComplete: function () {
@@ -117,10 +117,10 @@
             if (selectedRows.length > 0) {
                 var selectedRow = selectedRows[0];
 
-                selectedRow.CustomerUserId = 1234;
+                selectedRow.CustomerId = 1234;
                 $('#applicantName').val(selectedRow.ApplicantName);
                 $('#customerEmail').val(selectedRow.CustomerEmail);
-                $('#CustomerId').val(selectedRow.CustomerUserId);
+                $('#CustomerId').val(selectedRow.CustomerId);
                 $('#caseNumber').val(selectedRow.CaseNo);
 
                 $('#checkApplicantNameModal').modal('hide');

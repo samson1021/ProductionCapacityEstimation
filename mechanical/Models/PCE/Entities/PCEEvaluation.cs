@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using mechanical.Validators;
+using mechanical.Utils;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
 
@@ -37,7 +37,7 @@ namespace mechanical.Models.PCE.Entities
         public ProductionMeasurement ProductionMeasurement { get; set; }
         public string EstimatedProductionCapacity { get; set; }
         public string? BottleneckProductionLineCapacity { get; set; }
-        public string OverallActualCurrentPlantCapacity { get; set; }
+        public string OverallActualCurrentCapacity { get; set; }
         public virtual DateTimeRange TimeConsumedToCheck { get; set; }
 
         public string TechnicalObsolescenceStatus { get; set; }
@@ -57,11 +57,11 @@ namespace mechanical.Models.PCE.Entities
         public string? SurveyRemark { get; set; }
         public string? Remark { get; set; } = string.Empty;
     
+        public DateTime? CompletedAt { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid? UpdatedBy { get; set; } = null;
         public DateTime? UpdatedAt { get; set; } = null;
-        // here CompletionDate
     }
     public interface ITimeInterval
     {

@@ -5,7 +5,7 @@
 @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
-@model ReturnProductionDto
+@model ProductionReturnDto
 
 @{
     ViewData["Title"] = ViewBag.Title as string; 
@@ -43,7 +43,7 @@
                         <div class="row">
                             @await Html.PartialAsync("~/Views/PCEEvaluation/Partial/_EvaluationDetailPartial.cshtml", latestEvaluation)
                         </div>
-                        @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id)
+                        @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.AssignedEvaluatorId == currentUser.Id)
                         {
                             if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
                             {
@@ -95,7 +95,7 @@
                                 }
                                 else
                                 {
-                                    @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.EvaluatorUserID == currentUser.Id)
+                                    @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.AssignedEvaluatorId == currentUser.Id)
                                     { 
                                         @if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Reestimate")
                                         {

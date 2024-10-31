@@ -14,7 +14,7 @@
                     </div>
                     <div class="card-body">
                         <h6><strong>Name:</strong> @myPCECase.ApplicantName</h6>
-                        <h6 style="margin-top:1.2rem;"><strong>Customer Id: </strong> @myPCECase.CustomerUserId</h6>
+                        <h6 style="margin-top:1.2rem;"><strong>Customer Id: </strong> @myPCECase.CustomerId</h6>
                         <h6 style="margin-top:1.2rem;"><strong>Email:</strong> @myPCECase.CustomerEmail</h6>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                             </thead>
                             <tbody>
                                 @{
-                                    if (myPCECase.BussinessLicence == null)
+                                    if (myPCECase.BusinessLicense == null)
                                     {
                                         <tr>
                                             <td colspan="3">There is no document related to this case</td>
@@ -59,9 +59,9 @@
                                     {
                                         <tr>
 
-                                            <td>@myPCECase.BussinessLicence.Name</td>
-                                            <td>@myPCECase.BussinessLicence.Catagory</td>
-                                            <td><a href="/UploadFile/ViewFile/' + @myPCECase.BussinessLicence.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + @myPCECase.BussinessLicence.Id+ '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
+                                            <td>@myPCECase.BusinessLicense.Name</td>
+                                            <td>@myPCECase.BusinessLicense.Catagory</td>
+                                            <td><a href="/UploadFile/ViewFile/' + @myPCECase.BusinessLicense.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + @myPCECase.BusinessLicense.Id+ '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
                                         </tr>
                                     }
                                 }

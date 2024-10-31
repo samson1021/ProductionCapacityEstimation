@@ -305,7 +305,6 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> changeCollateralStatus(Guid Id, string status)
         {
-            var collateralId = "";
             var collaterals = await _collateralService.ChangeStatus(base.GetCurrentUserId(), Id, status);
 
             return RedirectToAction("MyCases", "CO");

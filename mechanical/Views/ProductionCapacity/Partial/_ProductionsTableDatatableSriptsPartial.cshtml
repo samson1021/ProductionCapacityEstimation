@@ -83,7 +83,10 @@
                                     if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
                                     {                           
                                         <text>
-                                            if (row.EvaluatorUserID === '@currentUser?.Id'&& row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
+                                        console.log("sdfsdgfdsg", row.AssignedEvaluatorId);
+                                                console.log("sdfsdgfdsg", '@currentUser?.Id');
+                                            if (row.AssignedEvaluatorId === '@currentUser?.Id' && row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
+                                                
                                                 const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=' + data;
                                                 const evaluateLink = `<a class="text-success" href="${evaluateUrl}">${row.CurrentStatus == "Reestimate" ? "Reestimate" : "Evaluate"}</a> | `;
                                                 link =  evaluateLink + link;
