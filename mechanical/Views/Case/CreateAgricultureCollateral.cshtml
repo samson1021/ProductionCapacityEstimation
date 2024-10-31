@@ -20,8 +20,8 @@
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
-                                <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner *" required>
-                                <span id="PropertyOwner-error" asp-validation-for="PropertyOwner" class="text-danger"></span>
+                                <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwnerAgr" placeholder="Property Owner *" required>
+                                <span id="PropertyOwnerAgr-error" asp-validation-for="PropertyOwner" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-6">
                                 <label asp-for="Role">Role <i class="text-danger">*</i></label>
@@ -59,28 +59,28 @@
                             </div>
                             <div class="form-group col-lg-2">
                                 <label asp-for="City">City </label>
-                                <input asp-for="City" type="text" class="form-control form-control-sm" id="City" placeholder="City">
-                                <span id="City-error" asp-validation-for="City" class="text-danger"></span>
+                                <input asp-for="City" type="text" class="form-control form-control-sm" id="CityAgr" placeholder="City">
+                                <span id="CityAgr-error" asp-validation-for="City" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-2">
                                 <label asp-for="SubCity">Sub-City </label>
-                                <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="SubCity" placeholder="Sub-City">
-                                <span id="SubCity-error" asp-validation-for="SubCity" class="text-danger"></span>
+                                <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="SubCityAgr" placeholder="Sub-City">
+                                <span id="SubCityAgr-error" asp-validation-for="SubCity" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-2">
                                 <label asp-for="Zone">Zone </label>
-                                <input asp-for="Zone" type="text" class="form-control form-control-sm" id="Zone" placeholder="Zone">
-                                <span id="Zone-error" asp-validation-for="Zone" class="text-danger"></span>
+                                <input asp-for="Zone" type="text" class="form-control form-control-sm" id="ZoneAgr" placeholder="Zone">
+                                <span id="ZoneAgr-error" asp-validation-for="Zone" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-2">
                                 <label asp-for="Woreda">Woreda </label>
-                                <input asp-for="Woreda" type="text" class="form-control form-control-sm" id="Woreda" placeholder="Woreda">
-                                <span id="Woreda-error" asp-validation-for="Woreda" class="text-danger"></span>
+                                <input asp-for="Woreda" type="text" class="form-control form-control-sm" id="WoredaAgr" placeholder="Woreda">
+                                <span id="WoredaAgr-error" asp-validation-for="Woreda" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-2">
                                 <label asp-for="Kebele">Kebele </label>
-                                <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="Kebele" placeholder="Kebele">
-                                <span id="Kebele-error" asp-validation-for="Kebele" class="text-danger"></span>
+                                <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="KebeleAgr" placeholder="Kebele">
+                                <span id="KebeleAgr-error" asp-validation-for="Kebele" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -104,8 +104,8 @@
                             </div>
                             <div class="form-group col-lg-6">
                                 <label asp-for="PurposeOfTheLand">Purpose of the land <i class="text-danger">*</i></label>
-                                <input asp-for="PurposeOfTheLand" type="text" class="form-control form-control-sm" placeholder="Purpose of the land" id="PurposeOfTheLand">
-                                <span id="PurposeOfTheLand-error" asp-validation-for="PurposeOfTheLand" class="text-danger"></span>
+                                <input asp-for="PurposeOfTheLand" type="text" class="form-control form-control-sm" placeholder="Purpose of the land" id="PurposeOfTheLandAgr">
+                                <span id="PurposeOfTheLandAgr-error" asp-validation-for="PurposeOfTheLand" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -193,6 +193,70 @@
 
 }
 <script>
+
+    function validateInputAgr(inputId, errorId) {
+        var input = document.getElementById(inputId).value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        console.log("from agr");
+        if (!alphanumericRegex.test(input)) {
+            document.getElementById(inputId).setCustomValidity("Only alphanumeric characters are allowed.");
+            document.getElementById(errorId).textContent = "Only alphanumeric characters are allowed.";
+        } else {
+            document.getElementById(inputId).setCustomValidity("");
+            document.getElementById(errorId).textContent = "";
+        }
+    }
+    document.getElementById("PropertyOwnerAgr").addEventListener("input", function () {
+        validateInputAgr("PropertyOwnerAgr", "PropertyOwnerAgr-error");
+    });
+    // document.getElementById("InvoiceNoAgr").addEventListener("input", function () {
+    //     validateInputAgr("InvoiceNoAgr", "InvoiceNoAgr-error");
+    // });
+    // document.getElementById("SerialNoMac").addEventListener("input", function () {
+    //     validateInput("SerialNoMac", "SerialNoMac-error");
+    // });
+    // document.getElementById("EngineMotorNoMac").addEventListener("input", function () {
+    //     validateInput("EngineMotorNoMac", "EngineMotorNoMac-error");
+    // });
+    document.getElementById("PurposeOfTheLandAgr").addEventListener("input", function () {
+        validateInputAgr("PurposeOfTheLandAgr", "PurposeOfTheLandAgr-error");
+    });
+    // document.getElementById("ModelNoMac").addEventListener("input", function () {
+    //     validateInput("ModelNoMac", "ModelNoMac-error");
+    // });
+    // document.getElementById("ChassisNoMac").addEventListener("input", function () {
+    //     validateInput("ChassisNoMac", "ChassisNoMac-error");
+    // });
+    document.getElementById("ZoneAgr").addEventListener("input", function () {
+        validateInputAgr("ZoneAgr", "ZoneAgr-error");
+    });
+    document.getElementById("CityAgr").addEventListener("input", function () {
+        validateInputAgr("CityAgr", "CityAgr-error");
+    });
+    document.getElementById("SubCityAgr").addEventListener("input", function () {
+        validateInputAgr("SubCityAgr", "SubCityAgr-error");
+    });
+    document.getElementById("WoredaAgr").addEventListener("input", function () {
+        validateInputAgr("WoredaAgr", "WoredaAgr-error");
+    });
+    document.getElementById("KebeleAgr").addEventListener("input", function () {
+        validateInputAgr("KebeleAgr", "KebeleAgr-error");
+    });
+    document.getElementById("HouseNoAgr").addEventListener("input", function () {
+        validateInputAgr("HouseNoAgr", "HouseNoAgr-error");
+    });
+    function handleRegionChange(selectElement) {
+        var otherRegionInput = document.getElementById("OtherRegion");
+        if (selectElement.value === "Others") {
+            otherRegionInput.style.display = "block";
+            otherRegionInput.setAttribute("required", "required");
+            otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
+        } else {
+            otherRegionInput.style.display = "none";
+            otherRegionInput.removeAttribute("required");
+            otherRegionInput.removeAttribute("name"); // Remove the name attribute
+        }
+    }
     // document.getElementById("PropertyAddress").addEventListener("input", function () {
     //     var input = this.value;
     //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
@@ -204,29 +268,30 @@
     //         document.getElementById("PropertyAddress-error").textContent = "";
     //     }
     // });
-    document.getElementById("PurposeOfTheLand").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("PurposeOfTheLand-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("PurposeOfTheLand-error").textContent = "";
-        }
-    });
-    document.getElementById("PropertyOwner").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
-            console.log("here");
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("PropertyOwner-error").textContent = "";
-        }
-    });
+    // document.getElementById("PurposeOfTheLand").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("PurposeOfTheLand-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("PurposeOfTheLand-error").textContent = "";
+    //     }
+    // });
+    // document.getElementById("PropertyOwnerAgr").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     console.log("from agri");
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("PropertyOwnerAgr-error").textContent = "Only alphanumeric characters are allowed.";
+    //         console.log("here agr");
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("PropertyOwnerAgr-error").textContent = "";
+    //     }
+    // });
     // document.getElementById("InvoiceNo").addEventListener("input", function () {
     //     var input = this.value;
     //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
@@ -250,83 +315,97 @@
     //     }
     // });
     // function for the Region dropdown value
-    function handleRegionChange(selectElement) {
-        var otherRegionInput = document.getElementById("OtherRegion");
-        if (selectElement.value === "Others") {
-            otherRegionInput.style.display = "block";
-            otherRegionInput.setAttribute("required", "required");
-            otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
-        } else {
-            otherRegionInput.style.display = "none";
-            otherRegionInput.removeAttribute("required");
-            otherRegionInput.removeAttribute("name"); // Remove the name attribute
-        }
-    }
-    //this is to validate all collateral addresses
-    function validateZoneInput(inputElement) {
-        var zoneError = document.getElementById("Zone-error");
-        var zoneValue = inputElement.value;
+    // function handleRegionChange(selectElement) {
+    //     var otherRegionInput = document.getElementById("OtherRegion");
+    //     if (selectElement.value === "Others") {
+    //         otherRegionInput.style.display = "block";
+    //         otherRegionInput.setAttribute("required", "required");
+    //         otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
+    //     } else {
+    //         otherRegionInput.style.display = "none";
+    //         otherRegionInput.removeAttribute("required");
+    //         otherRegionInput.removeAttribute("name"); // Remove the name attribute
+    //     }
+    // }
+    // //this is to validate all collateral addresses
+    // function validateZoneInput(inputElement) {
+    //     var zoneError = document.getElementById("Zone-error");
+    //     var zoneValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-            zoneError.textContent = "Zone must contain only alphanumeric characters.";
-        } else {
-            zoneError.textContent = ""; // Clear the error message if valid
-        }
-    }
-    function validateCityInput(inputElement) {
-        var zoneError = document.getElementById("City-error");
-        var zoneValue = inputElement.value;
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "Zone must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateCityInput(inputElement) {
+    //     var zoneError = document.getElementById("City-error");
+    //     var zoneValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-            zoneError.textContent = "City must contain only alphanumeric characters.";
-        } else {
-            zoneError.textContent = ""; // Clear the error message if valid
-        }
-    }
-    function validateSubCityInput(inputElement) {
-        var zoneError = document.getElementById("SubCity-error");
-        var zoneValue = inputElement.value;
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "City must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateSubCityInput(inputElement) {
+    //     var zoneError = document.getElementById("SubCity-error");
+    //     var zoneValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-            zoneError.textContent = "SubCity must contain only alphanumeric characters.";
-        } else {
-            zoneError.textContent = ""; // Clear the error message if valid
-        }
-    }
-    function validateWeredaInput(inputElement) {
-        var zoneError = document.getElementById("Wereda-error");
-        var zoneValue = inputElement.value;
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "SubCity must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateWeredaInput(inputElement) {
+    //     var zoneError = document.getElementById("Wereda-error");
+    //     var zoneValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-            zoneError.textContent = "Wereda must contain only alphanumeric characters.";
-        } else {
-            zoneError.textContent = ""; // Clear the error message if valid
-        }
-    }
-    function validateKebeleInput(inputElement) {
-        var zoneError = document.getElementById("Kebele-error");
-        var zoneValue = inputElement.value;
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "Wereda must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateKebeleInput(inputElement) {
+    //     var zoneError = document.getElementById("Kebele-error");
+    //     var zoneValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-            zoneError.textContent = "Kebele must contain only alphanumeric characters.";
-        } else {
-            zoneError.textContent = ""; // Clear the error message if valid
-        }
-    }
-    function validateHouseNoInput(inputElement) {
-        var zoneError = document.getElementById("HouseNo-error");
-        var zoneValue = inputElement.value;
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "Kebele must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // // document.getElementById("PropertyOwnerAgr").addEventListener("input", function () {
+    // //     var input = this.value;
+    // //     console.log("this is from agr");
+    // //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    // //     if (!alphanumericRegex.test(input)) {
+    // //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    // //         document.getElementById("PropertyOwnerAgr-error").textContent = "Only alphanumeric characters are allowed.";
+    // //         console.log("this is from agr if");
+    // //     } else {
+    // //         this.setCustomValidity("");
+    // //         console.log("this is from agr else");
+    // //         document.getElementById("PropertyOwnerAgr-error").textContent = "";
+    // //     }
+    // // });
+    // function validateHouseNoInput(inputElement) {
+    //     var zoneError = document.getElementById("HouseNo-error");
+    //     var zoneValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-            zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
-        } else {
-            zoneError.textContent = ""; // Clear the error message if valid
-        }
-    }
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
 </script>
