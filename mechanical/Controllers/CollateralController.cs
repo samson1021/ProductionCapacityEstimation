@@ -140,6 +140,10 @@ namespace mechanical.Controllers
             if (ModelState.IsValid)
             {
                 var collateral = await _collateralService.EditCollateral(base.GetCurrentUserId(), id, collateralPostDto);
+                if(collateral.CurrentStatus == "Reject")
+                {
+                    return RedirectToAction("RejectedDetail", "Case", new { Id = collateral.CaseId });
+                }
                 return RedirectToAction("Detail","Case", new { Id = collateral.CaseId });
             }
             return View();

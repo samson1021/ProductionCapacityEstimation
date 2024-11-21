@@ -71,6 +71,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyCases()
         {
+            
             var myCase = await _mOCaseService.GetMMNewCases(GetCurrentUserId());
             if (myCase == null) { return BadRequest("Unable to load case"); }
             string jsonData = JsonConvert.SerializeObject(myCase);
@@ -225,17 +226,13 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendCheking(Guid CollateralId)
         {
-            if (!await _cOCaseService.SendCheking(base.GetCurrentUserId(), CollateralId))
+            if (await _cOCaseService.SendCheking(base.GetCurrentUserId(), CollateralId))
             {
-                return RedirectToAction("Index", "Case");
+                return Json(new { redirect = Url.Action("MypendingCase", "MOCase") });
             }
-            return RedirectToAction("MypendingCase", "MOCase");
+            return Json(new { redirect = false });
         }
-
-
-
     }
 }

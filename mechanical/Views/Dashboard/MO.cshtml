@@ -128,7 +128,7 @@
                                         @foreach (var item in Model)
                                         {
                                             <tr>
-                                                <td><a href="@Url.Action("Detail", "Case")?Id=@item.Id">@item.CaseNo</a></td>
+                                                <td><a href="@Url.Action("MyCase", "MOCase")?Id=@item.Id">@item.CaseNo</a></td>
                                                 <td>@item.CreationAt</td>
                                                 <td>@item.ApplicantName</td>
                                                 <td>@item.CustomerId</td>

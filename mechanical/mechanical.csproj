@@ -42,13 +42,8 @@
 
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.14" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Signature management\Signature management.csproj" />
-  </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="UploadFile\" />
   </ItemGroup>
   
