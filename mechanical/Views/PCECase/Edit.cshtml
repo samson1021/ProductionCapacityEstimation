@@ -32,6 +32,20 @@
                         <input asp-for="Id" hidden />
                         <div class="row">
                             <div class="form-group col-xl-10">
+                                <label asp-for="Segment">Segment <i class="text-danger">*</i></label>
+                                <select asp-for="Segment" class="form-control form-control" id="Segment" required>
+                                    <option value="Wholesale">Wholesale</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Workout">Workout</option>
+                                    <option value="Legal">Legal</option>
+                                    <option value="Acquired Asset Administration">Acquired Asset Administration</option>
+                                    <option value="Facility Management">Facility Management</option>
+                                </select>
+                                <span asp-validation-for="Segment" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xl-10">
                                 <label asp-for="CaseNo">Case Number</label>
                                 <div class="input-group" style="margin:0;">
                                     <input asp-for="CaseNo" type="text" class="form-control col-lg-10" id="caseNumber" required readonly>

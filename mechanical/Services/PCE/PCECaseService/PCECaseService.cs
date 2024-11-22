@@ -6,6 +6,7 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+using Humanizer;
 
 namespace mechanical.Services.PCE.PCECaseService
 {
@@ -40,6 +41,7 @@ namespace mechanical.Services.PCE.PCECaseService
                 pceCase.DistrictId = user.DistrictId;
                 pceCase.PCECaseOriginatorId = UserId;
                 pceCase.CreatedAt = DateTime.Now;
+                //pceCase.Segment = "Retail";
 
                 await _cbeContext.PCECases.AddAsync(pceCase);
 
@@ -65,18 +67,21 @@ namespace mechanical.Services.PCE.PCECaseService
 
         }
 
-        public async Task<PCECaseReturnDto> Edit(Guid UserId, PCECaseReturnDto pceCasesDto)
+        public async Task<PCECaseReturnDto> Edit(Guid Id, PCECaseReturnDto pceCaseDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {  
-                var pceCase = await _cbeContext.PCECases.FirstOrDefaultAsync(c => c.Id == UserId);
+                var pceCase = await _cbeContext.PCECases.FirstOrDefaultAsync(c => c.Id == Id);
 
                 if (pceCase != null)
                 {
-                    pceCase.ApplicantName = pceCasesDto.ApplicantName;
-                    pceCase.CustomerEmail = pceCasesDto.CustomerEmail;
-                    pceCase.CustomerId = pceCasesDto.CustomerId;
+                    pceCase.ApplicantName = pceCaseDto.ApplicantName;
+                    pceCase.CustomerEmail = pceCaseDto.CustomerEmail;
+                    pceCase.CustomerId = pceCaseDto.CustomerId;
+                    pceCase.Segment = pceCaseDto.Segment;
+                    //_mapper.Map(pceCaseDto, pceCase);
+                    //_cbeContext.PCECases.Update(pceCase);
 
                     await _IPCECaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
                     {

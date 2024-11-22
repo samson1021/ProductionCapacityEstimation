@@ -153,7 +153,7 @@ namespace mechanical.Mapper
             
             //create the new mapping for PCE
             CreateMap<PCECaseDto, PCECase>().ReverseMap();
-            CreateMap<PCECaseReturnDto, PCECase>();
+            CreateMap<PCECaseReturnDto, PCECase>().ReverseMap();
             CreateMap<PCECaseTimeLinePostDto, PCECaseTimeLine>().ReverseMap();
             CreateMap<PCECaseTimeLineReturnDto, PCECaseTimeLine>().ReverseMap();
             CreateMap<PCECase, PCECaseReturnDto>()
