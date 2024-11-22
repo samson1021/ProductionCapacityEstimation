@@ -144,7 +144,13 @@
                                 <div class="pl-4">
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">1.&nbsp; &nbsp;Applicant name:</label>
+                                            <label class="col-form-label pr-2">1.&nbsp; &nbsp;Segment:</label>
+                                            <u class=" ">@pceCase.Segment</u>
+                                        </p>
+                                    </div>
+                                    <div class="form-group row my-0">
+                                        <p class="my-0 py-0">
+                                            <label class="col-form-label pr-2">2.&nbsp; &nbsp;Applicant name:</label>
                                             <u class=" ">@pceCase.ApplicantName</u>
                                         </p>
                                     </div>
@@ -153,7 +159,7 @@
                                         {
                                             <div class="form-group row my-0">
                                                 <p class="my-0 py-0 my-0">
-                                                    <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
+                                                    <label class="col-form-label pr-2">3.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
                                                     Unable to load the customer address based on the customer ID
                                                 </p>
                                             </div>
@@ -162,7 +168,7 @@
                                         {
                                             <div class="form-group row my-0">
                                                 <p class="my-0 py-0 my-0">
-                                                    <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
+                                                    <label class="col-form-label pr-2">3.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
                                                     Town: <u class="   px-2">&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;;</u>
                                                     Sub-City: <u class="  px-2">&nbsp; &nbsp; &nbsp; &nbsp; ;</u>
                                                     Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
@@ -390,7 +396,7 @@
                 </div>
             }
         }
-        else
+       @*  else
         {
             <div class="container-fluid page-break-after" style=" padding: 5mm 20mm;">
                 <div class="card py-4 ">
@@ -438,6 +444,12 @@
                             <div class="pl-4">
                                 <div class="form-group row my-0">
                                     <p class="my-0 py-0">
+                                        <label class="col-form-label pr-2">1.&nbsp; &nbsp;Segment:</label>
+                                        <u class=" ">@pceCase.Segment</u>
+                                    </p>
+                                </div>
+                                <div class="form-group row my-0">
+                                    <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">1.&nbsp; &nbsp;Applicant name:</label>
                                         <u class=" ">@pceCase.ApplicantName</u>
                                     </p>
@@ -450,12 +462,7 @@
                                         Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
                                     </p>
                                 </div>
-                                @* <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">3.&nbsp; &nbsp; Owner of the Machinery/Equipment:</label>
-                                        <u class="  ">@pce.OwnerOfMachinery</u>
-                                    </p>
-                                </div> *@
+                             
                                 <div class="form-group row my-0 pl-4">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Production Machine Purchased by CBE's partial Financing?</label>
@@ -535,18 +542,7 @@
                                         <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment Machinery Status:</label>
                                     </p>
                                 </div>
-                                @* <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp; Technical obsolescence status</label>
-                                        <u class="  "> @pce.ObsolescenceStatus</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">B.&nbsp; &nbsp; Depreciation Rate Applied:</label>
-                                        <u class="  ">@pce.PlantDepreciationRate</u>
-                                    </p>
-                                </div> *@
+                               
                                 <div class="form-group row my-0 pl-4">
                                     <p class="my-0 py-0">
                                         <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
@@ -642,7 +638,7 @@
                     </div>
                 </div>
             </div>
-        }
+        } *@
     }
 </section>
 

@@ -25,6 +25,10 @@
                 }
             },
             { data: 'CaseNo', width: '10%' },
+            @if (currentUserRole == "Maker Manager" || currentUserRole == "Maker TeamLeader" || currentUserRole == "District Valuation Manager")
+            {
+                @:{ data: 'Segment', width: '10%' },
+            }
             { data: 'ApplicantName', width: '15%' },
             { data: 'CustomerId', width: '15%' },            
             @if (status != "All")
