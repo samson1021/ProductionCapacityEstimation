@@ -61,14 +61,17 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ProductionPostDto ProductionDto)
+        public async Task<IActionResult> Edit(Guid id, ProductionEdittDto ProductionDto)
         {
             if (ModelState.IsValid)
             {
                 var production = await _ProductionCapacityService.EditProduction(base.GetCurrentUserId(), id, ProductionDto);
-                return RedirectToAction("Detail", "PCECase", new { Id = production.PCECaseId, Status = "New" });
+                return RedirectToAction("Detail", "ProductionCapacity", new { Id = production.Id });
             }
-            return View();
+            var response = await _ProductionCapacityService.GetProduction(base.GetCurrentUserId(), id);
+            var file = await _UploadFileService.GetUploadFileByCollateralId(id);
+            ViewData["ProductionFiles"] = file;
+            return View(response);
         }
 
         [HttpGet]

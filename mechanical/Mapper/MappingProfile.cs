@@ -162,8 +162,10 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.TotalNoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
             //manufatring PCE
-            CreateMap<ProductionPostDto, ProductionCapacity>();
+            CreateMap<ProductionPostDto, ProductionCapacity>().ReverseMap();
+            CreateMap<ProductionCapacity, ProductionEdittDto>().ReverseMap();
             CreateMap<ProductionCapacity, ProductionReturnDto>()
+
                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
                  .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 

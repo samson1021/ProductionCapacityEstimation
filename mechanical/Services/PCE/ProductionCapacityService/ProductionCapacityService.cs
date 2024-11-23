@@ -199,7 +199,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             } 
         }
 
-        public async Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionPostDto createProductionDto)
+        public async Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionEdittDto createProductionDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
