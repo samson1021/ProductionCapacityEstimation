@@ -1,5 +1,9 @@
-﻿﻿@{
+﻿﻿﻿@using mechanical.Models.Dto.UserDto
+
+@{
     ViewData["Title"] = ViewBag.Title ?? "PCE Cases";
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var currentUserRole = currentUser?.Role?.Name as string;
     var status = ViewBag.Status as string;
     var emptyMessage = "There are no PCE Cases.";
     var fetchUrl = "/PCECase/GetPCECases?Status=" + status;
@@ -36,6 +40,10 @@
                         <tr>
                             <th>Created At</th>
                             <th>Case No</th>
+                            @if (currentUserRole == "Maker Manager" || currentUserRole == "Maker TeamLeader" || currentUserRole == "District Valuation Manager")
+                            {
+                                <th>Requesting Unit</th>
+                            }
                             <th>Applicant Name</th>
                             <th>Customer Id</th>
                             @if (status != "All"){

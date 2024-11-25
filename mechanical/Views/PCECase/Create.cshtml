@@ -32,6 +32,21 @@
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create" onsubmit="return validateForm()">
+                    <div class="row">
+                        <div class="form-group col-xl-10">
+                            <label asp-for="Segment">Segment <i class="text-danger">*</i></label>
+                            <select asp-for="Segment" class="form-control form-control" id="Segment" required>
+                                <option value="" disabled selected>Select Segment</option>
+                                <option value="Wholesale">Wholesale</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Workout">Workout</option>
+                                <option value="Legal">Legal</option>
+                                <option value="Acquired Asset Administration">Acquired Asset Administration</option>
+                                <option value="Facility Management">Facility Management</option>
+                            </select>
+                            <span asp-validation-for="Segment" class="text-danger"></span>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="form-group col-xl-10">

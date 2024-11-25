@@ -7,6 +7,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
     {
         public Guid Id { get; set; }
         public required string CaseNo { get; set; }
+        public required string Segment { get; set; }
         public required string ApplicantName { get; set; }
         // public required string RequestingUnit { get; set; }
         public  string? Type { get; set; } 

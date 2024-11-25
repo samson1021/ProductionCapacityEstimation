@@ -44,13 +44,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="UploadFile\" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="UploadFile\" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,8 @@
 @{
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
     var returnedProductions = ViewData["ReturnedProductions"] as IEnumerable<ReturnedProductionDto>;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var currentUserRole = currentUser?.Role?.Name as string;
 }
 
 <section class="content">
@@ -175,5 +177,14 @@
                 </div>
             </div>
         </div>
+        @if (currentUserRole == "Relation Manager" && Model.AssignmentStatus == "New")
+        {
+            <div>
+                <a href="@Url.Action("Edit", "ProductionCapacity", new { Id = @Model.Id })" class="btn btn-md btn-info">
+                <i class="fas fa-pen mr-2"></i> Edit
+                </a>
+            </div>
+        }
+
     </div>
 </section>
