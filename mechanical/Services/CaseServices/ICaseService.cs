@@ -20,6 +20,7 @@ namespace mechanical.Services.CaseServices
         Task<CaseCountDto> GetDashboardCaseCount(Guid userId);
         Task<CaseCountDto> GetMyDashboardCaseCount(Guid userId);
         Task<bool> SendRejection(MoRejectCaseDto moRejectCaseDto);
+        Task<bool> RetrunToMaker(Guid Id);
         Task<CaseTerminate> ApproveCaseTermination(Guid id);
         Task<IEnumerable<CaseTerminateDto>> GetTerminatedCases(Guid userId);
 

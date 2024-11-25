@@ -149,7 +149,8 @@ namespace mechanical.Controllers
             var constMngAgMachinery = await _constMngAgriMachineryService.GetEvaluatedConstMngAgrMachinery(Id);
             var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
             ViewData["comments"] = comments;
-
+            var chechConstruction =  await _cbeContext.ConstMngAgrMachineries.FirstOrDefaultAsync(x => x.CollateralId == Id);
+            ViewData["constMngAgMachinery"] = chechConstruction;
             return View(constMngAgMachinery);
         }
         public async Task<IActionResult> GetReturnedEvaluatedConstMngAgrMachinery(Guid Id)

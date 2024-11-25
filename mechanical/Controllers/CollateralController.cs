@@ -193,10 +193,10 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
-
             if (response.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
             {
                 var motorVehicleDto = await _motorVehicleService.GetMotorVehicleByCollateralId(id);
+                ViewData["movaluation"] = motorVehicleDto;
             }
             else if (response.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
             {

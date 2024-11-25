@@ -1,5 +1,6 @@
 ﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
+
 @{
     var myCase = ViewData["case"] as CaseReturntDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
@@ -69,6 +70,7 @@
         await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+      
     }
    
 }

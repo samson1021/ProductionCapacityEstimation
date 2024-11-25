@@ -8,7 +8,8 @@
 @{
     var collateral = ViewData["collateral"] as ReturnEvaluatedCaseDto;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
-      var comment = ViewData["comments"] as Dictionary<string, string>;
+    var comment = ViewData["comments"] as Dictionary<string, string>;
+    var indBldgFacilityEquipment = ViewData["indBldgFacilityEquipmentReturnDto"];
 }
 <div class="content-header">
     <div class="container-fluid">

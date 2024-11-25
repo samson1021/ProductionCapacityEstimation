@@ -19,7 +19,18 @@
     // var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;
     // var conMngAgr = ViewData["conMngAgr"] as List<ConstMngAgrMachinery>;
 }
+<script>
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        var value = parseFloat(element.textContent);
+        var formattedValue = formatNumber(value);
+        element.textContent = formattedValue;
+    }
+</script>
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -134,6 +145,11 @@
     @{
         //await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        <script>
+            formatAndDisplayValue('ReplacementCost');
+            formatAndDisplayValue('InvoiceValue');
+            formatAndDisplayValue('NetEstimationValue');
+        </script>
     }
 
 }

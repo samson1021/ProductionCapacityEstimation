@@ -31,18 +31,16 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
         public async Task<IndBldgFacilityEquipment> CreateIndBldgFacilityEquipment(Guid userId, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipmentPostDto)
         {
             var indBldgFacilityEquipment = _mapper.Map<IndBldgFacilityEquipment>(indBldgFacilityEquipmentPostDto);
-            indBldgFacilityEquipment.InvoiceValue = indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacilityEquipment.CollateralId);
 
             indBldgFacilityEquipment.MarketShareFactor = await _motorVehicleAnnexService.GetCAMIBFMarketShareFactor(indBldgFacilityEquipment.TechnologyStandard);
             indBldgFacilityEquipment.DepreciationRate = await _motorVehicleAnnexService.GetIBMDepreciationRate(DateTime.Now.Year - indBldgFacilityEquipment.YearOfManufacture, indBldgFacilityEquipment.IndustrialBuildingMachineryType);
             indBldgFacilityEquipment.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(indBldgFacilityEquipment.CurrentEqpmntCondition, indBldgFacilityEquipment.AllocatedPointsRange);
-            indBldgFacilityEquipment.ReplacementCost = indBldgFacilityEquipment.InvoiceValue;
+            indBldgFacilityEquipment.ReplacementCost = (indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate);
             indBldgFacilityEquipment.NetEstimationValue = indBldgFacilityEquipment.MarketShareFactor * indBldgFacilityEquipment.DepreciationRate * indBldgFacilityEquipment.EqpmntConditionFactor * indBldgFacilityEquipment.ReplacementCost;
             indBldgFacilityEquipment.EvaluatorUserID = userId;
             _cbeContext.IndBldgFacilityEquipment.Add(indBldgFacilityEquipment);
-            _cbeContext.Update(collateral);
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
@@ -56,14 +54,13 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
         public async Task<IndBldgFacilityEquipmentReturnDto> CheckIndBldgFacilityEquipment(Guid userId,Guid Id, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipmentPostDto)
         {
             var indBldgFacilityEquipment = _mapper.Map<IndBldgFacilityEquipment>(indBldgFacilityEquipmentPostDto);
-            indBldgFacilityEquipment.InvoiceValue = indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacilityEquipment.CollateralId);
 
             indBldgFacilityEquipment.MarketShareFactor = await _motorVehicleAnnexService.GetCAMIBFMarketShareFactor(indBldgFacilityEquipment.TechnologyStandard);
             indBldgFacilityEquipment.DepreciationRate = await _motorVehicleAnnexService.GetIBMDepreciationRate(DateTime.Now.Year - indBldgFacilityEquipment.YearOfManufacture, indBldgFacilityEquipment.IndustrialBuildingMachineryType);
             indBldgFacilityEquipment.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(indBldgFacilityEquipment.CurrentEqpmntCondition, indBldgFacilityEquipment.AllocatedPointsRange);
-            indBldgFacilityEquipment.ReplacementCost = indBldgFacilityEquipment.InvoiceValue;
+            indBldgFacilityEquipment.ReplacementCost = (indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate);
             indBldgFacilityEquipment.NetEstimationValue = indBldgFacilityEquipment.MarketShareFactor * indBldgFacilityEquipment.DepreciationRate * indBldgFacilityEquipment.EqpmntConditionFactor * indBldgFacilityEquipment.ReplacementCost;
             var indBldgFacilityReturn = _mapper.Map<IndBldgFacilityEquipmentReturnDto>(indBldgFacilityEquipment);
             indBldgFacilityReturn.Id = Id;
@@ -113,14 +110,13 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
             var indBldgFacilityEquipment =await _cbeContext.IndBldgFacilityEquipment.FindAsync(Id);
             _mapper.Map(indBldgFacilityEquipmentPostDto, indBldgFacilityEquipment);
             
-            indBldgFacilityEquipment.InvoiceValue = indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacilityEquipment.CollateralId);
 
             indBldgFacilityEquipment.MarketShareFactor = await _motorVehicleAnnexService.GetCAMIBFMarketShareFactor(indBldgFacilityEquipment.TechnologyStandard);
             indBldgFacilityEquipment.DepreciationRate = await _motorVehicleAnnexService.GetIBMDepreciationRate(DateTime.Now.Year - indBldgFacilityEquipment.YearOfManufacture, indBldgFacilityEquipment.IndustrialBuildingMachineryType);
             indBldgFacilityEquipment.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(indBldgFacilityEquipment.CurrentEqpmntCondition, indBldgFacilityEquipment.AllocatedPointsRange);
-            indBldgFacilityEquipment.ReplacementCost = indBldgFacilityEquipment.InvoiceValue;
+            indBldgFacilityEquipment.ReplacementCost = (indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate);
             indBldgFacilityEquipment.NetEstimationValue = indBldgFacilityEquipment.MarketShareFactor * indBldgFacilityEquipment.DepreciationRate * indBldgFacilityEquipment.EqpmntConditionFactor * indBldgFacilityEquipment.ReplacementCost;
             _cbeContext.Update(indBldgFacilityEquipment);
             await _cbeContext.SaveChangesAsync();

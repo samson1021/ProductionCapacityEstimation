@@ -76,7 +76,7 @@ namespace mechanical.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public  IActionResult Create()
         {
             ViewData["EmployeeId"] = HttpContext.Session.GetString("EmployeeId") ?? null;
             return View();
@@ -241,6 +241,16 @@ namespace mechanical.Controllers
             }
             return RedirectToAction("MyCases" , "MOCase");
             
+        }
+        [HttpPost]
+        public async Task<IActionResult> RetrunToMaker(Guid Id)
+        {
+            bool success = await _caseService.RetrunToMaker(Id);
+            if (!success)
+            {
+                return Json(new { success = false });
+            }
+            return Json(new { success = true });
         }
         [HttpGet]
         public async Task<IActionResult> GetDashboardCaseCount()
