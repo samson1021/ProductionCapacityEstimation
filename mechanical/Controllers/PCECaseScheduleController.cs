@@ -90,7 +90,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ApproveSchedule(Guid Id)
-        {  
+        {
             var pceCaseSchedule = await _PCECaseScheduleService.ApproveSchedule(base.GetCurrentUserId(), Id);
 
             if (pceCaseSchedule == null)
@@ -118,6 +118,20 @@ namespace mechanical.Controllers
 
             string jsonData = JsonConvert.SerializeObject(PCECaseSchedule);
             return Ok(PCECaseSchedule);
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetSchedules(Guid PCECaseId)
+        {  
+            var pceCaseSchedules = await _PCECaseScheduleService.GetSchedules(PCECaseId);
+
+            if (pceCaseSchedules == null)
+            {
+                return new BadRequestObjectResult("Unable to retrieve PCE case schedules for the PCECase with ID: {PCECaseId}");
+            }          
+
+            string jsonData = JsonConvert.SerializeObject(pceCaseSchedules);
+            return Ok(jsonData);
         }
     }
 }

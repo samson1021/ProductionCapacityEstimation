@@ -1,29 +1,58 @@
-﻿@* @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
-
-@{
-    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
-} *@
-
-<script>
+﻿<script>
+    const pceCaseId = $('#pceCaseId').val();
+    const pceCaseStatus = $('#pceCaseStatus').val();
+    const currentUserId = $('#currentUserId').val();
+    const currentUserRole = $('#currentUserRole').val();
+    const latestScheduleDate = stripTime(new Date($('#latestScheduleDate').val()));
+    const currentDate = stripTime(new Date());
+    
     $(document).ready(function () { 
 
-        const currentDate = stripTime(new Date());
-        var latestSchedule = new Date($('#latestSchedule').val());
-
-        $('#updateScheduleButton').on('click', function (event) {
+        fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+       
+        $(document).on('click', '#acceptButton', function (event) {
+        // $('#acceptButton').click(function (event) {
             event.preventDefault();
-            $('#updateSchedule-modals').modal('show');
+          
+            var selectedDate = new Date($('#ScheduleDate').val());
+            
+            $('#dateError').text('');
+
+            if (isSameDate(selectedDate, latestScheduleDate)) {
+                $('#dateError').text('The selected date must be different from the current date.');
+                return;
+            }
+            if (stripTime(selectedDate) <= currentDate) {
+                $('#dateError').text("The selected date must be greater than the today's date.");
+                return; 
+            }
+
+            showLoadingIndicator();
+
+            var Id = $('#ScheduleId').val();
+            var formData = new FormData();
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/PCECaseSchedule/ApproveSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    hideLoadingIndicator();
+                    fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                    // location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while approving the schedule.');
+                    hideLoadingIndicator();
+                },
+                complete: function () {
+                    hideLoadingIndicator();
+                }
+            });
         });
-
-        $('#proposeNewScheduleButton').on('click', function (event) {
-            event.preventDefault();
-            $('#proposeNewSchedule-modals').modal('show');
-        });
-
-        $('#rescheduleButton').on('click', function (event) {
-            event.preventDefault();
-            $('#reschedule-modals').modal('show');
-        });       
 
         $('#createSchedule-form').submit(function (event) {
             event.preventDefault();
@@ -32,13 +61,13 @@
             
             $('#dateError').text('');
             
+            if (isSameDate(selectedDate, latestScheduleDate)) {
+                $('#dateError').text('The selected date must be different from the current date.');
+                return;
+            }
             if (stripTime(selectedDate) <= currentDate) {
                 $('#dateError').text("The selected date must be greater than the today's date.");
                 return; 
-            }
-            if (isSameDate(selectedDate, latestSchedule)) {
-                $('#dateError').text('The selected date must be different from the current date.');
-                return;
             }
 
             showLoadingIndicator();
@@ -55,7 +84,8 @@
                 contentType: false,
                 success: function (response) {
                     hideLoadingIndicator();
-                    location.reload();
+                    fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                    // location.reload();
                 },
                 error: function () {
                     alert('Error occurred while creating a schedule.');
@@ -74,13 +104,13 @@
 
             $('#updateDateError').text('');
 
+            if (isSameDate(selectedDate, latestScheduleDate)) {
+                $('#updateDateError').text('The selected date must be different from the current date.');
+                return;
+            }
             if (stripTime(selectedDate) <= currentDate) {
                 $('#updateDateError').text("The selected date must be greater than the today's date.");
                 return; 
-            }
-            if (isSameDate(selectedDate, latestSchedule)) {
-                $('#updateDateError').text('The selected date must be different from the current date.');
-                return;
             }
 
             showLoadingIndicator();
@@ -98,7 +128,8 @@
                 success: function (response) {
                     $('#updateSchedule-modals').modal('hide');
                     hideLoadingIndicator();
-                    location.reload();
+                    fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                    // location.reload();
                 },
                 error: function () {
                     alert('Error occurred while updating the schedule.');
@@ -117,13 +148,13 @@
 
             $('#proposeDateError').text('');
             
+            if (isSameDate(selectedDate, latestScheduleDate)) {
+                $('#proposeDateError').text('The selected date must be different from the current date.');
+                return;
+            }
             if (stripTime(selectedDate) <= currentDate) {
                 $('#proposeDateError').text("The selected date must be greater than the today's date.");
                 return; 
-            }
-            if (isSameDate(selectedDate, latestSchedule)) {
-                $('#proposeDateError').text('The selected date must be different from the current date.');
-                return;
             }
 
             showLoadingIndicator();
@@ -141,7 +172,8 @@
                 success: function (response) {
                     $('#proposeNewSchedule-modals').modal('hide');
                     hideLoadingIndicator();
-                    location.reload();
+                    fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                    // location.reload();
                 },
                 error: function () {
                     alert('Error occurred while proposing a schedule.');
@@ -160,13 +192,13 @@
             
             $('#rescheduleDateError').text('');
 
+            if (isSameDate(selectedDate, latestScheduleDate)) {
+                $('#rescheduleDateError').text('The selected date must be different from the current date.');
+                return;
+            }
             if (stripTime(selectedDate) <= currentDate) {
                 $('#rescheduleDateError').text("The selected date must be greater than the today's date.");
                 return; 
-            }
-            if (isSameDate(selectedDate, latestSchedule)) {
-                $('#rescheduleDateError').text('The selected date must be different from the current date.');
-                return;
             }
 
             showLoadingIndicator();
@@ -184,7 +216,8 @@
                 success: function (response) {
                     $('#reschedule-modals').modal('hide');
                     hideLoadingIndicator();
-                    location.reload();
+                    fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                    // location.reload();
                 },
                 error: function () {
                     alert('Error occurred while rescheduling the date.');
@@ -203,13 +236,13 @@
             
             $('#dateError').text('');
 
+            if (isSameDate(selectedDate, latestScheduleDate)) {
+                $('#dateError').text('The selected date must be different from the current date.');
+                return;
+            }
             if (stripTime(selectedDate) <= currentDate) {
                 $('#dateError').text("The selected date must be greater than the today's date.");
                 return; 
-            }
-            if (isSameDate(selectedDate, latestSchedule)) {
-                $('#dateError').text('The selected date must be different from the current date.');
-                return;
             }
 
             showLoadingIndicator();
@@ -226,7 +259,8 @@
                 contentType: false,
                 success: function (response) {
                     hideLoadingIndicator();
-                    location.reload();
+                    fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                    // location.reload();
                 },
                 error: function () {
                     alert('Error occurred while approving the schedule.');
@@ -239,6 +273,103 @@
         });
 
     });
+    
+    function fetchSchedules(currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate) {
+        // showLoadingIndicator();
+        $.ajax({
+            url: '/PCECaseSchedule/GetSchedules?PCECaseId=' + pceCaseId,
+            type: 'GET',
+            success: function (response) {
+                const schedules = typeof response === 'string' ? JSON.parse(response) : response;
+                // hideLoadingIndicator();
+                renderSchedules(schedules, currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate);
+                scrollToBottom();
+            },
+            error: function () {
+                alert('Error occurred while fetching schedules.');
+                // hideLoadingIndicator();
+            }
+        });
+    }
+
+    function renderSchedules(schedules, currentUserId, currentUserRole, pceCaseId, pceCaseStatus, latestScheduleDate) {
+        
+        const caseScheduleContainer = document.getElementById('CaseSchedule');
+        caseScheduleContainer.innerHTML = "";
+
+        if (!schedules || schedules.length === 0) {
+            caseScheduleContainer.innerHTML = currentUserRole !== "Maker Officer" 
+                ? `<div class="text-center">
+                    <h6>Valuation Schedule Is Not Set Yet For This PCE Case</h6>
+                </div>`
+                : `<form id="createSchedule-form" method="post" action="/PCECaseSchedule/CreateSchedule">
+                    <input type="hidden" name="PCECaseId" value="${pceCaseId}">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input id="ScheduleDate" name="ScheduleDate" class="form-control" type="date" value="${latestScheduleDate}" required />
+                        </div>
+                        <span class="text-danger" id="dateError"></span>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn bg-purple btn-sm">Submit</button>
+                    </div>
+                </form>`;
+            return;
+        }
+
+        const getStatusClassAndIcon = (status) => {
+            switch (status.toLowerCase()) {
+                case "approved":
+                    return { class: "text-success", icon: "fa-check-circle" };
+                case "rejected":
+                    return { class: "text-danger", icon: "fa-times-circle" };
+                case "rescheduled":
+                    return { class: "text-warning", icon: "fa-undo-circle" };
+                default:
+                    return { class: "text-info", icon: "fa-spinner" };
+            }
+        };
+
+        schedules.forEach(schedule => {
+            const { class: statusClass, icon: statusIcon } = getStatusClassAndIcon(schedule.Status);
+            const isProposed = schedule.Status.toLowerCase() === "proposed";
+
+            const actionButtons = `
+                ${schedule.User.Id !== currentUserId && isProposed ? `
+                    <input type="hidden" id="ScheduleId" name="Id" value="${schedule.Id}" />
+                    <button id="acceptButton" type="button" class="btn btn-sm btn-outline-primary ms-1">
+                        <i class="fas fa-check-circle"></i> Accept
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#proposeNewSchedule-modals">
+                        <i class="fas fa-plus-circle"></i> Propose New
+                    </button>` : ""}
+                ${schedule.User.Id === currentUserId && isProposed ? `
+                    <input type="hidden" id="ScheduleId" name="Id" value="${schedule.Id}" />
+                    <button type="button" class="update-link btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#updateSchedule-modals">Update</button>` : ""}
+                ${schedule.Status === "Approved" && pceCaseStatus !== "Completed" ? `
+                    <input type="hidden" id="ScheduleId" name="Id" value="${schedule.Id}" />
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#reschedule-modals">
+                        <i class="fas fa-plus-circle"></i> Re-Schedule
+                    </button>` : ""}
+            `;
+
+            caseScheduleContainer.innerHTML += `
+                <div class="post clearfix" style="border-bottom: 1px solid #adb5bd; color: #666; margin-bottom: 15px; padding-bottom: 15px;">
+                    <div class="user-block">
+                        <img class="img-circle img-bordered-sm" src="/img/avatar5.png" alt="User Image">
+                        <span class="username">
+                            <a href="/UserManagment/Profile?id=${schedule.User.Id}">${schedule.User.Name}</a>
+                        </span>
+                        <span class="description">${new Date(schedule.CreatedAt).toLocaleString()}</span>
+                    </div>
+                    <p id="ScheduleDate">Schedule Date: ${new Date(schedule.ScheduleDate).toLocaleDateString()}</p>
+                    <p>Status: <span class="${statusClass}">${schedule.Status}</span> <i class="fas ${statusIcon} ${statusClass}"></i></p>
+                    ${schedule.Reason ? `<p>Reason: <span class="text-danger">${schedule.Reason}</span></p>` : ""}
+                    ${(currentUserRole === "Maker Officer" || currentUserRole === "Relation Manager") ? `<div class="btn-group">${actionButtons}</div>` : ""}
+                </div>`;
+        });
+    }
+
     function showLoadingIndicator() {
 
         // Disable the page
@@ -281,6 +412,10 @@
 
     function stripTime(date) {
         return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+    
+    function scrollToBottom() {
+        $('.CaseSchedule').scrollTop($('.CaseSchedule').prop('scrollHeight'));
     }
 </script>
 

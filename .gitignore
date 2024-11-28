@@ -366,7 +366,7 @@ FodyWeavers.xsd
 mechanical/UploadFile/*
 mechanical/Migrations
 mechanical/Migrations/*
-# mechanical/appsettings.*
+mechanical/appsettings.*
 mechanical/appsettings.json
 mechanical/appsettings.Development.json
 .vscode/
