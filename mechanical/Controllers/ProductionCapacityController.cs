@@ -92,7 +92,7 @@ namespace mechanical.Controllers
 
         // [HttpGet("{Id}")]
         [HttpGet]
-        public async Task<IActionResult> Detail(Guid Id)
+        public async Task<IActionResult> Detail(Guid Id, string Status = "New")
         {
             try{
                     
@@ -103,7 +103,7 @@ namespace mechanical.Controllers
                 {
                     if (productionDetail.PCECase == null)
                     {
-                        return RedirectToAction("Detail", "PCECase", new { Id = productionDetail.PCECase.Id, Status = "New" });   
+                        return RedirectToAction("Detail", "PCECase", new { Id = productionDetail.PCECase.Id, Status = Status });   
                     }
                     return RedirectToAction("PCECases", "PCECase");
                 }
@@ -118,6 +118,7 @@ namespace mechanical.Controllers
                 ViewData["ProductionFiles"] = productionDetail.RelatedFiles;
                 ViewData["ReturnedProductions"] = productionDetail.ReturnedProductions;
                 ViewData["Title"] = "Production Detail";
+                ViewData["Status"] = Status;
                 
                 return View(productionDetail.ProductionCapacity);
             }

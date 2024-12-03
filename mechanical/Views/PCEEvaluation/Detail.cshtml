@@ -3,6 +3,7 @@
 @model PCEEvaluationReturnDto
 
 @{    
+    var status = "New";
     ViewData["Title"] = ViewBag.Title as string; 
 }
 
@@ -15,9 +16,11 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
-                    <li class="breadcrumb-item active">Valuation Detail</li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase", new { Status = status })">@status PCE Cases</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("Detail", "PCECase", new { Id = Model.PCE.PCECaseId, Status = status })">PCE Case Details</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("Detail", "ProductionCapacity", new { Id = Model.PCEId, Status = status })">Production Details</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity", new { Status = status })">@status Productions</a></li>
+                    <li class="breadcrumb-item active">Valuation Details</li>
                 </ol>
             </div>
         </div>

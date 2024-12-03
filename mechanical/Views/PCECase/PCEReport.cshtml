@@ -7,7 +7,7 @@
     var productions = ViewData["Productions"] as List<ProductionCapacity>;
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
     var PCECaseSchedule = ViewData["PCECaseSchedule"] as PCECaseSchedule;
-
+    var status = "Completed";
 
     var customerinfo = ViewData["customerinfo"];
 
@@ -102,7 +102,8 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Reports</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase", new { Status = status })">@status PCE Cases</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("Detail", "PCECase", new { Id = Model.Id, Status = status })">PCE Case Details</a></li>
                     <li class="breadcrumb-item active">PCE Case Report</li>
                 </ol>
               

@@ -19,6 +19,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> Index(Guid PCECaseId)
         {
             var caseTimeline = await _PCECaseTimeLineService.GetPCECaseTimeLines(PCECaseId);
+            ViewBag.PCECaseId = PCECaseId;
             return View(caseTimeline);
         }
     }

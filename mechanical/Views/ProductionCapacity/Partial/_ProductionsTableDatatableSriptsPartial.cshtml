@@ -2,7 +2,7 @@
 @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
 
 @{
-    var status = ViewBag.Status as string;
+    var status = ViewBag.Status as string ?? "All";
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
 
@@ -47,7 +47,7 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                        const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=' + data;
+                        const detailsUrl = '@Url.Action("Detail", "ProductionCapacity")?Id=' + data + '&Status=' + '@status';
                         let link = `<a href="${detailsUrl}">Details</a>`;
 
                         @{

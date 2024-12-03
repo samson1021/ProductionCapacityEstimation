@@ -170,7 +170,8 @@
         var category = $("#categoryDropdown").val();
         typeDropdown = $("#typeDropdown");
         typeDropdown.empty();
-        typeDropdown.append('<option value="" disabled selected>Select manufacturing sub sector </option>');
+        typeDropdown.append('<option value="" disabled selected>Select Manufacturing Sub-sector </option>');
+        @* // typeDropdown.append('<option value="" disabled selected>Select @Html.DisplayNameFor(ProductionReturnDto => category) Sub-sector </option>');        *@ 
         
         switch (category) {
             case "Aerospace":                
@@ -185,6 +186,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Agriculturalmachinery":
                 typeDropdown.append('<option value="Tractor manufacturing">Tractor manufacturing</option>');
                 typeDropdown.append('<option value="Combine harvester manufacturing">Combine harvester manufacturing</option>');
@@ -197,6 +199,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Alcoholicbeverage":
                 typeDropdown.append('<option value="Brewery">Brewery</option>');
                 typeDropdown.append('<option value="Winery">Winery</option>');
@@ -210,6 +213,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Animalfeed":
                 typeDropdown.append('<option value="Livestock feed manufacturing">Livestock feed manufacturing</option>');
                 typeDropdown.append('<option value="Pet food manufacturing">Pet food manufacturing</option>');
@@ -222,6 +226,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Artsandentertainment":
                 typeDropdown.append('<option value="Film production">Film production</option>');
                 typeDropdown.append('<option value="Music instrument manufacturing">Music instrument manufacturing</option>');
@@ -231,10 +236,10 @@
                 typeDropdown.append('<option value="Recording studio equipment manufacturing">Recording studio equipment manufacturing</option>');
                 typeDropdown.append('<option value="Event production equipment manufacturing">Event production equipment manufacturing</option>');
                 typeDropdown.append('<option value="Art and entertainment software development">Art and entertainment software development</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Automotiveparts":
                 typeDropdown.append('<option value="Engine parts manufacturing">Engine parts manufacturing</option>');
                 typeDropdown.append('<option value="Brake system manufacturing">Brake system manufacturing</option>');
@@ -247,6 +252,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "BakerandSnackFood":
                 typeDropdown.append('<option value="Bread and pastry manufacturing">Bread and pastry manufacturing</option>');
                 typeDropdown.append('<option value="Snack food manufacturing">Snack food manufacturing</option>');
@@ -259,6 +265,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Buildingmaterials":
                 typeDropdown.append('<option value="Cement manufacturing">Cement manufacturing</option>');
                 typeDropdown.append('<option value="Brick and tile manufacturing">Brick and tile manufacturing</option>');
@@ -271,6 +278,7 @@
 
                 $("#IndusteryProp").show();
                 break;
+
             case "CastingandFoundries":
                 typeDropdown.append('<option value="Iron casting">Iron casting</option>');
                 typeDropdown.append('<option value="Steel casting">Steel casting</option>');
@@ -284,6 +292,7 @@
 
                 $("#IndusteryProp").show();
                 break;
+
             case "ChemicalsandFertilizers":
                 typeDropdown.append('<option value="Petrochemical manufacturing">Petrochemical manufacturing</option>');
                 typeDropdown.append('<option value="Agrochemical manufacturing">Agrochemical manufacturing</option>');
@@ -293,10 +302,10 @@
                 typeDropdown.append('<option value="Fertilizer manufacturing">Fertilizer manufacturing</option>');
                 typeDropdown.append('<option value="Adhesive and sealant manufacturing">Adhesive and sealant manufacturing</option>');
                 typeDropdown.append('<option value="Paint and coating manufacturing">Paint and coating manufacturing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Cleaningmaterials":
                 typeDropdown.append('<option value="Household cleaning product manufacturing">Household cleaning product manufacturing</option>');
                 typeDropdown.append('<option value="Industrial cleaning product manufacturing">Industrial cleaning product manufacturing</option>');
@@ -306,10 +315,10 @@
                 typeDropdown.append('<option value="Cleaning equipment manufacturing">Cleaning equipment manufacturing</option>');
                 typeDropdown.append('<option value="Cleaning chemical manufacturing">Cleaning chemical manufacturing</option>');
                 typeDropdown.append('<option value="Janitorial supplies manufacturing">Janitorial supplies manufacturing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Cleaningsortingandprocessingofagriculturalproducts":
                 typeDropdown.append('<option value="Grain cleaning and processing">Grain cleaning and processing</option>');
                 typeDropdown.append('<option value="Fruit and vegetable sorting and processing">Fruit and vegetable sorting and processing</option>');
@@ -319,24 +328,23 @@
                 typeDropdown.append('<option value="Green coffee bean washing">Green coffee bean washing</option>');
                 typeDropdown.append('<option value="Green coffee bean sorting and packaging">Green coffee bean sorting and packaging</option>');
                 typeDropdown.append('<option value="Rice milling and processing">Rice milling and processing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Constructionmaterials":
                 typeDropdown.append('<option value="Concrete product manufacturing">Concrete product manufacturing</option>');
                 typeDropdown.append('<option value="Bricks and blocks manufacturing">Bricks and blocks manufacturing</option>');
-
                 typeDropdown.append('<option value="Roofing materials manufacturing">Roofing materials manufacturing</option>');
                 typeDropdown.append('<option value="Insulation materials manufacturing">Insulation materials manufacturing</option>');
                 typeDropdown.append('<option value="Doors and windows manufacturing">Doors and windows manufacturing</option>');
                 typeDropdown.append('<option value="Plumbing fixtures manufacturing">Plumbing fixtures manufacturing</option>');
                 typeDropdown.append('<option value="Flooring materials manufacturing">Flooring materials manufacturing</option>');
                 typeDropdown.append('<option value="Structural steel manufacturing">Structural steel manufacturing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Constructionmachineries":
                 typeDropdown.append('<option value="Excavator manufacturing">Excavator manufacturing</option>');
                 typeDropdown.append('<option value="Bulldozer manufacturing">Bulldozer manufacturing</option>');
@@ -350,10 +358,10 @@
                 typeDropdown.append('<option value="Backhoe loader manufacturing">Backhoe loader manufacturing</option>');
                 typeDropdown.append('<option value="Construction equipment attachments manufacturing">Construction equipment attachments manufacturing</option>');
                 typeDropdown.append('<option value="Road roller manufacturing">Road roller manufacturing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "CosmeticsandPerfumes":
                 typeDropdown.append('<option value="Skincare product manufacturing">Skincare product manufacturing</option>');
                 typeDropdown.append('<option value="Makeup product manufacturing">Makeup product manufacturing</option>');
@@ -363,10 +371,10 @@
                 typeDropdown.append('<option value="Cosmetics packaging manufacturing">Cosmetics packaging manufacturing</option>');
                 typeDropdown.append('<option value="Cosmetic tools and accessories manufacturing">Cosmetic tools and accessories manufacturing</option>');
                 typeDropdown.append('<option value="Cosmeceutical manufacturing">Cosmeceutical manufacturing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Defenseequipment":
                 typeDropdown.append('<option value="Military vehicle manufacturing">Military vehicle manufacturing</option>');
                 typeDropdown.append('<option value="Aircraft and aerospace systems manufacturing">Aircraft and aerospace systems manufacturing</option>');
@@ -376,11 +384,10 @@
                 typeDropdown.append('<option value="Communication systems manufacturing">Communication systems manufacturing</option>');
                 typeDropdown.append('<option value="Protective gear and armor manufacturing">Protective gear and armor manufacturing</option>');
                 typeDropdown.append('<option value="Military optics and targeting systems manufacturing">Military optics and targeting systems manufacturing</option>');
-
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Edibleoil":
                 typeDropdown.append('<option value="Vegetable oil refining and processing">Vegetable oil refining and processing</option>');
                 typeDropdown.append('<option value="Olive oil production">Olive oil production</option>');
@@ -394,6 +401,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Electricalequipment":
                 typeDropdown.append('<option value="Transformer manufacturing">Transformer manufacturing</option>');
                 typeDropdown.append('<option value="Switchgear and control panel manufacturing">Switchgear and control panel manufacturing</option>');
@@ -403,10 +411,10 @@
                 typeDropdown.append('<option value="Electrical cable and wire manufacturing">Electrical cable and wire manufacturing</option>');
                 typeDropdown.append('<option value="Circuit breaker and fuse manufacturing">Circuit breaker and fuse manufacturing</option>');
                 typeDropdown.append('<option value="Electrical component manufacturing">Electrical component manufacturing</option>');
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Electronics":
                 typeDropdown.append('<option value="Consumer electronics manufacturing">Consumer electronics manufacturing</option>');
                 typeDropdown.append('<option value="Semiconductor manufacturing">Semiconductor manufacturing</option>');
@@ -416,24 +424,23 @@
                 typeDropdown.append('<option value="Medical electronics manufacturing">Medical electronics manufacturing</option>');
                 typeDropdown.append('<option value="Automotive electronics manufacturing">Automotive electronics manufacturing</option>')
                 typeDropdown.append('<option value="Electronic assembly and testing">Electronic assembly and testing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Energy":
                 typeDropdown.append('<option value="Renewable energy equipment manufacturing (solar, wind, hydro)">Renewable energy equipment manufacturing (solar, wind, hydro)</option>')
                 typeDropdown.append('<option value="Power generation equipment manufacturing">Power generation equipment manufacturing</option>')
                 typeDropdown.append('<option value="Energy storage system manufacturing">Energy storage system manufacturing</option>')
                 typeDropdown.append('<option value="Transmission and distribution equipment manufacturing">Transmission and distribution equipment manufacturing</option>')
-
                 typeDropdown.append('<option value="Energy management systems manufacturing">Energy management systems manufacturing</option>')
                 typeDropdown.append('<option value="Energy metering and monitoring equipment manufacturing">Energy metering and monitoring equipment manufacturing</option>')
                 typeDropdown.append('<option value="Energy efficiency solutions manufacturing">Energy efficiency solutions manufacturing</option>')
                 typeDropdown.append('<option value="Power plant construction and equipment manufacturing">Power plant construction and equipment manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "FirearmandAmmunition":
                 typeDropdown.append('<option value="Firearm manufacturing">Firearm manufacturing</option>')
                 typeDropdown.append('<option value="Ammunition manufacturing">Ammunition manufacturing</option>')
@@ -443,10 +450,10 @@
                 typeDropdown.append('<option value="Firearm optics and sights manufacturing">Firearm optics and sights manufacturing</option>')
                 typeDropdown.append('<option value="Ammunition reloading equipment manufacturing">Ammunition reloading equipment manufacturing</option>')
                 typeDropdown.append('<option value="Shooting range equipment manufacturing">Shooting range equipment manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Foodprocessing":
                 typeDropdown.append('<option value="Fruit and vegetable processing">Fruit and vegetable processing</option>')
                 typeDropdown.append('<option value="Meat processing">Meat processing</option>')
@@ -456,10 +463,10 @@
                 typeDropdown.append('<option value="Frozen food processing">Frozen food processing</option>')
                 typeDropdown.append('<option value="Canned food processing">Canned food processing</option>')
                 typeDropdown.append('<option value="Food packaging and labeling">Food packaging and labeling</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Fruitsandvegetables":
                 typeDropdown.append('<option value="Fresh Produce Sorting and Grading">Fresh Produce Sorting and Grading</option>')
                 typeDropdown.append('<option value="Fruit and Vegetable Processing">Fruit and Vegetable Processing</option>')
@@ -472,6 +479,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Garment":
                 typeDropdown.append('<option value="Clothing manufacturing">Clothing manufacturing</option>')
                 typeDropdown.append('<option value="Apparel accessories manufacturing">Apparel accessories manufacturing</option>')
@@ -481,10 +489,10 @@
                 typeDropdown.append('<option value="Apparel pattern making and grading">Apparel pattern making and grading</option>')
                 typeDropdown.append('<option value="Garment washing and finishing">Garment washing and finishing</option>')
                 typeDropdown.append('<option value="Garment packaging and labeling">Garment packaging and labeling</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Glass":
                 typeDropdown.append('<option value="Flat glass manufacturing">Flat glass manufacturing</option>')
                 typeDropdown.append('<option value="Glass container manufacturing">Glass container manufacturing</option>')
@@ -494,47 +502,23 @@
                 typeDropdown.append('<option value="Glass fiber manufacturing">Glass fiber manufacturing</option>')
                 typeDropdown.append('<option value="Glass cutting and processing">Glass cutting and processing</option>')
                 typeDropdown.append('<option value="Glass coating and laminating">Glass coating and laminating</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "HerbalandMedicinalProduct":
                 typeDropdown.append('<option value="Herbal medicine manufacturing">Herbal medicine manufacturing</option>')
                 typeDropdown.append('<option value="Traditional medicine manufacturing">Traditional medicine manufacturing</option>')
                 typeDropdown.append('<option value="Herbal supplements manufacturing">Herbal supplements manufacturing</option>')
                 typeDropdown.append('<option value="Herbal skincare products manufacturing">Herbal skincare products manufacturing</option>')
-
-                typeDropdown.append('<option value="Traditional medicine manufacturing">Traditional medicine manufacturing</option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-                typeDropdown.append('<option value=""></option>')
-
                 typeDropdown.append('<option value="Herbal extracts and tinctures manufacturing">Herbal extracts and tinctures manufacturing</option>')
                 typeDropdown.append('<option value="Medicinal tea manufacturing">Medicinal tea manufacturing</option>')
                 typeDropdown.append('<option value="Herbal product packaging">Herbal product packaging</option>')
                 typeDropdown.append('<option value="Herbal product research and development">Herbal product research and development</option>')
-
-
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Homeappliances":
                 typeDropdown.append('<option value="Kitchen appliances manufacturing">Kitchen appliances manufacturing</option>')
                 typeDropdown.append('<option value="Laundry appliances manufacturing">Laundry appliances manufacturing</option>')
@@ -544,10 +528,10 @@
                 typeDropdown.append('<option value="Small home appliances manufacturing">Small home appliances manufacturing</option>')
                 typeDropdown.append('<option value="Smart home appliances manufacturing">Smart home appliances manufacturing</option>')
                 typeDropdown.append('<option value="Home appliance parts manufacturing">Home appliance parts manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "HoneyandBeeProductsProcessing":
                 typeDropdown.append('<option value="Honey extraction and processing">Honey extraction and processing</option>')
                 typeDropdown.append('<option value="Beeswax production and processing">Beeswax production and processing</option>')
@@ -556,10 +540,10 @@
                 typeDropdown.append('<option value="Pollen collection and processing">Pollen collection and processing</option>')
                 typeDropdown.append('<option value="Honey and bee products packaging">Honey and bee products packaging</option>')
                 typeDropdown.append('<option value="Beekeeping equipment manufacturing">Beekeeping equipment manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "HouseholdandPersonalProducts":
                 typeDropdown.append('<option value="Cleaning product manufacturing">Cleaning product manufacturing</option>')
                 typeDropdown.append('<option value="Personal care product manufacturing">Personal care product manufacturing</option>')
@@ -569,10 +553,10 @@
                 typeDropdown.append('<option value="Personal hygiene product manufacturing">Personal hygiene product manufacturing</option>')
                 typeDropdown.append('<option value="Insect repellent manufacturing">Insect repellent manufacturing</option>')
                 typeDropdown.append('<option value="Household and personal product packaging">Household and personal product packaging</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "ICTequipment":
                 typeDropdown.append('<option value="Computer hardware manufacturing">Computer hardware manufacturing</option>')
                 typeDropdown.append('<option value="Telecommunications equipment manufacturing">Telecommunications equipment manufacturing</option>')
@@ -581,7 +565,6 @@
                 typeDropdown.append('<option value="Mobile device manufacturing">Mobile device manufacturing</option>')
                 typeDropdown.append('<option value="ICT peripherals manufacturing">ICT peripherals manufacturing</option>')
                 typeDropdown.append('<option value="ICT equipment assembly and testing">ICT equipment assembly and testing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
@@ -595,10 +578,10 @@
                 typeDropdown.append('<option value="Industrial heating and cooling equipment manufacturing">Industrial heating and cooling equipment manufacturing</option>')
                 typeDropdown.append('<option value="Industrial mixing and blending equipment manufacturing">Industrial mixing and blending equipment manufacturing</option>')
                 typeDropdown.append('<option value="Industrial equipment maintenance and repair services">Industrial equipment maintenance and repair services</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Leatherandleatherproducts":
                 typeDropdown.append('<option value="Leather goods manufacturing (bags, belts, wallets)">Leather goods manufacturing (bags, belts, wallets)</option>')
                 typeDropdown.append('<option value="Footwear manufacturing">Footwear manufacturing</option>')
@@ -608,11 +591,11 @@
                 typeDropdown.append('<option value="Leather tanning and processing">Leather tanning and processing</option>')
                 typeDropdown.append('<option value="Leather care and maintenance products manufacturing">Leather care and maintenance products manufacturing</option>')
                 typeDropdown.append('<option value="Leather and leather products export and distribution">Leather and leather products export and distribution</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
 
                 break;
+
             case "Marine":
                 typeDropdown.append('<option value="Shipbuilding">Shipbuilding</option>')
                 typeDropdown.append('<option value="Boat manufacturing">Boat manufacturing</option>')
@@ -622,11 +605,11 @@
                 typeDropdown.append('<option value="Marine safety equipment manufacturing">Marine safety equipment manufacturing</option>')
                 typeDropdown.append('<option value="Marine navigation and communication equipment manufacturing">Marine navigation and communication equipment manufacturing</option>')
                 typeDropdown.append('<option value="Marine vessel repair and maintenance services">Marine vessel repair and maintenance services</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
 
                 break;
+
             case "Railway":
                 typeDropdown.append('<option value="Locomotive manufacturing">Locomotive manufacturing</option>')
                 typeDropdown.append('<option value="Railway rolling stock manufacturing">Railway rolling stock manufacturing</option>')
@@ -636,11 +619,11 @@
                 typeDropdown.append('<option value="Railway electrical systems manufacturing">Railway electrical systems manufacturing</option>')
                 typeDropdown.append('<option value="Railway passenger and freight car manufacturing">Railway passenger and freight car manufacturing</option>')
                 typeDropdown.append('<option value="Railway transportation services">Railway transportation services</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
 
                 break;
+
             case "Constructionmachinery":
                 typeDropdown.append('<option value="Excavator manufacturing">Excavator manufacturing</option>');
                 typeDropdown.append('<option value="Bulldozer manufacturing">Bulldozer manufacturing</option>');
@@ -650,11 +633,11 @@
                 typeDropdown.append('<option value="Backhoe loader manufacturing">Backhoe loader manufacturing</option>')
                 typeDropdown.append('<option value="Construction equipment attachments manufacturing">Construction equipment attachments manufacturing</option>')
                 typeDropdown.append('<option value="Road roller manufacturing">Road roller manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
 
                 break;
+
             case "Medicaldevicesandequipment":
                 typeDropdown.append('<option value="Surgical instrument manufacturing">Surgical instrument manufacturing</option>')
                 typeDropdown.append('<option value="Imaging and diagnostic equipment manufacturing">Imaging and diagnostic equipment manufacturing</option>')
@@ -664,7 +647,6 @@
                 typeDropdown.append('<option value="Dental equipment manufacturing">Dental equipment manufacturing</option>')
                 typeDropdown.append('<option value="Rehabilitation and mobility aids manufacturing">Rehabilitation and mobility aids manufacturing</option>')
                 typeDropdown.append('<option value="Medical device packaging and sterilization">Medical device packaging and sterilization</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
@@ -678,10 +660,10 @@
                 typeDropdown.append('<option value="Metal cutting and sawing services">Metal cutting and sawing services</option>')
                 typeDropdown.append('<option value="Metal surface treatment and finishing">Metal surface treatment and finishing</option>')
                 typeDropdown.append('<option value="Metal fabrication tool and equipment manufacturing">Metal fabrication tool and equipment manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "MetalFinishingandCoating":
                 typeDropdown.append('<option value="Surface coating and painting services">Surface coating and painting services</option>')
                 typeDropdown.append('<option value="Electroplating and metal plating services">Electroplating and metal plating services</option>')
@@ -691,10 +673,10 @@
                 typeDropdown.append('<option value="Metal polishing and buffing services">Metal polishing and buffing services</option>')
                 typeDropdown.append('<option value="Metal passivation services">Metal passivation services</option>')
                 typeDropdown.append('<option value="Metal surface treatment chemicals manufacturing">Metal surface treatment chemicals manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "MetalRecycling":
                 typeDropdown.append('<option value="Scrap metal collection and processing">Scrap metal collection and processing</option>')
                 typeDropdown.append('<option value="Metal shredding and sorting">Metal shredding and sorting</option>')
@@ -704,10 +686,10 @@
                 typeDropdown.append('<option value="Metal smelting and refining services">Metal smelting and refining services</option>')
                 typeDropdown.append('<option value="Metal waste management and disposal">Metal waste management and disposal</option>')
                 typeDropdown.append('<option value="Metal recycling equipment manufacturing">Metal recycling equipment manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "MetalWork":
                 typeDropdown.append('<option value="Metal forging and pressing">Metal forging and pressing</option>')
                 typeDropdown.append('<option value="Metal machining and turning">Metal machining and turning</option>')
@@ -717,10 +699,10 @@
                 typeDropdown.append('<option value="Metal drilling and tapping">Metal drilling and tapping</option>')
                 typeDropdown.append('<option value="Metal punching and stamping">Metal punching and stamping</option>')
                 typeDropdown.append('<option value="Metal assembly and sub-assembly">Metal assembly and sub-assembly</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "MiningandQuarrying":
                 typeDropdown.append('<option value="Coal mining">Coal mining</option>')
                 typeDropdown.append('<option value="Metal ore mining">Metal ore mining</option>')
@@ -733,6 +715,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Motorvehicle":
                 typeDropdown.append('<option value="Passenger car manufacturing">Passenger car manufacturing</option>')
                 typeDropdown.append('<option value="Commercial vehicle manufacturing">Commercial vehicle manufacturing</option>')
@@ -742,10 +725,10 @@
                 typeDropdown.append('<option value="Automotive chassis and body manufacturing">Automotive chassis and body manufacturing</option>')
                 typeDropdown.append('<option value="Automotive engine manufacturing">Automotive engine manufacturing</option>')
                 typeDropdown.append('<option value="Automotive parts and accessories manufacturing">Automotive parts and accessories manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Nonalcoholicbeverage":
                 typeDropdown.append('<option value="Bottled water manufacturing">Bottled water manufacturing</option>')
                 typeDropdown.append('<option value="Soft drink manufacturing">Soft drink manufacturing</option>')
@@ -753,10 +736,10 @@
                 typeDropdown.append('<option value="Energy drink manufacturing">Energy drink manufacturing</option>')
                 typeDropdown.append('<option value="Ready-to-drink coffee and tea manufacturing">Ready-to-drink coffee and tea manufacturing</option>')
                 typeDropdown.append('<option value="Sports and vitamin drink manufacturing">Sports and vitamin drink manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "NonFerrousMetals":
                 typeDropdown.append('<option value="Aluminum production and processing">Aluminum production and processing</option>')
                 typeDropdown.append('<option value="Copper production and processing">Copper production and processing</option>')
@@ -766,10 +749,10 @@
                 typeDropdown.append('<option value="Tin production and processing">Tin production and processing</option>')
                 typeDropdown.append('<option value="Precious metal production and processing (excluding gold)">Precious metal production and processing (excluding gold)</option>')
                 typeDropdown.append('<option value="Non-ferrous metal recycling and scrap processing">Non-ferrous metal recycling and scrap processing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "PackagingandContainers":
                 typeDropdown.append('<option value="Paper packaging manufacturing">Paper packaging manufacturing</option>')
                 typeDropdown.append('<option value="Plastic packaging manufacturing">Plastic packaging manufacturing</option>')
@@ -779,10 +762,10 @@
                 typeDropdown.append('<option value="Rigid packaging manufacturing">Rigid packaging manufacturing</option>')
                 typeDropdown.append('<option value="Packaging printing and labeling">Packaging printing and labeling</option>')
                 typeDropdown.append('<option value="Packaging machinery manufacturing">Packaging machinery manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "PetroleumandCoalProducts":
                 typeDropdown.append('<option value="Refining of crude oil">Refining of crude oil</option>')
                 typeDropdown.append('<option value="Petroleum product manufacturing (gasoline, diesel, jet fuel, etc.)">Petroleum product manufacturing (gasoline, diesel, jet fuel, etc.)</option>')
@@ -792,10 +775,10 @@
                 typeDropdown.append('<option value="Coal processing and manufacturing">Coal processing and manufacturing</option>')
                 typeDropdown.append('<option value="Charcoal manufacturing">Charcoal manufacturing</option>')
                 typeDropdown.append('<option value="Petroleum and coal product storage and distribution">Petroleum and coal product storage and distribution</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Pharmaceuticals":
                 typeDropdown.append('<option value="Pharmaceutical research and development">Pharmaceutical research and development</option>')
                 typeDropdown.append('<option value="Pharmaceutical manufacturing">Pharmaceutical manufacturing</option>')
@@ -805,10 +788,10 @@
                 typeDropdown.append('<option value="Pharmaceutical distribution and wholesaling">Pharmaceutical distribution and wholesaling</option>')
                 typeDropdown.append('<option value="Pharmaceutical testing and analysis">Pharmaceutical testing and analysis</option>')
                 typeDropdown.append('<option value="Pharmaceutical contract manufacturing">Pharmaceutical contract manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "PreciousMetals":
                 typeDropdown.append('<option value="Gold mining and refining">Gold mining and refining</option>')
                 typeDropdown.append('<option value="Silver mining and refining">Silver mining and refining</option>')
@@ -818,7 +801,6 @@
                 typeDropdown.append('<option value="Precious metal coin manufacturing">Precious metal coin manufacturing</option>')
                 typeDropdown.append('<option value="Precious metal recycling and refining">Precious metal recycling and refining</option>')
                 typeDropdown.append('<option value="Precious metal investment and trading">Precious metal investment and trading</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
@@ -832,10 +814,10 @@
                 typeDropdown.append('<option value="Rubber tire manufacturing">Rubber tire manufacturing</option>')
                 typeDropdown.append('<option value="Synthetic rubber manufacturing">Synthetic rubber manufacturing</option>')
                 typeDropdown.append('<option value="Plastic and rubber recycling">Plastic and rubber recycling</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Printingandwriting":
                 typeDropdown.append('<option value="Commercial printing services">Commercial printing services</option>')
                 typeDropdown.append('<option value="Offset printing">Offset printing</option>')
@@ -845,10 +827,10 @@
                 typeDropdown.append('<option value="Flexographic printing">Flexographic printing</option>')
                 typeDropdown.append('<option value="Gravure printing">Gravure printing</option>')
                 typeDropdown.append('<option value="Paper and stationery manufacturing">Paper and stationery manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Pulpandpaper":
                 typeDropdown.append('<option value="Pulp production">Pulp production</option>')
                 typeDropdown.append('<option value="Paper manufacturing">Paper manufacturing</option>')
@@ -858,10 +840,10 @@
                 typeDropdown.append('<option value="Paper packaging manufacturing">Paper packaging manufacturing</option>')
                 typeDropdown.append('<option value="Paper recycling">Paper recycling</option>')
                 typeDropdown.append('<option value="Pulp and paper machinery manufacturing">Pulp and paper machinery manufacturing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "RefrigerationandCoolingEquipment":
                 typeDropdown.append('<option value="Refrigerator manufacturing">Refrigerator manufacturing</option>')
                 typeDropdown.append('<option value="Air conditioning equipment manufacturing">Air conditioning equipment manufacturing</option>')
@@ -871,10 +853,10 @@
                 typeDropdown.append('<option value="Heat pump manufacturing">Heat pump manufacturing</option>')
                 typeDropdown.append('<option value="Refrigeration and cooling equipment parts manufacturing">Refrigeration and cooling equipment parts manufacturing</option>')
                 typeDropdown.append('<option value="Refrigeration and cooling equipment installation and servicing">Refrigeration and cooling equipment installation and servicing</option>')
-
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Semiconductor":
                 typeDropdown.append('<option value="Semiconductor wafer fabrication">Semiconductor wafer fabrication</option>')
                 typeDropdown.append('<option value="Semiconductor packaging and testing">Semiconductor packaging and testing</option>')
@@ -887,6 +869,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "SpiceandSeasoning":
                 typeDropdown.append('<option value="Spice blending and packaging">Spice blending and packaging</option>')
                 typeDropdown.append('<option value="Spice processing and grinding">Spice processing and grinding</option>')
@@ -899,6 +882,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Sponge":
                 typeDropdown.append('<option value="Mattress manufacturing">Mattress manufacturing</option>')
                 typeDropdown.append('<option value="Mattress manufacturing">Mattress manufacturing</option>')
@@ -911,6 +895,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Sportsandrecreation":
                 typeDropdown.append('<option value="Sports equipment manufacturing">Sports equipment manufacturing</option>')
                 typeDropdown.append('<option value="Fitness equipment manufacturing">Fitness equipment manufacturing/option>')
@@ -923,6 +908,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Soapanddetergents":
                 typeDropdown.append('<option value="Soap manufacturing">Soap manufacturing</option>')
                 typeDropdown.append('<option value="Detergent manufacturing">Detergent manufacturing</option>')
@@ -935,6 +921,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "SteelFabrication":
                 typeDropdown.append('<option value="Structural steel fabrication">Structural steel fabrication</option>')
                 typeDropdown.append('<option value="Steel plate fabrication">Steel plate fabrication</option>')
@@ -947,6 +934,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "SteelRecyclingandScrapProcessing":
                 typeDropdown.append('<option value="Scrap metal collection and processing">Scrap metal collection and processing</option>')
                 typeDropdown.append('<option value="Steel scrap sorting and grading">Steel scrap sorting and grading</option>')
@@ -959,6 +947,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "SugarandConfectionery":
                 typeDropdown.append('<option value="Sugar refining">Sugar refining</option>')
                 typeDropdown.append('<option value="Candy and confectionery manufacturing">Candy and confectionery manufacturing</option>')
@@ -971,6 +960,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Teaprocessing":
                 typeDropdown.append('<option value="Tea cultivation and harvesting">Tea cultivation and harvesting</option>')
                 typeDropdown.append('<option value="Tea processing and manufacturing">Tea processing and manufacturing</option>')
@@ -983,6 +973,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+
             case "Textile":
                 typeDropdown.append('<option value="Textile fiber production (natural and synthetic)">Textile fiber production (natural and synthetic)</option>')
                 typeDropdown.append('<option value="Yarn spinning and twisting">Yarn spinning and twisting</option>')
@@ -995,6 +986,7 @@
                 typeDropdown.append('<option value="Other">Others, please specify</option>');
                 $("#IndusteryProp").show();
                 break;
+            
             default:
                 break;
         }
