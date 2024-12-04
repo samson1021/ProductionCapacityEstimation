@@ -84,7 +84,7 @@
                                 <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                             </div>
                              <div class="form-group col-lg-3">
-                                <label asp-for="CountryOfOrgin">Country Of Orgin <i class="text-danger">*</i></label>
+                                <label asp-for="CountryOfOrgin">Country of Origin <i class="text-danger">*</i></label>
                                 <input asp-for="CountryOfOrgin" type="text" class="form-control form-control-sm" id="CountryOfOrgin" placeholder="Enter Country Of Orgin" >
                                 <span id="CountryOfOrgin-error" asp-validation-for="CountryOfOrgin" class="text-danger"></span>
                             </div>
@@ -151,10 +151,10 @@
 
                         <div id="IndustrialParkrow" style="display: none;">
                            <div class="row">
-                            <div class="form-group col-lg-4">
+                                <div class="form-group col-lg-4">
                                     <label asp-for="Industrialpark">Industrial Park <i class="text-danger">*</i></label>
                                     <select asp-for="Industrialpark" class="form-control form-control-sm" id="Industrialpark" onchange="handleIndestrialparkChange(this)">
-                                        <option value="">Select Industrial Park </option>
+                                        <option value="">Select Industrial Park</option>
                                         <option value="Adama">Adama</option>
                                         <option value="BahirDar">BahirDar</option>
                                         <option value="Bole lemi I">Bole lemi I</option>
@@ -165,12 +165,12 @@
                                         <option value="Hawassa">Hawassa</option>
                                         <option value="Jimma">Jimma</option>
                                         <option value="Mekelle">Mekelle</option>
-                                        <option value="Somalia">Somalia</option>                                       
+                                        <option value="Somalia">Somalia</option>
                                         <option value="Others">Others, please specify</option>
                                     </select>
-                                     <input type="text" class="form-control form-control-sm mt-2" id="OtherIndustrialpark" name="OtherIndustrialpark" style="display: none;"> 
-                                    <span id="Industrialpark-error" asp-validation-for="Industrialpark" class="text-danger"></span>                                
-                            </div>
+                                    <input type="text" class="form-control form-control-sm mt-2" id="OtherIndustrialpark" name="OtherIndustrialpark" style="display: none;">
+                                    <span id="Industrialpark-error" asp-validation-for="Industrialpark" class="text-danger"></span>
+                                </div>
                             <div class="form-group col-lg-4">
                                 <label asp-for="ShadeRentAgreement">Upload Shade Rent Agreement Document <i class="text-danger">*</i></label>
                                     <input asp-for="ShadeRentAgreement" type="file" class="form-control  form-control-sm" id="ShadeRentAgreement" >
@@ -358,6 +358,8 @@
         } else if (MachineryInstalledPlace === "Industrial Park") {
             var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
             var ShadeRentAgreement = $("#ShadeRentAgreement");
+            var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
+
 
             // Validate Industrial Park selection
             if (Industrialpark === "") {
@@ -413,18 +415,67 @@
             otherRegionInput.removeAttribute("name"); // Remove the name attribute
         }
     }
+    
+    
     function handleIndestrialparkChange(selectElement) {
-        var otherRegionInput = document.getElementById("OtherIndustrialpark");
+        var OtherIndustrialpark = document.getElementById("OtherIndustrialpark");
+
         if (selectElement.value === "Others") {
-            otherRegionInput.style.display = "block";
-            otherRegionInput.setAttribute("required", "required");
-            otherRegionInput.setAttribute("name", "Industrialpark"); // Set the name attribute to "Region"
+            OtherIndustrialpark.style.display = "block";
+            OtherIndustrialpark.setAttribute("required", "required");
+            OtherIndustrialpark.setAttribute("name", "Industrialpark"); // Set the name attribute to "Industrialpark"
         } else {
-            otherRegionInput.style.display = "none";
-            otherRegionInput.removeAttribute("required");
-            otherRegionInput.removeAttribute("name"); // Remove the name attribute
+            OtherIndustrialpark.style.display = "none";
+            OtherIndustrialpark.removeAttribute("required");
+            OtherIndustrialpark.removeAttribute("name"); // Remove the name attribute
         }
     }
+
+
+    function validateInputFields(inputId, errorId, isRequired) {
+        var input = document.getElementById(inputId).value;
+        //var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var errorMessage = "";
+        console.log("from vaidate mech");
+        // Check if the field is required and empty
+        if (isRequired && input.trim() === "") {
+            errorMessage = "This field is required.";
+        } 
+        // else if (!alphanumericRegex.test(input)) {
+        //     errorMessage = "Only alphanumeric characters are allowed.";
+        // }
+        if (errorMessage) {
+            document.getElementById(inputId).setCustomValidity(errorMessage);
+            document.getElementById(errorId).textContent = errorMessage;
+        } else {
+            document.getElementById(inputId).setCustomValidity("");
+            document.getElementById(errorId).textContent = "";
+        }
+    }
+    document.getElementById("addProductionForm").addEventListener("submit", function (event) {
+
+        validateInputFields("PropertyOwner", "PropertyOwner-error", true);
+        validateInputFields("Role", "Role-error", true);
+        validateInputFields("categoryDropdown", "Category-error", true);
+        validateInputFields("typeDropdown", "Type-error", true);
+        validateInputFields("MachineName", "MachineName-error", true);
+        validateInputFields("Purpose", "Purpose-error", true);
+        validateInputFields("ModelNo", "ModelNo-error", true);
+        validateInputFields("CountryOfOrgin", "CountryOfOrgin-error", true);
+        validateInputFields("BusinessLicenseNumber", "BusinessLicenseNumber-error", true);
+        validateInputFields("ManufactureYear", "ManufactureYear-error", true);
+        validateInputFields("InvoiceNo", "InvoiceNo-error", true);
+        validateInputFields("SerialNo", "SerialNo-error", true);
+       // validateInputFields("MachineryInstalledPlace", "MachineryInstalledPlace-error", true);
+        validateInputFields("Region", "Region-error", true);
+        validateInputFields("ProductDescription", "ProductDescription-error", true);
+
+        console.log("from submit mech");
+        if (!this.checkValidity()) {
+            event.preventDefault();  // Prevent form submission
+        }
+    });
+
     // function validateProductionForm() {
     //     var isValid = true;
     //     // Get trimmed values from form inputs
@@ -483,61 +534,61 @@
     //     return isValid; // Return the validation result
     // }
     
-    document.getElementById("InvoiceNo").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("InvoiceNo-error").textContent = "";
-        }
-    });
-    document.getElementById("SerialNo").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("SerialNo-error").textContent = "";
-        }
-    });
-    document.getElementById("ModelNo").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("ModelNo-error").textContent = "";
-        }
-    });
-    document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
-        this.style.borderColor = "";
-        document.getElementById("MachineryInstalledPlace-error").textContent = "";
-    });
-    document.getElementById("BusinessLicense").addEventListener("input", function () {
-        this.style.borderColor = "";
-        document.getElementById("BusinessLicense-error").textContent = "";
-    });
-    document.getElementById("MachineSpecificationDocument").addEventListener("input", function () {
-        this.style.borderColor = "";
-        document.getElementById("MachineSpecificationDocument-error").textContent = "";
-    });
+    // document.getElementById("InvoiceNo").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("InvoiceNo-error").textContent = "";
+    //     }
+    // });
+    // document.getElementById("SerialNo").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("SerialNo-error").textContent = "";
+    //     }
+    // });
+    // document.getElementById("ModelNo").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("ModelNo-error").textContent = "";
+    //     }
+    // });
+    // document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
+    //     this.style.borderColor = "";
+    //     document.getElementById("MachineryInstalledPlace-error").textContent = "";
+    // });
+    // document.getElementById("BusinessLicense").addEventListener("input", function () {
+    //     this.style.borderColor = "";
+    //     document.getElementById("BusinessLicense-error").textContent = "";
+    // });
+    // document.getElementById("MachineSpecificationDocument").addEventListener("input", function () {
+    //     this.style.borderColor = "";
+    //     document.getElementById("MachineSpecificationDocument-error").textContent = "";
+    // });
    
-    document.getElementById("PropertyOwner").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("MachineryInstalledPlace-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("PropertyOwner-error").textContent = "";
-        }
-    });
+    // document.getElementById("PropertyOwner").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("MachineryInstalledPlace-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("PropertyOwner-error").textContent = "";
+    //     }
+    // });
 </script>
