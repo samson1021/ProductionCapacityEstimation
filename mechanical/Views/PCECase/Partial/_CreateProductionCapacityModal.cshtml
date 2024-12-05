@@ -117,7 +117,7 @@
                         <div class="row" id="MachineryInstalledPlace">
                             <div class="form-group col-lg-4">
                                 <label asp-for="MachineryInstalledPlace"> Machinery Installed Place <i class="text-danger">*</i></label>
-                                <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" onchange="handleMachineryInstalledPlaceChange(this)" >
+                                <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlacelist" onchange="handleMachineryInstalledPlaceChange(this)" >
                                     <option value="">Select Machinery Installed Place</option>
                                     <option value="Private Owned LHC">Private Owned LHC</option>
                                     <option value="Industrial Park">Industrial Park</option>
@@ -453,7 +453,6 @@
         }
     }
     document.getElementById("addProductionForm").addEventListener("submit", function (event) {
-
         validateInputFields("PropertyOwner", "PropertyOwner-error", true);
         validateInputFields("Role", "Role-error", true);
         validateInputFields("categoryDropdown", "Category-error", true);
@@ -466,9 +465,14 @@
         validateInputFields("ManufactureYear", "ManufactureYear-error", true);
         validateInputFields("InvoiceNo", "InvoiceNo-error", true);
         validateInputFields("SerialNo", "SerialNo-error", true);
-       // validateInputFields("MachineryInstalledPlace", "MachineryInstalledPlace-error", true);
+        validateInputFields("MachineryInstalledPlacelist", "MachineryInstalledPlace-error", true);
         validateInputFields("Region", "Region-error", true);
         validateInputFields("ProductDescription", "ProductDescription-error", true);
+        validateInputFields("BusinessLicense", "BusinessLicense-error", true);
+        validateInputFields("MachineSpecificationDocument", "MachineSpecificationDocument-error", true);
+
+        
+
 
         console.log("from submit mech");
         if (!this.checkValidity()) {
@@ -476,119 +480,5 @@
         }
     });
 
-    // function validateProductionForm() {
-    //     var isValid = true;
-    //     // Get trimmed values from form inputs
-    //     var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace").value;
-    //     var OwnerName = document.getElementById("OwnerName").value;
-    //     var LHCNumber = document.getElementById("LHCNumber").value;
-    //     var LHCDocument = $("#LHCDocument");
-    //     var Industrialparklist = document.getElementById("Industrialparklist").value;
-    //     var ShadeRentAgreement = $("#ShadeRentAgreement");
-
-    //     // Clear previous error messages
-    //     document.getElementById("OwnerName-error").textContent = "";
-    //     document.getElementById("LHCNumber-error").textContent = "";
-    //     document.getElementById("LHCDocument-error").textContent = "";
-    //     document.getElementById("Industrialpark-error").textContent = "";
-    //     document.getElementById("ShadeRentAgreement-error").textContent = "";
-
-    //     // Check for "Private Owned LHC"
-    //     if (MachineryInstalledPlace === "Private Owned LHC") {
-    //         if (LHCNumber === "") {
-    //             toastr.error("Please provide the LHC Number. We need this to process your application.");
-    //             isValid = false;
-    //             return;
-    //         }
-    //         if (OwnerName === "") {
-    //             document.getElementById("OwnerName-error").textContent = "Owner's Name is required.";
-    //             toastr.error("Please provide the Owner's Name. We need this to process your application.");
-    //             isValid = false;
-    //             return;
-
-    //         }
-    //         if (LHCDocument.get(0).files.length === 0) {
-    //             document.getElementById("LHCDocument-error").textContent = "LHC Document upload is required.";
-    //             toastr.error("Please upload the LHC Document to proceed.");
-    //             isValid = false;
-    //             return;
-
-    //         }
-    //     }
-    //     // Check for "Industrial Park"
-    //     else if (MachineryInstalledPlace === "Industrial Park") {
-    //         if (Industrialparklist === "") {
-    //             document.getElementById("Industrialpark-error").textContent = "Industrial Park selection is required.";
-    //             toastr.error("Please select an Industrial Park. This is necessary for your application.");
-    //             return;
-    //         }
-    //         if (ShadeRentAgreement.get(0).files.length === 0) {
-    //             document.getElementById("ShadeRentAgreement-error").textContent = "Shade Rent Agreement upload is required.";
-    //             toastr.error("Please upload the Shade Rent Agreement to proceed.");
-    //             isValid = false;
-    //             return;
-
-    //         }
-    //     }
-
-    //     return isValid; // Return the validation result
-    // }
     
-    // document.getElementById("InvoiceNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("InvoiceNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("SerialNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("SerialNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("ModelNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("ModelNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("MachineryInstalledPlace").addEventListener("input", function () {
-    //     this.style.borderColor = "";
-    //     document.getElementById("MachineryInstalledPlace-error").textContent = "";
-    // });
-    // document.getElementById("BusinessLicense").addEventListener("input", function () {
-    //     this.style.borderColor = "";
-    //     document.getElementById("BusinessLicense-error").textContent = "";
-    // });
-    // document.getElementById("MachineSpecificationDocument").addEventListener("input", function () {
-    //     this.style.borderColor = "";
-    //     document.getElementById("MachineSpecificationDocument-error").textContent = "";
-    // });
-   
-    // document.getElementById("PropertyOwner").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("MachineryInstalledPlace-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("PropertyOwner-error").textContent = "";
-    //     }
-    // });
 </script>
