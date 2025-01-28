@@ -16,7 +16,7 @@
     //  var EvaluatorDate = ViewData["EvaluatorDate"];
 
     var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
-
+    var Signiture = ViewData["signiture"] as CreateUser;
     DateTime? createdAt = null;
     Guid? evaluatorId = null;
     string evaluatorName = null;
@@ -393,7 +393,15 @@
 
                     Capacity estimated by:-&nbsp;&nbsp; <u><strong>@evaluatorName</strong></u>; &nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
                         <span style="text-decoration: underline; margin: 0 5px;">
-                            <img src="/UploadFile/@($"{signatureImageId}.png")" alt="Signature" style="max-width: 70px; min-width:60px; min-height:50px ; max-height:60px" />
+                        @if (Signiture.Signatures != null)
+                        {
+                            <img src="@Url.Content("~/" + Signiture.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                        }
+                        else
+                        {
+                            <span>Not Registered</span>
+                        }
+                        
                     </span>&nbsp;&nbsp;&nbsp;&nbsp;
                     Evaluated Date: &nbsp;&nbsp; <u><strong>@createdAt</strong></u>
                     
@@ -441,7 +449,9 @@
                     </table>
                 </div>
        
-
+                <div class="text-center my-4">
+                    <img src="~/img/stamp.png" alt="Stamp" style="max-width: 200px; height: auto;" />
+                </div>
             </div>
            
          

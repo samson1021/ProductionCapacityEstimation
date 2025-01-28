@@ -1,7 +1,7 @@
-﻿@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>
-
+﻿
+@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>
 @{
-    // Your code here
+  
 }
 <style>
     .small-box-footer:hover {
@@ -30,7 +30,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("MyCases","CTLCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("NewCases","COCase")" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info<i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
@@ -52,7 +52,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("MyPendingCases","CTLCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("MyPendingCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info <i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
@@ -74,7 +74,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("MyCompleteCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info <i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
@@ -103,10 +103,12 @@
                             </div>
                         </div>
                     </div>
+
+
                     <div class="row">
                         <div class="card">
                             <div class="card-header border-transparent">
-                                <h3 class="card-title">Latest Case</h3>
+                                <h3 class="card-title">Latest Cases</h3>
                             </div>
 
                             <div class="card-body p-0">
@@ -116,7 +118,6 @@
                                             <tr>
                                                 <th>Case No</th>
                                                 <th>Creation Date</th>
-                                                <th>Requesting Unit</th>
                                                 <th>Applicant Name</th>
                                                 <th>Customer Id</th>
                                                 <th>Collateral</th>
@@ -127,9 +128,8 @@
                                             @foreach (var item in Model)
                                             {
                                                 <tr>
-                                                    <td><a href="@Url.Action("MyCase", "MTLCase")?Id=@item.Id">@item.CaseNo</a></td>
+                                                    <td><a href="@Url.Action("MyCase", "CO")?Id=@item.Id">@item.CaseNo</a></td>
                                                     <td>@item.CreationAt</td>
-                                                    <td>@item.Segement</td>
                                                     <td>@item.ApplicantName</td>
                                                     <td>@item.CustomerId</td>
                                                     <td>@item.NoOfCollateral</td>
@@ -160,11 +160,12 @@
         </div>
     </section>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
-
+        
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/Case/GetMyDashboardCaseCount")
@@ -178,6 +179,7 @@
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
+
         });
 
         // production capacity estimation start
@@ -196,10 +198,31 @@
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
                 });
+        }); 
+
+        
+        @*// production capacity estimation start
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/ProductionCapacity/GetDashboardPCECount")
+                .then(response => response.json())
+                .then(data => {
+
+                    animateCount("newProductionCount", data.NewProductionCount);
+                    animateCount("pendingProductionCount", data.PendingProductionCount);
+                    animateCount("completedProductionCount", data.CompletedProductionCount + data.ReestimatedProductionCount);
+                    animateCount("resubmittedProductionCount", data.ResubmittedProductionCount);
+                    animateCount("totalProductionCount", data.TotalProductionCount);
+
+                })
+                .catch(error => {
+                    console.error("Error fetching card counts:", error);
+                });
         });
+        *@
 
         // Production capacity estimation case end
 
+    
         function animateCount(elementId, targetCount) {
             const element = document.getElementById(elementId);
             const duration = 2000;
@@ -243,25 +266,25 @@
                 dataType: 'json',
                 success: function (data) {
                     var columns = [
-                        {
-                            data: 'CaseNo',
+                        { 
+                            data: 'CaseNo', 
                             width: '10%',
                             render: function (data, type, row) {
                                 return '<a href="@Url.Action("Detail", "PCECase")?Id=' + row.Id + '&Status=All">' + data + '</a>';
-                            }
+                            }                 
                         },
                         {
                             data: 'CreatedAt',
                             width: '15%',
                             render: function (data) {
                                 var date = new Date(data);
-                                return date.toLocaleString();
+                                return date.toISOString().split('T')[0];
+                                // return date.toLocaleString();
                             }
                         },
-                        { data: 'Segment', width: '15%' },
                         { data: 'ApplicantName', width: '15%' },
                         { data: 'CustomerId', width: '15%' },
-        @* { data: 'NoOfProductions', width: '10%' }, *@
+                        @* { data: 'NoOfProductions', width: '10%' }, *@
                         { data: 'TotalNoOfProductions', width: '10%' },
                         {
                             data: 'Status',
@@ -295,7 +318,7 @@
                         lengthChange: false,
                         autoWidth: false,
                         searching: false,
-                        ordering: false,
+                        ordering: false, 
                         data: data,
                         columns: columns,
                         order: [[1, 'desc']],

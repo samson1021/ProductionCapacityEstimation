@@ -32,14 +32,14 @@
             
             $('#dateError').text('');
             
-            if (stripTime(selectedDate) <= currentDate) {
-                $('#dateError').text("The selected date must be greater than the today's date.");
-                return; 
-            }
-            if (isSameDate(selectedDate, latestSchedule)) {
-                $('#dateError').text('The selected date must be different from the current date.');
-                return;
-            }
+            //if (stripTime(selectedDate) <= currentDate) {
+            //    $('#dateError').text("The selected date must be greater than the today's date.");
+            //    return; 
+            //}
+            //if (isSameDate(selectedDate, latestSchedule)) {
+            //    $('#dateError').text('The selected date must be different from the current date.');
+            //    return;
+            //}
 
             showLoadingIndicator();
 

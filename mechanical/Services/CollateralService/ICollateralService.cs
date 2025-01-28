@@ -28,12 +28,12 @@ namespace mechanical.Services.CollateralService
         Task<IEnumerable<ReturnCollateralDto>> GetMMCollaterals(Guid userId, Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetCMCollaterals(Guid userId, Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetRemarkCollaterals(Guid userId, Guid CaseId);
-
+        Task<IEnumerable<ReturnCollateralDto>> GetRmRemarkCollaterals(Guid userId, Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetMMPendCollaterals(Guid userId, Guid CaseId);
         // Task<IEnumerable<ReturnCollateralDto>> GetMTLCollaterals(Guid CaseId);
         // Task<IEnumerable<ReturnCollateralDto>> GetCTLCollaterals(Guid CaseId);
         // Task<ReturnCollateralDto> GetMORetunedCollaterals(Guid CaseId);
-        Task<Collateral> ChangeStatus(Guid useId,Guid CaseId, string Status);
+        Task<bool> ChangeStatus(Guid useId,Guid CaseId, string Status);
         // Task<IEnumerable<ReturnCollateralDto>> GetCMCollaterals(Guid CaseId);
         // Task<IEnumerable<ReturnFileDto>> GetCollateralFile(Guid CollateralId);
 
