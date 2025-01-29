@@ -427,7 +427,7 @@
         
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("/Case/GetDashboardCaseCount")
+            fetch("/Case/GetMyDashboardCaseCount")
                 .then(response => response.json())
                 .then(data => {
                     animateCountWithCollateral("newCasesCount", data.NewCaseCount, data.NewCollateralCount);

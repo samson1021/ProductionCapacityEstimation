@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UserService;
 using System.Data;
+using mechanical.Services.AuthenticatioinService;
+using System.Text.Json;
 
 namespace mechanical.Controllers
 {
@@ -22,11 +24,13 @@ namespace mechanical.Controllers
         private readonly CbeContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
-        public UserManagmentController(CbeContext context, IHttpContextAccessor httpContextAccessor, IUserService userService)
+        private readonly IAuthenticationService _authenticationService;
+        public UserManagmentController(CbeContext context, IHttpContextAccessor httpContextAccessor, IUserService userService, IAuthenticationService authenticationService)
         {
             _userService = userService;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationService = authenticationService;
         }
         private string GenerateValidPassword(int length)
         {
@@ -364,50 +368,33 @@ namespace mechanical.Controllers
 
         }
         [HttpPost]
-        public IActionResult CreateUser(CreateUser model)
+        public async Task<IActionResult> Create(CreateUser model)
         {
-            var password = "1234";
-            //var password = GenerateValidPassword(8);
-            string EncryptedPass = null;
-          //  EncryptedPass = HashPassword(password);
-
-            //if (IsValidPassword(password))
-            //{
-            //    model.Password = EncryptedPass;
-            //}
-            model.Password = password;
+            var existingUser = await _context.CreateUsers.FirstOrDefaultAsync(res => res.Email == model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "A user with this email already exists.");
+                return View(model);
+            }
+            existingUser = await _context.CreateUsers.FirstOrDefaultAsync(res => res.emp_ID == model.emp_ID);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("emp_ID", "A user with this Employee Id already exists.");
+                return View(model);
+            }
             model.Status = "Activated";
-            var UpperEmail = model.Email.ToUpper();
-            model.Email = UpperEmail;
-            
-                _context.CreateUsers.Add(model);
-                _context.SaveChanges();
-            
-                // Save the form data to the database
-                // You can use your data access logic or an ORM here
-                //using (var dbContext = new CbeCreditContext())
-                //{
-                //    // Map the form data to your database entity
-                //    var user = new CreateUser
-                //    {
-                //        Name = model.Name,
-                //        Email = model.Email,
-                //        District = model.District,
-                //        Branch = model.Branch,
-                //        Password = model.Password
-                //    };
+            await _context.CreateUsers.AddAsync(model);
+            await _context.SaveChangesAsync();
 
-                //    // Add the user entity to the context and save changes
-                //    dbContext.CreateUsers.Add(user);
-                //    dbContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public ActionResult GetEmployeeInfo(string id)
+        {
+            var employe = _authenticationService.GetEmployeeInfo(id);
+            string jsonData = JsonConvert.SerializeObject(employe);
 
-                    // Redirect to a success page or perform any other necessary actions
-                    return RedirectToAction("Index");
-                //}
-            //}
-            // If the model state is not valid, return the same view with the validation errors
-    
-
+            return Content(jsonData, "application/json");
         }
         public JsonResult GetRoles()
         {   var userId = base.GetCurrentUserId();
@@ -501,7 +488,7 @@ namespace mechanical.Controllers
         public ActionResult Edit(Guid id)
         {
             //var user = _userRepository.GetUserById(id);
-            var user = _context.CreateUsers.FirstOrDefault(c => c.Id == id);
+            var user = _context.CreateUsers.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
             //var model = new CreateUser
             //{
             //    Id = user.Id,

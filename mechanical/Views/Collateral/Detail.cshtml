@@ -146,9 +146,41 @@
         //await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         <script>
-            formatAndDisplayValue('ReplacementCost');
-            formatAndDisplayValue('InvoiceValue');
-            formatAndDisplayValue('NetEstimationValue');
+
+            $(function () {
+                $('.sendCheckForm').on('submit', function (e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to send this evaluation to the Checker?")) {
+                        // Prevent the default form submission
+
+                        var formData = $(this).serialize(); // Serialize the form data
+                        console.log(formData)
+                        $.ajax({
+                            url: '/MOCase/SendCheking', // Ensure this URL is correct
+                            type: 'POST', // Ensure the method is POST
+                            data: formData,
+                            success: function (result) {
+                                if (result.redirect) {
+                                    window.location.href = result.redirect; // Redirect if needed
+                                } else {
+                                    alert('An error occurred. Please try again.'); // Show error message
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('AJAX Error: ', status, error); // For debugging
+                                var errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                                    ? xhr.responseJSON.message
+                                    : 'An unexpected error occurred.';
+                                alert(errorMessage); // Show error message
+                            }
+                        });
+                    }
+                    });
+           
+                                });
+                    formatAndDisplayValue('ReplacementCost');
+                    formatAndDisplayValue('InvoiceValue');
+                    formatAndDisplayValue('NetEstimationValue');
         </script>
     }
 

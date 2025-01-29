@@ -391,6 +391,9 @@
                                 </div>
                             </div>
                             <div class="page-number"></div>
+                            <div class="text-center my-4">
+                                <img src="~/img/stamp.png" alt="Stamp" style="max-width: 200px; height: auto;" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -640,6 +643,7 @@
             </div>
         } *@
     }
+    
 </section>
 
 @section Scripts {
@@ -647,7 +651,7 @@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
     <script src="~/js/jsPDF/jspdf.umd.min.js"></script>
-    <script>
+    @*<script>
         // Your JavaScript code that uses the jsPDF library
         document.getElementById('download-btn').addEventListener('click', function () {
             const doc = new jsPDF();
@@ -686,6 +690,25 @@
             for (var i = 0; i < pageNumbers.length; i++) {
                 pageNumbers[i].textContent = 'Page ' + (i + 1) + ' of ' + totalPages;
             }
+        });
+    </script>*@
+
+    <script>
+        document.getElementById('print-btn').addEventListener('click', function () {
+            document.querySelector('footer').style.display = 'none';
+            document.getElementById('requieddoc').style.display = 'none';
+        @{
+            isPrinting = true;
+        }
+                document.body.classList.add('printing');
+            window.print();
+        @{
+            isPrinting = false;
+        }
+                document.body.classList.remove('printing');
+            document.querySelector('footer').style.display = 'block';
+            document.getElementById('custom-footer').style.display = 'none';
+            document.getElementById('requieddoc').style.display = 'block';
         });
     </script>
 }

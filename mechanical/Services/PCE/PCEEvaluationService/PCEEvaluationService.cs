@@ -171,6 +171,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error evaluating production capacity.");
                 await transaction.RollbackAsync();
+                throw new Exception(ex.Message);
                 throw new ApplicationException("An error occurred while evaluating production capacity.");
             }
         }
@@ -383,7 +384,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (MOSupervisor.Role.Name == "Maker TeamLeader")
             {
                 var MTLSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
-                await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+                if(MTLSupervisor != null)
+                {
+                    await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+                }
+        
             }  
         }
 

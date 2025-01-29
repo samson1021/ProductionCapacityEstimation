@@ -259,7 +259,7 @@
                                     <label>Invoice Value:</label>
                                 </div>
                                 <div class="col-lg-6">
-                                    <div>@Model.InvoiceValue</div>
+                                    <div id="InvoiceValue">@Model.InvoiceValue</div>
                                 </div>
                             </div>
                             <div class="row col-lg-4">
@@ -378,30 +378,30 @@
 
             $(document).ready(function () {
                 $('#sendCheckForm').on('submit', function (e) {
-
                     e.preventDefault(); // Prevent the default form submission
-
-                    var formData = $(this).serialize(); // Serialize the form data
-                    console.log(formData)
-                    $.ajax({
-                        url: '/MOCase/SendCheking', // Ensure this URL is correct
-                        type: 'POST', // Ensure the method is POST
-                        data: formData,
-                        success: function (result) {
-                            if (result.redirect) {
-                                window.location.href = result.redirect; // Redirect if needed
-                            } else {
-                                alert('An error occurred. Please try again.'); // Show error message
+                    if (confirm("Are you sure you want to send this evaluation to the Checker?")) {
+                        var formData = $(this).serialize(); // Serialize the form data
+                        console.log(formData)
+                        $.ajax({
+                            url: '/MOCase/SendCheking', // Ensure this URL is correct
+                            type: 'POST', // Ensure the method is POST
+                            data: formData,
+                            success: function (result) {
+                                if (result.redirect) {
+                                    window.location.href = result.redirect; // Redirect if needed
+                                } else {
+                                    alert('An error occurred. Please try again.'); // Show error message
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('AJAX Error: ', status, error); // For debugging
+                                var errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                                    ? xhr.responseJSON.message
+                                    : 'An unexpected error occurred.';
+                                alert(errorMessage); // Show error message
                             }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('AJAX Error: ', status, error); // For debugging
-                            var errorMessage = xhr.responseJSON && xhr.responseJSON.message
-                                ? xhr.responseJSON.message
-                                : 'An unexpected error occurred.';
-                            alert(errorMessage); // Show error message
-                        }
-                    });
+                        });
+                    }
                 });
             });
         </script>

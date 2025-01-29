@@ -53,6 +53,16 @@ namespace mechanical.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> RemarkCase(Guid Id)
+        {
+            var loanCase = await _caseService.GetCaseDetail(Id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);
+            if (loanCase == null) { return RedirectToAction("NewCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
         public IActionResult MyAssignments()
         {
             return View();
@@ -357,17 +367,31 @@ namespace mechanical.Controllers
         public async Task<IActionResult> MOVSummary(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
+            var MotorVehicles = await _cbeContext.MotorVehicles
+                              .Include(res => res.EvaluatorUser)
+                                  .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
+                               .Include(res => res.CheckerUser)
+                                  .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.MOV && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage=="Checker Officer").ToListAsync();
             ViewData["collaterals"] = collaterals;
+            ViewData["MotorVehicles"] = MotorVehicles;
+            ViewData["caseSchedule"] = caseSchedule;
             return View();
         }
         [HttpGet]
         public async Task<IActionResult> MOVReport(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
-            var MotorVehicles = await _cbeContext.MotorVehicles.Include(res => res.EvaluatorUser).Include(res => res.CheckerUser).Where(res => res.Collateral.CaseId == CaseId).ToListAsync();
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var MotorVehicles = await _cbeContext.MotorVehicles
+                              .Include(res => res.EvaluatorUser)
+                                  .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
+                               .Include(res => res.CheckerUser)
+                                  .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.MOV && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
             var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
             ViewData["collaterals"] = collaterals;
@@ -379,17 +403,29 @@ namespace mechanical.Controllers
         public async Task<IActionResult> ConstMngAgrMachinerySummary(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
+            var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries
+                                .Include(res => res.EvaluatorUser)
+                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
+                                 .Include(res => res.CheckerUser)
+                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.CMAMachinery && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
             ViewData["collaterals"] = collaterals;
+            ViewData["constMngAgrMachinery"] = constMngAgrMachinery;
+            ViewData["caseSchedule"] = caseSchedule;
             return View();
         }
         [HttpGet]
         public async Task<IActionResult> ConstMngAgrMachineryReport(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
-            var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries.Include(res=>res.EvaluatorUser).Include(res => res.CheckerUser).Where(res => res.Collateral.CaseId == CaseId).ToListAsync();
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries
+                                .Include(res => res.EvaluatorUser)
+                                    .ThenInclude(res => res.Signatures).ThenInclude(res=>res.SignatureFile)
+                                 .Include(res => res.CheckerUser)
+                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.CMAMachinery &&  res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer" ).ToListAsync();
             var caseSchedule =await _cbeContext.CaseSchedules.Where(res=>res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
             ViewData["collaterals"] = collaterals;
@@ -401,17 +437,35 @@ namespace mechanical.Controllers
         public async Task<IActionResult> IndBldgFacilityEquipmentSummary(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
+
+            var IndBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment
+                               .Include(res => res.EvaluatorUser)
+                                   .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
+                                .Include(res => res.CheckerUser)
+                                   .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+
+
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.IBFEqupment && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
             ViewData["collaterals"] = collaterals;
+            ViewData["IndBldgFacilityEquipment"] = IndBldgFacilityEquipment;
+            ViewData["caseSchedule"] = caseSchedule;
             return View();
         }
         [HttpGet]
         public async Task<IActionResult> IndBldgFacilityEquipmentReport(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
-            var IndBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res => res.EvaluatorUser).Include(res => res.CheckerUser).Where(res => res.Collateral.CaseId == CaseId ).ToListAsync();
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+           
+            var IndBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment
+                               .Include(res => res.EvaluatorUser)
+                                   .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
+                                .Include(res => res.CheckerUser)
+                                   .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+
+
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.IBFEqupment && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
             var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
             ViewData["collaterals"] = collaterals;
@@ -468,7 +522,7 @@ namespace mechanical.Controllers
             List<MotorVehicle> motorVehicle = null;
             try
             {
-                motorVehicle = await _cbeContext.MotorVehicles.Where(res => res.Collateral.CaseId == id).ToListAsync();
+                motorVehicle = await _cbeContext.MotorVehicles.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
             }
             catch (Exception ex)
             {
@@ -478,7 +532,7 @@ namespace mechanical.Controllers
             List<ConstMngAgrMachinery> conMngAgr = null;
             try
             {
-                conMngAgr = await _cbeContext.ConstMngAgrMachineries.Where(res => res.Collateral.CaseId == id).ToListAsync();
+                conMngAgr = await _cbeContext.ConstMngAgrMachineries.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
             }
             catch (Exception ex)
             {
@@ -488,7 +542,7 @@ namespace mechanical.Controllers
             List<IndBldgFacilityEquipment> indBldgFacEq = null;
             try
             {
-                indBldgFacEq = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.Collateral.CaseId == id).ToListAsync();
+                indBldgFacEq = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
             }
             catch (Exception ex)
             {

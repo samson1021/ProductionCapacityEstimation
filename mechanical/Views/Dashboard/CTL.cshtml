@@ -30,7 +30,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("MyCases","CTLCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="#" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info<i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
@@ -52,7 +52,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("MyPendingCases","CTLCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("MyPendingCase","MOCase")" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info <i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
@@ -127,7 +127,7 @@
                                             @foreach (var item in Model)
                                             {
                                                 <tr>
-                                                    <td><a href="@Url.Action("MyCase", "MTLCase")?Id=@item.Id">@item.CaseNo</a></td>
+                                                    <td><a href="@Url.Action("MyCase", "CTLCase")?Id=@item.Id">@item.CaseNo</a></td>
                                                     <td>@item.CreationAt</td>
                                                     <td>@item.Segement</td>
                                                     <td>@item.ApplicantName</td>
@@ -198,7 +198,6 @@
                 });
         });
 
-        // Production capacity estimation case end
 
         function animateCount(elementId, targetCount) {
             const element = document.getElementById(elementId);

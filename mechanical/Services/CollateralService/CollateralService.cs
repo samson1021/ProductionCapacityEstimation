@@ -340,6 +340,12 @@ namespace mechanical.Services.CollateralService
             var collaterals = caseAssignments.Select(res => res.Collateral);
             return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
         }
+        public async Task<IEnumerable<ReturnCollateralDto>> GetRmRemarkCollaterals(Guid userId, Guid CaseId)
+        {
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.CurrentStatus.Contains("Remark")).ToListAsync();
+
+            return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+        }
         public async Task<IEnumerable<ReturnCollateralDto>> GetMMPendCollaterals(Guid userId, Guid CaseId)
         {
 
@@ -414,7 +420,7 @@ namespace mechanical.Services.CollateralService
         //     }
         //     return returnFileDtos;
         // }
-        public async Task<Collateral> ChangeStatus(Guid useId, Guid Id, string Status)
+        public async Task<bool> ChangeStatus(Guid useId, Guid Id, string Status)
         {
             try
             {
@@ -426,12 +432,22 @@ namespace mechanical.Services.CollateralService
                     collateral.CurrentStatus = Status;
                     if (Status== "correction")
                     {
+                        var correction = await _cbeContext.Corrections.Where(res => res.CollateralID == Id && res.CommentedByUserId == useId).ToListAsync();
+                        if(correction.Count == 0)
+                        {
+                            throw new Exception("correction");
+                        }
                         caseassignment.Status = "Correction";
-                         collateral.CurrentStage = "Maker Officer";
-                         collateral.CurrentStatus = "Correction";
+                        collateral.CurrentStage = "Maker Officer";
+                        collateral.CurrentStatus = "Correction";
                     }
                     else if (Status == "Complete")
                     {
+                        var correction = await _cbeContext.Corrections.Where(res => res.CollateralID == Id && res.CommentedByUserId == useId).ToListAsync();
+                        if (correction.Count != 0)
+                        {
+                            throw new Exception("Complete");
+                        }
                         if (collateral.Category == MechanicalCollateralCategory.MOV)
                         {
                             //this is to set the user who made it 
@@ -499,7 +515,7 @@ namespace mechanical.Services.CollateralService
                     _cbeContext.Update(caseassignment);
                     await _cbeContext.SaveChangesAsync();
                 }
-                return (collateral);
+                return (true);
 
             }
             catch (Exception)
