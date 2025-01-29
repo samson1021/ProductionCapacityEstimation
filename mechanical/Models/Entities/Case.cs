@@ -12,7 +12,6 @@ namespace mechanical.Models.Entities
         public Guid DistrictId { get; set; }
         [ForeignKey("BussinessLicence")]
         public Guid? BussinessLicenceId { get; set; }
-        public bool SharedTask { get; set; }
 
         public required string Status { get; set; }
         public required string Segement { get; set; }
