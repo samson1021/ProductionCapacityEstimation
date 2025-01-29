@@ -1,0 +1,140 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var selectedCategory = document.getElementById("selectedCategory").value;
+
+        var categoryDropdown = document.getElementById("categoryDropdown");
+        for (var i = 0; i < categoryDropdown.options.length; i++) {
+            if (categoryDropdown.options[i].text === selectedCategory) {
+                categoryDropdown.selectedIndex = i;
+                break;
+            }
+        }
+        var typeDropdown = $("#typeDropdown");
+        function populateTypeDropdown() {
+            var category = $("#categoryDropdown").val();
+            typeDropdown = $("#typeDropdown");
+            typeDropdown.empty();
+            typeDropdown.append('<option value = "" disabled selected > Select Equipment Type </option>');
+                switch (category) {
+                case "MOV":
+                    typeDropdown.append('<option value="Automobile">Automobile</option>');
+                    typeDropdown.append('<option value="Bus">Bus</option>');
+                    typeDropdown.append('<option value="Minibus">Minibus</option>');
+                    typeDropdown.append('<option value="Truck">Truck</option>');
+                    typeDropdown.append('<option value="TruckWithTrail">Truck with trail</option>');
+                    typeDropdown.append('<option value="Hatchback">Hatchback</option>');
+                    typeDropdown.append('<option value="SUV">SUV</option>');
+                    typeDropdown.append('<option value="Minivan">Minivan</option>');
+                    typeDropdown.append('<option value="StationWagon">Station Wagon</option>');
+                    typeDropdown.append('<option value="Sedan">Sedan</option>');
+                    typeDropdown.append('<option value="Coupe">Coupe</option>');
+                    typeDropdown.append('<option value="Crossover">Crossover</option>');
+                    typeDropdown.append('<option value="Convertible">Convertible</option>');
+                    typeDropdown.append('<option value="SportsCar">Sports car</option>');
+                    typeDropdown.append('<option value="Pickup">Pickup</option>');
+                    typeDropdown.append('<option value="MUV">MUV</option>');
+                    typeDropdown.append('<option value="Motorcycles">Motorcycles</option>');
+                    typeDropdown.append('<option value="CompactCar">Compact car</option>');
+                    typeDropdown.append('<option value="Limousine">Limousine</option>');
+                    typeDropdown.append('<option value="Taxi">Taxi</option>');
+                    typeDropdown.append('<option value="FamilyCar">Family car</option>');
+                    typeDropdown.append('<option value="RecreationalVehicle">Recreational vehicle</option>');
+                    typeDropdown.append('<option value="FullSizeCar">Full-size car</option>');
+                    typeDropdown.append('<option value="Roadster">Roadster</option>');
+                    typeDropdown.append('<option value="CUV">CUV</option>');
+                    typeDropdown.append('<option value="Others">Others, please specify</option>');
+                    break;
+                case "CMAMachinery":
+                    typeDropdown.append('<option value="ChainExcavator">Chain Excavator</option>');
+                    typeDropdown.append('<option value="BullDozer">Bull Dozer</option>');
+                    typeDropdown.append('<option value="WheelLoader">Wheel Loader</option>');
+                    typeDropdown.append('<option value="MotorGrader">Motor Grader</option>');
+                    typeDropdown.append('<option value="DryCargoTruck">Dry Cargo Truck</option>');
+                    typeDropdown.append('<option value="ConcreteMixer">Concrete Mixer</option>');
+                    typeDropdown.append('<option value="PowerTruck">Power Truck</option>');
+                    typeDropdown.append('<option value="BulkCementCargo">Bulk Cement Cargo</option>');
+                    typeDropdown.append('<option value="ChainLoader">Chain Loader</option>');
+                    typeDropdown.append('<option value="SewageCleanerTruck">Sewage Cleaner Truck</option>');
+                    typeDropdown.append('<option value="ClosedCargoTruck">Closed Cargo Truck</option>');
+                    typeDropdown.append('<option value="DrawBarTrailer">Draw Bar Trailer</option>');
+                    typeDropdown.append('<option value="RigidDumpTruck">Rigid Dump Truck</option>');
+                    typeDropdown.append('<option value="ConcretePump">Concrete Pump</option>');
+                    typeDropdown.append('<option value="FuelCargo">Fuel Cargo</option>');
+                    typeDropdown.append('<option value="WaterSprinkler">Water Sprinkler</option>');
+                    typeDropdown.append('<option value="TipperDumpTruck">Tipper Dump Truck</option>');
+                    typeDropdown.append('<option value="CargoHalfCraneTruck">Cargo Half Crane Truck</option>');
+                    typeDropdown.append('<option value="MobileCrane">Mobile Crane</option>');
+                    typeDropdown.append('<option value="LowBed2AxleSemiTrailer">Low Bed 2Axle Semi Trailer</option>');
+                    typeDropdown.append('<option value="LowBed3AxleSemiTrailer">Low Bed 3Axle Semi Trailer</option>');
+                    typeDropdown.append('<option value="ConcertBatchingPlant">Concert Batching Plant</option>');
+                    typeDropdown.append('<option value="AsphaltBatchingPlant">Asphalt Batching Plant</option>');
+                    typeDropdown.append('<option value="DrillingRig">Drilling Rig</option>');
+                    typeDropdown.append('<option value="Compactor">Compactor</option>');
+                    typeDropdown.append('<option value="Backhoe">Backhoe</option>');
+                    typeDropdown.append('<option value="WheelTractorScraper">Wheel Tractor-Scraper</option>');
+                    typeDropdown.append('<option value="BackhoeLoader">Backhoe Loader</option>');
+                    typeDropdown.append('<option value="SkidSteerLoader">Skid-Steer Loader</option>');
+                    typeDropdown.append('<option value="TelescopicHandler">Telescopic Handler</option>');
+                    typeDropdown.append('<option value="DragLineExcavator">Drag-line Excavator</option>');
+                    typeDropdown.append('<option value="Forklift">Forklift</option>');
+                    typeDropdown.append('<option value="FactoryMachinery">Factory Machinery</option>');
+                    typeDropdown.append('<option value="Tractor">Tractor</option>');
+                    typeDropdown.append('<option value="CombineHarvester">Combine Harvester</option>');
+                    typeDropdown.append('<option value="ATVOrUTV">ATV or UTV</option>');
+                    typeDropdown.append('<option value="TractorWithDiscPlow">Tractor with Disc plow</option>');
+                    typeDropdown.append('<option value="TractorWithDiscHarrow">Tractor with Disc harrow</option>');
+                    typeDropdown.append('<option value="TractorWithDiscPloughAndDiscHarrow">Tractor with Disc plough & Disc harrow</option>');
+                    typeDropdown.append('<option value="TractorWithBackhoe">Tractor with backhoe</option>');
+                    typeDropdown.append('<option value="TractorWithLoader">Tractor with loader</option>');
+                    typeDropdown.append('<option value="TractorWithBucket">Tractor with bucket</option>');
+                    typeDropdown.append('<option value="TractorWithTrolleyOrTrailer">Tractor with trolley/trailer</option>');
+                    typeDropdown.append('<option value="TractorWithSeeder">Tractor with seeder</option>');
+                    typeDropdown.append('<option value="TractorWithChemicalSpreader">Tractor with Chemical spreader</option>');
+                    typeDropdown.append('<option value="TractorWithCultivator">Tractor with cultivator</option>');
+                    typeDropdown.append('<option value="TractorWithBaler">Tractor with baler</option>');
+                    typeDropdown.append('<option value="TractorWithRotavator">Tractor with Rotavator</option>');
+                    typeDropdown.append('<option value="DiscPlow">Disc plow</option>');
+                    typeDropdown.append('<option value="DiscHarrow">Disc harrow</option>');
+                    typeDropdown.append('<option value="Harvester">Harvester</option>');
+                    typeDropdown.append('<option value="Other">Others, please specify</option>');
+                    break;
+                case "IBFEqupment":
+                    typeDropdown.append('<option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>');
+                    typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>');
+                    typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>');
+                    break;
+                default:
+                    break;
+            }
+        }
+       
+        $("#categoryDropdown").change(function () {
+            typeDropdown.prop("disabled", false);
+            populateTypeDropdown();
+        });
+        populateTypeDropdown();
+        var selectedType = "@Model.Type";
+        var TypeDropDowns = document.getElementById("typeDropdown");
+        for (var i = 0; i < TypeDropDowns.options.length; i++) {
+            if (TypeDropDowns.options[i].text === selectedType) {
+                TypeDropDowns.selectedIndex = i;
+              
+                break;
+            }
+        }
+
+    });
+</script>

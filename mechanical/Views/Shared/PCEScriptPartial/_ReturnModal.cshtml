@@ -1,0 +1,96 @@
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.ReturnedProductionPostDto
+
+@{
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
+    var status = ViewBag.Status as string;
+    var RedirectUrl = "";
+    
+    if (myPCECase != null)
+    {
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myPCECase.Id, Status = "All" });
+    }
+    else if (myProduction != null)
+    {
+        RedirectUrl = Url.Action("Detail", "PCECase", new { Id = myProduction.PCECaseId, Status = "All" });
+    }
+    else
+    {
+        @* RedirectUrl = Url.Action("PCECases", "PCECase", new { Status = "All" });  *@
+        RedirectUrl = Url.Action("Productions", "ProductionCapacity", new { Status = "All" }); 
+    }
+}
+
+<!-- Return Modal -->
+<div class="modal fade" id="returnModal1" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnModalLabel">Return PCE</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="@Url.Action("Return", "PCEEvaluation")" id="ReturnForm">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="PCEId" type="hidden" />
+                    <div class="form-group">
+                        <label for="Reason">Comment:</label>
+                        <textarea class="form-control" asp-for="Reason" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Return</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var returnModal = document.getElementById('returnModal1');
+        var returnForm = document.getElementById('ReturnForm');
+        var commentField = document.getElementById('Reason');
+
+        returnModal.addEventListener('shown.bs.modal', function () {
+            commentField.focus();
+        });
+
+
+        returnForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(returnForm);
+            var actionUrl = returnForm.action;
+
+            fetch(actionUrl, {
+                method: returnForm.method,
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })               
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success('Return Comment saved successfully');
+                        $(returnModal).modal('hide');
+
+                        setTimeout(function () {
+                            window.location.href = '@RedirectUrl';
+                        }, 1000);
+                    } else {
+                        toastr.error('Error saving Return comment: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error saving Return comment: ' + error);
+                });                      
+        });
+    });
+</script>

@@ -1,0 +1,358 @@
+﻿@using System;
+@using System.Globalization;
+@using mechanical.Utils;
+@{
+    static string CapitalizeEachWord(string str)
+    {
+        TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
+        return textInfo.ToTitleCase(str.ToLower());
+    }
+
+    var collaterals = ViewData["collaterals"] as List<Collateral>;
+    var cases = ViewData["cases"] as Case;
+    var constMngAgrMachinery = ViewData["constMngAgrMachinery"] as List<ConstMngAgrMachinery>;
+    var caseSchedule = ViewData["caseSchedule"] as CaseSchedule;
+    var commaSeparatedRegions = "";
+    var commaSeparatedPropertyof = "";
+    var commaSeparatedType = "";
+
+    if (collaterals != null)
+    {
+        var uniqueRegions = collaterals.Select(m => m.Region).Distinct();
+        commaSeparatedRegions = CapitalizeEachWord(string.Join(", ", uniqueRegions));
+        var ProportyOF = collaterals.Select(m => m.PropertyOwner).Distinct();
+        commaSeparatedPropertyof = CapitalizeEachWord(string.Join(", ", ProportyOF));
+        var Type = collaterals.Select(m => m.Type).Distinct();
+        commaSeparatedType = string.Join(", ", Type);
+    }
+
+    var maker = constMngAgrMachinery.Select(m => m.EvaluatorUser).Distinct();
+    var checker = constMngAgrMachinery.Select(m => m.CheckerUser).Distinct();
+
+    var caseScheduleDate = DateTime.Now;
+    if (caseSchedule != null)
+    {
+        caseScheduleDate = caseSchedule.ScheduleDate;
+    }
+}
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            @* <h6>Case Detail</h6>*@
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                @*  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "Case")">Construction Mining ANd Agricultural Machinery Report </a></li>*@
+                <li class="breadcrumb-item active"><button class="btn btn-outline-primary" onclick="exportToPDF()">Export to PDF</button></li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div id="report" class="container-fluid page-break-after" style=" padding: 0mm 20mm 0mm 20mm;">
+    <div class="card py-4 ">
+        <div class="card-body px-2 mx-2">
+
+            <div class="d-flex justify-content-between">
+                <div class="">
+                    &nbsp;
+                </div>
+                <div class="d-flex align-items-center">
+                    <img src="~/img/cbelogo.png" alt="Logo" class="mr-3" style="max-height: 50px;">
+                    <h4 class="mb-0">Commercial Bank of Ethiopia</h4>
+                </div>
+                <div class="">
+                    &nbsp;
+                </div>
+            </div>
+            <hr class="my-1 border-1 border-dotted border-dark">
+            <div>
+                <div class="d-flex flex-column py-2">
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-1 mr-4">
+                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToShortDateString()</u>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-1 mr-4 " style="font-weight:500">
+                            Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@cases.CaseNo</u>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h5 class="mb-1"> Report on Valuation of Mechanical Equipment of <strong>@commaSeparatedPropertyof</strong> </h5>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h5 class="mb-1"> @commaSeparatedRegions , Ethiopia</h5>
+                    </div>
+                </div>
+                <h5 class="mt-1 pl-4">Part I: Excutive Summery</h5>
+                <div class="row my-0 py-0">
+                    <p style="font-size: 18px;" class="py-0">
+                        This is to notify that on request of  <label class="col-form-label">@cases.ApplicantName</label> we have visited
+                        the mechanical equipment of <label class="col-form-label">@commaSeparatedPropertyof</label> found at <label class="col-form-label">(@commaSeparatedRegions)</label>
+                        area on date <label class="col-form-label"> @caseScheduleDate.ToShortDateString() </label> to carry out valuation of <label class="col-form-label">Construction Minging Agriculture</label>  found there in.
+                    </p>
+                </div>
+                <div class="row my-0 py-0">
+                    <h5 class="py-0">
+                        General Description
+                        <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
+                    </h5>
+                </div>
+                <div class="pl-4">
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Property of:</label>
+                            <u class=" ">@commaSeparatedPropertyof</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2"> Machiery & Equipment Location:</label>
+                            <u class=" ">@commaSeparatedRegions</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Type of Mechanical Equipment:</label>
+                            <u class=" ">@commaSeparatedType</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Date as on which Valuation is made: </label>
+                            <u class=" ">@caseScheduleDate.ToShortDateString()</u>
+                        </p>
+                    </div>
+                </div>
+                <div class="row my-0 py-0">
+                    <h5 class="py-0">
+                        Our survey assessment and remarks are as under:
+                        <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
+                    </h5>
+                </div>
+                <div class="pl-4">
+                    <div class="row my-0 py-0">
+                        @{
+                            foreach (var item in constMngAgrMachinery)
+                            {
+                                if (item.Remark != null && item.Remark != String.Empty)
+                                {
+                                    <p style="font-size: 18px;" class="py-0">
+                                        @item.Remark
+                                    </p>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="row my-0 py-0">
+                    <h5 class="py-0">
+                        Assumptions and Limiting Conditions:
+                        <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
+                    </h5>
+                </div>
+                <div class="pl-4">
+                    <div class="row my-0 py-0">
+                        <p style="font-size: 18px;" class="py-0">
+                            Assumptions are made to the best of our knowledge and belief.Reliance is based on the information furnished to us by the identifier AND/OR owner.This valuation report shall not be used for any other purpose, other than specified in purpose of valuation.
+                            Exchange Rate as of Date of <label class="col-form-label"> @caseScheduleDate.ToShortDateString() </label>
+                        </p>
+                    </div>
+                </div>
+                <h5 class="mt-1 pl-4">Part II: Cost Summery</h5>
+                <div class="pl-4">
+                    <div class="form-group row my-0 pl-4">
+                        <p style="font-size: 18px;" class="my-0 py-0">
+                            RC, Total Replacement Cost (new) &nbsp; = &nbsp;
+                            <label class="col-form-label pr-2">
+                                <u id="ReplacementCost" class="">
+                                    @{
+                                        var sum = 0.0;
+                                        foreach (var item in constMngAgrMachinery)
+                                        {
+                                            sum = item.ReplacementCost + sum;
+                                        }
+                                    }
+                                    @sum
+                                </u>
+                            </label>
+                        </p>
+                    </div>
+                    <table class="table table-border-none table-responsive">
+                        <thead style="border-bottom: 3px solid #6f42c1;">
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th style="width: 200px;white-space: normal;">Min</th>
+                                <th style="width: 200px;">Max</th>
+                                <th style="width: 200px;">Average</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> Mm, Manufacturer’s Market Share </td>
+                                <td>@{
+                                        var minValue = constMngAgrMachinery.Min(obj => obj.MarketShareFactor);
+                                    }@Math.Round(minValue, 2) </td>
+                                <td>
+                                    @{
+                                        var maxValue = constMngAgrMachinery.Max(obj => obj.MarketShareFactor);
+                                    }@Math.Round(maxValue, 2)
+                                </td>
+                                <td>
+                                    @{
+                                        var AvrValue = constMngAgrMachinery.Average(obj => obj.MarketShareFactor);
+                                    }@Math.Round(AvrValue, 2)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Dr, Depreciation Rate by Age </td>
+                                <td>
+                                    @{
+                                        var DminValue = constMngAgrMachinery.Min(obj => obj.DepreciationRate);
+                                    }@Math.Round(DminValue, 2)
+                                </td>
+                                <td>
+                                    @{
+                                        var DmaxValue = constMngAgrMachinery.Max(obj => obj.DepreciationRate);
+                                    }@Math.Round(DmaxValue, 2)
+                                </td>
+                                <td>
+                                    @{
+                                        var DAvrValue = constMngAgrMachinery.Average(obj => obj.DepreciationRate);
+                                    }@Math.Round(DAvrValue, 2)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EC, Equipment Condition</td>
+                                <td>
+                                    @{
+                                        var EminValue = constMngAgrMachinery.Min(obj => obj.EqpmntConditionFactor);
+                                    }@Math.Round(EminValue, 2)
+                                </td>
+                                <td>
+                                    @{
+                                        var EmaxValue = constMngAgrMachinery.Max(obj => obj.EqpmntConditionFactor);
+                                    }@Math.Round(EmaxValue, 2)
+                                </td>
+                                <td>
+                                    @{
+                                        var EAvrValue = constMngAgrMachinery.Average(obj => obj.EqpmntConditionFactor);
+                                    }@Math.Round(EAvrValue, 2)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group row my-0 pl-4">
+                        <p style="font-size: 18px;" class="my-0 py-0">
+                            Total Estimation/Market Value &nbsp; = &nbsp;
+                            <label class="col-form-label pr-2">
+                                <u id="NetEstimationValue" class="">
+                                    @{
+                                        var NAvrValue = constMngAgrMachinery.Sum(obj => obj.NetEstimationValue);
+                                    }
+                                    @NAvrValue
+                                </u>
+                            </label>
+                        </p>
+                    </div>
+                </div>
+                <div class="pl-4">
+                    <div class="row my-0 py-0">
+                        <p style="font-size: 18px;" class="py-0">
+                            Based on above, we certify that, "Total present market value of <label class="col-form-label">@commaSeparatedPropertyof</label>
+                            Construction, Minning & Agricultural Machinery as of <label class="col-form-label"> @caseScheduleDate.ToShortDateString() </label> is
+                            <label style="font-size: 20px;" class="col-form-label"> @NumberToWordsConverter.ConvertDoubleToWords(NAvrValue)</label>
+                        </p>
+                    </div>
+                </div>
+                <div class="approvedby" style="display:block">
+                    @{
+                        foreach (var item in maker)
+                        {
+                            <p style="font-size: 18px;">
+                                Maker’s Name :- &nbsp;&nbsp;<u><strong>@(item.Name)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                                <span style="text-decoration: underline; margin: 0 5px;">
+                                    @if (item.Signatures != null)
+                                    {
+                                        <img src="@Url.Content("~/" + item.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                                    }
+                                    else
+                                    {
+                                        <span>Not Registered</span>
+                                    }
+                                </span>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                            </p>
+                        }
+                    }
+
+                </div>
+                <div class="approvedby" style="display:block">
+                    @{
+                        foreach (var item in checker)
+                        {
+                            <p style="font-size: 18px;">
+                                Checker's Name :- &nbsp;&nbsp;<u><strong>@(item.Name)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                                <span style="text-decoration: underline; margin: 0 5px;">
+                                    @if (item.Signatures != null)
+                                    {
+                                        <img src="@Url.Content("~/" + item.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                                    }
+                                    else
+                                    {
+                                        <span>Not Registered</span>
+                                    }
+                                </span>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                            </p>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div class="text-center my-4">
+            <img src="~/img/stamp.png" alt="Stamp" style="max-width: 200px; height: auto;" />
+        </div>
+        <div class="page-number"></div>
+    </div>
+
+</div>
+<script src="~/js/html2canvas.min.js"></script>
+<script src="~/js/jspdf.min.js"></script>
+<script src="~/js/html2pdf.bundle.min.js"></script>
+<script>
+    function exportToPDF() {
+        var element = document.getElementById('report');
+        var opt = {
+            margin: [15, -15, 25, -15], // No margins
+            filename: 'ccustom-reporoot.pdf',
+
+
+            image: { type: 'jpeg', quality: 0.78 }, // Higher quality for images
+            html2canvas: { scale: 2 }, // Higher scale for better resolution
+            jsPDF: {
+                unit: 'mm', // Use mm for units
+                format: 'a4', // A4 format
+                orientation: 'portrait' // Portrait orientation
+            }
+        };
+
+        // Use html2pdf to create the PDF
+        html2pdf().from(element).set(opt).save();
+    }
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        var value = parseFloat(element.textContent);
+        var formattedValue = formatNumber(value);
+        element.textContent = formattedValue;
+    }
+    formatAndDisplayValue('ReplacementCost');
+    formatAndDisplayValue('NetEstimationValue');
+</script>
+

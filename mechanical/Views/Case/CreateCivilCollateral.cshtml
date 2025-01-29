@@ -1,0 +1,482 @@
+﻿@model mechanical.Models.Dto.CollateralDto.CivilCollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+}
+
+<div class="modal fade" id="addCivilCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Add Civil Collateral</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("CreateCivil", "Collateral", FormMethod.Post, new { id = "addCivilCollateralForm" }))
+            {
+                <div class="modal-body" style="padding-top:0px;">
+                    <div class="card-body">
+                        <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
+                                <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwnerCiv" placeholder="Property Owner *" required>
+                                <span id="PropertyOwnerCiv-error" asp-validation-for="PropertyOwner" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Role">Role <i class="text-danger">*</i></label>
+                                <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                                    <option value="" disabled selected>Select Role *</option>
+                                    <option value="Applicant">Applicant</option>
+                                    <option value="Guarantor">Guarantor</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="BuildingStatus">Building Status<i class="text-danger">*</i></label>
+                                <select asp-for="BuildingStatus" class="form-control form-control-sm" id="BuildingStatus" required>
+                                    <option value="" disabled selected>Select Building Status *</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="UnderConstruction">Under Construction</option>
+                                </select>
+                                <span asp-validation-for="BuildingStatus" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Ownership">Ownership<i class="text-danger">*</i></label>
+                                <select asp-for="Ownership" class="form-control form-control-sm" id="Ownership">
+                                    <option value="" disabled selected>Select Ownership *</option>
+                                    <option value="Private">Private</option>
+                                    <option value="Cooperative">Cooperative</option>
+                                </select>
+                                <span asp-validation-for="Ownership" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="BuildingType">Type of Building <i class="text-danger">*</i></label>
+                                <select asp-for="BuildingType" class="form-control form-control-sm" id="BuildingType" required>
+                                    <option value="" disabled selected>Select Type of Building *</option>
+                                    <option value="ResidentialHouse">Residential House</option>
+                                    <option value="Condominium">Condominium</option>
+                                    <option value="ApartmentHouse">Apartment House</option>
+                                    <option value="CommercialTower">Commercial Tower</option>
+                                    <option value="RealState">Real State</option>
+                                    <option value="FactoryBuilding">Factory Building</option>
+                                    <option value="WarehouseBuilding">Warehouse Building</option>
+                                    <option value="CommercialBuilding">Commercial Building</option>
+                                    <option value="MixedBuilding">Mixed Building</option>
+                                    <option value="Others,please specify">Others,please specify</option>
+                                </select>
+                                <span asp-validation-for="BuildingType" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label asp-for="PurposeOfTheLand">Purpose of the land <i class="text-danger">*</i></label>
+                                <input asp-for="PurposeOfTheLand" type="text" class="form-control form-control-sm" placeholder="Purpose of the land" id="PurposeOfTheLandCiv" required>
+                                <span id="PurposeOfTheLandCiv-error" asp-validation-for="PurposeOfTheLand" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-2">
+                                <label asp-for="Region">Region <i class="text-danger">*</i></label>
+                                <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)" required>
+                                    <option value="">Select Region</option>
+                                    <option value="Addis Ababa">Addis Ababa</option>
+                                    <option value="Afar">Afar</option>
+                                    <option value="Amhara">Amhara</option>
+                                    <option value="Benshangul">Benshangul</option>
+                                    <option value="Central Ethiopia">Central Ethiopia</option>
+                                    <option value="Diredawa">Diredawa</option>
+                                    <option value="Gambella">Gambella</option>
+                                    <option value="Harrari">Harrari</option>
+                                    <option value="Oromia">Oromia</option>
+                                    <option value="Sidama">Sidama</option>
+                                    <option value="Somalia">Somalia</option>
+                                    <option value="South western Ethiopia">South western Ethiopia</option>
+                                    <option value="Southern Ethiopia">Southern Ethiopia</option>
+                                    <option value="Tigray">Tigray</option>
+                                    <option value="Others">Others, please specify</option>
+                                </select>
+                                <input type="text" class="form-control form-control-sm mt-2" id="OtherRegion" name="OtherRegion" style="display: none;">
+                                <span asp-validation-for="Region" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label asp-for="City">City </label>
+                                <input asp-for="City" type="text" class="form-control form-control-sm" id="CityCiv" placeholder="City">
+                                <span id="CityCiv-error" asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label asp-for="SubCity">Sub-City </label>
+                                <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="SubCityCiv" placeholder="Sub-City">
+                                <span id="SubCityCiv-error" asp-validation-for="SubCity" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label asp-for="Zone">Zone </label>
+                                <input asp-for="Zone" type="text" class="form-control form-control-sm" id="ZoneCiv" placeholder="Zone">
+                                <span id="ZoneCiv-error" asp-validation-for="Zone" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label asp-for="Woreda">Woreda </label>
+                                <input asp-for="Woreda" type="text" class="form-control form-control-sm" id="WoredaCiv" placeholder="Woreda">
+                                <span id="WoredaCiv-error" asp-validation-for="Woreda" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label asp-for="Kebele">Kebele </label>
+                                <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="KebeleCiv" placeholder="Kebele">
+                                <span id="KebeleCiv-error" asp-validation-for="Kebele" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="LHCNo">LHC Number: <i class="text-danger">*</i> </label>
+                                <input asp-for="LHCNo" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNoCiv" required>
+                                <span id="LHCNoCiv-error" asp-validation-for="LHCNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="PlotOfLand">Plot of Land(m2): </label>
+                                <input asp-for="PlotOfLand" type="number" class="form-control form-control-sm" placeholder="Plot Of Land(m2)" id="PlotOfLandCiv">
+                                <span id="PlotOfLandCiv-error" asp-validation-for="PlotOfLand" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="BlockNo">Block Number: </label>
+                                <input asp-for="BlockNo" type="number" class="form-control form-control-sm" placeholder="Block Number" id="BlockNoCiv">
+                                <span id="BlockNoCiv-error" asp-validation-for="BlockNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="FloorNo">Floor Number:</label>
+                                <input asp-for="FloorNo" type="number" class="form-control form-control-sm" placeholder="Floor Number" id="FloorNoCiv">
+                                <span id="FloorNoCiv-error" asp-validation-for="FloorNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="HouseNo">House Number:</label>
+                                <input asp-for="HouseNo" type="number" class="form-control form-control-sm" placeholder="House Number" id="HouseNoCiv">
+                                <span id="HouseNoCiv-error" asp-validation-for="HouseNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="HouseArea">House Area(m2)</label>
+                                <input asp-for="HouseArea" type="number" class="form-control form-control-sm" placeholder="House Area(m2)" id="HouseAreaCiv">
+                                <span id="HouseAreaCiv-error" asp-validation-for="HouseArea" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label asp-for="UploadLHC">Upload LHC<i class="text-danger">*</i></label>
+                                <input asp-for="UploadLHC" type="file" class="form-control  form-control-sm" id="UploadLHCCiv" required>
+                                <span id="UploadLHCCiv-error" asp-validation-for="UploadLHC" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="UploadSitePlan">Upload Aproved Plan:</label>
+                                <input asp-for="UploadSitePlan" type="file" class="form-control  form-control-sm" id="UploadSitePlan">
+                                <span asp-validation-for="UploadSitePlan" class="text-danger"></span>
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="LeaseAgreement">Lease Agreement</label>
+                                <input asp-for="LeaseAgreement" type="file" class="form-control  form-control-sm" id="LeaseAgreement">
+                                <span asp-validation-for="LeaseAgreement" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CurrentLeasePaymentReceipt">Current Lease Payment Receipt:</label>
+                                <input asp-for="CurrentLeasePaymentReceipt" type="file" class="form-control  form-control-sm" id="CurrentLeasePaymentReceipt">
+                                <span asp-validation-for="CurrentLeasePaymentReceipt" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CurrentLandRevenueTaxPaymentReceipt">Current Land Revenue Tax Payment Receipt:</label>
+                                <input asp-for="CurrentLandRevenueTaxPaymentReceipt" type="file" class="form-control  form-control-sm" id="CurrentLandRevenueTaxPaymentReceipt">
+                                <span asp-validation-for="CurrentLandRevenueTaxPaymentReceipt" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Add</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SendForEvaluationModal" tabindex="-1" role="dialog" aria-labelledby="SendForEvaluationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Send For Valuation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("SendForValuation", "Case", FormMethod.Post, new { id = "assignForm" }))
+                {
+                    <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
+                    <div class="form-group">
+                        <label for="CenterDropdown">Select Valuation Center:</label>
+                        <select class="form-control" id="CenterDropdown" name="CenterId">
+                        </select>
+                    </div>
+                    <div class="row col-12">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignButton">Assign</button>
+                            <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+    // function validateInputCiv(inputId, errorId) {
+    //         var input = document.getElementById(inputId).value;
+    //         var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //         console.log("from Civ");
+    //         if (!alphanumericRegex.test(input)) {
+    //             document.getElementById(inputId).setCustomValidity("Only alphanumeric characters are allowed.");
+    //             document.getElementById(errorId).textContent = "Only alphanumeric characters are allowed.";
+    //         } else {
+    //             document.getElementById(inputId).setCustomValidity("");
+    //             document.getElementById(errorId).textContent = "";
+    //         }
+    // }
+    function validateInputCiv(inputId, errorId, isRequired) {
+        var input = document.getElementById(inputId).value;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var errorMessage = "";
+        console.log("from validate civ");
+        // Check if the field is required and empty
+        if (isRequired && input.trim() === "") {
+            errorMessage = "This field is required.";
+        } else if (!alphanumericRegex.test(input)) {
+            errorMessage = "Only alphanumeric characters are allowed.";
+        }
+        if (errorMessage) {
+            document.getElementById(inputId).setCustomValidity(errorMessage);
+            document.getElementById(errorId).textContent = errorMessage;
+        } else {
+            document.getElementById(inputId).setCustomValidity("");
+            document.getElementById(errorId).textContent = "";
+        }
+    }
+    document.getElementById("addCivilCollateralForm").addEventListener("submit", function (event) {
+        // validateInputCiv("ModelNo", "ModelNo-error", true);
+        // validateInputCiv("EngineNo", "EngineNo-error", true);
+        validateInputCiv("LHCNoCiv", "LHCNoCiv-error", true);
+        console.log("from submit func");
+        event.preventDefault();
+        if (!this.checkValidity()) {
+            event.preventDefault();  // Prevent form submission
+            //alert("Please fix the errors in the form.");
+        }
+    });
+    
+    function handleRegionChange(selectElement) {
+        var otherRegionInput = document.getElementById("OtherRegion");
+        if (selectElement.value === "Others") {
+            otherRegionInput.style.display = "block";
+            otherRegionInput.setAttribute("required", "required");
+            otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
+        } else {
+            otherRegionInput.style.display = "none";
+            otherRegionInput.removeAttribute("required");
+            otherRegionInput.removeAttribute("name"); // Remove the name attribute
+        }
+    }
+    document.getElementById("PropertyOwnerCiv").addEventListener("input", function () {
+        validateInputCiv("PropertyOwnerCiv", "PropertyOwnerCiv-error",true);
+    });
+    // document.getElementById("InvoiceNoCiv").addEventListener("input", function () {
+    //     validateInputCiv("InvoiceNoCiv", "InvoiceNoCiv-error");
+    // });
+    
+    document.getElementById("ZoneCiv").addEventListener("input", function () {
+        validateInputCiv("ZoneCiv", "ZoneCiv-error",true);
+    });
+    document.getElementById("CityCiv").addEventListener("input", function () {
+        validateInputCiv("CityCiv", "CityCiv-error",true);
+    });
+    document.getElementById("SubCityCiv").addEventListener("input", function () {
+        validateInputCiv("SubCityCiv", "SubCityCiv-error",true);
+    });
+    document.getElementById("WoredaCiv").addEventListener("input", function () {
+        validateInputCiv("WoredaCiv", "WoredaCiv-error",true);
+    });
+    document.getElementById("KebeleCiv").addEventListener("input", function () {
+        validateInputCiv("KebeleCiv", "KebeleCiv-error",true);
+    });
+    document.getElementById("HouseNoCiv").addEventListener("input", function () {
+        validateInputCiv("HouseNoCiv", "HouseNoCiv-error",true);
+    });
+    document.getElementById("PurposeOfTheLandCiv").addEventListener("input", function () {
+        validateInputCiv("PurposeOfTheLandCiv", "PurposeOfTheLandCiv-error",true);
+    });
+    document.getElementById("LHCNoCiv").addEventListener("input", function () {
+        validateInpuCiv("LHCNoCiv", "LHCNoCiv-error", true);
+    });
+
+    // document.getElementById("SerialNoMac").addEventListener("input", function () {
+    //     validateInput("SerialNoMac", "SerialNoMac-error");
+    // });
+    // document.getElementById("EngineMotorNoMac").addEventListener("input", function () {
+    //     validateInput("EngineMotorNoMac", "EngineMotorNoMac-error");
+    // });
+    // document.getElementById("PurposeOfTheLandAgr").addEventListener("input", function () {
+    //     validateInputCiv("PurposeOfTheLandAgr", "PurposeOfTheLandAgr-error");
+    // });
+    // document.getElementById("ModelNoMac").addEventListener("input", function () {
+    //     validateInput("ModelNoMac", "ModelNoMac-error");
+    // });
+    // document.getElementById("ChassisNoMac").addEventListener("input", function () {
+    //     validateInput("ChassisNoMac", "ChassisNoMac-error");
+    // });
+
+
+
+    // document.getElementById("PurposeOfTheLand").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("PurposeOfTheLand-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("PurposeOfTheLand-error").textContent = "";
+    //     }
+    // });
+    
+
+    // document.getElementById("PropertyOwnerCiv").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     console.log("this is civil");
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("PropertyOwnerCiv-error").textContent = "Only alphanumeric characters are allowed.";
+    //         console.log("this is civil if");
+    //     } else {
+    //         this.setCustomValidity("");
+    //         console.log("this is civil else");
+    //         document.getElementById("PropertyOwnerCiv-error").textContent = "";
+    //     }
+    // });
+
+    // document.getElementById("InvoiceNo").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("InvoiceNo-error").textContent = "";
+    //     }
+    // });
+    // document.getElementById("SerialNo").addEventListener("input", function () {
+    //     var input = this.value;
+    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
+    //     if (!alphanumericRegex.test(input)) {
+    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
+    //         document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
+    //     } else {
+    //         this.setCustomValidity("");
+    //         document.getElementById("SerialNo-error").textContent = "";
+    //     }
+    // });
+    // function for the Region dropdown value
+
+    // function handleRegionChange(selectElement) {
+    //     var otherRegionInput = document.getElementById("OtherRegion");
+    //     if (selectElement.value === "Others") {
+    //         otherRegionInput.style.display = "block";
+    //         otherRegionInput.setAttribute("required", "required");
+    //         otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
+    //     } else {
+    //         otherRegionInput.style.display = "none";
+    //         otherRegionInput.removeAttribute("required");
+    //         otherRegionInput.removeAttribute("name"); // Remove the name attribute
+    //     }
+    // }
+    
+    //this is to validate all collateral addresses
+    // function validateZoneInput(inputElement) {
+    //     var zoneError = document.getElementById("Zone-error");
+    //     var zoneValue = inputElement.value;
+
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "Zone must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateCityInput(inputElement) {
+    //     var zoneError = document.getElementById("City-error");
+    //     var zoneValue = inputElement.value;
+
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "City must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateSubCityInput(inputElement) {
+    //     var zoneError = document.getElementById("SubCity-error");
+    //     var zoneValue = inputElement.value;
+
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "SubCity must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateWeredaInput(inputElement) {
+    //     var zoneError = document.getElementById("Wereda-error");
+    //     var zoneValue = inputElement.value;
+
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "Wereda must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateKebeleInput(inputElement) {
+    //     var zoneError = document.getElementById("Kebele-error");
+    //     var zoneValue = inputElement.value;
+
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "Kebele must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+    // function validateHouseNoInput(inputElement) {
+    //     var zoneError = document.getElementById("HouseNo-error");
+    //     var zoneValue = inputElement.value;
+
+    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+    //         zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
+    //     } else {
+    //         zoneError.textContent = ""; // Clear the error message if valid
+    //     }
+    // }
+</script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+
+}

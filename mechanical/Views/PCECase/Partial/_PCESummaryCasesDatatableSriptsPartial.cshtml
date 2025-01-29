@@ -1,0 +1,53 @@
+﻿<script>
+    $(document).ready(function () {
+        var PCECaseId = $('#PCECaseId').val();
+
+        function initializeDataTable(data) {
+            $('#summaryProductions').DataTable({
+                language: {
+                    emptyTable: "There is no production register for this PCE case."
+                },
+                responsive: true,
+                pageLength: 8,
+                lengthChange: false,
+                autoWidth: false,
+                scrollX: true,
+                data: data,
+                columns: [
+                    { data: "PCE.SerialNo" },
+                    { data: "PCE.PropertyOwner" },
+                    { data: "ProductionLineOrEquipmentName" },
+                    { data: "PCE.ManufactureYear" },
+                    { data: "PCE.CountryOfOrgin" },
+                    { data: "PCE.ModelNo" },
+                    { data: "PCE.InvoiceNo" },
+                    { data: "PCE.LHCNumber" },
+                    { data: "PCE.Type" },
+                    { data: "PCE.SerialNo" },
+                    { data: "DepreciationRateApplied" },
+                    { data: "ActualProductionCapacity" },
+                    { data: "EstimatedProductionCapacity" },
+                    { data: "SurveyRemark" }
+                ]
+            });
+        }
+        function loadProductions() {
+            $.ajax({
+                url: '/PCECase/GetPCESummary?PCECaseId=' + PCECaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if ($.fn.DataTable.isDataTable('#summaryProductions')) {
+                        $('#summaryProductions').DataTable().destroy();
+                    }
+                    initializeDataTable(data);
+                },
+                error: function (error) {
+                    toastr.error("Failed to load Productions");
+                    console.log(error);
+                }
+            });
+        }
+        loadProductions();
+    });
+</script>

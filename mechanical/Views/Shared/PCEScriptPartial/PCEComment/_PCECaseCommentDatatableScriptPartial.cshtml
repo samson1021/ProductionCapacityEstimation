@@ -1,0 +1,251 @@
+﻿<script>
+    const socketUrl = 'wss://localhost:5021/ws';
+    @* const socketUrl = 'ws://localhost:5021/ws'; *@
+    const PCECaseId = $('#PCECaseId').val();
+    const chatMessages = $('.direct-chat-messages');
+    @* let socket = new WebSocket(socketUrl);  *@
+
+    $(document).ready(function () {       
+
+        @* socket.onopen = function() { 
+            console.log('WebSocket connection established'); 
+        };
+        socket.onclose = function() { 
+            console.log('WebSocket connection closed'); 
+            reconnect();
+        };
+        socket.onerror = function(error) { 
+            console.error('WebSocket error:', error); 
+        };
+        
+        socket.onmessage = function(event) {
+            const message = event.data;
+            if (message && message.length > 0) {
+                console.log("message: ", message);
+                updateChatMessages(message);
+                scrollToBottom();
+            }
+        }; *@
+
+        $('#SendButton').click(function (e) {
+            e.preventDefault();
+            sendMessage();            
+        });
+
+        @* setInterval(loadComments, 5000); *@
+        loadComments();
+    });
+
+    function loadComments() {
+        $.ajax({
+            url: '/PCECaseComment/GetCaseComments?PCECaseId=' + PCECaseId,
+            method: 'GET',
+            success: function (data) {
+                updateChatMessages(data);
+                updateContactList(data);
+            },
+            error: function () {
+                console.log('An error occurred while retrieving case comments.');
+            }
+        });
+    }
+
+    function sendMessage(message) {
+
+        var message = $('#messageinput').val().trim();
+        var requestData = {
+            Content: message,
+            PCECaseId: PCECaseId
+        };
+
+        $.ajax({
+            url: '/PCECaseComment/CreateCaseComment',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            @* data: requestData, *@
+            success: function (response) {
+                $('#messageinput').val('');
+                loadComments();
+            },
+            error: function () {
+                console.log('Error while sending the message.');
+            }
+        });
+    }
+
+    function updateChatMessages(data) {
+
+        var currentUserID = data.userId;
+        var caseComments = data.caseComments;
+
+        $(".CommentBage").text(caseComments.length);
+        chatMessages.empty();
+
+        if (caseComments.length > 0) {
+            let lastDate = '';
+            caseComments.forEach(function (comment) {
+                var createdAt = new Date(comment.CreatedAt);
+                var options = { year: 'numeric', month: 'long', day: 'numeric' }; 
+                var formattedDate = createdAt.toLocaleDateString('en-US', options); 
+
+                // Check if the date has changed
+                if (formattedDate !== lastDate) {
+                    chatMessages.append($('<div>').addClass('chat-date').text(formattedDate));
+                    lastDate = formattedDate; 
+                }
+
+                var chatMsg = createChatMessage(comment, currentUserID);
+                chatMessages.append(chatMsg);
+            });
+        } else {
+            chatMessages.append('<div class="no-comments-msg">There are no comments related to this PCE Case.</div>');
+        }
+
+        scrollToBottom();
+    }
+
+    function createChatMessage(comment, currentUserID) {
+        var chatMsg = $('<div>').addClass('direct-chat-msg');
+        var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+        var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comment.AuthorId).text(comment.AuthorName);
+        var chatText = $('<div>').addClass('direct-chat-text').text(comment.Content);
+        var createdAt = new Date(comment.CreatedAt);
+        
+        // Only get the time for the timestamp
+        var chatTimestamp = $('<span>').addClass('direct-chat-timestamp').text(createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+        chatInfos.append(chatName); // Name at the top
+        chatMsg.append(chatInfos, chatText, chatTimestamp); // Append timestamp last
+        if (comment.AuthorId === currentUserID) {
+            chatMsg.addClass('right');
+        }
+        return chatMsg;
+    }
+    
+    function updateContactList(data) {
+
+        var users = data.caseComments.map(comment => ({
+            id: comment.AuthorId,
+            name: comment.AuthorName,
+            avatar: '/img/avatar5.png',
+            lastMessage: comment.Content,
+            date: new Date(comment.CreatedAt)
+        }));
+
+        populateContactList(users);
+    }
+
+    function populateContactList(users) {
+        var contactList = $('.contacts-list');
+        contactList.empty();
+
+        users.forEach(function (user) {
+            var listItem = $('<li>').append(
+                $('<a>').attr('href', '/UserManagment/Profile/' + user.id)
+                    .append($('<img>').addClass('contacts-list-img').attr('src', user.avatar))
+                    .append($('<div>').addClass('contacts-list-info')
+                        .append($('<span>').addClass('contacts-list-name').text(user.name))
+                        .append($('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date)))
+                        .append($('<span>').addClass('contacts-list-msg').text(user.lastMessage))
+                    )
+            );
+            contactList.append(listItem);
+        });
+    }
+
+    function scrollToBottom() {
+        chatMessages.scrollTop(chatMessages.prop('scrollHeight'));
+    }
+
+    function formatDate(date) {
+        var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return date.toLocaleString('en-US', options);
+    }
+
+    @* function reconnect() {
+        setTimeout(() => {
+            console.log('Attempting to reconnect...');
+            socket = new WebSocket(socketUrl);
+        }, 5000); 
+    } *@
+
+</script>
+
+<style>
+    .direct-chat-messages {
+        max-height: 50vh;
+        overflow-y: auto; 
+        padding: 2%; 
+    }  
+    .direct-chat-msg {
+        max-width: 75%; 
+        margin-bottom: 1.25rem;
+        border-radius: 0.625rem; 
+        padding: 1rem; 
+        word-wrap: break-word;
+        display: flex;
+        flex-direction: column; 
+        position: relative;
+        background-color: #f9f9f9; 
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1); 
+        overflow-wrap: break-word; 
+        min-height: 2.5rem;
+        width: fit-content;
+    }
+    .direct-chat-msg.right {
+        margin-left: auto;
+        background-color: #e6f7ff; 
+    }
+    .direct-chat-msg:not(.right) {
+        background-color: #f1f1f1; 
+    }
+    .direct-chat-text {
+        white-space: pre-wrap;
+        margin-bottom: 1.25rem;
+        display: inline-block; 
+    }
+    .direct-chat-infos {
+        display: flex; 
+        justify-content: space-between;
+        align-items: flex-start;;
+    }
+    .direct-chat-timestamp {
+        position: absolute;
+        right: 0.625rem; 
+        bottom: 0.3125rem;
+        color: #888888; 
+        font-size: 0.8rem; 
+        margin-left: auto;
+        margin-top: 0.3125rem;
+        font-style: italic;
+        display: block;
+    }
+    .chat-date {
+        text-align: center; 
+        margin: 2% auto;
+        color: #333; 
+        font-weight: bold; 
+        font-size: 1rem; 
+        padding: 0.5rem 1rem;
+        letter-spacing: 0.05rem;
+        
+        background-color: #f9f9f9; 
+        border: none;
+        width: fit-content;        
+        border-radius: 1rem; 
+        display: block;   
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1),
+                    0 0.25rem 0 rgba(0, 0, 0, 0.1); 
+    }
+    .SendButton {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+</style>

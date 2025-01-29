@@ -1,0 +1,64 @@
+﻿<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3>My Assignment</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">My Assignment</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="MOMyCasesDatatable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Created At</th>
+                            <th>Case No</th>
+                            <th>Aplicant Name</th>
+                            <th>Customer Id</th>
+                            <th>New Collateral</th>
+                            <th>Total Collateral</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="assignModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Assign Case</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="userSelect">Select User:</label>
+                <select id="userSelect" class="form-control">
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="assignCaseBtn">Assign</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_MTLMyCasesDatatableSriptsPartial");
+    }
+}

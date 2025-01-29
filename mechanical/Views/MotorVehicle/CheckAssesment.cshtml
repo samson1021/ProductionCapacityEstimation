@@ -1,0 +1,743 @@
+﻿@{
+    ViewData["Title"] = "Get Returned Evaluated Moter Vehicle";
+}
+
+@model mechanical.Models.Dto.MotorVehicleDto.ReturnEvaluatedCaseDto;
+
+@{
+    var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
+    var motorVehicle = ViewData["motorVehicleDto"] as MotorVehicle;
+
+}
+<div class="modal fade" id="CheckAssesmentModal" tabindex="-1" role="dialog" aria-labelledby="CheckAssesmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CollateralFileModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">Motor vehicle  Evaluation Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="checkAssessmentForm" enctype="multipart/form-data" asp-action="CheckAssesment" asp-route-Id="@Model.ReturnMotorVehicleDto.Id">
+                    <input name="CollateralId" id="TxtmovId" value="@Model.CaseCommenAttributeDto.CollateralId" type="hidden" />
+                    <input name="Id" id="TxtEquipmentId" value="@Model.ReturnMotorVehicleDto.Id" type="hidden" />
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label asp-for="@Model.ReturnMotorVehicleDto.EngineType">Engine Type</label>
+                            <select name="EngineType" asp-for="@motorVehicle.EngineType" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Engine Type</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.EngineType" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="@Model.ReturnMotorVehicleDto.NoOfCylinder">Number of Cylinder</label>
+                            <select name="NoOfCylinder" asp-for="@motorVehicle.NoOfCylinder" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select No Of Cylinder</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.NoOfCylinder" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="@Model.ReturnMotorVehicleDto.TransmissionType">Transmission Type</label>
+                            <select name="TransmissionType" asp-for="@motorVehicle.TransmissionType" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Transmission Type</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.NoOfCylinder" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lbcoolingSystem">Cooling System</label>
+                            <select name="coolingSystem" asp-for="@motorVehicle.coolingSystem" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(CoolingSystem)).Cast<CoolingSystem>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Cooling System</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.coolingSystem" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblEnginePower">Engine Power(Cc/Kw/Hp)</label>
+                            <input name="EnginePower" id="txtEnginePower" value="@motorVehicle.EnginePower" type="text" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.EnginePower" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblLoadingCapacity">Loading Capacity(Per & Qt.)</label>
+                            <input name="LoadingCapacity" id="txtLoadingCapacity" value="@motorVehicle.LoadingCapacity" type="text" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.LoadingCapacity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblBodyType">Body Type</label>
+                            <select name="BodyType" asp-for="@motorVehicle.BodyType" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(BodyType)).Cast<BodyType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Body Type</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.BodyType" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblCabinType">Cabin Type</label>
+                            <select name="CabinType" asp-for="@motorVehicle.CabinType" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(CabinType)).Cast<CabinType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Cabin Type</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.CabinType" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblNumberOfAxle">Number of Axles</label>
+                            <select name="NumberOfAxle" asp-for="@motorVehicle.NumberOfAxle" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfAxles)).Cast<NoOfAxles>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Number of Axles</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.NumberOfAxle" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblColor">Color</label>
+                            <input name="Color" list="carColors" type="text" class="form-control" value="@motorVehicle.Color" placeholder="Select Car Color" required>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.Color" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblMotorVehicleMake">Motor Vehicle Make</label>
+                            <select name="MotorVehicleMake" asp-for="@motorVehicle.MotorVehicleMake" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(MotorVehicleMake)).Cast<MotorVehicleMake>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Motor Vehicle Make</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.MotorVehicleMake" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblCurrentEqpmntCondition">Current Equipment Condition</label>
+                            <select name="CurrentEqpmntCondition" asp-for="@motorVehicle.CurrentEqpmntCondition" class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(EquipmentCondition)).Cast<EquipmentCondition>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Current Equipment Condition</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.CurrentEqpmntCondition" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblAllocatedPointsRange">Allocated Points Range</label>
+                            <select name="AllocatedPointsRange" asp-for="@motorVehicle.AllocatedPointsRange" class="form-control"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled>Select Allocated Points Range</option>
+                            </select>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.AllocatedPointsRange" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblModelNo">Model Number</label>
+                            <input name="ModelNo" id="lblModelNo" value="@Model.ReturnMotorVehicleDto.ModelNo" type="text" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.ModelNo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblEngineNo">Engine Number</label>
+                            <input name="EngineNo" id="txtEngineNo" type="text" value="@Model.ReturnMotorVehicleDto.EngineNo" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.EngineNo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblChassisNo">Chassis Number</label>
+                            <input name="ChassisNo" id="txtChassisNo" value="@Model.ReturnMotorVehicleDto.ChassisNo" type="text" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.ChassisNo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblSerialNo">Serial Number</label>
+                            <input name="SerialNo" id="txtSerialNo" type="text" value="@Model.ReturnMotorVehicleDto.SerialNo" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.SerialNo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblPlateNo">Plate Number</label>
+                            <input name="PlateNo" id="txtPlateNo" type="text" value="@Model.ReturnMotorVehicleDto.PlateNo" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.PlateNo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblTDNo">TD Number</label>
+                            <input name="TDNo" id="txtTDNo" type="text" value="@Model.ReturnMotorVehicleDto.TDNo" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.TDNo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblYearOfManufacture">Year of Manufacture</label>
+                            <input name="YearOfManufacture" id="txtYearOfManufacture" value="@Model.ReturnMotorVehicleDto.YearOfManufacture" type="text" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.YearOfManufacture" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblCountryOfOrigin">Country of Origin</label>
+                            <input name="CountryOfOrigin" type="text" class="form-control form-control-sm" value="@Model.ReturnMotorVehicleDto.CountryOfOrigin" placeholder="Select Country of Origin" list="country" required>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.CountryOfOrigin" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblPhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
+                            <textarea name="PhysicalAndInstallationAssesment" id="txtTDNo" type="text" value="@Model.ReturnMotorVehicleDto.PhysicalAndInstallationAssesment" class="form-control form-control-sm">@Model.ReturnMotorVehicleDto.PhysicalAndInstallationAssesment</textarea>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.PhysicalAndInstallationAssesment" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblOverallSurveyAssesment">Overall Survey Assessment</label>
+                            <textarea name="OverallSurveyAssesment" id="txtaOverallSurveyAssesment" class="form-control form-control-sm" value="@Model.ReturnMotorVehicleDto.OverallSurveyAssesment" type="text">@Model.ReturnMotorVehicleDto.OverallSurveyAssesment</textarea>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.OverallSurveyAssesment" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblRemark">Remark</label>
+                            <textarea name="Remark" id="txtCountryOfOrigin" value=@Model.ReturnMotorVehicleDto.Remark type="text" class="form-control form-control-sm">@Model.ReturnMotorVehicleDto.Remark</textarea>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.Remark" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label id="lblInvoiceValue">Invoice Value</label>
+                            <input name="InvoiceValue" id="txtInvoiceValue" type="number" class="form-control form-control-sm" value="@Model.ReturnMotorVehicleDto.InvoiceValue" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.InvoiceValue" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblCurrency">Currency</label>
+                            <input name="Currency" list="currencyList" type="text" class="form-control form-control-sm" value="@Model.ReturnMotorVehicleDto.Currency" placeholder="Select Currency" required>
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.Currency" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label id="lblExchangeRate">Exchange Rate</label>
+                            <input name="ExchangeRate" id="txtExchangeRate" type="number" value="@Model.ReturnMotorVehicleDto.ExchangeRate" class="form-control form-control-sm" />
+                            <span asp-validation-for="@Model.ReturnMotorVehicleDto.ExchangeRate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <button type="submit" id="btnSaveForResubmiting" class="  btn bg-purple mr-2">Evaluate <i class="fas fa-toolbox"></i></button>
+                                    <button type="button" class="btn  btn-secondary" data-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_MVSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+    }
+        }
+<script>
+    // Disable the modal
+    $('#CheckAssesmentModal').modal('hide');
+    $('#CheckAssesmentModal').data('bs.modal', null);
+</script>
+
+<!--this is file Box modal code-->
+<div class="modal fade" id="CollateralFileModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CollateralFileModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Collateral Related Document List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>File Catagory</th>
+                        <th>File Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (collateralFiles != null)
+                        {
+
+
+                            foreach (var collateralFile in collateralFiles)
+                            {
+                                <tr>
+                                    <td>@collateralFile.Name</td>
+                                    <td>@collateralFile.Catagory</td>
+                                    <td>@collateralFile.ContentType</td>
+                                    <td><a href="@Url.Action("DownloadFile", "Collateral", new { id = collateralFile.Id })">Download</a></td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .motion-button {
+        transition: transform 0.3s ease-in-out;
+        color: red;
+    }
+
+        .motion-button:hover {
+            transform: scale(1.1);
+        }
+
+    .comment-text {
+        color: red;
+    }
+
+    .alert {
+        color: #f44336; /* Danger color */
+        /*         font-size: 12px; /* Adjust the font size as needed */
+        */
+    }
+</style>
+<datalist id="carColors">
+    <option value="Black" />
+    <option value="White" />
+    <option value="Silver" />
+    <option value="Gray" />
+    <option value="Red" />
+    <option value="Blue" />
+    <option value="Green" />
+    <option value="Yellow" />
+    <option value="Orange" />
+    <option value="Brown" />
+    <option value="Beige" />
+    <option value="Gold" />
+    <option value="Purple" />
+    <option value="Pink" />
+    <option value="Bronze" />
+    <option value="Burgundy" />
+    <option value="Teal" />
+    <option value="Champagne" />
+    <option value="Maroon" />
+    <option value="Navy" />
+    <option value="Cream" />
+    <option value="Ivory" />
+    <option value="Indigo" />
+    <option value="Turquoise" />
+    <option value="Lime" />
+    <option value="Aqua" />
+    <option value="Magenta" />
+    <option value="Charcoal" />
+    <option value="Ruby" />
+    <option value="Emerald" />
+    <option value="Sapphire" />
+    <option value="Pearl" />
+    <option value="Copper" />
+    <option value="Mocha" />
+    <option value="Plum" />
+    <option value="Amber" />
+    <option value="Coral" />
+    <option value="Lilac" />
+    <option value="Ebony" />
+    <option value="Frost" />
+    <option value="Graphite" />
+</datalist>
+<datalist id="country">
+    <option value="Afghanistan" />
+    <option value="Albania" />
+    <option value="Algeria" />
+    <option value="American Samoa" />
+    <option value="Andorra" />
+    <option value="Angola" />
+    <option value="Anguilla" />
+    <option value="Antarctica" />
+    <option value="Antigua and Barbuda" />
+    <option value="Argentina" />
+    <option value="Armenia" />
+    <option value="Aruba" />
+    <option value="Australia" />
+    <option value="Austria" />
+    <option value="Azerbaijan" />
+    <option value="Bahamas" />
+    <option value="Bahrain" />
+    <option value="Bangladesh" />
+    <option value="Barbados" />
+    <option value="Belarus" />
+    <option value="Belgium" />
+    <option value="Belize" />
+    <option value="Benin" />
+    <option value="Bermuda" />
+    <option value="Bhutan" />
+    <option value="Bolivia" />
+    <option value="Bosnia and Herzegovina" />
+    <option value="Botswana" />
+    <option value="Bouvet Island" />
+    <option value="Brazil" />
+    <option value="British Indian Ocean Territory" />
+    <option value="Brunei Darussalam" />
+    <option value="Bulgaria" />
+    <option value="Burkina Faso" />
+    <option value="Burundi" />
+    <option value="Cambodia" />
+    <option value="Cameroon" />
+    <option value="Canada" />
+    <option value="Cape Verde" />
+    <option value="Cayman Islands" />
+    <option value="Central African Republic" />
+    <option value="Chad" />
+    <option value="Chile" />
+    <option value="China" />
+    <option value="Christmas Island" />
+    <option value="Cocos (Keeling) Islands" />
+    <option value="Colombia" />
+    <option value="Comoros" />
+    <option value="Congo" />
+    <option value="Congo, The Democratic Republic of The" />
+    <option value="Cook Islands" />
+    <option value="Costa Rica" />
+    <option value="Cote D'ivoire" />
+    <option value="Croatia" />
+    <option value="Cuba" />
+    <option value="Cyprus" />
+    <option value="Czech Republic" />
+    <option value="Denmark" />
+    <option value="Djibouti" />
+    <option value="Dominica" />
+    <option value="Dominican Republic" />
+    <option value="Ecuador" />
+    <option value="Egypt" />
+    <option value="El Salvador" />
+    <option value="Equatorial Guinea" />
+    <option value="Eritrea" />
+    <option value="Estonia" />
+    <option value="Ethiopia" />
+    <option value="Falkland Islands (Malvinas)" />
+    <option value="Faroe Islands" />
+    <option value="Fiji" />
+    <option value="Finland" />
+    <option value="France" />
+    <option value="French Guiana" />
+    <option value="French Polynesia" />
+    <option value="French Southern Territories" />
+    <option value="Gabon" />
+    <option value="Gambia" />
+    <option value="Georgia" />
+    <option value="Germany" />
+    <option value="Ghana" />
+    <option value="Gibraltar" />
+    <option value="Greece" />
+    <option value="Greenland" />
+    <option value="Grenada" />
+    <option value="Guadeloupe" />
+    <option value="Guam" />
+    <option value="Guatemala" />
+    <option value="Guinea" />
+    <option value="Guinea-bissau" />
+    <option value="Guyana" />
+    <option value="Haiti" />
+    <option value="Heard Island and Mcdonald Islands" />
+    <option value="Holy See (Vatican City State)" />
+    <option value="Honduras" />
+    <option value="Hong Kong" />
+    <option value="Hungary" />
+    <option value="Iceland" />
+    <option value="India" />
+    <option value="Indonesia" />
+    <option value="Iran, Islamic Republic of" />
+    <option value="Iraq" />
+    <option value="Ireland" />
+    <option value="Israel" />
+    <option value="Italy" />
+    <option value="Jamaica" />
+    <option value="Japan" />
+    <option value="Jordan" />
+    <option value="Kazakhstan" />
+    <option value="Kenya" />
+    <option value="Kiribati" />
+    <option value="Korea, Democratic People's Republic of" />
+    <option value="Korea, Republic of" />
+    <option value="Kuwait" />
+    <option value="Kyrgyzstan" />
+    <option value="Lao People's Democratic Republic" />
+    <option value="Latvia" />
+    <option value="Lebanon" />
+    <option value="Lesotho" />
+    <option value="Liberia" />
+    <option value="Libyan Arab Jamahiriya" />
+    <option value="Liechtenstein" />
+    <option value="Lithuania" />
+    <option value="Luxembourg" />
+    <option value="Macao" />
+    <option value="Macedonia, The Former Yugoslav Republic of" />
+    <option value="Madagascar" />
+    <option value="Malawi" />
+    <option value="Malaysia" />
+    <option value="Maldives" />
+    <option value="Mali" />
+    <option value="Malta" />
+    <option value="Marshall Islands" />
+    <option value="Martinique" />
+    <option value="Mauritania" />
+    <option value="Mauritius" />
+    <option value="Mayotte" />
+    <option value="Mexico" />
+    <option value="Micronesia, Federated States of" />
+    <option value="Moldova, Republic of" />
+    <option value="Monaco" />
+    <option value="Mongolia" />
+    <option value="Montserrat" />
+    <option value="Morocco" />
+    <option value="Mozambique" />
+    <option value="Myanmar" />
+    <option value="Namibia" />
+    <option value="Nauru" />
+    <option value="Nepal" />
+    <option value="Netherlands" />
+    <option value="Netherlands Antilles" />
+    <option value="New Caledonia" />
+    <option value="New Zealand" />
+    <option value="Nicaragua" />
+    <option value="Niger" />
+    <option value="Nigeria" />
+    <option value="Niue" />
+    <option value="Norfolk Island" />
+    <option value="Northern Mariana Islands" />
+    <option value="Norway" />
+    <option value="Oman" />
+    <option value="Pakistan" />
+    <option value="Palau" />
+    <option value="Palestinian Territory, Occupied" />
+    <option value="Panama" />
+    <option value="Papua New Guinea" />
+    <option value="Paraguay" />
+    <option value="Peru" />
+    <option value="Philippines" />
+    <option value="Pitcairn" />
+    <option value="Poland" />
+    <option value="Portugal" />
+    <option value="Puerto Rico" />
+    <option value="Qatar" />
+    <option value="Reunion" />
+    <option value="Romania" />
+    <option value="Russian Federation" />
+    <option value="Rwanda" />
+    <option value="Saint Helena" />
+    <option value="Saint Kitts and Nevis" />
+    <option value="Saint Lucia" />
+    <option value="Saint Pierre and Miquelon" />
+    <option value="Saint Vincent and The Grenadines" />
+    <option value="Samoa" />
+    <option value="San Marino" />
+    <option value="Sao Tome and Principe" />
+    <option value="Saudi Arabia" />
+    <option value="Senegal" />
+    <option value="Serbia and Montenegro" />
+    <option value="Seychelles" />
+    <option value="Sierra Leone" />
+    <option value="Singapore" />
+    <option value="Slovakia" />
+    <option value="Slovenia" />
+    <option value="Solomon Islands" />
+    <option value="Somalia" />
+    <option value="South Africa" />
+    <option value="South Georgia and The South Sandwich Islands" />
+    <option value="Spain" />
+    <option value="Sri Lanka" />
+    <option value="Sudan" />
+    <option value="Suriname" />
+    <option value="Svalbard and Jan Mayen" />
+    <option value="Swaziland" />
+    <option value="Sweden" />
+    <option value="Switzerland" />
+    <option value="Syrian Arab Republic" />
+    <option value="Taiwan, Province of China" />
+    <option value="Tajikistan" />
+    <option value="Tanzania, United Republic of" />
+    <option value="Thailand" />
+    <option value="Timor-leste" />
+    <option value="Togo" />
+    <option value="Tokelau" />
+    <option value="Tonga" />
+    <option value="Trinidad and Tobago" />
+    <option value="Tunisia" />
+    <option value="Turkey" />
+    <option value="Turkmenistan" />
+    <option value="Turks and Caicos Islands" />
+    <option value="Tuvalu" />
+    <option value="Uganda" />
+    <option value="Ukraine" />
+    <option value="United Arab Emirates" />
+    <option value="United Kingdom" />
+    <option value="United States" />
+    <option value="United States Minor Outlying Islands" />
+    <option value="Uruguay" />
+    <option value="Uzbekistan" />
+    <option value="Vanuatu" />
+    <option value="Venezuela" />
+    <option value="Viet Nam" />
+    <option value="Virgin Islands, British" />
+    <option value="Virgin Islands, U.S" />
+    <option value="Wallis and Futuna" />
+    <option value="Western Sahara" />
+    <option value="Yemen" />
+    <option value="Zambia" />
+    <option value="Zimbabwe" />
+</datalist>
+<datalist id="currencyList">
+    <option value="ETB" />
+    <option value="USD" />
+    <option value="EUR" />
+    <option value="AED" />
+    <option value="AFN" />
+    <option value="ALL" />
+    <option value="AMD" />
+    <option value="ANG" />
+    <option value="AOA" />
+    <option value="ARS" />
+    <option value="AUD" />
+    <option value="AWG" />
+    <option value="AZN" />
+    <option value="BAM" />
+    <option value="BBD" />
+    <option value="BDT" />
+    <option value="BGN" />
+    <option value="BHD" />
+    <option value="BIF" />
+    <option value="BMD" />
+    <option value="BND" />
+    <option value="BOB" />
+    <option value="BRL" />
+    <option value="BSD" />
+    <option value="BTN" />
+    <option value="BWP" />
+    <option value="BYN" />
+    <option value="BZD" />
+    <option value="CAD" />
+    <option value="CDF" />
+    <option value="CHF" />
+    <option value="CLP" />
+    <option value="CNY" />
+    <option value="COP" />
+    <option value="CRC" />
+    <option value="CUC" />
+    <option value="CUP" />
+    <option value="CVE" />
+    <option value="CZK" />
+    <option value="DJF" />
+    <option value="DKK" />
+    <option value="DOP" />
+    <option value="DZD" />
+    <option value="EGP" />
+    <option value="ERN" />
+    <option value="FJD" />
+    <option value="FKP" />
+    <option value="GBP" />
+    <option value="GEL" />
+    <option value="GHS" />
+    <option value="GIP" />
+    <option value="GMD" />
+    <option value="GNF" />
+    <option value="GTQ" />
+    <option value="GYD" />
+    <option value="HKD" />
+    <option value="HNL" />
+    <option value="HRK" />
+    <option value="HTG" />
+    <option value="HUF" />
+    <option value="IDR" />
+    <option value="ILS" />
+    <option value="INR" />
+    <option value="IQD" />
+    <option value="IRR" />
+    <option value="ISK" />
+    <option value="JMD" />
+    <option value="JOD" />
+    <option value="JPY" />
+    <option value="KES" />
+    <option value="KGS" />
+    <option value="KHR" />
+    <option value="KMF" />
+    <option value="KPW" />
+    <option value="KRW" />
+    <option value="KWD" />
+    <option value="KYD" />
+    <option value="KZT" />
+    <option value="LAK" />
+    <option value="LBP" />
+    <option value="LKR" />
+    <option value="LRD" />
+    <option value="LSL" />
+    <option value="LYD" />
+    <option value="MAD" />
+    <option value="MDL" />
+    <option value="MGA" />
+    <option value="MKD" />
+    <option value="MMK" />
+    <option value="MNT" />
+    <option value="MOP" />
+    <option value="MRU" />
+    <option value="MUR" />
+    <option value="MVR" />
+    <option value="MWK" />
+    <option value="MXN" />
+    <option value="MYR" />
+    <option value="MZN" />
+    <option value="NAD" />
+    <option value="NGN" />
+    <option value="NIO" />
+    <option value="NOK" />
+    <option value="NPR" />
+    <option value="NZD" />
+    <option value="OMR" />
+    <option value="PAB" />
+    <option value="PEN" />
+    <option value="PGK" />
+    <option value="PHP" />
+    <option value="PKR" />
+    <option value="PLN" />
+    <option value="PYG" />
+    <option value="QAR" />
+    <option value="RON" />
+    <option value="RSD" />
+    <option value="RUB" />
+    <option value="RWF" />
+    <option value="SAR" />
+    <option value="SBD" />
+    <option value="SCR" />
+    <option value="SDG" />
+    <option value="SEK" />
+    <option value="SGD" />
+    <option value="SHP" />
+    <option value="SLL" />
+    <option value="SOS" />
+    <option value="SRD" />
+    <option value="SSP" />
+    <option value="STN" />
+    <option value="SVC" />
+    <option value="SYP" />
+    <option value="SZL" />
+    <option value="THB" />
+    <option value="TJS" />
+    <option value="TMT" />
+    <option value="TND" />
+    <option value="TOP" />
+    <option value="TRY" />
+    <option value="TTD" />
+    <option value="TWD" />
+    <option value="TZS" />
+    <option value="UAH" />
+    <option value="UGX" />
+    <option value="UYU" />
+    <option value="UZS" />
+    <option value="VES" />
+    <option value="VND" />
+    <option value="VUV" />
+    <option value="WST" />
+    <option value="XAF" />
+    <option value="XCD" />
+    <option value="XDR" />
+    <option value="XOF" />
+    <option value="XPF" />
+    <option value="YER" />
+    <option value="ZAR" />
+    <option value="ZMW" />
+    <option value="ZWL" />
+</datalist>

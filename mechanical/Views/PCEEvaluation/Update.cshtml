@@ -1,0 +1,92 @@
+@using mechanical.Models.Dto.UploadFileDto
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+
+@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
+@{
+    ViewData["Title"] = ViewBag.Title as string;
+    var ReturnPost = new ReturnedProductionPostDto
+    {
+        PCEId = Model.PCEId,
+        Reason = ""
+    };
+    ViewData["ReturnPost"] = ReturnPost;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-4">
+                <div class="row align-items-center">
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-6 offset-xl-1">
+                <h4 class="m-0">Update PCE Evaluation</h4>
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
+                   <li class="breadcrumb-item active">Update</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Update Icon">
+                    Update PCE Evaluation
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Update" id="evaluationForm">
+                    
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+                    <input asp-for="PCEId" value='@Model.PCEId' type="hidden" />
+                    <input asp-for="DeletedFileIds" id="DeletedFileIds" type="hidden" />
+         
+                    @await Html.PartialAsync("Partial/_EvaluationUpdateFormPartial")
+
+                    <div class="form-group row justify-content-center">
+                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
+                            <a href="@Url.Action("Detail", "ProductionCapacity", new { Id = @Model.PCEId })" class="btn btn-secondary btn-block">
+                                <i class="fas fa-times mr-2"></i> Cancel
+                            </a>
+                        </div>
+                        <div class="col-xl-3"></div>
+                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
+                            <button type="button" id="return-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#returnModal1">
+                                <i class="fas fa-undo mr-2"></i> Return
+                            </button>
+                        </div>
+                        <div class="col-xl-3"></div>
+                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save mr-2"></i> Update
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
+}

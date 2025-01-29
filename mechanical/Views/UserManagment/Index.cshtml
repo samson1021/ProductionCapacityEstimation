@@ -1,0 +1,160 @@
+﻿
+@* @model IEnumerable<CreditBackOffice.Models.CreateUser>
+    @model mechanical.Models.Entities.CreateUser
+ *@@* <script src="~/plugins/jquery/jquery.js"></script>
+ *@
+@{
+    // ViewData["Title"] = "Index";
+}
+@* <a href="~/lib/jquery/dist/jquery.min.map">~/lib/jquery/dist/jquery.min.map</a>
+ *@
+@*  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script> *@
+@*  this is form Jon *@
+@* <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script> *@
+
+<script>
+    // $(document).ready(function () {
+        // make ajax request to get users
+        // $.ajax({
+        //     type: "get",
+        //     url: '/usermanagment/getusers',
+        //     dataType: 'json',
+        //     success: function (data) {
+
+
+                // populate table with user data
+                // var tableBody = $('#userTable tbody');
+                // tableBody.empty();
+                // Clear existing rows
+//                 $(data).each(function (index, user) {
+//                     var row = $('<tr></tr>');
+//                     row.append($('<td></td>').text(user.Name));
+//                     row.append($('<td></td>').text(user.Email));
+//                     row.append($('<td></td>').text(user.DistrictName));
+//                     row.append($('<td></td>').text(user.Branch));
+//                     row.append($('<td></td>').text(user.RoleName));
+//                     row.append($('<td></td>').text(user.Status));
+//                     row.append($('<td></td>').html('<a href="/usermanagment/edit/' + user.Id + '">Edit</a> | <a href="/usermanagment/delete/' + user.Id + '">Delete</a>'));
+//                     tableBody.append(row);
+//                 });
+//                 $('#userTable').DataTable({
+//                     data: data,
+//                     columns: [
+//                         { data: 'RenderingEngine' },
+//                         { data: 'Browser' },
+//                         { data: 'Platforms' },
+//                         { data: 'EngineVersion' },
+//                         { data: 'CssGrade' }
+//                     ],
+//                     responsive: true,
+//                     lengthChange: false,
+//                     autoWidth: false,
+//                     buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+//                 }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+//             },
+//             error: function () {
+//                 alert('Error getting users.');
+//             }
+//         });
+//     });
+// 
+</script>
+
+
+@* <section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <a asp-action="CreateUser">Create New</a>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table id="userTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>District</th>
+                            <th>Branch</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section> *@
+
+
+
+
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <a asp-action="Create">Create New</a>
+            </div>
+            @* <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">My Case</li>
+                </ol>
+            </div> *@
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div id="loading" style="display: none; text-align: center;">
+                    <img src="img/loading2.gif" alt="Loading">
+                </div>
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>District</th>
+                            <th>Branch</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("UserViewScriptsPartial");
+    }
+}
+
+

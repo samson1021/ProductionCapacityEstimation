@@ -1,0 +1,500 @@
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Entities;
+@using mechanical.Models.Dto.UploadFileDto
+
+@{
+    var PCECase = ViewData["PCECase"] as PCECase;
+    var productions = ViewData["Productions"] as List<ProductionCapacity>;
+    var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
+    var PCECaseSchedule = ViewData["PCECaseSchedule"] as PCECaseSchedule;
+
+
+    var customerinfo = ViewData["customerinfo"];
+
+    // var  signaturefilename = ViewData["EvaluatorsignatureID"];
+    //  var EvaluatorName = ViewData["EvaluatorName"];
+    //  var EvaluatorDate = ViewData["EvaluatorDate"];
+
+    var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
+    var Signiture = ViewData["signiture"] as CreateUser;
+    DateTime? createdAt = null;
+    Guid? evaluatorId = null;
+    string evaluatorName = null;
+    Guid? pCEvaluationId = null;
+    Guid? signatureImageId = null;
+
+    if (evaluatorReport != null)
+    {
+        createdAt = evaluatorReport.CreatedAt;
+        evaluatorId = evaluatorReport.EvaluatorId;
+        evaluatorName = evaluatorReport.EvaluatorName;
+        pCEvaluationId = evaluatorReport.PCEvaluationId;
+        signatureImageId = evaluatorReport.SignatureImageId;
+    }
+
+
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>; 
+
+    var commaSeparatedRegions = "";
+    var commaSeparatedPropertyof = "";
+    var commaSeparatedType = "";
+
+    if (productions != null)
+    {
+        var uniqueRegions = productions.Select(m => m.Region).Distinct();
+        commaSeparatedRegions = string.Join(", ", uniqueRegions);
+        var ProportyOF = productions.Select(m => m.PropertyOwner).Distinct();
+        commaSeparatedPropertyof = string.Join(", ", ProportyOF);
+        var Type = productions.Select(m => m.Type).Distinct();
+        commaSeparatedType = string.Join(", ", Type);
+    }
+
+    var makers = PCEEvaluations.Select(m => m.Evaluator).Distinct();
+    var PCECaseScheduleDate = DateTime.Now;
+    if (PCECaseSchedule != null)
+    {
+        PCECaseScheduleDate = PCECaseSchedule.ScheduleDate;
+    }
+    bool isPrinting = false;
+}
+
+<style>
+    .printing #requieddoc {
+    display: none !important;
+    }
+    .printing .approvedby {
+        display: block !important;
+    }
+    .printing #print-btn {
+    display: none !important;
+    }
+    .printing #download-btn {
+        display: none !important;
+    }
+    .printing footer {
+    display: none !important;
+    }
+    @@media print {
+         footer {
+            display: none !important
+        }
+        .printbtn{
+            display: none !important;
+        }
+
+        .downloadbtn {
+            display: none !important;
+        }
+        #requieddoc {
+            display: none !important;
+        }
+        .approvedby{
+            display:block !important;
+        }
+    }
+</style>
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>PCE Case Detail</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Reports</a></li>
+                    <li class="breadcrumb-item active">PCE Case Report</li>
+                </ol>
+              
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content" style="max-width: 300mm; font-family: 'Times New Roman', Times, serif; text-align: justify; line-height: 1.5; font-size: 12pt; margin: 0 auto;">
+
+    
+    <div class="card" style="margin: 10mm 20mm;">
+        <div class="card-body d-flex justify-content-end">
+            <div>
+                <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
+                <!-- <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button> -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid " style=" padding: 10mm 20mm;">
+        <div class="card py-4 ">
+            <div class="card-body px-2 mx-2">
+
+                <div class="d-flex justify-content-between">
+                    <div class="">
+                        &nbsp;
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <img src="~/img/cbelogo.png" alt="Logo" class="mr-3" style="max-height: 50px;">
+                        <h4 class="mb-0">Commercial Bank of Ethiopia</h4>
+                    </div>
+                    <div>
+                        <div class="">
+                            &nbsp;
+                        </div>
+                        <!-- <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
+                        <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button>  -->
+                    </div>
+                </div>
+
+                <hr class="my-1 border-1 border-dotted border-dark">
+                
+               <div class="d-flex flex-column py-2">
+                    <div class="d-flex justify-content-center">
+                        <h5 class="mb-1"> Production Capacity Estimation</h5>                        
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-1 mr-4">
+                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToShortDateString()</u>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                     
+                        <p class="mb-1 mr-4 " style="font-weight:500">
+                            Reference No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@productions[0].Id</u>
+                        </p>
+                    </div>
+                </div> 
+                
+
+                <h5 class="mt-1 pl-4">A. General Data Collection</h5>
+
+                <div class="row my-0 py-0">
+                    <p class="py-0">
+                        <label class="col-form-label">CBE Branch:</label>
+                        <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
+                    </p>
+                </div>
+
+                <div class="pl-4">
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">1.&nbsp; &nbsp;Segment:</label>
+                            <u class=" ">@PCECase.Segment</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">2.&nbsp; &nbsp;Applicant name:</label>
+                            <u class=" ">@PCECase.ApplicantName</u>
+                        </p>
+                    </div>
+
+
+                    @{
+                        if (customerinfo == "err")
+                        {
+                            <div class="form-group row my-0">
+                                <p class="my-0 py-0 my-0">
+                                    <label class="col-form-label pr-2">3.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
+                                    Unable to load the customer address based on the customer ID
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group row my-0">
+                                <p class="my-0 py-0 my-0">
+                                    <label class="col-form-label pr-2">3.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
+                                    Town: <u class="   px-2">&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;;</u>
+                                    Sub-City: <u class="  px-2">&nbsp; &nbsp; &nbsp; &nbsp; ;</u>
+                                    Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
+                                </p>
+                            </div>
+                        }
+                    }
+
+                   @*  <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">3.&nbsp; &nbsp; Owner of the Machinery/Equipment:</label>
+                            <u class="  ">@productions[0].OwnerOfMachinery</u>
+                        </p>
+                    </div> *@
+
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Production Machine Purchased by CBE's partial Financing?</label>
+                            <u class="  "> &nbsp;&nbsp; No</u>
+                        </p>
+                    </div>
+
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0 my-0">
+                            <label class="col-form-label pr-2">4.&nbsp; &nbsp; Production Machine Location:</label> &nbsp;
+                            Town: <u class="   px-2">@productions[0].Region &nbsp; ;</u>
+                            Sub-City: <u class="  px-2">@productions[0].SubCity &nbsp; ;</u>
+                            Woreda: <u class="   px-2"> @productions[0].Wereda</u>
+                        </p>
+                    </div>
+
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
+                            <u class="  "> @productions[0].BusinessLicenseNumber</u>
+                        </p>                       
+                    </div>
+
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">6.&nbsp; &nbsp; LHC number where the equipment Installed:</label>
+                            <u class="  "> @productions[0].MachineryInstalledPlace</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">A.&nbsp; &nbsp; Owner Name in the LHC:</label>
+                            <u class="  "> @productions[0].OwnerName</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">7.&nbsp; &nbsp; Name/Type of the equipment:</label>
+                            <u class="  "> @productions[0].Type </u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
+                            <u class="  "> @productions[0].ManufactureYear &nbsp; </u>
+                            <label class="col-form-label pl-2">Country of Origin:</label>
+                            <u class="  ">@productions[0].CountryOfOrgin</u>
+                        </p>
+                    </div>
+
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">9.&nbsp; &nbsp; Place of inspection:</label>
+                            <u class="  ">@PCEEvaluations[0].InspectionPlace  </u>
+                            <label class="col-form-label pl-2"> Date of inspection: </label>
+                            <u class="  ">@PCEEvaluations[0].InspectionDate </u>
+                        </p>
+                    </div>
+
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">10.&nbsp; &nbsp;Name of CRM who accompanied the Inspection:</label>
+                            <u class="  "> &nbsp; &nbsp; Relational Manager  </u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">                     
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
+                            <u class="  "> @productions[0].Purpose  </u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">A.&nbsp; &nbsp; Time Consumed to Check Production Process: &nbsp; &nbsp; Form </label>
+                             <u class="  "> @PCEEvaluations[0].TimeConsumedToCheck.Start</u>
+                            <label class="col-form-label pl-2"> To    </label>
+                            <u class="  ">@PCEEvaluations[0].TimeConsumedToCheck.End</u> 
+                        </p>
+                    </div>
+
+                    <div class="form-group row my-0">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment Machinery Status:</label>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">A.&nbsp; &nbsp; Technical obsolescence status</label>
+                            <u class="  "> @PCEEvaluations[0].TechnicalObsolescenceStatus</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">B.&nbsp; &nbsp; Depreciation Rate Applied:</label>
+                            <u class="  ">@PCEEvaluations[0].DepreciationRateApplied</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
+                            <u class="  ">  @PCEEvaluations[0].Discrepancies </u>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group mb-1">
+                    <label class=" col-form-label font-weight-bold">Survey remark:</label>
+                    <u class="pl-4">@PCEEvaluations[0].SurveyRemark </u>
+                </div>
+
+
+
+
+
+
+
+                <br />
+              <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
+
+                <div class="pl-4" style="width: 100%;">
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">A.&nbsp; &nbsp;Type of Output it Produces</label>
+                            <u>@PCEEvaluations[0].OutputType</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0 pl-4">
+                        <p class="my-0 py-0">
+                            <label class="col-form-label pr-2">C.&nbsp; &nbsp;Phase of the Output, (Finished Product, Raw Material for Next Line)</label>
+                            <u>@PCEEvaluations[0].OutputPhase</u>
+                        </p>
+                    </div>
+                    <table class="table table-border-none" style="width: 100%; table-layout: auto; overflow-wrap: break-word;">
+                        <thead style="border-bottom: 3px solid #6f42c1;">
+                            <tr>
+                                <th style="width: 5%;">No</th>
+                                <th style="width: 25%;">Production Line<br /> / Equipment Name</th>
+                                <th style="width: 20%;">Year<br /> Manufg</th>
+                                <th style="width: 15%;">Unit <br /> Meast</th>
+                                <th style="width: 10%;">Qty.</th>
+                                <th style="width: 25%;">Total Actual<br /> Capacity (Qty./Unit Time)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>@PCEEvaluations[0].ProductionLineOrEquipmentName</td>
+                                <td>@productions[0].ManufactureYear</td> 
+                                <td>@PCEEvaluations[0].ProductionUnit</td>
+                                <td>@PCEEvaluations[0].ProductionMeasurement</td>
+                                <td>@PCEEvaluations[0].ActualProductionCapacity</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="form-group mb-1">
+                        <label class="col-form-label font-weight-bold">Conclusion </label>
+                        <u class="pl-4">&nbsp; </u>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+                <div class="approvedby" style="display:block">
+
+
+
+                    Capacity estimated by:-&nbsp;&nbsp; <u><strong>@evaluatorName</strong></u>; &nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                        <span style="text-decoration: underline; margin: 0 5px;">
+                        @if (Signiture.Signatures != null)
+                        {
+                            <img src="@Url.Content("~/" + Signiture.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                        }
+                        else
+                        {
+                            <span>Not Registered</span>
+                        }
+                        
+                    </span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    Evaluated Date: &nbsp;&nbsp; <u><strong>@createdAt</strong></u>
+                    
+                </div>
+
+                
+                <div class="requieddoc" id="requieddoc">
+                    <br />
+                    <h5 class="mt-1 pl-4">C.  Documents used for Production Capacity Estimation</h5>
+
+                        <table class="table table-border-none table-responsive" >
+                            <thead style="border-bottom: 3px solid #6f42c1;">
+                                <tr>
+                                    <th style="width: 300px;">File Name</th>
+                                    <th style="width: 300px;">File Category</th>
+                                    <th style="width: 250px;">Content Type</th>
+                                    <th style="width: 250px;">Action</th>
+                                </tr>
+                            </thead>
+                        <tbody>
+                            @{
+                                if (productionFiles != null && productionFiles.Any())
+                                {
+                                     foreach (var productionFile in productionFiles)
+                                    {
+                                        <tr>
+                                            <td>@productionFile.Name</td>
+                                            <td>@productionFile.Catagory</td>
+                                            <td>@productionFile.ContentType</td>
+                                            <td>
+                                                <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
+                                                <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>&nbsp;|&nbsp;
+                                            </td>
+
+                                        </tr>
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    <tr class="text-center"> <td colspan="4"><h6>There is no document related to this PCE </h6></td></tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+       
+                <div class="text-center my-4">
+                    <img src="~/img/stamp.png" alt="Stamp" style="max-width: 200px; height: auto;" />
+                </div>
+            </div>
+           
+         
+        </div>
+    </div>
+   
+</section>
+
+
+@section Scripts { 
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
+    <script src="~/js/jsPDF/jspdf.umd.min.js"></script>
+    <script>
+        // Your JavaScript code that uses the jsPDF library
+        document.getElementById('download-btn').addEventListener('click', function () {
+            const doc = new jsPDF();
+            const pageContent = document.querySelector('body').innerHTML;
+            doc.addHTML(pageContent, function () {
+                doc.save('document.pdf');
+            });
+        });
+    </script>
+}
+
+
+<script>
+    document.getElementById('print-btn').addEventListener('click', function () {
+        document.querySelector('footer').style.display = 'none';
+        document.getElementById('requieddoc').style.display = 'none';
+    @{
+        isPrinting = true;
+    }
+        document.body.classList.add('printing');
+        window.print();
+    @{
+        isPrinting = false;
+    }
+            document.body.classList.remove('printing');
+        document.querySelector('footer').style.display = 'block';
+        document.getElementById('custom-footer').style.display = 'none';
+        document.getElementById('requieddoc').style.display = 'block';
+    });
+</script>
+

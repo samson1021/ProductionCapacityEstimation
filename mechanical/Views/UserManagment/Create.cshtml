@@ -1,0 +1,388 @@
+﻿@model mechanical.Models.Entities.CreateUser
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+<script src="~/bootstrap/js/bootstrap.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="~/js/adminlte.min.js"></script>
+<script src="~/js/dashboard.js"></script>
+<script src="~/lib/chart.js/chart.min.js"></script>
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+
+@* <script>
+
+  
+
+    $(document).ready(function () {
+
+        // Make AJAX request to get roles
+
+        $.ajax({
+
+            type: "GET",
+
+            url: '/UserManagment/GetRoles',
+
+            dataType: 'json',
+
+            success: function (data) {
+
+                // Populate dropdown list with roles
+
+                console.log("your list of roles are" + data);
+
+                var dropdown = $('#RoleId');
+                dropdown.append($('<option></option>').val(0).text('Select role for this user'));
+
+                $(data).each(function (index, role) {
+
+                    dropdown.append($('<option></option>').val(role.RoleId).text(role.Name));
+
+                });
+
+            },
+
+            error: function () {
+
+                alert('Error getting roles.');
+
+                console.log("your list of roles are" + data);
+
+
+
+            }
+
+        });
+
+    });
+    </script> *@
+
+<script>
+
+
+
+    $(document).ready(function () {
+
+        // Make AJAX request to get roles
+
+        $.ajax({
+
+            type: "GET",
+
+            url: '/UserManagment/GetDistrict',
+
+            dataType: 'json',
+
+            success: function (datas) {
+
+                // Populate dropdown list with roles
+
+                console.log("your list of district are" + datas);
+
+                var dropdown = $('#DistrictId');
+
+                // dropdown.append($('<option></option>').val(0).text('Select District for this user'));
+
+                $(datas).each(function (index, district) {
+
+                    dropdown.append($('<option></option>').val(district.Id).text(district.Name));
+
+                });
+
+            },
+
+            error: function () {
+
+                alert('Error getting roles.');
+
+                console.log("your list of districts are" + datas);
+
+
+
+            }
+
+        });
+
+    });
+</script>
+ 
+@{
+    ViewData["Title"] = "Create";
+}
+
+<script>
+    $(document).ready(function () {
+        // Make AJAX request to get roles
+        $.ajax({
+            type: "GET",
+            url: '/UserManagment/GetRoles',
+            dataType: 'json',
+            success: function (data) {
+                // Populate dropdown list with roles
+                console.log("your list of roles are" + data);
+                var dropdown = $('#RoleId');
+                dropdown.empty(); // Clear existing options
+                dropdown.append($('<option></option>').val('').text('Select role for this user')); // Add default option
+                $(data).each(function (index, role) {
+                    
+                    dropdown.append($('<option></option>').val(role.RoleId).text(role.Name));
+                });
+            },
+            error: function () {
+                alert('Error getting roles.');
+                console.log("your list of roles are" + data);
+            }
+        });
+
+        // Make AJAX request to get supervisors based on selected role
+        $("#RoleId").change(function () {
+            var selectedRole = $(this).find(":selected").text();
+            console.log(selectedRole);
+            if (selectedRole == 'Relation Manager') {
+                $('#Department').html(`
+                    <option value = "" selected disabled > Select Department </option>
+                    <option value="Wholesale">Wholesale</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Workout">Workout</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Acquired Asset Administration">Acquired Asset Administration</option>
+                    <option value="Facility Management">Facility Management</option>
+                `);
+            } else {
+                $('#Department').html(`
+                    <option value="" selected disabled>Select valuation unit</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Agriculture">Agriculture</option>
+                    `);
+            }
+
+
+            var roleId = $("#RoleId").val();
+            var Department = $("#Department").val();
+            var districtId = $("#DistrictId").val();
+           
+        });
+
+        $("#Department").change(function () {
+
+            var roleId = $("#RoleId").val();
+            var Department = $("#Department").val();
+            var districtId = $("#DistrictId").val();
+            var dropdown = $('#SupervisorId');
+            dropdown.empty(); // Clear existing options
+            dropdown.append($('<option></option>').val('').text('Select Supervisor')); // Add default option
+            if (roleId) {
+                // Make an AJAX request to retrieve the supervisors based on the selected role
+                $.ajax({
+                    url: '/UserManagment/GetSupervisors',
+                    type: 'GET',
+                    data: { roleId: roleId, districtId: districtId, Department: Department },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data != null && data.length > 0) {
+                            $(data).each(function (index, supervisor) {
+                                dropdown.append($('<option></option>').val(supervisor.Id).text(supervisor.Name));
+                            });
+                        } else {
+                            dropdown.prop('disabled', true);
+                        }
+                    },
+                    error: function () {
+                        alert('Error getting supervisors.');
+                        console.log("your list of supervisors are" + data);
+                    }
+                });
+            } else {
+                //dropdown.prop('disabled', true);
+            }
+        });
+    });
+</script>
+
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-user"></i>
+                    Create User Access
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/UserManagment/Create">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row">
+                        <div class="form-group col-xl-5">
+                            <label asp-for="emp_ID" class="control-label">Employee Id <span class="text-danger">*</span></label>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="emp_ID" id="emp_ID" class="form-control" required />
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-4" id="GetEmployeeInfo" value="Get Info" required>
+                            </div>
+                            <span asp-validation-for="emp_ID" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-7">
+                            <label asp-for="Name" class="control-label">Full name <span class="text-danger">*</span></label>
+                            <input asp-for="Name" id="Name" class="form-control" readonly required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group  col-xl-7">
+                            <label asp-for="Email" class="control-label">Email <span class="text-danger">*</span></label>
+                            <input asp-for="Email" id="Email" class="form-control" readonly required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group  col-xl-5">
+                            <label asp-for="title" class="control-label">Title <span class="text-danger">*</span></label>
+                            <input asp-for="title" id="title" class="form-control" readonly required />
+                            <span asp-validation-for="title" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="Branch" class="control-label">Department <span class="text-danger">*</span></label>
+                            <input asp-for="Branch" id="Branch" class="form-control" readonly  required/>
+                            <span asp-validation-for="Branch" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
+                            <label asp-for="company" class="control-label">Company <span class="text-danger">*</span></label>
+                            <input asp-for="company" id="company" class="form-control" readonly required />
+                            <span asp-validation-for="company" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-7">
+                            <label asp-for="PhoneNO" class="control-label">Phone Number</label>
+                            <input asp-for="PhoneNO" class="form-control" />
+                            <span asp-validation-for="PhoneNO" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-5">
+                            <label asp-for="DistrictId" class="control-label">Center <span class="text-danger">*</span></label>
+                            <select id="DistrictId" name="DistrictId" class="form-control" required></select>
+                            <span asp-validation-for="DistrictId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-4">
+                            <label asp-for="RoleId" class="control-label">Roles <span class="text-danger">*</span></label>
+                            <select id="RoleId" name="RoleId" class="form-control" required></select>
+                            <span asp-validation-for="RoleId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="Department" class="control-label">Division <span class="text-danger">*</span></label>
+                            <select name="Department" id="Department" class="form-control" required>
+                            </select>
+                            <span asp-validation-for="Department" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="SupervisorId" class="control-label">SuperVisor </label>
+                            <select id="SupervisorId" name="SupervisorId" class="form-control"></select>
+                            <span asp-validation-for="SupervisorId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="submit" value="Submit" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </form>
+
+                <div>
+                    <a asp-action="Index">Back to List</a>
+                </div>
+                <div id="loadingIndicator" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000;">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+          
+
+    
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        <script>
+            $(document).ready(function () {
+                $('#loadingIndicator').hide();
+                $('#GetEmployeeInfo').click(function () {
+                    var empId = $('#emp_ID').val();
+
+                    // Check if empId is not empty
+                    if (empId) {
+                        // Show loading indicator
+                        $('#loadingIndicator').show(); // Add a loading element in your HTML
+
+                        $.ajax({
+                            url: '/UserManagment/GetEmployeeInfo', // Adjust the URL based on your routing
+                            type: 'GET',
+                            data: { id: empId },
+                            success: function (data) {
+                                // Hide loading indicator
+                                $('#loadingIndicator').hide();
+
+                                // Check if data is null or empty
+                                if (!data || $.isEmptyObject(data)) {
+                                    // Show toaster notification
+                                    toastr.warning('No employee information found for the provided ID.');
+                                    return;
+                                }
+
+                                // Populate fields with employee information
+                                $('#Name').val(data.DisplayName);
+                                $('#Email').val(data.Email);
+                                $('#title').val(data.jobTitle);
+                                $('#Branch').val(data.Department);
+                                $('#company').val(data.company);
+                            },
+                            error: function () {
+                                // Hide loading indicator
+                                $('#loadingIndicator').hide();
+
+                                alert('Error retrieving employee information.');
+                            }
+                        });
+                    } else {
+                        alert('Please enter an Employee ID.');
+                    }
+                });
+            });
+        </script>
+    }
+}
+<style>
+    .spinner-border {
+        width: 3rem; /* Size of the spinner */
+        height: 3rem; /* Size of the spinner */
+        border: 0.25em solid rgba(0, 0, 0, 0.1); /* Light border */
+        border-top-color: #007bff; /* Color of the spinner */
+        border-radius: 50%; /* Rounded */
+        animation: spin 0.75s linear infinite; /* Spinning animation */
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+        /* Spin effect */
+    }
+</style>    

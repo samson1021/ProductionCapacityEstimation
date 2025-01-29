@@ -1,0 +1,46 @@
+﻿<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/PCECase/GetPCECasesReport',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#MyNewCase').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: 'CreatedAt',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        { data: 'CaseNo', width: '10%' },
+                        { data: 'ApplicantName', width: '20%' },
+                        { data: 'CustomerId', width: '15%' },
+                        { data: 'TotalNoOfProductions', width: '10%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("PCECaseDetailReport", "PCECase")?Id=' + data + '">Details </a>';
+                            }
+                        }
+
+                    ],
+                    order: [[0, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: [{ extend: 'copy', title: 'RM PCE total Case' },
+                    { extend: 'csv', title: 'RM PCE total Case' },
+                    { extend: 'excel', title: 'RM PCE total Case' },
+                    { extend: 'pdf', title: 'RM PCE total Case - pdf' },
+                    { extend: 'print', title: 'RM PCE total Case - Print' }, 'colvis']
+                }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
+            }
+        });
+    });
+
+</script>

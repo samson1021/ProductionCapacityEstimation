@@ -1,0 +1,476 @@
+﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
+@using mechanical.Models.Dto.UploadFileDto
+@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionReturnDto;
+@{
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
+}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6">
+                <h4 class="m-0">Edit Production Capacitty</h4>
+            </div>
+            <div class="col-sm-6 col-xl-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">Edit Production Capacitty</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <section class=" connectedSortable">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <form method="post" enctype="multipart/form-data" asp-action="Edit">
+
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <input asp-for="Id" hidden />
+                                <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
+                                <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwner" placeholder="Property Owner *" required>
+                                <span asp-validation-for="PropertyOwner" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Role">Role <i class="text-danger">*</i></label>
+                                <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
+                                    <option value="" disabled selected>Select Role</option>
+                                    <option value="Applicant">Applicant</option>
+                                    <option value="Guarantor">Guarantor</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <input type="hidden" id="selectedCategory" value="@Model.Category" />
+                                <label asp-for="Category"> Manufacturing Main Sector <i class="text-danger">*</i></label>
+                                <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
+                                        asp-items="@(new SelectList(Enum.GetValues(typeof(ManufacturingSector)).Cast<ManufacturingSector>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                    <option value="" disabled selected>Select Manufacturing Main Sector</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label asp-for="Type">Manufacturing Sub Sector <i class="text-danger">*</i></label>
+                                <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
+                                    <option value="" selected>Select Manufacturing Sub Sector</option>
+                                </select>
+                                <span asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body" style="padding-bottom:0px;">
+                                <div class="row">
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="MachineName">Machine Name <i class="text-danger">*</i></label>
+                                        <input asp-for="MachineName" type="text" class="form-control form-control-sm" placeholder="Enter Machine Name" id="MachineName" required>
+                                        <span asp-validation-for="MachineName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Purpose">Purpose</label>
+                                        <input asp-for="Purpose" type="text" class="form-control form-control-sm" id="Purpose" placeholder="Please Enter Purpose">
+                                        <span asp-validation-for="Purpose" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="ModelNo">Model Number</label>
+                                        <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
+                                        <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="CountryOfOrgin">Country Of Orgin <i class="text-danger">*</i></label>
+                                        <input asp-for="CountryOfOrgin" type="text" class="form-control form-control-sm" id="CountryOfOrgin" placeholder="Enter Model Number" required>
+                                        <span id="CountryOfOrgin-error" asp-validation-for="CountryOfOrgin" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="BusinessLicenseNumber">Business License Number <i class="text-danger">*</i></label>
+                                        <input asp-for="BusinessLicenseNumber" type="text" class="form-control form-control-sm" id="BusinessLicenseNumber" placeholder="Business License Number" required>
+                                        <span asp-validation-for="BusinessLicenseNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="ManufactureYear">Manufactuing Year</label>
+                                        <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
+                                        <span asp-validation-for="ManufactureYear" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="InvoiceNo">Invoice Number</label>
+                                        <input asp-for="InvoiceNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="XXXXXXXXXXXX">
+                                        <span asp-validation-for="InvoiceNo" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="SerialNo">Serial Number</label>
+                                        <input asp-for="SerialNo" type="text" class="form-control form-control-sm" id="SerialNo" placeholder="XXXXXXXXXXXX">
+                                        <span asp-validation-for="SerialNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row" id="MachineryInstalledPlaceRow">
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="MachineryInstalledPlace"> Machinery Installed Place <i class="text-danger">*</i></label>
+                                        <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
+                                            <option value="" disabled>Select Machinery Installed Place </option>
+                                            <option value="Private Owned LHC">Private Owned LHC</option>
+                                            <option value="Industrial Park">Industrial Park</option>
+                                        </select>
+                                        <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
+
+                                    </div>
+                                    @* <div id="IndustrialPark" style="display: none;"> *@
+                                    <div id="IndustrialParkRow" class="form-group col-lg-4" style="@(Model.MachineryInstalledPlace == "Industrial Park" ? "" : "display: none;")">
+                                        @* <div id="IndustrialPark" @(Model.Industrialpark != null ? "" : "style=\"display: none;\"")> *@
+
+                                        <label asp-for="Industrialpark"> Industrial Park <i class="text-danger">*</i></label>
+                                        <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
+                                                asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                            <option value="" selected disabled>Select Industrial Park</option>
+                                        </select>
+                                        <span asp-validation-for="Industrialpark" class="text-danger"></span>
+
+                                    </div>
+                                    @* <div id="PrivateownedLHC" @(Model.LHCNumber != null ? "" : "style=\"display: none;\"")> *@
+                                    <div id="PrivateownedLHCRow" class="form-group col-lg-8 row" style="@(Model.MachineryInstalledPlace == "Private Owned LHC" ? "" : "display: none;")">
+
+                                        <div class="form-group col-lg-6">
+                                            <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
+                                            <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
+                                            <span asp-validation-for="LHCNumber" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label asp-for="OwnerName">Owner Name in the LHC <i class="text-danger">*</i></label>
+                                            <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
+                                            <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card">
+                            <div class="card-body" style="padding-bottom:0px;">
+                                @*  <h5 class="text-center">Property Address</h5> *@
+                                <div class="row">
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="Region">Region <i class="text-danger">*</i></label>
+                                        <input asp-for="Region" type="text" class="form-control form-control-sm" id="Region" placeholder="Enter Region" required>
+                                        <span asp-validation-for="Region" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="Zone">Zone</label>
+                                        <input asp-for="Zone" type="text" class="form-control form-control-sm" id="Zone" placeholder="Enter Zone">
+                                        <span asp-validation-for="Zone" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label asp-for="City">City</label>
+                                        <input asp-for="City" type="text" class="form-control form-control-sm" id="City" placeholder="Enter City">
+                                        <span asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="SubCity">Sub-City</label>
+                                        <input asp-for="SubCity" type="text" class="form-control form-control-sm" id="SubCity" placeholder="Enter Sub City">
+                                        <span asp-validation-for="SubCity" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Wereda">Wereda</label>
+                                        <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="Wereda" placeholder="Enter Wereda">
+                                        <span asp-validation-for="Wereda" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="Kebele">Kebele</label>
+                                        <input asp-for="Kebele" type="text" class="form-control form-control-sm" id="Kebele" placeholder="Enter Kebele">
+                                        <span asp-validation-for="Kebele" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="HouseNo">House Number</label>
+                                        <input asp-for="HouseNo" type="text" class="form-control form-control-sm" id="HouseNo" placeholder="Enter House Number">
+                                        <span asp-validation-for="HouseNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card">
+                            <div class="card-body" style="padding-bottom:0px;">
+                                <div class="row">
+                                    <div class="form-group col-lg-12">
+                                        <label asp-for="ProductDescription">Production Capacity Description <i class="text-danger">*</i></label>
+                                        <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..." required> </textarea>
+                                        <span asp-validation-for="ProductDescription" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Edit</button>
+                            </div>
+                            @*  <div class="form-group col-lg-6">
+                            <button type="button" id="sendEvaluationButton" class="btn btn-lg bg-purple" data-toggle="modal" data-target="#sendEvaluationButtonModal1">
+                            Send Evaluation Again <i class="fas fa-eye"></i>
+                            </button>
+                            </di *@
+                        </div>
+                        @*   <script>
+                        // Get the button element
+                        const sendEvaluationButton = document.getElementById('sendEvaluationButton');
+
+                        // Add an onClick event handler
+                        sendEvaluationButton.addEventListener('click', function () {
+                        // Perform the desired action, such as sending the evaluation to a specific path
+
+                        // Redirect to a specific path
+                        window.location.href = '/specific-path';
+                        });
+                        </script>  *@
+                    </form>
+                </div>
+                <div class="row" style="margin-top:1.2rem;margin-bottom:0.2rem;">
+                    <table class="table table-bordered " style="border-top: 3px solid #6f42c1;">
+                        <thead>
+                            <tr>
+                                <th colspan="4"><h4>Edit Production Capacity Document</h4></th>
+                            </tr>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Document Catagory</th>
+                                @* <th>Document Type</th> *@
+                                <th>Document Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (productionFiles.Count() == 0)
+                                {
+                                    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">There is no document related to this PCE (Click to Add new Document)</a></h6></td></tr>
+                                }
+                                else
+                                {
+                                    foreach (var productionFile in productionFiles)
+                                    {
+                                        <tr>
+                                            <td>@productionFile.Name</td>
+                                            <td>@productionFile.Catagory</td>
+                                            @* <td>@productionFile.ContentType</td> *@
+                                            <td>
+                                                <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
+                                                <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>&nbsp;|&nbsp;
+                                                <a class="text-danger delete-link" href="#" data-id="@productionFile.Id" data-toggle="modal" data-target="#deleteConfirmationModal">Delete <i class="fas fas-solid fa-trash"></i></a>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">Click to Add new Document</a></h6></td></tr>
+                                }
+
+                                // if (Model.BusinessLicense == null)
+                                // {
+                                //    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">There is no document related to this case (Click to Add new Document)</a></h6></td></tr>
+                                // }
+                                // else
+                                // {
+
+                                // }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this item?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="deleteItem">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload Document</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label name-for="DocumentCategory">Document Catagory <i class="text-danger">*</i></label>
+                        <select name="DocumentCategory" class="form-control form-control-sm" id="DocumentCategory" required>
+                            <option value="" disabled selected>Select Document Catagory</option>
+                            <option value="PCE Owner LHC Certificate">PCE Owner LHC Certificate</option>
+                            <option value="PCE Shade Rent Agreement">PCE Shade Rent Agreement</option>
+                            <option value="PCE Business License">PCE Business license</option>
+                            <option value="PCE Machine Specification Document">PCE Machine Specification Focument</option>
+                            <option value="PCE Machine Operation Manual">PCE Machine Operation Manual</option>
+                            <option value="PCE Other Supportive Document"> PCE Other Supportive Document</option>
+                        </select>
+                        <span name-for="DocumentCategory" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label name-for="File">Document</label>
+                        <input name="File" type="file" class="form-control" id="ProductionDocument">
+                        <span name-validation-for="File" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn bg-purple" id="uploadFile">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="sendEvaluationButtonModal1" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/Case/SendReEvaluation" id="ReevaluationForm">
+                <input asp-for="Id" hidden />
+                <div class="modal-header">
+                    <h4 class="modal-title" id="returnModalLabel">Reevaluation Comment</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="ReevaluationComment">Are you sure you want to send it to Reevaluation:</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn bg-purple col-xl-3" onclick="closeModal()">No</button>
+                        </div>
+                        <div class="col-md-6 ">
+                            <button type="submit" class="btn bg-purple col-xl-3">Yes</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("Partial/_EditScriptPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
+    <script>       
+        $(document).ready(function () {
+
+            //handleMachineryInstalledPlaceChange();
+            var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace").value;
+            $("#MachineryInstalledPlace").change(function () {
+
+                var PrivateownedLHC = document.getElementById("PrivateownedLHC");
+                var IndustrialPark = document.getElementById("IndustrialPark");
+
+                console.log(MachineryInstalledPlace);
+                console.log('@Model.MachineryInstalledPlace');
+
+                if ($(this).val() === 'Private Owned LHC') {
+                    $("#IndustrialParkRow").hide();
+                    $("#PrivateownedLHCRow").show();
+                } else if ($(this).val() === 'Industrial Park') {
+                    $("#IndustrialParkRow").show();
+                    $("#PrivateownedLHCRow").hide();
+                }
+                else {
+                    $("#IndustrialPark").hide();
+                    $("#PrivateownedLHC").hide();
+                }
+            });
+
+            $('.delete-link').on('click', function (e) {
+                e.preventDefault();
+                var itemId = $(this).data('id');
+                $('#deleteItem').data('id', itemId);
+                $('#deleteConfirmationModal').modal('show');
+            });
+
+            $('#deleteItem').on('click', function () {
+                var itemId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("DeleteProductionFile", "ProductionCapacity")',
+                    type: 'POST',
+                    data: { id: itemId },
+                    success: function (result) {
+                        toastr.success('PCE Document deleted successfully.');
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error('unable to delete PCE document.');
+                    }
+                });
+
+                $('#deleteConfirmationModal').modal('hide');
+            });
+
+            $('#uploadLink').on('click', function (e) {
+                e.preventDefault();
+                var ProductionId = $(this).data('id');
+                $('#uploadModal').data('ProductionId', ProductionId);
+                $('#uploadModal').modal('show');
+            });
+
+
+            $('#uploadFile').on('click', function () {
+                var ProductionId = $('#uploadModal').data('ProductionId');
+
+                var fileInput = document.getElementById('ProductionDocument');
+                var file = fileInput.files[0];
+                var DocumentCategory = document.getElementById('DocumentCategory').value;
+                var formData = new FormData();
+                formData.append('File', file);
+                formData.append('ProductionId', ProductionId);
+                formData.append('DocumentCategory', DocumentCategory)
+
+                $.ajax({
+                    url: '@Url.Action("UploadProductionFile", "ProductionCapacity")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        toastr.success('PCE File uploaded successfully.');
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error('An error occurred while uploading the PCE file.');
+                    }
+                });
+                $('#uploadModal').modal('hide');
+            });
+        });
+    </script>
+}

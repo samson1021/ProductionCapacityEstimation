@@ -1,0 +1,334 @@
+﻿
+@model IEnumerable<mechanical.Models.Dto.CaseDto.CaseDto>
+@{
+  
+}
+<style>
+    .small-box-footer:hover {
+        text-decoration: underline;
+    }
+</style>
+<div class="content-header">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-green update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="newCasesCount">-</h4>
+                                            <h6 class="text-white m-b-0">New Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1><i class="fas fa-plus"></i></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("NewCases","COCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info<i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-yellow update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="pendingCasesCount">-</h4>
+                                            <h6 class="text-white m-b-0">Pending Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1><i class="fas fa-spinner"></i></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("MyPendingCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-pink update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="completedCasesCount">-</h4>
+                                            <h6 class="text-white m-b-0">Completed Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("MyCompleteCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-c-blue update-card">
+                                <div class="card-block">
+                                    <div class="row align-items-end">
+                                        <div class="col-8">
+                                            <h4 class="text-white" id="totalCasesCount">-</h4>
+                                            <h6 class="text-white m-b-0">Total Cases</h6>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <div class="icon col-12">
+                                                <h1> <i class="fas fa-grip-lines"></i></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="@Url.Action("TotalCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="card">
+                            <div class="card-header border-transparent">
+                                <h3 class="card-title">Latest Cases</h3>
+                            </div>
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Case No</th>
+                                                <th>Creation Date</th>
+                                                <th>Applicant Name</th>
+                                                <th>Customer Id</th>
+                                                <th>Collateral</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td><a href="@Url.Action("MyCase", "CO")?Id=@item.Id">@item.CaseNo</a></td>
+                                                    <td>@item.CreationAt</td>
+                                                    <td>@item.ApplicantName</td>
+                                                    <td>@item.CustomerId</td>
+                                                    <td>@item.NoOfCollateral</td>
+                                                    <td>
+                                                        @if (item.Status == "New")
+                                                        {
+                                                            <span class="badge badge-success">New</span>
+                                                        }
+                                                        else if (item.Status == "Pending")
+                                                        {
+                                                            <span class="badge badge-warning">Pending</span>
+                                                        }
+                                                        else if (item.Status == "Complete")
+                                                        {
+                                                            <span class="badge badge-purple">Complete</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+    }
+        
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/Case/GetMyDashboardCaseCount")
+                .then(response => response.json())
+                .then(data => {
+                    animateCountWithCollateral("newCasesCount", data.NewCaseCount, data.NewCollateralCount);
+                    animateCountWithCollateral("pendingCasesCount", data.PendingCaseCount, data.PendingCollateralCount);
+                    animateCountWithCollateral("completedCasesCount", data.CompletedCaseCount, data.CompletedCollateralCount);
+                    animateCount("totalCasesCount", data.TotalCaseCount, data.TotalCollateralCount);
+                })
+                .catch(error => {
+                    console.error("Error fetching card counts:", error);
+                });
+
+        });
+
+        // production capacity estimation start
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/PCECase/GetDashboardPCECaseCount")
+                .then(response => response.json())
+                .then(data => {
+
+                    animateCountWithCollateral("newPCECaseCount", data.NewPCECaseCount, data.NewProductionCount);
+                    animateCountWithCollateral("pendingPCECaseCount", data.PendingPCECaseCount, data.PendingProductionCount);
+                    animateCountWithCollateral("completedPCECaseCount", data.CompletedPCECaseCount + data.ReestimatedPCECaseCount, data.CompletedProductionCount + data.ReestimatedProductionCount);
+                    // animateCountWithCollateral("returnedPCECaseCount", data.ReturnedPCECaseCount, data.ReturnedProductionCount);
+                    animateCount("totalPCECaseCount", data.TotalPCECaseCount);
+
+                })
+                .catch(error => {
+                    console.error("Error fetching card counts:", error);
+                });
+        }); 
+
+        
+        @*// production capacity estimation start
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/ProductionCapacity/GetDashboardPCECount")
+                .then(response => response.json())
+                .then(data => {
+
+                    animateCount("newProductionCount", data.NewProductionCount);
+                    animateCount("pendingProductionCount", data.PendingProductionCount);
+                    animateCount("completedProductionCount", data.CompletedProductionCount + data.ReestimatedProductionCount);
+                    animateCount("resubmittedProductionCount", data.ResubmittedProductionCount);
+                    animateCount("totalProductionCount", data.TotalProductionCount);
+
+                })
+                .catch(error => {
+                    console.error("Error fetching card counts:", error);
+                });
+        });
+        *@
+
+        // Production capacity estimation case end
+
+    
+        function animateCount(elementId, targetCount) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startCount = 1;
+            const step = Math.ceil(targetCount / (duration / 20));
+
+            let currentCount = startCount;
+            const animationInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= targetCount) {
+                    clearInterval(animationInterval);
+                    currentCount = targetCount;
+                }
+                element.textContent = currentCount;
+            }, 20);
+        }
+
+        function animateCountWithCollateral(elementId, caseCount, collateralCount) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startCount = 1;
+            const step = Math.ceil(caseCount / (duration / 20));
+
+            let currentCount = startCount;
+            const animationInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= caseCount) {
+                    clearInterval(animationInterval);
+                    currentCount = caseCount;
+                }
+                element.textContent = `${currentCount} (${collateralCount})`;
+            }, 20);
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "/PCECase/GetPCECases?Limit=5",
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var columns = [
+                        { 
+                            data: 'CaseNo', 
+                            width: '10%',
+                            render: function (data, type, row) {
+                                return '<a href="@Url.Action("Detail", "PCECase")?Id=' + row.Id + '&Status=All">' + data + '</a>';
+                            }                 
+                        },
+                        {
+                            data: 'CreatedAt',
+                            width: '15%',
+                            render: function (data) {
+                                var date = new Date(data);
+                                return date.toISOString().split('T')[0];
+                                // return date.toLocaleString();
+                            }
+                        },
+                        { data: 'ApplicantName', width: '15%' },
+                        { data: 'CustomerId', width: '15%' },
+                        @* { data: 'NoOfProductions', width: '10%' }, *@
+                        { data: 'TotalNoOfProductions', width: '10%' },
+                        {
+                            data: 'Status',
+                            width: '10%',
+                            render: function (data) {
+                                var statusHtml = '';
+                                if (data === "New") {
+                                    statusHtml = '<span class="badge badge-success">New</span>';
+                                } else if (data === "Pending") {
+                                    statusHtml = '<span class="badge badge-warning">Pending</span>';
+                                } else if (data === "Terminated") {
+                                    statusHtml = '<span class="badge badge-danger">Terminated</span>';
+                                } else if (data === "Completed") {
+                                    statusHtml = '<span class="badge badge-info">Completed</span>';
+                                } else {
+                                    statusHtml = '<span class="badge badge-dark">Unknown</span>';
+                                }
+                                return statusHtml;
+                            }
+                        },
+                    ];
+
+                    $('#PCECasesDatatable').DataTable({
+                        language: {
+                            emptyTable: "There are no new PCE Cases",
+                            info: "",
+                        },
+                        responsive: true,
+                        pageLength: 10,
+                        paging: false,
+                        lengthChange: false,
+                        autoWidth: false,
+                        searching: false,
+                        ordering: false, 
+                        data: data,
+                        columns: columns,
+                        order: [[1, 'desc']],
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error: " + status + " - " + error);
+                }
+            });
+        });
+    </script>
+
+}

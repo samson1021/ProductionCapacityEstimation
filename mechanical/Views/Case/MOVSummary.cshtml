@@ -1,0 +1,302 @@
+﻿@using System;
+@using System.Globalization;
+@using mechanical.Utils;
+@{
+    static string CapitalizeEachWord(string str)
+    {
+        TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
+        return textInfo.ToTitleCase(str.ToLower());
+    }
+    var collaterals = ViewData["collaterals"] as List<Collateral>;
+    var cases = ViewData["cases"] as Case;
+    var MotorVehicle = ViewData["MotorVehicles"] as List<MotorVehicle>;
+    var caseSchedule = ViewData["caseSchedule"] as CaseSchedule;
+    var commaSeparatedRegions = "";
+    var commaSeparatedPropertyof = "";
+    var commaSeparatedType = "";
+
+    if (collaterals != null)
+    {
+        var uniqueRegions = collaterals.Select(m => m.Region).Distinct();
+        commaSeparatedRegions = CapitalizeEachWord(string.Join(", ", uniqueRegions));
+        var ProportyOF = collaterals.Select(m => m.PropertyOwner).Distinct();
+        commaSeparatedPropertyof = CapitalizeEachWord(string.Join(", ", ProportyOF));
+        var Type = collaterals.Select(m => m.Type).Distinct();
+        commaSeparatedType = string.Join(", ", Type);
+
+    }
+
+    var maker = MotorVehicle.Select(m => m.EvaluatorUser).Distinct();
+
+    var checker = MotorVehicle.Select(m => m.CheckerUser).Distinct();
+
+    var caseScheduleDate = DateTime.Now;
+    if (caseSchedule != null)
+    {
+        caseScheduleDate = caseSchedule.ScheduleDate;
+    }
+}
+<style>
+    .table {
+        font-size: 10px; /* Smaller text size */
+    }
+
+    th, td {
+        padding: 4px; /* Slightly increased padding */
+        border: 1px solid #ccc;
+        overflow: hidden; /* Prevent overflow */
+        overflow-wrap: break-word; /* Allow words to break and wrap */
+        white-space: normal; /* Allow normal text wrapping */
+    }
+</style>
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            @* <h6>Case Detail</h6>*@
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                @*  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "Case")">Construction Mining ANd Agricultural Machinery Report </a></li>*@
+                <li class="breadcrumb-item active"><button class="btn btn-outline-primary" onclick="exportToPDF()">Export to PDF</button></li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div id="report" class="container-fluid page-break-after" style=" padding: 0mm 5mm 0mm 5mm;">
+    <div class="card py-4 ">
+        <div class="card-body px-2 mx-2">
+
+            <div class="d-flex justify-content-between">
+                <div class="">
+                    &nbsp;
+                </div>
+                <div class="d-flex align-items-center">
+                    <img src="~/img/cbelogo.png" alt="Logo" class="mr-3" style="max-height: 50px;">
+                    <h4 class="mb-0">Commercial Bank of Ethiopia</h4>
+                </div>
+                <div class="">
+                    &nbsp;
+                </div>
+            </div>
+            <hr class="my-1 border-1 border-dotted border-dark">
+            <div>
+                <div class="d-flex flex-column py-2">
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-1 mr-4">
+                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToShortDateString()</u>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-1 mr-4 " style="font-weight:500">
+                            Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@cases.CaseNo</u>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h5 class="mb-1"> Report Summary  </h5>
+                    </div>
+                </div>
+
+                <div class="row my-0 py-0">
+                    <h5 class="py-0">
+                        Part I: General Description
+                        <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
+                    </h5>
+                </div>
+                <div class="pl-4">
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Applicant's Name':</label>
+                            <u class=" ">@cases.ApplicantName</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Date of Valuation: </label>
+                            <u class=" ">@caseScheduleDate.ToShortDateString()</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Type of Mechanical Equipment:</label>
+                            <u class=" ">@commaSeparatedType</u>
+                        </p>
+                    </div>
+                </div>
+                <div class="row my-0 py-0">
+                    <h5 class="py-0">
+                        PART II: SUMMERY OF VALUATION
+                        <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
+                    </h5>
+                </div>
+                <div class="pl-1">
+                    <table class="table table-border-none" style="padding:0.2px; width:100%;" >
+                        <thead style="border-bottom: 3px solid #6f42c1;">
+                            <tr>
+                                <th>S/No.</th>
+                                <th>Machine Name</th>
+                                <th>Plate No.</th>
+                                <th>YoMfg</th>
+                                <th>Origin</th>
+                                <th>Model No.</th>
+                                <th>Engine No.</th>
+                                <th>Chassis No.</th>
+                                <th>Serial No.</th>
+                                <th>Physical & Technical Assessment</th>
+                                <th>Property of</th>
+                                <th>Replacement Cost</th>
+                                <th>Depreciation Rate</th>
+                                <th>Net Estimation Value</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var x = 1;
+                                foreach (var item in MotorVehicle)
+                                {
+                                    <tr>
+                                        <td class="col-sno"> @x</td>
+                                        <td>@item.Collateral.Type</td>
+                                        <td>@item.PlateNo</td>
+                                        <td>@item.YearOfManufacture</td>
+                                        <td>@item.CountryOfOrigin</td>
+                                        <td>@item.ModelNo</td>
+                                        <td>@item.EngineNo</td>
+                                        <td>@item.ChassisNo</td>
+                                        <td>@item.SerialNo</td>
+                                        <td>@EnumHelper.GetEnumDisplayName(item.CurrentEqpmntCondition) (@EnumHelper.GetEnumDisplayName(item.AllocatedPointsRange)) @EnumHelper.GetEnumDisplayName(item.EngineType) @EnumHelper.GetEnumDisplayName(item.NoOfCylinder) @EnumHelper.GetEnumDisplayName(item.TransmissionType) @item.EnginePower @item.LoadingCapacity @EnumHelper.GetEnumDisplayName(item.NumberOfAxle) @item.Color</td>
+                                        <td>@item.Collateral.PropertyOwner</td>
+                                        <td class="ReplacementCost">@item.ReplacementCost</td>
+                                        <td class="ReplacementCost">@item.DepreciationRate</td>
+                                        <td class="ReplacementCost">@item.NetEstimationValue</td>
+                                        <td>@item.Remark</td>
+                                    </tr>
+                                    x++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <div class="form-group row my-0 pl-4">
+                        <p style="font-size: 18px;" class="my-0 py-0">
+                            Total Replacement Cost &nbsp; = &nbsp;
+                            <label class="col-form-label pr-2">
+                                <u class="NetEstimationValue" class="">
+                                    @{
+                                        var sum = 0.0;
+                                        foreach (var item in MotorVehicle)
+                                        {
+                                            sum = item.ReplacementCost + sum;
+                                        }
+                                    }
+                                    @sum
+                                </u>
+                            </label>
+                            and Total Estimation/Market Value &nbsp; = &nbsp;
+                            <label class="col-form-label pr-2">
+                                <u class="NetEstimationValue" class="">
+                                    @{
+                                        var NAvrValue = MotorVehicle.Sum(obj => obj.NetEstimationValue);
+                                    }
+                                    @NAvrValue
+                                </u>
+                            </label>
+                        </p>
+                    </div>
+                </div>
+               
+                <div class="approvedby" style="display:block">
+                    @{
+                        foreach (var item in maker)
+                        {
+                            <p style="font-size: 18px;">
+                                Maker’s Name :- &nbsp;&nbsp;<u><strong>(@item.Name)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                                <span style="text-decoration: underline; margin: 0 5px;">
+                                    @if (item.Signatures != null)
+                                    {
+                                        <img src="@Url.Content("~/" + item.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                                    }
+                                    else
+                                    {
+                                        <span>Not Registered</span>
+                                    }
+                                </span>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                            </p>
+                        }
+                    }
+
+                </div>
+                <div class="approvedby" style="display:block">
+                    @{
+                        foreach (var item in checker)
+                        {
+                            <p style="font-size: 18px;">
+                                Checker's Name :- &nbsp;&nbsp;<u><strong>@(item.Name)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                                <span style="text-decoration: underline; margin: 0 5px;">
+                                    @if (item.Signatures != null)
+                                    {
+                                        <img src="@Url.Content("~/" + item.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                                    }
+                                    else
+                                    {
+                                        <span>Not Registered</span>
+                                    }
+                                </span>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                            </p>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div style= "padding-top:0px; margin-top:0px;" class="text-center">
+            <img src="~/img/stamp.png" alt="Stamp" style="max-width: 200px; height: auto;" />
+        </div>
+        <div class="page-number"></div>
+    </div>
+
+</div>
+<script src="~/js/html2canvas.min.js"></script>
+<script src="~/js/jspdf.min.js"></script>
+<script src="~/js/html2pdf.bundle.min.js"></script>
+
+
+
+<script>
+    function exportToPDF() {
+        var element = document.getElementById('report');
+        var opt = {
+            margin: [15, 0, 15, 0], // No margins
+            filename: 'ccustom-reporoot.pdf',
+
+
+            image: { type: 'jpeg', quality: 0.78 }, // Higher quality for images
+            html2canvas: { scale: 2 }, // Higher scale for better resolution
+            jsPDF: {
+                unit: 'mm', // Use mm for units
+                format: 'a4', // A4 format
+                orientation: 'landscape' // Portrait orientation
+            }
+        };
+
+        // Use html2pdf to create the PDF
+        html2pdf().from(element).set(opt).save();
+    }
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function formatAndDisplayValue(className) {
+        var elements = document.getElementsByClassName(className);
+        for (var i = 0; i < elements.length; i++) {
+            var value = parseFloat(elements[i].textContent);
+            var formattedValue = formatNumber(value);
+            elements[i].textContent = formattedValue;
+        }
+    }
+
+    // Call the function for the desired classes
+    formatAndDisplayValue('ReplacementCost');
+    formatAndDisplayValue('NetEstimationValue');
+</script>

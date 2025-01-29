@@ -1,0 +1,993 @@
+﻿
+@{
+    ViewData["Title"] = "Get Evaluated Moter Vehicle";
+}
+@* @model mechanical.Models.Dto.MotorVehicleDto.CreateMotorVehicleDto;
+ *@
+@model mechanical.Models.Dto.MotorVehicleDto.ReturnEvaluatedCaseDto;
+ 
+@{
+    var collateral = ViewData["collateral"] as ReturnEvaluatedCaseDto;
+    var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
+    var comment = ViewData["comments"] as Dictionary<string, string>;
+    var motorVehicle = ViewData["motorVehicleDto"] as MotorVehicle;
+    Console.WriteLine(collateral);
+}
+<script>
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        console.log(element.value);
+        var value = parseFloat(element.value); // Use .value
+        var formattedValue = formatNumber(value);
+       element.value = formattedValue; // Update the value of the input
+    }
+</script>
+ <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6 col-xl-6">
+                <h1 class="m-0">Motor Vehicle Valuated Checking Form</h1>
+            </div>
+            <div class="col-sm-6 col-xl-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">My Case</li>
+                    <li class="breadcrumb-item active">Detail</li>
+                    <li class="breadcrumb-item active">Collateral evaluation</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <div class="card">
+            <div class="card-body">
+                <input id="TxtmovId" value="@Model.CaseCommenAttributeDto.CollateralId" type="hidden" />
+                <input id="TxtEquipmentId" value="@Model.ReturnMotorVehicleDto.Id" type="hidden" />
+                <div class="row">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2 checkedButton">Checked <i class="fas fa-check"></i></button>
+                                <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2 correctionButton">Send for Correction <i class="fas fa-reply-all"></i></button>
+                                <button id="CheckAssesmentButton" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#CheckAssesmentModal"> Evaluation Tool <i class="fas fa-toolbox"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblEngineType">Engine Type</label>
+                        <div class="input-group">
+                            <input id="txtCollateralId" value="@Model.ReturnMotorVehicleDto.EngineType" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["EngineType"] != null && comment["EngineType"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment["EngineType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="NoOfCylinder">Number of Cylinders</label>
+                        <div class="input-group">
+                            <input id="NoOfCylinders" value=@Model.ReturnMotorVehicleDto.NoOfCylinder type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["NoOfCylinder"] != null && comment["NoOfCylinder"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NoOfCylinder" data-comment="@comment["NoOfCylinder"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NoOfCylinder"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NoOfCylinder"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="TransmissionType">Transmission Type</label>
+                        <div class="input-group">
+                            <input id="TransmissionTypes" value="@Model.ReturnMotorVehicleDto.TransmissionType" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["TransmissionTypes"] != null && comment["TransmissionTypes"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TransmissionTypes" data-comment="@comment["TransmissionTypes"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TransmissionTypes"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TransmissionTypes"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lbcoolingSystem">Cooling System</label>
+                        <div class="input-group">
+                            <input id="txtcoolingSystem" value="@Model.ReturnMotorVehicleDto.coolingSystem" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["coolingSystem"] != null && comment["coolingSystem"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="coolingSystem" data-comment="@comment["coolingSystem"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="coolingSystem"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="coolingSystem"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblEnginePower">Engine Power(Cc/Kw/Hp)</label>
+                        <div class="input-group">
+                            <input id="txtEnginePower" value="@Model.ReturnMotorVehicleDto.EnginePower" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["EnginePower"] != null && comment["EnginePower"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EnginePower" data-comment="@comment["EnginePower"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EnginePower"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EnginePower"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblLoadingCapacity">Loading Capacity(Per & Qt.)</label>
+                        <div class="input-group">
+                            <input id="txtLoadingCapacity" value="@Model.ReturnMotorVehicleDto.LoadingCapacity" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["LoadingCapacity"] != null && comment["LoadingCapacity"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="LoadingCapacity" data-comment="@comment["LoadingCapacity"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="LoadingCapacity"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="LoadingCapacity"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblBodyType">Body Type</label>
+                        <div class="input-group">
+                            <input id="txtBodyType" value="@Model.ReturnMotorVehicleDto.BodyType" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["BodyType"] != null && comment["BodyType"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="BodyType" data-comment="@comment["BodyType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="BodyType"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="BodyType"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblCabinType">Cabin Type</label>
+                        <div class="input-group">
+                            <input id="txtCabinType" value="@Model.ReturnMotorVehicleDto.CabinType" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["CabinType"] != null && comment["CabinType"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CabinType" data-comment="@comment["CabinType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CabinType"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CabinType"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblNumberOfAxle">Number of Axles</label>
+                        <div class="input-group">
+                            <input id="txtNumberOfAxle" value="@Model.ReturnMotorVehicleDto.NumberOfAxle" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["NumberOfAxle"] != null && comment["NumberOfAxle"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NumberOfAxle" data-comment="@comment["NumberOfAxle"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NumberOfAxle"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NumberOfAxle"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblColor">Color</label>
+                        <div class="input-group">
+                            <input id="txtColor" value="@Model.ReturnMotorVehicleDto.Color" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["Color"] != null && comment["Color"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Color" data-comment="@comment["Color"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Color"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Color"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblMotorVehicleMake">Motor Vehicle Make</label>
+                        <div class="input-group">
+                            <input id="txtMotorVehicleMake" value="@Model.ReturnMotorVehicleDto.MotorVehicleMake" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["MotorVehicleMake"] != null && comment["MotorVehicleMake"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MotorVehicleMake" data-comment="@comment["MotorVehicleMake"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MotorVehicleMake"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MotorVehicleMake"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblCurrentEqpmntCondition">Current Equipment Condition</label>
+                        <div class="input-group">
+                            <input id="txtCurrentEqpmntCondition" value="@Model.ReturnMotorVehicleDto.CurrentEqpmntCondition" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["CurrentEqpmntCondition"] != null && comment["CurrentEqpmntCondition"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition" data-comment="@comment["CurrentEqpmntCondition"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CurrentEqpmntCondition"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblAllocatedPointsRange">Allocated Points Range</label>
+                        <div class="input-group">
+                            <input id="txtAllocatedPointsRange" value="@Model.ReturnMotorVehicleDto.AllocatedPointsRange" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["AllocatedPointsRange"] != null && comment["AllocatedPointsRange"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange" data-comment="@comment["AllocatedPointsRange"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AllocatedPointsRange"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblModelNo">Model Number</label>
+                        <div class="input-group">
+                            <input id="lblModelNo" value="@Model.ReturnMotorVehicleDto.ModelNo" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["ModelNo"] != null && comment["ModelNo"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ModelNo" data-comment="@comment["ModelNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ModelNo"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ModelNo"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblEngineNo">Engine Number</label>
+                        <div class="input-group">
+                            <input id="txtEngineNo" type="text" value="@Model.ReturnMotorVehicleDto.EngineNo" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["EngineNo"] != null && comment["EngineNo"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineNo" data-comment="@comment["EngineNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineNo"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineNo"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblChassisNo">Chassis Number</label>
+                        <div class="input-group">
+                            <input id="txtChassisNo" value="@Model.ReturnMotorVehicleDto.ChassisNo" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["ChassisNo"] != null && comment["ChassisNo"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ChassisNo" data-comment="@comment["ChassisNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ChassisNo"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ChassisNo"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblSerialNo">Serial Number</label>
+                        <div class="input-group">
+                            <input id="txtSerialNo" type="text" value="@Model.ReturnMotorVehicleDto.SerialNo" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["SerialNo"] != null && comment["SerialNo"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="SerialNo" data-comment="@comment["SerialNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="SerialNo"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="SerialNo"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblPlateNo">Plate Number</label>
+                        <div class="input-group">
+                            <input id="txtPlateNo" type="text" value="@Model.ReturnMotorVehicleDto.PlateNo" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["PlateNo"] != null && comment["PlateNo"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PlateNo" data-comment="@comment["PlateNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PlateNo"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PlateNo"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblTDNo">TD Number</label>
+                        <div class="input-group">
+                            <input id="txtTDNo" type="text" value="@Model.ReturnMotorVehicleDto.TDNo" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["TDNo"] != null && comment["TDNo"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TDNo" data-comment="@comment["TDNo"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TDNo"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="TDNo"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblYearOfManufacture">Year of Manufacture</label>
+                        <div class="input-group">
+                            <input id="txtYearOfManufacture" value="@Model.ReturnMotorVehicleDto.YearOfManufacture" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["YearOfManufacture"] != null && comment["YearOfManufacture"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="YearOfManufacture" data-comment="@comment["YearOfManufacture"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="YearOfManufacture"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="YearOfManufacture"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblCountryOfOrigin">Country of Origin</label>
+                        <div class="input-group">
+                            <input id="txtCountryOfOrigin" value=@Model.ReturnMotorVehicleDto.CountryOfOrigin type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["CountryOfOrigin"] != null && comment["CountryOfOrigin"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CountryOfOrigin" data-comment="@comment["CountryOfOrigin"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CountryOfOrigin"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="CountryOfOrigin"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblPhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
+                        <div class="input-group">
+                            <textarea id="txtTDNo" type="text" value="@Model.ReturnMotorVehicleDto.PhysicalAndInstallationAssesment" class="form-control" readonly>@Model.ReturnMotorVehicleDto.PhysicalAndInstallationAssesment</textarea>
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["PhysicalAndInstallationAssesment"] != null && comment["PhysicalAndInstallationAssesment"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment" data-comment="@comment["PhysicalAndInstallationAssesment"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PhysicalAndInstallationAssesment"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblOverallSurveyAssesment">Overall Survey Assessment</label>
+                        <div class="input-group">
+                            <textarea id="txtaOverallSurveyAssesment" class="form-control" value="@Model.ReturnMotorVehicleDto.OverallSurveyAssesment" type="text" readonly>@Model.ReturnMotorVehicleDto.OverallSurveyAssesment</textarea>
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["OverallSurveyAssesment"] != null && comment["OverallSurveyAssesment"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment" data-comment="@comment["OverallSurveyAssesment"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="OverallSurveyAssesment"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblRemark">Remark</label>
+                        <div class="input-group">
+                            <textarea id="txtCountryOfOrigin" value=@Model.ReturnMotorVehicleDto.Remark type="text" class="form-control" readonly>@Model.ReturnMotorVehicleDto.Remark</textarea>
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["Remark"] != null && comment["Remark"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Remark" data-comment="@comment["Remark"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Remark"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Remark"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <label id="lblInvoiceValue">Invoice Value</label>
+                        <div class="input-group">
+                            <input id="txtInvoiceValue" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.InvoiceValue"  readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["InvoiceValue"] != null && comment["InvoiceValue"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="InvoiceValue" data-comment="@comment["InvoiceValue"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="InvoiceValue"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="InvoiceValue"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblCurrency">Currency</label>
+                        <div class="input-group">
+                            <input id="txtCurrency" list="currencyList" type="text" value="@Model.ReturnMotorVehicleDto.Currency" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["Currency"] != null && comment["Currency"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Currency" data-comment="@comment["Currency"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Currency"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="Currency"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-4">
+                        <label id="lblExchangeRate">Exchange Rate</label>
+                        <div class="input-group">
+                            <input id="txtExchangeRate" type="number" value="@Model.ReturnMotorVehicleDto.ExchangeRate" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["ExchangeRate"] != null && comment["ExchangeRate"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ExchangeRate" data-comment="@comment["ExchangeRate"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ExchangeRate"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ExchangeRate"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-gray-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">Assessment Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Market Share Factor</label>
+                                <div class="input-group">
+                                    <p class="form-control">@Model.ReturnMotorVehicleDto.MarketShareFactor</p>
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["MarketShareFactor"] != null && comment["MarketShareFactor"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MarketShareFactor" data-comment="@comment["MarketShareFactor"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MarketShareFactor"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MarketShareFactor"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Depreciation Rate</label>
+                                <div class="input-group">
+                                    <p class="form-control">@Model.ReturnMotorVehicleDto.DepreciationRate</p>
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["DepreciationRate"] != null && comment["DepreciationRate"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="DepreciationRate" data-comment="@comment["DepreciationRate"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="DepreciationRate"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="DepreciationRate"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Equipment Condition Factor</label>
+                                <div class="input-group">
+                                    <p class="form-control">@Model.ReturnMotorVehicleDto.EqpmntConditionFactor</p>
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["EqpmntConditionFactor"] != null && comment["EqpmntConditionFactor"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EqpmntConditionFactor" data-comment="@comment["EqpmntConditionFactor"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EqpmntConditionFactor"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EqpmntConditionFactor"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Replacement Cost</label>
+                                <div class="input-group">
+                                    <input id="ReplacementCost" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.ReplacementCost" readonly />
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["ReplacementCost"] != null && comment["ReplacementCost"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ReplacementCost" data-comment="@comment["ReplacementCost"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ReplacementCost"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="ReplacementCost"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Net Estimation Value</label>
+                                <div class="input-group">
+                                    <input id="NetEstimationValue" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.NetEstimationValue" readonly />
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["NetEstimationValue"] != null && comment["NetEstimationValue"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NetEstimationValue" data-comment="@comment["NetEstimationValue"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NetEstimationValue"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="NetEstimationValue"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Please Enter Your Additional Comments </label>
+                                <div class="input-group">
+                                    <div class="input-group-append">
+                                        <label class="btn btn-outline-info show-comment-box" data-toggle="modal"
+                                               data-target="#CommentBoxModal" data-field-id="AdditionalComment">
+                                            Additional Comment
+                                            <i class="fas fa-plus"></i>
+                                        </label>
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["AdditionalComment"] != null && comment["AdditionalComment"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AdditionalComment" data-comment="@comment["AdditionalComment"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AdditionalComment"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="AdditionalComment"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-append">
+                                        <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2 checkedButton">Checked <i class="fas fa-check"></i></button>
+                                        <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2 correctionButton">Send for Correction <i class="fas fa-reply-all"></i></button>
+                                        <button id="CheckAssesmentButton" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#CheckAssesmentModal"> Evaluation Tool <i class="fas fa-toolbox"></i> </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("CheckAssesment")
+
+<script>
+    const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
+    
+    CheckAssesmentButton.addEventListener("click", function () {
+        $('#CheckAssesmentModal').modal('show');
+    });
+</script>
+@section Scripts {
+    @{
+        <script>
+            formatAndDisplayValue('ReplacementCost');
+            formatAndDisplayValue('txtInvoiceValue');
+            formatAndDisplayValue('NetEstimationValue');
+        </script>
+       await Html.RenderPartialAsync("ScriptPartial/_MVSriptsPartial");
+       await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+     }
+}
+
+<div class="modal fade" id="CommentBoxModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <textarea id="comment" class="form-control" rows="4" placeholder="Enter your comment"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary save-comment">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

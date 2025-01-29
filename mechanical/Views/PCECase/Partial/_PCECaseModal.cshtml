@@ -1,0 +1,132 @@
+﻿<div class="modal fade" id="checkApplicantNameModal" tabindex="-1" role="dialog" aria-labelledby="addProductionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductionModalLabel">
+                    <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Search and Select the Applicant
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="pcecase-table" class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all"></th>
+                            <th>Applicant Name</th>
+                            <th>Applicant Email</th>
+                            <th>Customer ID</th>
+                            <th>Case ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-purple bg-purple" id="okButton">Select</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        var table;
+
+        const checkApplicantName = document.getElementById("checkApplicantName");
+        checkApplicantName.addEventListener("click", function () {
+            const applicantName = document.getElementById("applicantName").value;
+            const url = '@Url.Action("GetByApplicantName", "PCECase")';
+            fetch(url + `?applicantName=${applicantName}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+                })
+                .then(data => {
+                    populateDataTable(data);
+                    // Show the modal after a short delay
+                    setTimeout(function () {
+                        $('#checkApplicantNameModal').modal('show');
+                    }, 100);
+                })
+                .catch(error => console.error(error));
+        });
+
+        function populateDataTable(data) {
+            table = $('#pcecase-table').DataTable({
+                destroy: true,
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        render: (data, type, row) => {
+                            return `<input type="checkbox" class="select-row" data-id="${row.Id}">`;
+                        }
+                    },
+                    { data: 'ApplicantName' },
+                    { data: 'CustomerEmail' },
+                    { data: 'CustomerId' },
+                    { data: 'CaseNo' }
+                ],
+                initComplete: function () {
+                    // Re-add the search form and other UI elements
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var searchInput = $(`<input type="text" class="form-control" placeholder="Search ${column.header().textContent}" />`)
+                            .appendTo($(column.footer()).empty())
+                            .on('keyup change clear', function () {
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
+                    });
+                }
+            });
+        }
+
+        $('#pcecase-table').on('change', '.select-row', function () {
+            // Deselect all other checkboxes
+            $('.select-row').not(this).prop('checked', false).closest('tr').removeClass('bg-purple')
+                .find('.select-row').removeClass('bg-purple');
+
+            // Get the current row
+            var currentRow = $(this).closest('tr');
+
+            // Toggle the selected class and styles
+            if ($(this).is(':checked')) {
+                currentRow.addClass('bg-purple');
+                $(this).addClass('bg-purple');
+            } else {
+                currentRow.removeClass('bg-purple');
+                $(this).removeClass('bg-purple');
+            }
+        });
+
+        $('#okButton').click(function () {
+            var selectedRows = $('.select-row:checked').map(function () {
+                return table.row($(this).closest('tr')).data();
+            }).get();
+            if (selectedRows.length > 0) {
+                var selectedRow = selectedRows[0];
+
+                selectedRow.CustomerId = 1234;
+                $('#applicantName').val(selectedRow.ApplicantName);
+                $('#customerEmail').val(selectedRow.CustomerEmail);
+                $('#CustomerId').val(selectedRow.CustomerId);
+                $('#caseNumber').val(selectedRow.CaseNo);
+
+                $('#checkApplicantNameModal').modal('hide');
+            }
+        });
+    });
+
+</script>
+
