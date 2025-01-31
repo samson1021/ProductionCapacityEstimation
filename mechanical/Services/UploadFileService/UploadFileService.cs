@@ -53,22 +53,31 @@ namespace mechanical.Services.UploadFileService
             return _mapper.Map<ReturnFileDto>(uploadFile);
 
         }
-        public async Task <ActionResult>DownloadFile(Guid Id)
+        public async Task<ActionResult> DownloadFile(Guid Id)
         {
-            var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
-            var filePath = Path.Combine("UploadFile", Id.ToString() + uploadFile.Extension);
-            byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            //var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
+            //var filePath = Path.Combine("UploadFile", Id.ToString() + uploadFile.Extension);
+            //byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
-            return  new FileContentResult(fileBytes, "application/octet-stream") { FileDownloadName = uploadFile.Name };
+            //return new FileContentResult(fileBytes, "application/octet-stream") { FileDownloadName = uploadFile.Name };
+            var (fileBytes, fileName, mimeType) = await ViewFile(Id);
+
+            return new FileContentResult(fileBytes, mimeType) { FileDownloadName = fileName };
+
         }
-        public async Task<(byte[] , string, string)> ViewFile(Guid Id)
+        public async Task<(byte[], string, string)> ViewFile(Guid Id)
         {
             var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
             var filePath = Path.Combine("UploadFile", Id.ToString() + uploadFile.Extension);
+            if (!System.IO.File.Exists(filePath))
+            {
+                throw new FileNotFoundException("File not found");
+            }
 
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
             string fileName = Path.GetFileName(filePath);
             string mimeType;
+
             switch (Path.GetExtension(fileName).ToLower())
             {
                 case ".pdf":
@@ -84,11 +93,27 @@ namespace mechanical.Services.UploadFileService
                 case ".gif":
                     mimeType = "image/gif";
                     break;
+                case ".doc":
+                case ".docx":
+                    mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                    break;
+                case ".xls":
+                case ".xlsx":
+                    mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    break;
+                case ".ppt":
+                case ".pptx":
+                    mimeType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                    break;
                 default:
-                    throw new ArgumentException("Unsupported file type");
+                    // Redirect to download for unsupported file types
+                    mimeType = "application/octet-stream"; // Generic binary file type
+                    break;
             }
             return (fileBytes, fileName, mimeType);
         }
+
+
 
         public async Task<IEnumerable<ReturnFileDto>> GetUploadFileByCollateralId(Guid? CollateralId)
         {

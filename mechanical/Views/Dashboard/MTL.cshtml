@@ -8,19 +8,168 @@
         text-decoration: underline;
     }
 </style>
-<div class="content-header">
-    <section class="content">
-        <div class="container-fluid">
-            <div class="card">
-                <div class="card-body">
+<div class="content-header"></div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-green update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="newCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">New Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1><i class="fas fa-plus"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="#" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info<i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-yellow update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="pendingCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">Pending Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1><i class="fas fa-spinner"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("MyPendingCase","MOCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="completedCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">Completed Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1> <i class="fas fas-solid fa-check"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-c-blue update-card">
+                            <div class="card-block">
+                                <div class="row align-items-end">
+                                    <div class="col-8">
+                                        <h4 class="text-white" id="totalCasesCount">-</h4>
+                                        <h6 class="text-white m-b-0">Total Cases</h6>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <div class="icon col-12">
+                                            <h1> <i class="fas fa-grip-lines"></i></h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="@Url.Action("TotalCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    More info <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Latest Case</h3>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Case No</th>
+                                            <th>Creation Date</th>
+                                            <th>Requesting Unit</th>
+                                            <th>Applicant Name</th>
+                                            <th>Customer Id</th>
+                                            <th>Collateral</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td><a href="@Url.Action("MyCase", "MTLCase")?Id=@item.Id">@item.CaseNo</a></td>
+                                                <td>@item.CreationAt</td>
+                                                <td>@item.Segement</td>
+                                                <td>@item.ApplicantName</td>
+                                                <td>@item.CustomerId</td>
+                                                <td>@item.NoOfCollateral</td>
+                                                <td>
+                                                    @if (item.Status == "New")
+                                                    {
+                                                        <span class="badge badge-success">New</span>
+                                                    }
+                                                    else if (item.Status == "Pending")
+                                                    {
+                                                        <span class="badge badge-warning">Pending</span>
+                                                    }
+                                                    else if (item.Status == "Complete")
+                                                    {
+                                                        <span class="badge badge-purple">Complete</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*  Production capacity case   *@
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
                     <div class="row">
-                        <div class="col-xl-3 col-md-6">
+                        <div class="col flex-grow-1">
                             <div class="card bg-c-green update-card">
                                 <div class="card-block">
                                     <div class="row align-items-end">
                                         <div class="col-8">
-                                            <h4 class="text-white" id="newCasesCount">-</h4>
-                                            <h6 class="text-white m-b-0">New Cases</h6>
+                                            <h4 class="text-white" id="newPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">New PCE Cases</h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <div class="icon col-12">
@@ -30,19 +179,19 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("MyCases","CTLCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("PCECases","PCECase", new { Status = "New" })" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info<i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-6">
+                        <div class="col flex-grow-1">
                             <div class="card bg-c-yellow update-card">
                                 <div class="card-block">
                                     <div class="row align-items-end">
                                         <div class="col-8">
-                                            <h4 class="text-white" id="pendingCasesCount">-</h4>
-                                            <h6 class="text-white m-b-0">Pending Cases</h6>
+                                            <h4 class="text-white" id="pendingPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">Pending PCE Cases</h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <div class="icon col-12">
@@ -52,19 +201,19 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("MyPendingCases","CTLCase")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("PCECases","PCECase", new { Status = "Pending" })" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info <i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-6">
+                        <div class="col flex-grow-1">
                             <div class="card bg-c-pink update-card">
                                 <div class="card-block">
                                     <div class="row align-items-end">
                                         <div class="col-8">
-                                            <h4 class="text-white" id="completedCasesCount">-</h4>
-                                            <h6 class="text-white m-b-0">Completed Cases</h6>
+                                            <h4 class="text-white" id="completedPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">Completed PCE Cases</h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <div class="icon col-12">
@@ -74,19 +223,19 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("PCECases","PCECase", new { Status = "Completed" })" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info <i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-6">
+                        <div class="col flex-grow-1">
                             <div class="card bg-c-blue update-card">
                                 <div class="card-block">
                                     <div class="row align-items-end">
                                         <div class="col-8">
-                                            <h4 class="text-white" id="totalCasesCount">-</h4>
-                                            <h6 class="text-white m-b-0">Total Cases</h6>
+                                            <h4 class="text-white" id="totalPCECaseCount">-</h4>
+                                            <h6 class="text-white m-b-0">Total PCE Cases</h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <div class="icon col-12">
@@ -96,60 +245,33 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <a href="@Url.Action("TotalCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                    <a href="@Url.Action("PCECases","PCECase")" class="small-box-footer" style="color: white; display: inline-block;">
                                         More info <i class="fas fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="card">
-                            <div class="card-header border-transparent">
-                                <h3 class="card-title">Latest Case</h3>
-                            </div>
 
+                    <div class="row">
+                        <div class="card mx-2">
+                            <div class="card-header border-transparent">
+                                <h3 class="card-title">Latest PCE Cases</h3>
+                            </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table m-0">
+                                    <table id="PCECasesDatatable" class="table table-bordered table-striped m-0">
                                         <thead>
                                             <tr>
                                                 <th>Case No</th>
                                                 <th>Creation Date</th>
-                                                <th>Requesting Unit</th>
                                                 <th>Applicant Name</th>
                                                 <th>Customer Id</th>
-                                                <th>Collateral</th>
+                                                @* <th>New Productions</th> *@
+                                                <th>Total Productions</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr>
-                                                    <td><a href="@Url.Action("MyCase", "MTLCase")?Id=@item.Id">@item.CaseNo</a></td>
-                                                    <td>@item.CreationAt</td>
-                                                    <td>@item.Segement</td>
-                                                    <td>@item.ApplicantName</td>
-                                                    <td>@item.CustomerId</td>
-                                                    <td>@item.NoOfCollateral</td>
-                                                    <td>
-                                                        @if (item.Status == "New")
-                                                        {
-                                                            <span class="badge badge-success">New</span>
-                                                        }
-                                                        else if (item.Status == "Pending")
-                                                        {
-                                                            <span class="badge badge-warning">Pending</span>
-                                                        }
-                                                        else if (item.Status == "Complete")
-                                                        {
-                                                            <span class="badge badge-purple">Complete</span>
-                                                        }
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -157,8 +279,9 @@
                     </div>
                 </div>
             </div>
+            @* Production Estimation Capacity Estimation *@
         </div>
-    </section>
+</section>
 </div>
 @section Scripts {
     @{
@@ -258,7 +381,6 @@
                                 return date.toLocaleString();
                             }
                         },
-                        { data: 'Segment', width: '15%' },
                         { data: 'ApplicantName', width: '15%' },
                         { data: 'CustomerId', width: '15%' },
         @* { data: 'NoOfProductions', width: '10%' }, *@
