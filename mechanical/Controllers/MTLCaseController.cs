@@ -32,11 +32,25 @@ namespace mechanical.Controllers
 
             return View();
         }
+        [HttpGet]
+        public IActionResult MyCompletedCases()
+        {
+
+            return View();
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetMyCases()
         {
             var myCase = await _mmCaseService.GetMMNewCases(GetCurrentUserId());
+            if (myCase == null) { return BadRequest("Unable to load case"); }
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMyCompletedCases()
+        {
+            var myCase = await _mmCaseService.GetMTLCompletedCases(GetCurrentUserId());
             if (myCase == null) { return BadRequest("Unable to load case"); }
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
