@@ -145,7 +145,17 @@ namespace mechanical.Services.UploadFileService
             }
         }
 
+        public async Task<IEnumerable<ReturnFileDto>> GetMoUploadFile(Guid? CaseId)
+        {
+            if (CaseId == null) return null;
 
+                var uploadFiles = await _cbeContext.UploadFiles
+                    .Where(res => res.CaseId == CaseId && res.CollateralId == null)
+                    .ToListAsync();
+                return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
+
+            
+        }
 
         public async Task<IEnumerable<ReturnPCEReportFileDto>> GetAllUploadFileByCaseId(Guid? CollateralId)
         {

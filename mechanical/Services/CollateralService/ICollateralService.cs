@@ -9,6 +9,7 @@ namespace mechanical.Services.CollateralService
     public interface ICollateralService
     {
         Task<Collateral> CreateCollateral(Guid userId, Guid caseId, CollateralPostDto createCollateralDto);
+        Task<bool> CreateMOFile(Guid userId, Guid caseId, string DocumentType, IEnumerable<IFormFile>? Document);
         Task<Collateral> CreateCivilCollateral(Guid userId, Guid caseId, CivilCollateralPostDto createCivilCollateralDto);
         Task<Collateral> CreateAgricultureCollateral(Guid userId, Guid caseId, AgricultureCollateralPostDto createAgricultureCollateralDto);
         Task<IEnumerable<ReturnCollateralDto>> GetCollaterals(Guid CaseId);
@@ -26,6 +27,7 @@ namespace mechanical.Services.CollateralService
         // Task<IEnumerable<ReturnCollateralDto>> GetMOCollaterals(Guid CaseId);
         // Task<IEnumerable<ReturnCollateralDto>> GetCOCollaterals(Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetMMCollaterals(Guid userId, Guid CaseId);
+        Task<IEnumerable<ReturnCollateralDto>> GetMMCompleteCollaterals(Guid userId, Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetCMCollaterals(Guid userId, Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetRemarkCollaterals(Guid userId, Guid CaseId);
         Task<IEnumerable<ReturnCollateralDto>> GetRmRemarkCollaterals(Guid userId, Guid CaseId);

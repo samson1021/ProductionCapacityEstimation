@@ -48,7 +48,7 @@ namespace mechanical.Services.MMCaseService
         public async Task<IEnumerable<CaseDto>> GetMTLCompletedCases(Guid userId)
         {
 
-            var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).ThenInclude(res => res.CaseOriginator).Where(Ca => Ca.UserId == userId && Ca.Status == "Completed").ToListAsync();
+            var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).ThenInclude(res => res.CaseOriginator).Where(Ca => Ca.UserId == userId && Ca.Status == "Complete").ToListAsync();
             var uniqueCases = caseAssignments.Select(ca => ca.Collateral.Case).DistinctBy(c => c.Id).ToList();
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(uniqueCases);
             foreach (var caseDto in caseDtos)

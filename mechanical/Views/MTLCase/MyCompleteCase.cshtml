@@ -4,8 +4,8 @@
 @{
     var myCase = ViewData["case"] as CaseReturntDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
-    var caseTerminate = ViewData["caseTerminate"] as IEnumerable<CaseTerminateReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+    var caseTerminate = ViewData["caseTerminate"] as IEnumerable<CaseTerminateReturnDto>;
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
 }
 
@@ -64,7 +64,7 @@
                         @await Html.PartialAsync("_GeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                        @await Html.PartialAsync("_CreateCollateral")
+                        @await Html.PartialAsync("_CompleteCollateral")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("_CaseSchedule")
@@ -85,119 +85,6 @@
         </div>
     </div>
 </section>
-@*@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
-@{
-    var myCase = ViewData["case"] as CaseDto;
-}<style>
-     .purple-checkbox input[type="checkbox"]:checked + label::before {
-         background-color: purple;
-     }
-</style>
-<input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Case Detail</h1>
-            </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("MyCase", "Case")">My Case/</a></li>
-                    <li class="breadcrumb-item active">Detail</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="content">
-    <div class="container-fluid">
-        <div class="card">
-            <div class="Card-header">
-                <div class="col-12" style="margin-top:0.5em;">
-                    <div class="row">
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Case number</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CaseNo</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Applicant name</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@myCase.ApplicantName</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Applicant Customer Id</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CustomerId</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Applicant address</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CaseNo</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Created at</span>
-                                    <span class="info-box-number text-center text-muted mb-0">@myCase.CreationAt</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col-12 col-sm-6">
-                            <div class="btn-group">
-                                <a  class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = myCase.Id })">
-                                   Time Line <i class="nav-icon fas fa-sitemap"></i>
-                                </a>
-                               @* <button id="showCollateralFile" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#CollateralFileModal">
-                                    Related Document <i class="fas fa-file"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <table id="caseCollaterals" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
-                            <th>Property Owner</th>
-                            <th>Role</th>
-                            <th>Equipment Catagory</th>
-                            <th>Equipment Type</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="row">
-                    <div class="col-xl-2 col-lg-4 col-sm-6">
-                        <button id="assignButton" class="col-12 btn btn-sm bg-purple">Assign</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>*@
-
 
 <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -209,7 +96,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm("AssignTeamleader", "CMCase", FormMethod.Post, new { id = "assignForm" }))
+                @using (Html.BeginForm("AssignTeamleader", "MMCase", FormMethod.Post, new { id = "assignForm" }))
                 {
                     <input type="hidden" id="selectedCollateralIds" name="selectedCollateralIds">
                     <div class="form-group">
@@ -232,7 +119,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-
+        
             $('#AcceptcaseTerminationButton').click(function (event) {
                 event.preventDefault();
                 var formData = new FormData();
@@ -257,9 +144,8 @@
                     }
                 });
             });
-
+        
         });
-
         function fetchCollateralDetails(collateralId) {
             $('#CollateralFileModal').modal('show');
             $.ajax({
@@ -292,7 +178,7 @@
         }
     </script>
     @{
-        await Html.RenderPartialAsync("ScriptPartial/CTL/_CTLMyCaseDatatableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/MTL/_MTLMyCompleteCaseDatatableSriptsPartial");
     }
 }
 

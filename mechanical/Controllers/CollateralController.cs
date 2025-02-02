@@ -41,7 +41,7 @@ namespace mechanical.Controllers
             return View();
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
+     //   [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Guid caseId, CollateralPostDto collateralDto)
         {
             if (ModelState.IsValid)
@@ -51,6 +51,21 @@ namespace mechanical.Controllers
                 return Ok(response);
             }
             return BadRequest();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateMoDocument(Guid CaseId, string DocumentType, IEnumerable<IFormFile>? Document)
+        {
+            try
+            {
+                await _collateralService.CreateMOFile(base.GetCurrentUserId(), CaseId, DocumentType, Document);
+                var response = new { message = "Document created successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -238,6 +253,13 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetMMCollaterals(Guid CaseId)
         {
             var collaterals = await _collateralService.GetMMCollaterals(base.GetCurrentUserId(),CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMMCompleteCollaterals(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetMMCompleteCollaterals(base.GetCurrentUserId(), CaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }

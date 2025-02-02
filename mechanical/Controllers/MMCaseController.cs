@@ -7,6 +7,7 @@ using mechanical.Services.MMCaseService;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.CaseAssignmentService;
+using mechanical.Services.UploadFileService;
 
 namespace mechanical.Controllers
 {
@@ -16,15 +17,17 @@ namespace mechanical.Controllers
         private readonly IMMCaseService _mMCaseService;  
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;  
-        private readonly ICaseAssignmentService _caseAssignmentService; 
+        private readonly ICaseAssignmentService _caseAssignmentService;
+        private readonly IUploadFileService _uploadFileService;
 
-        public MMCaseController(ICaseService caseService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
+        public MMCaseController(ICaseService caseService,IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
         {
             _caseService = caseService;
             _mMCaseService = mMCaseService; 
             _caseAssignmentService = caseAssignment;
             _caseScheduleService = caseScheduleService;
-            _caseTermnateService = caseTerminateService;            
+            _caseTermnateService = caseTerminateService;     
+            _uploadFileService = uploadFileService;
         }
 
         [HttpGet]
@@ -62,6 +65,8 @@ namespace mechanical.Controllers
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }
 

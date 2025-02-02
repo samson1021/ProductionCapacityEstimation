@@ -1,0 +1,89 @@
+﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@{
+    var myCase = ViewData["case"] as CaseReturntDto;
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="Card-header">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12 col-sm-6" style="margin-top:1rem;">
+                            <div class="btn-group">
+                                <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
+                                    <i class="fas fa-plus-circle"></i> Upload Document
+                                </button>
+                                
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="caseCollaterals" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Property Owner</th>
+                            <th>Role</th>
+                            <th>Equipment Catagory</th>
+                            <th>Equipment Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+      
+    });
+</script>
+<div class="modal fade" id="addMechanicalCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-l" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCollateralModalLabel">   <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon"> Upload Valuation Supporting Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("CreateMoDocument", "Collateral", FormMethod.Post, new { id = "addMechanicalCollateralForm", enctype = "multipart/form-data" }))
+            {
+                <div class="modal-body" style="padding-top:0px;">
+                    <div class="card-body">
+                        <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <label asp-for="Type">Document Type <i class="text-danger">*</i></label>
+                                <select id="typeDropdown" name="DocumentType" required class="form-control form-control-sm">
+                                    <option value="" disabled selected>Select Document Type *</option>
+                                    <option value="Site visit witness form">Site visit witness form</option>
+                                    <option value="Maker officer Supportive Document">Other Supportive Document</option>
+                                </select>
+                                <span asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <label asp-for="PackingList">Document</label>
+                                <input name="Document" type="file" class="form-control form-control-sm" id="Document" multiple>
+                                <span asp-validation-for="PackingList" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

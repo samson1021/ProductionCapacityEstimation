@@ -366,7 +366,7 @@
     // }
     function validateInputMac(inputId, errorId, isRequired) {
         var input = document.getElementById(inputId).value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
         var errorMessage = "";
         if (isRequired && input.trim() === "") {
             errorMessage = "This field is required.";
