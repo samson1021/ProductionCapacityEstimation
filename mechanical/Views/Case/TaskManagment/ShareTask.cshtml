@@ -16,8 +16,10 @@
             <div class="modal-body">
                 @using (Html.BeginForm("ShareTask", "TaskManagment", FormMethod.Post, new { id = "shareTskForm" }))
                 {
-                    <input asp-for="CaseOrginatorId" value=@userId type="hidden" id="userId" />
-                    <input type="hidden" id="selectedCaseIds" name="selectedCaseIds">
+                    @* <input asp-for="CaseOrginatorId" value="@userId" type="hidden" id="CaseOrginatorId" /> *@
+                    <input asp-for="CaseOrginatorId" type="hidden" id="CaseOrginatorId" />
+                    <input asp-for="CaseId"  type="hidden" id="CaseId" /> 
+                    @* <input type="hidden" id="selectedCaseIds" name="selectedCaseIds"> *@
 
                     <div class="form-group">
                         <label asp-for="AssignedId"> Assignee Name <i class="text-danger">*</i></label>

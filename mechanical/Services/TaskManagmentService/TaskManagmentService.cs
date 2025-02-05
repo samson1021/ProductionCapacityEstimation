@@ -9,6 +9,7 @@ using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -29,49 +30,67 @@ namespace mechanical.Services.TaskManagmentService
             _caseTimeLineService = caseTimeLineService;
 
         }
-
-        public async Task<TaskManagment> ShareTask(Guid AssignorId, Guid AssigneeId, Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
+        public async Task<TaskManagment> ShareTask(Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
         {
+            if (createTaskManagmentDto == null)
+            {
+                throw new ArgumentNullException(nameof(createTaskManagmentDto), "Task management DTO cannot be null.");
+            }
+
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
                 EncodingHelper.EncodeObject(createTaskManagmentDto);
-                // SanitizerHelper.SanitizeObject(createProductionDto);
-                var asignorId = _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == AssignorId);
-                if (asignorId == null)
+
+                // Fetch the user details
+                var user = await _cbeContext.CreateUsers
+                    .Include(u => u.District)
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseOrginatorId);
+
+                if (user == null)
                 {
-                    throw new Exception("user not found");
+                    throw new KeyNotFoundException("User not found.");
                 }
+
+                // Map DTO to TaskManagment entity
                 var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
                 task.Id = Guid.NewGuid();
-                task.CaseId = selectedCaseIds;
+                task.CaseId = createTaskManagmentDto.CaseId;
+                task.TaskName = createTaskManagmentDto.TaskName;
+                task.PriorityType = createTaskManagmentDto.PriorityType;
+                task.SharingReason = createTaskManagmentDto.SharingReason;
+                task.CompletionDate = createTaskManagmentDto.Deadline;
+                task.CaseOrginatorId = user.Id;
+                task.AssignedId = user.Id;
+                task.TaskStatus = "New"; // Use an enum or constant
                 task.AssignedDate = DateTime.Now;
-                task.CaseOrginatorId = AssignorId;
-                task.AssignedId = AssigneeId;
-                task.TaskStatus = "New";
+                task.Deadline = createTaskManagmentDto.Deadline;
 
+                // Add task to the context
                 await _cbeContext.TaskManagments.AddAsync(task);
 
+                // Create a task notification
                 var taskNotification = new TaskNotification
                 {
                     TaskId = task.Id,
-                    UserId = AssigneeId,
+                    UserId = user.Id,
                     Date = DateTime.Now,
-                    Notification = " New Task",
-                    Status = "New"
+                    Notification = "New Task",
+                    Status ="New" // Use an enum or constant
                 };
                 await _cbeContext.TaskNotifications.AddAsync(taskNotification);
-               
 
-               await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-               {
-                   CaseId = task.CaseId,
-                   Activity = $"<strong>A new case with ID {task.CaseId} has been shared to {task.AssignedId} by {task.CaseOrginatorId}</strong>",
-                   CurrentStage = asignorId.Role.Name
-               });
+                // Log the timeline event
+                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                {
+                    CaseId = task.CaseId,
+                    Activity = $"<strong>A new case with ID {task.CaseId} has been shared to {task.AssignedId} by {task.CaseOrginatorId}</strong>",
+                    CurrentStage = user.Role.Name
+                });
 
-
+                // Save changes and commit the transaction
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -79,12 +98,11 @@ namespace mechanical.Services.TaskManagmentService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating production");
+                _logger.LogError(ex, "Error sharing task.");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while creating production.");
+                throw new ApplicationException("An error occurred while sharing the task.", ex);
             }
         }
-       
 
 
         public Task<bool> DeleteTask(Guid AssignorId, Guid Id)

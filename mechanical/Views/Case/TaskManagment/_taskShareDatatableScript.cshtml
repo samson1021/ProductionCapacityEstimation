@@ -20,7 +20,7 @@
             var selectedCaseIds = [];
 
             checkedCases.each(function () {
-                var caseId = $(this).val();
+                var caseId = $(this).val();                
                 console.log("Case id is " + caseId);
                 selectedCaseIds.push(caseId);
                 console.log("selectedCaseIds is " + selectedCaseIds);
@@ -29,7 +29,8 @@
                 toastr.error('Please select at least one case');
 
             } else {
-                $('#selectedCaseIds').val(selectedCaseIds.join(','));
+                $('#CaseId').val(selectedCaseIds.join(','));
+                $('#CaseOrginatorId').val('0F80DC55-E37D-4870-995E-A6054367DF63');
 
                 $('#shareTaskModal').modal('show');
             }

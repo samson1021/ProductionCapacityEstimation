@@ -633,6 +633,10 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNO")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1184,7 +1188,6 @@ namespace mechanical.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("URL")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")

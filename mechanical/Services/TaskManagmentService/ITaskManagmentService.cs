@@ -14,7 +14,7 @@ namespace mechanical.Services.TaskManagmentService
    
     public interface ITaskManagmentService
     {
-        Task<TaskManagment> ShareTask(Guid AssignorId, Guid AssigneeId, Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
+        Task<TaskManagment> ShareTask( Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
         Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId,  Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto);
         Task<bool> DeleteTask(Guid AssignorId, Guid Id);
         Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id);
