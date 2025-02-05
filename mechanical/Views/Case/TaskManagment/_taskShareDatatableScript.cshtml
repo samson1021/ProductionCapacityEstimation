@@ -13,6 +13,19 @@
 
 <script>
     $(document).ready(function () {
+        fetch('/UserManagment/GetUsers')
+            .then(response => response.json())
+            .then(data => {
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Assignee');
+                $('#CenterDropdown').append(selectOption);
+                data.forEach(function (user) {
+                    var option = $('<option></option>').attr('value', user.Id).text(user.Name);
+                    $('#CenterDropdown').append(option);
+                });
+            })
+            .catch(error => {
+                console.log('Error fetching District data:', error);
+            });
 
         $('#shareTaskButton').on('click', function () {
 
@@ -30,7 +43,7 @@
 
             } else {
                 $('#CaseId').val(selectedCaseIds.join(','));
-                $('#CaseOrginatorId').val('0F80DC55-E37D-4870-995E-A6054367DF63');
+                $('#CaseOrginatorId').val('47315C47-F8F0-4B68-A7BD-BA2E3C3561A1');
 
                 $('#shareTaskModal').modal('show');
             }

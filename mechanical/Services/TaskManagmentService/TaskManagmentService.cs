@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using mechanical.Data;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
@@ -48,6 +49,12 @@ namespace mechanical.Services.TaskManagmentService
                     .Include(u => u.District)
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseOrginatorId);
+                var Asigneuser = await _cbeContext.CreateUsers
+                    .Include(u => u.District)
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId);
+                var CaseApplicantName = await _cbeContext.Cases                    
+                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseId);
 
                 if (user == null)
                 {
@@ -63,7 +70,7 @@ namespace mechanical.Services.TaskManagmentService
                 task.SharingReason = createTaskManagmentDto.SharingReason;
                 task.CompletionDate = createTaskManagmentDto.Deadline;
                 task.CaseOrginatorId = user.Id;
-                task.AssignedId = user.Id;
+                task.AssignedId = createTaskManagmentDto.AssignedId;
                 task.TaskStatus = "New"; // Use an enum or constant
                 task.AssignedDate = DateTime.Now;
                 task.Deadline = createTaskManagmentDto.Deadline;
@@ -86,7 +93,7 @@ namespace mechanical.Services.TaskManagmentService
                 await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
                 {
                     CaseId = task.CaseId,
-                    Activity = $"<strong>A new case with ID {task.CaseId} has been shared to {task.AssignedId} by {task.CaseOrginatorId}</strong>",
+                    Activity = $"<strong>A {CaseApplicantName.ApplicantName} appicant case has been shared to {Asigneuser.Role.Name} by {user.Role.Name}</strong>",
                     CurrentStage = user.Role.Name
                 });
 
