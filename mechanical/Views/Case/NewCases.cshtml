@@ -1,4 +1,9 @@
-﻿
+﻿@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto;
+@{
+    // var myCase = ViewData["case"] as CaseReturntDto;
+   
+}
+ 
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -21,6 +26,7 @@
                 <table id="MyNewCase" class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
                             <th>Created At</th>
                             <th>Case No</th>
                             <th>Aplicant Name</th>
@@ -31,13 +37,28 @@
                         </tr>
                     </thead>
                 </table>
+                <div class="row">
+                     @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" /> *@
+                    <div class="row">
+                        <button type="submit" id="shareTaskButton" class="col-xl-2  btn btn-sm  bg-purple"> Share Task <i class="fa-regular fa-share-nodes"></i> </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+
+@* @await Html.PartialAsync("TaskManagment/CreateTask") *@
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_NewCasesDatatableSriptsPartial");
+        await Html.RenderPartialAsync("TaskManagment/ShareTask");
+          await Html.RenderPartialAsync("TaskManagment/_taskShareDatatableScript");
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
+      
+
     }
 }
 

@@ -22,6 +22,12 @@
                     data: data,
                     columns: [
                         {
+                            data: null,
+                            render: function (data, type, row, meta) {
+                                return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
+                            }
+                        },
+                        {
                             data: 'CreationAt',
                             width: '15%',
                             render: function (data, type, row, meta) {
@@ -55,6 +61,6 @@
                 }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
             }
         });
-    });
+            });
    
-</script>
+</script>A

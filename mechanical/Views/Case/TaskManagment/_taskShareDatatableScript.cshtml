@@ -1,0 +1,91 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $('#shareTaskButton').on('click', function () {
+
+            var checkedCases = $('.purple-checkbox:checked');
+            var selectedCaseIds = [];
+
+            checkedCases.each(function () {
+                var caseId = $(this).val();
+                console.log("Case id is " + caseId);
+                selectedCaseIds.push(caseId);
+                console.log("selectedCaseIds is " + selectedCaseIds);
+            });
+            if (selectedCaseIds.length === 0) {
+                toastr.error('Please select at least one case');
+
+            } else {
+                $('#selectedCaseIds').val(selectedCaseIds.join(','));
+
+                $('#shareTaskModal').modal('show');
+            }
+        });
+
+        // $('#sendShareTaskButton').on('click', function () {
+
+        //     var checkedCases = $('.purple-checkbox:checked');
+        //     var selectedCaseIds = [];
+
+        //     checkedCases.each(function () {
+        //         var caseId = $(this).val();
+        //         selectedCaseIds.push(caseId);
+        //     });
+        //     if (selectedCaseIds.length === 0) {
+        //         toastr.error('Please select at least one case');
+        //     } else {
+        //         $('#selectedCaseIds').val(selectedCaseIds.join(','));
+
+        //         $('#sendShareTaskButton').modal('show');
+        //     }
+        // });
+
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#MyNewCase tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+
+        $('#assignTaskButton').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/TaskManagment/ShareTask',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    loadCollaterals();
+                    $('#shareTaskModal').modal('hide');
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
+                }
+            });
+        });
+
+    });
+
+</script>A

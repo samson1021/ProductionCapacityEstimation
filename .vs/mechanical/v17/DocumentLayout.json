@@ -1,0 +1,599 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\taskmanagment\\sharetask.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\taskmanagment\\sharetask.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\newcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\newcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\taskmanagment\\_tasksharedatatablescript.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\taskmanagment\\_tasksharedatatablescript.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\mycase.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\mycase.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\dto\\taskmanagmentdto\\taskmanagmentpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\taskmanagmentdto\\taskmanagmentpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\pcecase\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\pcecase\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\taskmanagment\\sharedcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\taskmanagment\\sharedcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\_valuation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\_valuation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\pcecase\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\pcecase\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\dto\\taskmanagmentdto\\taskmanagmentreturndto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\taskmanagmentdto\\taskmanagmentreturndto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\pce\\dto\\productioncapacitydto\\productionreturndto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\pce\\dto\\productioncapacitydto\\productionreturndto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\entities\\taskmanagment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\taskmanagment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\dto\\taskmanagmentdto\\taskmanagmentupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\taskmanagmentdto\\taskmanagmentupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\pce\\dto\\productioncapacitydto\\productionedittdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\pce\\dto\\productioncapacitydto\\productionedittdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\pce\\dto\\productioncapacitydto\\productionpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\pce\\dto\\productioncapacitydto\\productionpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\dto\\collateraldto\\civilcollateralpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\collateraldto\\civilcollateralpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\productioncapacity\\_pcegeneralinfo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\productioncapacity\\_pcegeneralinfo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\taskmanagment\\updatetask.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\taskmanagment\\updatetask.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\entities\\tasknotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\tasknotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\data\\cbecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\data\\cbecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\views\\case\\taskmanagment\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\taskmanagment\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\mapper\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\mapper\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\data\\seedusersrolesanddistricts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\data\\seedusersrolesanddistricts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\.vs\\mechanical\\config\\applicationhost.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.vs\\mechanical\\config\\applicationhost.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\entities\\case.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\case.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\entities\\collateral.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\collateral.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\websockets\\websockethandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\websockets\\websockethandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\models\\entities\\taskcomment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\taskcomment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tasksharing\\tasksharing\\mechanical\\migrations\\20250130062337_tasksharing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\migrations\\20250130062337_tasksharing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ShareTask.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\ShareTask.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\TaskManagment\\ShareTask.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\ShareTask.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\TaskManagment\\ShareTask.cshtml",
+              "ViewState": "AQIAADYAAAAAAAAAAAAAADoAAAAwAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T11:57:18.851Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_NewCasesDatatableSriptsPartial.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
+              "ViewState": "AQIAADUAAAAAAAAAAAAowD8AAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-30T12:36:23.836Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NewCases.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\NewCases.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\NewCases.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\NewCases.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\NewCases.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAADgAAAA+AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T06:35:14.388Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MyCase.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\MyCase.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\MyCase.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\MyCase.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\MyCase.cshtml",
+              "ViewState": "AQIAACYBAAAAAAAAAAAAAHcAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T11:44:45.657Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "_taskShareDatatableScript.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\_taskShareDatatableScript.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\TaskManagment\\_taskShareDatatableScript.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\_taskShareDatatableScript.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\TaskManagment\\_taskShareDatatableScript.cshtml",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAowBoAAAAPAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-30T12:34:38.777Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\Create.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\Create.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\Create.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\Create.cshtml",
+              "ViewState": "AQIAAF0AAAAAAAAAAAAAAGQAAABRAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T06:26:11.208Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Detail.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\Detail.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\Detail.cshtml",
+              "ViewState": "AQIAACcAAAAAAAAAAAAAADMAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T06:35:33.537Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TaskManagmentPostDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentPostDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentPostDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentPostDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentPostDto.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAAAsAAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:50:36.304Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Detail.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\PCECase\\Detail.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\PCECase\\Detail.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\PCECase\\Detail.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\PCECase\\Detail.cshtml",
+              "ViewState": "AQIAAKsAAAAAAAAAAAAAALAAAAA3AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T11:10:07.628Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SharedCases.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\SharedCases.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\TaskManagment\\SharedCases.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\SharedCases.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\TaskManagment\\SharedCases.cshtml",
+              "ViewState": "AQIAABIAAAAAAAAAAAAAABwAAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-03T06:57:43.056Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "_Valuation.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\_Valuation.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\_Valuation.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\_Valuation.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\_Valuation.cshtml",
+              "ViewState": "AQIAAAsBAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-31T07:09:16.767Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\PCECase\\Create.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\PCECase\\Create.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\PCECase\\Create.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\PCECase\\Create.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-30T13:09:25.554Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ProductionReturnDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionReturnDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionReturnDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionReturnDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionReturnDto.cs",
+              "ViewState": "AQIAAGMAAAAAAAAAAAAUwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T13:06:14.04Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "TaskManagment.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\TaskManagment.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\TaskManagment.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\TaskManagment.cs",
+              "RelativeToolTip": "mechanical\\Models\\Entities\\TaskManagment.cs",
+              "ViewState": "AQIAAAsAAAAAAAAAAADwvxMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T12:51:46.684Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "TaskManagmentReturnDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentReturnDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentReturnDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentReturnDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentReturnDto.cs",
+              "ViewState": "AQIAABAAAAAAAAAAAAAQwBUAAAA5AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:51:06.033Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "TaskManagmentUpdateDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentUpdateDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentUpdateDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentUpdateDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\TaskManagmentDto\\TaskManagmentUpdateDto.cs",
+              "ViewState": "AQIAAAQAAAAAAAAAAAA1wAsAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:54:18.107Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ProductionEdittDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionEdittDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionEdittDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionEdittDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionEdittDto.cs",
+              "ViewState": "AQIAADEAAAAAAAAAAAAUwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T13:03:41.315Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ProductionPostDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionPostDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionPostDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionPostDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\PCE\\Dto\\ProductionCapacityDto\\ProductionPostDto.cs",
+              "ViewState": "AQIAAAUAAAAAAAAAAAAxwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T12:59:44.622Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "CivilCollateralPostDto.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\CollateralDto\\CivilCollateralPostDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\CollateralDto\\CivilCollateralPostDto.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Dto\\CollateralDto\\CivilCollateralPostDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\CollateralDto\\CivilCollateralPostDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T12:59:10.757Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "_PCEGeneralInfo.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\ProductionCapacity\\_PCEGeneralInfo.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\ProductionCapacity\\_PCEGeneralInfo.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\ProductionCapacity\\_PCEGeneralInfo.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\ProductionCapacity\\_PCEGeneralInfo.cshtml",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-30T12:34:52.342Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "UpdateTask.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\UpdateTask.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\TaskManagment\\UpdateTask.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\UpdateTask.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\TaskManagment\\UpdateTask.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-30T12:32:29.222Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "Detail.cshtml",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\Detail.cshtml",
+              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\TaskManagment\\Detail.cshtml",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Views\\Case\\TaskManagment\\Detail.cshtml",
+              "RelativeToolTip": "mechanical\\Views\\Case\\TaskManagment\\Detail.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-30T07:05:19.82Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Mapper\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "mechanical\\Mapper\\MappingProfile.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Mapper\\MappingProfile.cs",
+              "RelativeToolTip": "mechanical\\Mapper\\MappingProfile.cs",
+              "ViewState": "AQIAANgAAAAAAAAAAAAIwOEAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:54:26.693Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "SeedUsersRolesAndDistricts.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Data\\SeedUsersRolesAndDistricts.cs",
+              "RelativeDocumentMoniker": "mechanical\\Data\\SeedUsersRolesAndDistricts.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Data\\SeedUsersRolesAndDistricts.cs",
+              "RelativeToolTip": "mechanical\\Data\\SeedUsersRolesAndDistricts.cs",
+              "ViewState": "AQIAAAgBAAAAAAAAAAAIwBoBAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:32:54.689Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "20250130062337_tasksharing.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Migrations\\20250130062337_tasksharing.cs",
+              "RelativeDocumentMoniker": "mechanical\\Migrations\\20250130062337_tasksharing.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Migrations\\20250130062337_tasksharing.cs",
+              "RelativeToolTip": "mechanical\\Migrations\\20250130062337_tasksharing.cs",
+              "ViewState": "AQIAAM4DAAAAAAAAAAAewPwDAAATAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:23:37.437Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "CbeContext.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Data\\CbeContext.cs",
+              "RelativeDocumentMoniker": "mechanical\\Data\\CbeContext.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Data\\CbeContext.cs",
+              "RelativeToolTip": "mechanical\\Data\\CbeContext.cs",
+              "ViewState": "AQIAAGQAAAAAAAAAAAD4v2sAAAA9AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T06:04:13.412Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeDocumentMoniker": "mechanical\\appsettings.json",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeToolTip": "mechanical\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-01-30T06:03:27.142Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "applicationhost.config",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\.vs\\mechanical\\config\\applicationhost.config",
+              "RelativeDocumentMoniker": ".vs\\mechanical\\config\\applicationhost.config",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\.vs\\mechanical\\config\\applicationhost.config",
+              "RelativeToolTip": ".vs\\mechanical\\config\\applicationhost.config",
+              "ViewState": "AQIAAI0AAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-01-30T05:55:24.916Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "Case.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\Case.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\Case.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\Case.cs",
+              "RelativeToolTip": "mechanical\\Models\\Entities\\Case.cs",
+              "ViewState": "AQIAABEAAAAAAAAAAAAuwBgAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T13:14:01.652Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "Collateral.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\Collateral.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\Collateral.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\Collateral.cs",
+              "RelativeToolTip": "mechanical\\Models\\Entities\\Collateral.cs",
+              "ViewState": "AQIAADEAAAAAAAAAAAAqwDgAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T13:07:47.404Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "TaskNotification.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\TaskNotification.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\TaskNotification.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\TaskNotification.cs",
+              "RelativeToolTip": "mechanical\\Models\\Entities\\TaskNotification.cs",
+              "ViewState": "AQIAAAcAAAAAAAAAAAAgwA4AAAA1AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T12:59:48.619Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "WebSocketHandler.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\WebSockets\\WebSocketHandler.cs",
+              "RelativeDocumentMoniker": "mechanical\\WebSockets\\WebSocketHandler.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\WebSockets\\WebSocketHandler.cs",
+              "RelativeToolTip": "mechanical\\WebSockets\\WebSocketHandler.cs",
+              "ViewState": "AQIAAE4AAAAAAAAAAAAAAFcAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T12:56:57.589Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "TaskComment.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\TaskComment.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\TaskComment.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Models\\Entities\\TaskComment.cs",
+              "RelativeToolTip": "mechanical\\Models\\Entities\\TaskComment.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T12:51:44.884Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Program.cs",
+              "RelativeDocumentMoniker": "mechanical\\Program.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\mechanical\\Program.cs",
+              "RelativeToolTip": "mechanical\\Program.cs",
+              "ViewState": "AQIAAHkAAAAAAAAAAAAAAIsAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-29T12:49:28.499Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1023,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
