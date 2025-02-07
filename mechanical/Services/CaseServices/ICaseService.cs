@@ -1,6 +1,8 @@
 ﻿using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.Dto.TaskDto;
+//using mechanical.Models.Dto.TaskDto;
 using mechanical.Models.Entities;
 
 namespace mechanical.Services.CaseServices
@@ -28,6 +30,7 @@ namespace mechanical.Services.CaseServices
         //Task<RmNewCaseDto> GetRmNewCase(Guid Id);
 
 
+        Task<IEnumerable<TaskManagmentDto>> GetRmReceivedCases(Guid userId);
         Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId);
         Task<IEnumerable<CaseDto>> GetRmTotalCases(Guid userId);
         

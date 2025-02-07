@@ -74,6 +74,8 @@ namespace mechanical.Controllers
             ViewData["case"] = loanCase;
             return View();
         }
+        
+        
         [HttpGet]
         public async Task<IActionResult> GetRemarkedCases()
         {
@@ -485,6 +487,21 @@ namespace mechanical.Controllers
             
             return View();
         }
+
+        public async Task<IActionResult> ReceivedCases()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetReceivedCases()
+        {
+            var myCase = await _caseService.GetRmReceivedCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+
+
         [HttpGet]
         public IActionResult ReestimationCases()
         {
@@ -561,6 +578,7 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
         }
+        
         [HttpGet]
         public async Task<IActionResult> GetTotalCases()
         {

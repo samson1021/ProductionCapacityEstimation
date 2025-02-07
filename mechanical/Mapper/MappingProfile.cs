@@ -16,8 +16,8 @@ using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
 
-/////
-using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.Dto.TaskDto;
+
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
@@ -47,6 +47,9 @@ namespace mechanical.Mapper
                 .ForMember(dest=>dest.AuthorName, opt=>opt.MapFrom(src=>src.Author.Name));
 
             CreateMap<CaseSchedulePostDto, CaseSchedule>();
+
+            CreateMap<TaskManagmentDto, TaskManagment>();
+
             CreateMap<CaseSchedule, CaseScheduleReturnDto>();
 
             CreateMap<CaseTerminatePostDto, CaseTerminate>();

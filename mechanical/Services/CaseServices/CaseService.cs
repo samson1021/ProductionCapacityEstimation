@@ -18,6 +18,7 @@ using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using System.Net;
 using System.Xml;
+using mechanical.Models.Dto.TaskDto;
 
 namespace mechanical.Services.CaseServices
 {
@@ -340,9 +341,15 @@ namespace mechanical.Services.CaseServices
         //    return _mapper.Map<RmNewCaseDto>(loanCase);
         //}
 
+        public async Task<IEnumerable<TaskManagmentDto>> GetRmReceivedCases(Guid userId)
+        {
+            var cases = await _cbeContext.TaskManagment.Where(res =>res.AssignedId == userId ).ToListAsync();
+            var caseDtos = _mapper.Map<IEnumerable<TaskManagmentDto>>(cases);
+            return caseDtos;
+        }
         public async Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res =>res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
+            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
            .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))).ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             foreach (var caseDto in caseDtos)
