@@ -59,6 +59,7 @@ using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
 using Microsoft.AspNetCore.Authentication;
+using mechanical.Services.TaskManagmentService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -131,6 +132,7 @@ builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
+builder.Services.AddScoped<ITaskManagmentService, TaskManagmentService>();
 builder.Services.AddScoped<mechanical.Services.AuthenticatioinService.IAuthenticationService, LdapAuthenticationService>();
 
 builder.Services.AddAutoMapper(typeof(Program));

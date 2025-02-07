@@ -27,6 +27,7 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Models.Dto.TaskManagmentDto;
 /////
 
 namespace mechanical.Mapper
@@ -220,7 +221,16 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
                 .ReverseMap();
-            ///////
+           
+            //Task Managment 
+            CreateMap<TaskManagmentPostDto, TaskManagment>().ReverseMap();
+            CreateMap<TaskManagment, TaskManagmentUpdateDto>().ReverseMap();
+            CreateMap<TaskManagment, TaskManagmentReturnDto>().ReverseMap();
+
+
+
+
+
         }
 
         string EnumToDisplayName<TEnum>(TEnum enumValue)
