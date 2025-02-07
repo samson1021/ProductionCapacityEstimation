@@ -1,0 +1,156 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        fetch('/UserManagment/GetUsers')
+            .then(response => response.json())
+            .then(data => {
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Assignee');
+                $('#CenterDropdown').append(selectOption);
+                data.forEach(function (user) {
+                    var option = $('<option></option>').attr('value', user.Id).text(user.Name);
+                    $('#CenterDropdown').append(option);
+                });
+            })
+            .catch(error => {
+                console.log('Error fetching District data:', error);
+            });
+
+        $('#shareTaskButton').on('click', function () {
+            
+            var checkedCases = $('.purple-checkbox:checked');
+            var selectedCaseIds = [];
+            checkedCases.each(function () {
+                 var caseId = $(this).val(); // Get the value from the input
+                $.ajax({
+                    url: '/TaskManagment/GetCase',
+                    type: 'GET',
+                    data: { CaseId: caseId }, // Send caseId as Cased
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log('Response:', response); // Debugging log
+                        caseOrginatorId = response.CaseOriginatorId; // Check spelling
+                        // Set the value after receiving the response
+                        $('#CaseOrginatorId').val(caseOrginatorId);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching case:', error); // Handle errors
+                    }
+                });
+
+                
+                selectedCaseIds.push(caseId);
+                console.log("selectedCaseIds is " + selectedCaseIds);
+            });
+            if (selectedCaseIds.length === 0) {
+                toastr.error('Please select at least one case');
+
+            } else {
+                $('#CaseId').val(selectedCaseIds.join(','));                
+                $('#shareTaskModal').modal('show');
+            }
+        });
+
+      
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#MyNewCase tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+
+        $('#assignTaskButton').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/TaskManagment/ShareTask',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    $('#shareTaskModal').modal('hide');
+                     toastr.success(response.message);               
+                   
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
+                }
+            });
+        });
+        //get shared Task
+        $.ajax({
+            url: '/TaskManagment/GetSharedTasks',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#MySharedTask').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: 'AssignedDate',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        {
+                            data: 'Deadline',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },                      
+                        // { data: 'AssignedId', width: '15%' },
+                        { data: 'TaskName', width: '10%' },
+                        { data: 'PriorityType', width: '15%' },
+                        { data: 'TaskStatus', width: '10%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("DetialSharedTask", "TaskManagment")?Id=' + data + '">Details | </a><a href="@Url.Action("UpdateSharedTask", "TaskManagment")?Id=' + data + '"> Edit | </a><a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                            }
+                        }
+                    ],
+                    order: [[0, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: [
+                        { extend: 'copy', title: 'RM Shared Case' },
+                        { extend: 'csv', title: 'RM Shared Case' },
+                        { extend: 'excel', title: 'RM Shared Case' },
+                        { extend: 'pdf', title: 'RM Shared Case - pdf' },
+                        { extend: 'print', title: 'RM Shared Case - Print' },
+                        'colvis'
+                    ]
+                }).buttons().container().appendTo('#MySharedTask_wrapper .col-md-6:eq(0)');
+            }
+        });
+
+
+
+     });
+
+</script>

@@ -102,10 +102,10 @@ namespace mechanical.Data
         public virtual DbSet<EmployeeInfoes> Employees { get; set; }
         public virtual DbSet<Correction> Corrections { get; set; }
         public virtual DbSet<Reject> Rejects { get; set; }
-        public virtual DbSet<TaskComment> TaskComment { get; set; }
+        public virtual DbSet<TaskComment> TaskComments { get; set; }
 	
-	    public virtual DbSet<TaskManagment> TaskManagment { get; set; }
-	    public virtual DbSet<TaskNotification> TaskNotification { get; set; }
+	    public virtual DbSet<TaskManagment> TaskManagments { get; set; }
+	    public virtual DbSet<TaskNotification> TaskNotifications { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
