@@ -182,26 +182,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxTY3JpcHRQYXJ0aWFsXF9STVRvdGFsQ2FzZXNEYXRhdGFibGVTcmlwdHNQYXJ0aWFsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Case/TaskManagment/Detail.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxUYXNrTWFuYWdtZW50XERldGFpbC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Case/TaskManagment/SharedCases.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxUYXNrTWFuYWdtZW50XFNoYXJlZENhc2VzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Case/TaskManagment/ShareTask.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxUYXNrTWFuYWdtZW50XFNoYXJlVGFzay5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Case/TaskManagment/UpdateTask.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxUYXNrTWFuYWdtZW50XFVwZGF0ZVRhc2suY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Case/TaskManagment/_taskShareDatatableScript.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxUYXNrTWFuYWdtZW50XF90YXNrU2hhcmVEYXRhdGFibGVTY3JpcHQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Case/TerminatedCases.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzZVxUZXJtaW5hdGVkQ2FzZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -1108,6 +1088,26 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/Signature/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2lnbmF0dXJlXFByb2ZpbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/TaskManagment/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxEZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/TaskManagment/SharedCases.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxTaGFyZWRDYXNlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/TaskManagment/ShareTaskModel.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxTaGFyZVRhc2tNb2RlbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/TaskManagment/UpdateTask.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxVcGRhdGVUYXNrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/TaskManagment/_taskShareDatatableScript.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxfdGFza1NoYXJlRGF0YXRhYmxlU2NyaXB0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/USER/Desktop/TaskSharing/TaskSharing/mechanical/Views/UserManagment/Create.cshtml]

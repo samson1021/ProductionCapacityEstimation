@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Signature management")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+283fb55ce429641a985a2718177672cfd3eff7a8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4f50b0b48e187b02ad3606667beb16e4336c922")]
 [assembly: System.Reflection.AssemblyProductAttribute("Signature management")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Signature management")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

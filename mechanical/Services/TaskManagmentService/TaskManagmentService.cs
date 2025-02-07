@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using mechanical.Data;
+using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Models.Entities;
@@ -82,7 +83,7 @@ namespace mechanical.Services.TaskManagmentService
                 var taskNotification = new TaskNotification
                 {
                     TaskId = task.Id,
-                    UserId = user.Id,
+                    UserId = task.AssignedId,
                     Date = DateTime.Now,
                     Notification = "New Task",
                     Status ="New" // Use an enum or constant
@@ -111,13 +112,12 @@ namespace mechanical.Services.TaskManagmentService
             }
         }
 
-
-        public Task<bool> DeleteTask(Guid AssignorId, Guid Id)
+        public async Task<bool> DeleteTask(Guid AssignorId, Guid Id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<TaskManagmentReturnDto> GetTask(Guid AssignorId, Guid Id)
+        public async Task<TaskManagmentReturnDto> GetSharedTask(Guid AssignorId)
         {
             throw new NotImplementedException();
         }
@@ -127,12 +127,18 @@ namespace mechanical.Services.TaskManagmentService
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<TaskManagmentReturnDto>> GetTasks(Guid AssignorId, Guid? CaseId = null, string Status = null)
+        public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid AssignorId)
         {
-            throw new NotImplementedException();
+            var sharedCases = await _cbeContext.TaskManagments
+            .Where(res => res.CaseOrginatorId == AssignorId)
+            .ToListAsync();
+
+            var sharedCaseDtos = _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(sharedCases);
+
+            return sharedCaseDtos;
         }
 
-        public Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
+        public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
         {
             throw new NotImplementedException();
         }
