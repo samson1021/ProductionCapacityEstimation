@@ -6610,19 +6610,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {}
+    "C:\\Users\\samsontsegay\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\Signature management\\Signature management.csproj",
+      "projectUniqueName": "C:\\Users\\samsontsegay\\Documents\\Projects\\collateral\\TaskSharing\\Signature management\\Signature management.csproj",
       "projectName": "Signature management",
-      "projectPath": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\Signature management\\Signature management.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\USER\\Desktop\\TaskSharing\\TaskSharing\\Signature management\\obj\\",
+      "projectPath": "C:\\Users\\samsontsegay\\Documents\\Projects\\collateral\\TaskSharing\\Signature management\\Signature management.csproj",
+      "packagesPath": "C:\\Users\\samsontsegay\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\samsontsegay\\Documents\\Projects\\collateral\\TaskSharing\\Signature management\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\samsontsegay\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -6630,7 +6630,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -6643,11 +6642,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -6730,7 +6724,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
       }
     }
   },
