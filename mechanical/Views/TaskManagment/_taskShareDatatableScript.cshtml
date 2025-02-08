@@ -14,7 +14,8 @@
 
 <script>
     $(document).ready(function () {
-        fetch('/UserManagment/GetUsers')
+
+        fetch('/UserManagment/GetRMUsers')
             .then(response => response.json())
             .then(data => {
                 var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Assignee');
@@ -28,28 +29,11 @@
                 console.log('Error fetching District data:', error);
             });
 
-        $('#shareTaskButton').on('click', function () {
-            
+        $('#shareTaskButton').on('click', function () {            
             var checkedCases = $('.purple-checkbox:checked');
             var selectedCaseIds = [];
             checkedCases.each(function () {
-                 var caseId = $(this).val(); // Get the value from the input
-                $.ajax({
-                    url: '/TaskManagment/GetCase',
-                    type: 'GET',
-                    data: { CaseId: caseId }, // Send caseId as Cased
-                    dataType: 'json',
-                    success: function (response) {
-                        console.log('Response:', response); // Debugging log
-                        caseOrginatorId = response.CaseOriginatorId; // Check spelling
-                        // Set the value after receiving the response
-                        $('#CaseOrginatorId').val(caseOrginatorId);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error fetching case:', error); // Handle errors
-                    }
-                });
-
+                 var caseId = $(this).val(); // Get the value from the input               
                 
                 selectedCaseIds.push(caseId);
                 console.log("selectedCaseIds is " + selectedCaseIds);
@@ -58,7 +42,8 @@
                 toastr.error('Please select at least one case');
 
             } else {
-                $('#CaseId').val(selectedCaseIds.join(','));                
+                $('#selectedCaseIds').val(selectedCaseIds.join(','));
+                console.log("selectedCaseIds is joind  " + selectedCaseIds.join(','));
                 $('#shareTaskModal').modal('show');
             }
         });
@@ -74,10 +59,33 @@
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
 
-        $('#assignTaskButton').submit(function (e) {
+        $('#shareTskForm').submit(function (e) {
             e.preventDefault();
 
             var formData = new FormData(this);
+            const currentDate = stripTime(new Date());
+
+            var deadlineValue = $('#Deadline').val(); // Get the value
+            console.log("Deadline Input Value: ", deadlineValue);
+
+            var selectedDeadline;
+
+            if (deadlineValue) {
+                var parts = deadlineValue.split('-'); // Split the string
+                var selectedDeadline = new Date(parts[0], parts[1] - 1, parts[2]); // Create Date object
+            } 
+
+            console.log("Current Date: ", currentDate);
+            console.log("Selected Deadline: ", selectedDeadline);
+
+            $('#DeadlineError').text(''); // Clear previous errors
+
+           
+            // // Validate deadline
+            // if (stripTime(selectedDeadline) < currentDate) {
+            //     $('#DeadlineError').text("The deadline cannot be before today's date.");
+            //     return;
+            // }
 
             $.ajax({
                 url: '/TaskManagment/ShareTask',
@@ -85,17 +93,19 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function () {
+                success: function (response) {                 
                     $('#shareTaskModal').modal('hide');
-                     toastr.success(response.message);               
-                   
+                    $('#shareTskForm')[0].reset();                   
+                    toastr.success("Task has been shared successfully.");
                 },
-                error: function (xhr, textStatus, errorThrown) {
+                error: function (xhr) {
                     var error = xhr.responseJSON;
-                    toastr.error(error.message);
+                    toastr.error(error.message || "An error occurred");
                 }
             });
         });
+        
+        
         //get shared Task
         $.ajax({
             url: '/TaskManagment/GetSharedTasks',
@@ -152,5 +162,8 @@
 
 
      });
-
+    function stripTime(date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+   
 </script>

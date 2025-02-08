@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("mechanical")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4f50b0b48e187b02ad3606667beb16e4336c922")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e43150de71cf46194097ed7183e46e4c5040322f")]
 [assembly: System.Reflection.AssemblyProductAttribute("mechanical")]
 [assembly: System.Reflection.AssemblyTitleAttribute("mechanical")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

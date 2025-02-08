@@ -20,17 +20,15 @@ namespace mechanical.Controllers
             _cbeContext = cbeContext;
         }
         [HttpPost]
-        public async Task<IActionResult> ShareTask(Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
+        public async Task<IActionResult> ShareTask(string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
         {
             try
             {
-                await _taskManagmentService.ShareTask(selectedCaseIds, createTaskManagmentDto);
-                var response = new { message = "Task is assigned successfully" };               
+                await _taskManagmentService.ShareTask(selectedCaseIds, base.GetCurrentUserId(), createTaskManagmentDto);          
                 return RedirectToAction("NewCases", "Case");
             }
             catch (Exception ex)
-            {
-                var error = new { message = "Task is not assigned successfully" };
+            {               
                // return BadRequest(error);
                 return RedirectToAction("NewCases", "Case");
             }
@@ -40,18 +38,6 @@ namespace mechanical.Controllers
         public IActionResult SharedCases()
         {
             return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetCase(Guid CaseId)
-        {
-            var caseOriginator = await _cbeContext.Cases
-                .Where(c => c.Id == CaseId)
-                .Select(c => new  {c.CaseOriginatorId})
-                 .FirstOrDefaultAsync();
-            if (caseOriginator == null) { return BadRequest("Unable to get case Orignator"); }
-            string jsonData = JsonConvert.SerializeObject(caseOriginator);
-            return Content(jsonData, "application/json");
         }
 
         public async Task<IActionResult> GetSharedTask()

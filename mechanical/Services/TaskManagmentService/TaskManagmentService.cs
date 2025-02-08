@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using mechanical.Data;
+using mechanical.Models.Dto.CaseAssignmentDto;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
@@ -32,77 +33,71 @@ namespace mechanical.Services.TaskManagmentService
             _caseTimeLineService = caseTimeLineService;
 
         }
-        public async Task<TaskManagment> ShareTask(Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
+        public async Task<TaskManagment> ShareTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
         {
-            if (createTaskManagmentDto == null)
-            {
-                throw new ArgumentNullException(nameof(createTaskManagmentDto), "Task management DTO cannot be null.");
-            }
-
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
                 EncodingHelper.EncodeObject(createTaskManagmentDto);
 
-                // Fetch the user details
                 var user = await _cbeContext.CreateUsers
                     .Include(u => u.District)
                     .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseOrginatorId);
-                var Asigneuser = await _cbeContext.CreateUsers
-                    .Include(u => u.District)
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId);
-                var CaseApplicantName = await _cbeContext.Cases                    
-                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseId);
+                    .FirstOrDefaultAsync(u => u.Id == AssignorId)
+                    ?? throw new ArgumentException("User not found.", nameof(AssignorId));
 
-                if (user == null)
+                var asigneeUser = await _cbeContext.CreateUsers
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId)
+                    ?? throw new ArgumentException("Assignee user not found.", nameof(createTaskManagmentDto.AssignedId));
+
+                var caseList = selectedCaseIds.Split(',')
+                    .Select(x => Guid.Parse(x.Trim()))
+                    .ToList();
+
+                if (caseList.Count == 0)
+                    throw new ArgumentException("No valid case IDs provided.");
+
+                var taskShares = new List<TaskManagment>();
+
+                foreach (var caseId in caseList)
                 {
-                    throw new KeyNotFoundException("User not found.");
+                    var caseData = await _cbeContext.Cases
+                        .FirstOrDefaultAsync(c => c.Id == caseId)
+                        ?? throw new ArgumentException($"Case not found: {caseId}");
+
+                    var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
+                    task.Id = Guid.NewGuid();
+                    task.CaseId = caseId;
+                    task.TaskStatus = "New"; // Consider using an enum
+                    task.AssignedDate = DateTime.Now;
+                    task.CaseOrginatorId = AssignorId;
+
+                    await _cbeContext.TaskManagments.AddAsync(task);
+
+                    await _cbeContext.TaskNotifications.AddAsync(new TaskNotification
+                    {
+                        TaskId = task.Id,
+                        UserId = task.AssignedId,
+                        Date = DateTime.Now,
+                        Notification = "New Task",
+                        Status = "New"
+                    });
+
+                    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                    {
+                        CaseId = caseId,
+                        Activity = $"<strong>A {caseData.ApplicantName} applicant case has been shared to {asigneeUser.Role.Name} by {user.Role.Name}</strong>",
+                        CurrentStage = user.Role.Name
+                    });
+
+                    taskShares.Add(task);
                 }
 
-                // Map DTO to TaskManagment entity
-                var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
-                task.Id = Guid.NewGuid();
-                task.CaseId = createTaskManagmentDto.CaseId;
-                task.TaskName = createTaskManagmentDto.TaskName;
-                task.PriorityType = createTaskManagmentDto.PriorityType;
-                task.SharingReason = createTaskManagmentDto.SharingReason;
-                task.CompletionDate = createTaskManagmentDto.Deadline;
-                task.CaseOrginatorId = user.Id;
-                task.AssignedId = createTaskManagmentDto.AssignedId;
-                task.TaskStatus = "New"; // Use an enum or constant
-                task.AssignedDate = DateTime.Now;
-                task.Deadline = createTaskManagmentDto.Deadline;
-
-                // Add task to the context
-                await _cbeContext.TaskManagments.AddAsync(task);
-
-                // Create a task notification
-                var taskNotification = new TaskNotification
-                {
-                    TaskId = task.Id,
-                    UserId = task.AssignedId,
-                    Date = DateTime.Now,
-                    Notification = "New Task",
-                    Status ="New" // Use an enum or constant
-                };
-                await _cbeContext.TaskNotifications.AddAsync(taskNotification);
-
-                // Log the timeline event
-                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-                {
-                    CaseId = task.CaseId,
-                    Activity = $"<strong>A {CaseApplicantName.ApplicantName} appicant case has been shared to {Asigneuser.Role.Name} by {user.Role.Name}</strong>",
-                    CurrentStage = user.Role.Name
-                });
-
-                // Save changes and commit the transaction
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return task;
+                return taskShares.First(); // Returns first task; ensure list is not empty
             }
             catch (Exception ex)
             {
@@ -111,7 +106,7 @@ namespace mechanical.Services.TaskManagmentService
                 throw new ApplicationException("An error occurred while sharing the task.", ex);
             }
         }
-
+     
         public async Task<bool> DeleteTask(Guid AssignorId, Guid Id)
         {
             throw new NotImplementedException();
@@ -131,6 +126,7 @@ namespace mechanical.Services.TaskManagmentService
         {
             var sharedCases = await _cbeContext.TaskManagments
             .Where(res => res.CaseOrginatorId == AssignorId)
+            .OrderByDescending(d => d.AssignedDate)
             .ToListAsync();
 
             var sharedCaseDtos = _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(sharedCases);
