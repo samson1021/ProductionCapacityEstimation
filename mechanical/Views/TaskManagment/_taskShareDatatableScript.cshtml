@@ -49,7 +49,6 @@
                         console.error('Error fetching case:', error); // Handle errors
                     }
                 });
-
                 
                 selectedCaseIds.push(caseId);
                 console.log("selectedCaseIds is " + selectedCaseIds);
@@ -87,7 +86,7 @@
                 contentType: false,
                 success: function () {
                     $('#shareTaskModal').modal('hide');
-                     toastr.success(response.message);               
+                     toastr.success(response.message);
                    
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -148,9 +147,5 @@
                 }).buttons().container().appendTo('#MySharedTask_wrapper .col-md-6:eq(0)');
             }
         });
-
-
-
      });
-
 </script>

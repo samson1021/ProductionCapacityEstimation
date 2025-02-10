@@ -1,0 +1,117 @@
+@using System
+
+@model mechanical.Models.Dto.TaskManagmentDto.ShareTasksDto
+@{
+    ViewData["Title"] = "Task Management";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Task Management</h2>
+
+    <div class="text-right">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#shareTaskModal">
+            Share New Task
+        </button>
+    </div>
+    <hr />
+
+    <h3 class="mt-4">Shared Tasks</h3>
+    <table class="table table-bordered" id="sharedTasksTable">
+        <thead>
+            <tr>
+                <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                <th>Case</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Shared To</th>
+                <th>Shared At</th>
+                <th>Deadline</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="shareTaskModal" tabindex="-1" aria-labelledby="shareTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareTaskModalLabel">Share New Task</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm" method="post" action="/TaskManagment/ShareTasks">
+                    <div class="mb-3">
+                        <label for="CaseId" class="form-label">Select Case</label>
+                        <select class="form-control" id="CaseId" asp-for="CaseId" required>
+                            <option value="">-- Select Case --</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a case.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="TaskName" class="form-label">Task List</label>
+                        <select class="form-control" id="TaskName" asp-for="TaskName" required>
+                            <option value="">-- Select Task --</option>
+                            <option value="All">All</option>
+                            <option value="Collateral Addition Only">Collateral Addition Only</option>
+                            <option value="Case Follow">Case Follow</option>
+                            <option value="Report Generation">Report Generation</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a task.</div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Share to Relationship Managers</label>
+                        <select class="form-control select2" asp-for="SelectedRMs" required multiple>
+                            <option value="" disabled>Select RMs</option>
+                        </select>
+                        <div class="invalid-feedback">Please select at least one relationship manager.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Reason" class="form-label">Reason for Task Sharing</label>
+                        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
+                        <div class="invalid-feedback">Please provide a reason for task sharing.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="PriorityType" class="form-label">Task Priority Type</label>
+                        <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
+                            <option value="">-- Select Priority Type --</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a priority type.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Deadline" class="form-label">Task Deadline</label>
+                        <input type="date" value='@DateTime.Now.ToString("yyyy-MM-dd")' class="form-control" id="Deadline" asp-for="Deadline" required>
+                        <div class="invalid-feedback">Please select a deadline.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="saveTaskButton">
+                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Share Task
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("_taskSharingTable");
+        await Html.RenderPartialAsync("_taskSharingScriptPartial");
+    }
+}
