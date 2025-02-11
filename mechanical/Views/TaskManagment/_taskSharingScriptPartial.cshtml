@@ -59,6 +59,12 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
+                    return `
+                        <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">View</button>
+                        <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
+                        <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Revoke</button>
+                    `;
+                    @* render: function (data, type, row, meta) {
                         const detailsUrl = '@Url.Action("Detail", "Case")?Id=' + row.CaseId;
                         const reassignUrl = '@Url.Action("Reassign", "TaskManagment")?Id=' + data;
                         const revokeUrl = '@Url.Action("Revoke", "TaskManagment")?Id=' + data;
@@ -67,7 +73,7 @@
                         link += ` | <a class="btn btn-danger btn-sm" href="${revokeUrl}" data-id="${data}">Revoke</a>`;
                         link += ` | <a class="btn btn-warning btn-sm" href="#" onclick="openReturnModal('${data}')">Reassign</a>`;
                         
-                        return link;
+                        return link; *@
                     }
                 }
             ]
@@ -92,6 +98,62 @@
             error: function (error) {
                 toastr.error(`Failed to load shared tasks (Status: ${error.status})`);
                 console.log(error);
+            }
+        });
+    }
+
+    let currentTaskId = null;
+
+    // Show task details in modal
+    function showTaskDetails(taskId) {
+        $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
+            $('#detailsContent').html(data);
+            $('#detailsModal').modal('show');
+        });
+    }
+
+    // Open reassign modal
+    function openReassignModal(taskId) {
+        currentTaskId = taskId;
+        $.get('/TaskManagment/GetRMs', function (users) {
+            const dropdown = $('#reassignUserDropdown');
+            dropdown.empty();
+            users.forEach(user => {
+                dropdown.append($('<option></option>').val(user.Id).text(user.Name));
+            });
+            $('#reassignModal').modal('show');
+        });
+    }
+
+    // Submit reassignment
+    function submitReassignment() {
+        const newUserId = $('#reassignUserDropdown').val();
+        $.post(`/TaskManagment/Reassign?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                $('#reassignModal').modal('hide');
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+    // Open revoke modal
+    function openRevokeModal(taskId) {
+        currentTaskId = taskId;
+        $('#revokeModal').modal('show');
+    }
+
+    // Submit revoke
+    function submitRevoke() {
+        $.post(`/TaskManagment/Revoke?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                $('#revokeModal').modal('hide');
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
             }
         });
     }

@@ -1120,6 +1120,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxVcGRhdGVUYXNrLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/TaskManagment/_TaskDetailsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxfVGFza0RldGFpbHNQYXJ0aWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/TaskManagment/_taskShareDatatableScript.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxfdGFza1NoYXJlRGF0YXRhYmxlU2NyaXB0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

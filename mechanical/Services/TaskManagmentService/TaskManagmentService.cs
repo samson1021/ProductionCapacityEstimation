@@ -121,10 +121,10 @@ namespace mechanical.Services.TaskManagmentService
             throw new NotImplementedException();
         }
 
-        public Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id)
-        {
-            throw new NotImplementedException();
-        }
+        // public Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
         public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
         {
@@ -241,5 +241,44 @@ namespace mechanical.Services.TaskManagmentService
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
         
+        
+        public async Task ReassignTask(Guid userId, Guid taskId, Guid newAssignedId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                throw new ArgumentException("Task not found.");
+            }
+
+            task.AssignedId = newAssignedId;
+            task.AssignedDate = DateTime.UtcNow;
+
+            _cbeContext.TaskManagments.Update(task);
+            await _cbeContext.SaveChangesAsync();
+        }
+
+        public async Task RevokeTask(Guid userId, Guid taskId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                throw new ArgumentException("Task not found.");
+            }
+
+            _cbeContext.TaskManagments.Remove(task);
+            await _cbeContext.SaveChangesAsync();
+        }
+
+        public async Task<TaskManagmentReturnDto> GetTaskDetails(Guid userId, Guid taskId)
+        {
+            var task = await _cbeContext.TaskManagments
+                .Include(t => t.Case)
+                .Include(t => t.Assigned)
+                .Include(t => t.CaseOrginator)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+            
+            // return task;
+            return _mapper.Map<TaskManagmentReturnDto>(task);
+        }
     }
 }

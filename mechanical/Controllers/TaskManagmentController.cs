@@ -138,5 +138,60 @@ namespace mechanical.Controllers
             var result = rms.Select(rm => new { Id = rm.Id, Name = rm.Name });
             return Json(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Reassign(Guid id, Guid newAssignedId)
+        {
+            try
+            {
+                await _taskManagmentService.ReassignTask(base.GetCurrentUserId(), id, newAssignedId);
+                return Json(new { success = true, message = "Task reassigned successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while reassigning the task." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Revoke(Guid id)
+        {
+            try
+            {
+                await _taskManagmentService.RevokeTask(base.GetCurrentUserId(), id);
+                return Json(new { success = true, message = "Task revoked successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while revoking the task." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DetailPartial(Guid id)
+        {
+            try
+            {
+                var task = await _taskManagmentService.GetTaskDetails(base.GetCurrentUserId(), id);
+                if (task == null)
+                {
+                    return NotFound();
+                }
+
+                return PartialView("_TaskDetailsPartial", task);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while fetching task details.");
+            }
+        }
     }
 }
