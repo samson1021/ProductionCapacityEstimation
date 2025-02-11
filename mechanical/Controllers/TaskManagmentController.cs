@@ -101,27 +101,27 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> ShareTasks(ShareTasksDto model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    var task = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), model);
-                    var response = new { message = "Task is assigned successfully" };
-                    return RedirectToAction("SharedTasks");
+                    var response = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), model);
+                    if (response){
+                        return Ok(new { success=true, message = "Task is shared successfully" });
+                    }
+                    else
+                    {
+                        return Ok(new {  success=false, message = "Task is not shared successfully" });
+                    }
                 }
-                else
-                {                    
-                    var response = new { message = "Task is not assigned successfully" };
-                    return RedirectToAction("SharedTasks");
+                catch (Exception ex)
+                {
+                    return BadRequest(new { message = ex.Message });
                 }
-
             }
-            catch (Exception ex)
-            {
-                var error = new { message = "Task is not assigned successfully" };
-                return BadRequest(error);
-            }
+            return BadRequest(new {  success=false, message = "Task is not shared successfully" });
         }
+        
 
         [HttpGet]
         public async Task<IActionResult> GetMyCases()

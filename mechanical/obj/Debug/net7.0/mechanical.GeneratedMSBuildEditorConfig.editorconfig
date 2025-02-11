@@ -1068,6 +1068,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFVzZXJWaWV3U2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/Shared/_CommonLibrariesScriptPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Db21tb25MaWJyYXJpZXNTY3JpcHRQYXJ0aWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/Shared/_LoginLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -1122,10 +1126,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/TaskManagment/_taskSharingScriptPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxfdGFza1NoYXJpbmdTY3JpcHRQYXJ0aWFsLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/TaskManagment/_taskSharingTable.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza01hbmFnbWVudFxfdGFza1NoYXJpbmdUYWJsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Darkles/CBE/TaskSharing/mechanical/Views/UserManagment/Create.cshtml]

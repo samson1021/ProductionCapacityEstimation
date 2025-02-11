@@ -1,22 +1,14 @@
 ﻿using AutoMapper;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.DirectoryServices.ActiveDirectory;
 
 using mechanical.Data;
 using mechanical.Hubs;
 using mechanical.Utils;
 using mechanical.Models.Entities;
-using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.CaseTimeLineService;
-
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -37,7 +29,6 @@ namespace mechanical.Services.TaskManagmentService
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
-
         }
 
         public async Task<TaskManagment> ShareTask(Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
@@ -164,22 +155,15 @@ namespace mechanical.Services.TaskManagmentService
                 {
                     throw new KeyNotFoundException("Case not found.");
                 }
-
                 
                 foreach (var rmId in dto.SelectedRMs)
                 {
-
-                Console.WriteLine("dfghgfhg");
-                Console.WriteLine(dto.CaseId);
-                Console.WriteLine(rmId);
-                Console.WriteLine("dfghgfhg");
-                // Fetch the user details
+                    // Fetch the user details
                     var assignedUser = await _cbeContext.CreateUsers.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == rmId);
                     if (assignedUser != null)
                     {
                         // Map DTO to TaskManagment entity
                         // var task = _mapper.Map<TaskManagment>(dto);
-
                         var task =  new TaskManagment{
                             Id = Guid.NewGuid(),
                             CaseId = dto.CaseId,
@@ -190,8 +174,8 @@ namespace mechanical.Services.TaskManagmentService
                             CaseOrginatorId = sharedCase.CaseOriginatorId,
                             AssignedId = rmId,
                             TaskStatus = "New",
-                            // AssignedDate = DateTime.Now,
-                            // CompletionDate = null,
+                            AssignedDate = DateTime.Now,
+                            CompletionDate = null,
                         };
                         // Add task to the context
                         await _cbeContext.TaskManagments.AddAsync(task);
@@ -205,35 +189,31 @@ namespace mechanical.Services.TaskManagmentService
                         });
 
                         // Create a task notification
+                        string notificationMessage = $"New task assigned: {task.TaskName}";
                         var taskNotification = new TaskNotification
                         {
                             TaskId = task.Id,
                             UserId = task.AssignedId,
                             Date = DateTime.Now,
-                            Notification = "New Task",
+                            Notification = notificationMessage,
                             Status ="New"
                         };
                         
-                        string notificationMessage = $"New task assigned: {task.TaskName}";
-                        // var notification = new Notification
-                        // {
-                        //     UserId = rmId,
-                        //     Message = notificationMessage,
-                        //     Date = DateTime.Now,
-                        //     Status ="New",
-                        //     IsRead = false
-                        // };
-                        // _cbeContext.Notifications.Add(notification);
+                        var notification = new Notification
+                        {
+                            UserId = rmId,
+                            Message = notificationMessage,
+                            CreatedAt = DateTime.Now,
+                            Status ="New",
+                            IsRead = false
+                        };
+                        _cbeContext.Notifications.Add(notification);
 
                         // Send real-time notification
-
                         await _cbeContext.TaskNotifications.AddAsync(taskNotification);
-                        
                         await _hubContext.Clients.User(assignedUser.Id.ToString()).SendAsync("ReceiveNotification", notificationMessage);
                     }
-
                 }
-
                 // Save changes and commit the transaction
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
