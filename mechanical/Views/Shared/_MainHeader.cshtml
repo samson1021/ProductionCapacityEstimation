@@ -2,8 +2,6 @@
     @inject IHttpContextAccessor HttpContextAccessor
     var session = HttpContextAccessor.HttpContext.Session;
     var userRole = session.GetString("userRole");
-    //Console.WriteLine(userRole);
-    //Console.WriteLine("this is ");
 
 }
 <nav class="main-header navbar navbar-expand navbar-purple navbar-white ">
@@ -12,17 +10,10 @@
             <a class="nav-link " style="color:#6f42c1" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            @{
-                if(userRole == "Relation Manager")
-                {
-                    <a href="@Url.Action("RM", "Dashboard")" style="color:#6f42c1" class="nav-link">Home</a>
-                }
-                else
-                {
-                    <a href="@Url.Action("MM", "Dashboard")" style="color:#6f42c1" class="nav-link">Home</a>
-                }
-            }
-            
+            <a href="@Url.Action("Index", "Dashboard", new { Role = userRole })" style="color:#6f42c1" class="nav-link">
+                <i class="nav-icon fas fa-home"></i>
+                Home
+            </a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="#" style="color:#6f42c1" class="nav-link">Contact</a>
@@ -34,21 +25,35 @@
             <a class="nav-link" style="color:#6f42c1" data-widget="navbar-search" href="#" role="button">
                 <i class="fas fa-search"></i>
             </a>
-            <div class="navbar-search-block">
+            <div class="collapse navbar-search-block center" style="width:85%" id="navbar-search">
+            @* <div class="navbar-collapse navbar-search-block" id="navbar-search"> *@
                 <form class="form-inline">
                     <div class="input-group input-group-sm">
-                        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                        <label for="search-input" class="sr-only">Search</label>
+                        <input id="search-input" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
                         <div class="input-group-append">
                             <button style="color:#6f42c1" class="btn btn-navbar" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
-                            <button class="btn btn-navbar" style="color:#6f42c1"  type="button" data-widget="navbar-search">
+                            <button class="btn btn-navbar" style="color:#6f42c1"  type="button" data-widget="navbar-search" data-toggle="collapse" data-target="#navbar-search">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
+        </li>
+
+        <li class="nav-item dropdown">
+            <button class="btn btn-light position-relative" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                🔔
+                <span id="notification-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle">0</span>
+            </button>
+            <ul id="notification-list" class="dropdown-menu dropdown-menu-end">
+                <span class="dropdown-item dropdown-header">0 Notifications</span>
+                <div class="dropdown-divider"></div>
+                <li class="dropdown-item" id="no-notifications">No new notifications</li>
+            </ul>
         </li>
 
         <li class="nav-item dropdown">
@@ -102,22 +107,18 @@
                 <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
             </div>
         </li>
+
         <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
+            <a class="nav-link" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
                 <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
+                <span id="notification-count" class="badge badge-warning navbar-badge">7</span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-envelope mr-2"></i> 4 new messages
-                    <span class="float-right text-muted text-sm">3 mins</span>
-                </a>
+                <span class="dropdown-item dropdown-header">7 Notifications</span>
                 <div class="dropdown-divider"></div>
                 <a href="#" style="color:#6f42c1" class="dropdown-item">
-                    <i class="fas fa-users mr-2"></i> 8 friend requests
-                    <span class="float-right text-muted text-sm">12 hours</span>
+                    <i class="fas fa-envelope mr-2"></i> 4 new messages
+                    <span class="float-right text-muted text-sm">3 mins</span>
                 </a>
                 <div class="dropdown-divider"></div>
                 <a href="#" style="color:#6f42c1" class="dropdown-item">

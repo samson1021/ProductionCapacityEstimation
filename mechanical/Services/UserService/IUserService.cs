@@ -8,5 +8,7 @@ namespace mechanical.Services.UserService
         Task<UserReturnDto> GetUser(Guid id);
         Task<UserReturnDto> GetUser();
         Task<ReturnUserDto> GetUserById(Guid Id); // Different return DTO
+        
+        Task<IEnumerable<ReturnUserDto>> GetRMs(Guid userId);
     }
 }

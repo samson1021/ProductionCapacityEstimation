@@ -18,6 +18,7 @@ using System.Web.Services.Description;
 
 using mechanical;
 using mechanical.Data;
+using mechanical.Hubs;
 using mechanical.WebSockets;
 using mechanical.Controllers;
 using mechanical.Models.Entities;
@@ -60,6 +61,7 @@ using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
 using Microsoft.AspNetCore.Authentication;
 using mechanical.Services.TaskManagmentService;
+using mechanical.Services.NotificationService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -133,6 +135,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
 builder.Services.AddScoped<ITaskManagmentService, TaskManagmentService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<mechanical.Services.AuthenticatioinService.IAuthenticationService, LdapAuthenticationService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
@@ -144,6 +147,9 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+
+builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
 
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +265,12 @@ app.UseAuthorization();
 
 app.UseMiddleware<SessionTimeoutMiddleware>();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+    endpoints.MapHub<NotificationHub>("/notificationHub");
+    // endpoints.MapControllers();
+});
 
 app.MapControllerRoute(
     name: "default",

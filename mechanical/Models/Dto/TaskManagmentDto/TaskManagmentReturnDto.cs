@@ -20,6 +20,6 @@ namespace mechanical.Models.Dto.TaskManagmentDto
 
         public virtual CreateUser? CaseOrginator { get; set; }
         public virtual CreateUser? Assigned { get; set; }
-
+        public virtual Case? Case { get; set; }
     }
 }
