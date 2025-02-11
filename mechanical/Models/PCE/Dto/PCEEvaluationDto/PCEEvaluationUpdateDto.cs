@@ -22,7 +22,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Phase of Output")]
         public OutputPhase OutputPhase { get; set; }
 
-        [Display(Name = "Shifts Per Day")]        
+        [Display(Name = "Shifts Per Day")]
         [Range(1, 5, ErrorMessage = "Shifts per day must be between 1 and 5.")]
         public int? ShiftsPerDay { get; set; }
 

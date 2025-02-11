@@ -33,8 +33,9 @@
             var checkedCases = $('.purple-checkbox:checked');
             var selectedCaseIds = [];
             checkedCases.each(function () {
+
                  var caseId = $(this).val(); // Get the value from the input               
-                
+
                 selectedCaseIds.push(caseId);
                 console.log("selectedCaseIds is " + selectedCaseIds);
             });
@@ -97,6 +98,7 @@
                     $('#shareTaskModal').modal('hide');
                     $('#shareTskForm')[0].reset();                   
                     toastr.success("Task has been shared successfully.");
+
                 },
                 error: function (xhr) {
                     var error = xhr.responseJSON;
@@ -158,12 +160,9 @@
                 }).buttons().container().appendTo('#MySharedTask_wrapper .col-md-6:eq(0)');
             }
         });
-
-
-
      });
+
     function stripTime(date) {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate());
     }
-   
 </script>

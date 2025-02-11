@@ -16,8 +16,8 @@ using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
 
-/////
-using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.Dto.TaskDto;
+
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
@@ -28,6 +28,7 @@ using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Dto.TaskManagmentDto;
+using mechanical.Models.Dto.NotificationDto;
 /////
 
 namespace mechanical.Mapper
@@ -48,6 +49,9 @@ namespace mechanical.Mapper
                 .ForMember(dest=>dest.AuthorName, opt=>opt.MapFrom(src=>src.Author.Name));
 
             CreateMap<CaseSchedulePostDto, CaseSchedule>();
+
+            CreateMap<TaskManagmentDto, TaskManagment>();
+
             CreateMap<CaseSchedule, CaseScheduleReturnDto>();
 
             CreateMap<CaseTerminatePostDto, CaseTerminate>();
@@ -193,7 +197,7 @@ namespace mechanical.Mapper
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
             CreateMap<TimeInterval, TimeIntervalReturnDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
-            CreateMap<ReturnedProductionPostDto, ReturnedProduction>();           
+            CreateMap<ReturnedProductionPostDto, ReturnedProduction>();
             CreateMap<ReturnedProduction, ReturnedProductionDto>();
 
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
@@ -222,15 +226,15 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
                 .ReverseMap();
            
-            //Task Managment 
+            //Task Managment
             CreateMap<TaskManagmentPostDto, TaskManagment>().ReverseMap();
             CreateMap<TaskManagment, TaskManagmentUpdateDto>().ReverseMap();
             CreateMap<TaskManagment, TaskManagmentReturnDto>().ReverseMap();
+            // CreateMap<TaskManagment, ShareTasksDto>()
+            //     .ForMember(dest => dest.SelectedRMs, opt => opt.Ignore());
 
-
-
-
-
+            CreateMap<Notification, NotificationPostDto>().ReverseMap();
+            CreateMap<Notification, NotificationReturnDto>().ReverseMap();
         }
 
         string EnumToDisplayName<TEnum>(TEnum enumValue)

@@ -82,11 +82,18 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="@Url.Action("ReceivedCases", "Case")" class="nav-link">
+                                    <i class="fas fa-check nav-icon"></i>
+                                    <p> Received Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="@Url.Action("TotalCases", "Case")" class="nav-link">
                                     <i class="fas fa-circle nav-icon"></i>
                                     <p> All cases </p>
                                 </a>
                             </li>
+                            
                             <li class="nav-item">
                                 <a href="@Url.Action("TerminatedCases", "Case")" class="nav-link" style="color:red;">
                                     <i class="fas fa-ban nav-icon "> </i>
@@ -174,6 +181,45 @@
                                 <a href="@Url.Action("PCECasesReport", "PCECase")" class="nav-link">
                                     <i class="fas fa-download nav-icon"></i>
                                     <p> Generate  Report </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p> Task Management<i class="fas fa-angle-left right"></i> </p>
+                        </a>
+                        <ul class="nav nav-treeview pl-3">
+                            <li class="nav-item">
+                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "New" })" class="nav-link">
+                                    <i class="fas fa-grip-lines nav-icon"></i>
+                                    <p> New Tasks </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "Pending" })" class="nav-link">
+                                    <i class="fas fa-spinner nav-icon"></i>
+                                    <p> Pending Tasks </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "Refused" })" class="nav-link">
+                                    <i class="fas fa-undo nav-icon"></i>
+                                    <p> Refused  Tasks </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "Completed" })" class="nav-link">
+                                    <i class="fas fa-check nav-icon"></i>
+                                    <p> Completed Tasks </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("SharedTasks", "TaskManagment")" class="nav-link">
+                                    <i class="fas fa-circle nav-icon"></i>
+                                    <p> All Tasks </p>
                                 </a>
                             </li>
                         </ul>

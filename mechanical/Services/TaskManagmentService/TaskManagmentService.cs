@@ -1,39 +1,51 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
+using System.Linq;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using System.DirectoryServices.ActiveDirectory;
+
 using mechanical.Data;
+
 using mechanical.Models.Dto.CaseAssignmentDto;
+
+using mechanical.Hubs;
+using mechanical.Utils;
+using mechanical.Models.Entities;
+
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
-using mechanical.Models.Entities;
 using mechanical.Services.CaseTimeLineService;
-using mechanical.Services.PCE.PCECaseTimeLineService;
-using mechanical.Utils;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
+
 
 namespace mechanical.Services.TaskManagmentService
 {
     public class TaskManagmentService : ITaskManagmentService
     {
         private readonly CbeContext _cbeContext;
+        private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IMapper _mapper;      
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<TaskManagmentService> _logger;      
         private readonly ICaseTimeLineService _caseTimeLineService;
-
-        public TaskManagmentService(CbeContext cbeContext, IMapper mapper, ILogger<TaskManagmentService> logger, IHttpContextAccessor httpContextAccessor,  ICaseTimeLineService caseTimeLineService)
+        
+        public TaskManagmentService(CbeContext cbeContext, IHubContext<NotificationHub> hubContext, IMapper mapper, ILogger<TaskManagmentService> logger, IHttpContextAccessor httpContextAccessor,  ICaseTimeLineService caseTimeLineService)
         {
             _cbeContext = cbeContext;
+            _hubContext = hubContext;
             _mapper = mapper;
-            _logger = logger;            
+            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
 
         }
+
         public async Task<TaskManagment> ShareTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
+
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
@@ -48,8 +60,14 @@ namespace mechanical.Services.TaskManagmentService
 
                 var asigneeUser = await _cbeContext.CreateUsers
                     .Include(u => u.Role)
+
                     .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId)
                     ?? throw new ArgumentException("Assignee user not found.", nameof(createTaskManagmentDto.AssignedId));
+
+                   /* .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId);
+                var sharedCase = await _cbeContext.Cases                    
+                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseId); */
+
 
                 var caseList = selectedCaseIds.Split(',')
                     .Select(x => Guid.Parse(x.Trim()))
@@ -62,6 +80,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 foreach (var caseId in caseList)
                 {
+
                     var caseData = await _cbeContext.Cases
                         .FirstOrDefaultAsync(c => c.Id == caseId)
                         ?? throw new ArgumentException($"Case not found: {caseId}");
@@ -93,6 +112,12 @@ namespace mechanical.Services.TaskManagmentService
 
                     taskShares.Add(task);
                 }
+/*
+                    CaseId = task.CaseId,
+                    Activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {Asigneuser.Role.Name} by {user.Role.Name}</strong>",
+                    CurrentStage = user.Role.Name
+                }); */
+
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -121,22 +146,17 @@ namespace mechanical.Services.TaskManagmentService
         {
             throw new NotImplementedException();
         }
-
-        public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid AssignorId)
+        public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId)
         {
-            var sharedCases = await _cbeContext.TaskManagments
-            .Where(res => res.CaseOrginatorId == AssignorId)
-            .OrderByDescending(d => d.AssignedDate)
-            .ToListAsync();
-
-            var sharedCaseDtos = _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(sharedCases);
-
-            return sharedCaseDtos;
+            var tasks = await _cbeContext.TaskManagments.Include(t => t.Case).Include(t => t.Assigned).Where(res => res.CaseOrginatorId == userId).ToListAsync();
+            return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
 
-        public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
+        public async Task<IEnumerable<TaskManagmentReturnDto>> GetAssignedTasks(Guid userId)
         {
-            throw new NotImplementedException();
+            var tasks = await _cbeContext.TaskManagments.Include(t => t.Case).Include(t => t.CaseOrginator).Where(t => t.AssignedId==userId).ToListAsync();
+            return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
+        
     }
 }

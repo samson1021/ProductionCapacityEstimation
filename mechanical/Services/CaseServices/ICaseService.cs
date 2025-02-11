@@ -1,6 +1,8 @@
 ﻿using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.Dto.TaskDto;
+//using mechanical.Models.Dto.TaskDto;
 using mechanical.Models.Entities;
 
 namespace mechanical.Services.CaseServices
@@ -28,6 +30,7 @@ namespace mechanical.Services.CaseServices
         //Task<RmNewCaseDto> GetRmNewCase(Guid Id);
 
 
+        Task<IEnumerable<TaskManagmentDto>> GetRmReceivedCases(Guid userId);
         Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId);
         Task<IEnumerable<CaseDto>> GetRmTotalCases(Guid userId);
         
@@ -36,6 +39,11 @@ namespace mechanical.Services.CaseServices
         Task<bool> DeleteBussinessLicence(Guid Id);
         Task<bool> UploadBussinessLicence(Guid userId, IFormFile file, Guid caseId);
         Task<IEnumerable<CaseDto>> GetRmPendingCases(Guid userId);
+
+
+        Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string Status = null, int? Limit = null);
+        Task<IEnumerable<CaseDto>> GetAssignedCases(Guid userId, string Status = null, int? Limit = null);
+        Task<IEnumerable<CaseDto>> GetSharedCases(Guid userId, string Status = null, int? Limit = null);
 
 
         //Task<IEnumerable<RMCaseDto>> GetMTLPendingCases();
@@ -54,9 +62,6 @@ namespace mechanical.Services.CaseServices
         //Task<Collateral> MyResubmitedCases();
         //Task<Collateral> MyReturnedCase(Guid CollateralId);
         //Task<Collateral> MyResubmitedCase(Guid CollateralId);
-
-
-
 
     }
 }

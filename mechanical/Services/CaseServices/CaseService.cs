@@ -18,6 +18,7 @@ using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using System.Net;
 using System.Xml;
+using mechanical.Models.Dto.TaskDto;
 
 namespace mechanical.Services.CaseServices
 {
@@ -340,9 +341,15 @@ namespace mechanical.Services.CaseServices
         //    return _mapper.Map<RmNewCaseDto>(loanCase);
         //}
 
+        public async Task<IEnumerable<TaskManagmentDto>> GetRmReceivedCases(Guid userId)
+        {
+            var cases = await _cbeContext.TaskManagments.Where(res =>res.AssignedId == userId ).ToListAsync();
+            var caseDtos = _mapper.Map<IEnumerable<TaskManagmentDto>>(cases);
+            return caseDtos;
+        }
         public async Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res =>res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
+            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
            .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))).ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             foreach (var caseDto in caseDtos)
@@ -763,5 +770,89 @@ namespace mechanical.Services.CaseServices
             await _cbeContext.SaveChangesAsync();
             return caseTerminate;
         }
+
+
+
+        
+
+        public async Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string status = null, int? Limit = null)
+        {
+            var query = _cbeContext.Cases.AsNoTracking().Where(c => c.CaseOriginatorId == userId);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(c => c.Status == status);
+            }
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                query = query.Take(Limit.Value);
+            }
+
+            var cases = await query.ToListAsync();
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
+
+        public async Task<IEnumerable<CaseDto>> GetSharedCases(Guid userId, string status = null, int? Limit = null)
+        {
+            
+            // var unfilteredQuery = _cbeContext.TaskAssignments
+                                            // .AsNoTracking()
+                                            // .Include(ta => ta.Task)
+                                            //     .ThenInclude(t => t.Case)
+                                            // .Where(ta => ta.UserId == userId);
+            var query = _cbeContext.TaskManagments
+                                .AsNoTracking()
+                                .Include(t => t.Case)
+                                .Where(t => t.CaseOrginatorId == userId);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(t => t.TaskStatus == status);
+            }
+
+            var cases = await query.GroupBy(t => t.Case)
+                                .Select(c => c.Key)
+                                .OrderByDescending(c => c.CreationAt)
+                                .ToListAsync();
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                cases = cases.Take(Limit.Value).ToList();
+            }
+
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
+
+        public async Task<IEnumerable<CaseDto>> GetAssignedCases(Guid userId, string status = null, int? Limit = null)
+        {
+            // var unfilteredQuery = _cbeContext.TaskAssignments
+                                            // .AsNoTracking()
+                                            // .Include(ta => ta.Task)
+                                            //     .ThenInclude(t => t.Case)
+                                            // .Where(ta => ta.UserId == userId);
+            var query = _cbeContext.TaskManagments
+                                .AsNoTracking()
+                                .Include(t => t.Case)
+                                .Where(t => t.AssignedId == userId);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(t => t.TaskStatus == status);
+            }
+
+            var cases = await query.GroupBy(t => t.Case)
+                                .Select(c => c.Key)
+                                .OrderByDescending(c => c.CreationAt)
+                                .ToListAsync();
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                cases = cases.Take(Limit.Value).ToList();
+            }
+
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
+
     }
 }
