@@ -1,0 +1,94 @@
+<script>
+    function initializeDataTable(data, emptyMessage) {
+        const $sharedTasksTable = $('#sharedTasksTable');
+        $sharedTasksTable.DataTable({
+            language: { emptyTable: emptyMessage },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            order: [[5, 'desc']],
+            buttons: [
+                { extend: 'copy', title: 'Shared Case' },
+                { extend: 'csv', title: 'Shared Case' },
+                { extend: 'excel', title: 'Shared Case' },
+                { extend: 'pdf', title: 'Shared Case - pdf' },
+                { extend: 'print', title: 'Shared Case - Print' },
+                'colvis'
+            ],
+            data: data,
+            columns: [
+                {
+                    data: null,
+                    render: function (data) {
+                        return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.Status !== "New" ) ? ' disabled' : '') + '>'; 
+                    }
+                },
+                {
+                    data: 'Case.CaseNo',
+                    width: '25%',
+                    render: function (data, type, row, meta) {
+                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple"> ${data} </a>`;
+                    }
+                },
+                { data: 'TaskName', width: '25%' },
+                { data: 'TaskStatus', width: '35%' },
+                { data: 'PriorityType', width: '35%' },
+                { data: 'Assigned.Name', width: '35%' },
+                {
+                    data: 'AssignedDate',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        var date = new Date(data);
+                        return date.toLocaleString();
+                    }
+                },
+                {
+                    data: 'Deadline',
+                    width: '35%',
+                    render: function (data) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        const detailsUrl = '@Url.Action("Detail", "Case")?Id=' + row.CaseId;
+                        const reassignUrl = '@Url.Action("Reassign", "TaskManagment")?Id=' + data;
+                        const revokeUrl = '@Url.Action("Revoke", "TaskManagment")?Id=' + data;
+
+                        let link = `<a href="${detailsUrl}" class="btn btn-info btn-sm">View</a>`;
+                        link += ` | <a class="btn btn-danger btn-sm" href="${revokeUrl}" data-id="${data}">Revoke</a>`;
+                        link += ` | <a class="btn btn-warning btn-sm" href="#" onclick="openReturnModal('${data}')">Reassign</a>`;
+                        
+                        return link;
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#sharedTasksTable_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadSharedTasks() {
+        $.ajax({
+            url: '/TaskManagment/GetSharedTasks',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var tableBody = $('#sharedTasksTable tbody');
+                tableBody.empty();
+                @* if ($.fn.DataTable.isDataTable('#sharedTasksTable')) {
+                    $('#sharedTasksTable').DataTable().destroy();
+                } *@
+                
+                emptyMessage = "No shared tasks found.";
+                initializeDataTable(data, emptyMessage); 
+            },
+            error: function (error) {
+                toastr.error(`Failed to load shared tasks (Status: ${error.status})`);
+                console.log(error);
+            }
+        });
+    }
+</script>

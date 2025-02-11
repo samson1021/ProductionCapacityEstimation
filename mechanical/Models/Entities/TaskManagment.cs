@@ -13,14 +13,13 @@ namespace mechanical.Models.Entities
       
         public required string TaskStatus { get; set; }
 
-        public DateTime AssignedDate { get; set; }
-        public DateTime CompletionDate { get; set; }
+        public DateTime AssignedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? CompletionDate { get; set; } = null;
         public DateTime Deadline { get; set; }
         public required string PriorityType { get; set; }
 
         public virtual CreateUser? CaseOrginator { get; set; }
         public virtual CreateUser? Assigned { get; set; }
-
-
+        public virtual Case? Case { get; set; }
     }
 }

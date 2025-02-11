@@ -996,6 +996,44 @@ namespace mechanical.Migrations
                     b.ToTable("MotorVehicles");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("URL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.Reject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1160,6 +1198,8 @@ namespace mechanical.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedId");
+
+                    b.HasIndex("CaseId");
 
                     b.HasIndex("CaseOrginatorId");
 
@@ -2049,6 +2089,17 @@ namespace mechanical.Migrations
                     b.Navigation("EvaluatorUser");
                 });
 
+            modelBuilder.Entity("mechanical.Models.Entities.Notification", b =>
+                {
+                    b.HasOne("mechanical.Models.Entities.CreateUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("mechanical.Models.Entities.ReturnedProduction", b =>
                 {
                     b.HasOne("mechanical.Models.Entities.CreateUser", "ReturnedBy")
@@ -2106,6 +2157,12 @@ namespace mechanical.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("mechanical.Models.Entities.Case", "Case")
+                        .WithMany()
+                        .HasForeignKey("CaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("mechanical.Models.Entities.CreateUser", "CaseOrginator")
                         .WithMany()
                         .HasForeignKey("CaseOrginatorId")
@@ -2113,6 +2170,8 @@ namespace mechanical.Migrations
                         .IsRequired();
 
                     b.Navigation("Assigned");
+
+                    b.Navigation("Case");
 
                     b.Navigation("CaseOrginator");
                 });

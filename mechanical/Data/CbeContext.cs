@@ -103,9 +103,9 @@ namespace mechanical.Data
         public virtual DbSet<Correction> Corrections { get; set; }
         public virtual DbSet<Reject> Rejects { get; set; }
         public virtual DbSet<TaskComment> TaskComments { get; set; }
-	
 	    public virtual DbSet<TaskManagment> TaskManagments { get; set; }
 	    public virtual DbSet<TaskNotification> TaskNotifications { get; set; }
+	    public virtual DbSet<Notification> Notifications { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
