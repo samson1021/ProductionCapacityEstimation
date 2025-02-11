@@ -343,7 +343,7 @@ namespace mechanical.Services.CaseServices
 
         public async Task<IEnumerable<TaskManagmentDto>> GetRmReceivedCases(Guid userId)
         {
-            var cases = await _cbeContext.TaskManagment.Where(res =>res.AssignedId == userId ).ToListAsync();
+            var cases = await _cbeContext.TaskManagments.Where(res =>res.AssignedId == userId ).ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<TaskManagmentDto>>(cases);
             return caseDtos;
         }
