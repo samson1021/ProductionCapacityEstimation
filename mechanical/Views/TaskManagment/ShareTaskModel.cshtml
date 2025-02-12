@@ -1,7 +1,7 @@
 ﻿@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto
 @{
     //var myCase = ViewData["case"] as CaseReturntDto;
-    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+    // var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
 }
  
 <div class="modal fade" id="shareTaskModal" tabindex="-1" role="dialog" aria-labelledby="SendshareTaskModalLabel" aria-hidden="true">
@@ -16,10 +16,10 @@
             <div class="modal-body">
                 @using (Html.BeginForm("ShareTask", "TaskManagment", FormMethod.Post, new { id = "shareTskForm" }))
                 {
-                    <input asp-for="CaseOrginatorId" type="hidden" id="CaseOrginatorId" />
-                    <input asp-for="CaseId" type="hidden" id="CaseId" />
+                  
+                    @* <input asp-for="CaseId" type="hidden" id="CaseId" /> *@
 
-                    @*<input type="hidden" id="CaseIds" name="selectedCaseIds">*@
+                    <input type="hidden" id="selectedCaseIds" name="selectedCaseIds">
                     <div class="form-group">
                         <label asp-for="AssignedId"> Assignee Name <i class="text-danger">*</i></label>
                         <select class="form-control" id="CenterDropdown" name="AssignedId" required>
@@ -51,20 +51,17 @@
                             <option value="Normal Priority">Normal Priority</option>
                         </select>
                         <span asp-validation-for="PriorityType" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="SharingReason">Sharing Reason <i class="text-danger">*</i></label>
-                        <input asp-for="SharingReason" type="text" class="form-control" placeholder="Write sharing reason" id="SharingReason" required>
-                        <span asp-validation-for="SharingReason" class="text-danger"></span>
-                    </div>
+                    </div>                   
 
                     <div class="form-group">
                         <label asp-for="Deadline" id="Deadline">Deadline <i class="text-danger">*</i></label>
                         <input asp-for="Deadline" type="date" class="form-control" id="Deadline" required>
-                        <span id="Deadline-error" asp-validation-for="Deadline" class="text-danger"></span>
+                        <span id="DeadlineError" asp-validation-for="Deadline" class="text-danger"></span>
                     </div>
-
+                    <div class="form-group">
+                        <label asp-for="SharingReason">Sharing Reason <i class="text-danger">*</i></label>
+                        <textarea asp-for="SharingReason" rows="1" class="form-control" placeholder="Write sharing reason" id="SharingReason" required></textarea>  <span asp-validation-for="SharingReason" class="text-danger"></span>
+                    </div>
 
                     <div class="row col-12">
                         <div class="btn-group">

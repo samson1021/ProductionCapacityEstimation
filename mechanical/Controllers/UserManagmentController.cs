@@ -162,7 +162,44 @@ namespace mechanical.Controllers
 
         }
         [AllowAnonymous]
+        
+            public JsonResult GetRMUsers()
+        {
+            //    var usersWithDistricts = dbContext.Users
+            //.Include(u => u.District) // Include the District navigation property
+            //.ToList();
 
+            //    return View(usersWithDistricts);
+            //var usersWithDistricts = _context.CreateUsers.Include(u => u.District).ToList();
+            // return Json(usersWithDistricts);
+
+            var response = base.GetCurrentUserId();
+            var role = _context.CreateUsers.Include(c => c.Role).Where(res => res.Id == response).FirstOrDefault();
+            List<CreateUser> usersWithDistricts = new List<CreateUser>();
+            if (role.Name == "Relation Manager")
+            {
+                usersWithDistricts = _context.CreateUsers.Include(u => u.District).Include(c => c.Role).Where(res => res.Department == role.Department).ToList();
+            }
+            else
+            {
+                usersWithDistricts = _context.CreateUsers.Include(u => u.District).Include(c => c.Role).ToList();
+            }
+            var usersData = usersWithDistricts.Select(u => new
+            {
+                u.Name,
+                u.Email,
+                DistrictName = u.District != null ? u.District.Name : "",
+                RoleName = u.Role != null ? u.Role.Name : "",
+                u.Branch,
+                u.Department,
+                u.Status,
+                u.Id
+            });
+
+            return Json(usersData);
+        }
+         [AllowAnonymous]
+        
         public JsonResult GetUsers()
         {
             //    var usersWithDistricts = dbContext.Users
