@@ -7,9 +7,8 @@
 
 <div class="container mt-4">
     <h2 class="mb-4">Task Management</h2>
-
-    <div class="text-right">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#shareTaskModal">
+    <div class="text-end">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareTaskModal">
             Share New Task
         </button>
     </div>
@@ -33,13 +32,13 @@
     </table>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="shareTaskModal" tabindex="-1" role="dialog" aria-labelledby="shareTaskModalLabel" aria-hidden="true">
+<!-- Share Task Modal -->
+<div class="modal fade" id="shareTaskModal" tabindex="-1" aria-labelledby="shareTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignshareTaskModalLabel">Share New Task</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="shareTaskModalLabel">Share New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="taskForm" method="Post" action="/TaskManagment/ShareTasks">
@@ -103,10 +102,10 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary" id="saveTaskButton">
-                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                     Share Task
                 </button>
             </div>
@@ -114,63 +113,91 @@
     </div>
 </div>
 
-<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Task Details</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="detailsContent">
-        <!-- Content loaded via AJAX -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+<!-- Task Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="taskDetailModalLabel">Task Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="detailsContent"></div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-<div class="modal fade" id="reassignModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Reassign Task</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <select id="reassignUserDropdown" class="form-control"></select>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="submitReassignment()">Reassign</button>
-      </div>
+<!-- Reassign Modal -->
+<div class="modal fade" id="reassignModal" tabindex="-1" aria-labelledby="reassignTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="reassignTaskModalLabel">Reassign Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <select id="reassignUserDropdown" class="form-control"></select>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitReassignment()">Reassign</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-<div class="modal fade" id="revokeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Revoke Task</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to revoke this task?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" onclick="submitRevoke()">Revoke</button>
-      </div>
+<!-- Revoke Modal -->
+<div class="modal fade" id="revokeModal" tabindex="-1" aria-labelledby="revokeTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="revokeTaskModalLabel">Revoke Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to revoke this task?</p>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="submitRevoke()">Revoke</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @section Scripts {
+    @* @await Html.RenderPartialAsync("_ValidationScriptsPartial")
+    @await Html.RenderPartialAsync("_CommonLibrariesScriptPartial")
+    @await Html.RenderPartialAsync("_taskSharingScriptPartial") *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("_taskSharingScriptPartial");
     }
 }
+
+<style>
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+    .modal-body {
+        background-color: #f8f9fa;
+    }
+    .modal-footer {
+        background-color: #e9ecef;
+    }
+    .modal-title {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    dt {
+        font-weight: bold;
+    }
+    dd {
+        margin-bottom: 1rem;
+        padding-left: 15px;
+    }
+</style>

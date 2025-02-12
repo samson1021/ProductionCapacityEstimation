@@ -25,7 +25,8 @@
                 {
                     data: null,
                     render: function (data) {
-                        return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.TaskStatus !== "New" ) ? ' disabled' : '') + '>'; 
+                        return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
+                               ((data.TaskStatus !== "New") ? ' disabled' : '') + '>'; 
                     }
                 },
                 {
@@ -59,21 +60,11 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                    return `
-                        <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">View</button>
-                        <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
-                        <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Revoke</button>
-                    `;
-                    @* render: function (data, type, row, meta) {
-                        const detailsUrl = '@Url.Action("Detail", "Case")?Id=' + row.CaseId;
-                        const reassignUrl = '@Url.Action("Reassign", "TaskManagment")?Id=' + data;
-                        const revokeUrl = '@Url.Action("Revoke", "TaskManagment")?Id=' + data;
-
-                        let link = `<a href="${detailsUrl}" class="btn btn-info btn-sm">View</a>`;
-                        link += ` | <a class="btn btn-danger btn-sm" href="${revokeUrl}" data-id="${data}">Revoke</a>`;
-                        link += ` | <a class="btn btn-warning btn-sm" href="#" onclick="openReturnModal('${data}')">Reassign</a>`;
-                        
-                        return link; *@
+                        return `
+                            <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">View</button>
+                            <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
+                            <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Revoke</button>
+                        `;
                     }
                 }
             ]
@@ -86,12 +77,11 @@
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                @* var tableBody = $('#sharedTasksTable tbody');
+                 @* var tableBody = $('#sharedTasksTable tbody');
                 tableBody.empty(); *@
                 if ($.fn.DataTable.isDataTable('#sharedTasksTable')) {
                     $('#sharedTasksTable').DataTable().destroy();
                 }
-                
                 const emptyMessage = "No shared tasks found.";
                 initializeDataTable(data, emptyMessage);
             },
@@ -104,15 +94,17 @@
 
     let currentTaskId = null;
 
-    // Show task details in modal
+    // Show task details using Bootstrap 5's modal API
     function showTaskDetails(taskId) {
         $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
             $('#detailsContent').html(data);
-            $('#detailsModal').modal('show');
+            var detailsModalEl = document.getElementById('detailsModal');
+            var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
+            detailsModal.show();
         });
     }
 
-    // Open reassign modal
+    // Open reassign modal using Bootstrap 5's modal API
     function openReassignModal(taskId) {
         currentTaskId = taskId;
         $.get('/TaskManagment/GetRMs', function (users) {
@@ -121,7 +113,9 @@
             users.forEach(user => {
                 dropdown.append($('<option></option>').val(user.Id).text(user.Name));
             });
-            $('#reassignModal').modal('show');
+            var reassignModalEl = document.getElementById('reassignModal');
+            var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
+            reassignModal.show();
         });
     }
 
@@ -131,7 +125,9 @@
         $.post(`/TaskManagment/Reassign?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
-                $('#reassignModal').modal('hide');
+                var reassignModalEl = document.getElementById('reassignModal');
+                var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
+                reassignModal.hide();
                 loadSharedTasks();
             } else {
                 toastr.error(response.message, "Error");
@@ -139,10 +135,12 @@
         });
     }
 
-    // Open revoke modal
+    // Open revoke modal using Bootstrap 5's modal API
     function openRevokeModal(taskId) {
         currentTaskId = taskId;
-        $('#revokeModal').modal('show');
+        var revokeModalEl = document.getElementById('revokeModal');
+        var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+        revokeModal.show();
     }
 
     // Submit revoke
@@ -150,7 +148,9 @@
         $.post(`/TaskManagment/Revoke?id=${currentTaskId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
-                $('#revokeModal').modal('hide');
+                var revokeModalEl = document.getElementById('revokeModal');
+                var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+                revokeModal.hide();
                 loadSharedTasks();
             } else {
                 toastr.error(response.message, "Error");
@@ -192,13 +192,12 @@
             $.each(data, function (index, item) {
                 rmDropdown.append($('<option></option>').val(item.Id).text(item.Name));
             });
-            rmDropdown.select2(); // Reinitialize Select2
+            rmDropdown.select2();
         });
 
-        // Handle form submission via AJAX
-        $("#saveTaskButton").click(function () {
-
-            event.preventDefault();
+        // Handle form submission via AJAX with the event object declared
+        $("#saveTaskButton").click(function (e) {
+            e.preventDefault();
             var form = $("#taskForm");
 
             // Check form validity
@@ -221,14 +220,15 @@
                         loadSharedTasks();
                         form[0].reset();
                         form.removeClass("was-validated");
-                        $("#shareTaskModal").modal('hide');
+                        var shareTaskModalEl = document.getElementById('shareTaskModal');
+                        var shareTaskModal = bootstrap.Modal.getOrCreateInstance(shareTaskModalEl);
+                        shareTaskModal.hide();
                         $('.select2').val(null).trigger('change');
                     } else {
                         toastr.error(response.message, "Error occured when sharing Task");
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error(xhr); // Debugging: Log the error
                     toastr.error("An error occurred while submitting the form.", "Error");
                 },
                 complete: function () {
