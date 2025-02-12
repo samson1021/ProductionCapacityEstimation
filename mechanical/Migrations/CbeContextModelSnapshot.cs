@@ -1017,9 +1017,6 @@ namespace mechanical.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TaskId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("URL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1173,7 +1170,7 @@ namespace mechanical.Migrations
                     b.Property<Guid>("CaseOrginatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CompletionDate")
+                    b.Property<DateTime?>("CompletionDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Deadline")

@@ -1,13 +1,168 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-    
-    $(document).ready(function () {
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+    function initializeDataTable(data, emptyMessage) {
+        const $sharedTasksTable = $('#sharedTasksTable');
+        $sharedTasksTable.DataTable({
+            language: { emptyTable: emptyMessage },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            order: [[6, 'desc']],
+            buttons: [
+                { extend: 'copy', title: 'Shared Case' },
+                { extend: 'csv', title: 'Shared Case' },
+                { extend: 'excel', title: 'Shared Case' },
+                { extend: 'pdf', title: 'Shared Case - pdf' },
+                { extend: 'print', title: 'Shared Case - Print' },
+                'colvis'
+            ],
+            data: data,
+            columns: [
+                {
+                    data: null,
+                    render: function (data) {
+                        return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.TaskStatus !== "New" ) ? ' disabled' : '') + '>'; 
+                    }
+                },
+                {
+                    data: 'Case.CaseNo',
+                    width: '25%',
+                    render: function (data, type, row, meta) {
+                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple"> ${data} </a>`;
+                    }
+                },
+                { data: 'TaskName', width: '25%' },
+                { data: 'TaskStatus', width: '35%' },
+                { data: 'PriorityType', width: '35%' },
+                { data: 'Assigned.Name', width: '35%' },
+                {
+                    data: 'AssignedDate',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        var date = new Date(data);
+                        return date.toLocaleString();
+                    }
+                },
+                {
+                    data: 'Deadline',
+                    width: '35%',
+                    render: function (data) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                    return `
+                        <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">View</button>
+                        <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
+                        <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Revoke</button>
+                    `;
+                    @* render: function (data, type, row, meta) {
+                        const detailsUrl = '@Url.Action("Detail", "Case")?Id=' + row.CaseId;
+                        const reassignUrl = '@Url.Action("Reassign", "TaskManagment")?Id=' + data;
+                        const revokeUrl = '@Url.Action("Revoke", "TaskManagment")?Id=' + data;
+
+                        let link = `<a href="${detailsUrl}" class="btn btn-info btn-sm">View</a>`;
+                        link += ` | <a class="btn btn-danger btn-sm" href="${revokeUrl}" data-id="${data}">Revoke</a>`;
+                        link += ` | <a class="btn btn-warning btn-sm" href="#" onclick="openReturnModal('${data}')">Reassign</a>`;
+                        
+                        return link; *@
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#sharedTasksTable_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadSharedTasks() {
+        $.ajax({
+            url: '/TaskManagment/GetSharedTasks',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                @* var tableBody = $('#sharedTasksTable tbody');
+                tableBody.empty(); *@
+                if ($.fn.DataTable.isDataTable('#sharedTasksTable')) {
+                    $('#sharedTasksTable').DataTable().destroy();
+                }
+                
+                const emptyMessage = "No shared tasks found.";
+                initializeDataTable(data, emptyMessage);
+            },
+            error: function (error) {
+                toastr.error(`Failed to load shared tasks (Status: ${error.status})`);
+                console.log(error);
+            }
+        });
+    }
+
+    let currentTaskId = null;
+
+    // Show task details in modal
+    function showTaskDetails(taskId) {
+        $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
+            $('#detailsContent').html(data);
+            $('#detailsModal').modal('show');
+        });
+    }
+
+    // Open reassign modal
+    function openReassignModal(taskId) {
+        currentTaskId = taskId;
+        $.get('/TaskManagment/GetRMs', function (users) {
+            const dropdown = $('#reassignUserDropdown');
+            dropdown.empty();
+            users.forEach(user => {
+                dropdown.append($('<option></option>').val(user.Id).text(user.Name));
+            });
+            $('#reassignModal').modal('show');
+        });
+    }
+
+    // Submit reassignment
+    function submitReassignment() {
+        const newUserId = $('#reassignUserDropdown').val();
+        $.post(`/TaskManagment/Reassign?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                $('#reassignModal').modal('hide');
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+    // Open revoke modal
+    function openRevokeModal(taskId) {
+        currentTaskId = taskId;
+        $('#revokeModal').modal('show');
+    }
+
+    // Submit revoke
+    function submitRevoke() {
+        $.post(`/TaskManagment/Revoke?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                $('#revokeModal').modal('hide');
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+    $(document).ready(function () {
         loadSharedTasks();
         
         $('.select2').select2({
-            placeholder: "Select RMs",
+            @* placeholder: "Select RMs", *@
             allowClear: true
         });
 
@@ -21,7 +176,6 @@
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
 
-
         // Populate Cases dropdown
         $.get("/TaskManagment/GetMyCases", function (data) {
             var caseDropdown = $("#CaseId");
@@ -34,7 +188,7 @@
         // Populate RMs dropdown
         $.get("/TaskManagment/GetRMs", function (data) {
             var rmDropdown = $("#SelectedRMs");
-            rmDropdown.empty().append('<option value="" disabled>Select RMs</option>');
+            rmDropdown.empty();//.append('<option value="" disabled>Select RMs</option>');
             $.each(data, function (index, item) {
                 rmDropdown.append($('<option></option>').val(item.Id).text(item.Name));
             });
@@ -43,6 +197,8 @@
 
         // Handle form submission via AJAX
         $("#saveTaskButton").click(function () {
+
+            event.preventDefault();
             var form = $("#taskForm");
 
             // Check form validity
@@ -54,29 +210,25 @@
             // Disable submit button and show spinner
             $("#saveTaskButton").prop("disabled", true);
             $("#submitSpinner").removeClass("d-none");
-            console.log("ghjghj", form.attr("action"),form.attr("method"),form.serialize());
+            
             $.ajax({
                 url: form.attr("action"),
                 type: form.attr("method"),
                 data: form.serialize(),
                 success: function (response) {
                     if (response.success) {
-                        // Show success toast
-                        toastr.success("Task shared successfully!", "Success");
-
-                        // Clear form and close modal
+                        toastr.success(response.message, "Success");
+                        loadSharedTasks();
                         form[0].reset();
                         form.removeClass("was-validated");
-                        $("#shareTaskModal").modal("hide");
-
-                        // Update task table dynamically
-                        loadSharedTasks();
-                        
+                        $("#shareTaskModal").modal('hide');
+                        $('.select2').val(null).trigger('change');
                     } else {
                         toastr.error(response.message, "Error occured when sharing Task");
                     }
                 },
-                error: function () {
+                error: function (xhr, status, error) {
+                    console.error(xhr); // Debugging: Log the error
                     toastr.error("An error occurred while submitting the form.", "Error");
                 },
                 complete: function () {

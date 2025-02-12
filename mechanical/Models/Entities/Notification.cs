@@ -7,7 +7,6 @@ namespace mechanical.Models.Entities
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public Guid TaskId { get; set; }
         public required string Message { get; set; }
         public required string Status { get; set; }
         public required bool IsRead { get; set; }

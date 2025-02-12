@@ -1,0 +1,25 @@
+@* @model mechanical.Models.Entities.TaskManagment *@
+@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentReturnDto
+
+<dl class="row">
+    <dt class="col-sm-4">Case Number</dt>
+    <dd class="col-sm-8">@Model.Case?.CaseNo</dd>
+
+    <dt class="col-sm-4">Task Name</dt>
+    <dd class="col-sm-8">@Model.TaskName</dd>
+
+    <dt class="col-sm-4">Assigned To</dt>
+    <dd class="col-sm-8">@Model.Assigned?.Name</dd>
+
+    <dt class="col-sm-4">Priority</dt>
+    <dd class="col-sm-8">@Model.PriorityType</dd>
+
+    <dt class="col-sm-4">Deadline</dt>
+    <dd class="col-sm-8">@Model.Deadline.ToString("yyyy-MM-dd")</dd>
+
+    <dt class="col-sm-4">Status</dt>
+    <dd class="col-sm-8">@Model.TaskStatus</dd>
+
+    <dt class="col-sm-4">Reason</dt>
+    <dd class="col-sm-8">@Model.SharingReason</dd>
+</dl>

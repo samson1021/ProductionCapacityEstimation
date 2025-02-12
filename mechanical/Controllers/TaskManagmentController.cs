@@ -87,27 +87,27 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> ShareTasks(ShareTasksDto model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    var task = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), model);
-                    var response = new { message = "Task is assigned successfully" };
-                    return RedirectToAction("SharedTasks");
+                    var response = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), model);
+                    if (response){
+                        return Ok(new { success=true, message = "Task is shared successfully" });
+                    }
+                    else
+                    {
+                        return Ok(new {  success=false, message = "Task is not shared successfully" });
+                    }
                 }
-                else
-                {                    
-                    var response = new { message = "Task is not assigned successfully" };
-                    return RedirectToAction("SharedTasks");
+                catch (Exception ex)
+                {
+                    return BadRequest(new { message = ex.Message });
                 }
-
             }
-            catch (Exception ex)
-            {
-                var error = new { message = "Task is not assigned successfully" };
-                return BadRequest(error);
-            }
+            return BadRequest(new {  success=false, message = "Task is not shared successfully" });
         }
+        
 
         [HttpGet]
         public async Task<IActionResult> GetMyCases()
@@ -123,6 +123,61 @@ namespace mechanical.Controllers
             var rms = await _userService.GetRMs(base.GetCurrentUserId());
             var result = rms.Select(rm => new { Id = rm.Id, Name = rm.Name });
             return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Reassign(Guid id, Guid newAssignedId)
+        {
+            try
+            {
+                await _taskManagmentService.ReassignTask(base.GetCurrentUserId(), id, newAssignedId);
+                return Json(new { success = true, message = "Task reassigned successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while reassigning the task." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Revoke(Guid id)
+        {
+            try
+            {
+                await _taskManagmentService.RevokeTask(base.GetCurrentUserId(), id);
+                return Json(new { success = true, message = "Task revoked successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while revoking the task." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DetailPartial(Guid id)
+        {
+            try
+            {
+                var task = await _taskManagmentService.GetTaskDetails(base.GetCurrentUserId(), id);
+                if (task == null)
+                {
+                    return NotFound();
+                }
+
+                return PartialView("_TaskDetailsPartial", task);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while fetching task details.");
+            }
         }
     }
 }
