@@ -188,42 +188,25 @@
 
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
-                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
-                            <p> Task Management<i class="fas fa-angle-left right"></i> </p>
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon" style="width: 20px; height: 20px;">
+                            <p class="ml-2">Task Management <i class="fas fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview pl-3">
                             <li class="nav-item">
-                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "New" })" class="nav-link">
-                                    <i class="fas fa-grip-lines nav-icon"></i>
-                                    <p> New Tasks </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "Pending" })" class="nav-link">
-                                    <i class="fas fa-spinner nav-icon"></i>
-                                    <p> Pending Tasks </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "Refused" })" class="nav-link">
-                                    <i class="fas fa-undo nav-icon"></i>
-                                    <p> Refused  Tasks </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("SharedTasks", "TaskManagment", new { Status = "Completed" })" class="nav-link">
-                                    <i class="fas fa-check nav-icon"></i>
-                                    <p> Completed Tasks </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a href="@Url.Action("SharedTasks", "TaskManagment")" class="nav-link">
-                                    <i class="fas fa-circle nav-icon"></i>
-                                    <p> All Tasks </p>
+                                    <i class="fas fa-user-friends nav-icon"></i>
+                                    <p>Shared Tasks</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("ReceivedTasks", "TaskManagment")" class="nav-link">
+                                    @* <i class="fas fa-inbox nav-icon"></i> *@
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>Received Tasks</p>
                                 </a>
                             </li>
                         </ul>
-                    </li>       
+                    </li>
                 }
                 else if (@userRole == "Maker Manager")
                 {
@@ -762,3 +745,34 @@
         </nav>
     </div>
 </aside>
+
+<style>
+    .nav-link {
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-link:hover {
+        background-color: #007bff;
+        color: white;
+        border-radius: 0.25rem;
+    }
+
+    .nav-icon {
+        margin-right: 8px;
+    }
+
+    .nav-treeview {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+
+    .nav-treeview .nav-link {
+        color: #555;
+    }
+
+    .nav-treeview .nav-link:hover {
+        background-color: #e2e6ea;
+        color: #007bff;
+    }
+</style>

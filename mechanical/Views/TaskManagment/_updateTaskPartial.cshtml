@@ -1,0 +1,44 @@
+@* @model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentReturnDto *@
+@model mechanical.Models.Dto.TaskManagmentDto.UpdateTaskDto
+<form id="updateTaskForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="Id" asp-for="Id" />
+    <div class="mb-3">
+        <label for="TaskName" class="form-label">Task List</label>
+        <select class="form-control" id="TaskName" asp-for="TaskName" required>
+            <option value="All">All</option>
+            <option value="Collateral Addition Only">Collateral Addition Only</option>
+            <option value="Case Follow">Case Follow</option>
+            <option value="Report Generation">Report Generation</option>
+            <option value="Revoked">Revoke</option>
+        </select>
+        <span asp-validation-for="TaskName" class="text-danger"></span>
+        <div class="invalid-feedback">Please select a task.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="Deadline" class="form-label">Deadline</label>
+        <input type="date" class="form-control" id="Deadline" asp-for="Deadline" required>
+        <span asp-validation-for="Deadline" class="text-danger"></span>
+        <div class="invalid-feedback">Deadline must be today or in the future.</div>
+    </div>
+                        
+    <div class="mb-3">
+        <label for="PriorityType" class="form-label">Priority</label>
+        <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+        </select>
+        <span asp-validation-for="PriorityType" class="text-danger"></span>
+        <div class="invalid-feedback">Please select a priority type.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="Reason" class="form-label">Reason for Task Sharing</label>
+        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
+        <span asp-validation-for="SharingReason" class="text-danger"></span>
+        <div class="invalid-feedback">Please provide a reason for task sharing.</div>
+    </div>
+</form>
