@@ -198,7 +198,7 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-    context.Database.Migrate(); // Apply migrations
+   // context.Database.Migrate(); // Apply migrations
     // Seed.SeedData(app);
     // SeedDistrict.SeedData(app);
     SeedUsersRolesAndDistricts.SeedData(app);

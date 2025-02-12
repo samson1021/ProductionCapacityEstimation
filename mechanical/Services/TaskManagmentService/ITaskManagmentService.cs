@@ -18,7 +18,7 @@ namespace mechanical.Services.TaskManagmentService
 
         Task<TaskManagment> ShareTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto);       
 
-        Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId,  Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto);
+        //Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId,  Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto);
         Task<bool> DeleteTask(Guid AssignorId, Guid Id);
         Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id);
 

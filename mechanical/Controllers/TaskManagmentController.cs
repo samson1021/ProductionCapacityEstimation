@@ -7,9 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using mechanical.Data;
 using mechanical.Controllers;
 using mechanical.Models.Dto.TaskManagmentDto;
-using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
-using mechanical.Services.TaskManagmentService;
+
 using mechanical.Services.CaseServices;
 using mechanical.Services.UserService;
 
@@ -96,7 +95,7 @@ namespace mechanical.Controllers
                     return RedirectToAction("SharedTasks");
                 }
                 else
-                {                    
+                {
                     var response = new { message = "Task is not assigned successfully" };
                     return RedirectToAction("SharedTasks");
                 }
