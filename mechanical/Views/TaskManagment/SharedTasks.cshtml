@@ -168,9 +168,6 @@
 </div>
 
 @section Scripts {
-    @* @await Html.RenderPartialAsync("_ValidationScriptsPartial")
-    @await Html.RenderPartialAsync("_CommonLibrariesScriptPartial")
-    @await Html.RenderPartialAsync("_taskSharingScriptPartial") *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("_CommonLibrariesScriptPartial");

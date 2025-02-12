@@ -1,3 +1,7 @@
 mechanical/bin
 mechanical/obj
-
+mechanical/migrations
+mechanical/UploadFile
+mechanical/.vs
+mechanical/.config
+mechanical/appsettings*
