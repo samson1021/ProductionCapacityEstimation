@@ -37,7 +37,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                await _taskManagmentService.ShareTask(selectedCaseIds, base.GetCurrentUserId(), createTaskManagmentDto);          
+                await _taskManagmentService.SharesTask(selectedCaseIds, base.GetCurrentUserId(), createTaskManagmentDto);          
                 return RedirectToAction("NewCases", "Case");
             }
             catch (Exception ex)

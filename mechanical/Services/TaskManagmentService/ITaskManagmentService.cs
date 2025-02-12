@@ -6,7 +6,7 @@ namespace mechanical.Services.TaskManagmentService
     public interface ITaskManagmentService
     {
 
-        Task<TaskManagment> ShareTask(Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
+        //Task<TaskManagment> ShareTask(Guid selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
 
 
         Task<TaskManagment> SharesTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto);       
