@@ -3,13 +3,13 @@ using Newtonsoft.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 using mechanical.Data;
 using mechanical.Controllers;
 using mechanical.Models.Dto.TaskManagmentDto;
-using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
-using mechanical.Services.TaskManagmentService;
+
 using mechanical.Services.CaseServices;
 using mechanical.Services.UserService;
 
@@ -20,25 +20,30 @@ namespace mechanical.Controllers
 {
     public class TaskManagmentController : BaseController
     {
+        private readonly ILogger<TaskManagmentController> _logger;
         private readonly ITaskManagmentService _taskManagmentService;
         private readonly CbeContext _cbeContext;
         private readonly ICaseService _caseService;
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
         
-        public TaskManagmentController(ITaskManagmentService taskManagmentService, ICaseService caseService, IUserService userService, CbeContext cbeContext)
+        public TaskManagmentController(IMapper mapper, ILogger<TaskManagmentController> logger, ITaskManagmentService taskManagmentService, ICaseService caseService, IUserService userService, CbeContext cbeContext)
         {
             _taskManagmentService = taskManagmentService;
             _cbeContext = cbeContext;
             _caseService = caseService;
             _userService = userService;
+            _logger = logger;
+            _mapper = mapper;
         }
         
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ShareTask(string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
         {
             try
             {
-                await _taskManagmentService.ShareTask(selectedCaseIds, base.GetCurrentUserId(), createTaskManagmentDto);          
+                await _taskManagmentService.SharesTask(selectedCaseIds, base.GetCurrentUserId(), createTaskManagmentDto);          
                 return RedirectToAction("NewCases", "Case");
             }
             catch (Exception ex)
@@ -77,37 +82,35 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SharedTasks(string status = "All")
+        public async Task<IActionResult> SharedTasks()
         {
-            // var model = new ShareTasksDto();
-            ViewData["status"] = status;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ShareTasks(ShareTasksDto model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ShareTasks(ShareTasksDto dto)
         {
             if (!ModelState.IsValid)
-            {
-                try
-                {
-                    var response = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), model);
-                    if (response){
-                        return Ok(new { success=true, message = "Task is shared successfully" });
-                    }
-                    else
-                    {
-                        return Ok(new {  success=false, message = "Task is not shared successfully" });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(new { message = ex.Message });
-                }
+            {                
+                return BadRequest(new {  success=false, message = "Task is not shared successfully" });
             }
-            return BadRequest(new {  success=false, message = "Task is not shared successfully" });
-        }
-        
+            try
+            {
+                
+                if (dto.Deadline < DateTime.Today)
+                {
+                    return Json(new { success = false, message = "Deadline must be today or in the future." });
+                }
+
+                var response = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), dto);
+                return Json(new { success=response.Success, message = response.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }        
 
         [HttpGet]
         public async Task<IActionResult> GetMyCases()
@@ -126,12 +129,14 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Reassign(Guid id, Guid newAssignedId)
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReassignTask(Guid id, Guid newAssignedId)
         {
             try
             {
-                await _taskManagmentService.ReassignTask(base.GetCurrentUserId(), id, newAssignedId);
-                return Json(new { success = true, message = "Task reassigned successfully." });
+                var response = await _taskManagmentService.ReassignTask(base.GetCurrentUserId(), id, newAssignedId);
+                return Json(new { success=response.Success, message = response.Message });
+                // return Json(new { success = true, message = "Task reassigned successfully." });
             }
             catch (ArgumentException ex)
             {
@@ -144,12 +149,14 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Revoke(Guid id)
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RevokeTask(Guid id)
         {
             try
             {
-                await _taskManagmentService.RevokeTask(base.GetCurrentUserId(), id);
-                return Json(new { success = true, message = "Task revoked successfully." });
+                var response = await _taskManagmentService.RevokeTask(base.GetCurrentUserId(), id);
+                return Json(new { success=response.Success, message = response.Message });
+                // return Json(new { success = true, message = "Task revoked successfully." });
             }
             catch (ArgumentException ex)
             {
@@ -166,7 +173,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                var task = await _taskManagmentService.GetTaskDetails(base.GetCurrentUserId(), id);
+                var task = await _taskManagmentService.GetTask(base.GetCurrentUserId(), id);
                 if (task == null)
                 {
                     return NotFound();
@@ -177,6 +184,75 @@ namespace mechanical.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "An error occurred while fetching task details.");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTask(Guid id)
+        {
+            var task = await _taskManagmentService.GetTask(base.GetCurrentUserId(), id);
+            return Json(task);
+        }
+
+        [HttpPost]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteTask(Guid id)
+        {
+            try
+            {
+                var response = await _taskManagmentService.CompleteTask(base.GetCurrentUserId(), id);
+                return Json(new { success=response.Success, message = response.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while completing the task." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateTask(Guid id)
+        {
+            try
+            {
+                var task = await _taskManagmentService.GetTask(base.GetCurrentUserId(), id);
+                if (task == null)
+                {
+                    return NotFound();
+                }
+
+                return PartialView("_updateTaskPartial", _mapper.Map<UpdateTaskDto>(task));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while fetching task details.");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTask(UpdateTaskDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new {  success=false, message = "Task is not updated successfully" });
+            }
+            try
+            {
+                if (dto.Deadline < DateTime.Today)
+                {
+                    return Json(new { success = false, message = "Deadline must be today or in the future." });
+                }
+
+                var response = await _taskManagmentService.UpdateTask(base.GetCurrentUserId(), dto);
+                return Json(new { success=response.Success, message = response.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

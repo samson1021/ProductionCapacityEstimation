@@ -1,8 +1,10 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // Initialize DataTable with additional functionalities
     function initializeDataTable(data, emptyMessage) {
         const $sharedTasksTable = $('#sharedTasksTable');
         $sharedTasksTable.DataTable({
@@ -31,15 +33,15 @@
                 },
                 {
                     data: 'Case.CaseNo',
-                    width: '25%',
+                    width: '10%',
                     render: function (data, type, row, meta) {
-                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple"> ${data} </a>`;
+                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple">${data}</a>`;
                     }
                 },
-                { data: 'TaskName', width: '25%' },
-                { data: 'TaskStatus', width: '35%' },
-                { data: 'PriorityType', width: '35%' },
-                { data: 'Assigned.Name', width: '35%' },
+                { data: 'TaskName', width: '10%' },
+                { data: 'TaskStatus', width: '5%' },
+                { data: 'PriorityType', width: '5%' },
+                { data: 'Assigned.Name', width: '10%' },
                 {
                     data: 'AssignedDate',
                     width: '15%',
@@ -50,24 +52,39 @@
                 },
                 {
                     data: 'Deadline',
-                    width: '35%',
+                    width: '15%',
                     render: function (data) {
                         var date = new Date(data);
-                        return date.toISOString().split('T')[0];
+                        var formatted = date.toISOString().split('T')[0];
+                        var today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        var diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+                        var countdown = diffDays <= 3 && diffDays >= 0 ? `<br/><small class="text-danger">Due in ${diffDays} day(s)</small>` : "";
+                        return formatted + countdown;
                     }
                 },
                 {
                     data: 'Id',
-                    width: '10%',
+                    width: '30%',
                     render: function (data, type, row, meta) {
+                        var updateButton = `<button class="btn btn-secondary btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
+                        var completeButton = "";
+                        @* if(row.TaskStatus !== 'Completed'){
+                            completeButton = `<button class="btn btn-success btn-sm ms-1" onclick="openCompleteModal('${data}')">Complete</button>`;
+                        } *@
                         return `
-                            <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">View</button>
+                            <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">Details</button>
                             <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
-                            <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Revoke</button>
+                            ${updateButton}
+                            <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Delete</button>
+                            @* ${completeButton} *@
                         `;
                     }
                 }
-            ]
+            ],
+            drawCallback: function () {
+                // post-draw manipulation
+            }
         }).buttons().container().appendTo('#sharedTasksTable_wrapper .col-md-6:eq(0)');
     }
 
@@ -77,8 +94,6 @@
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                 @* var tableBody = $('#sharedTasksTable tbody');
-                tableBody.empty(); *@
                 if ($.fn.DataTable.isDataTable('#sharedTasksTable')) {
                     $('#sharedTasksTable').DataTable().destroy();
                 }
@@ -94,7 +109,7 @@
 
     let currentTaskId = null;
 
-    // Show task details using Bootstrap 5's modal API
+    // Show task details in modal 
     function showTaskDetails(taskId) {
         $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
             $('#detailsContent').html(data);
@@ -104,7 +119,17 @@
         });
     }
 
-    // Open reassign modal using Bootstrap 5's modal API
+    // Update task in modal 
+    function showUpdateTask(taskId) {
+        $.get(`/TaskManagment/UpdateTask?id=${taskId}`, function (data) {
+            $('#updateContent').html(data);
+            var updateModalEl = document.getElementById('updateTaskModal');
+            var updateModal = bootstrap.Modal.getOrCreateInstance(updateModalEl);
+            updateModal.show();
+        });
+    }
+
+    // Open reassign modal 
     function openReassignModal(taskId) {
         currentTaskId = taskId;
         $.get('/TaskManagment/GetRMs', function (users) {
@@ -119,10 +144,10 @@
         });
     }
 
-    // Submit reassignment
+    // Submit reassignment via AJAX
     function submitReassignment() {
         const newUserId = $('#reassignUserDropdown').val();
-        $.post(`/TaskManagment/Reassign?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
+        $.post(`/TaskManagment/ReassignTask?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var reassignModalEl = document.getElementById('reassignModal');
@@ -135,7 +160,7 @@
         });
     }
 
-    // Open revoke modal using Bootstrap 5's modal API
+    // Open revoke modal 
     function openRevokeModal(taskId) {
         currentTaskId = taskId;
         var revokeModalEl = document.getElementById('revokeModal');
@@ -143,9 +168,9 @@
         revokeModal.show();
     }
 
-    // Submit revoke
+    // Submit revoke via AJAX
     function submitRevoke() {
-        $.post(`/TaskManagment/Revoke?id=${currentTaskId}`, function (response) {
+        $.post(`/TaskManagment/RevokeTask?id=${currentTaskId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var revokeModalEl = document.getElementById('revokeModal');
@@ -158,14 +183,91 @@
         });
     }
 
+    // Open complete modal 
+    function openCompleteModal(taskId) {
+        currentTaskId = taskId;
+        var completeModalEl = document.getElementById('completeModal');
+        var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
+        completeModal.show();
+    }
+
+    // Submit complete via AJAX
+    function submitComplete() {
+        $.post(`/TaskManagment/CompleteTask?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var completeModalEl = document.getElementById('completeModal');
+                var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
+                completeModal.hide();
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+    @* // Mark task as completed via AJAX
+    function markTaskCompleted(taskId) {
+        $.post(`/TaskManagment/CompleteTask?id=${taskId}`, function(response) {
+            if(response.success) {
+                toastr.success(response.message, "Success");
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    } *@
+
+    @* // Open Update Task modal and pre-populate the form
+    function openUpdateModal(taskId) {
+        $.get(`/TaskManagment/GetTask?id=${taskId}`, function(data) {
+            // Assuming data returns a JSON object with task properties
+            $("#updateTaskId").val(data.Id);
+            $("#updateTaskName").val(data.TaskName);
+            $("#updateDeadline").val(new Date(data.Deadline).toISOString().split('T')[0]);
+            $("#updatePriorityType").val(data.PriorityType);
+            $("#updateSharingReason").val(data.SharingReason);
+            var updateTaskModalEl = document.getElementById('updateTaskModal');
+            var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+            updateTaskModal.show();
+        });
+    } *@
+
+    // Submit updateed task via AJAX after re-validating the deadline
+    function submitTaskUpdate() {
+        var deadline = new Date($("#updateDeadline").val());
+        var today = new Date();
+        today.setHours(0,0,0,0);
+        if (deadline < today) {
+            toastr.error("Deadline must be today or in the future.", "Validation Error");
+            return;
+        }
+        $.ajax({
+            url: '/TaskManagment/UpdateTask',
+            type: 'POST',
+            data: $("#updateTaskForm").serialize(),
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message, "Success");
+                    var updateTaskModalEl = document.getElementById('updateTaskModal');
+                    var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+                    updateTaskModal.hide();
+                    loadSharedTasks();
+                } else {
+                    toastr.error(response.message, "Error");
+                }
+            },
+            error: function() {
+                toastr.error("An error occurred while updating the task.", "Error");
+            }
+        });
+    }
+
     $(document).ready(function () {
         loadSharedTasks();
         
-        $('.select2').select2({
-            @* placeholder: "Select RMs", *@
-            allowClear: true
-        });
+        $('.select2').select2({ allowClear: true });
 
+        // Select all / individual checkboxes
         $('#selectAllCheckbox').on('click', function () {
             var isChecked = $(this).prop('checked');
             $('.purple-checkbox').prop('checked', isChecked);
@@ -185,24 +287,33 @@
             });
         });
 
-        // Populate RMs dropdown
+        // Populate RMs dropdown (for Share Task form)
         $.get("/TaskManagment/GetRMs", function (data) {
             var rmDropdown = $("#SelectedRMs");
-            rmDropdown.empty();//.append('<option value="" disabled>Select RMs</option>');
+            rmDropdown.empty();
             $.each(data, function (index, item) {
                 rmDropdown.append($('<option></option>').val(item.Id).text(item.Name));
             });
             rmDropdown.select2();
         });
 
-        // Handle form submission via AJAX with the event object declared
+        // Deadline validation for Share Task form before submission
         $("#saveTaskButton").click(function (e) {
             e.preventDefault();
-            var form = $("#taskForm");
+            var form = $("#shareTasksForm");
 
-            // Check form validity
+            // Validate form controls first
             if (form[0].checkValidity() === false) {
                 form.addClass("was-validated");
+                return;
+            }
+
+            // Validate deadline field (must be today or later)
+            var deadline = new Date($("#Deadline").val());
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (deadline < today) {
+                toastr.error("Deadline must be today or in the future.", "Validation Error");
                 return;
             }
 
@@ -211,8 +322,10 @@
             $("#submitSpinner").removeClass("d-none");
             
             $.ajax({
-                url: form.attr("action"),
-                type: form.attr("method"),
+                @* url: form.attr("action"),
+                type: form.attr("method"), *@
+                url: '/TaskManagment/ShareTasks',
+                type: 'POST',
                 data: form.serialize(),
                 success: function (response) {
                     if (response.success) {
@@ -225,18 +338,24 @@
                         shareTaskModal.hide();
                         $('.select2').val(null).trigger('change');
                     } else {
-                        toastr.error(response.message, "Error occured when sharing Task");
+                        toastr.error(response.message, "Error occurred when sharing Task");
                     }
                 },
-                error: function (xhr, status, error) {
+                error: function () {
                     toastr.error("An error occurred while submitting the form.", "Error");
                 },
                 complete: function () {
-                    // Re-enable submit button and hide spinner
                     $("#saveTaskButton").prop("disabled", false);
                     $("#submitSpinner").addClass("d-none");
                 }
             });
+        });
+
+        // Status filter for DataTable
+        $('#statusFilter').on('change', function() {
+            var status = $(this).val();
+            var table = $('#sharedTasksTable').DataTable();
+            table.column(3).search(status).draw();
         });
     });
 </script>

@@ -8,10 +8,9 @@ using mechanical.Models.Dto.CaseAssignmentDto;
 
 using mechanical.Hubs;
 using mechanical.Utils;
+using mechanical.Models.Dto;
 using mechanical.Models.Entities;
-
 using mechanical.Models.Dto.CaseDto;
-
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.CaseTimeLineService;
@@ -37,7 +36,7 @@ namespace mechanical.Services.TaskManagmentService
             _caseTimeLineService = caseTimeLineService;
         }
 
-        public async Task<TaskManagment> ShareTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
+        public async Task<TaskManagment> SharesTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
 
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -124,21 +123,11 @@ namespace mechanical.Services.TaskManagmentService
                 throw new ApplicationException("An error occurred while sharing the task.", ex);
             }
         }
-     
-        public async Task<bool> DeleteTask(Guid AssignorId, Guid Id)
+
+        public async Task<ResultDto> DeleteTask(Guid AssignorId, Guid Id)
         {
             throw new NotImplementedException();
         }
-
-        public async Task<TaskManagmentReturnDto> GetSharedTask(Guid AssignorId)
-        {
-            throw new NotImplementedException();
-        }
-
-        // public Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id)
-        // {
-        //     throw new NotImplementedException();
-        // }
 
         public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
         {
@@ -147,11 +136,11 @@ namespace mechanical.Services.TaskManagmentService
 
         
         
-        public async Task<bool> ShareTasks(Guid userId, ShareTasksDto dto)
+        public async Task<ResultDto> ShareTasks(Guid userId, ShareTasksDto dto)
         {
             if (dto == null)
             {
-                throw new ArgumentNullException(nameof(dto), "Task management DTO cannot be null.");
+                return new ResultDto { Success = false, Message = "Task management DTO cannot be null." };
             }
 
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -167,7 +156,7 @@ namespace mechanical.Services.TaskManagmentService
                 
                 if (sharedCase == null)
                 {
-                    throw new KeyNotFoundException("Case not found.");
+                    return new ResultDto { Success = false, Message = "Case not found." };
                 }
                 
                 foreach (var rmId in dto.SelectedRMs)
@@ -232,21 +221,15 @@ namespace mechanical.Services.TaskManagmentService
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return true;
+                return new ResultDto { Success = true, Message = "Case is shared Successfully!" };
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sharing task.");
                 await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while sharing the task.", ex);
+                return new ResultDto { Success = false, Message = $"An error occurred while sharing the task. {ex}" };
             }
-        }
-
-
-        public Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId)
@@ -260,36 +243,8 @@ namespace mechanical.Services.TaskManagmentService
             var tasks = await _cbeContext.TaskManagments.Include(t => t.Case).Include(t => t.CaseOrginator).Where(t => t.AssignedId==userId).ToListAsync();
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
-        
-        
-        public async Task ReassignTask(Guid userId, Guid taskId, Guid newAssignedId)
-        {
-            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
-            if (task == null)
-            {
-                throw new ArgumentException("Task not found.");
-            }
 
-            task.AssignedId = newAssignedId;
-            task.AssignedDate = DateTime.UtcNow;
-
-            _cbeContext.TaskManagments.Update(task);
-            await _cbeContext.SaveChangesAsync();
-        }
-
-        public async Task RevokeTask(Guid userId, Guid taskId)
-        {
-            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
-            if (task == null)
-            {
-                throw new ArgumentException("Task not found.");
-            }
-
-            _cbeContext.TaskManagments.Remove(task);
-            await _cbeContext.SaveChangesAsync();
-        }
-
-        public async Task<TaskManagmentReturnDto> GetTaskDetails(Guid userId, Guid taskId)
+        public async Task<TaskManagmentReturnDto> GetTask(Guid userId, Guid taskId)
         {
             var task = await _cbeContext.TaskManagments
                 .Include(t => t.Case)
@@ -297,8 +252,81 @@ namespace mechanical.Services.TaskManagmentService
                 .Include(t => t.CaseOrginator)
                 .FirstOrDefaultAsync(t => t.Id == taskId);
             
-            // return task;
             return _mapper.Map<TaskManagmentReturnDto>(task);
+        }
+
+        public async Task<ResultDto> ReassignTask(Guid userId, Guid taskId, Guid newAssignedId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                return new ResultDto { Success = false, Message = "Task not found." };
+            }
+
+            var user =  await _cbeContext.CreateUsers.FindAsync(newAssignedId);
+            if (user == null)
+            {
+                return new ResultDto { Success = false, Message = "User not found." };
+            }
+
+            task.Assigned = user;
+            task.AssignedId = newAssignedId;
+            task.AssignedDate = DateTime.UtcNow;
+            // task.TaskStatus = "In Progress";
+
+            _cbeContext.TaskManagments.Update(task);
+            await _cbeContext.SaveChangesAsync();
+            
+            return new ResultDto { Success = true, Message = "Task reassigned successfully." };
+        }
+
+        public async Task<ResultDto> RevokeTask(Guid userId, Guid taskId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                return new ResultDto { Success = false, Message = "Task not found." };
+            }
+
+            _cbeContext.TaskManagments.Remove(task);
+            await _cbeContext.SaveChangesAsync();
+
+            return new ResultDto { Success = true, Message = "Task revoked successfully." };
+        }
+
+        public async Task<ResultDto> CompleteTask(Guid userId, Guid taskId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                return new ResultDto { Success = false, Message = "Task not found." };
+            }
+            task.TaskStatus = "Completed";
+
+            _cbeContext.TaskManagments.Update(task);
+            await _cbeContext.SaveChangesAsync();
+
+            return new ResultDto { Success = true, Message = "Task marked as completed." };
+        }
+
+        public async Task<ResultDto> UpdateTask(Guid userId, UpdateTaskDto dto)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(dto.Id);
+
+            if (task == null)
+            {
+                return new ResultDto { Success = false, Message = "Task not found." };
+            }
+
+            task.TaskName = dto.TaskName;
+            task.Deadline = dto.Deadline;
+            task.PriorityType = dto.PriorityType;
+            task.SharingReason = dto.SharingReason;
+
+            _cbeContext.TaskManagments.Update(task);
+            await _cbeContext.SaveChangesAsync();
+            
+            return new ResultDto { Success = true, Message = "Task updated successfully." };
         }
     }
 }

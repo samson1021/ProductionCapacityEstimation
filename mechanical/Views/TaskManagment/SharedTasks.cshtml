@@ -1,20 +1,40 @@
 @using System
-
 @model mechanical.Models.Dto.TaskManagmentDto.ShareTasksDto
 @{
     ViewData["Title"] = "Task Management";
 }
 
 <div class="container mt-4">
-    <h2 class="mb-4">Task Management</h2>
-    <div class="text-end">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareTaskModal">
-            Share New Task
-        </button>
+    <h2 class="mb-4">Shared Tasks</h2>
+    
+    <!-- Filter and Share Task Button -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="input-group">
+                <select id="statusFilter" class="form-control custom-select">
+                    <option value="">All</option>
+                    <option value="New">New</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Pending">Pending</option>
+                </select>
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="fas fa-filter"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9 text-end">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareTaskModal">
+                Share New Task
+            </button>
+        </div>
     </div>
+    
     <hr />
 
-    <h3 class="mt-4">Shared Tasks</h3>
     <table class="table table-bordered" id="sharedTasksTable">
         <thead>
             <tr>
@@ -41,7 +61,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="taskForm" method="Post" action="/TaskManagment/ShareTasks">
+                <form id="shareTasksForm">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label for="CaseId" class="form-label">Case List</label>
@@ -75,10 +95,10 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="Reason" class="form-label">Reason for Task Sharing</label>
-                        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
-                        <span asp-validation-for="SharingReason" class="text-danger"></span>
-                        <div class="invalid-feedback">Please provide a reason for task sharing.</div>
+                        <label for="Deadline" class="form-label">Deadline</label>
+                        <input type="date" value='@DateTime.Now.ToString("yyyy-MM-dd")' class="form-control" id="Deadline" asp-for="Deadline" required>
+                        <span asp-validation-for="Deadline" class="text-danger"></span>
+                        <div class="invalid-feedback">Please select a deadline.</div>
                     </div>
 
                     <div class="mb-3">
@@ -95,10 +115,10 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="Deadline" class="form-label">Deadline</label>
-                        <input type="date" value='@DateTime.Now.ToString("yyyy-MM-dd")' class="form-control" id="Deadline" asp-for="Deadline" required>
-                        <span asp-validation-for="Deadline" class="text-danger"></span>
-                        <div class="invalid-feedback">Please select a deadline.</div>
+                        <label for="Reason" class="form-label">Reason for Task Sharing</label>
+                        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
+                        <span asp-validation-for="SharingReason" class="text-danger"></span>
+                        <div class="invalid-feedback">Please provide a reason for task sharing.</div>
                     </div>
                 </form>
             </div>
@@ -167,6 +187,42 @@
     </div>
 </div>
 
+<!-- Complete Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="completeTaskModalLabel">Complete Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to complete this task?</p>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="submitComplete()">Complete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Task Modal -->
+<div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="updateTaskModalLabel">Update Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="updateContent"></div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitTaskUpdate()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -196,5 +252,24 @@
     dd {
         margin-bottom: 1rem;
         padding-left: 15px;
+    }
+
+    .custom-select {
+        border: 1px solid #007bff;
+        border-radius: 0.25rem;
+        background-color: #f8f9fa;
+        transition: border-color 0.3s;
+    }
+    
+    .custom-select:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .input-group-text {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 0 0.25rem 0.25rem 0;
     }
 </style>
