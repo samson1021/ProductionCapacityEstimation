@@ -34,20 +34,22 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="shareTaskModal" tabindex="-1" aria-labelledby="shareTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="shareTaskModal" tabindex="-1" role="dialog" aria-labelledby="shareTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="shareTaskModalLabel">Share New Task</h5>
+                <h5 class="modal-title" id="assignshareTaskModalLabel">Share New Task</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="taskForm" method="post" action="/TaskManagment/ShareTasks">
+                <form id="taskForm" method="Post" action="/TaskManagment/ShareTasks">
+                    @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <label for="CaseId" class="form-label">Select Case</label>
+                        <label for="CaseId" class="form-label">Case List</label>
                         <select class="form-control" id="CaseId" asp-for="CaseId" required>
                             <option value="">-- Select Case --</option>
                         </select>
+                        <span asp-validation-for="CaseId" class="text-danger"></span>
                         <div class="invalid-feedback">Please select a case.</div>
                     </div>
 
@@ -60,25 +62,28 @@
                             <option value="Case Follow">Case Follow</option>
                             <option value="Report Generation">Report Generation</option>
                         </select>
+                        <span asp-validation-for="TaskName" class="text-danger"></span>
                         <div class="invalid-feedback">Please select a task.</div>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label class="form-label">Share to Relationship Managers</label>
+                        <label class="form-label">Relation Managers</label>
                         <select class="form-control select2" asp-for="SelectedRMs" required multiple>
                             <option value="" disabled>Select RMs</option>
                         </select>
-                        <div class="invalid-feedback">Please select at least one relationship manager.</div>
+                        <span asp-validation-for="SelectedRMs" class="text-danger"></span>
+                        <div class="invalid-feedback">Please select at least one relations manager.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="Reason" class="form-label">Reason for Task Sharing</label>
                         <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
+                        <span asp-validation-for="SharingReason" class="text-danger"></span>
                         <div class="invalid-feedback">Please provide a reason for task sharing.</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="PriorityType" class="form-label">Task Priority Type</label>
+                        <label for="PriorityType" class="form-label">Priority</label>
                         <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
                             <option value="">-- Select Priority Type --</option>
                             <option value="Low">Low</option>
@@ -86,12 +91,14 @@
                             <option value="High">High</option>
                             <option value="Urgent">Urgent</option>
                         </select>
+                        <span asp-validation-for="PriorityType" class="text-danger"></span>
                         <div class="invalid-feedback">Please select a priority type.</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="Deadline" class="form-label">Task Deadline</label>
+                        <label for="Deadline" class="form-label">Deadline</label>
                         <input type="date" value='@DateTime.Now.ToString("yyyy-MM-dd")' class="form-control" id="Deadline" asp-for="Deadline" required>
+                        <span asp-validation-for="Deadline" class="text-danger"></span>
                         <div class="invalid-feedback">Please select a deadline.</div>
                     </div>
                 </form>
@@ -107,11 +114,63 @@
     </div>
 </div>
 
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Task Details</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="detailsContent">
+        <!-- Content loaded via AJAX -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reassignModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reassign Task</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <select id="reassignUserDropdown" class="form-control"></select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitReassignment()">Reassign</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="revokeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Revoke Task</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to revoke this task?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="submitRevoke()">Revoke</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("_taskSharingTable");
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("_taskSharingScriptPartial");
     }
 }

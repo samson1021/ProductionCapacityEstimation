@@ -1,12 +1,6 @@
 ﻿using AutoMapper;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.DirectoryServices.ActiveDirectory;
 
 using mechanical.Data;
 
@@ -17,10 +11,10 @@ using mechanical.Utils;
 using mechanical.Models.Entities;
 
 using mechanical.Models.Dto.CaseDto;
+
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.CaseTimeLineService;
-
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -41,7 +35,6 @@ namespace mechanical.Services.TaskManagmentService
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
-
         }
 
         public async Task<TaskManagment> ShareTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
@@ -252,10 +245,120 @@ namespace mechanical.Services.TaskManagmentService
             throw new NotImplementedException();
         }
 
+        // public Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id)
+        // {
+        //     throw new NotImplementedException();
+        // }
+
+        public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+        
+        public async Task<bool> ShareTasks(Guid userId, ShareTasksDto dto)
+        {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto), "Task management DTO cannot be null.");
+            }
+
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {
+                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
+                EncodingHelper.EncodeObject(dto);
+
+                var sharedCase = await _cbeContext.Cases
+                                                .Include(c => c.CaseOriginator)
+                                                    .ThenInclude(u => u.Role)
+                                                .FirstOrDefaultAsync(u => u.Id == dto.CaseId);
+                
+                if (sharedCase == null)
+                {
+                    throw new KeyNotFoundException("Case not found.");
+                }
+                
+                foreach (var rmId in dto.SelectedRMs)
+                {
+                    // Fetch the user details
+                    var assignedUser = await _cbeContext.CreateUsers.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == rmId);
+                    if (assignedUser != null)
+                    {
+                        // Map DTO to TaskManagment entity
+                        // var task = _mapper.Map<TaskManagment>(dto);
+                        var task =  new TaskManagment{
+                            Id = Guid.NewGuid(),
+                            CaseId = dto.CaseId,
+                            TaskName = dto.TaskName,
+                            PriorityType = dto.PriorityType,
+                            SharingReason = dto.SharingReason,
+                            Deadline = dto.Deadline,
+                            CaseOrginatorId = sharedCase.CaseOriginatorId,
+                            AssignedId = rmId,
+                            TaskStatus = "New",
+                            AssignedDate = DateTime.Now,
+                            CompletionDate = null,
+                        };
+                        // Add task to the context
+                        await _cbeContext.TaskManagments.AddAsync(task);
+
+                        // Log the timeline event
+                        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                        {
+                            CaseId = task.CaseId,
+                            Activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>",
+                            CurrentStage = assignedUser.Role.Name
+                        });
+
+                        // Create a task notification
+                        string notificationMessage = $"New task assigned: {task.TaskName}";
+                        var taskNotification = new TaskNotification
+                        {
+                            TaskId = task.Id,
+                            UserId = task.AssignedId,
+                            Date = DateTime.Now,
+                            Notification = notificationMessage,
+                            Status ="New"
+                        };
+                        
+                        var notification = new Notification
+                        {
+                            UserId = rmId,
+                            Message = notificationMessage,
+                            CreatedAt = DateTime.Now,
+                            Status ="New",
+                            IsRead = false
+                        };
+                        _cbeContext.Notifications.Add(notification);
+
+                        // Send real-time notification
+                        await _cbeContext.TaskNotifications.AddAsync(taskNotification);
+                        await _hubContext.Clients.User(assignedUser.Id.ToString()).SendAsync("ReceiveNotification", notificationMessage);
+                    }
+                }
+                // Save changes and commit the transaction
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sharing task.");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while sharing the task.", ex);
+            }
+        }
+
+
         public Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id)
         {
             throw new NotImplementedException();
         }
+
         public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId)
         {
             var tasks = await _cbeContext.TaskManagments.Include(t => t.Case).Include(t => t.Assigned).Where(res => res.CaseOrginatorId == userId).ToListAsync();
@@ -268,5 +371,44 @@ namespace mechanical.Services.TaskManagmentService
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
         
+        
+        public async Task ReassignTask(Guid userId, Guid taskId, Guid newAssignedId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                throw new ArgumentException("Task not found.");
+            }
+
+            task.AssignedId = newAssignedId;
+            task.AssignedDate = DateTime.UtcNow;
+
+            _cbeContext.TaskManagments.Update(task);
+            await _cbeContext.SaveChangesAsync();
+        }
+
+        public async Task RevokeTask(Guid userId, Guid taskId)
+        {
+            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
+            if (task == null)
+            {
+                throw new ArgumentException("Task not found.");
+            }
+
+            _cbeContext.TaskManagments.Remove(task);
+            await _cbeContext.SaveChangesAsync();
+        }
+
+        public async Task<TaskManagmentReturnDto> GetTaskDetails(Guid userId, Guid taskId)
+        {
+            var task = await _cbeContext.TaskManagments
+                .Include(t => t.Case)
+                .Include(t => t.Assigned)
+                .Include(t => t.CaseOrginator)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+            
+            // return task;
+            return _mapper.Map<TaskManagmentReturnDto>(task);
+        }
     }
 }
