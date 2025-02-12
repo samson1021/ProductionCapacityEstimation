@@ -11,6 +11,11 @@
     <div class="row mb-3">
         <div class="col-md-3">
             <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="fas fa-filter"></i>
+                    </span>
+                </div>
                 <select id="statusFilter" class="form-control custom-select">
                     <option value="">All</option>
                     <option value="New">New</option>
@@ -18,11 +23,6 @@
                     <option value="Completed">Completed</option>
                     <option value="Pending">Pending</option>
                 </select>
-                <div class="input-group-append">
-                    <span class="input-group-text">
-                        <i class="fas fa-filter"></i>
-                    </span>
-                </div>
             </div>
         </div>
 
@@ -172,7 +172,7 @@
 <div class="modal fade" id="revokeModal" tabindex="-1" aria-labelledby="revokeTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-3 shadow">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="revokeTaskModalLabel">Revoke Task</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -191,7 +191,7 @@
 <div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-3 shadow">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header bg-success text-white">
                 <h5 class="modal-title" id="completeTaskModalLabel">Complete Task</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -210,7 +210,7 @@
 <div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-3 shadow">
-            <div class="modal-header bg-secondary text-white">
+            <div class="modal-header bg-warning text-white">
                 <h5 class="modal-title" id="updateTaskModalLabel">Update Task</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
