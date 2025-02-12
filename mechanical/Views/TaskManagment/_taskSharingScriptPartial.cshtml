@@ -47,7 +47,7 @@
                     width: '15%',
                     render: function (data, type, row, meta) {
                         var date = new Date(data);
-                        return date.toLocaleString();
+                        return date.toISOString().split('T')[0];
                     }
                 },
                 {
@@ -67,13 +67,13 @@
                     data: 'Id',
                     width: '30%',
                     render: function (data, type, row, meta) {
-                        var updateButton = `<button class="btn btn-secondary btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
+                        var updateButton = `<button class="btn btn-info btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
                         var completeButton = "";
                         @* if(row.TaskStatus !== 'Completed'){
                             completeButton = `<button class="btn btn-success btn-sm ms-1" onclick="openCompleteModal('${data}')">Complete</button>`;
                         } *@
                         return `
-                            <button class="btn btn-info btn-sm" onclick="showTaskDetails('${data}')">Details</button>
+                            <button class="btn bg-purple btn-sm" onclick="showTaskDetails('${data}')">Details</button>
                             <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
                             ${updateButton}
                             <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Delete</button>
@@ -215,9 +215,9 @@
                 toastr.error(response.message, "Error");
             }
         });
-    } *@
+    }
 
-    @* // Open Update Task modal and pre-populate the form
+    // Open Update Task modal and pre-populate the form
     function openUpdateModal(taskId) {
         $.get(`/TaskManagment/GetTask?id=${taskId}`, function(data) {
             // Assuming data returns a JSON object with task properties
@@ -322,8 +322,6 @@
             $("#submitSpinner").removeClass("d-none");
             
             $.ajax({
-                @* url: form.attr("action"),
-                type: form.attr("method"), *@
                 url: '/TaskManagment/ShareTasks',
                 type: 'POST',
                 data: form.serialize(),

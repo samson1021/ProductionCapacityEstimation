@@ -14,11 +14,5 @@ namespace mechanical.Models.Dto.TaskManagmentDto
         public DateTime Deadline { get; set; }
         public required string PriorityType { get; set; }
         public IEnumerable<Guid> SelectedRMs { get; set; }
-
-        // public required string TaskStatus { get; set; }
-        // public IEnumerable<CaseReturntDto> Cases { get; set; }
-        // public IEnumerable<CreateUser> RMs { get; set; }
-        // public IEnumerable<TaskManagmentReturnDto> Tasks { get; set; }
-        // public IEnumerable<TaskManagmentReturnDto> AssignedTasks { get; set; }
     }
 }
