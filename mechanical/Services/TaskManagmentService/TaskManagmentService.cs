@@ -209,7 +209,7 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { Success = false, Message = "Case not found." };
                 }
                 
-                // var response = await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
+                var response = await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
 
                 return new ResultDto { Success = true, Message = "Case is shared Successfully!" };
             }
