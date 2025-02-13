@@ -7,12 +7,7 @@ namespace mechanical.Services.TaskManagmentService
     public interface ITaskManagmentService
     {
 
-        Task<TaskManagment> SharesTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto);       
-
-
-        //Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId,  Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto);
-        // Task<TaskManagmentReturnDto> GetTaskDetails(Guid AssignorId, Guid Id);
-        
+        Task<TaskManagment> SharesTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto);
         Task<TaskManagmentReturnDto> GetTask(Guid userId, Guid taskId);
         Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId);
         Task<IEnumerable<TaskManagmentReturnDto>> GetAssignedTasks(Guid userId);

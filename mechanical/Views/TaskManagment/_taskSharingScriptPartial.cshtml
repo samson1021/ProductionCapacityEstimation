@@ -281,7 +281,7 @@
         });
 
         // Deadline validation for Share Task form before submission
-        $("#saveTaskButton").click(function (e) {
+        $("#shareTaskButton").click(function (e) {
             e.preventDefault();
             var form = $("#shareTasksForm");
 
@@ -314,8 +314,8 @@
             }
 
             // Disable submit button and show spinner
-            $("#saveTaskButton").prop("disabled", true);
-            $("#submitSpinner").removeClass("d-none");
+            $("#shareTaskButton").prop("disabled", true);
+            $("#shareSpinner").removeClass("d-none");
             
             $.ajax({
                 url: '/TaskManagment/ShareTasks',
@@ -339,8 +339,8 @@
                     toastr.error("An error occurred while submitting the form.", "Error");
                 },
                 complete: function () {
-                    $("#saveTaskButton").prop("disabled", false);
-                    $("#submitSpinner").addClass("d-none");
+                    $("#shareTaskButton").prop("disabled", false);
+                    $("#shareSpinner").addClass("d-none");
                 }
             });
         });
@@ -379,6 +379,10 @@
                 deadlineInput.siblings(".invalid-feedback").hide();
             }
 
+            // Disable submit button and show spinner
+            $("#updateTaskButton").prop("disabled", true);
+            $("#updateSpinner").removeClass("d-none");
+
             $.ajax({
                 url: '/TaskManagment/UpdateTask',
                 type: 'POST',
@@ -396,6 +400,10 @@
                 },
                 error: function() {
                     toastr.error("An error occurred while updating the task.", "Error");
+                },
+                complete: function () {
+                    $("#updateTaskButton").prop("disabled", false);
+                    $("#updateSpinner").addClass("d-none");
                 }
             });
         });

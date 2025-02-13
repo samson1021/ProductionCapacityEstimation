@@ -132,12 +132,6 @@ namespace mechanical.Services.TaskManagmentService
                 throw new ApplicationException("An error occurred while sharing the task.", ex);
             }
         }
-
-        public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
-        {
-            throw new NotImplementedException();
-        }
-
         
         public async Task LogTimelineEvent(Guid caseId, string activity, string currentStage)
         {
@@ -149,39 +143,39 @@ namespace mechanical.Services.TaskManagmentService
             });
         }
 
+        private async Task AssignCaseToUser(Case sharedCase, Guid userId, ShareTasksDto dto)
+        {
+            var task = new TaskManagment
+            {
+                Id = Guid.NewGuid(),
+                CaseId = dto.CaseId,
+                TaskName = dto.TaskName,
+                PriorityType = dto.PriorityType,
+                SharingReason = dto.SharingReason,
+                Deadline = dto.Deadline,
+                CaseOrginatorId = sharedCase.CaseOriginatorId,
+                AssignedId = userId,
+                TaskStatus = "New",
+                AssignedDate = DateTime.Now,
+                CompletionDate = null,
+            };
+
+            await _cbeContext.TaskManagments.AddAsync(task);
+
+            string notificationMessage = $"New task assigned: {task.TaskName}";
+            await _notificationService.SendNotification(userId, notificationMessage);
+            
+            var assignedUser = await _userService.GetUserById(userId);
+            var activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
+            await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
+        }
+
         public async Task AssignCaseToUsers(Case sharedCase, IEnumerable<Guid> userIds, ShareTasksDto dto)
         {
             foreach (var userId in userIds)
             {
-                
-                var assignedUser = await _userService.GetUserById(userId);
-                // Map DTO to TaskManagment entity
-                // var task = _mapper.Map<TaskManagment>(dto);
-                var task = new TaskManagment
-                {
-                    Id = Guid.NewGuid(),
-                    CaseId = sharedCase.Id,
-                    TaskName = dto.TaskName,
-                    PriorityType = dto.PriorityType,
-                    SharingReason = dto.SharingReason,
-                    Deadline = dto.Deadline,
-                    CaseOrginatorId = sharedCase.CaseOriginatorId,
-                    AssignedId = userId,
-                    TaskStatus = "New",
-                    AssignedDate = DateTime.Now,
-                    CompletionDate = null,
-                };
-
-                await _cbeContext.TaskManagments.AddAsync(task);
-
-                string notificationMessage = $"New task assigned: {task.TaskName}";
-                await _notificationService.SendNotification(userId, notificationMessage);
-                
-                var activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
-                await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
+                await AssignCaseToUser(sharedCase, userId, dto);
             }
-
-            await _cbeContext.SaveChangesAsync();
         }
         
         public async Task<ResultDto> ShareTasks(Guid userId, ShareTasksDto dto)
@@ -205,6 +199,8 @@ namespace mechanical.Services.TaskManagmentService
                 }
                 
                 await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 return new ResultDto { Success = true, Message = "Case is shared Successfully!" };
             }
@@ -240,78 +236,182 @@ namespace mechanical.Services.TaskManagmentService
             return _mapper.Map<TaskManagmentReturnDto>(task);
         }
 
+        public async Task<ResultDto> UpdateTask(Guid userId, UpdateTaskDto dto)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {
+                var task = await _cbeContext.TaskManagments
+                    .Include(t => t.Case)
+                    .Include(t => t.Assigned)
+                    .Include(t => t.CaseOrginator)
+                    .FirstOrDefaultAsync(t => t.Id == dto.Id);
+
+                if (task == null)
+                {
+                    return new ResultDto { Success = false, Message = "Task not found." };
+                }
+
+                task.TaskName = dto.TaskName;
+                task.Deadline = dto.Deadline;
+                task.PriorityType = dto.PriorityType;
+                task.SharingReason = dto.SharingReason;
+
+                _cbeContext.TaskManagments.Update(task);
+
+                // Send notification to the assigned user
+                string notificationMessage = $"Task '{task.TaskName}' has been updated.";
+                await _notificationService.SendNotification(task.AssignedId, notificationMessage);
+
+                // Log timeline event
+                var activity = $"Task '{task.TaskName}' updated by user {userId}.";
+                await LogTimelineEvent(task.CaseId, activity, "Updated");
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new ResultDto { Success = true, Message = "Task updated successfully." };
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating task.");
+                await transaction.RollbackAsync();
+                return new ResultDto { Success = false, Message = $"An error occurred while updating the task. {ex}" };
+            }
+        }
+
         public async Task<ResultDto> ReassignTask(Guid userId, Guid taskId, Guid newAssignedId)
         {
-            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
-            if (task == null)
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
             {
-                return new ResultDto { Success = false, Message = "Task not found." };
+                var task = await _cbeContext.TaskManagments
+                    .Include(t => t.Case)
+                    .Include(t => t.Assigned)
+                    .Include(t => t.CaseOrginator)
+                    .FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return new ResultDto { Success = false, Message = "Task not found." };
+                }
+
+                var newAssignedUser = await _cbeContext.CreateUsers.FindAsync(newAssignedId);
+                if (newAssignedUser == null)
+                {
+                    return new ResultDto { Success = false, Message = "User not found." };
+                }
+
+                var previousAssignedId = task.AssignedId;
+                task.Assigned = newAssignedUser;
+                task.AssignedId = newAssignedId;
+                task.AssignedDate = DateTime.UtcNow;
+                // task.TaskStatus = "In Progress";
+
+                _cbeContext.TaskManagments.Update(task);
+
+                // Send notification to the new assigned user
+                string notificationMessage = $"Task '{task.TaskName}' has been reassigned to you.";
+                await _notificationService.SendNotification(newAssignedId, notificationMessage);
+
+                // Log timeline event
+                var activity = $"Task '{task.TaskName}' reassigned from user {previousAssignedId} to {newAssignedId}.";
+                await LogTimelineEvent(task.CaseId, activity, "Reassigned");
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new ResultDto { Success = true, Message = "Task reassigned successfully." };
             }
 
-            var user =  await _cbeContext.CreateUsers.FindAsync(newAssignedId);
-            if (user == null)
+            catch (Exception ex)
             {
-                return new ResultDto { Success = false, Message = "User not found." };
+                _logger.LogError(ex, "Error reassigning task.");
+                await transaction.RollbackAsync();
+                return new ResultDto { Success = false, Message = $"An error occurred while reassigning the task. {ex}" };
             }
-
-            task.Assigned = user;
-            task.AssignedId = newAssignedId;
-            task.AssignedDate = DateTime.UtcNow;
-            // task.TaskStatus = "In Progress";
-
-            _cbeContext.TaskManagments.Update(task);
-            await _cbeContext.SaveChangesAsync();
-            
-            return new ResultDto { Success = true, Message = "Task reassigned successfully." };
         }
 
         public async Task<ResultDto> DeleteTask(Guid userId, Guid taskId)
         {
-            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
-            if (task == null)
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
             {
-                return new ResultDto { Success = false, Message = "Task not found." };
+                var task = await _cbeContext.TaskManagments
+                    .Include(t => t.Case)
+                    .Include(t => t.Assigned)
+                    .FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return new ResultDto { Success = false, Message = "Task not found." };
+                }
+
+                // Send notification to the assigned user
+                string notificationMessage = $"Task '{task.TaskName}' has been deleted.";
+                await _notificationService.SendNotification(task.AssignedId, notificationMessage);
+
+                // Log timeline event
+                var activity = $"Task '{task.TaskName}' deleted by user {userId}.";
+                await LogTimelineEvent(task.CaseId, activity, "Deleted");
+
+                _cbeContext.TaskManagments.Remove(task);
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new ResultDto { Success = true, Message = "Task deleted successfully." };
             }
 
-            _cbeContext.TaskManagments.Remove(task);
-            await _cbeContext.SaveChangesAsync();
-
-            return new ResultDto { Success = true, Message = "Task deleted successfully." };
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting task.");
+                await transaction.RollbackAsync();
+                return new ResultDto { Success = false, Message = $"An error occurred while deleting the task. {ex}" };
+            }
         }
 
         public async Task<ResultDto> CompleteTask(Guid userId, Guid taskId)
         {
-            var task = await _cbeContext.TaskManagments.FindAsync(taskId);
-            if (task == null)
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
             {
-                return new ResultDto { Success = false, Message = "Task not found." };
+                var task = await _cbeContext.TaskManagments
+                    .Include(t => t.Case)
+                    .Include(t => t.Assigned)
+                    .Include(t => t.CaseOrginator)
+                    .FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return new ResultDto { Success = false, Message = "Task not found." };
+                }
+
+                task.TaskStatus = "Completed";
+                task.CompletionDate = DateTime.UtcNow;
+
+                _cbeContext.TaskManagments.Update(task);
+
+                // Send notification to the assigned user
+                string notificationMessage = $"Task '{task.TaskName}' has been marked as completed.";
+                await _notificationService.SendNotification(task.AssignedId, notificationMessage);
+
+                // Log timeline event
+                var activity = $"Task '{task.TaskName}' marked as completed by user {userId}.";
+                await LogTimelineEvent(task.CaseId, activity, "Completed");
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new ResultDto { Success = true, Message = "Task marked as completed." };
             }
-            task.TaskStatus = "Completed";
 
-            _cbeContext.TaskManagments.Update(task);
-            await _cbeContext.SaveChangesAsync();
-
-            return new ResultDto { Success = true, Message = "Task marked as completed." };
-        }
-
-        public async Task<ResultDto> UpdateTask(Guid userId, UpdateTaskDto dto)
-        {
-            var task = await _cbeContext.TaskManagments.FindAsync(dto.Id);
-
-            if (task == null)
+            catch (Exception ex)
             {
-                return new ResultDto { Success = false, Message = "Task not found." };
+                _logger.LogError(ex, "Error completing task.");
+                await transaction.RollbackAsync();
+                return new ResultDto { Success = false, Message = $"An error occurred while completing the task. {ex}" };
             }
-
-            task.TaskName = dto.TaskName;
-            task.Deadline = dto.Deadline;
-            task.PriorityType = dto.PriorityType;
-            task.SharingReason = dto.SharingReason;
-
-            _cbeContext.TaskManagments.Update(task);
-            await _cbeContext.SaveChangesAsync();
-            
-            return new ResultDto { Success = true, Message = "Task updated successfully." };
         }
     }
 }
