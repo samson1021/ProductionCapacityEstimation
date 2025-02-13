@@ -58,5 +58,20 @@ namespace mechanical.Services.NotificationService
                 return _mapper.Map<IEnumerable<NotificationReturnDto>>(notifications);
             
         }
+        
+        public async Task SendNotification(Guid userId, string message)
+        {
+            var notification = new Notification
+            {
+                UserId = userId,
+                Message = message,
+                CreatedAt = DateTime.Now,
+                Status = "New",
+                IsRead = false
+            };
+
+            _cbeContext.Notifications.Add(notification);
+            await _hubContext.Clients.User(userId.ToString()).SendAsync("ReceiveNotification", message);
+        }
     }
 }

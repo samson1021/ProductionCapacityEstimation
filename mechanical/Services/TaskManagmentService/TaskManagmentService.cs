@@ -14,26 +14,35 @@ using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.CaseTimeLineService;
+using mechanical.Services.NotificationService;
+using mechanical.Services.CaseServices;
+using mechanical.Services.UserService;
 
 namespace mechanical.Services.TaskManagmentService
 {
     public class TaskManagmentService : ITaskManagmentService
     {
+        private readonly IMapper _mapper;
         private readonly CbeContext _cbeContext;
         private readonly IHubContext<NotificationHub> _hubContext;
-        private readonly IMapper _mapper;      
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<TaskManagmentService> _logger;      
+        private readonly ILogger<TaskManagmentService> _logger;
         private readonly ICaseTimeLineService _caseTimeLineService;
+        private readonly INotificationService _notificationService;
+        private readonly ICaseService _caseService;
+        private readonly IUserService _userService;
         
-        public TaskManagmentService(CbeContext cbeContext, IHubContext<NotificationHub> hubContext, IMapper mapper, ILogger<TaskManagmentService> logger, IHttpContextAccessor httpContextAccessor,  ICaseTimeLineService caseTimeLineService)
+        public TaskManagmentService(CbeContext cbeContext, IHubContext<NotificationHub> hubContext, IMapper mapper, ILogger<TaskManagmentService> logger, IHttpContextAccessor httpContextAccessor, ICaseService caseService, IUserService userService, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
-            _cbeContext = cbeContext;
-            _hubContext = hubContext;
             _mapper = mapper;
             _logger = logger;
+            _cbeContext = cbeContext;
+            _hubContext = hubContext;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
+            _notificationService = notificationService;
+            _caseService = caseService;
+            _userService = userService;
         }
 
         public async Task<TaskManagment> SharesTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
@@ -56,8 +65,8 @@ namespace mechanical.Services.TaskManagmentService
                     .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId)
                     ?? throw new ArgumentException("Assignee user not found.", nameof(createTaskManagmentDto.AssignedId));
 
-                   /* .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId);
-                var sharedCase = await _cbeContext.Cases                    
+                /* .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId);
+                var sharedCase = await _cbeContext.Cases
                     .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseId); */
 
 
@@ -135,6 +144,50 @@ namespace mechanical.Services.TaskManagmentService
         }
 
         
+        public async Task LogTimelineEvent(Guid caseId, string activity, string currentStage)
+        {
+            await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            {
+                CaseId = caseId,
+                Activity = activity,
+                CurrentStage = currentStage
+            });
+        }
+
+        public async Task AssignCaseToUsers(Case sharedCase, IEnumerable<Guid> userIds, ShareTasksDto dto)
+        {
+            foreach (var userId in userIds)
+            {
+                
+                var assignedUser = await _userService.GetUserById(userId);
+                // Map DTO to TaskManagment entity
+                // var task = _mapper.Map<TaskManagment>(dto);
+                var task = new TaskManagment
+                {
+                    Id = Guid.NewGuid(),
+                    CaseId = sharedCase.Id,
+                    TaskName = dto.TaskName,
+                    PriorityType = dto.PriorityType,
+                    SharingReason = dto.SharingReason,
+                    Deadline = dto.Deadline,
+                    CaseOrginatorId = sharedCase.CaseOriginatorId,
+                    AssignedId = userId,
+                    TaskStatus = "New",
+                    AssignedDate = DateTime.Now,
+                    CompletionDate = null,
+                };
+
+                await _cbeContext.TaskManagments.AddAsync(task);
+
+                string notificationMessage = $"New task assigned: {task.TaskName}";
+                await _notificationService.SendNotification(userId, notificationMessage);
+                
+                var activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
+                await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
+            }
+
+            await _cbeContext.SaveChangesAsync();
+        }
         
         public async Task<ResultDto> ShareTasks(Guid userId, ShareTasksDto dto)
         {
@@ -146,80 +199,17 @@ namespace mechanical.Services.TaskManagmentService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
+                // Encode/Sanitize inputs in Dto
                 EncodingHelper.EncodeObject(dto);
-
-                var sharedCase = await _cbeContext.Cases
-                                                .Include(c => c.CaseOriginator)
-                                                    .ThenInclude(u => u.Role)
-                                                .FirstOrDefaultAsync(u => u.Id == dto.CaseId);
+                
+                var sharedCase = await _caseService.GetCaseById(dto.CaseId);
                 
                 if (sharedCase == null)
                 {
                     return new ResultDto { Success = false, Message = "Case not found." };
                 }
                 
-                foreach (var rmId in dto.SelectedRMs)
-                {
-                    // Fetch the user details
-                    var assignedUser = await _cbeContext.CreateUsers.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == rmId);
-                    if (assignedUser != null)
-                    {
-                        // Map DTO to TaskManagment entity
-                        // var task = _mapper.Map<TaskManagment>(dto);
-                        var task =  new TaskManagment{
-                            Id = Guid.NewGuid(),
-                            CaseId = dto.CaseId,
-                            TaskName = dto.TaskName,
-                            PriorityType = dto.PriorityType,
-                            SharingReason = dto.SharingReason,
-                            Deadline = dto.Deadline,
-                            CaseOrginatorId = sharedCase.CaseOriginatorId,
-                            AssignedId = rmId,
-                            TaskStatus = "New",
-                            AssignedDate = DateTime.Now,
-                            CompletionDate = null,
-                        };
-                        // Add task to the context
-                        await _cbeContext.TaskManagments.AddAsync(task);
-
-                        // Log the timeline event
-                        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-                        {
-                            CaseId = task.CaseId,
-                            Activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>",
-                            CurrentStage = assignedUser.Role.Name
-                        });
-
-                        // Create a task notification
-                        string notificationMessage = $"New task assigned: {task.TaskName}";
-                        var taskNotification = new TaskNotification
-                        {
-                            TaskId = task.Id,
-                            UserId = task.AssignedId,
-                            Date = DateTime.Now,
-                            Notification = notificationMessage,
-                            Status ="New"
-                        };
-                        
-                        var notification = new Notification
-                        {
-                            UserId = rmId,
-                            Message = notificationMessage,
-                            CreatedAt = DateTime.Now,
-                            Status ="New",
-                            IsRead = false
-                        };
-                        _cbeContext.Notifications.Add(notification);
-
-                        // Send real-time notification
-                        await _cbeContext.TaskNotifications.AddAsync(taskNotification);
-                        await _hubContext.Clients.User(assignedUser.Id.ToString()).SendAsync("ReceiveNotification", notificationMessage);
-                    }
-                }
-                // Save changes and commit the transaction
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                // var response = await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
 
                 return new ResultDto { Success = true, Message = "Case is shared Successfully!" };
             }

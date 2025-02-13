@@ -9,5 +9,6 @@ namespace mechanical.Services.NotificationService
         Task<NotificationReturnDto> GetNotification(Guid userId, Guid notificationId);
         Task<IEnumerable<NotificationReturnDto>> GetNotifications(Guid userId);
         Task<IEnumerable<NotificationReturnDto>> GetUnreadNotifications(Guid userId);
+        Task SendNotification(Guid userId, string message);
     }
 }
