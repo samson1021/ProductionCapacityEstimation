@@ -5,6 +5,11 @@
 
 <script>
     // Initialize DataTable with additional functionalities
+    
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+
     function initializeDataTable(data, emptyMessage) {
         const $sharedTasksTable = $('#sharedTasksTable');
         $sharedTasksTable.DataTable({
@@ -39,9 +44,9 @@
                     }
                 },
                 { data: 'TaskName', width: '10%' },
-                { data: 'TaskStatus', width: '5%' },
+                { data: 'TaskStatus', width: '10%' },
                 { data: 'PriorityType', width: '5%' },
-                { data: 'Assigned.Name', width: '10%' },
+                { data: 'Assigned.Name', width: '15%' },
                 {
                     data: 'AssignedDate',
                     width: '15%',
@@ -54,10 +59,11 @@
                     data: 'Deadline',
                     width: '15%',
                     render: function (data) {
-                        var date = new Date(data);
+                        
+                        var date = stripTime(new Date(data));
                         var formatted = date.toISOString().split('T')[0];
-                        var today = new Date();
-                        today.setHours(0, 0, 0, 0);
+                        var today = stripTime(new Date());
+                        // today.setHours(0, 0, 0, 0);
                         var diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
                         var countdown = diffDays <= 3 && diffDays >= 0 ? `<br/><small class="text-danger">Due in ${diffDays} day(s)</small>` : "";
                         return formatted + countdown;
@@ -65,7 +71,7 @@
                 },
                 {
                     data: 'Id',
-                    width: '30%',
+                    width: '20%',
                     render: function (data, type, row, meta) {
                         var updateButton = `<button class="btn btn-info btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
                         var completeButton = "";
@@ -74,9 +80,9 @@
                         } *@
                         return `
                             <button class="btn bg-purple btn-sm" onclick="showTaskDetails('${data}')">Details</button>
-                            <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
                             ${updateButton}
-                            <button class="btn btn-danger btn-sm" onclick="openRevokeModal('${data}')">Delete</button>
+                            <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${data}')">Delete</button>
                             @* ${completeButton} *@
                         `;
                     }
@@ -160,22 +166,22 @@
         });
     }
 
-    // Open revoke modal 
-    function openRevokeModal(taskId) {
+    // Open delete modal 
+    function openDeleteModal(taskId) {
         currentTaskId = taskId;
-        var revokeModalEl = document.getElementById('revokeModal');
-        var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
-        revokeModal.show();
+        var deleteModalEl = document.getElementById('deleteModal');
+        var deleteModal = bootstrap.Modal.getOrCreateInstance(deleteModalEl);
+        deleteModal.show();
     }
 
-    // Submit revoke via AJAX
-    function submitRevoke() {
-        $.post(`/TaskManagment/RevokeTask?id=${currentTaskId}`, function (response) {
+    // Submit delete via AJAX
+    function submitDelete() {
+        $.post(`/TaskManagment/DeleteTask?id=${currentTaskId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
-                var revokeModalEl = document.getElementById('revokeModal');
-                var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
-                revokeModal.hide();
+                var deleteModalEl = document.getElementById('deleteModal');
+                var deleteModal = bootstrap.Modal.getOrCreateInstance(deleteModalEl);
+                deleteModal.hide();
                 loadSharedTasks();
             } else {
                 toastr.error(response.message, "Error");
@@ -232,39 +238,16 @@
         });
     } *@
 
-    // Submit updateed task via AJAX after re-validating the deadline
-    function submitTaskUpdate() {
-        var deadline = new Date($("#updateDeadline").val());
-        var today = new Date();
-        today.setHours(0,0,0,0);
-        if (deadline < today) {
-            toastr.error("Deadline must be today or in the future.", "Validation Error");
-            return;
-        }
-        $.ajax({
-            url: '/TaskManagment/UpdateTask',
-            type: 'POST',
-            data: $("#updateTaskForm").serialize(),
-            success: function(response) {
-                if (response.success) {
-                    toastr.success(response.message, "Success");
-                    var updateTaskModalEl = document.getElementById('updateTaskModal');
-                    var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
-                    updateTaskModal.hide();
-                    loadSharedTasks();
-                } else {
-                    toastr.error(response.message, "Error");
-                }
-            },
-            error: function() {
-                toastr.error("An error occurred while updating the task.", "Error");
-            }
-        });
-    }
-
     $(document).ready(function () {
         loadSharedTasks();
         
+        // Status filter for DataTable
+        $('#statusFilter').on('change', function() {
+            var status = $(this).val();
+            var table = $('#sharedTasksTable').DataTable();
+            table.column(3).search(status).draw();
+        });
+
         $('.select2').select2({ allowClear: true });
 
         // Select all / individual checkboxes
@@ -309,12 +292,25 @@
             }
 
             // Validate deadline field (must be today or later)
-            var deadline = new Date($("#Deadline").val());
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (deadline < today) {
-                toastr.error("Deadline must be today or in the future.", "Validation Error");
+            var deadlineInput = $("#Deadline");
+            var deadline = stripTime(new Date(deadlineInput.val()));
+            var today = stripTime(new Date());
+            @* today.setHours(0, 0, 0, 0); *@
+
+            if (deadline < today)  {
+            var errorMessage = "Deadline cannot be earlier than today.";
+
+                // Show error message in Toastr
+                toastr.error(errorMessage, "Validation Error");
+
+                // Show inline validation message
+                deadlineInput.addClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").text(errorMessage).show();
+
                 return;
+            } else {
+                deadlineInput.removeClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").hide();
             }
 
             // Disable submit button and show spinner
@@ -349,11 +345,59 @@
             });
         });
 
-        // Status filter for DataTable
-        $('#statusFilter').on('change', function() {
-            var status = $(this).val();
-            var table = $('#sharedTasksTable').DataTable();
-            table.column(3).search(status).draw();
+        // Submit updateed task via AJAX after re-validating the deadline
+        @* function submitTaskUpdate() { *@
+        $("#updateTaskButton").click(function (e) {
+            e.preventDefault();
+            var form = $("#updateTaskForm");
+
+            // Validate form controls first
+            if (form[0].checkValidity() === false) {
+                form.addClass("was-validated");
+                return;
+            }
+            
+            // Validate deadline field (must be today or later)
+            var deadlineInput = $("#updateDeadline");
+            var deadline = stripTime(new Date(deadlineInput.val()));
+            var today = stripTime(new Date());
+            @* today.setHours(0, 0, 0, 0); *@
+
+            if (deadline < today)  {
+                var errorMessage = "Deadline cannot be earlier than today.";
+
+                // Show error message in Toastr
+                toastr.error(errorMessage, "Validation Error");
+
+                // Show inline validation message
+                deadlineInput.addClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").text(errorMessage).show();
+
+                return;
+            } else {
+                deadlineInput.removeClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").hide();
+            }
+
+            $.ajax({
+                url: '/TaskManagment/UpdateTask',
+                type: 'POST',
+                data: $("#updateTaskForm").serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message, "Success");
+                        var updateTaskModalEl = document.getElementById('updateTaskModal');
+                        var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+                        updateTaskModal.hide();
+                        loadSharedTasks();
+                    } else {
+                        toastr.error(response.message, "Error");
+                    }
+                },
+                error: function() {
+                    toastr.error("An error occurred while updating the task.", "Error");
+                }
+            });
         });
     });
 </script>

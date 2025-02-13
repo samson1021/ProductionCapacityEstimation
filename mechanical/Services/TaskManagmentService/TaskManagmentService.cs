@@ -133,11 +133,6 @@ namespace mechanical.Services.TaskManagmentService
             }
         }
 
-        public async Task<ResultDto> DeleteTask(Guid AssignorId, Guid Id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<TaskManagment> UpdateTask(Guid AssignorId, Guid AssigneeId, Guid TaskId, TaskManagmentUpdateDto updateTaskManagmentDto)
         {
             throw new NotImplementedException();
@@ -209,7 +204,7 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { Success = false, Message = "Case not found." };
                 }
                 
-                var response = await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
+                await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
 
                 return new ResultDto { Success = true, Message = "Case is shared Successfully!" };
             }
@@ -270,7 +265,7 @@ namespace mechanical.Services.TaskManagmentService
             return new ResultDto { Success = true, Message = "Task reassigned successfully." };
         }
 
-        public async Task<ResultDto> RevokeTask(Guid userId, Guid taskId)
+        public async Task<ResultDto> DeleteTask(Guid userId, Guid taskId)
         {
             var task = await _cbeContext.TaskManagments.FindAsync(taskId);
             if (task == null)
@@ -281,7 +276,7 @@ namespace mechanical.Services.TaskManagmentService
             _cbeContext.TaskManagments.Remove(task);
             await _cbeContext.SaveChangesAsync();
 
-            return new ResultDto { Success = true, Message = "Task revoked successfully." };
+            return new ResultDto { Success = true, Message = "Task deleted successfully." };
         }
 
         public async Task<ResultDto> CompleteTask(Guid userId, Guid taskId)

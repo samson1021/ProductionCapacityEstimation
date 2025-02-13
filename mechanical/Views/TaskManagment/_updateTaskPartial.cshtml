@@ -18,11 +18,11 @@
 
     <div class="mb-3">
         <label for="Deadline" class="form-label">Deadline</label>
-        <input type="date" class="form-control" id="Deadline" asp-for="Deadline" required>
+        <input type="date" class="form-control" id="updateDeadline" asp-for="Deadline" required>
         <span asp-validation-for="Deadline" class="text-danger"></span>
-        <div class="invalid-feedback">Deadline must be today or in the future.</div>
+        <div class="invalid-feedback">Please select a deadline. Deadline cannot be earlier than today.</div>
     </div>
-                        
+    
     <div class="mb-3">
         <label for="PriorityType" class="form-label">Priority</label>
         <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
