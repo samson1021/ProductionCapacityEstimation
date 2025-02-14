@@ -170,14 +170,45 @@ namespace mechanical.Services.TaskManagmentService
             await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
         }
 
-        public async Task AssignCaseToUsers(Case sharedCase, IEnumerable<Guid> userIds, ShareTasksDto dto)
+        private async Task AssignCaseToUsers(Case sharedCase, IEnumerable<Guid> userIds, ShareTasksDto dto)
         {
-            foreach (var userId in userIds)
+            var now = DateTime.Now;
+
+            // Prepare task assignments in bulk
+            var tasks = userIds.Select(userId => new TaskManagment
             {
-                await AssignCaseToUser(sharedCase, userId, dto);
-            }
+                Id = Guid.NewGuid(),
+                CaseId = dto.CaseId,
+                TaskName = dto.TaskName,
+                PriorityType = dto.PriorityType,
+                SharingReason = dto.SharingReason,
+                Deadline = dto.Deadline,
+                CaseOrginatorId = sharedCase.CaseOriginatorId,
+                AssignedId = userId,
+                TaskStatus = "New",
+                AssignedDate = now,
+                CompletionDate = null
+            }).ToList();
+
+            await _cbeContext.TaskManagments.AddRangeAsync(tasks);
+
+            // Save changes once for all inserts
+            await _cbeContext.SaveChangesAsync();
+
+            // Send notifications & log timeline events concurrently
+            var notificationTasks = tasks.Select(async task =>
+            {
+                string notificationMessage = $"New task assigned: {task.TaskName}";
+                await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type", "");
+
+                var assignedUser = await _userService.GetUserById(task.AssignedId);
+                var activity = $"<strong>A {sharedCase.ApplicantName} applicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
+                await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
+            });
+
+            await Task.WhenAll(notificationTasks);
         }
-        
+
         public async Task<ResultDto> ShareTasks(Guid userId, ShareTasksDto dto)
         {
             if (dto == null)

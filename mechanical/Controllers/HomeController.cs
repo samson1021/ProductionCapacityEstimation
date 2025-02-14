@@ -106,7 +106,9 @@ namespace mechanical.Controllers
 
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Role, userRole)
+                    new Claim(ClaimTypes.Role, userRole),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
