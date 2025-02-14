@@ -40,13 +40,26 @@ namespace mechanical.Data
                     idProperty.ValueGeneratedOnAdd();
                 }
             }
- 
+
             base.OnModelCreating(modelBuilder);
             
+            // // Add indexes using Fluent API
+            // modelBuilder.Entity<Notification>()
+            //     .HasIndex(n => n.UserId)
+            //     .HasDatabaseName("IX_Notifications_UserId");
+
+            // modelBuilder.Entity<Notification>()
+            //     .HasIndex(n => n.IsRead)
+            //     .HasDatabaseName("IX_Notifications_IsRead");
+
+            // modelBuilder.Entity<Notification>()
+            //     .HasIndex(n => n.CreatedAt)
+            //     .HasDatabaseName("IX_Notifications_CreatedAt");
+
             modelBuilder.Entity<PCEEvaluation>()
                 .HasMany(e => e.ShiftHours)
                 .WithOne()
-                .HasForeignKey(ti => ti.PCEEId);          
+                .HasForeignKey(ti => ti.PCEEId);
 
             modelBuilder.Entity<PCEEvaluation>()
                 .HasOne(pe => pe.TimeConsumedToCheck)

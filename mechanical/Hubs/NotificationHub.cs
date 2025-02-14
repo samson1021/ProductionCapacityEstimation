@@ -1,41 +1,19 @@
 using Microsoft.AspNetCore.SignalR;
-using mechanical.Data;
-using mechanical.Models.Entities;
+using System.Security.Claims;
 
 namespace mechanical.Hubs
 {
     public class NotificationHub : Hub
     {
-        private readonly CbeContext _context;
-
-        public NotificationHub(CbeContext context)
+        // Remove database operations from the hub
+        public override async Task OnConnectedAsync()
         {
-            _context = context;
-        }
-
-        public async Task SendNotification(Guid userId, string message)
-        {
-            var notification = new Notification
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId != null)
             {
-                UserId = userId,
-                Message = message,
-                Status = "New",
-                IsRead = false
-            };
-
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
-
-            await Clients.User(userId.ToString()).SendAsync("ReceiveNotification", message);
-        }
-        public async Task MarkAsRead(Guid notificationId)
-        {
-            var notification = await _context.Notifications.FindAsync(notificationId);
-            if (notification != null)
-            {
-                notification.IsRead = true;
-                await _context.SaveChangesAsync();
+                await Groups.AddToGroupAsync(Context.ConnectionId, userId);
             }
+            await base.OnConnectedAsync();
         }
     }
 }

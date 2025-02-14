@@ -1,0 +1,22 @@
+@model IEnumerable<mechanical.Models.Dto.NotificationDto.NotificationReturnDto>
+
+<div class="container">
+    <h2>Notifications</h2>
+    <div class="list-group">
+        @foreach (var notification in Model)
+        {
+            <a href="@notification.Link" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@notification.Message</h5>
+                    <small>@notification.CreatedAt.ToString("g")</small>
+                </div>
+                @if (!notification.IsRead)
+                {
+                    <form method="post" action="/Notification/MarkAsRead?id=@notification.Id">
+                        <button type="submit" class="btn btn-sm btn-link">Mark Read</button>
+                    </form>
+                }
+            </a>
+        }
+    </div>
+</div>

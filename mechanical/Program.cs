@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.SignalR;
 
 using System.Text;
 using System.Threading;
@@ -149,7 +150,17 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
 
 builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
+
+// // Add services to the container
+
+// Add SignalR
+// builder.Services.AddSignalR();
+builder.Services.AddSignalR(options => {
+    options.EnableDetailedErrors = true;
+});
+
+// Register the custom IUserIdProvider
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,21 +224,21 @@ if (!app.Environment.IsDevelopment())
 }
 
 /////////////////////////////// Chat web sockets //////////////////////////
-// Enable WebSocket support
-app.UseWebSockets();
+// // Enable WebSocket support
+// app.UseWebSockets();
 
 
-// Create an instance of your WebSocket handler
-var webSocketHandler = new WebSocketHandler();
+// // Create an instance of your WebSocket handler
+// var webSocketHandler = new WebSocketHandler();
 
-// Map the WebSocket endpoint
-app.Map("/ws", async context =>
-{
-    await webSocketHandler.HandleWebSocket(context);
-});
+// // Map the WebSocket endpoint
+// app.Map("/ws", async context =>
+// {
+//     await webSocketHandler.HandleWebSocket(context);
+// });
 
-// Start cleanup task for disconnected clients
-_ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
+// // Start cleanup task for disconnected clients
+// _ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
 ///////////////////////////////////////////////////////////////////////////
 
 app.UseSession(); // Add the session middleware

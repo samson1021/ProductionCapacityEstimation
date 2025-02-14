@@ -81,7 +81,7 @@
                         return `
                             <button class="btn bg-purple btn-sm" onclick="showTaskDetails('${data}')">Details</button>
                             ${updateButton}
-                            <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}')">Reassign</button>
+                            <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</button>
                             <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${data}')">Delete</button>
                             @* ${completeButton} *@
                         `;
@@ -136,13 +136,16 @@
     }
 
     // Open reassign modal 
-    function openReassignModal(taskId) {
+    function openReassignModal(taskId, username, userId) {
         currentTaskId = taskId;
         $.get('/TaskManagment/GetRMs', function (users) {
             const dropdown = $('#reassignUserDropdown');
             dropdown.empty();
+            dropdown.append($('<option></option>').val(userId).text(username));
             users.forEach(user => {
-                dropdown.append($('<option></option>').val(user.Id).text(user.Name));
+                if(user.Id !== userId){
+                    dropdown.append($('<option></option>').val(user.Id).text(user.Name));
+                }
             });
             var reassignModalEl = document.getElementById('reassignModal');
             var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);

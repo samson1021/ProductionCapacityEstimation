@@ -8,10 +8,10 @@ namespace mechanical.Models.Entities
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public required string Message { get; set; }
-        public required string Status { get; set; }
-        public required bool IsRead { get; set; }
+        public required string Type { get; set; }
+        public string Link { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string URL { get; set; } = string.Empty;
+        public required bool IsRead { get; set; }
 
         public virtual CreateUser? User { get; set; }
     }

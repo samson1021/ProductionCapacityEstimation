@@ -76,47 +76,11 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
         <script src="~/lib/chart.js/chart.min.js"></script>
         <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    @* <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script> *@
+        @* <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script> *@
         <!---->
-
-        <script>                    
-            // SignalR for real-time notifications
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/notificationHub")
-                .build();
-
-            connection.start()
-                .then(() => console.log("Connected to SignalR Hub"))
-                .catch(err => console.error("SignalR Connection Error:", err));
-
-            connection.on("ReceiveNotification", function (message) {
-                // Show Alert
-                alert("🔔 Notification: " + message);
-
-                // Show Toast Notification
-                toastr.success(message, "New Task Shared");
-                toastr.info(message, "New Notification");
-
-                // Update Dashboard Notifications
-                let notificationPanel = document.getElementById("notification-list");
-                let newItem = document.createElement("li");
-                newItem.innerText = message;
-                notificationPanel.prepend(newItem);
-
-                // Update Bell Icon Counter
-                let counter = document.getElementById("notification-count");
-                let count = parseInt(counter.innerText) || 0;
-                counter.innerText = count + 1;
-            });
-
-            document.getElementById("notification-list").addEventListener("click", function (event) {
-                let notificationId = event.target.getAttribute("data-id");
-                if (notificationId) {
-                    fetch(`/api/notifications/markAsRead/${notificationId}`, { method: "POST" })
-                        .then(() => event.target.classList.add("text-muted"));
-                }
-            });
-        </script>
+                    
+        <script src="~/js/notifications.js"></script>
+            
 
         @await RenderSectionAsync("Scripts", required: false)        
     </body>

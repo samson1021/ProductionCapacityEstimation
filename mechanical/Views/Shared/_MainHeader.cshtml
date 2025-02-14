@@ -43,16 +43,16 @@
                 </form>
             </div>
         </li>
-
+        
         <li class="nav-item dropdown">
-            <button class="btn btn-light position-relative" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                🔔
-                <span id="notification-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle">0</span>
+            <button class="btn btn-light position-relative" id="notificationDropdown" data-bs-toggle="dropdown">
+                <i class="bi bi-bell"></i>🔔
+                <span id="notificationBadge" class="badge bg-danger position-absolute top-0 start-100 translate-middle">0</span>
             </button>
-            <ul id="notification-list" class="dropdown-menu dropdown-menu-end">
-                <span class="dropdown-item dropdown-header">0 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <li class="dropdown-item" id="no-notifications">No new notifications</li>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                <li class="dropdown-header">Notifications</li>
+                <div id="notificationItems"></div>
+                <li><a class="dropdown-item text-center" href="/Notifications">View All</a></li>
             </ul>
         </li>
 
