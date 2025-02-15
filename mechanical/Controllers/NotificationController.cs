@@ -116,7 +116,8 @@ namespace mechanical.Controllers
             return Ok();
         }
 
-        [HttpPost("MarkAllAsRead")]
+        // [HttpPost("MarkAllAsRead")]
+        [HttpGet]
         public async Task<IActionResult> MarkAllAsRead()
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);

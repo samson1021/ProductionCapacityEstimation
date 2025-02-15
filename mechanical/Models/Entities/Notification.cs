@@ -1,5 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace mechanical.Models.Entities
 {
     // public class Notification
@@ -18,6 +22,7 @@ namespace mechanical.Models.Entities
         public required bool IsRead { get; set; }
 
         [Required]
+        [JsonPropertyName("CreatedAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual CreateUser? User { get; set; }

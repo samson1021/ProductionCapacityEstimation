@@ -85,9 +85,7 @@ namespace mechanical.Services.NotificationService
                     _cbeContext.SaveChangesAsync(),
                     _notificationHub.Clients.User(userId.ToString()).SendAsync("ReceiveNotification", new
                     {
-                        message,
-                        link,
-                        id = notification.Id
+                        message, link, notification.Id
                     })
                 );
             }
@@ -118,9 +116,7 @@ namespace mechanical.Services.NotificationService
             var tasks = userIds.Select(userId =>
                 _notificationHub.Clients.User(userId.ToString()).SendAsync("ReceiveNotification", new
                 {
-                    message,
-                    link,
-                    id = notifications.First(n => n.UserId == userId).Id
+                    message, link, Id = notifications.First(n => n.UserId == userId).Id
                 })
             );
             await Task.WhenAll(tasks);

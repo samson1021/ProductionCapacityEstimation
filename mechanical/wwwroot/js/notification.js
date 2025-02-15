@@ -1,18 +1,44 @@
-// Helper: Get relative time (returns a string like "2 minutes ago")
-function getRelativeTime(date) {
-    const now = new Date();
-    const diff = now - date;
-    if (isNaN(diff)) return "Unknown time";
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+// Helper
+// function convertToUTC(date) {
+//     return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+//                      date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+// }
 
-    if (seconds < 60) return "Just now";
-    if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-    return `${days} day${days > 1 ? "s" : ""} ago`;
+function getRelativeTime(date) {
+    if (typeof date !== "string" || !date.trim()) return "Unknown time";
+    if (!date.endsWith("Z")) date += "Z";
+
+    date = new Date(date);
+    if (!(date instanceof Date)) return "Unknown time";
+    if (isNaN(date)) return "Invalid date";
+
+    // date = (new Date(Date.parse(date)))
+    const now = (new Date());
+    const diff = date - now;
+    // const diff = convertToUTC(date) - convertToUTC(now);
+
+    const seconds = Math.floor(Math.abs(diff) / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (diff > 0) {
+
+        if (seconds < 60) return "In a few seconds";
+        if (minutes < 60) return `In ${minutes} minute${minutes > 1 ? "s" : ""}`;
+        if (hours < 24) return `In ${hours} hour${hours > 1 ? "s" : ""}`;
+        if (days === 1) return "Tomorrow";
+        return `In ${days} day${days > 1 ? "s" : ""}`;
+    } else {
+
+        if (seconds < 60) return "Just now";
+        if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+        if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+        if (days === 1) return "Yesterday";
+        return `${days} day${days > 1 ? "s" : ""} ago`;
+    }
 }
+
 
 // SignalR connection (using negotiation to allow fallback transports)
 const token = localStorage.getItem("authToken"); // Must be set at login
@@ -39,21 +65,27 @@ connection.on("ReceiveNotification", (data) => {
 
     // Prepend new notification (with fade-in)
     const notificationList = document.getElementById("notificationItems");
-    const newNotificationHTML = addNotification(data);
+    const newNotificationHTML = addNotification({
+        Id: data.id,
+        Message: data.message,
+        Link: data.link,
+        IsRead: false,
+        CreatedAt: new Date().toISOString()
+    });
     const tempContainer = document.createElement("div");
     tempContainer.innerHTML = newNotificationHTML;
     const newElement = tempContainer.firstElementChild;
     newElement.style.display = "none";
     notificationList.insertAdjacentElement("afterbegin", newElement);
     newElement.style.display = "";
-    $(newElement).hide().fadeIn(500); // Using jQuery here only for fadeIn
+    $(newElement).hide().fadeIn(500);
 
     // Display a toast
-    toastr.info("🔔 " + message);
+    toastr.info("🔔 " + data.message);
 });
 
 function addNotification(data) {
-    const relativeTime = getRelativeTime(new Date(data.CreatedAt));
+    const relativeTime = getRelativeTime(data.CreatedAt);
     const unreadClass = data.IsRead ? "" : "unread-notification";
     return `
         <li class="dropdown-item notification-item ${unreadClass}">
@@ -88,6 +120,7 @@ document.addEventListener("click", function (event) {
 });
 
 function updateNotificationCount(delta) {
+
     const badge = document.getElementById("notificationBadge");
     let maxCount = 9;
     let count = Math.max(0, (parseInt(badge.textContent) || 0) + delta)

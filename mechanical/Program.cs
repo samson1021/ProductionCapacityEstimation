@@ -14,7 +14,10 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 
+
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
@@ -85,16 +88,20 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddSession();
 
-builder.Services.AddControllers()
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.IgnoreNullValues = true;
+    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.PropertyNamingPolicy = null; // For Newtonsoft.Json
-            options.JsonSerializerOptions.IgnoreNullValues = true; // Ignore null values
-            options.JsonSerializerOptions.WriteIndented = true; // Indent the JSON output
-            // Add any other serialization options you need
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-        });
 ////////////////////
 builder.Services.AddSwaggerGen();
 ////////////////////
