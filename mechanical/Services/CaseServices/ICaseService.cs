@@ -2,7 +2,6 @@
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.DashboardDto;
 using mechanical.Models.Dto.TaskDto;
-//using mechanical.Models.Dto.TaskDto;
 using mechanical.Models.Entities;
 
 namespace mechanical.Services.CaseServices
@@ -41,6 +40,7 @@ namespace mechanical.Services.CaseServices
         Task<IEnumerable<CaseDto>> GetRmPendingCases(Guid userId);
 
 
+        Task<Case> GetCaseById(Guid caseId);
         Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string Status = null, int? Limit = null);
         Task<IEnumerable<CaseDto>> GetAssignedCases(Guid userId, string Status = null, int? Limit = null);
         Task<IEnumerable<CaseDto>> GetSharedCases(Guid userId, string Status = null, int? Limit = null);

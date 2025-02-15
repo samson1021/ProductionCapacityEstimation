@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-using Newtonsoft.Json;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
@@ -150,13 +148,13 @@ namespace mechanical.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RevokeTask(Guid id)
+        public async Task<IActionResult> DeleteTask(Guid id)
         {
             try
             {
-                var response = await _taskManagmentService.RevokeTask(base.GetCurrentUserId(), id);
+                var response = await _taskManagmentService.DeleteTask(base.GetCurrentUserId(), id);
                 return Json(new { success=response.Success, message = response.Message });
-                // return Json(new { success = true, message = "Task revoked successfully." });
+                // return Json(new { success = true, message = "Task deleted successfully." });
             }
             catch (ArgumentException ex)
             {

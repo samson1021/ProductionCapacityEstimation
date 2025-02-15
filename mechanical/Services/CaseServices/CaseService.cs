@@ -773,7 +773,13 @@ namespace mechanical.Services.CaseServices
 
 
 
-        
+        public async Task<Case> GetCaseById(Guid caseId)
+        {
+            return await _cbeContext.Cases
+                .Include(c => c.CaseOriginator)
+                    .ThenInclude(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == caseId);
+        }        
 
         public async Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string status = null, int? Limit = null)
         {
@@ -795,12 +801,6 @@ namespace mechanical.Services.CaseServices
 
         public async Task<IEnumerable<CaseDto>> GetSharedCases(Guid userId, string status = null, int? Limit = null)
         {
-            
-            // var unfilteredQuery = _cbeContext.TaskAssignments
-                                            // .AsNoTracking()
-                                            // .Include(ta => ta.Task)
-                                            //     .ThenInclude(t => t.Case)
-                                            // .Where(ta => ta.UserId == userId);
             var query = _cbeContext.TaskManagments
                                 .AsNoTracking()
                                 .Include(t => t.Case)
@@ -826,11 +826,6 @@ namespace mechanical.Services.CaseServices
 
         public async Task<IEnumerable<CaseDto>> GetAssignedCases(Guid userId, string status = null, int? Limit = null)
         {
-            // var unfilteredQuery = _cbeContext.TaskAssignments
-                                            // .AsNoTracking()
-                                            // .Include(ta => ta.Task)
-                                            //     .ThenInclude(t => t.Case)
-                                            // .Where(ta => ta.UserId == userId);
             var query = _cbeContext.TaskManagments
                                 .AsNoTracking()
                                 .Include(t => t.Case)

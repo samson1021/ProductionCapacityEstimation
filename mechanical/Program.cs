@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +9,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication;
+
 
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
@@ -55,11 +63,9 @@ using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
-using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
-using Microsoft.AspNetCore.Authentication;
 using mechanical.Services.TaskManagmentService;
 using mechanical.Services.NotificationService;
 /////////////
@@ -82,16 +88,20 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddSession();
 
-builder.Services.AddControllers()
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.IgnoreNullValues = true;
+    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.PropertyNamingPolicy = null; // For Newtonsoft.Json
-            options.JsonSerializerOptions.IgnoreNullValues = true; // Ignore null values
-            options.JsonSerializerOptions.WriteIndented = true; // Indent the JSON output
-            // Add any other serialization options you need
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-        });
 ////////////////////
 builder.Services.AddSwaggerGen();
 ////////////////////
@@ -149,7 +159,6 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
 
 builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
 
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,6 +166,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -177,13 +187,51 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Set the expiration time for the cookie
     options.SlidingExpiration = true; // Extend the expiration time with each request
+})
+.AddJwtBearer("Bearer", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt")["Key"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
+            {
+                context.Token = accessToken;
+            }
+            
+            return Task.CompletedTask;
+        }
+    };
 });
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
+
 //builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+// Add SignalR
+builder.Services.AddSignalR(options => {
+    options.EnableDetailedErrors = true;
+});
+
+// Register the custom IUserIdProvider
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 var app = builder.Build();
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
@@ -213,21 +261,21 @@ if (!app.Environment.IsDevelopment())
 }
 
 /////////////////////////////// Chat web sockets //////////////////////////
-// Enable WebSocket support
-app.UseWebSockets();
+// // Enable WebSocket support
+// app.UseWebSockets();
 
 
-// Create an instance of your WebSocket handler
-var webSocketHandler = new WebSocketHandler();
+// // Create an instance of your WebSocket handler
+// var webSocketHandler = new WebSocketHandler();
 
-// Map the WebSocket endpoint
-app.Map("/ws", async context =>
-{
-    await webSocketHandler.HandleWebSocket(context);
-});
+// // Map the WebSocket endpoint
+// app.Map("/ws", async context =>
+// {
+//     await webSocketHandler.HandleWebSocket(context);
+// });
 
-// Start cleanup task for disconnected clients
-_ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
+// // Start cleanup task for disconnected clients
+// _ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
 ///////////////////////////////////////////////////////////////////////////
 
 app.UseSession(); // Add the session middleware
@@ -275,5 +323,7 @@ app.UseEndpoints(endpoints =>
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

@@ -46,3 +46,85 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+/* Purple and Golden Theme */
+#notificationDropdown {
+  background-color: #6f42c1;  /* Purple */
+  border: none;
+  color: #f1c40f;           /* Golden */
+}
+
+#notificationDropdown:hover {
+  background-color: #5936a2;
+}
+
+.dropdown-menu {
+  background-color: #f8f9fa;
+  border: 1px solid #6f42c1;
+}
+
+.dropdown-header {
+  background-color: #6f42c1;
+  color: #f1c40f;
+  font-weight: bold;
+}
+
+.notification-item {
+  border-bottom: 1px solid #e9ecef;
+  padding: 10px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Highlight unread notifications */
+.unread-notification {
+  background-color: #fff3cd; /* A light golden shade */
+  font-weight: bold;
+}
+
+/* Golden text for links */
+.text-golden {
+  color: #f1c40f;
+}
+
+/* Badge styling */
+.badge {
+  background-color: #f1c40f;  /* Golden badge */
+  color: #6f42c1;           /* Purple text in badge */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Spinner centering */
+#notificationItems .spinner-border {
+  margin: 10px auto;
+}
+
+/* Base styles for all links */
+a {
+  text-decoration: none;
+  color: #007acc;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover state: Change color and add a slight zoom effect */
+a:hover {
+  color: #005f99;
+  transform: scale(1.05);
+}
+
+/* Focus state: Add a visible outline for accessibility */
+a:focus {
+  outline: 3px solid #007acc;
+  outline-offset: 3px;
+}
+
+/* Active state: Slight press-down effect and darker color */
+a:active {
+  transform: scale(0.95);
+  color: #003f5c;
+}

@@ -1,41 +1,41 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using mechanical.Data;
-using mechanical.Models.Entities;
+using System.Security.Claims;
 
 namespace mechanical.Hubs
 {
+    [Authorize]
     public class NotificationHub : Hub
     {
-        private readonly CbeContext _context;
 
-        public NotificationHub(CbeContext context)
+        public async Task SendNotification(string message, Guid userId = default)
         {
-            _context = context;
-        }
-
-        public async Task SendNotification(Guid userId, string message)
-        {
-            var notification = new Notification
+            if (userId == Guid.Empty)
             {
-                UserId = userId,
-                Message = message,
-                Status = "New",
-                IsRead = false
-            };
-
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
-
-            await Clients.User(userId.ToString()).SendAsync("ReceiveNotification", message);
-        }
-        public async Task MarkAsRead(Guid notificationId)
-        {
-            var notification = await _context.Notifications.FindAsync(notificationId);
-            if (notification != null)
-            {
-                notification.IsRead = true;
-                await _context.SaveChangesAsync();
+                await Clients.All.SendAsync("ReceiveNotification", message);
             }
+            else
+            {
+                await Clients.User(userId.ToString()).SendAsync("ReceiveNotification", message);
+            }
+        }
+        
+        public override async Task OnConnectedAsync()
+        {
+            if (Context.User?.Identity?.IsAuthenticated != true)
+            {
+                return;
+            }
+
+            var userId = Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return;
+            }
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+            await base.OnConnectedAsync();
         }
     }
 }

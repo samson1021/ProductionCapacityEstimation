@@ -7,10 +7,10 @@ namespace mechanical.Models.Dto.NotificationDto
     public class NotificationPostDto
     {
         public Guid UserId { get; set; }
-        public Guid TaskId { get; set; }
         public required string Message { get; set; }
-        public required string Status { get; set; } = "New";
-        public required bool IsRead { get; set; } = false;
-        public string URL { get; set; } = string.Empty;
+        public required string Type { get; set; }
+        public string? Link { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public required bool IsRead { get; set; }
     }
 }

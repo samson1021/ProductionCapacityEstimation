@@ -483,7 +483,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
+                _logger.LogError(ex, "Error fetching production capacity valuation.");
+                // _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
                 throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
             }
         }
@@ -525,7 +526,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
+                _logger.LogError(ex, "Error fetching production capacity valuation.");
+                // _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
                 throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
             }
         }                   
