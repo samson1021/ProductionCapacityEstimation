@@ -7,6 +7,19 @@ namespace mechanical.Hubs
     [Authorize]
     public class NotificationHub : Hub
     {
+
+        public async Task SendNotification(string message, Guid userId = default)
+        {
+            if (userId == Guid.Empty)
+            {
+                await Clients.All.SendAsync("ReceiveNotification", message);
+            }
+            else
+            {
+                await Clients.User(userId.ToString()).SendAsync("ReceiveNotification", message);
+            }
+        }
+        
         public override async Task OnConnectedAsync()
         {
             if (Context.User?.Identity?.IsAuthenticated != true)

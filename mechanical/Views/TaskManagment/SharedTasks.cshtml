@@ -1,5 +1,3 @@
-@using System
-@model mechanical.Models.Dto.TaskManagmentDto.ShareTasksDto
 @{
     ViewData["Title"] = "Task Management";
 }
@@ -7,7 +5,7 @@
 <div class="container mt-4">
     <h2 class="mb-4">Shared Tasks</h2>
     
-    <!-- Filter and Share Task Button -->
+    <!-- Filter and Share Case Button -->
     <div class="row mb-3">
         <div class="col-md-3">
             <div class="input-group">
@@ -27,8 +25,8 @@
         </div>
 
         <div class="col-md-9 text-end">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareTaskModal">
-                Share New Task
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareCaseModal">
+                Share Case
             </button>
         </div>
     </div>
@@ -52,81 +50,42 @@
     </table>
 </div>
 
-<!-- Share Task Modal -->
-<div class="modal fade" id="shareTaskModal" tabindex="-1" aria-labelledby="shareTaskModalLabel" aria-hidden="true">
+<!-- Share Case Modal -->
+<div class="modal fade" id="shareCaseModal" tabindex="-1" aria-labelledby="shareCaseModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-3 shadow">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="shareTaskModalLabel">Share New Task</h5>
+                <h5 class="modal-title" id="shareCaseModalLabel">Share Case</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="shareTasksForm">
-                    @Html.AntiForgeryToken()
-                    <div class="mb-3">
-                        <label for="CaseId" class="form-label">Case List</label>
-                        <select class="form-control" id="CaseId" asp-for="CaseId" required>
-                            <option value="">-- Select Case --</option>
-                        </select>
-                        <span asp-validation-for="CaseId" class="text-danger"></span>
-                        <div class="invalid-feedback">Please select a case.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="TaskName" class="form-label">Task List</label>
-                        <select class="form-control" id="TaskName" asp-for="TaskName" required>
-                            <option value="">-- Select Task --</option>
-                            <option value="All">All</option>
-                            <option value="Collateral Addition Only">Collateral Addition Only</option>
-                            <option value="Case Follow">Case Follow</option>
-                            <option value="Report Generation">Report Generation</option>
-                        </select>
-                        <span asp-validation-for="TaskName" class="text-danger"></span>
-                        <div class="invalid-feedback">Please select a task.</div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="form-label">Relation Managers</label>
-                        <select class="form-control select2" asp-for="SelectedRMs" required multiple>
-                            <option value="" disabled>Select RMs</option>
-                        </select>
-                        <span asp-validation-for="SelectedRMs" class="text-danger"></span>
-                        <div class="invalid-feedback">Please select at least one relations manager.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="Deadline" class="form-label">Deadline</label>
-                        <input type="date" value='@DateTime.Now.ToString("yyyy-MM-dd")' class="form-control" id="Deadline" asp-for="Deadline" required>
-                        <span asp-validation-for="Deadline" class="text-danger"></span>
-                        <div class="invalid-feedback">Please select a deadline. Deadline cannot be earlier than today.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="PriorityType" class="form-label">Priority</label>
-                        <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
-                            <option value="">-- Select Priority Type --</option>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                            <option value="Urgent">Urgent</option>
-                        </select>
-                        <span asp-validation-for="PriorityType" class="text-danger"></span>
-                        <div class="invalid-feedback">Please select a priority type.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="Reason" class="form-label">Reason for Task Sharing</label>
-                        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
-                        <span asp-validation-for="SharingReason" class="text-danger"></span>
-                        <div class="invalid-feedback">Please provide a reason for task sharing.</div>
-                    </div>
-                </form>
+            <div class="modal-body" id="shareContent">
+                @await Html.PartialAsync("_shareTaskPartial")
             </div>
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" id="shareTaskButton">
+                <button type="submit" class="btn btn-primary" id="shareCaseButton">
                     <span id="shareSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                    Share Task
+                    Share Case
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Task Modal -->
+<div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="updateTaskModalLabel">Update Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="updateContent"></div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="updateTaskButton">
+                    <span id="updateSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    Save Changes
                 </button>
             </div>
         </div>
@@ -206,33 +165,11 @@
     </div>
 </div>
 
-<!-- Update Task Modal -->
-<div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-3 shadow">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="updateTaskModalLabel">Update Task</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="updateContent"></div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="updateTaskButton">
-                     @* onclick="submitTaskUpdate() *@
-                    <span id="updateSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                    Save Changes
-                </button>
-
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("_taskSharingScriptPartial");
+        await Html.RenderPartialAsync("_sharedTasksScriptPartial");
     }
 }
 

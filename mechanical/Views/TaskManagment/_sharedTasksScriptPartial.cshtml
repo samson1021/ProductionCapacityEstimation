@@ -33,7 +33,7 @@
                     data: null,
                     render: function (data) {
                         return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
-                               ((data.TaskStatus !== "New") ? ' disabled' : '') + '>'; 
+                                ((data.TaskStatus !== "New") ? ' disabled' : '') + '>'; 
                     }
                 },
                 {
@@ -63,9 +63,17 @@
                         var date = stripTime(new Date(data));
                         var formatted = date.toISOString().split('T')[0];
                         var today = stripTime(new Date());
-                        // today.setHours(0, 0, 0, 0);
                         var diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
-                        var countdown = diffDays <= 3 && diffDays >= 0 ? `<br/><small class="text-danger">Due in ${diffDays} day(s)</small>` : "";
+                        // var countdown = diffDays <= 3 && diffDays >= 0 ? `<br/><small class="text-danger">Due in ${diffDays} day(s)</small>` : "";
+                        
+                        var countdown = "";
+                        if (diffDays < 0) {
+                            countdown = `<br/><small class="text-danger">Overdue by ${Math.abs(diffDays)} day(s)</small>`;
+                        } else if (diffDays === 0) {
+                            countdown = `<br/><small class="text-danger">Due today</small>`;
+                        } else if (diffDays <= 3) {
+                            countdown = `<br/><small class="text-warning">Due in ${diffDays} day(s)</small>`;
+                        }
                         return formatted + countdown;
                     }
                 },
@@ -284,9 +292,9 @@
         });
 
         // Deadline validation for Share Task form before submission
-        $("#shareTaskButton").click(function (e) {
+        $("#shareCaseButton").click(function (e) {
             e.preventDefault();
-            var form = $("#shareTasksForm");
+            var form = $("#shareCaseForm");
 
             // Validate form controls first
             if (form[0].checkValidity() === false) {
@@ -295,7 +303,7 @@
             }
 
             // Validate deadline field (must be today or later)
-            var deadlineInput = $("#Deadline");
+            var deadlineInput = $("#shareDeadline");
             var deadline = stripTime(new Date(deadlineInput.val()));
             var today = stripTime(new Date());
             @* today.setHours(0, 0, 0, 0); *@
@@ -317,7 +325,7 @@
             }
 
             // Disable submit button and show spinner
-            $("#shareTaskButton").prop("disabled", true);
+            $("#shareCaseButton").prop("disabled", true);
             $("#shareSpinner").removeClass("d-none");
             
             $.ajax({
@@ -327,13 +335,14 @@
                 success: function (response) {
                     if (response.success) {
                         toastr.success(response.message, "Success");
-                        loadSharedTasks();
                         form[0].reset();
                         form.removeClass("was-validated");
-                        var shareTaskModalEl = document.getElementById('shareTaskModal');
-                        var shareTaskModal = bootstrap.Modal.getOrCreateInstance(shareTaskModalEl);
-                        shareTaskModal.hide();
                         $('.select2').val(null).trigger('change');
+                        var shareCaseModalEl = document.getElementById('shareCaseModal');
+                        var shareCaseModal = bootstrap.Modal.getOrCreateInstance(shareCaseModalEl);
+                        shareCaseModal.hide();
+                        shareCaseModalEl.hide();
+                        loadSharedTasks();
                     } else {
                         toastr.error(response.message, "Error occurred when sharing Task");
                     }
@@ -342,7 +351,7 @@
                     toastr.error("An error occurred while submitting the form.", "Error");
                 },
                 complete: function () {
-                    $("#shareTaskButton").prop("disabled", false);
+                    $("#shareCaseButton").prop("disabled", false);
                     $("#shareSpinner").addClass("d-none");
                 }
             });
