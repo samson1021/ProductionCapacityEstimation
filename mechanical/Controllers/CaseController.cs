@@ -628,6 +628,14 @@ namespace mechanical.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetMyCases()
+        {
+            var cases = await _caseService.GetMyCases(base.GetCurrentUserId());
+            var result = cases.Select(c => new { Id = c.Id, CaseNo = c.CaseNo });
+            return Json(result);
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> MyCase(Guid Id)
         //{

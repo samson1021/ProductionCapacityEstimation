@@ -6,20 +6,14 @@ header {
 
 a {
     text-decoration: none;
-    /* color: #007acc; */
     font-weight: 500;
     transition: color 0.3s ease, transform 0.2s ease;
 }
 
-/* a:hover {
-    color: #005f99;
+a:hover {
+    background-color: #bdc4bd;
     transform: scale(1.05);
-} */
-
-/* a:focus {
-    outline: 3px solid #007acc;
-    outline-offset: 3px;
-} */
+}
 
 a:active {
     transform: scale(0.95);
@@ -34,9 +28,9 @@ a:active {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* #notificationDropdown:hover {
+#notificationDropdown:hover {
     color: #5c5b5e;
-} */
+}
 
 #notificationDropdown:active {
     transform: scale(0.95);
@@ -44,11 +38,11 @@ a:active {
 
 /* Dropdown Menu */
 .dropdown-menu {
-    background-color: #d9e1e9; /* White */
-    border: 1px solid #9ea0a1; /* Light Gray */
+    background-color: #d9e1e9;
+    border: 1px solid #9ea0a1;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 300px; /* Fixed width for consistency */
+    width: 300px;
     padding: 0;
     overflow: hidden;
 }
@@ -66,9 +60,9 @@ a:active {
     transition: background-color 0.3s ease;
 }
 
-/* .dropdown-header:hover {
+.dropdown-header:hover {
     background-color: #f8f9fa;
-} */
+}
 
 /* Links in dropdown */
 .dropdown-header a {
@@ -98,26 +92,29 @@ a:active {
 
 /* Notification Items */
 .notification-item {
-    border-bottom: 1px solid #e9ecef; /* Light Gray */
+    border-bottom: 1px solid #e9ecef;
     padding: 12px 16px;
     animation: fadeIn 0.5s ease-in-out;
     transition: background-color 0.3s ease;
 }
 
 .notification-item:last-child {
-    border-bottom: none; /* Remove border for the last item */
+    border-bottom: none;
 }
 
-/* .notification-item:hover {
+.notification-item:hover {
     background-color: #f8f9fa;
-} */
+}
 
 /* Unread Notifications */
 .unread-notification {
-    background-color: #e9f5ff; /* Light Blue */
+    background-color: #e9f5ff;
     font-weight: bold;
 }
 
+.badge {
+    background-color: #f1c40f;
+}
 /* Badge (Notification Count) */
 .navbar-badge {
     background-color: #dc3545;
@@ -141,16 +138,16 @@ a:active {
     text-overflow: ellipsis;
     max-width: 100%;
 }
-
-/* .notification-item a:hover {
+/* 
+.notification-item a:hover {
     color: #005f99;
-    ransform: scale(1.05);
+    transform: scale(1.05);
 } */
 
-/* .notification-item a:focus {
+.notification-item a:focus {
     outline: 3px solid #007bff;
     outline-offset: 3px;
-} */
+}
 
 .notification-item a:active {
     transform: scale(0.95);
@@ -158,8 +155,8 @@ a:active {
 }
 
 #notificationItems {
-    max-height: 300px; /* Scrollable height */
-    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 300px;
+    overflow-y: auto;
     padding: 12px;
 }
 
@@ -172,13 +169,13 @@ a:active {
 /* Footer Links */
 .dropdown-item {
     padding: 8px 12px;
-    color: #6f42c1; /* Purple */
+    color: #6f42c1;
     transition: background-color 0.3s ease;
 }
 
-/* .dropdown-item:hover {
+.dropdown-item:hover {
     background-color: #f8f9fa;
-} */
+}
 
 .border-left {
     border-left: 1px solid #e0e0e0;

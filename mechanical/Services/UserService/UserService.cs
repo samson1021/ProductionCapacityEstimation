@@ -40,8 +40,8 @@ namespace mechanical.Services.UserService
         {
             var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).Include(res => res.District).FirstOrDefaultAsync(res => res.Id == Id);             
             return _mapper.Map<ReturnUserDto>(user);
-        }       
-        public async Task<IEnumerable<ReturnUserDto>> GetRMs(Guid userId)
+        }
+        public async Task<IEnumerable<ReturnUserDto>> GetPeerRMs(Guid userId)
         {
             var user = await _cbeContext.CreateUsers
                                      .AsNoTracking()

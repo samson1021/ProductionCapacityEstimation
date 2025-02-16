@@ -14,7 +14,7 @@
         $('.select2').select2({ allowClear: true });
 
         // Populate RMs dropdown (for Share Task form)
-        $.get("/TaskManagment/GetRMs", function (data) {
+        $.get("/UserManagment/GetPeerRMs", function (data) {
             var rmDropdown = $("#SelectedRMs");
             rmDropdown.empty();
             $.each(data, function (index, item) {
@@ -65,6 +65,8 @@
                 type: 'POST',
                 data: form.serialize(),
                 success: function (response) {
+                    $("#shareCaseButton").prop("disabled", false);
+                    $("#shareSpinner").addClass("d-none");
                     if (response.success) {
                         toastr.success(response.message, "Success");
                         form[0].reset();
@@ -73,7 +75,6 @@
                         var shareCaseModalEl = document.getElementById('shareCaseModal');
                         var shareCaseModal = bootstrap.Modal.getOrCreateInstance(shareCaseModalEl);
                         shareCaseModal.hide();
-                        shareCaseModalEl.hide();
                     } else {
                         toastr.error(response.message, "Error occurred when sharing Task");
                     }
