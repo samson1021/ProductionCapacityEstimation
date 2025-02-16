@@ -146,10 +146,10 @@
     // Open reassign modal 
     function openReassignModal(taskId, username, userId) {
         currentTaskId = taskId;
-        $.get('/TaskManagment/GetRMs', function (users) {
+        $.get('/UserManagment/GetPeerRMs', function (users) {
             const dropdown = $('#reassignUserDropdown');
             dropdown.empty();
-            dropdown.append($('<option></option>').val(userId).text(username));
+            @* dropdown.append($('<option></option>').val(userId).text(username)); *@
             users.forEach(user => {
                 if(user.Id !== userId){
                     dropdown.append($('<option></option>').val(user.Id).text(user.Name));
@@ -273,7 +273,7 @@
         });
 
         // Populate Cases dropdown
-        $.get("/TaskManagment/GetMyCases", function (data) {
+        $.get("/Case/GetMyCases", function (data) {
             var caseDropdown = $("#CaseId");
             caseDropdown.empty().append('<option value="">-- Select Case --</option>');
             $.each(data, function (index, item) {
@@ -282,7 +282,7 @@
         });
 
         // Populate RMs dropdown (for Share Task form)
-        $.get("/TaskManagment/GetRMs", function (data) {
+        $.get("/UserManagment/GetPeerRMs", function (data) {
             var rmDropdown = $("#SelectedRMs");
             rmDropdown.empty();
             $.each(data, function (index, item) {
@@ -341,8 +341,16 @@
                         var shareCaseModalEl = document.getElementById('shareCaseModal');
                         var shareCaseModal = bootstrap.Modal.getOrCreateInstance(shareCaseModalEl);
                         shareCaseModal.hide();
-                        shareCaseModalEl.hide();
                         loadSharedTasks();
+                        
+                        @* $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '');
+                        shareCaseModalEl.on('hidden.bs.modal', function () {
+                            $('.modal-backdrop').remove();
+                            $('body').removeClass('modal-open');
+                            $('body').css('padding-right', '');
+                        }); *@
                     } else {
                         toastr.error(response.message, "Error occurred when sharing Task");
                     }
@@ -373,7 +381,6 @@
             var deadlineInput = $("#updateDeadline");
             var deadline = stripTime(new Date(deadlineInput.val()));
             var today = stripTime(new Date());
-            @* today.setHours(0, 0, 0, 0); *@
 
             if (deadline < today)  {
                 var errorMessage = "Deadline cannot be earlier than today.";
@@ -398,7 +405,7 @@
             $.ajax({
                 url: '/TaskManagment/UpdateTask',
                 type: 'POST',
-                data: $("#updateTaskForm").serialize(),
+                data: form.serialize(),
                 success: function(response) {
                     if (response.success) {
                         toastr.success(response.message, "Success");

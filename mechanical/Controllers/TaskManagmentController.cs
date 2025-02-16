@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 
-using mechanical.Data;
-using mechanical.Controllers;
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
-
-using mechanical.Services.CaseServices;
-using mechanical.Services.UserService;
 
 // [ApiController]
 // [Route("api/tasks")]
@@ -20,17 +15,11 @@ namespace mechanical.Controllers
     {
         private readonly ILogger<TaskManagmentController> _logger;
         private readonly ITaskManagmentService _taskManagmentService;
-        private readonly CbeContext _cbeContext;
-        private readonly ICaseService _caseService;
-        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         
-        public TaskManagmentController(IMapper mapper, ILogger<TaskManagmentController> logger, ITaskManagmentService taskManagmentService, ICaseService caseService, IUserService userService, CbeContext cbeContext)
+        public TaskManagmentController(IMapper mapper, ILogger<TaskManagmentController> logger, ITaskManagmentService taskManagmentService)
         {
             _taskManagmentService = taskManagmentService;
-            _cbeContext = cbeContext;
-            _caseService = caseService;
-            _userService = userService;
             _logger = logger;
             _mapper = mapper;
         }
@@ -57,13 +46,13 @@ namespace mechanical.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetSharedTask()
-        {
-            return View();
-        }
+        // public async Task<IActionResult> GetSharedTask()
+        // {
+        //     return View();
+        // }
 
         [HttpGet]
-        public async Task<IActionResult> GetSharedTasks()
+        public async Task<JsonResult> GetSharedTasks()
         {
             var tasks = await _taskManagmentService.GetSharedTasks(base.GetCurrentUserId());
             return Json(tasks);
@@ -108,22 +97,49 @@ namespace mechanical.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-        }        
-
-        [HttpGet]
-        public async Task<IActionResult> GetMyCases()
-        {
-            var cases = await _caseService.GetMyCases(base.GetCurrentUserId());
-            var result = cases.Select(c => new { Id = c.Id, CaseNo = c.CaseNo });
-            return Json(result);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRMs()
+        public async Task<IActionResult> UpdateTask(Guid id)
         {
-            var rms = await _userService.GetRMs(base.GetCurrentUserId());
-            var result = rms.Select(rm => new { Id = rm.Id, Name = rm.Name });
-            return Json(result);
+            try
+            {
+                var task = await _taskManagmentService.GetTask(base.GetCurrentUserId(), id);
+                if (task == null)
+                {
+                    return NotFound();
+                }
+
+                return PartialView("_updateTaskPartial", _mapper.Map<UpdateTaskDto>(task));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while fetching task details.");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTask(UpdateTaskDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new {  success=false, message = "Task is not updated successfully" });
+            }
+            try
+            {
+                if (dto.Deadline < DateTime.Today)
+                {
+                    return Json(new { success = false, message = "Deadline must be today or in the future." });
+                }
+
+                var response = await _taskManagmentService.UpdateTask(base.GetCurrentUserId(), dto);
+                return Json(new { success=response.Success, message = response.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -186,7 +202,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTask(Guid id)
+        public async Task<JsonResult> GetTask(Guid id)
         {
             var task = await _taskManagmentService.GetTask(base.GetCurrentUserId(), id);
             return Json(task);
@@ -208,49 +224,6 @@ namespace mechanical.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "An error occurred while completing the task." });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> UpdateTask(Guid id)
-        {
-            try
-            {
-                var task = await _taskManagmentService.GetTask(base.GetCurrentUserId(), id);
-                if (task == null)
-                {
-                    return NotFound();
-                }
-
-                return PartialView("_updateTaskPartial", _mapper.Map<UpdateTaskDto>(task));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while fetching task details.");
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTask(UpdateTaskDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new {  success=false, message = "Task is not updated successfully" });
-            }
-            try
-            {
-                if (dto.Deadline < DateTime.Today)
-                {
-                    return Json(new { success = false, message = "Deadline must be today or in the future." });
-                }
-
-                var response = await _taskManagmentService.UpdateTask(base.GetCurrentUserId(), dto);
-                return Json(new { success=response.Success, message = response.Message });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
             }
         }
     }
