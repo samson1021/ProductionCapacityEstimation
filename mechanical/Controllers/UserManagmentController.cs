@@ -162,28 +162,18 @@ namespace mechanical.Controllers
 
         }
         [AllowAnonymous]
-        
         public JsonResult GetRMUsers()
         {
-            //    var usersWithDistricts = dbContext.Users
-            //.Include(u => u.District) // Include the District navigation property
-            //.ToList();
-
-            //    return View(usersWithDistricts);
-            //var usersWithDistricts = _context.CreateUsers.Include(u => u.District).ToList();
-            // return Json(usersWithDistricts);
-
             var response = base.GetCurrentUserId();
             var role = _context.CreateUsers.Include(c => c.Role).Where(res => res.Id == response).FirstOrDefault();
             List<CreateUser> usersWithDistricts = new List<CreateUser>();
-            if (role.Name == "Relation Manager")
-            {
-                usersWithDistricts = _context.CreateUsers.Include(u => u.District).Include(c => c.Role).Where(res => res.Department == role.Department).ToList();
-            }
-            else
-            {
-                usersWithDistricts = _context.CreateUsers.Include(u => u.District).Include(c => c.Role).ToList();
-            }
+
+            usersWithDistricts = _context.CreateUsers
+               .Include(u => u.District)
+               .Include(c => c.Role)
+               .Where(res => (res.Department == role.Department && res.Role.Name == role.Role.Name))
+               .ToList();
+
             var usersData = usersWithDistricts.Select(u => new
             {
                 u.Name,
@@ -195,10 +185,11 @@ namespace mechanical.Controllers
                 u.Status,
                 u.Id
             });
-
             return Json(usersData);
         }
-         [AllowAnonymous]
+
+
+        [AllowAnonymous]
         
         public JsonResult GetUsers()
         {
