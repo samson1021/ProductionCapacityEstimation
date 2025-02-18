@@ -9,6 +9,5 @@ namespace mechanical.Models.Dto.TaskManagmentDto
         public string SharingReason { get; set; } = string.Empty;
         public DateTime Deadline { get; set; }
         public required string PriorityType { get; set; }
-       
     }
 }

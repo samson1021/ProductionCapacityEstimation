@@ -258,7 +258,7 @@ namespace mechanical.Services.TaskManagmentService
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
 
-        public async Task<IEnumerable<TaskManagmentReturnDto>> GetAssignedTasks(Guid userId)
+        public async Task<IEnumerable<TaskManagmentReturnDto>> GetReceivedTasks(Guid userId)
         {
             var tasks = await _cbeContext.TaskManagments.Include(t => t.Case).Include(t => t.CaseOrginator).Where(t => t.AssignedId==userId).ToListAsync();
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);

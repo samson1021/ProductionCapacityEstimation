@@ -488,20 +488,6 @@ namespace mechanical.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ReceivedCases()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetReceivedCases()
-        {
-            var myCase = await _caseService.GetRmReceivedCases(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
-        }
-
-
         [HttpGet]
         public IActionResult ReestimationCases()
         {
@@ -626,6 +612,18 @@ namespace mechanical.Controllers
             var caseSchedule = await _caseService.ApproveCaseTermination(Id);
             if (caseSchedule == null) { return BadRequest("Unable to update case Schdule"); }
             return Ok();
+        }
+
+        public async Task<IActionResult> ReceivedCases()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetReceivedCases()
+        {
+            var cases = await _caseService.GetReceivedCases(base.GetCurrentUserId());
+            return Json(cases);
         }
 
         [HttpGet]
