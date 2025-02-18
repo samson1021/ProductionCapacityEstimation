@@ -18,7 +18,7 @@
         fetch('/UserManagment/GetRMUsers')
             .then(response => response.json())
             .then(data => {
-                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Assignee');
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Relation Manager');
                 $('#CenterDropdown').append(selectOption);
                 data.forEach(function (user) {
                     var option = $('<option></option>').attr('value', user.Id).text(user.Name);
@@ -29,27 +29,24 @@
                 console.log('Error fetching District data:', error);
             });
 
-        $('#shareTaskButton').on('click', function () {            
+        $('#shareTaskButton').on('click', function () {
             var checkedCases = $('.purple-checkbox:checked');
             var selectedCaseIds = [];
             checkedCases.each(function () {
-
-                 var caseId = $(this).val(); // Get the value from the input               
+                var caseId = $(this).val(); // Get the value from the input
 
                 selectedCaseIds.push(caseId);
-                console.log("selectedCaseIds is " + selectedCaseIds);
             });
             if (selectedCaseIds.length === 0) {
                 toastr.error('Please select at least one case');
 
             } else {
                 $('#selectedCaseIds').val(selectedCaseIds.join(','));
-                console.log("selectedCaseIds is joind  " + selectedCaseIds.join(','));
                 $('#shareTaskModal').modal('show');
             }
         });
 
-      
+
         $('#selectAllCheckbox').on('click', function () {
             var isChecked = $(this).prop('checked');
             $('.purple-checkbox').prop('checked', isChecked);
@@ -59,55 +56,33 @@
             var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
-
         $('#shareTskForm').submit(function (e) {
             e.preventDefault();
-
-            var formData = new FormData(this);
-            const currentDate = stripTime(new Date());
-
-            var deadlineValue = $('#Deadline').val(); // Get the value
-            console.log("Deadline Input Value: ", deadlineValue);
-
-            var selectedDeadline;
-
-            if (deadlineValue) {
-                var parts = deadlineValue.split('-'); // Split the string
-                var selectedDeadline = new Date(parts[0], parts[1] - 1, parts[2]); // Create Date object
-            } 
-
-            console.log("Current Date: ", currentDate);
-            console.log("Selected Deadline: ", selectedDeadline);
-
-            $('#DeadlineError').text(''); // Clear previous errors
-
-           
-            // // Validate deadline
-            // if (stripTime(selectedDeadline) < currentDate) {
-            //     $('#DeadlineError').text("The deadline cannot be before today's date.");
-            //     return;
-            // }
-
-            $.ajax({
-                url: '/TaskManagment/ShareTask',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {                 
-                    $('#shareTaskModal').modal('hide');
-                    $('#shareTskForm')[0].reset();                   
-                    toastr.success("Task has been shared successfully.");
-
-                },
-                error: function (xhr) {
-                    var error = xhr.responseJSON;
-                    toastr.error(error.message || "An error occurred");
-                }
-            });
+            if (validateInput()) { // Check if validation passes
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '/TaskManagment/ShareTask',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        $('#shareTaskModal').modal('hide');
+                        $('#shareTskForm')[0].reset();
+                        $('.purple-checkbox').prop('checked', false); // Uncheck all checkboxes
+                        toastr.success("Task has been shared successfully.");
+                    },
+                    error: function (xhr) {
+                        var error = xhr.responseJSON;
+                        toastr.error(error.message || "An error occurred");
+                    }
+                });
+            } else {
+                toastr.error("Unable to share task successfully.");
+            }
         });
-        
-        
+
+
         //get shared Task
         $.ajax({
             url: '/TaskManagment/GetSharedTasks',
@@ -132,7 +107,7 @@
                                 var date = new Date(data);
                                 return date.toLocaleString();
                             }
-                        },                      
+                        },
                         // { data: 'AssignedId', width: '15%' },
                         { data: 'TaskName', width: '10%' },
                         { data: 'PriorityType', width: '15%' },
@@ -160,9 +135,103 @@
                 }).buttons().container().appendTo('#MySharedTask_wrapper .col-md-6:eq(0)');
             }
         });
-     });
+
+
+        // Validate function for the form
+        function validateInput() {
+            const currentDate = stripTime(new Date());
+            var selectedDeadline;
+            var deadlineValue = $('#Deadline').val(); // Get the value
+            var AssignedId = $('#CenterDropdown').val(); // Get the value
+            var TaskName = $('#TaskName').val(); // Get the value
+            var PriorityType = $('#PriorityType').val(); // Get the value
+            var SharingReason = $('#SharingReason').val(); // Get the value
+
+            // Clear previous errors
+            $('#DeadlineError').text('');
+            $('#AssignedIdError').text('');
+            $('#TaskNameError').text('');
+            $('#PriorityTypeError').text('');
+            $('#SharingReasonError').text('');
+
+            // Validate AssignedId
+            if (!AssignedId) {
+                $('#AssignedIdError').text('The assignee name is required');
+                return false;
+            }
+            // Validate TaskName
+            if (!TaskName) {
+                $('#TaskNameError').text('The task list is required');
+                return false;
+            }
+            // Validate PriorityType
+            if (!PriorityType) {
+                $('#PriorityTypeError').text('The priority Type is required');
+                return false;
+            }
+            // Validate Deadline
+            if (deadlineValue) {
+                var parts = deadlineValue.split('-'); // Split the string
+                selectedDeadline = new Date(parts[0], parts[1] - 1, parts[2]); // Create Date object
+                // Check if the date is valid
+                if (isNaN(selectedDeadline.getTime())) {
+                    $('#DeadlineError').text('Invalid date. Please enter a valid date.');
+                    return false;
+                }
+                // Validate if the deadline is in the past
+                if (stripTime(selectedDeadline) < currentDate) {
+                    $('#DeadlineError').text("Deadline cannot be in the past.");
+                    return false; // Exit if deadline is in the past
+                }
+            } else {
+                $('#DeadlineError').text('The deadline is required');
+                return false; // Exit if deadline is not provided
+            }
+            // Validate SharingReason
+            if (!SharingReason) {
+                $('#SharingReasonError').text('The Sharing Reason is required');
+                return false;
+            }
+            // If validation passes
+            return true; // Indicate that validation passed
+        }
+        // Common function to clear error messages
+        function clearError(inputSelector, errorSelector, validationFunction) {
+            $(inputSelector).on('input change', function () {
+                const value = $(this).val();
+                if (value) {
+                    $(errorSelector).text(''); // Clear error if not empty
+                }
+                // Additional validation for the deadline
+                if (validationFunction) {
+                    validationFunction(value, errorSelector);
+                }
+            });
+        }
+
+        // Validation function for the deadline
+        function validateDeadline(value, errorSelector) {
+            const currentDate = stripTime(new Date());
+            const parts = value.split('-');
+            const selectedDeadline = new Date(parts[0], parts[1] - 1, parts[2]);
+
+            if (!isNaN(selectedDeadline.getTime()) && stripTime(selectedDeadline) >= currentDate) {
+                $(errorSelector).text(''); // Clear error if the date is valid
+            } else if (value) {
+                $(errorSelector).text('Deadline cannot be in the past.'); // Show error if date is in the past
+            }
+        }
+
+        // Attach error clearing to each relevant input field
+        clearError('#CenterDropdown', '#AssignedIdError');
+        clearError('#TaskName', '#TaskNameError');
+        clearError('#PriorityType', '#PriorityTypeError');
+        clearError('#Deadline', '#DeadlineError', validateDeadline);
+        clearError('#SharingReason', '#SharingReasonError');
+    });
 
     function stripTime(date) {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate());
     }
+
 </script>
