@@ -78,16 +78,15 @@
                 },
                 {
                     data: 'Id',
-                    width: '20%',
+                    width: '10%',
                     render: function (data, type, row, meta) {
-                        var updateButton = `<button class="btn btn-info btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
-                        var completeButton = "";
+                        var completeLink = "";
                         if(row.TaskStatus !== 'Completed'){
-                            completeButton = `<button class="btn btn-success btn-sm ms-1" onclick="openCompleteModal('${data}')">Complete</button>`;
+                            completeLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>`;
                         }
                         return `
-                            <button class="btn bg-purple btn-sm" onclick="showTaskDetails('${data}')">Details</button>
-                            ${completeButton}
+                            <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a>
+                            ${completeLink}
                         `;
                     }
                 }
