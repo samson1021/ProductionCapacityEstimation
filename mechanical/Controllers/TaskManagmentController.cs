@@ -40,23 +40,11 @@ namespace mechanical.Controllers
             }
            
         }
+
         [HttpGet]
         public IActionResult SharedCases()
         {
             return View();
-        }
-
-        // public async Task<IActionResult> GetSharedTask()
-        // {
-        //     return View();
-        // }
-
-        [HttpGet]
-        public async Task<JsonResult> GetSharedTasks()
-        {
-            var tasks = await _taskManagmentService.GetSharedTasks(base.GetCurrentUserId());
-            return Json(tasks);
-            // return Content(JsonConvert.SerializeObject(tasks), "application/json");
         }
 
         public async Task<IActionResult> UpdateSharedTask()
@@ -72,6 +60,14 @@ namespace mechanical.Controllers
         public async Task<IActionResult> SharedTasks()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetSharedTasks()
+        {
+            var tasks = await _taskManagmentService.GetSharedTasks(base.GetCurrentUserId());
+            return Json(tasks);
+            // return Content(JsonConvert.SerializeObject(tasks), "application/json");
         }
 
         [HttpPost]
@@ -225,6 +221,19 @@ namespace mechanical.Controllers
             {
                 return Json(new { success = false, message = "An error occurred while completing the task." });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReceivedTasks()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetReceivedTasks()
+        {
+            var tasks = await _taskManagmentService.GetReceivedTasks(base.GetCurrentUserId());
+            return Json(tasks);
         }
     }
 }

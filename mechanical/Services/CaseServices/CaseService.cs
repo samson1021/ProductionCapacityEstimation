@@ -1,24 +1,16 @@
 ﻿using AutoMapper;
-using mechanical.Data;
-using mechanical.Models.Dto.CaseDto;
-using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.Entities;
-using mechanical.Services.CaseTimeLineService;
-using mechanical.Services.UploadFileService;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Http;
-
-using mechanical.Models.Dto.CaseTimeLineDto;
-using Microsoft.CodeAnalysis.Operations;
-using System.Diagnostics.Metrics;
-using Microsoft.AspNetCore.Http.HttpResults;
-using mechanical.Models.Dto.DashboardDto;
-using mechanical.Models.Dto.CollateralDto;
-using mechanical.Models.Dto.CaseScheduleDto;
 using System.Net;
 using System.Xml;
-using mechanical.Models.Dto.TaskDto;
+using Microsoft.EntityFrameworkCore;
+
+using mechanical.Data;
+using mechanical.Models.Entities;
+using mechanical.Models.Dto.CaseDto;
+using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.Dto.CaseTimeLineDto;
+using mechanical.Services.CaseTimeLineService;
+using mechanical.Services.UploadFileService;
 
 namespace mechanical.Services.CaseServices
 {
@@ -42,7 +34,8 @@ namespace mechanical.Services.CaseServices
         public async Task<IEnumerable<CaseDto>> GetRmRemarkedCases(Guid userId)
         {
             var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
-           .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))).ToListAsync();
+                        .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))).ToListAsync();
+
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             foreach (var caseDto in caseDtos)
             {
@@ -341,12 +334,6 @@ namespace mechanical.Services.CaseServices
         //    return _mapper.Map<RmNewCaseDto>(loanCase);
         //}
 
-        public async Task<IEnumerable<TaskManagmentDto>> GetRmReceivedCases(Guid userId)
-        {
-            var cases = await _cbeContext.TaskManagments.Where(res =>res.AssignedId == userId ).ToListAsync();
-            var caseDtos = _mapper.Map<IEnumerable<TaskManagmentDto>>(cases);
-            return caseDtos;
-        }
         public async Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId)
         {
             var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
@@ -776,10 +763,11 @@ namespace mechanical.Services.CaseServices
         public async Task<Case> GetCaseById(Guid caseId)
         {
             return await _cbeContext.Cases
-                .Include(c => c.CaseOriginator)
-                    .ThenInclude(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Id == caseId);
-        }        
+                                    .Include(c => c.CaseOriginator)
+                                        .ThenInclude(u => u.Role)
+                                    .FirstOrDefaultAsync(u => u.Id == caseId);
+           
+        }
 
         public async Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string status = null, int? Limit = null)
         {
@@ -824,7 +812,7 @@ namespace mechanical.Services.CaseServices
             return _mapper.Map<IEnumerable<CaseDto>>(cases);
         }
 
-        public async Task<IEnumerable<CaseDto>> GetAssignedCases(Guid userId, string status = null, int? Limit = null)
+        public async Task<IEnumerable<CaseDto>> GetReceivedCases(Guid userId, string status = null, int? Limit = null)
         {
             var query = _cbeContext.TaskManagments
                                 .AsNoTracking()
