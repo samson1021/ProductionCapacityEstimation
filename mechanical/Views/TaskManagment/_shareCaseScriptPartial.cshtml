@@ -1,0 +1,92 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+
+    $(document).ready(function () {
+
+        $('.select2').select2({ allowClear: true });
+
+        // Populate RMs dropdown (for Share Task form)
+        $.get("/UserManagment/GetPeerRMs", function (data) {
+            var rmDropdown = $("#SelectedRMs");
+            rmDropdown.empty();
+            $.each(data, function (index, item) {
+                rmDropdown.append($('<option></option>').val(item.Id).text(item.Name));
+            });
+            rmDropdown.select2();
+        });
+
+        // Deadline validation for Share Task form before submission
+        $("#shareCaseButton").click(function (e) {
+            e.preventDefault();
+            var form = $("#shareCaseForm");
+
+            // Validate form controls first
+            if (form[0].checkValidity() === false) {
+                form.addClass("was-validated");
+                return;
+            }
+
+            // Validate deadline field (must be today or later)
+            var deadlineInput = $("#shareDeadline");
+            var deadline = stripTime(new Date(deadlineInput.val()));
+            var today = stripTime(new Date());
+            @* today.setHours(0, 0, 0, 0); *@
+
+            if (deadline < today)  {
+            var errorMessage = "Deadline cannot be earlier than today.";
+
+                // Show error message in Toastr
+                toastr.error(errorMessage, "Validation Error");
+
+                // Show inline validation message
+                deadlineInput.addClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").text(errorMessage).show();
+
+                return;
+            } else {
+                deadlineInput.removeClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").hide();
+            }
+
+            // Disable submit button and show spinner
+            $("#shareCaseButton").prop("disabled", true);
+            $("#shareSpinner").removeClass("d-none");
+            
+            $.ajax({
+                url: '/TaskManagment/ShareTasks',
+                type: 'POST',
+                data: form.serialize(),
+                success: function (response) {
+                    $("#shareCaseButton").prop("disabled", false);
+                    $("#shareSpinner").addClass("d-none");
+                    if (response.success) {
+                        toastr.success(response.message, "Success");
+                        form[0].reset();
+                        form.removeClass("was-validated");
+                        $('.select2').val(null).trigger('change');
+                        var shareCaseModalEl = document.getElementById('shareCaseModal');
+                        var shareCaseModal = bootstrap.Modal.getOrCreateInstance(shareCaseModalEl);
+                        shareCaseModal.hide();
+                    } else {
+                        toastr.error(response.message, "Error occurred when sharing Task");
+                    }
+                },
+                error: function () {
+                    toastr.error("An error occurred while submitting the form.", "Error");
+                },
+                complete: function () {
+                    $("#shareCaseButton").prop("disabled", false);
+                    $("#shareSpinner").addClass("d-none");
+                }
+            });
+        });
+    });
+</script>
