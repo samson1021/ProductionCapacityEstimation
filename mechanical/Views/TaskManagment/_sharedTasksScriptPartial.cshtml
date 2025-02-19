@@ -79,8 +79,22 @@
                 },
                 {
                     data: 'Id',
-                    width: '20%',
+                    width: '15%',
                     render: function (data, type, row, meta) {
+                        var updateLink = `<a class="text-info" href="javascript:void(0);" onclick="showUpdateTask('${data}')">Update</a>`;
+                        @* var completeLink = "";
+                        if(row.TaskStatus !== 'Completed'){
+                            completeLink = `<a href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>`;
+                        } *@
+                        return `
+                            <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a> 
+                            | ${updateLink} 
+                            | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a> 
+                            | <a class="text-danger" href="javascript:void(0);" onclick="openDeleteModal('${data}')">Delete</a>
+                            @* ${completeLink} *@
+                        `;
+                    }
+                    /* render: function (data, type, row, meta) {
                         var updateButton = `<button class="btn btn-info btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
                         var completeButton = "";
                         @* if(row.TaskStatus !== 'Completed'){
@@ -93,7 +107,7 @@
                             <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${data}')">Delete</button>
                             @* ${completeButton} *@
                         `;
-                    }
+                    } */
                 }
             ],
             drawCallback: function () {
