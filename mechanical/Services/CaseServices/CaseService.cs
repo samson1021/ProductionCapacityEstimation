@@ -11,6 +11,7 @@ using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UploadFileService;
+using System.Linq;
 
 namespace mechanical.Services.CaseServices
 {
@@ -92,19 +93,70 @@ namespace mechanical.Services.CaseServices
                            .FirstOrDefaultAsync(c => c.Id == id);
             return _mapper.Map<CaseReturntDto>(loanCase);
         }
-        public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
-        {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res=>res.CurrentStatus=="New" && res.CurrentStage == "Relation Manager"))
-                       .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
-                       .ToListAsync();
-            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-            foreach(var caseDto in caseDtos)
-            {
-                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-            }
-            return caseDtos ;
-        }
-        public async Task<IEnumerable<CaseTerminateDto>> GetTerminatedCases(Guid userId)
+        //public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
+        //{
+        //    var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res=>res.CurrentStatus=="New" && res.CurrentStage == "Relation Manager"))
+        //               .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+        //               .ToListAsync();
+        //    var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+        //    foreach(var caseDto in caseDtos)
+        //    {
+        //        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+        //        caseDto.CaseType = "sharedCase";
+        //    }
+        //    return caseDtos ;
+        //}
+
+
+      public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
+{
+    // Initialize a list to hold the merged case DTOs
+    var caseDtos = new List<CaseDto>();
+
+    // Get cases where the user is the case originator
+    var originatorCases = await _cbeContext.Cases
+        .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+        .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+        .ToListAsync();
+
+    // Map originator cases to DTOs and set properties
+    var originatorCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(originatorCases);
+    foreach (var caseDto in originatorCaseDtos)
+    {
+        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+        caseDto.CaseType = "Owner";
+        caseDtos.Add(caseDto); // Add to the combined list
+    }
+
+    // Get cases where the user is assigned
+    var assignedCases = await _cbeContext.Cases
+        .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+        .Where(case1 => case1.Status == "New" &&
+                        _cbeContext.TaskManagments.Any(task => task.CaseId == case1.Id && task.AssignedId == userId))
+        .ToListAsync();
+
+    // Map assigned cases to DTOs and set properties
+    var assignedCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(assignedCases);
+    foreach (var caseDto in assignedCaseDtos)
+    {
+        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+        caseDto.CaseType = "SharedCase";
+        caseDtos.Add(caseDto); // Add to the combined list
+    }
+
+    // Sort the combined list based on CreatedAt attribute
+   var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+
+    return sortedCaseDtos;
+}
+            /// <summary>
+            ////
+            /// </summary>
+            /// <param name="userId"></param>
+            /// <returns></returns>
+
+
+            public async Task<IEnumerable<CaseTerminateDto>> GetTerminatedCases(Guid userId)
         {
             var cases = await _cbeContext.Cases.Include(x => x.Collaterals)
                        .Where(res => res.CaseOriginatorId == userId && res.Status == "Terminate")
