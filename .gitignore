@@ -5,3 +5,6 @@ mechanical/UploadFile
 mechanical/.vs
 mechanical/.config
 mechanical/appsettings*
+mechanical.csproj
+mechanical.csproj.user
+.vs/
