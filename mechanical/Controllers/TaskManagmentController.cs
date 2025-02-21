@@ -222,7 +222,8 @@ namespace mechanical.Controllers
                 {
                     return NotFound();
                 }
-
+                
+                ViewData["myTask"] = task;
                 return PartialView("_TaskDetailsPartial", task);
             }
             catch (Exception ex)

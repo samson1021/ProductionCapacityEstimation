@@ -1,9 +1,9 @@
-﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+﻿@using mechanical.Models.Dto.TaskManagmentDto
 
 @{
-    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
+    var myTask = ViewData["myTask"] as TaskManagmentReturnDto;
 }
-@model mechanical.Models.PCE.Dto.PCECaseCommentDto.PCECaseCommentPostDto
+@model mechanical.Models.Dto.TaskManagmentDto.TaskCommentPostDto
 <section class="content">
     <div class="card direct-chat direct-chat-purple">
         <div class="card-header">
@@ -24,7 +24,8 @@
         <div class="card-footer">
             <form action="/PCECaseComment/CreateCaseComment" method="Post" id="commentForm" onsubmit="return false;">
                 <div class="input-group">
-                    <input asp-for="PCECaseId" value='@myPCECase.Id' type="hidden" id="PCECaseId" />
+                    <input asp-for="TaskId" value='@myTask.Id' type="hidden" id="TaskId" />
+                    <input asp-for="CommenteeId" value='@myTask.AssignedId' type="hidden" id="CommenteeId" />
                     <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control">
                     <span class="input-group-append">
                         @* <button type="submit" class="btn btn-primary" id="SendButton"><i class="fab fa-telegram-plane"></i></button> *@
