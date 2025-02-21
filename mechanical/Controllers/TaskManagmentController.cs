@@ -24,6 +24,8 @@ namespace mechanical.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+
         public async Task<IActionResult> CommentTask()
         {
             return View();
@@ -52,6 +54,10 @@ namespace mechanical.Controllers
             var comments = await _taskManagmentService.GetTaskComment(base.GetCurrentUserId(), TaskId);
             return Json(comments);
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ShareTask(string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)

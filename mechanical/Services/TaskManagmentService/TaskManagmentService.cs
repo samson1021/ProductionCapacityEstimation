@@ -498,7 +498,6 @@ namespace mechanical.Services.TaskManagmentService
             }
 
         }
-
         public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid userId, Guid taskId)
         {
             var comments = await _cbeContext.TaskComments.Where(u => (u.CommenterId == userId && u.TaskId == taskId) || (u.CommenteeId == userId && u.TaskId == taskId)).ToListAsync();
