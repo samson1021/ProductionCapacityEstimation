@@ -467,5 +467,43 @@ namespace mechanical.Services.TaskManagmentService
                 return new ResultDto { Success = false, Message = $"An error occurred while completing the task. {ex}" };
             }
         }
+
+        public async Task<TaskComment> CommentTask(Guid userId, TaskCommentPostDto dto)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {
+                EncodingHelper.EncodeObject(dto);
+
+
+                var comment = _mapper.Map<TaskComment>(dto);
+                comment.Id = Guid.NewGuid();
+                comment.CommenterId = userId; // userId is already a Guid
+                comment.CommenteeId = dto.CommenteeId; // Consider using an enum
+                comment.TaskId = dto.TaskId;
+                comment.Comment = dto.Comment;
+                comment.CommentDate = DateTime.UtcNow; // Use UtcNow for consistency
+
+                //  await _cbeContext.TaskManagments.AddAsync(comment);
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return comment; // Returns first task; ensure list is not empty
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sharing task.");
+                await transaction.RollbackAsync();
+                throw new ApplicationException("An error occurred while sharing the task.", ex);
+            }
+
+        }
+
+        public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid userId, Guid taskId)
+        {
+            var comments = await _cbeContext.TaskComments.Where(u => (u.CommenterId == userId && u.TaskId == taskId) || (u.CommenteeId == userId && u.TaskId == taskId)).ToListAsync();
+            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
+        }
+
     }
 }

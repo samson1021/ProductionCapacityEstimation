@@ -23,7 +23,35 @@ namespace mechanical.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-        
+
+        public async Task<IActionResult> CommentTask()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CommentTask(TaskCommentPostDto dto)
+        {
+            try
+            {
+                await _taskManagmentService.CommentTask(base.GetCurrentUserId(), dto);
+                return RedirectToAction("CommentTask", "TaskManagment");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTaskComment(Guid TaskId)
+        {
+            var comments = await _taskManagmentService.GetTaskComment(base.GetCurrentUserId(), TaskId);
+            return Json(comments);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ShareTask(string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
