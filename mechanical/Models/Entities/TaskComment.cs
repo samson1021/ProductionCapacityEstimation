@@ -13,5 +13,6 @@ namespace mechanical.Models.Entities
         public virtual CreateUser? User { get; set; }
         public virtual TaskManagment? Task { get; set; }
 
+
     }
 }
