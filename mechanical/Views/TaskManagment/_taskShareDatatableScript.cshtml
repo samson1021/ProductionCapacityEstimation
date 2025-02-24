@@ -81,7 +81,12 @@
                 toastr.error("Unable to share task successfully.");
             }
         });
-
+        // Close button functionality
+        $('#closeButton, .close').on('click', function () {
+            $('#shareTaskModal').modal('hide'); // Use Bootstrap's method to hide the modal
+            $('#shareTskForm')[0].reset(); // Reset the form
+            $('.purple-checkbox').prop('checked', false); // Uncheck all checkboxes
+        });
 
         //get shared Task
         $.ajax({
