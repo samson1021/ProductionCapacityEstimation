@@ -24,6 +24,7 @@ using AutoMapper;
 using mechanical.Models.Dto.CaseTerminateDto;
 using mechanical.Services.CaseTerminateService;
 using Microsoft.CodeAnalysis.Operations;
+using mechanical.Services.UploadFileService;
 
 namespace mechanical.Controllers
 {
@@ -38,7 +39,8 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
-        public CaseController(IMapper mapper,ICaseTerminateService caseTerminateService,ICaseService caseService,ICaseScheduleService caseScheduleService, CbeContext cbeContext, IHttpContextAccessor httpContextAccessor,ICaseAssignmentService caseAssignmentService, IMailService mailService)
+        private readonly IUploadFileService _uploadFileService;
+        public CaseController(IMapper mapper,IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService,ICaseService caseService,ICaseScheduleService caseScheduleService, CbeContext cbeContext, IHttpContextAccessor httpContextAccessor,ICaseAssignmentService caseAssignmentService, IMailService mailService)
         {
             _caseService = caseService;
             _cbeContext = cbeContext;
@@ -47,7 +49,8 @@ namespace mechanical.Controllers
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTerminateService;
             _mailService = mailService;
-            _mapper = mapper; 
+            _mapper = mapper;
+            _uploadFileService = uploadFileService;
         }
         public IActionResult RemarkCases()
         {
@@ -61,6 +64,8 @@ namespace mechanical.Controllers
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         public IActionResult MyAssignments()
@@ -72,6 +77,8 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpGet]
@@ -189,6 +196,8 @@ namespace mechanical.Controllers
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
+            var moFile = await _uploadFileService.GetMoUploadFile(id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpGet]
@@ -202,6 +211,8 @@ namespace mechanical.Controllers
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["caseTerminate"] = caseTerminate;
             ViewData["Id"] = base.GetCurrentUserId();
+            var moFile = await _uploadFileService.GetMoUploadFile(id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpGet]
@@ -210,6 +221,8 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
+            var moFile = await _uploadFileService.GetMoUploadFile(id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpPost]
@@ -506,6 +519,8 @@ namespace mechanical.Controllers
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
+            var moFile = await _uploadFileService.GetMoUploadFile(id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpGet]
@@ -552,6 +567,8 @@ namespace mechanical.Controllers
             ViewData["motorVehicle"] = motorVehicle;
             ViewData["indBldgFacEq"] = indBldgFacEq;
             ViewData["conMngAgr"] = conMngAgr;
+            var moFile = await _uploadFileService.GetMoUploadFile(id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpGet]

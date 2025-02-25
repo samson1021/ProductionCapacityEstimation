@@ -76,6 +76,32 @@ namespace mechanical.Services.CollateralService
 
             return collateral;
         }
+        public async Task<bool> CreateMOFile(Guid userId, Guid caseId, string DocumentType,IEnumerable<IFormFile>? Document)
+        {
+            try
+            {
+                if (Document != null)
+                {
+                    foreach (var otherDocument in Document)
+                    {
+                        var moDocuments = new CreateFileDto()
+                        {
+                            File = otherDocument ?? throw new ArgumentNullException(nameof(otherDocument)),
+                            CaseId = caseId,
+                            Catagory = DocumentType
+                        };
+                        await _uploadFileService.CreateUploadFile(userId, moDocuments);
+                    }
+                    return true;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new Exception("unable to upload file");
+            }
+           
+        }
         public async Task<Collateral> CreateCivilCollateral(Guid userId, Guid caseId, CivilCollateralPostDto createCivilCollateralDto)
         {
             var collateral = _mapper.Map<Collateral>(createCivilCollateralDto);
@@ -312,6 +338,13 @@ namespace mechanical.Services.CollateralService
         {
             
             var caseAssignments = await _cbeContext.CaseAssignments.Include(res=>res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status=="New").ToListAsync();
+            var collaterals = caseAssignments.Select(res => res.Collateral);
+            return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+        }
+        public async Task<IEnumerable<ReturnCollateralDto>> GetMMCompleteCollaterals(Guid userId, Guid CaseId)
+        {
+
+            var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status == "Complete").ToListAsync();
             var collaterals = caseAssignments.Select(res => res.Collateral);
             return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
         }

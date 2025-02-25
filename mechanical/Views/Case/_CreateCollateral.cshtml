@@ -366,10 +366,8 @@
     // }
     function validateInputMac(inputId, errorId, isRequired) {
         var input = document.getElementById(inputId).value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
         var errorMessage = "";
-        console.log("from vaidate mech");
-        // Check if the field is required and empty
         if (isRequired && input.trim() === "") {
             errorMessage = "This field is required.";
         } else if (!alphanumericRegex.test(input)) {

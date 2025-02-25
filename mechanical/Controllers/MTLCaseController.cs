@@ -6,6 +6,7 @@ using mechanical.Services.MMCaseService;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.CaseAssignmentService;
+using mechanical.Services.UploadFileService;
 
 namespace mechanical.Controllers
 {
@@ -16,18 +17,26 @@ namespace mechanical.Controllers
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly ICaseAssignmentService _caseAssignmentService;
+        private readonly IUploadFileService _uploadFileService;
 
-        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
+        public MTLCaseController(ICaseService caseService,IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
             _mmCaseService = mMCaseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
+            _uploadFileService = uploadFileService;
         }
 
         [HttpGet]
         public IActionResult MyCases()
+        {
+
+            return View();
+        }
+        [HttpGet]
+        public IActionResult MyCompletedCases()
         {
 
             return View();
@@ -37,6 +46,14 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetMyCases()
         {
             var myCase = await _mmCaseService.GetMMNewCases(GetCurrentUserId());
+            if (myCase == null) { return BadRequest("Unable to load case"); }
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMyCompletedCases()
+        {
+            var myCase = await _mmCaseService.GetMTLCompletedCases(GetCurrentUserId());
             if (myCase == null) { return BadRequest("Unable to load case"); }
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
@@ -58,11 +75,27 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }      
 
         [HttpGet]
         public async Task<IActionResult> MyCase(Guid Id)
+        {
+            var loanCase = await _caseService.GetCaseDetail(Id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);
+            var caseTerminate = await _caseTermnateService.GetCaseTerminates(Id);
+            ViewData["caseTerminate"] = caseTerminate;
+            if (loanCase == null) { return RedirectToAction("NewCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> MyCompleteCase(Guid Id)
         {
             var loanCase = await _caseService.GetCaseDetail(Id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);

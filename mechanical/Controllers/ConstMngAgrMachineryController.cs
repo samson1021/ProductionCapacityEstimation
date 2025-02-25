@@ -65,7 +65,7 @@ namespace mechanical.Controllers
             _cbeContext.Update(Mov);
             var collateral = await _cbeContext.Collaterals.FindAsync(CollateralId);
 
-            if (CurrentStatus == "Remark Justfication")
+            if (CurrentStatus == "Remark")
             {
                
                 collateral.CurrentStage = "Checker Officer";
