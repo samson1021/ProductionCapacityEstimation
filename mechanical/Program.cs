@@ -81,7 +81,7 @@ builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache fo
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
-    options.Cookie.Name = ".YourApp.Session"; // Set a unique name for the session cookie
+    options.Cookie.Name = "mechanical.Session"; // Set a unique name for the session cookie
     options.IdleTimeout = TimeSpan.FromMinutes(20); // Set the session timeout
     options.Cookie.HttpOnly = true; // Ensure the session cookie is accessible only via HTTP
     options.Cookie.IsEssential = true;
@@ -111,7 +111,7 @@ builder.Services.AddSwaggerGen();
 //            throw new InvalidOperationException("Connection string 'CbeCreditContext' not found.")));
 builder.Services.AddDbContext<CbeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
-                         throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
+                        throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
 
 //production capacity estimation
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
@@ -183,7 +183,7 @@ builder.Services.AddAuthentication(options =>
     //options.SlidingExpiration = true;
 
     options.AccessDeniedPath = "/Home/Index";
-    options.Cookie.Name = "YourAppCookieName"; // Set a unique name for the authentication cookie
+    options.Cookie.Name = "MechanicalCookie"; // Set a unique name for the authentication cookie
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Set the expiration time for the cookie
     options.SlidingExpiration = true; // Extend the expiration time with each request

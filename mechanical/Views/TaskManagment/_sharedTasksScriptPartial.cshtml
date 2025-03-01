@@ -94,20 +94,6 @@
                             @* ${completeLink} *@
                         `;
                     }
-                    /* render: function (data, type, row, meta) {
-                        var updateButton = `<button class="btn btn-info btn-sm" onclick="showUpdateTask('${data}')">Update</button>`;
-                        var completeButton = "";
-                        @* if(row.TaskStatus !== 'Completed'){
-                            completeButton = `<button class="btn btn-success btn-sm ms-1" onclick="openCompleteModal('${data}')">Complete</button>`;
-                        } *@
-                        return `
-                            <button class="btn bg-purple btn-sm" onclick="showTaskDetails('${data}')">Details</button>
-                            ${updateButton}
-                            <button class="btn btn-warning btn-sm" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</button>
-                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${data}')">Delete</button>
-                            @* ${completeButton} *@
-                        `;
-                    } */
                 }
             ],
             drawCallback: function () {
@@ -356,7 +342,7 @@
                         var shareCaseModal = bootstrap.Modal.getOrCreateInstance(shareCaseModalEl);
                         shareCaseModal.hide();
                         loadSharedTasks();
-                        
+
                         @* $('.modal-backdrop').remove();
                         $('body').removeClass('modal-open');
                         $('body').css('padding-right', '');

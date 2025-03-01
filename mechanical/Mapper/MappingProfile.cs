@@ -229,6 +229,7 @@ namespace mechanical.Mapper
             //     .ForMember(dest => dest.SelectedRMs, opt => opt.Ignore());
 
             CreateMap<Notification, NotificationPostDto>().ReverseMap();
+            CreateMap<Notification, NotificationReturnDto>().ReverseMap();
         
             CreateMap<TaskCommentPostDto, TaskComment>().ReverseMap();
             CreateMap<TaskComment, TaskCommentReturnDto>().ReverseMap();
