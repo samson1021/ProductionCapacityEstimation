@@ -1,13 +1,10 @@
 ﻿@using mechanical.Models.Dto.TaskManagmentDto
 
-@{
-    var myTask = ViewData["myTask"] as TaskManagmentReturnDto;
-}
-@model mechanical.Models.Dto.TaskManagmentDto.TaskCommentPostDto
+
 <section class="content">
     <div class="card direct-chat direct-chat-purple">
         <div class="card-header">
-            <h3 class="card-title">PCE Case Comment</h3>
+            <h3 class="card-title">Task Comment</h3>
             <div class="card-tools">
                 <span title="New Messages" class="badge badge-warning CommentBage"></span>
                 <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
@@ -16,16 +13,15 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="direct-chat-messages" style="height:30rem;"></div>
+            <div class="direct-chat-messages" style="height:25rem;"></div>
             <div class="direct-chat-contacts">
                 <ul class="contacts-list"></ul>
             </div>
         </div>
         <div class="card-footer">
-            <form action="/PCECaseComment/CreateCaseComment" method="Post" id="commentForm" onsubmit="return false;">
+            <form action="/TaskManagment/CommentTask" method="post" id="commentForm">
                 <div class="input-group">
-                    <input asp-for="TaskId" value='@myTask.Id' type="hidden" id="TaskId" />
-                    <input asp-for="CommenteeId" value='@myTask.AssignedId' type="hidden" id="CommenteeId" />
+                    <input type="hidden" id="TaskId" />
                     <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control">
                     <span class="input-group-append">
                         @* <button type="submit" class="btn btn-primary" id="SendButton"><i class="fab fa-telegram-plane"></i></button> *@

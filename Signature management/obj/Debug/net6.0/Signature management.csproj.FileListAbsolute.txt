@@ -757,3 +757,193 @@ M:\CBE\Project\task sharing\TaskSharing\Signature management\obj\Debug\net6.0\re
 M:\CBE\Project\task sharing\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.pdb
 M:\CBE\Project\task sharing\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.genruntimeconfig.cache
 M:\CBE\Project\task sharing\TaskSharing\Signature management\obj\Debug\net6.0\ref\Signature management.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\appsettings_Signature.Development.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\appsettings_Signature.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Signature management.exe
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Signature management.deps.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Signature management.runtimeconfig.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Signature management.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Signature management.pdb
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Azure.Core.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Azure.Identity.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\BouncyCastle.Crypto.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Humanizer.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\itextsharp.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Caching.Memory.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Logging.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.ObjectPool.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Options.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.Primitives.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Extensions.WebEncoders.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Identity.Client.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.OpenApi.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.SqlServer.Server.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Win32.Registry.AccessControl.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Novell.Directory.Ldap.NETStandard.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.Blob.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.CPlusPlus.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.DebuggerVisualizers.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.Extensions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.Gpu.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.MachineLearning.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.UserInterface.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\OpenCvSharp.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.CodeDom.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ComponentModel.Composition.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ComponentModel.Composition.Registration.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Configuration.ConfigurationManager.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Data.Odbc.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Data.OleDb.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Data.SqlClient.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Diagnostics.DiagnosticSource.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Diagnostics.EventLog.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Diagnostics.PerformanceCounter.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.DirectoryServices.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.DirectoryServices.AccountManagement.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.DirectoryServices.Protocols.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Drawing.Common.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Formats.Asn1.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.IO.Packaging.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.IO.Ports.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Linq.Async.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Management.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Memory.Data.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Private.ServiceModel.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Reflection.Context.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Runtime.Caching.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Security.Cryptography.Xml.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Security.Permissions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.Duplex.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.Http.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.NetTcp.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.Primitives.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.Security.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceModel.Syndication.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.ServiceProcess.ServiceController.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Speech.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Text.Encoding.CodePages.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Text.Encodings.Web.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Threading.AccessControl.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Web.Services.Description.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\System.Windows.Extensions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\cs\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\de\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\es\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\fr\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\it\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\ja\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\ko\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\pl\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\pt-BR\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\ru\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\tr\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\zh-Hans\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\zh-Hant\System.Private.ServiceModel.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\cs\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\de\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\es\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\fr\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\it\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\ja\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\ko\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\pl\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\pt-BR\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\ru\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\tr\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\zh-Hans\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\zh-Hant\System.Web.Services.Description.resources.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Win32.Registry.AccessControl.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\linux-arm\native\libSystem.IO.Ports.Native.so
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\linux-arm64\native\libSystem.IO.Ports.Native.so
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\linux-x64\native\libSystem.IO.Ports.Native.so
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\osx-arm64\native\libSystem.IO.Ports.Native.dylib
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\osx-x64\native\libSystem.IO.Ports.Native.dylib
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-arm64\native\sni.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-x64\native\sni.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win-x86\native\sni.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\freebsd\lib\net6.0\System.Data.Odbc.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\linux\lib\net6.0\System.Data.Odbc.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\osx\lib\net6.0\System.Data.Odbc.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Data.Odbc.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Data.OleDb.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.Messages.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Diagnostics.PerformanceCounter.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.DirectoryServices.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.DirectoryServices.AccountManagement.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\linux\lib\net6.0\System.DirectoryServices.Protocols.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\osx\lib\net6.0\System.DirectoryServices.Protocols.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.DirectoryServices.Protocols.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.IO.Ports.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.IO.Ports.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Management.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.ServiceProcess.ServiceController.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Speech.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Threading.AccessControl.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.csproj.AssemblyReference.cache
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.AssemblyInfoInputs.cache
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.AssemblyInfo.cs
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.csproj.CoreCompileInputs.cache
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.sourcelink.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets.build.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets.development.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets\msbuild.Signature management.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets\msbuild.build.Signature management.props
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.Signature management.props
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.Signature management.props
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\staticwebassets.pack.json
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\scopedcss\bundle\Signature management.styles.css
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signatur.CA95F3A0.Up2Date
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\refint\Signature management.dll
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.pdb
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\Signature management.genruntimeconfig.cache
+C:\Users\USER\Desktop\tsn1\TaskSharing\Signature management\obj\Debug\net6.0\ref\Signature management.dll

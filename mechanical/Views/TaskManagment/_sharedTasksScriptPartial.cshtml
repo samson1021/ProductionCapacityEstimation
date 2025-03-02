@@ -12,7 +12,7 @@
 
     function initializeDataTable(data, emptyMessage) {
         const $sharedTasksTable = $('#sharedTasksTable');
-        $sharedTasksTable.DataTable({
+        $sharedTasksTable.DataTable({ 
             language: { emptyTable: emptyMessage },
             responsive: true,
             pageLength: 8,
@@ -87,8 +87,8 @@
                             completeLink = `<a href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>`;
                         } *@
                         return `
-                            <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a> 
-                            | ${updateLink} 
+                                <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" class='details-link'>Details</a>
+                                | ${updateLink} 
                             | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a> 
                             | <a class="text-danger" href="javascript:void(0);" onclick="openDeleteModal('${data}')">Delete</a>
                             @* ${completeLink} *@
@@ -136,17 +136,18 @@
     }
 
     let currentTaskId = null;
-
+   
     // Show task details in modal 
-    function showTaskDetails(taskId) {
-        $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
+    function showTaskDetails(taskId) {       
+        $('#TaskId').val(`${taskId}`);
+         $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
             $('#detailsContent').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
             var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
             detailsModal.show();
         });
     }
-
+    
     // Update task in modal 
     function showUpdateTask(taskId) {
         $.get(`/TaskManagment/UpdateTask?id=${taskId}`, function (data) {

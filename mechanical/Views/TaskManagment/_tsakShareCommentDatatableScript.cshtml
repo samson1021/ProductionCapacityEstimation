@@ -1,0 +1,269 @@
+﻿<script>
+    const socketUrl = 'wss://localhost:5021/ws';
+    $(document).ready(function () {
+        $('#custom-tabs-four-settings-tab').click(function (e) {
+            var TaskId = $('#TaskId').val();  // Retrieve TaskId from the hidden input
+            console.log("inside comment" + TaskId);
+            e.preventDefault(); // Prevent default anchor click behavior
+            $('#messageinput').val('');
+            loadComments(TaskId); // Load comments when the tab is clicked
+        });
+
+        // Handle Send Button click
+        $('#SendButton').click(function (e) {
+            e.preventDefault(); // Prevent default form submission
+            var TaskId = $('#TaskId').val();
+            sendMessage(TaskId); // Function to send the message
+            console.log("task idd for send" + TaskId);
+            $('#messageinput').val('');  // Clear the input field after sending
+        });
+    });
+
+    // Function to load comments
+    function loadComments(TaskId) {
+        console.log('Loading comments...');
+        $.ajax({
+            url: '/TaskManagment/GetTaskComment?TaskId=' + TaskId,
+            method: 'GET',
+            success: function (data) {
+                console.log("Received comment data:", data);
+                updateChatMessages(data); // Update the chat messages
+            },
+            error: function () {
+                console.log('An error occurred while retrieving task comments.');
+            }
+        });
+    }
+
+    // Function to update chat messages
+    function updateChatMessages(comments) {
+        const chatMessages = $('.direct-chat-messages');
+        chatMessages.empty(); // Clear existing messages
+        comments.forEach(function (comment) {
+            var CommentDate = new Date(comment.CommentDate); // Convert to Date object
+            var Username = $('<a>').attr('href', '/UserManagment/Profile/' + comment.UserId).text(comment.AuthorName);
+            var Comment = comment.Comment;
+            var formattedDate = formatDate(CommentDate);
+            const messageElement = `<div class="direct-chat-msg">
+                  <div class="direct-chat-infos clearfix">
+                              <span class="direct-chat-name float-left">${Username}</span>
+                                  <span class="direct-chat-timestamp float-right">${formattedDate}</span>
+                  </div>
+                  <div class="direct-chat-text">
+                              ${Comment}
+                  </div>
+              </div>`;
+            chatMessages.append(messageElement);
+        });
+        chatMessages.scrollTop(chatMessages[0].scrollHeight); // Scroll to the bottom
+    }
+
+    function sendMessage(taskId) {
+        var Comment = $('#messageinput').val().trim();
+        var requestData = {
+            Comment: Comment,
+            TaskId: taskId,
+        };
+
+        console.log("Send comment requestData: ", requestData);
+
+        $.ajax({
+            url: '/TaskManagment/CommentTask',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                $('#messageinput').val('');  // Clear the input field after sending
+                loadComments(taskId);  // Function to reload the comments
+            },
+            error: function () {
+                console.log('Error while sending the message.');
+            }
+        });
+
+        return false;  // Prevent default form submission
+    }
+
+    // function updateChatMessages(data) {
+
+    //     var currentUserID = data.CommenterId;
+    //     var taskComment = data.Comment;
+    //     console.log("currentUserID " + currentUserID);
+    //     console.log("taskComment " + taskComment);
+    //     $(".CommentBage").text(taskComment.length);
+    //     chatMessages.empty();
+
+    //     if (taskComment.length > 0) {
+    //         let lastDate = '';
+    //         taskComment.forEach(function (comment) {
+    //             var createdAt = new Date(comment.CreatedAt);
+    //             var options = { year: 'numeric', month: 'long', day: 'numeric' };
+    //             var formattedDate = createdAt.toLocaleDateString('en-US', options);
+
+    //             // Check if the date has changed
+    //             if (formattedDate !== lastDate) {
+    //                 chatMessages.append($('<div>').addClass('chat-date').text(formattedDate));
+    //                 lastDate = formattedDate;
+    //             }
+
+    //             var chatMsg = createChatMessage(comment, currentUserID);
+    //             chatMessages.append(chatMsg);
+    //         });
+    //     } else {
+    //         chatMessages.append('<div class="no-comments-msg">There are no comments related to this PCE Case.</div>');
+    //     }
+
+    //     scrollToBottom();
+    // }
+
+    // function createChatMessage(comment, currentUserID) {
+    //     var chatMsg = $('<div>').addClass('direct-chat-msg');
+    //     var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+    //     var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comment.AuthorId).text(comment.AuthorName);
+    //     var chatText = $('<div>').addClass('direct-chat-text').text(comment.Content);
+    //     var createdAt = new Date(comment.CreatedAt);
+
+    //     // Only get the time for the timestamp
+    //     var chatTimestamp = $('<span>').addClass('direct-chat-timestamp').text(createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+    //     chatInfos.append(chatName); // Name at the top
+    //     chatMsg.append(chatInfos, chatText, chatTimestamp); // Append timestamp last
+    //     if (comment.AuthorId === currentUserID) {
+    //         chatMsg.addClass('right');
+    //     }
+    //     return chatMsg;
+    // }
+
+    // function updateContactList(data) {
+
+    //     var users = data.caseComments.map(comment => ({
+    //         id: comment.AuthorId,
+    //         name: comment.AuthorName,
+    //         avatar: '/img/avatar5.png',
+    //         lastMessage: comment.Content,
+    //         date: new Date(comment.CreatedAt)
+    //     }));
+
+    //     populateContactList(users);
+    // }
+
+    // function populateContactList(users) {
+    //     var contactList = $('.contacts-list');
+    //     contactList.empty();
+
+    //     users.forEach(function (user) {
+    //         var listItem = $('<li>').append(
+    //             $('<a>').attr('href', '/UserManagment/Profile/' + user.id)
+    //                 .append($('<img>').addClass('contacts-list-img').attr('src', user.avatar))
+    //                 .append($('<div>').addClass('contacts-list-info')
+    //                     .append($('<span>').addClass('contacts-list-name').text(user.name))
+    //                     .append($('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date)))
+    //                     .append($('<span>').addClass('contacts-list-msg').text(user.lastMessage))
+    //                 )
+    //         );
+    //         contactList.append(listItem);
+    //     });
+    // }
+
+    // function scrollToBottom() {
+    //     chatMessages.scrollTop(chatMessages.prop('scrollHeight'));
+    // }
+
+    function formatDate(date) {
+        var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return date.toLocaleString('en-US', options);
+    }
+
+    @* function reconnect() {
+        setTimeout(() => {
+        console.log('Attempting to reconnect...');
+        socket = new WebSocket(socketUrl);
+        }, 5000);
+        } *@
+
+</script>
+
+<style>
+    .direct-chat-messages {
+        max-height: 50vh;
+        overflow-y: auto;
+        padding: 2%;
+    }
+
+    .direct-chat-msg {
+        max-width: 75%;
+        margin-bottom: 1.25rem;
+        border-radius: 0.625rem;
+        padding: 1rem;
+        word-wrap: break-word;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background-color: #f9f9f9;
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
+        overflow-wrap: break-word;
+        min-height: 2.5rem;
+        width: fit-content;
+    }
+
+        .direct-chat-msg.right {
+            margin-left: auto;
+            background-color: #e6f7ff;
+        }
+
+        .direct-chat-msg:not(.right) {
+            background-color: #f1f1f1;
+        }
+
+    .direct-chat-text {
+        white-space: pre-wrap;
+        margin-bottom: 1.25rem;
+        display: inline-block;
+    }
+
+    .direct-chat-infos {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        ;
+    }
+
+    .direct-chat-timestamp {
+        position: absolute;
+        right: 0.625rem;
+        bottom: 0.3125rem;
+        color: #888888;
+        font-size: 0.8rem;
+        margin-left: auto;
+        margin-top: 0.3125rem;
+        font-style: italic;
+        display: block;
+    }
+
+    .chat-date {
+        text-align: center;
+        margin: 2% auto;
+        color: #333;
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        letter-spacing: 0.05rem;
+        background-color: #f9f9f9;
+        border: none;
+        width: fit-content;
+        border-radius: 1rem;
+        display: block;
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1), 0 0.25rem 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .SendButton {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+</style>

@@ -24,21 +24,15 @@ namespace mechanical.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-
-        public async Task<IActionResult> CommentTask()
-        {
-            return View();
-        }
-
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CommentTask(TaskCommentPostDto dto)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> CommentTask([FromBody] TaskCommentPostDto dto)
         {
             try
             {
                 await _taskManagmentService.CommentTask(base.GetCurrentUserId(), dto);
-                return RedirectToAction("CommentTask", "TaskManagment");
+                return Ok();
 
             }
             catch (Exception ex)
@@ -51,7 +45,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTaskComment(Guid TaskId)
         {
-            var comments = await _taskManagmentService.GetTaskComment(base.GetCurrentUserId(), TaskId);
+            var comments = await _taskManagmentService.GetTaskComment(TaskId);
             return Json(comments);
         }
 
@@ -190,7 +184,7 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        // [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
             try
@@ -219,8 +213,7 @@ namespace mechanical.Controllers
                 {
                     return NotFound();
                 }
-                
-                ViewData["myTask"] = task;
+                TempData["myTaskInfo"] = task.Id; // Use TempData instead
                 return PartialView("_TaskDetailsPartial", task);
             }
             catch (Exception ex)
