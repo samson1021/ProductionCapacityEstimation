@@ -1,13 +1,13 @@
 ﻿<script>
-    const socketUrl = 'wss://localhost:5021/ws';  
+    const socketUrl = 'wss://localhost:5021/ws';
     $(document).ready(function () {
-         $('#custom-tabs-four-settings-tab').click(function (e) {
-              var TaskId = $('#TaskId').val();  // Retrieve TaskId from the hidden input
+        $('#custom-tabs-four-settings-tab').click(function (e) {
+            var TaskId = $('#TaskId').val();  // Retrieve TaskId from the hidden input
             console.log("inside comment" + TaskId);
             e.preventDefault(); // Prevent default anchor click behavior
-            $('#messageinput').val('');  
-              loadComments(TaskId); // Load comments when the tab is clicked
-           });
+            $('#messageinput').val('');
+            loadComments(TaskId); // Load comments when the tab is clicked
+        });
 
         // Handle Send Button click
         $('#SendButton').click(function (e) {
@@ -41,23 +41,25 @@
         chatMessages.empty(); // Clear existing messages
         comments.forEach(function (comment) {
             var CommentDate = new Date(comment.CommentDate); // Convert to Date object
+            var Username = $('<a>').attr('href', '/UserManagment/Profile/' + comment.UserId).text(comment.AuthorName);
+            var Comment = comment.Comment;
             var formattedDate = formatDate(CommentDate);
             const messageElement = `<div class="direct-chat-msg">
-                <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-left">${comment.UserId}</span>
-                                <span class="direct-chat-timestamp float-right">${formattedDate}</span>
-                </div>
-                <div class="direct-chat-text">
-                        ${comment.Comment}
-                </div>
-            </div>`;
+                  <div class="direct-chat-infos clearfix">
+                              <span class="direct-chat-name float-left">${Username}</span>
+                                  <span class="direct-chat-timestamp float-right">${formattedDate}</span>
+                  </div>
+                  <div class="direct-chat-text">
+                              ${Comment}
+                  </div>
+              </div>`;
             chatMessages.append(messageElement);
         });
         chatMessages.scrollTop(chatMessages[0].scrollHeight); // Scroll to the bottom
     }
 
     function sendMessage(taskId) {
-        var Comment = $('#messageinput').val().trim();      
+        var Comment = $('#messageinput').val().trim();
         var requestData = {
             Comment: Comment,
             TaskId: taskId,
@@ -81,6 +83,7 @@
 
         return false;  // Prevent default form submission
     }
+
     // function updateChatMessages(data) {
 
     //     var currentUserID = data.CommenterId;
