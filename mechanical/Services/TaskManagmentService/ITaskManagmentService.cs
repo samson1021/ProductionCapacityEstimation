@@ -17,6 +17,6 @@ namespace mechanical.Services.TaskManagmentService
         Task<ResultDto> DeleteTask(Guid userId, Guid taskId);
         Task<ResultDto> CompleteTask(Guid userId, Guid taskId);
         Task<TaskComment> CommentTask(Guid userId, TaskCommentPostDto dto);
-        Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid userId, Guid taskId);
+        Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId);
     }
 }

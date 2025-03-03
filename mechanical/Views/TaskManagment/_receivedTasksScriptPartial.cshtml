@@ -120,6 +120,7 @@
 
     // Show task details in modal 
     function showTaskDetails(taskId) {
+        $('#TaskId').val(`${taskId}`);
         $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
             $('#detailsContent').html(data);
             var detailsModalEl = document.getElementById('detailsModal');

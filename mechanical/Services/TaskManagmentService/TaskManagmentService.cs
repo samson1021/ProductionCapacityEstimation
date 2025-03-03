@@ -18,6 +18,8 @@ using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.NotificationService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.UserService;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -476,13 +478,11 @@ namespace mechanical.Services.TaskManagmentService
 
                 var comment = _mapper.Map<TaskComment>(dto);
                 comment.Id = Guid.NewGuid();
-                comment.CommenterId = userId; // userId is already a Guid
-                comment.CommenteeId = dto.CommenteeId; // Consider using an enum
+                comment.UserId = userId; // userId is already a Guid
                 comment.TaskId = dto.TaskId;
                 comment.Comment = dto.Comment;
                 comment.CommentDate = DateTime.UtcNow; // Use UtcNow for consistency
-
-                //  await _cbeContext.TaskManagments.AddAsync(comment);
+                await _cbeContext.TaskComments.AddAsync(comment);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return comment; // Returns first task; ensure list is not empty
@@ -496,10 +496,14 @@ namespace mechanical.Services.TaskManagmentService
             }
 
         }
-        public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid userId, Guid taskId)
+        public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId)
         {
-            var comments = await _cbeContext.TaskComments.Where(u => (u.CommenterId == userId && u.TaskId == taskId) || (u.CommenteeId == userId && u.TaskId == taskId)).ToListAsync();
-            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
+            var comments = await _cbeContext.TaskComments
+                   .Include(res=>res.User)
+                   .Where(t=>t.TaskId == taskId)
+                   .OrderBy(d => d.CommentDate)
+                   .ToListAsync();
+            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);            
         }
 
     }
