@@ -7,17 +7,18 @@ namespace mechanical.Services.NotificationService
     public interface INotificationService
     {
         Task<NotificationReturnDto> GetNotification(Guid userId, Guid notificationId);
-        Task<NotificationResultDto> GetNotifications(Guid userId, int page = 1, int pageSize = 10);
-        Task<IEnumerable<NotificationReturnDto>> GetUnreadNotifications(Guid userId, int page = 1, int pageSize = 10);
-        
-        Task MarkAsRead(Guid userId, Guid Id);
+        Task<NotificationResultDto> GetNotifications(Guid userId, bool includeRead = false, int page = 1, int pageSize = 10);
+        Task MarkAsRead(Guid userId, List<Guid> notificationIds);
         Task MarkAllAsRead(Guid userId);
+        Task MarkAsSeen(Guid userId, List<Guid> notificationIds);
+        Task MarkAllAsSeen(Guid userId);
         Task<int> GetUnreadCount(Guid userId);
+        Task<int> GetUnseenCount(Guid userId);
 
-        Task<NotificationReturnDto> SendNotification(Guid userId, string message, string type, string link = "");
-        Task<IEnumerable<NotificationReturnDto>> SendNotifications(IEnumerable<Guid> userIds, string message, string type, string link = "");
-        Task SendRealTimeNotification(NotificationReturnDto notification);
-        Task SendRealTimeNotifications(IEnumerable<NotificationReturnDto> notifications);
+        Task<NotificationReturnDto> AddNotification(Guid userId, string content, string type, string link = "");
+        Task<IEnumerable<NotificationReturnDto>> AddNotifications(IEnumerable<Guid> userIds, string content, string type, string link = "");
+        Task SendNotification(NotificationReturnDto notification);
+        Task SendNotifications(IEnumerable<NotificationReturnDto> notifications);
 
         Task UnicastNotification(Guid userId, string notification);
         Task MulticastNotification(IEnumerable<Guid> userIds, string notification);

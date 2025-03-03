@@ -1,44 +1,19 @@
-// Helper
-// function convertToUTC(date) {
-//     return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-//                      date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-// }
-
 // Helper function to calculate relative time
 function getRelativeTime(date) {
     if (typeof date !== "string" || !date.trim()) return "Unknown time";
     if (!date.endsWith("Z")) date += "Z";
 
     date = new Date(date);
-    if (!(date instanceof Date)) return "Unknown time";
-    if (isNaN(date)) return "Invalid date";
+    if (!(date instanceof Date) || isNaN(date)) return "Invalid date";
 
-    // date = (new Date(Date.parse(date)))
     const now = new Date();
-    const diff = date - now;
-    // const diff = convertToUTC(date) - convertToUTC(now);
+    const diff = now - date;
 
     const seconds = Math.floor(Math.abs(diff) / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (diff > 0) {
-        return formatFutureTime(seconds, minutes, hours, days);
-    } else {
-        return formatPastTime(seconds, minutes, hours, days);
-    }
-}
-
-function formatFutureTime(seconds, minutes, hours, days) {
-    if (seconds < 60) return "In a few seconds";
-    if (minutes < 60) return `In ${minutes} minute${minutes > 1 ? "s" : ""}`;
-    if (hours < 24) return `In ${hours} hour${hours > 1 ? "s" : ""}`;
-    if (days === 1) return "Tomorrow";
-    return `In ${days} day${days > 1 ? "s" : ""}`;
-}
-
-function formatPastTime(seconds, minutes, hours, days) {
     if (seconds < 60) return "Just now";
     if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
     if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
@@ -46,38 +21,9 @@ function formatPastTime(seconds, minutes, hours, days) {
     return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
-// Add a new notification to the UI
-function addNotificationToUI(data) {
-    const notificationList = document.getElementById("notificationItems");
-    if (!notificationList) return;
-
-    const newNotificationHTML = generateNotificationHTML(data);
-    // const newNotificationHTML = generateNotificationHTML({
-    //     Id: data.id,
-    //     Message: data.message,
-    //     Link: data.link,
-    //     IsRead: false,
-    //     CreatedAt: new Date().toISOString()
-    // });
-    const tempContainer = document.createElement("div");
-    tempContainer.innerHTML = newNotificationHTML;
-    const newElement = tempContainer.firstElementChild;
-
-    newElement.style.display = "none";
-    notificationList.insertAdjacentElement("afterbegin", newElement);
-    newElement.style.display = "";
-    $(newElement).hide().fadeIn(500);
-}
-
-// SignalR connection setup (using negotiation to allow fallback transports)
+// SignalR connection setup
 function setupSignalRConnection() {
     const token = localStorage.getItem("authToken");
-    if (!token) {
-        console.error("No authentication token found");
-        toastr.error("Authentication token missing. Please log in again.");
-        return;
-    }
-
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/notificationHub", { accessTokenFactory: () => token })
         .withAutomaticReconnect()
@@ -87,73 +33,123 @@ function setupSignalRConnection() {
     connection.on("ReceiveNotification", (data) => {
         updateNotificationBadge(1);
         addNotificationToUI(data);
-        toastr.info("🔔 " + data.message);
+        toastr.info("🔔 " + data.content);
     });
 
     connection.onclose(() => {
         console.warn("SignalR connection lost. Reconnecting...");
         toastr.warning("Connection lost. Reconnecting...");
-        setTimeout(startConnection, 5000);
+        setTimeout(() => connection.start(), 5000);
     });
 
-    function startConnection() {
-        connection.start()
-            .then(() => console.log("Connected to SignalR Hub"))
-            .catch(err => {
-                console.error("SignalR Connection Error:", err);
-                toastr.error("Failed to connect to notifications service. Reconnecting...");
-                setTimeout(startConnection, 5000);
-            });
-    }
-    startConnection();
-}
-
-// Generate HTML for a notification
-function generateNotificationHTML(data) {
-    const relativeTime = getRelativeTime(data.CreatedAt);
-    const unreadClass = data.IsRead ? "" : "unread-notification";
-    return `
-        <li class="dropdown-item notification-item ${unreadClass}">
-            <a href="${data.Link}" class="text-decoration-none text-golden notification-link" data-id="${data.Id}" role="button">
-                ${data.Message}
-                <div class="text-end mt-1">
-                    <small class="text-muted">${relativeTime}</small>
-                </div>
-            </a>
-        </li>
-    `;
+    connection.start()
+        .then(() => console.log("Connected to SignalR Hub"))
+        .catch(err => {
+            console.error("SignalR Connection Error:", err);
+            toastr.error("Failed to connect to notifications service. Reconnecting...");
+            setTimeout(() => connection.start(), 5000);
+        });
 }
 
 // Mark a single notification as read
-function markNotificationAsRead(id, element) {
-    $.ajax({
-        url: "/Notification/MarkAsRead?id=" + id,
-        method: "POST",
-        contentType: "application/json"
-    }).done(function () {
-        $(element).removeClass("border-warning");
-        $(element).find("h5").removeClass("fw-bold");
+async function markNotificationAsRead(id, element) {
+    try {
+        const response = await fetch(`/Notification/MarkAsRead?ids=${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        if (!response.ok) throw new Error("Failed to mark as read");
+        if (element) {
+            element.classList.remove("unread", "unseen");
+            element.querySelector("h5").classList.remove("fw-bold");
+        }
         updateNotificationBadge(-1);
-    }).fail(function (err) {
+    } catch (err) {
         console.error("Error marking notification as read", err);
+        toastr.error("Failed to mark notification as read");
+    }
+}
+
+let isDropdownOpen = false;
+
+// Function to mark notifications as seen when the dropdown is expanded
+function handleDropdownToggle() {
+    const dropdown = document.getElementById("notificationDropdown");
+    if (!dropdown) return;
+
+    dropdown.addEventListener("show.bs.dropdown", async () => {
+        isDropdownOpen = true;
+        const notificationIds = getVisibleNotificationIds();
+        if (notificationIds.length > 0) {
+            await markNotificationsAsSeen(notificationIds);
+        }
+    });
+
+    dropdown.addEventListener("hide.bs.dropdown", () => {
+        isDropdownOpen = false;
     });
 }
 
+// Get IDs of visible notifications
+function getVisibleNotificationIds() {
+    const notificationItems = document.querySelectorAll(".notification-item");
+    const notificationIds = [];
+    notificationItems.forEach(item => {
+        if (isElementInViewport(item)) {
+            const id = item.querySelector(".notification-link")?.getAttribute("data-id");
+            if (id) notificationIds.push(id);
+        }
+    });
+    return notificationIds;
+}
+
+// Check if an element is in the viewport
+function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// Mark notifications as seen
+async function markNotificationsAsSeen(notificationIds) {
+    try {
+        const response = await fetch('/Notification/MarkAsSeen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(notificationIds),
+        });
+
+        if (!response.ok) throw new Error("Failed to mark notifications as seen");
+        console.log('Notifications marked as seen.');
+    } catch (error) {
+        console.error('Error marking notifications as seen:', error);
+    }
+}
+
 // Mark all notifications as read
-function markAllAsRead() {
-    $.ajax({
-        url: "/Notification/MarkAllAsRead",
-        method: "POST",
-        contentType: "application/json"
-    }).done(function () {
-        // Remove unread styles from all notifications
-        $(".list-group-item").removeClass("border-warning");
-        $(".list-group-item h5").removeClass("fw-bold");
+async function markAllAsRead() {
+    try {
+        const response = await fetch("/Notification/MarkAllAsRead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        if (!response.ok) throw new Error("Failed to mark all as read");
+        document.querySelectorAll(".notification-item.unread").forEach(item => {
+            item.classList.remove("unread", "unseen");
+            item.querySelector("h5").classList.remove("fw-bold");
+        });
         updateNotificationBadge(0);
         collapseNotificationDropdown();
-    }).fail(function (err) {
+    } catch (err) {
         console.error("Error marking all notifications as read", err);
-    });
+        toastr.error("Failed to mark all notifications as read");
+    }
 }
 
 // Collapse the notification dropdown
@@ -170,23 +166,49 @@ function updateNotificationBadge(delta) {
     const badge = document.getElementById("notificationBadge");
     if (!badge) return;
 
-    if (delta === 0) badge.textContent = "0";
-    else{
-        let maxCount = 9;
-        let count = Math.max(0, (parseInt(badge.textContent) || 0) + delta);
-        badge.textContent = count > maxCount ? `${maxCount}+` : count;
-    }
+    let count = parseInt(badge.textContent) || 0;
+    count = Math.max(0, count + delta);
+    badge.textContent = count > 9 ? "9+" : count;
+    badge.style.display = count > 0 ? "inline-block" : "none";
+}
+
+// Generate HTML for a notification
+function generateNotificationHTML(data) {
+    const relativeTime = getRelativeTime(data.CreatedAt);
+    const unreadClass = data.IsRead ? "" : "unread";
+    const unseenClass = data.IsSeen ? "" : "unseen";
+    return `
+        <div class="list-group-item notification-item ${unreadClass} ${unseenClass}">
+            <a href="${data.Link}" class="text-decoration-none text-dark" data-id="${data.Id}" onclick="markNotificationAsRead('${data.Id}', this)">
+                <div class="card-body">
+                    <h5 class="${data.IsRead ? "card-title" : "card-title fw-bold"}">${data.Content}</h5>
+                    <p class="card-text text-end mt-1">
+                        <small class="text-muted">${relativeTime}</small>
+                    </p>
+                </div>
+            </a>
+        </div>
+    `;
+}
+
+// Add a new notification to the UI
+function addNotificationToUI(data) {
+    const notificationList = document.getElementById("notificationItems");
+    if (!notificationList) return;
+
+    const newNotificationHTML = generateNotificationHTML(data);
+    const tempContainer = document.createElement("div");
+    tempContainer.innerHTML = newNotificationHTML;
+    const newElement = tempContainer.firstElementChild;
+
+    newElement.style.display = "none";
+    notificationList.insertAdjacentElement("afterbegin", newElement);
+    newElement.style.display = "";
+    $(newElement).hide().fadeIn(500);
 }
 
 // Fetch notifications for the dropdown
 async function fetchNotifications() {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-        console.error("No authentication token found");
-        return;
-    }
-
-    let limit = 5;
     const notificationList = document.getElementById("notificationItems");
     if (!notificationList) return;
 
@@ -198,13 +220,19 @@ async function fetchNotifications() {
         </div>`;
 
     try {
-        const response = await fetch("/Notification/GetNotifications?limit=" + limit, {
-            method: "GET",
-            headers: {"Authorization": `Bearer ${token}`, "Content-Type": "application/json"}
-        });
+        const response = await fetch("/Notification/GetUnreadNotifications?limit=5");
         if (!response.ok) throw new Error("Failed to fetch notifications");
         const result = await response.json();
-        renderNotifications(result);
+        var dropdownFooter = document.getElementById('dropdownFooter');
+        if (result.UnseenCount == 0){
+            notificationList.innerHTML = `<div class="p-3 text-center text-info">No new notifications.</div>`;
+            dropdownFooter.style.display = "none";
+        }
+        else{
+            renderNotifications(result);
+            dropdownFooter.style.display = "";
+        }
+
     } catch (error) {
         console.error("Error fetching notifications:", error);
         notificationList.innerHTML = `<div class="p-3 text-center text-danger">Failed to load notifications.</div>`;
@@ -219,41 +247,23 @@ function renderNotifications(data) {
     let html = "";
     data.Notifications.forEach(notification => {
         html += generateNotificationHTML(notification);
-        // html += addNotification(notification);
     });
     notificationList.innerHTML = html;
-    updateNotificationBadge(data.UnreadCount);
+    updateNotificationBadge(data.UnseenCount);
 }
-
-// Mark notification as read on click (using delegation)
-document.addEventListener("click", function (event) {
-    const link = event.target.closest(".notification-link");
-    if (link) {
-        const notificationId = link.getAttribute("data-id");
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-            console.error("No authentication token found");
-            return;
-        }
-        fetch(`/Notification/MarkAsRead?id=${notificationId}`, {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${token}` }
-        }).then(response => {
-            if (response.ok) {
-                const item = link.closest("li");
-                if (item) {
-                    item.classList.remove("unread-notification");
-                }
-                updateNotificationBadge(-1);
-            }
-        }).catch(error => console.error("Error marking as read:", error));
-    }
-});
 
 // Initialize the notification system
 document.addEventListener("DOMContentLoaded", () => {
     setupSignalRConnection();
     fetchNotifications();
+    handleDropdownToggle();
 });
 
-// connection.onclose(() => setupSignalRConnection());
+// Event delegation for marking notifications as read
+document.addEventListener("click", (event) => {
+    const link = event.target.closest(".notification-link");
+    if (link) {
+        const notificationId = link.getAttribute("data-id");
+        markNotificationAsRead(notificationId, link.closest(".notification-item"));
+    }
+});
