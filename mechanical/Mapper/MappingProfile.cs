@@ -197,6 +197,8 @@ namespace mechanical.Mapper
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
 
+            //CreateMap<Sha0>
+
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
@@ -227,7 +229,7 @@ namespace mechanical.Mapper
             CreateMap<UpdateTaskDto, TaskManagmentReturnDto>().ReverseMap();
             // CreateMap<TaskManagment, ShareTasksDto>()
             //     .ForMember(dest => dest.SelectedRMs, opt => opt.Ignore());
-
+            CreateMap<TaskManagment, ShareTasksDto>().ReverseMap();
             CreateMap<Notification, NotificationPostDto>().ReverseMap();
             CreateMap<Notification, NotificationReturnDto>().ReverseMap();
         
