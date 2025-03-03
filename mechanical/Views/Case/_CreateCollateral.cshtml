@@ -12,7 +12,7 @@
         <div class="col-12">
 
 
-            @if (shareTaskData == null || shareTaskData.TaskName == "All" || shareTaskData.TaskName == "Collateral Addition")
+            @if (shareTaskData == null || shareTaskData.TaskName == "All Task" || shareTaskData.TaskName == "Collateral Addition")
             {
 
                 <div class="row">
@@ -52,10 +52,8 @@
         </table>
 
 
-        @if (shareTaskData == null || shareTaskData.TaskName == "All")
+        @if (shareTaskData == null || shareTaskData.TaskName == "All Task")
         {
-
-        // All, Case Follow, Report Generation
             <div class="row">
                 @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
                 <div class="row">
