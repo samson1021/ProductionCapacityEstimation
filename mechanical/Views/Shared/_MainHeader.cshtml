@@ -105,10 +105,19 @@
             </a>
             <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationDropdown" style="width: 350px;">
                 <div class="dropdown-header bg-light py-3">
-                    <h6 class="mb-0 text-center fw-bold">Notifications</h6>
+                    <a href="/Notification" class="text-decoration-none text-secondary">
+                        <h6 class="mb-0 text-center fw-bold">Notifications</h6>
+                    </a>
                 </div>
-                <div id="notificationItems" class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;"></div>
-                <div class="dropdown-footer bg-light py-2">
+                <div id="notificationItems" class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Loading State -->
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="dropdownFooter" class="dropdown-footer bg-light py-2">
                     <div class="d-flex justify-content-around">
                         <a href="#" class="text-decoration-none text-secondary" onclick="markAllAsRead(); return false;">
                             <i class="fas fa-check-circle me-1"></i> Mark All as Read
@@ -133,59 +142,3 @@
         </li>
     </ul>
 </nav>
-<script>
-    // Mark a single notification as read
-    function markNotificationAsRead(id, element) {
-        $.ajax({
-            url: "/Notification/MarkAsRead?id=" + id,
-            method: "POST",
-            contentType: "application/json"
-        }).done(function () {
-            $(element).removeClass("border-warning");
-            $(element).find("h5").removeClass("fw-bold");
-            updateNotificationBadge(-1);
-        }).fail(function (err) {
-            console.error("Error marking notification as read", err);
-        });
-    }
-
-    // Mark all notifications as read
-    function markAllAsRead() {
-        $.ajax({
-            url: "/Notification/MarkAllAsRead",
-            method: "POST",
-            contentType: "application/json"
-        }).done(function () {
-            // Remove unread styles from all notifications
-            $(".list-group-item").removeClass("border-warning");
-            $(".list-group-item h5").removeClass("fw-bold");
-            updateNotificationBadge(0);
-            collapseNotificationDropdown();
-        }).fail(function (err) {
-            console.error("Error marking all notifications as read", err);
-        });
-    }
-
-    // Collapse the notification dropdown
-    function collapseNotificationDropdown() {
-        const dropdown = document.getElementById("notificationDropdown");
-        if (dropdown && dropdown.classList.contains("show")) {
-            dropdown.classList.remove("show");
-            dropdown.setAttribute("aria-expanded", "false");
-        }
-    }
-
-    // Update the notification badge count
-    function updateNotificationBadge(delta) {
-        const badge = document.getElementById("notificationBadge");
-        if (!badge) return;
-
-        if (delta === 0) badge.textContent = "0";
-        else{
-            let maxCount = 9;
-            let count = Math.max(0, (parseInt(badge.textContent) || 0) + delta);
-            badge.textContent = count > maxCount ? `${maxCount}+` : count;
-        }
-    }
-
-</script>

@@ -12,11 +12,11 @@ a {
 
 a:hover {
     background-color: #bdc4bd;
-    transform: scale(1.05);
+    transform: scale(1.025);
 }
 
 a:active {
-    transform: scale(0.95);
+    transform: scale(0.975);
 }
 
 /* Notification Dropdown Styles */
@@ -28,23 +28,8 @@ a:active {
 .dropdown-item:hover {
     background-color: #f8f9fa;
 }
-
-.dropdown-menu {
-    border: none;
-    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 10px; */
-    overflow: hidden;
-    background-color: #d9e1e9;
-}
-
-.dropdown-header {
+.dropdown-item a:hover {
     background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.dropdown-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
 }
 
 .list-group-item {
@@ -57,12 +42,18 @@ a:active {
 .list-group-item:hover {
     background-color: #f8f9fa;
 }
+.list-group-item a:hover {
+    background-color: #f8f9fa;
+}
 
 .list-group-item.unread {
     background-color: #fff3cd;
 }
 
 .list-group-item.unread:hover {
+    background-color: #ffe69c;
+}
+.list-group-item.unread a:hover {
     background-color: #ffe69c;
 }
 
@@ -82,65 +73,103 @@ a:active {
     flex: 1;
 }
 
-.notification-time {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-
 /* Badge Styles */
 .badge {
     background-color: #f1c40f;
 }
 
-.badge-danger {
-    background-color: #dc3545;
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Notification Dropdown Styles */
+.dropdown-menu {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow: hidden;
+    /* border: none;
+    background-color: #d9e1e9; */
 }
 
-.new-notification {
-    animation: fadeIn 0.3s ease;
-}
-
-/* Animation for Fade-In */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-/* 
-.notification-item {
+.dropdown-header {
+    background-color: #f8f9fa;
     border-bottom: 1px solid #e9ecef;
     padding: 12px 16px;
-    animation: fadeIn 0.5s ease-in-out;
-    transition: background-color 0.3s ease;
-    overflow-y: auto;
+    font-weight: 600;
+    color: #6f42c1;
+}
+
+.dropdown-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 8px 16px;
+    text-align: center;
+}
+
+/* .dropdown-footer a:hover {
+    background-color: #f8f9fa;
+} */
+
+.notification-item {
+    /* padding: 12px 16px; */
+    border-left: 4px solid transparent;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
 }
 
 .notification-item:last-child {
     border-bottom: none;
 }
 
+/* Unseen notifications */
+.notification-item.unseen {
+    background-color: #e9f5ff;
+    border-left: 4px solid #007bff;
+}
+
+.notification-item.unread {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
 .notification-item:hover {
     background-color: #f8f9fa;
 }
 
-.unread-notification {
-    background-color: #e9f5ff;
-    font-weight: bold;
-}
-
-.notification-item a {
+.notification-link {
+    color: #343a40;
     text-decoration: none;
-    transition: color 0.3s ease, transform 0.2s ease;
     display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
 }
 
-.notification-item a:active {
-    transform: scale(0.95);
-} */
+.notification-link:hover {
+    color: #6f42c1;
+}
+
+.notification-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+/* Badge Styles */
+.badge-danger {
+    background-color: #dc3545;
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    border-radius: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animation for New Notifications */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.new-notification {
+    animation: fadeIn 0.5s ease;
+}
