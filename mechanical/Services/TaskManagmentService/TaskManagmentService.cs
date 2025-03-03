@@ -18,6 +18,8 @@ using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.NotificationService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.UserService;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -499,10 +501,11 @@ namespace mechanical.Services.TaskManagmentService
         public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId)
         {
             var comments = await _cbeContext.TaskComments
+                   .Include(res=>res.User)
                    .Where(t=>t.TaskId == taskId)
                    .OrderBy(d => d.CommentDate)
                    .ToListAsync();
-            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
+            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);            
         }
 
     }

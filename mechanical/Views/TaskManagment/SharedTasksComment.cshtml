@@ -22,13 +22,22 @@
             <form action="/TaskManagment/CommentTask" method="post" id="commentForm">
                 <div class="input-group">
                     <input type="hidden" id="TaskId" />
-                    <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control">
+                    <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control required ">
                     <span class="input-group-append">
                         @* <button type="submit" class="btn btn-primary" id="SendButton"><i class="fab fa-telegram-plane"></i></button> *@
                         <button type="submit" class="btn btn-primary" id="SendButton"><i class="fas fa-arrow-right"></i></button>
                     </span>
                 </div>
-            </form>
+                <span class="mt-0 mb-2" id="error-message" style="color: red; display: none;"> </span>
+              </form>
         </div>
     </div>
 </section>
+<style>
+    #error-message {
+        margin: 0; /* No margin above or below */
+        padding: 0; /* No padding */
+        display: block; /* Ensure it behaves as a block element */
+        color: red; /* Set the text color */
+    }
+</style>
