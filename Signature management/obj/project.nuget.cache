@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5S87/mWP5yU=",
+  "dgSpecHash": "stbBT3gY4SA=",
   "success": true,
-  "projectFilePath": "M:\\CBE\\Project\\task sharing\\TaskSharing\\Signature management\\Signature management.csproj",
+  "projectFilePath": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\Signature management\\Signature management.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Melese\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Melese\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

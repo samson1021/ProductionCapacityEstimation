@@ -6615,11 +6615,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "M:\\CBE\\Project\\task sharing\\TaskSharing\\Signature management\\Signature management.csproj",
+      "projectUniqueName": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\Signature management\\Signature management.csproj",
       "projectName": "Signature management",
-      "projectPath": "M:\\CBE\\Project\\task sharing\\TaskSharing\\Signature management\\Signature management.csproj",
+      "projectPath": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\Signature management\\Signature management.csproj",
       "packagesPath": "C:\\Users\\Melese\\.nuget\\packages\\",
-      "outputPath": "M:\\CBE\\Project\\task sharing\\TaskSharing\\Signature management\\obj\\",
+      "outputPath": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\Signature management\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Melese\\AppData\\Roaming\\NuGet\\NuGet.Config",
