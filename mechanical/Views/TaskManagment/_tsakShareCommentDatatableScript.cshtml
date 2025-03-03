@@ -37,27 +37,26 @@
         });
     }
 
-    // Function to update chat messages
     function updateChatMessages(comments) {
         const chatMessages = $('.direct-chat-messages');
         chatMessages.empty(); // Clear existing messages
-
-        // Check if comments are not null and have elements
         if (comments && comments.length > 0) {
             comments.forEach(function (comment) {
+                var Username = comment.User.Name;
+                console.log("send userid:", Username); // Log the response data
                 var CommentDate = new Date(comment.CommentDate); // Convert to Date object
                 var Comment = comment.Comment;
                 var formattedDate = formatDate(CommentDate);
                 const messageElement = `
-                    <div class="direct-chat-msg">
-                        <div class="direct-chat-infos clearfix">
-                            <span class="direct-chat-name float-left">${comment.UserId}</span>
-                            <span class="direct-chat-timestamp float-right">${formattedDate}</span>
-                        </div>
-                        <div class="direct-chat-text">
-                            ${Comment}
-                        </div>
-                    </div>`;
+                        <div class="direct-chat-msg">
+                            <div class="direct-chat-infos clearfix">
+                               <span class="direct-chat-name float-left">${Username}</span>
+                                <span class="direct-chat-timestamp float-right">${formattedDate}</span>
+                            </div>
+                            <div class="direct-chat-text">
+                                ${Comment}
+                            </div>
+                        </div>`;
                 chatMessages.append(messageElement);
             });
             chatMessages.scrollTop(chatMessages[0].scrollHeight); // Scroll to the bottom
@@ -65,10 +64,13 @@
             chatMessages.append("<div>There are no comments related to this task.</div>");
         }
     }
+
+
+
     function sendMessage(taskId) {
         var Comment = $('#messageinput').val().trim();
         var errorMessage = $('#error-message'); // Reference to the error message container
-          // Clear previous error message
+        // Clear previous error message
         errorMessage.hide();
         // Check if the comment is empty
         if (Comment === "") {
@@ -101,7 +103,7 @@
         return date.toLocaleString('en-US', options);
     }
 
-   
+
 
 </script>
 <style>
@@ -114,7 +116,7 @@
     }
 
     .direct-chat-msg {
-        max-width: 80%; /* Limit the width of chat messages */
+        max-width: 0%; /* Limit the width of chat messages */
         margin-bottom: 1.25rem;
         border-radius: 0.625rem;
         padding: 1rem;
@@ -129,14 +131,14 @@
         width: fit-content; /* Allow it to fit content */
     }
 
-    .direct-chat-msg.right {
-        margin-left: auto; /* Align right messages to the right */
-        background-color: #e6f7ff;
-    }
+        .direct-chat-msg.right {
+            margin-left: auto; /* Align right messages to the right */
+            background-color: #e6f7ff;
+        }
 
-    .direct-chat-msg.left {
-        background-color: #f1f1f1; /* Left message color */
-    }
+        .direct-chat-msg.left {
+            background-color: #f1f1f1; /* Left message color */
+        }
 
     .direct-chat-text {
         white-space: pre-wrap;
@@ -188,13 +190,12 @@
     }
 
     /* Responsive adjustments */
-   
-        .direct-chat-msg {
-            max-width: 95%; /* Allow more width on smaller screens */
-        }
-        
-        .SendButton {
-            font-size: 14px; /* Smaller button text on smaller screens */
-        }
-    
+
+    .direct-chat-msg {
+        max-width: 95%; /* Allow more width on smaller screens */
+    }
+
+    .SendButton {
+        font-size: 14px; /* Smaller button text on smaller screens */
+    }
 </style>
