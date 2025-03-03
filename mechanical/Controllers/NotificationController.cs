@@ -105,7 +105,8 @@ namespace mechanical.Controllers
             return Json(new { unreadCount });
         }
 
-        [HttpPost("MarkAsRead")]
+        // [HttpPost("MarkAsRead")]
+        [HttpPost]
         public async Task<IActionResult> MarkAsRead(Guid id)
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -115,12 +116,13 @@ namespace mechanical.Controllers
             await _notificationService.MarkAsRead(userId, id);
             return Ok();
         }
-
+        
         // [HttpPost("MarkAllAsRead")]
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> MarkAllAsRead()
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 

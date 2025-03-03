@@ -80,6 +80,7 @@
 
 @section Scripts {
     <script>
+        // Mark a single notification as read
         function markNotificationAsRead(id, element) {
             $.ajax({
                 url: "/Notification/MarkAsRead?id=" + id,
@@ -88,9 +89,50 @@
             }).done(function () {
                 $(element).removeClass("border-warning");
                 $(element).find("h5").removeClass("fw-bold");
+                updateNotificationBadge(-1);
             }).fail(function (err) {
                 console.error("Error marking notification as read", err);
             });
         }
+
+        // Mark all notifications as read
+        function markAllAsRead() {
+            $.ajax({
+                url: "/Notification/MarkAllAsRead",
+                method: "POST",
+                contentType: "application/json"
+            }).done(function () {
+                // Remove unread styles from all notifications
+                $(".list-group-item").removeClass("border-warning");
+                $(".list-group-item h5").removeClass("fw-bold");
+                updateNotificationBadge(0);
+                collapseNotificationDropdown();
+            }).fail(function (err) {
+                console.error("Error marking all notifications as read", err);
+            });
+        }
+
+        // Collapse the notification dropdown
+        function collapseNotificationDropdown() {
+            const dropdown = document.getElementById("notificationDropdown");
+            if (dropdown && dropdown.classList.contains("show")) {
+                dropdown.classList.remove("show");
+                dropdown.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        // Update the notification badge count
+        function updateNotificationBadge(delta) {
+            const badge = document.getElementById("notificationBadge");
+            if (!badge) return;
+
+            if (delta === 0) badge.textContent = "0";
+            else{
+                let maxCount = 9;
+                let count = Math.max(0, (parseInt(badge.textContent) || 0) + delta);
+                badge.textContent = count > maxCount ? `${maxCount}+` : count;
+            }
+        }
+
     </script>
 }

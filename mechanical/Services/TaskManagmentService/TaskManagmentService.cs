@@ -18,6 +18,8 @@ using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.NotificationService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.UserService;
+using mechanical.Models.PCE.Dto.PCECaseCommentDto;
+using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -46,7 +48,7 @@ namespace mechanical.Services.TaskManagmentService
             _userService = userService;
         }
 
-        public async Task<TaskManagment> SharesTask(string selectedCaseIds, Guid AssignorId, TaskManagmentPostDto createTaskManagmentDto)
+        public async Task<TaskManagment> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
 
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -96,14 +98,6 @@ namespace mechanical.Services.TaskManagmentService
 
                     await _cbeContext.TaskManagments.AddAsync(task);
 
-                    await _cbeContext.TaskNotifications.AddAsync(new TaskNotification
-                    {
-                        TaskId = task.Id,
-                        UserId = task.AssignedId,
-                        Date = DateTime.UtcNow,
-                        Notification = "New Task",
-                        Status = "New"
-                    });
 
                     await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
                     {
@@ -112,7 +106,13 @@ namespace mechanical.Services.TaskManagmentService
                         CurrentStage = user.Role.Name
                     });
 
+                    string notificationMessage = $"New task assigned: {createTaskManagmentDto.TaskName}";
+                    var notification = await _notificationService.SendNotification(AssignorId, notificationMessage, "Type", "#");
+
                     taskShares.Add(task);
+
+                    await _notificationService.SendRealTimeNotification(notification);
+
                 }
 /*
                     CaseId = task.CaseId,
@@ -168,7 +168,7 @@ namespace mechanical.Services.TaskManagmentService
             await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
 
             string notificationMessage = $"New task assigned: {task.TaskName}";
-            var notification = await _notificationService.SendNotification(userId, notificationMessage, "Type", "");
+            var notification = await _notificationService.SendNotification(userId, notificationMessage, "Type", "#");
             
             return notification;
         }
@@ -211,7 +211,7 @@ namespace mechanical.Services.TaskManagmentService
             }
 
             string notificationMessage = $"New task assigned: {dto.TaskName}";
-            var notifications = await _notificationService.SendNotifications(userIds, notificationMessage, "Type", "");
+            var notifications = await _notificationService.SendNotifications(userIds, notificationMessage, "Type", "#");
 
             return notifications;
         }
@@ -305,7 +305,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationMessage = $"Task '{task.TaskName}' has been updated.";
-                var notification = await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type");
+                var notification = await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type", "#");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -405,7 +405,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationMessage = $"Task '{task.TaskName}' has been deleted.";
-                var notification = await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type");
+                var notification = await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type", "#");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -451,7 +451,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationMessage = $"Task '{task.TaskName}' has been marked as completed.";
-                var notification = await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type");
+                var notification = await _notificationService.SendNotification(task.AssignedId, notificationMessage, "Type", "#");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -478,13 +478,11 @@ namespace mechanical.Services.TaskManagmentService
 
                 var comment = _mapper.Map<TaskComment>(dto);
                 comment.Id = Guid.NewGuid();
-                comment.CommenterId = userId; // userId is already a Guid
-                comment.CommenteeId = dto.CommenteeId; // Consider using an enum
+                comment.UserId = userId; // userId is already a Guid
                 comment.TaskId = dto.TaskId;
                 comment.Comment = dto.Comment;
                 comment.CommentDate = DateTime.UtcNow; // Use UtcNow for consistency
-
-                //  await _cbeContext.TaskManagments.AddAsync(comment);
+                await _cbeContext.TaskComments.AddAsync(comment);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return comment; // Returns first task; ensure list is not empty
@@ -498,10 +496,14 @@ namespace mechanical.Services.TaskManagmentService
             }
 
         }
-        public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid userId, Guid taskId)
+        public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId)
         {
-            var comments = await _cbeContext.TaskComments.Where(u => (u.CommenterId == userId && u.TaskId == taskId) || (u.CommenteeId == userId && u.TaskId == taskId)).ToListAsync();
-            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
+            var comments = await _cbeContext.TaskComments
+                   .Include(res=>res.User)
+                   .Where(t=>t.TaskId == taskId)
+                   .OrderBy(d => d.CommentDate)
+                   .ToListAsync();
+            return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);            
         }
 
     }

@@ -2,8 +2,7 @@
 {
     public class TaskCommentPostDto
     {
-        public Guid TaskId { get; set; }       
-        public Guid CommenteeId { get; set; }
+        public Guid TaskId { get; set; }    
         public required string Comment { get; set; }
        
     }
