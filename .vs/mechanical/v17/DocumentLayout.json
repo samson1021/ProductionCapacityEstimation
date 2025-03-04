@@ -3,31 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\models\\entities\\taskcomment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\taskcomment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\models\\entities\\taskmanagment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\taskmanagment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\views\\taskmanagment\\sharedtaskscomment.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\taskmanagment\\sharedtaskscomment.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\views\\taskmanagment\\_tsaksharecommentdatatablescriptpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\taskmanagment\\_tsaksharecommentdatatablescriptpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{E4033638-8076-4F0D-BAC6-831D71519BFA}|Signature management\\Signature management.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\signature management\\appsettings_signature.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{E4033638-8076-4F0D-BAC6-831D71519BFA}|Signature management\\Signature management.csproj|solutionrelative:signature management\\appsettings_signature.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\controllers\\taskmanagmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\controllers\\taskmanagmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\views\\taskmanagment\\sharedtasks.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\taskmanagment\\sharedtasks.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\USER\\AppData\\Local\\SourceServer\\eb0fc1ecf7b1ff39adcbe031e92019d153d4782dc4af94798b959700953a4cf7\\src\\Mvc\\Mvc.Core\\src\\Infrastructure\\ResourceInvoker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -37,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -53,93 +38,39 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "TaskComment.cs",
-              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Models\\Entities\\TaskComment.cs",
-              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\TaskComment.cs",
-              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Models\\Entities\\TaskComment.cs",
-              "RelativeToolTip": "mechanical\\Models\\Entities\\TaskComment.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAA4wAgAAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T12:32:39.582Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "TaskManagment.cs",
-              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Models\\Entities\\TaskManagment.cs",
-              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\TaskManagment.cs",
-              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Models\\Entities\\TaskManagment.cs",
-              "RelativeToolTip": "mechanical\\Models\\Entities\\TaskManagment.cs",
+              "Title": "appsettings_Signature.json",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\Signature management\\appsettings_Signature.json",
+              "RelativeDocumentMoniker": "Signature management\\appsettings_Signature.json",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\Signature management\\appsettings_Signature.json",
+              "RelativeToolTip": "Signature management\\appsettings_Signature.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T12:32:33.968Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "_tsakShareCommentDatatableScriptPartial.cshtml",
-              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\TaskManagment\\_tsakShareCommentDatatableScriptPartial.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\TaskManagment\\_tsakShareCommentDatatableScriptPartial.cshtml",
-              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\TaskManagment\\_tsakShareCommentDatatableScriptPartial.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\TaskManagment\\_tsakShareCommentDatatableScriptPartial.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAD8AAAAJAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-25T11:05:22.337Z",
-              "EditorCaption": ""
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-03-04T07:28:56.719Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "SharedTasksComment.cshtml",
-              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\TaskManagment\\SharedTasksComment.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\TaskManagment\\SharedTasksComment.cshtml",
-              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\TaskManagment\\SharedTasksComment.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\TaskManagment\\SharedTasksComment.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACQAAAATAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-25T07:40:36.545Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ResourceInvoker.cs",
-              "DocumentMoniker": "C:\\Users\\USER\\AppData\\Local\\SourceServer\\eb0fc1ecf7b1ff39adcbe031e92019d153d4782dc4af94798b959700953a4cf7\\src\\Mvc\\Mvc.Core\\src\\Infrastructure\\ResourceInvoker.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\eb0fc1ecf7b1ff39adcbe031e92019d153d4782dc4af94798b959700953a4cf7\\src\\Mvc\\Mvc.Core\\src\\Infrastructure\\ResourceInvoker.cs",
-              "ToolTip": "C:\\Users\\USER\\AppData\\Local\\SourceServer\\eb0fc1ecf7b1ff39adcbe031e92019d153d4782dc4af94798b959700953a4cf7\\src\\Mvc\\Mvc.Core\\src\\Infrastructure\\ResourceInvoker.cs",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\eb0fc1ecf7b1ff39adcbe031e92019d153d4782dc4af94798b959700953a4cf7\\src\\Mvc\\Mvc.Core\\src\\Infrastructure\\ResourceInvoker.cs",
-              "ViewState": "AQIAAE4AAAAAAAAAAAAmwFsAAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T08:40:07.102Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SharedTasks.cshtml",
-              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\TaskManagment\\SharedTasks.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\TaskManagment\\SharedTasks.cshtml",
-              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\TaskManagment\\SharedTasks.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\TaskManagment\\SharedTasks.cshtml",
-              "ViewState": "AQIAAL4AAAAAAAAAAAAAAMYAAABOAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-25T07:38:58.285Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
               "Title": "TaskManagmentController.cs",
               "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Controllers\\TaskManagmentController.cs",
               "RelativeDocumentMoniker": "mechanical\\Controllers\\TaskManagmentController.cs",
               "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Controllers\\TaskManagmentController.cs",
               "RelativeToolTip": "mechanical\\Controllers\\TaskManagmentController.cs",
-              "ViewState": "AQIAACIAAAAAAAAAAADwvzEAAAAAAAAA",
+              "ViewState": "AQIAAB0AAAAAAAAAAAAxwC8AAABOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-25T07:20:04.759Z",
+              "WhenOpened": "2025-03-04T06:37:32.99Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeDocumentMoniker": "mechanical\\appsettings.json",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeToolTip": "mechanical\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-03-04T06:34:37.13Z",
               "EditorCaption": ""
             }
           ]
