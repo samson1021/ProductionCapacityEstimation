@@ -1,34 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\",
+  "WorkspaceRootPath": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\controllers\\taskmanagmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\controllers\\taskmanagmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\_createcollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\_createcollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\services\\caseservices\\caseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\services\\caseservices\\caseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\controllers\\casecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\controllers\\casecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\newcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\newcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\services\\caseservices\\icaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\services\\caseservices\\icaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|c:\\users\\user\\desktop\\tsn1\\tasksharing\\mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,98 +18,83 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ICaseService.cs",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\ICaseService.cs",
-              "RelativeDocumentMoniker": "mechanical\\Services\\CaseServices\\ICaseService.cs",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\ICaseService.cs",
-              "RelativeToolTip": "mechanical\\Services\\CaseServices\\ICaseService.cs",
-              "ViewState": "AQIAABQAAAAAAAAAAIA3wC0AAAAcAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-02T14:12:17.613Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CaseService.cs",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\CaseService.cs",
-              "RelativeDocumentMoniker": "mechanical\\Services\\CaseServices\\CaseService.cs",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\CaseService.cs",
-              "RelativeToolTip": "mechanical\\Services\\CaseServices\\CaseService.cs",
-              "ViewState": "AQIAAOMBAAAAAAAAAAAcwPwBAAAUAAAA",
+              "DocumentIndex": 0,
+              "Title": "TaskManagmentController.cs",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Controllers\\TaskManagmentController.cs",
+              "RelativeDocumentMoniker": "mechanical\\Controllers\\TaskManagmentController.cs",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Controllers\\TaskManagmentController.cs",
+              "RelativeToolTip": "mechanical\\Controllers\\TaskManagmentController.cs",
+              "ViewState": "AQIAAB0AAAAAAAAAAAAQwC8AAAA8AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-01T13:06:47.965Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "CaseController.cs",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Controllers\\CaseController.cs",
-              "RelativeDocumentMoniker": "mechanical\\Controllers\\CaseController.cs",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Controllers\\CaseController.cs",
-              "RelativeToolTip": "mechanical\\Controllers\\CaseController.cs",
-              "ViewState": "AQIAAJUAAAAAAAAAAAAqwPMAAAAIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-28T07:39:28.925Z",
+              "WhenOpened": "2025-03-04T06:37:32.99Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "_CreateCollateral.cshtml",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\_CreateCollateral.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\_CreateCollateral.cshtml",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\_CreateCollateral.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\Case\\_CreateCollateral.cshtml",
-              "ViewState": "AQIAAAkAAAAAAAAAAAAAAA4AAABNAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-03-03T06:23:23.127Z",
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeDocumentMoniker": "mechanical\\appsettings.json",
+              "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeToolTip": "mechanical\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-03-04T06:34:37.13Z",
               "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1023,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Detail.cshtml",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\Detail.cshtml",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\Case\\Detail.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAA3AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-28T07:36:46.585Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "NewCases.cshtml",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\NewCases.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\NewCases.cshtml",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\NewCases.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\Case\\NewCases.cshtml",
-              "ViewState": "AQIAABIAAAAAAAAAAAAAAB0AAAAvAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-28T06:19:46.667Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "_NewCasesDatatableSriptsPartial.cshtml",
-              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
-              "RelativeDocumentMoniker": "mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
-              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
-              "RelativeToolTip": "mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACkAAABGAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-19T11:21:09.064Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:3:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:4:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:5:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
             }
           ]
         }
