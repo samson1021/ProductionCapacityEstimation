@@ -74,8 +74,7 @@
               "RelativeToolTip": "mechanical\\Services\\CaseServices\\CaseService.cs",
               "ViewState": "AQIAAOMBAAAAAAAAAAAcwPwBAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-01T13:06:47.965Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-01T13:06:47.965Z"
             },
             {
               "$type": "Document",
@@ -87,8 +86,7 @@
               "RelativeToolTip": "mechanical\\Controllers\\CaseController.cs",
               "ViewState": "AQIAAJUAAAAAAAAAAAAqwPMAAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-28T07:39:28.925Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-28T07:39:28.925Z"
             },
             {
               "$type": "Document",
@@ -110,7 +108,7 @@
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\Detail.cshtml",
               "ToolTip": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
               "RelativeToolTip": "mechanical\\Views\\Case\\Detail.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAATAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAmAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-02-28T07:36:46.585Z",
               "EditorCaption": ""
