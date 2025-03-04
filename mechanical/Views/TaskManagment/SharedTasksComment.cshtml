@@ -1,0 +1,43 @@
+﻿@using mechanical.Models.Dto.TaskManagmentDto
+
+
+<section class="content">
+    <div class="card direct-chat direct-chat-purple">
+        <div class="card-header">
+            <h3 class="card-title">Task Comment</h3>
+            <div class="card-tools">
+                <span title="New Messages" class="badge badge-warning CommentBage"></span>
+                <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
+                    <i class="fas fa-comments"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="direct-chat-messages" style="height:25rem;"></div>
+            <div class="direct-chat-contacts">
+                <ul class="contacts-list"></ul>
+            </div>
+        </div>
+        <div class="card-footer">
+            <form action="/TaskManagment/CommentTask" method="post" id="commentForm">
+                <div class="input-group">
+                    <input type="hidden" id="TaskId" />
+                    <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control required ">
+                    <span class="input-group-append">
+                        @* <button type="submit" class="btn btn-primary" id="SendButton"><i class="fab fa-telegram-plane"></i></button> *@
+                        <button type="submit" class="btn btn-primary" id="SendButton"><i class="fas fa-arrow-right"></i></button>
+                    </span>
+                </div>
+                <span class="mt-0 mb-2" id="error-message" style="color: red; display: none;"> </span>
+              </form>
+        </div>
+    </div>
+</section>
+<style>
+    #error-message {
+        margin: 0; /* No margin above or below */
+        padding: 0; /* No padding */
+        display: block; /* Ensure it behaves as a block element */
+        color: red; /* Set the text color */
+    }
+</style>

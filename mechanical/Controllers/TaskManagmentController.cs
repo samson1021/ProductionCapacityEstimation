@@ -23,22 +23,46 @@ namespace mechanical.Controllers
             _logger = logger;
             _mapper = mapper;
         }
+
         
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> CommentTask([FromBody] TaskCommentPostDto dto)
+        {
+            try
+            {
+                await _taskManagmentService.CommentTask(base.GetCurrentUserId(), dto);
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTaskComment(Guid TaskId)
+        {
+            var comments = await _taskManagmentService.GetTaskComment(TaskId);
+            return Json(comments);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ShareTask(string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
         {
             try
             {
-                await _taskManagmentService.SharesTask(selectedCaseIds, base.GetCurrentUserId(), createTaskManagmentDto);          
+                await _taskManagmentService.ShareTask(base.GetCurrentUserId(), selectedCaseIds, createTaskManagmentDto);
                 return RedirectToAction("NewCases", "Case");
             }
             catch (Exception ex)
-            {               
+            {
                // return BadRequest(error);
                 return RedirectToAction("NewCases", "Case");
             }
-           
         }
 
         [HttpGet]
@@ -47,17 +71,17 @@ namespace mechanical.Controllers
             return View();
         }
 
-        public async Task<IActionResult> UpdateSharedTask()
+        public IActionResult UpdateSharedTask()
         {
             return View();
         }
-        public async Task<IActionResult> DetialSharedTask()
+        public IActionResult DetialSharedTask()
         {
             return View();
         }
 
         [HttpGet]
-        public async Task<IActionResult> SharedTasks()
+        public IActionResult SharedTasks()
         {
             return View();
         }
@@ -75,7 +99,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> ShareTasks(ShareTasksDto dto)
         {
             if (!ModelState.IsValid)
-            {                
+            {
                 return BadRequest(new {  success=false, message = "Task is not shared successfully" });
             }
             try
@@ -91,7 +115,7 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = "Task is not shared successfully" });
             }
         }
 
@@ -134,7 +158,7 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = "Task is not updated successfully" });
             }
         }
 
@@ -150,7 +174,7 @@ namespace mechanical.Controllers
             }
             catch (ArgumentException ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = "An error occurred while reassigning the task." });
             }
             catch (Exception ex)
             {
@@ -159,7 +183,7 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        // [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
             try
@@ -170,7 +194,7 @@ namespace mechanical.Controllers
             }
             catch (ArgumentException ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = "An error occurred while revoking the task." });
             }
             catch (Exception ex)
             {
@@ -188,7 +212,7 @@ namespace mechanical.Controllers
                 {
                     return NotFound();
                 }
-
+                TempData["myTaskInfo"] = task.Id; // Use TempData instead
                 return PartialView("_TaskDetailsPartial", task);
             }
             catch (Exception ex)
@@ -224,7 +248,7 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ReceivedTasks()
+        public IActionResult ReceivedTasks()
         {
             return View();
         }

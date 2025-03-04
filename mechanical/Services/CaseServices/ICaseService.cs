@@ -1,5 +1,6 @@
 ﻿using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Models.Entities;
 
 namespace mechanical.Services.CaseServices
@@ -7,6 +8,7 @@ namespace mechanical.Services.CaseServices
     public interface ICaseService
     {
         Task<Case> CreateCase(Guid userId, CasePostDto createCaseDto);
+
         Task<CaseReturntDto> GetCase(Guid userId, Guid id);
         Task<string> GetCustomerName(double customerId);
         Task<CaseReturntDto> GetCaseDetail(Guid id);
@@ -39,6 +41,11 @@ namespace mechanical.Services.CaseServices
         Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string Status = "", int? Limit = null);
         Task<IEnumerable<CaseDto>> GetReceivedCases(Guid userId, string Status = "", int? Limit = null);
         Task<IEnumerable<CaseDto>> GetSharedCases(Guid userId, string Status = "", int? Limit = null);
+
+        // shared case info
+        Task<ShareTasksDto> SharedCaseInfo(Guid id);
+
+
 
         //Task<IEnumerable<RMCaseDto>> GetMTLPendingCases();
 

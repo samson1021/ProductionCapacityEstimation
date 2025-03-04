@@ -183,16 +183,62 @@ namespace mechanical.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> Detail(Guid id)
+        //public async Task<IActionResult> Detail(Guid id, string CaseType)
+        //{
+
+        //    if (CaseType!= "Owner")
+        //    {
+        //        var ShareTaskData = await _caseService.SharedCaseInfo(id);
+        //        var f = 0;
+
+        //    }
+        //    else
+        //    {
+        //        var ShareTaskData = null;
+
+        //    }
+        //    var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
+        //    var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+        //    if (loanCase == null) { return RedirectToAction("NewCases"); }
+        //    ViewData["case"] = loanCase;
+        //    ViewData["CaseType"] = CaseType;
+        //    ViewData["CaseSchedule"] = caseSchedule;
+        //    ViewData["Id"] = base.GetCurrentUserId();
+
+        //    ViewData['ShareTaskData'] =  ShareTaskData;
+        //    ;
+        //    return View();
+        //}
+        public async Task<IActionResult> Detail(Guid id, string CaseType)
         {
+            object ShareTaskData; 
+
+            if (CaseType != "Owner")
+            {
+                ShareTaskData = await _caseService.SharedCaseInfo(id);
+            }
+            else
+            {
+                ShareTaskData = null;
+            }
+
             var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
-            if (loanCase == null) { return RedirectToAction("NewCases"); }
+
+            if (loanCase == null)
+            {
+                return RedirectToAction("NewCases");
+            }
+
             ViewData["case"] = loanCase;
+            ViewData["CaseType"] = CaseType;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
+            ViewData["ShareTaskData"] = ShareTaskData; // Fixed syntax: single quotes to double quotes
+
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> PendDetail(Guid id)
         {

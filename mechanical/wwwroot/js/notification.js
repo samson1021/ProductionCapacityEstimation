@@ -1,176 +1,269 @@
-// Helper
-// function convertToUTC(date) {
-//     return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-//                      date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-// }
-
+// Helper function to calculate relative time
 function getRelativeTime(date) {
     if (typeof date !== "string" || !date.trim()) return "Unknown time";
     if (!date.endsWith("Z")) date += "Z";
 
     date = new Date(date);
-    if (!(date instanceof Date)) return "Unknown time";
-    if (isNaN(date)) return "Invalid date";
+    if (!(date instanceof Date) || isNaN(date)) return "Invalid date";
 
-    // date = (new Date(Date.parse(date)))
-    const now = (new Date());
-    const diff = date - now;
-    // const diff = convertToUTC(date) - convertToUTC(now);
+    const now = new Date();
+    const diff = now - date;
 
     const seconds = Math.floor(Math.abs(diff) / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (diff > 0) {
-
-        if (seconds < 60) return "In a few seconds";
-        if (minutes < 60) return `In ${minutes} minute${minutes > 1 ? "s" : ""}`;
-        if (hours < 24) return `In ${hours} hour${hours > 1 ? "s" : ""}`;
-        if (days === 1) return "Tomorrow";
-        return `In ${days} day${days > 1 ? "s" : ""}`;
-    } else {
-
-        if (seconds < 60) return "Just now";
-        if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-        if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-        if (days === 1) return "Yesterday";
-        return `${days} day${days > 1 ? "s" : ""} ago`;
-    }
+    if (seconds < 60) return "Just now";
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (days === 1) return "Yesterday";
+    return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
+// SignalR connection setup
+function setupSignalRConnection() {
+    const token = localStorage.getItem("authToken");
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub", { accessTokenFactory: () => token })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
 
-// SignalR connection (using negotiation to allow fallback transports)
-const token = localStorage.getItem("authToken"); // Must be set at login
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/notificationHub", { accessTokenFactory: () => token })
-    .withAutomaticReconnect()
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
+    connection.on("ReceiveNotification", (data) => {
+        updateNotificationBadge(1);
+        addNotificationToUI(data);
+        toastr.info("🔔 " + data.content);
+    });
 
-function startConnection() {
+    connection.onclose(() => {
+        console.warn("SignalR connection lost. Reconnecting...");
+        toastr.warning("Connection lost. Reconnecting...");
+        setTimeout(() => connection.start(), 5000);
+    });
+
     connection.start()
         .then(() => console.log("Connected to SignalR Hub"))
         .catch(err => {
             console.error("SignalR Connection Error:", err);
             toastr.error("Failed to connect to notifications service. Reconnecting...");
-            setTimeout(startConnection, 5000);
+            setTimeout(() => connection.start(), 5000);
         });
 }
 
-connection.on("ReceiveNotification", (data) => {
+// Mark a single notification as read
+async function markNotificationAsRead(id, element) {
+    try {
+        const response = await fetch(`/Notification/MarkAsRead?ids=${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        if (!response.ok) throw new Error("Failed to mark as read");
+        if (element) {
+            element.classList.remove("unread", "unseen");
+            element.querySelector("h5").classList.remove("fw-bold");
+        }
+        updateNotificationBadge(-1);
+    } catch (err) {
+        console.error("Error marking notification as read", err);
+        toastr.error("Failed to mark notification as read");
+    }
+}
 
-    // Update dropdown badge
-    updateNotificationCount(1);
+let isDropdownOpen = false;
 
-    // Prepend new notification (with fade-in)
-    const notificationList = document.getElementById("notificationItems");
-    const newNotificationHTML = addNotification({
-        Id: data.id,
-        Message: data.message,
-        Link: data.link,
-        IsRead: false,
-        CreatedAt: new Date().toISOString()
+// Function to mark notifications as seen when the dropdown is expanded
+function handleDropdownToggle() {
+    const dropdown = document.getElementById("notificationDropdown");
+    if (!dropdown) return;
+
+    dropdown.addEventListener("show.bs.dropdown", async () => {
+        isDropdownOpen = true;
+        const notificationIds = getVisibleNotificationIds();
+        if (notificationIds.length > 0) {
+            await markNotificationsAsSeen(notificationIds);
+        }
     });
+
+    dropdown.addEventListener("hide.bs.dropdown", () => {
+        isDropdownOpen = false;
+    });
+}
+
+// Get IDs of visible notifications
+function getVisibleNotificationIds() {
+    const notificationItems = document.querySelectorAll(".notification-item");
+    const notificationIds = [];
+    notificationItems.forEach(item => {
+        if (isElementInViewport(item)) {
+            const id = item.querySelector(".notification-link")?.getAttribute("data-id");
+            if (id) notificationIds.push(id);
+        }
+    });
+    return notificationIds;
+}
+
+// Check if an element is in the viewport
+function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// Mark notifications as seen
+async function markNotificationsAsSeen(notificationIds) {
+    try {
+        const response = await fetch('/Notification/MarkAsSeen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(notificationIds),
+        });
+
+        if (!response.ok) throw new Error("Failed to mark notifications as seen");
+        console.log('Notifications marked as seen.');
+    } catch (error) {
+        console.error('Error marking notifications as seen:', error);
+    }
+}
+
+// Mark all notifications as read
+async function markAllAsRead() {
+    try {
+        const response = await fetch("/Notification/MarkAllAsRead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        if (!response.ok) throw new Error("Failed to mark all as read");
+        document.querySelectorAll(".notification-item.unread").forEach(item => {
+            item.classList.remove("unread", "unseen");
+            item.querySelector("h5").classList.remove("fw-bold");
+        });
+        updateNotificationBadge(0);
+        collapseNotificationDropdown();
+    } catch (err) {
+        console.error("Error marking all notifications as read", err);
+        toastr.error("Failed to mark all notifications as read");
+    }
+}
+
+// Collapse the notification dropdown
+function collapseNotificationDropdown() {
+    const dropdown = document.getElementById("notificationDropdown");
+    if (dropdown && dropdown.classList.contains("show")) {
+        dropdown.classList.remove("show");
+        dropdown.setAttribute("aria-expanded", "false");
+    }
+}
+
+// Update the notification badge count
+function updateNotificationBadge(delta) {
+    const badge = document.getElementById("notificationBadge");
+    if (!badge) return;
+
+    let count = parseInt(badge.textContent) || 0;
+    count = Math.max(0, count + delta);
+    badge.textContent = count > 9 ? "9+" : count;
+    badge.style.display = count > 0 ? "inline-block" : "none";
+}
+
+// Generate HTML for a notification
+function generateNotificationHTML(data) {
+    const relativeTime = getRelativeTime(data.CreatedAt);
+    const unreadClass = data.IsRead ? "" : "unread";
+    const unseenClass = data.IsSeen ? "" : "unseen";
+    return `
+        <div class="list-group-item notification-item ${unreadClass} ${unseenClass}">
+            <a href="${data.Link}" class="text-decoration-none text-dark" data-id="${data.Id}" onclick="markNotificationAsRead('${data.Id}', this)">
+                <div class="card-body">
+                    <h5 class="${data.IsRead ? "card-title" : "card-title fw-bold"}">${data.Content}</h5>
+                    <p class="card-text text-end mt-1">
+                        <small class="text-muted">${relativeTime}</small>
+                    </p>
+                </div>
+            </a>
+        </div>
+    `;
+}
+
+// Add a new notification to the UI
+function addNotificationToUI(data) {
+    const notificationList = document.getElementById("notificationItems");
+    if (!notificationList) return;
+
+    const newNotificationHTML = generateNotificationHTML(data);
     const tempContainer = document.createElement("div");
     tempContainer.innerHTML = newNotificationHTML;
     const newElement = tempContainer.firstElementChild;
+
     newElement.style.display = "none";
     notificationList.insertAdjacentElement("afterbegin", newElement);
     newElement.style.display = "";
     $(newElement).hide().fadeIn(500);
-
-    // Display a toast
-    toastr.info("🔔 " + data.message);
-});
-
-function addNotification(data) {
-    const relativeTime = getRelativeTime(data.CreatedAt);
-    const unreadClass = data.IsRead ? "" : "unread-notification";
-    return `
-        <li class="dropdown-item notification-item ${unreadClass}">
-            <a href="${data.Link}" class="text-decoration-none text-golden notification-link" data-id="${data.Id}">
-                ${data.Message}
-                <div class="text-end mt-1">
-                    <small class="text-muted">${relativeTime}</small>
-                </div>
-            </a>
-        </li>
-    `;
 }
 
-// Mark notification as read on click (using delegation)
-document.addEventListener("click", function (event) {
-    const link = event.target.closest(".notification-link");
-    if (link) {
-        const notificationId = link.getAttribute("data-id");
-        fetch(`/Notification/MarkAsRead?id=${notificationId}`, {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${token}` }
-        }).then(response => {
-            if (response.ok) {
-                const item = link.closest("li");
-                if (item) {
-                    item.classList.remove("unread-notification");
-                }
-                updateNotificationCount(-1);
-            }
-        }).catch(error => console.error("Error marking as read:", error));
-    }
-});
-
-function updateNotificationCount(delta) {
-
-    const badge = document.getElementById("notificationBadge");
-    let maxCount = 9;
-    let count = Math.max(0, (parseInt(badge.textContent) || 0) + delta)
-    if (count > maxCount) {
-        badge.textContent = maxCount + '+';
-    } else {
-        badge.textContent = count;
-    }
-}
-
-// Fetch notifications for the dropdown (limit to 5)
+// Fetch notifications for the dropdown
 async function fetchNotifications() {
-    let limit = 5;
     const notificationList = document.getElementById("notificationItems");
+    if (!notificationList) return;
+
     notificationList.innerHTML = `
         <div class="text-center p-3">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>`;
+
     try {
-        const response = await fetch("/Notification/GetNotifications?limit=" + limit, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await fetch("/Notification/GetUnreadNotifications?limit=5");
         if (!response.ok) throw new Error("Failed to fetch notifications");
         const result = await response.json();
-        renderNotifications(result);
+        var dropdownFooter = document.getElementById('dropdownFooter');
+        if (result.UnseenCount == 0){
+            notificationList.innerHTML = `<div class="p-3 text-center text-info">No new notifications.</div>`;
+            dropdownFooter.style.display = "none";
+        }
+        else{
+            renderNotifications(result);
+            dropdownFooter.style.display = "";
+        }
+
     } catch (error) {
         console.error("Error fetching notifications:", error);
         notificationList.innerHTML = `<div class="p-3 text-center text-danger">Failed to load notifications.</div>`;
     }
 }
 
+// Render notifications in the dropdown
 function renderNotifications(data) {
     const notificationList = document.getElementById("notificationItems");
+    if (!notificationList) return;
+
     let html = "";
     data.Notifications.forEach(notification => {
-        html += addNotification(notification);
+        html += generateNotificationHTML(notification);
     });
     notificationList.innerHTML = html;
-    updateNotificationCount(data.UnreadCount)
+    updateNotificationBadge(data.UnseenCount);
 }
 
-// Initialize
+// Initialize the notification system
 document.addEventListener("DOMContentLoaded", () => {
-    startConnection();
+    setupSignalRConnection();
     fetchNotifications();
+    handleDropdownToggle();
 });
-connection.onclose(() => startConnection());
+
+// Event delegation for marking notifications as read
+document.addEventListener("click", (event) => {
+    const link = event.target.closest(".notification-link");
+    if (link) {
+        const notificationId = link.getAttribute("data-id");
+        markNotificationAsRead(notificationId, link.closest(".notification-item"));
+    }
+});

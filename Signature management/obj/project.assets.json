@@ -6610,11 +6610,16 @@
     ]
   },
   "packageFolders": {
+<<<<<<< HEAD
     "C:\\Users\\samsontsegay\\.nuget\\packages\\": {}
+=======
+    "C:\\Users\\USER\\.nuget\\packages\\": {}
+>>>>>>> da7e5575a4d01905ce97957ff53f61525829ed1b
   },
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\samsontsegay\\Documents\\Projects\\collateral\\TaskSharing\\Signature management\\Signature management.csproj",
       "projectName": "Signature management",
       "projectPath": "C:\\Users\\samsontsegay\\Documents\\Projects\\collateral\\TaskSharing\\Signature management\\Signature management.csproj",
@@ -6623,6 +6628,16 @@
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\samsontsegay\\AppData\\Roaming\\NuGet\\NuGet.Config",
+=======
+      "projectUniqueName": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\Signature management\\Signature management.csproj",
+      "projectName": "Signature management",
+      "projectPath": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\Signature management\\Signature management.csproj",
+      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\USER\\Desktop\\tsn1\\TaskSharing\\Signature management\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+>>>>>>> da7e5575a4d01905ce97957ff53f61525829ed1b
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -6724,7 +6739,11 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< HEAD
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
+>>>>>>> da7e5575a4d01905ce97957ff53f61525829ed1b
       }
     }
   },

@@ -1,0 +1,201 @@
+﻿<script>
+    const socketUrl = 'wss://localhost:5021/ws';
+    $(document).ready(function () {
+        $('#custom-tabs-four-settings-tab').click(function (e) {
+            e.preventDefault(); // Prevent default anchor click behavior
+            var TaskId = $('#TaskId').val();  // Retrieve TaskId from the hidden input
+            var errorMessage = $('#error-message'); // Reference to the error message container
+            errorMessage.hide();
+            console.log("inside comment" + TaskId);
+            $('#messageinput').val('');
+            loadComments(TaskId); // Load comments when the tab is clicked
+        });
+
+        // Handle Send Button click
+        $('#SendButton').click(function (e) {
+            e.preventDefault(); // Prevent default form submission
+            var TaskId = $('#TaskId').val();
+            sendMessage(TaskId); // Function to send the message
+            console.log("task idd for send" + TaskId);
+            $('#messageinput').val('');  // Clear the input field after sending
+        });
+    });
+
+    // Function to load comments
+    function loadComments(TaskId) {
+        console.log('Loading comments...');
+        $.ajax({
+            url: '/TaskManagment/GetTaskComment?TaskId=' + TaskId,
+            method: 'GET',
+            success: function (data) {
+                console.log("Received comment data:", data);
+                updateChatMessages(data); // Update the chat messages
+            },
+            error: function () {
+                console.log('An error occurred while retrieving task comments.');
+            }
+        });
+    }
+
+    function updateChatMessages(comments) {
+        const chatMessages = $('.direct-chat-messages');
+        chatMessages.empty(); // Clear existing messages
+        if (comments && comments.length > 0) {
+            comments.forEach(function (comment) {
+                var Username = comment.User.Name;
+                console.log("send userid:", Username); // Log the response data
+                var CommentDate = new Date(comment.CommentDate); // Convert to Date object
+                var Comment = comment.Comment;
+                var formattedDate = formatDate(CommentDate);
+                const messageElement = `
+                        <div class="direct-chat-msg">
+                            <div class="direct-chat-infos clearfix">
+                               <span class="direct-chat-name float-left">${Username}</span>
+                                <span class="direct-chat-timestamp float-right">${formattedDate}</span>
+                            </div>
+                            <div class="direct-chat-text">
+                                ${Comment}
+                            </div>
+                        </div>`;
+                chatMessages.append(messageElement);
+            });
+            chatMessages.scrollTop(chatMessages[0].scrollHeight); // Scroll to the bottom
+        } else {
+            chatMessages.append("<div>There are no comments related to this task.</div>");
+        }
+    }
+
+
+
+    function sendMessage(taskId) {
+        var Comment = $('#messageinput').val().trim();
+        var errorMessage = $('#error-message'); // Reference to the error message container
+        // Clear previous error message
+        errorMessage.hide();
+        // Check if the comment is empty
+        if (Comment === "") {
+            // Show error message in the UI
+            errorMessage.text("Message cannot be empty.").show();
+            return; // Exit the function if the comment is empty
+        }
+        var requestData = {
+            Comment: Comment,
+            TaskId: taskId,
+        };
+        $.ajax({
+            url: '/TaskManagment/CommentTask',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                $('#messageinput').val('');  // Clear the input field after sending
+                loadComments(taskId);  // Function to reload the comments
+            },
+            error: function () {
+                console.log('Error while sending the message.');
+            }
+        });
+
+        return false;  // Prevent default form submission
+    }
+    function formatDate(date) {
+        var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return date.toLocaleString('en-US', options);
+    }
+
+
+
+</script>
+<style>
+    .direct-chat-messages {
+        max-height: 50vh;
+        overflow-y: auto;
+        padding: 2%;
+        width: 100%; /* Full width of the container */
+        box-sizing: border-box; /* Include padding in width calculations */
+    }
+
+    .direct-chat-msg {
+        max-width: 0%; /* Limit the width of chat messages */
+        margin-bottom: 1.25rem;
+        border-radius: 0.625rem;
+        padding: 1rem;
+        word-wrap: break-word;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background-color: #f9f9f9;
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
+        overflow-wrap: break-word;
+        min-height: 2.5rem;
+        width: fit-content; /* Allow it to fit content */
+    }
+
+        .direct-chat-msg.right {
+            margin-left: auto; /* Align right messages to the right */
+            background-color: #e6f7ff;
+        }
+
+        .direct-chat-msg.left {
+            background-color: #f1f1f1; /* Left message color */
+        }
+
+    .direct-chat-text {
+        white-space: pre-wrap;
+        margin-bottom: 1.25rem;
+        display: inline-block;
+    }
+
+    .direct-chat-infos {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .direct-chat-timestamp {
+        position: absolute;
+        right: 0.625rem;
+        bottom: 0.3125rem;
+        color: #888888;
+        font-size: 0.8rem;
+        font-style: italic;
+    }
+
+    .chat-date {
+        text-align: center;
+        margin: 2% auto;
+        color: #333;
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        letter-spacing: 0.05rem;
+        background-color: #f9f9f9;
+        border: none;
+        width: fit-content;
+        border-radius: 1rem;
+        display: block;
+        box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1), 0 0.25rem 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .SendButton {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+        width: 100%; /* Full width for the button */
+    }
+
+    /* Responsive adjustments */
+
+    .direct-chat-msg {
+        max-width: 95%; /* Allow more width on smaller screens */
+    }
+
+    .SendButton {
+        font-size: 14px; /* Smaller button text on smaller screens */
+    }
+</style>

@@ -1,5 +1,4 @@
 @model mechanical.Models.ViewModels.NotificationViewModel
-
 <div class="container my-4">
     <h2 class="mb-4">Notifications</h2>
     @if (!Model.Notifications.Any())
@@ -13,16 +12,23 @@
             {
                 var cardClass = notification.IsRead ? "card mb-2" : "card mb-2 border-warning";
                 var titleClass = notification.IsRead ? "card-title" : "card-title fw-bold";
-                <a href="@notification.Link" class="list-group-item list-group-item-action" data-id="@notification.Id" onclick="markNotificationAsRead('@notification.Id', this)">
-                    <div class="@cardClass">
-                        <div class="card-body">
-                            <h5 class="@titleClass">@notification.Message</h5>
-                            <p class="card-text text-end mt-1">
-                                <small class="text-muted">@notification.CreatedAt.ToString("g")</small>
-                            </p>
+                var unseenClass = !notification.IsSeen ? "unseen" : "";
+                <div class="list-group-item notification-item @(notification.IsRead ? "" : "unread") @unseenClass">
+                    <a href="@notification.Link" class="list-group-item list-group-item-action text-decoration-none text-dark" data-id="@notification.Id" onclick="markNotificationAsRead('@notification.Id', this)">
+                        <div class="@cardClass">
+                            <div class="card-body">
+                                <h5 class="@titleClass">@notification.Content</h5>
+                                @* @if (!notification.IsRead)
+                                {
+                                    <button class="btn btn-sm btn-primary mark-as-read" data-id="@notification.Id">Mark as Read</button>
+                                } *@
+                                <p class="card-text text-end mt-1">
+                                    <small class="text-muted">@notification.CreatedAt.ToString("g")</small>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             }
         </div>
 
@@ -77,20 +83,15 @@
         }
     }
 </div>
-
 @section Scripts {
     <script>
-        function markNotificationAsRead(id, element) {
-            $.ajax({
-                url: "/Notification/MarkAsRead?id=" + id,
-                method: "POST",
-                contentType: "application/json"
-            }).done(function () {
-                $(element).removeClass("border-warning");
-                $(element).find("h5").removeClass("fw-bold");
-            }).fail(function (err) {
-                console.error("Error marking notification as read", err);
+        $(document).ready(function () {
+            $(".mark-as-read").click(function () {
+                var id = $(this).data("id");
+                $.post("/Notification/MarkAsRead", { ids: [id] }, function () {
+                    location.reload();
+                });
             });
-        }
+        });
     </script>
 }

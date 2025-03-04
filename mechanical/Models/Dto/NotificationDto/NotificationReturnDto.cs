@@ -12,10 +12,11 @@ namespace mechanical.Models.Dto.NotificationDto
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public required string Message { get; set; }
+        public required string Content { get; set; }
         public required string Type { get; set; }
         public string Link { get; set; } = string.Empty;
         public required bool IsRead { get; set; }
+        public required bool IsSeen { get; set; }
 
         [JsonPropertyName("CreatedAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
