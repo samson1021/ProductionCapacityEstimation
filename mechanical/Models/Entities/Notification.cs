@@ -15,11 +15,12 @@ namespace mechanical.Models.Entities
         [Required]
         public Guid UserId { get; set; }
         [Required]
-        public required string Message { get; set; }
+        public required string Content { get; set; }
 
         public required string Type { get; set; }
         public string Link { get; set; } = string.Empty;
         public required bool IsRead { get; set; }
+        public required bool IsSeen { get; set; }
 
         [Required]
         [JsonPropertyName("CreatedAt")]

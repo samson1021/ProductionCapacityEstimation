@@ -28,11 +28,12 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            // var userId = User.Identity.GetUserId();
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 
-            var result = await _notificationService.GetNotifications(userId, page, pageSize);
+            var result = await _notificationService.GetNotifications(userId, includeRead: true, page: page, pageSize: pageSize);
             
             var viewModel = new NotificationViewModel
             {
@@ -60,7 +61,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetNotification(Guid id)
         {
             var notification = await _notificationService.GetNotification(base.GetCurrentUserId(), id);
-            return Json(notification);
+            return Ok(notification);
         }
 
         [HttpGet]
@@ -89,9 +90,21 @@ namespace mechanical.Controllers
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 
-            var result = await _notificationService.GetNotifications(userId, pageSize: limit);
-            return Json(result);
-            // return Ok(notifications);
+            var result = await _notificationService.GetNotifications(userId, includeRead: true, pageSize: limit);
+            return Ok(result);
+            // return Json(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUnreadNotifications(int limit = 5)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
+
+            var result = await _notificationService.GetNotifications(userId, includeRead: false, pageSize: limit);
+            return Ok(result);
+            // return Json(result);
         }
 
         [HttpGet]
@@ -102,30 +115,92 @@ namespace mechanical.Controllers
                 return Unauthorized();
 
             int unreadCount = await _notificationService.GetUnreadCount(userId);
-            return Json(new { unreadCount });
+            return Ok(new { unreadCount });
         }
 
-        [HttpPost("MarkAsRead")]
-        public async Task<IActionResult> MarkAsRead(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetUnseenCount()
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 
-            await _notificationService.MarkAsRead(userId, id);
-            return Ok();
+            int unreadCount = await _notificationService.GetUnseenCount(userId);
+            return Ok(new { unreadCount });
+        }
+
+        // [HttpPost("MarkAsRead")]
+        [HttpPost]
+        public async Task<ActionResult> MarkAsRead(List<Guid> ids)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
+                
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest("No notification IDs provided.");
+            }
+            
+            await _notificationService.MarkAsRead(userId, ids);
+            return Ok(new { success = true });
         }
 
         // [HttpPost("MarkAllAsRead")]
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> MarkAllAsRead()
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 
             await _notificationService.MarkAllAsRead(userId);
             return Ok();
         }
+        
+        // [HttpPost("MarkAllAsRead")]
+        [HttpPost]
+        public async Task<IActionResult> MarkAllAsSeen()
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
+
+            await _notificationService.MarkAllAsSeen(userId);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> MarkAsSeen(List<Guid> ids)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
+                
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest("No notification IDs provided.");
+            }
+            await _notificationService.MarkAsSeen(userId, ids);
+            return Ok(new { success = true });
+        }
+
+        
+        // [HttpPost]
+        // public async Task<IActionResult> MarkAsRead(Guid id)
+        // {
+        //     var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //     if (!Guid.TryParse(userIdStr, out var userId))
+        //         return Unauthorized();
+
+        //     // if (id == null || !id.Empty())
+        //     // {
+        //     //     return BadRequest("No notification IDs provided.");
+        //     // }
+        //     await _notificationService.MarkAsRead(userId, new List<Guid> {id});
+        //     return Ok();
+        // }
+        
     }
 }

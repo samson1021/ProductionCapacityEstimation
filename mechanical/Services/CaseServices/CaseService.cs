@@ -12,6 +12,7 @@ using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UploadFileService;
 using System.Linq;
+using mechanical.Models.Dto.TaskManagmentDto;
 
 namespace mechanical.Services.CaseServices
 {
@@ -78,6 +79,13 @@ namespace mechanical.Services.CaseServices
             });
           
             return loanCase;
+        }
+
+        public async Task<ShareTasksDto> SharedCaseInfo(Guid id)
+        {
+            var sharedcaseInfos = await _cbeContext.TaskManagments.FirstOrDefaultAsync(info=>info.CaseId==id);
+            var sharedcaseinfo = _mapper.Map<ShareTasksDto>(sharedcaseInfos);
+            return sharedcaseinfo;
         }
         public async Task<CaseReturntDto> GetCase(Guid userId, Guid id)
         {
