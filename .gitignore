@@ -8,4 +8,5 @@ mechanical/appsettings*
 mechanical.csproj
 mechanical.csproj.user
 .vs/
-Signature management/
+Signature management/obj
+Signature management/bin
