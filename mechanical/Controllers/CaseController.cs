@@ -152,6 +152,14 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetCompleteCases()
+        {
+            var myCase = await _caseService.GetRmCompleteCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetHOCases()
         {
             var cases = await _cbeContext.Cases.Include(res=>res.District).Include(res=>res.Collaterals).ToListAsync();
@@ -557,10 +565,23 @@ namespace mechanical.Controllers
             ViewData["Id"] = base.GetCurrentUserId();
             return View();
         }
+
         [HttpGet]
-        public async Task<IActionResult> MyCompleteCase(Guid id)
+        public async Task<IActionResult> MyCompleteCase(Guid id, string CaseType)
         {
-            
+
+            object ShareTaskData;
+
+            if (CaseType != "Owner")
+            {
+                ShareTaskData = await _caseService.SharedCaseInfo(id);
+            }
+            else
+            {
+                ShareTaskData = null;
+            }
+
+
             var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
             //var motorvechiel = await _cbeContext.MotorVehicles.Where(res => res.Collaterial.CaseId == CaseId).ToListAsync();
@@ -601,15 +622,15 @@ namespace mechanical.Controllers
             ViewData["motorVehicle"] = motorVehicle;
             ViewData["indBldgFacEq"] = indBldgFacEq;
             ViewData["conMngAgr"] = conMngAgr;
+
+
+
+            ViewData["CaseType"] = CaseType;
+            ViewData["ShareTaskData"] = ShareTaskData;
+
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> GetCompleteCases()
-        {
-            var myCase = await _caseService.GetRmCompleteCases(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
-        }
+      
         
         [HttpGet]
         public async Task<IActionResult> GetTotalCases()

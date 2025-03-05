@@ -1,9 +1,15 @@
-﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+﻿@using mechanical.Models.Dto.TaskManagmentDto
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
 @{
     var myCase = ViewData["case"] as CaseReturntDto;
     var motorVehicle = ViewData["motorVehicle"] as List<MotorVehicle>;
     var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;
     var conMngAgr = ViewData["conMngAgr"] as List<ConstMngAgrMachinery>;
+
+
+
+    /// task share
+    var shareTaskData = ViewData["ShareTaskDatas"] as ShareTasksDto;
 }
 
 <div class="card">
@@ -12,36 +18,42 @@
             <div class="row">
                 <div class="col-12 col-sm-6">
                     <div class="btn-group">
-                        @{
-                            if (motorVehicle != null && motorVehicle.Count > 0)
-                            {
-                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVReport", "Case", new { CaseId = myCase.Id })">
-                                    MOV Report 
-                                </a>
-                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVSummary", "Case", new { CaseId = myCase.Id })">
-                                    MOV Summary 
-                                </a>
-                            }
-                            if (conMngAgr != null && conMngAgr.Count > 0)
-                            {
-                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachineryReport", "Case", new { CaseId = myCase.Id })">
-                                    CAM Report 
-                                </a>
-                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachinerySummary", "Case", new { CaseId = myCase.Id })">
-                                    CAM Summary 
-                                </a>
 
-                            }
-                            if (indBldgFacEq != null && indBldgFacEq.Count > 0)
+                        @if (shareTaskData == null || shareTaskData.TaskName == "All Task" || shareTaskData.TaskName == "Report Generation")
                             {
-                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentReport", "Case", new { CaseId = myCase.Id })">
-                                    IBFE Report 
-                                </a>
-                                <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentSummary", "Case", new { CaseId = myCase.Id })">
-                                    IBFE Summary 
-                                </a>
+  
+                                if (motorVehicle != null && motorVehicle.Count > 0)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVReport", "Case", new { CaseId = myCase.Id })">
+                                        MOV Report 
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("MOVSummary", "Case", new { CaseId = myCase.Id })">
+                                        MOV Summary 
+                                    </a>
+                                }
+                                if (conMngAgr != null && conMngAgr.Count > 0)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachineryReport", "Case", new { CaseId = myCase.Id })">
+                                        CAM Report 
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("ConstMngAgrMachinerySummary", "Case", new { CaseId = myCase.Id })">
+                                        CAM Summary 
+                                    </a>
+
+                                }
+                                if (indBldgFacEq != null && indBldgFacEq.Count > 0)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentReport", "Case", new { CaseId = myCase.Id })">
+                                        IBFE Report 
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("IndBldgFacilityEquipmentSummary", "Case", new { CaseId = myCase.Id })">
+                                        IBFE Summary 
+                                    </a>
+                                }
+                        
                             }
-                        }
+
+                      
                         <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
                     </div>
 
