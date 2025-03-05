@@ -5,6 +5,8 @@ using AutoMapper;
 
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
+using mechanical.Models.PCE.Entities;
+using Newtonsoft.Json;
 
 // [ApiController]
 // [Route("api/tasks")]
@@ -26,7 +28,6 @@ namespace mechanical.Controllers
 
         
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> CommentTask([FromBody] TaskCommentPostDto dto)
         {
             try
@@ -45,8 +46,14 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTaskComment(Guid TaskId)
         {
-            var comments = await _taskManagmentService.GetTaskComment(TaskId);
-            return Json(comments);
+            var response = new
+            {
+                userId = base.GetCurrentUserId(),
+                comments = await _taskManagmentService.GetTaskComment(TaskId)
+             };
+            return Content(JsonConvert.SerializeObject(response), "application/json");
+            //var comments = await _taskManagmentService.GetTaskComment(TaskId);
+            //return Json(response);
         }
 
         [HttpPost]
