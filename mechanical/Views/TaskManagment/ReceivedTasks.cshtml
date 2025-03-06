@@ -1,91 +1,87 @@
 @{
     ViewData["Title"] = "Task Management";
 }
-
-<div class="container mt-4">
-    <h2 class="mb-4">Received Tasks</h2>
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <div class="input-group">
-                <div class="input-group-append">
-                    <span class="input-group-text">
-                        <i class="fas fa-filter"></i>
-                    </span>
-                </div>
-                <select id="statusFilter" class="form-control custom-select">
-                    <option value="">All</option>
-                    <option value="New">New</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Revoked">Revoked</option>
-                </select>
+<link href="~/css/taskmanagement.css" rel="stylesheet" />
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="container my-4">
+            <h4 class="mb-4 fw-bold text-center">Task Management</h4>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyCase", "Case")">My Cases</a></li>
+                    <li class="breadcrumb-item active">Received Tasks</li>
+                </ol>
             </div>
         </div>
     </div>
-    
-    <hr />
+</section>
 
-    <table class="table table-bordered" id="receivedTasksTable">
-        <thead>
-            <tr>
-                <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
-                <th>Case</th>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th>Shared By</th>
-                <th>Shared At</th>
-                <th>Deadline</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-    </table>
-</div>
-
-<!-- Task Details Modal -->
-<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-white rounded-3">
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="card card-purple card-outline-0">
-                        <div class="card-header p-0 border-bottom-0">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
-                                    <li class="nav-item text-dark">
-                                        <a class="nav-link active" id="custom-tabs-four-home-tab" data-bs-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i> Task Details</a>
-                                    </li>
-                                    <li class="nav-item text-dark">
-                                        <a class="nav-link" id="custom-tabs-four-settings-tab" data-bs-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
-                                            <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBadge"></span>
-                                        </a>
-                                    </li>
-                                </ul>
+<section class="content">
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="mb-4">Received Tasks</h2>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-filter"></i>
+                                </span>
                             </div>
-                        </div>
-                        <div class="card-body" style="height: 450px;">
-                            <div class="tab-content" id="custom-tabs-four-tabContent">
-                                <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-                                    <div class="modal-body" id="detailsContent"></div>
-                                </div>
-                                <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                                    <div>
-                                        @await Html.PartialAsync("SharedTasksComment")
-                                    </div>
-                                </div>
-                            </div>
+                            <select id="statusFilter" class="form-control custom-select">
+                                <option value="">All</option>
+                                <option value="New">New</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Returned">Returned</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-            </section>
-            <div class="modal-footer bg-light mb-2 mt-2">
-                <button type="button" class="btn btn-sm btn-purple btn-secondary" data-bs-dismiss="modal">Close</button>
+                
+                <hr />
+
+                <table class="table table-bordered table-striped" id="receivedTasksTable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
+                            <th>Case</th>
+                            <th>Task</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Shared By</th>
+                            <th>Shared At</th>
+                            <th>Deadline</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Return Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="returnTaskModalLabel">Return Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to return this task?</p>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="submitReturn()">Return</button>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Complete Modal -->
 <div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeTaskModalLabel" aria-hidden="true">
@@ -110,61 +106,8 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("_CommonLibrariesScriptPartial");
-        await Html.RenderPartialAsync("_receivedTasksScriptPartial");
-        await Html.RenderPartialAsync("_tsakShareCommentDatatableScript");
-
+        await Html.RenderPartialAsync("_taskDetailModal");
+        await Html.RenderPartialAsync("ScriptPartial/_receivedTasksScriptPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_taskShareCommentDatatableScriptPartial");
     }
-}<style>
-    .modal-header {
-        background-color: #e9ecef;
-        color: white;
-    }
-
-    .modal-body {
-        background-color: white;
-    }
-
-    .modal-footer {
-        background-color: #e9ecef;
-    }
-
-    .modal-title {
-        font-weight: bold;
-        font-size: 1.5rem;
-    }
-
-    dt {
-        font-weight: bold;
-    }
-
-    dd {
-        margin-bottom: 1rem;
-        padding-left: 15px;
-    }
-
-    .custom-select {
-        border: 1px solid #007bff;
-        border-radius: 0.25rem;
-        background-color: #f8f9fa;
-        transition: border-color 0.3s;
-    }
-
-        .custom-select:focus {
-            border-color: #0056b3;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-    .input-group-text {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 0 0.25rem 0.25rem 0;
-    }
-
-    .card.card-purple {
-        border: none; /* Removes the border */
-        box-shadow: none; /* Removes the shadow */
-    }
-
-</style>
-
+}

@@ -15,12 +15,13 @@ namespace mechanical.Models.Dto.NotificationDto
         public required string Content { get; set; }
         public required string Type { get; set; }
         public string Link { get; set; } = string.Empty;
-        public required bool IsRead { get; set; }
-        public required bool IsSeen { get; set; }
+        public bool IsRead { get; set; } = false;
+        public bool IsSeen { get; set; } = false;
+        public bool IsArchived { get; set; } = false;
 
         [JsonPropertyName("CreatedAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // public virtual CreateUser? User { get; set; }
+        public virtual CreateUser? User { get; set; }
     }
 }

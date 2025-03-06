@@ -82,16 +82,11 @@
                     width: '15%',
                     render: function (data, type, row, meta) {
                         var updateLink = `<a class="text-info" href="javascript:void(0);" onclick="showUpdateTask('${data}')">Update</a>`;
-                        @* var completeLink = "";
-                        if(row.TaskStatus !== 'Completed'){
-                            completeLink = `<a href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>`;
-                        } *@
                         return `
                                 <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" class='details-link'>Details</a>
                                 | ${updateLink} 
                             | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a> 
                             | <a class="text-danger" href="javascript:void(0);" onclick="openDeleteModal('${data}')">Delete</a>
-                            @* ${completeLink} *@
                         `;
                     }
                 }
@@ -201,40 +196,7 @@
         });
     }
 
-    // Open complete modal 
-    function openCompleteModal(taskId) {
-        currentTaskId = taskId;
-        var completeModalEl = document.getElementById('completeModal');
-        var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
-        completeModal.show();
-    }
-
-    // Submit complete via AJAX
-    function submitComplete() {
-        $.post(`/TaskManagment/CompleteTask?id=${currentTaskId}`, function (response) {
-            if (response.success) {
-                toastr.success(response.message, "Success");
-                var completeModalEl = document.getElementById('completeModal');
-                var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
-                completeModal.hide();
-                loadSharedTasks();
-            } else {
-                toastr.error(response.message, "Error");
-            }
-        });
-    }
-    @* // Mark task as completed via AJAX
-    function markTaskCompleted(taskId) {
-        $.post(`/TaskManagment/CompleteTask?id=${taskId}`, function(response) {
-            if(response.success) {
-                toastr.success(response.message, "Success");
-                loadSharedTasks();
-            } else {
-                toastr.error(response.message, "Error");
-            }
-        });
-    }
-
+    @*
     // Open Update Task modal and pre-populate the form
     function openUpdateModal(taskId) {
         $.get(`/TaskManagment/GetTask?id=${taskId}`, function(data) {

@@ -37,18 +37,17 @@ namespace mechanical.Services.NotificationService
             return _mapper.Map<NotificationReturnDto>(notification);
         }
         
-        public async Task<NotificationResultDto> GetNotifications(Guid userId, bool includeRead = false, int page = 1, int pageSize = 10)
+        public async Task<NotificationResultDto> GetNotifications(Guid userId, bool includeRead = false, string mode = "active", int page = 1, int pageSize = 10)
         {
-            var notificationsQuery = _cbeContext.Notifications.Where(n => n.UserId == userId);
-            
-            if (!includeRead)
-            {
-                notificationsQuery = notificationsQuery.Where(n => !n.IsRead);
-            }
+            var notificationsQuery = _cbeContext.Notifications.Where(n => n.UserId == userId &&
+                                                                        (includeRead || !n.IsRead) &&
+                                                                        (mode == "all" ||
+                                                                            (mode == "active" && !n.IsArchived) ||
+                                                                            (mode == "archived" && n.IsArchived))
+                                                                    ).OrderByDescending(n => n.CreatedAt);
 
-            var orderedNotificationsQuery = notificationsQuery .OrderByDescending(n => n.CreatedAt);
-            int totalCount = await orderedNotificationsQuery.CountAsync();
-            var notifications = await orderedNotificationsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            int totalCount = await notificationsQuery.CountAsync();
+            var notifications = await notificationsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
             int unreadCount = await GetUnreadCount(userId);
             int unseenCount = await GetUnseenCount(userId);
@@ -68,14 +67,10 @@ namespace mechanical.Services.NotificationService
             {
                 var notification = new Notification
                 {
-                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Content = content,
                     Type = type,
                     Link = link,
-                    CreatedAt = DateTime.UtcNow,
-                    IsRead = false,
-                    IsSeen = false
                 };
 
                 _cbeContext.Notifications.AddAsync(notification);
@@ -97,14 +92,10 @@ namespace mechanical.Services.NotificationService
         {
             var notifications = userIds.Select(userId => new Notification
             {
-                Id = Guid.NewGuid(),
                 UserId = userId,
                 Content = content,
                 Type = type,
-                Link = link,
-                CreatedAt = DateTime.UtcNow,
-                IsRead = false,
-                IsSeen = false
+                Link = link
             }).ToList();
 
             _cbeContext.Notifications.AddRangeAsync(notifications);
@@ -114,36 +105,26 @@ namespace mechanical.Services.NotificationService
             return _mapper.Map<IEnumerable<NotificationReturnDto>>(notifications);
         }
 
-        // public async Task MarkAsRead(Guid userId, Guid notificationId)
-        // {
-        //     var notification = await _cbeContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
-        //     if (notification != null)
-        //     {
-        //         notification.IsRead = true;
-        //     }
-        //     await _cbeContext.SaveChangesAsync();
-        // }
-        
-        public async Task MarkAsRead(Guid userId, List<Guid> notificationIds)
+        public async Task MarkAsRead(Guid userId, Guid notificationId)
         {
-            if (notificationIds == null || !notificationIds.Any())
+            if (notificationId == Guid.Empty)
             {
                 return;
             }
 
             await _cbeContext.Notifications
-                            .Where(n => n.UserId == userId && notificationIds.Contains(n.Id))
+                            .Where(n => n.UserId == userId && notificationId == n.Id)
                             .ExecuteUpdateAsync(setters => setters
                                 .SetProperty(n => n.IsRead, true)
                                 .SetProperty(n => n.IsSeen, true));
 
-            // var notifications = await _cbeContext.Notifications.Where(n => n.UserId == userId && notificationIds.Contains(n.Id)).ToListAsync();
-
-            // foreach (var notification in notifications)
-            // {
-            //     notification.IsRead = true;
-            //     notification.IsSeen = true;
-            // }
+            //     var notification = await _cbeContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
+            //     if (notification != null)
+            //     {
+            //         notification.IsRead = true;
+            //         notification.IsSeen = true;
+            //     }
+            //     await _cbeContext.SaveChangesAsync();
 
             await _cbeContext.SaveChangesAsync();
         }
@@ -212,9 +193,33 @@ namespace mechanical.Services.NotificationService
             // }
         }
 
+        public async Task Archive(Guid userId, Guid notificationId)
+        {
+            if (notificationId == Guid.Empty)
+            {
+                return;
+            }
+
+            await _cbeContext.Notifications
+                            .Where(n => n.UserId == userId && notificationId == n.Id)
+                            .ExecuteUpdateAsync(setters => setters
+                                .SetProperty(n => n.IsSeen, true)
+                                .SetProperty(n => n.IsArchived, true));
+
+            //     var notification = await _cbeContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
+            //     if (notification != null)
+            //     {
+            //         notification.IsRead = true;
+            //         notification.IsSeen = true;
+            //     }
+            //     await _cbeContext.SaveChangesAsync();
+
+            await _cbeContext.SaveChangesAsync();
+        }
+
         public async Task<int> GetUnreadCount(Guid userId)
         {
-            return await _cbeContext.Notifications.Where(n => n.UserId == userId && !n.IsRead).CountAsync();
+            return await _cbeContext.Notifications.Where(n => n.UserId == userId && !n.IsRead && !n.IsArchived).CountAsync();
         }
         public async Task<int> GetUnseenCount(Guid userId)
         {
