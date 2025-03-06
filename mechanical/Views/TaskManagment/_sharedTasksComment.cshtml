@@ -18,6 +18,7 @@
     </div>
     <div class="card-footer">
         <form action="/TaskManagment/CommentTask" method="post" id="commentForm">
+            @Html.AntiForgeryToken()
             <div class="input-group">
                 <input asp-for="TaskId" type="hidden" id="TaskId" />
                 <input type="text" name="message" id="messageinput" placeholder="Type message ..." class="form-control">
