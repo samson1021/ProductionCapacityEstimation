@@ -1,4 +1,6 @@
-﻿namespace mechanical.Models.Dto.CaseDto
+﻿using mechanical.Models.Entities;
+
+namespace mechanical.Models.Dto.CaseDto
 {
     public class CaseDto
     {
@@ -10,10 +12,13 @@
         public required string ApplicantName { get; set; }
         public required string CustomerId { get; set; }
         public string CaseType { get; set; } = string.Empty;
+        public string TaskName { get; set; } = string.Empty;
         public string District {  get; set; } = string.Empty;
         public required string Status { get; set; }
         public int NoOfCollateral { get; set; } = 0;
         public int TotalNoOfCollateral { get; set; } = 0;
+        public virtual TaskManagment? TaskManag { get; set; }
+       
 
     }
 }

@@ -3,47 +3,71 @@
   "WorkspaceRootPath": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\mycompletecase.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\mycompletecase.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\services\\caseservices\\caseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\services\\caseservices\\caseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\_completecollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\_completecollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\models\\dto\\casedto\\casedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\casedto\\casedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\_createcollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\_createcollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\models\\entities\\case.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\entities\\case.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\models\\dto\\maildto\\mailpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\maildto\\mailpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\models\\dto\\casedto\\casepostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\models\\dto\\casedto\\casepostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Melese\\AppData\\Local\\SourceServer\\c154da7d37a456201bb3260d1b78404bde5288809e6e1e13a3e6d9090b6d5bae\\mechanical\\Controllers\\CaseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\detail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\controllers\\casecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\controllers\\casecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\mycompletecase.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\mycompletecase.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\services\\caseservices\\caseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\services\\caseservices\\caseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\_createcollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\_createcollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Melese\\AppData\\Local\\SourceServer\\c154da7d37a456201bb3260d1b78404bde5288809e6e1e13a3e6d9090b6d5bae\\mechanical\\Controllers\\CaseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\scriptpartial\\_rmmycompletecasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\scriptpartial\\_rmmycompletecasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\_completecollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\_completecollateral.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\mycompletecases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\mycompletecases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\controllers\\casecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\controllers\\casecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\scriptpartial\\_newcasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\newcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\newcases.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Migrations\\20250306061842_TaskSharing Migration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:mechanical\\Migrations\\20250306061842_TaskSharing Migration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\views\\case\\scriptpartial\\_rmmycompletecasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|solutionrelative:mechanical\\views\\case\\scriptpartial\\_rmmycompletecasesdatatablesriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{691A4AA4-C5D4-4A1D-BE69-CAA1EE7D4B22}|mechanical\\mechanical.csproj|m:\\cbe\\project\\tasksharing1\\tasksharing\\mechanical\\services\\caseservices\\icaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -57,11 +81,89 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 13,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Case.cs",
+              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Entities\\Case.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Entities\\Case.cs",
+              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Entities\\Case.cs",
+              "RelativeToolTip": "mechanical\\Models\\Entities\\Case.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAwAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-06T11:06:07.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MailPostDto.cs",
+              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Dto\\MailDto\\MailPostDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\MailDto\\MailPostDto.cs",
+              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Dto\\MailDto\\MailPostDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\MailDto\\MailPostDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-06T11:06:01.737Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CasePostDto.cs",
+              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Dto\\CaseDto\\CasePostDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\CaseDto\\CasePostDto.cs",
+              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Dto\\CaseDto\\CasePostDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\CaseDto\\CasePostDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-06T11:05:49.487Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "CaseDto.cs",
+              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Dto\\CaseDto\\CaseDto.cs",
+              "RelativeDocumentMoniker": "mechanical\\Models\\Dto\\CaseDto\\CaseDto.cs",
+              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Models\\Dto\\CaseDto\\CaseDto.cs",
+              "RelativeToolTip": "mechanical\\Models\\Dto\\CaseDto\\CaseDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-06T08:23:23.822Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "20250306061842_TaskSharing Migration.cs",
+              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Migrations\\20250306061842_TaskSharing Migration.cs",
+              "RelativeDocumentMoniker": "mechanical\\Migrations\\20250306061842_TaskSharing Migration.cs",
+              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Migrations\\20250306061842_TaskSharing Migration.cs",
+              "RelativeToolTip": "mechanical\\Migrations\\20250306061842_TaskSharing Migration.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-06T06:18:43.045Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeDocumentMoniker": "mechanical\\appsettings.json",
+              "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\appsettings.json",
+              "RelativeToolTip": "mechanical\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAABRAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-03-06T06:17:44.767Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "_CompleteCollateral.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\_CompleteCollateral.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\_CompleteCollateral.cshtml",
@@ -74,7 +176,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 8,
               "Title": "_CreateCollateral.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\_CreateCollateral.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\_CreateCollateral.cshtml",
@@ -87,44 +189,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "MyCompleteCase.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\MyCompleteCase.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\MyCompleteCase.cshtml",
               "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\MyCompleteCase.cshtml",
               "RelativeToolTip": "mechanical\\Views\\Case\\MyCompleteCase.cshtml",
-              "ViewState": "AQIAAIEAAAAAAAAAAAAAAFgAAAAcAAAA",
+              "ViewState": "AQIAAG8AAAAAAAAAAAAAAFgAAAAcAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-03-04T12:27:25.067Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "Detail.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\Detail.cshtml",
               "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\Detail.cshtml",
               "RelativeToolTip": "mechanical\\Views\\Case\\Detail.cshtml",
-              "ViewState": "AQIAADwAAAAAAAAAAAAAAFYAAAASAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAEIAAAAsAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-03-04T12:27:10.333Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "CaseController.cs",
               "DocumentMoniker": "C:\\Users\\Melese\\AppData\\Local\\SourceServer\\c154da7d37a456201bb3260d1b78404bde5288809e6e1e13a3e6d9090b6d5bae\\mechanical\\Controllers\\CaseController.cs",
-              "ToolTip": "C:\\Users\\Melese\\AppData\\Local\\SourceServer\\c154da7d37a456201bb3260d1b78404bde5288809e6e1e13a3e6d9090b6d5bae\\mechanical\\Controllers\\CaseController.cs [Read Only]",
+              "ToolTip": "C:\\Users\\Melese\\AppData\\Local\\SourceServer\\c154da7d37a456201bb3260d1b78404bde5288809e6e1e13a3e6d9090b6d5bae\\mechanical\\Controllers\\CaseController.cs",
               "ViewState": "AQIAACICAAAAAAAAAAAcwDsCAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-04T12:20:03.728Z",
-              "EditorCaption": " [Read Only]"
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 16,
               "Title": "_RMMyCompleteCasesDatatableSriptsPartial.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_RMMyCompleteCasesDatatableSriptsPartial.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\ScriptPartial\\_RMMyCompleteCasesDatatableSriptsPartial.cshtml",
@@ -132,12 +234,11 @@
               "RelativeToolTip": "mechanical\\Views\\Case\\ScriptPartial\\_RMMyCompleteCasesDatatableSriptsPartial.cshtml",
               "ViewState": "AQIAAAwAAAAAAAAAAAAAACwAAABMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-03-04T12:01:30.569Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-04T12:01:30.569Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 17,
               "Title": "ICaseService.cs",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\ICaseService.cs",
               "RelativeDocumentMoniker": "mechanical\\Services\\CaseServices\\ICaseService.cs",
@@ -149,33 +250,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "CaseService.cs",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\CaseService.cs",
               "RelativeDocumentMoniker": "mechanical\\Services\\CaseServices\\CaseService.cs",
               "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Services\\CaseServices\\CaseService.cs",
               "RelativeToolTip": "mechanical\\Services\\CaseServices\\CaseService.cs",
-              "ViewState": "AQIAAJEAAAAAAAAAAAAcwLUAAAAMAAAA",
+              "ViewState": "AQIAAHMAAAAAAAAAAAAYwH4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-01T13:06:47.965Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 11,
               "Title": "CaseController.cs",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Controllers\\CaseController.cs",
               "RelativeDocumentMoniker": "mechanical\\Controllers\\CaseController.cs",
               "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Controllers\\CaseController.cs",
               "RelativeToolTip": "mechanical\\Controllers\\CaseController.cs",
-              "ViewState": "AQIAAFoCAAAAAAAAAAAcwHYCAAAMAAAA",
+              "ViewState": "AQIAAH0AAAAAAAAAAIAzwJUAAAAxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-28T07:39:28.925Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "MyCompleteCases.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\MyCompleteCases.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\MyCompleteCases.cshtml",
@@ -188,26 +289,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "NewCases.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\NewCases.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\NewCases.cshtml",
               "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\NewCases.cshtml",
               "RelativeToolTip": "mechanical\\Views\\Case\\NewCases.cshtml",
-              "ViewState": "AQIAAA8AAAAAAAAAAAAAACMAAAAvAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACAAAAAwAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-02-28T06:19:46.667Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 12,
               "Title": "_NewCasesDatatableSriptsPartial.cshtml",
               "DocumentMoniker": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
               "RelativeDocumentMoniker": "mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
               "ToolTip": "M:\\CBE\\Project\\TaskSharing1\\TaskSharing\\mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
               "RelativeToolTip": "mechanical\\Views\\Case\\ScriptPartial\\_NewCasesDatatableSriptsPartial.cshtml",
-              "ViewState": "AQIAAAwAAAAAAAAAAAAAADMAAABIAAAA",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAABAAAAAjAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-02-19T11:21:09.064Z",
               "EditorCaption": ""
