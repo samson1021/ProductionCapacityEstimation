@@ -24,8 +24,15 @@
                         {
                             data: null,
                             render: function (data, type, row, meta) {
-                                return '<input class="purple-checkbox" type="checkbox"  value="' + data.Id + '">';
+                             
+                                if (row.CaseType === 'Shared') {
+                                   // return ''; // Return empty string to hide the checkbox
+                                    return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '" disabled>';
+                                } else {
+                                    return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">';
+                                }
                             }
+                            
                         },
                         {
                             data: 'CreationAt',
@@ -36,19 +43,41 @@
                             }
                         }, 
                         { data: 'CaseNo', width: '10%' },
-                        { data: 'ApplicantName', width: '20%' },
-                        { data: 'CustomerId', width: '15%' },
+                        { data: 'ApplicantName', width: '15%' },
+                        { data: 'CustomerId', width: '10%' },
                         { data: 'NoOfCollateral', width: '10%' },
                         { data: 'TotalNoOfCollateral', width: '10%' },
                         {
                             data: 'CaseType',
                             width: '10%',
                         },
+
+                        {
+                            data: 'TaskName',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                if (!data) return '';
+                                var tasks = data.split(',').map(task => task.trim());
+                                var taskLinks = tasks.map(task => {
+                                    if (task === 'Report Generation') {
+                                        // return '<a href="/Case/Detail?Id=' + row.Id + '">' + task + '</a>';
+                                        // Change to the new URL format using dynamic Id
+                                        return '<a href="/Case/MyCompleteCase?Id=' + row.Id + '&CaseType=' + encodeURIComponent(row.CaseType) + '">' + task + '</a>';
+                                    } else {
+                                        return '<a href="/Case/Detail?Id=' + row.Id + '&CaseType=' + encodeURIComponent(row.CaseType) + '">' + task + '</a>';
+                                    }
+                                });
+                                return taskLinks.join(', ');
+                            }
+                        },
+                        // {
+                        //     data: 'TaskName',
+                        //     width: '10%',
+                        // },
                         {
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                // return '<a href="Url.Action("Detail", "Case")?Id=' + data + '">Details | </a><a href="Url.Action("Edit", "Case")?Id=' + data + '"> Edit | </a><a href="Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
                                     return '<a href="@Url.Action("Detail", "Case")?Id=' + data + '&CaseType=' + encodeURIComponent(row.CaseType) + '">Details | </a>' +
                                                     '<a href="@Url.Action("Edit", "Case")?Id=' + data + '"> Edit | </a>' +
                                                     '<a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '"> <i class="nav-icon fas fa-sitemap ">  </i></a>';
