@@ -23,17 +23,17 @@ a:active {
 
 .list-group-item {
     border: none;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #5a9edd;
     transition: background-color 0.2s ease;
 }
 
 .list-group-item:hover {
-    background-color: #E3F2FD; /* Light Blue hover */
+    background-color: #9acdf1;
     transform: scale(1.02);
     transition: all 0.2s ease-in-out;
 }
 .list-group-item a:hover {
-    background-color: #E3F2FD;
+    background-color: #9acdf1;
 }
 
 /* Badge Styles */
@@ -93,7 +93,6 @@ a:active {
     right: 10px;
 }
 
-
 /* Dropdown Container */
 .dropdown-notifications-menu {
     border: 1px solid #e9ecef;
@@ -135,17 +134,19 @@ a:active {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     /* transition: background-color 0.2s ease; */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: #9acdf1;
 }
 
 /* Notification States */
 .dropdown-notification-unseen {
-    background-color: #e8f4fc;
+    background-color: #fcefe8;
     border-left: 3px solid #3498db;
 }
 
 .dropdown-notification-unread {
     font-weight: 600;
-    background-color: #f8f9fa;
+    background-color: #faf9f8;
+    border-left: 3px solid #449fdb;
 }
 
 /* Footer Section */
@@ -159,7 +160,7 @@ a:active {
 }
 
 .dropdown-notifications-action:hover {
-    color: #3498db !important;
+    color: #348adb !important;
 }
 
 .dropdown-notification-content {
@@ -177,11 +178,10 @@ a:active {
     font-size: 0.75rem;
     color: #6c757d;
     position: absolute;
-    right: 16px;
-    bottom: 12px;
+    right: 2rem;
+    bottom: 0.25rem;
 }
 
-/* Hover Effects */
 .dropdown-notification-item:hover {
     transform: translateX(4px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

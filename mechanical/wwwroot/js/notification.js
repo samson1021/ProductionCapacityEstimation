@@ -220,7 +220,7 @@ async function markAllAsRead() {
             });
         
         updateNotificationBadge(-Infinity);
-        fetchUnreadNotifications()
+        // fetchUnreadNotifications()
         collapseNotificationDropdown();
     } catch (err) {
         console.error("Error marking all notifications as read", err);
