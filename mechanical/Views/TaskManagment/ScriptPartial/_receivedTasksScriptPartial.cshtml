@@ -85,13 +85,14 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                        var completeLink = "";
+                        var completeReturnLink = "";
                         if(row.TaskStatus !== 'Completed'){
-                            completeLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>`;
+                            completeReturnLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>
+                            | <a class="text-danger" href="javascript:void(0);" onclick="openReturnModal('${data}')">Return</a>`;
                         }
                         return `
                             <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a>
-                            ${completeLink}
+                            ${completeReturnLink}
                         `;
                     }
                 }
@@ -151,6 +152,41 @@
                 var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
                 completeModal.hide();
                 loadReceivedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+   @* // Mark task as completed via AJAX
+    function markTaskCompleted(taskId) {
+        $.post(`/TaskManagment/CompleteTask?id=${taskId}`, function(response) {
+            if(response.success) {
+                toastr.success(response.message, "Success");
+                loadSharedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+     *@
+    // Open return modal 
+    function openReturnModal(taskId) {
+        currentTaskId = taskId;
+        var returnModalEl = document.getElementById('returnModal');
+        var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+        returnModal.show();
+    }
+
+    // Submit return via AJAX
+    function submitReturn() {
+        $.post(`/TaskManagment/ReturnTask?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var returnModalEl = document.getElementById('returnModal');
+                var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+                returnModal.hide();
+                loadSharedTasks();
             } else {
                 toastr.error(response.message, "Error");
             }

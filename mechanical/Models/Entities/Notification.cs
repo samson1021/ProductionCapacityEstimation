@@ -10,17 +10,18 @@ namespace mechanical.Models.Entities
     public class Notification
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
         public Guid UserId { get; set; }
         [Required]
-        public required string Content { get; set; }
+        public required string Content { get; set; } = string.Empty;
 
         public required string Type { get; set; }
-        public string Link { get; set; } = string.Empty;
-        public required bool IsRead { get; set; }
-        public required bool IsSeen { get; set; }
+        public string? Link { get; set; } = string.Empty;
+        public bool IsRead { get; set; } = false;
+        public bool IsSeen { get; set; } = false;
+        public bool IsArchived { get; set; } = false;
 
         [Required]
         [JsonPropertyName("CreatedAt")]
@@ -29,3 +30,5 @@ namespace mechanical.Models.Entities
         public virtual CreateUser? User { get; set; }
     }
 }
+
+

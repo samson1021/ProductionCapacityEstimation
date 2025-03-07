@@ -1,12 +1,11 @@
-﻿using System.Text.Json;
+﻿using AutoMapper;
+using Newtonsoft.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
-using mechanical.Models.PCE.Entities;
-using Newtonsoft.Json;
 
 // [ApiController]
 // [Route("api/tasks")]
@@ -25,7 +24,6 @@ namespace mechanical.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-
         
         [HttpPost]
         public async Task<IActionResult> CommentTask([FromBody] TaskCommentPostDto dto)
@@ -34,13 +32,11 @@ namespace mechanical.Controllers
             {
                 await _taskManagmentService.CommentTask(base.GetCurrentUserId(), dto);
                 return Ok();
-
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
-
         }
 
         [HttpGet]
@@ -50,11 +46,12 @@ namespace mechanical.Controllers
             {
                 userId = base.GetCurrentUserId(),
                 comments = await _taskManagmentService.GetTaskComment(TaskId)
-             };
+            };
+
+            //return Ok(response);
             return Content(JsonConvert.SerializeObject(response), "application/json");
-            //var comments = await _taskManagmentService.GetTaskComment(TaskId);
-            //return Json(response);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -114,11 +111,11 @@ namespace mechanical.Controllers
                 
                 if (dto.Deadline < DateTime.Today)
                 {
-                    return Json(new { success = false, message = "Deadline must be today or in the future." });
+                    return Ok(new { success = false, message = "Deadline must be today or in the future." });
                 }
 
                 var response = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), dto);
-                return Json(new { success=response.Success, message = response.Message });
+                return Ok(new { success=response.Success, message = response.Message });
             }
             catch (Exception ex)
             {
@@ -157,11 +154,11 @@ namespace mechanical.Controllers
             {
                 if (dto.Deadline < DateTime.Today)
                 {
-                    return Json(new { success = false, message = "Deadline must be today or in the future." });
+                    return Ok(new { success = false, message = "Deadline must be today or in the future." });
                 }
 
                 var response = await _taskManagmentService.UpdateTask(base.GetCurrentUserId(), dto);
-                return Json(new { success=response.Success, message = response.Message });
+                return Ok(new { success=response.Success, message = response.Message });
             }
             catch (Exception ex)
             {
@@ -170,42 +167,59 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        // [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReassignTask(Guid id, Guid newAssignedId)
         {
             try
             {
                 var response = await _taskManagmentService.ReassignTask(base.GetCurrentUserId(), id, newAssignedId);
-                return Json(new { success=response.Success, message = response.Message });
-                // return Json(new { success = true, message = "Task reassigned successfully." });
+                return Ok(new { success=response.Success, message = response.Message });
+                // return Ok(new { success = true, message = "Task reassigned successfully." });
             }
             catch (ArgumentException ex)
             {
-                return Json(new { success = false, message = "An error occurred while reassigning the task." });
+                return Ok(new { success = false, message = "An error occurred while reassigning the task." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred while reassigning the task." });
+                return Ok(new { success = false, message = "An error occurred while reassigning the task." });
             }
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
             try
             {
                 var response = await _taskManagmentService.DeleteTask(base.GetCurrentUserId(), id);
-                return Json(new { success=response.Success, message = response.Message });
-                // return Json(new { success = true, message = "Task deleted successfully." });
+                return Ok(new { success=response.Success, message = response.Message });
+                // return Ok(new { success = true, message = "Task deleted successfully." });
             }
             catch (ArgumentException ex)
             {
-                return Json(new { success = false, message = "An error occurred while revoking the task." });
+                return Ok(new { success = false, message = "An error occurred while deleting the task." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred while revoking the task." });
+                return Ok(new { success = false, message = "An error occurred while deleting the task." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReturnTask(Guid id)
+        {
+            try
+            {
+                var response = await _taskManagmentService.ReturnTask(base.GetCurrentUserId(), id);
+                return Ok(new { success=response.Success, message = response.Message });
+                // return Ok(new { success = true, message = "Task returned successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return Ok(new { success = false, message = "An error occurred while returning the task." });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = "An error occurred while returning the task." });
             }
         }
 
@@ -242,15 +256,15 @@ namespace mechanical.Controllers
             try
             {
                 var response = await _taskManagmentService.CompleteTask(base.GetCurrentUserId(), id);
-                return Json(new { success=response.Success, message = response.Message });
+                return Ok(new { success=response.Success, message = response.Message });
             }
             catch (ArgumentException ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Ok(new { success = false, message = ex.Message });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred while completing the task." });
+                return Ok(new { success = false, message = "An error occurred while completing the task." });
             }
         }
 

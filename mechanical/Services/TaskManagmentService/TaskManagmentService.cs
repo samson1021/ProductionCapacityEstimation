@@ -421,6 +421,51 @@ namespace mechanical.Services.TaskManagmentService
                 return new ResultDto { Success = false, Message = $"An error occurred while deleting the task. {ex}" };
             }
         }
+        public async Task<ResultDto> ReturnTask(Guid userId, Guid taskId)
+        {
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            try
+            {
+                var task = await _cbeContext.TaskManagments
+                                            .Include(t => t.Case)
+                                                .ThenInclude(c => c.CaseOriginator)
+                                            .FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return new ResultDto { Success = false, Message = "Task not found." };
+                }
+
+                task.TaskStatus = "Returned";
+                _cbeContext.TaskManagments.Update(task);
+
+                // Log timeline event
+                var user = await _userService.GetUserById(userId);
+                var activity = $"Task '{task.TaskName}' returned by user {user.Name}.";
+                await LogTimelineEvent(task.CaseId, activity, task?.Case?.CaseOriginator?.Name);
+
+                // Send notification to the assigned user
+                string notificationContent = $"Task '{task.TaskName}' has been returned.";
+                var notification = await _notificationService.AddNotification(userId, notificationContent, "Type", "#");
+
+                // Send notification to the case owner
+                string notificationContentOwner = $"Task '{task.TaskName}' has been returned by {user.Name}.";
+                var notificationOwner = await _notificationService.AddNotification(task.CaseOrginatorId, notificationContentOwner, "Type", "#");
+
+                await _cbeContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                await _notificationService.SendNotification(notification);
+
+                return new ResultDto { Success = true, Message = "Task returned successfully." };
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting task.");
+                await transaction.RollbackAsync();
+                return new ResultDto { Success = false, Message = $"An error occurred while deleting the task. {ex}" };
+            }
+        }
 
         public async Task<ResultDto> CompleteTask(Guid userId, Guid taskId)
         {
