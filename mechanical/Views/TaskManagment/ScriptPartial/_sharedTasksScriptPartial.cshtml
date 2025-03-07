@@ -40,7 +40,9 @@
                     data: 'Case.CaseNo',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple">${data}</a>`;
+                        // return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple">${data}</a>`;
+                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}&CaseType=Owner' class="text-purple">${data}</a>`;
+
                     }
                 },
                 { data: 'TaskName', width: '10%' },

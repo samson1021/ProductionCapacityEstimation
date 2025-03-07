@@ -101,22 +101,64 @@ namespace mechanical.Services.CaseServices
                            .FirstOrDefaultAsync(c => c.Id == id);
             return _mapper.Map<CaseReturntDto>(loanCase);
         }
+
+
+
+
         //public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
         //{
-        //    var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res=>res.CurrentStatus=="New" && res.CurrentStage == "Relation Manager"))
-        //               .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
-        //               .ToListAsync();
-        //    var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-        //    foreach(var caseDto in caseDtos)
+        //    var caseDtos = new List<CaseDto>();
+
+        //    // Get cases where the user is the originator
+        //    var originatorCases = await _cbeContext.Cases
+        //        .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+        //        .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+        //        .ToListAsync();
+
+        //    var originatorCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(originatorCases);
+        //    foreach (var caseDto in originatorCaseDtos)
         //    {
         //        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-        //        caseDto.CaseType = "sharedCase";
+        //        caseDto.CaseType = "Owner";
+        //        caseDto.TaskName = "All"; // Set the TaskName
+        //        caseDtos.Add(caseDto); // Add to the combined list
         //    }
-        //    return caseDtos ;
+
+        //    var assignedCases = await _cbeContext.Cases
+        //        .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+        //        .Join(
+        //            _cbeContext.TaskManagments.Where(task => task.AssignedId == userId),
+        //            case1 => case1.Id,
+        //            task => task.CaseId,
+        //            (case1, task) => case1
+        //        )
+        //        .Where(case1 => case1.Status == "New")
+        //        .ToListAsync();
+
+
+
+        //    var assignedCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(assignedCases);
+        //    foreach (var caseDto in assignedCaseDtos)
+        //    {
+        //        // Get the TaskName for the case from TaskManagments
+        //        var taskName = await _cbeContext.TaskManagments
+        //            .Where(task => task.CaseId == caseDto.Id && task.AssignedId == userId)
+        //            .Select(task => task.TaskName) // Assuming TaskName is a property in TaskManagment
+        //            .FirstOrDefaultAsync(); // Take the first task name (or handle multiple tasks as needed)
+
+        //        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+        //        caseDto.CaseType = "SharedCase";
+        //        caseDto.TaskName = taskName; // Set the TaskName
+        //        caseDtos.Add(caseDto); // Add to the combined list
+        //    }
+
+        //    // Sort the combined list by CreationAt
+        //    var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+        //    return sortedCaseDtos;
         //}
 
 
-      public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
+        public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
         {
             var caseDtos = new List<CaseDto>();
 
@@ -130,24 +172,54 @@ namespace mechanical.Services.CaseServices
             {
                 caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
                 caseDto.CaseType = "Owner";
+                caseDto.TaskName = "All"; // Set the TaskName
                 caseDtos.Add(caseDto); // Add to the combined list
             }
 
+            // Get cases where the user is assigned a task
             var assignedCases = await _cbeContext.Cases
                 .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
-                .Where(case1 => case1.Status == "New" && _cbeContext.TaskManagments.Any(task => task.CaseId == case1.Id && task.AssignedId == userId))
+                .Join(
+                    _cbeContext.TaskManagments.Where(task => task.AssignedId == userId),
+                    case1 => case1.Id,
+                    task => task.CaseId,
+                    (case1, task) => new { Case = case1, Task = task } // Include both Case and Task
+                )
+                .Where(x => x.Case.Status == "New")
                 .ToListAsync();
 
-            var assignedCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(assignedCases);
-            foreach (var caseDto in assignedCaseDtos)
+            // Group by Case to handle multiple tasks per case
+            var groupedAssignedCases = assignedCases
+                .GroupBy(x => x.Case)
+                .Select(g => new
+                {
+                    Case = g.Key,
+                    TaskNames = g.Select(x => x.Task.TaskName).ToList() // Collect all TaskNames for the case
+                });
+
+            foreach (var group in groupedAssignedCases)
             {
+                var caseDto = _mapper.Map<CaseDto>(group.Case);
+
+                // Set TaskName by concatenating all task names
+                caseDto.TaskName = string.Join(", ", group.TaskNames);
+
                 caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-                caseDto.CaseType = "SharedCase";
+                caseDto.CaseType = "Shared";
                 caseDtos.Add(caseDto); // Add to the combined list
             }
-           var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+
+            // Sort the combined list by CreationAt
+            var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
             return sortedCaseDtos;
         }
+
+
+        /// <summary>
+        /// ///////////////////////////
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
 
         public async Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId)
         {
@@ -175,7 +247,7 @@ namespace mechanical.Services.CaseServices
             foreach (var caseDto in assignedCaseDtos)
             {
                 caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-                caseDto.CaseType = "SharedCase";
+                caseDto.CaseType = "Shared";
                 caseDtos.Add(caseDto); // Add to the combined list
             }
             var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
