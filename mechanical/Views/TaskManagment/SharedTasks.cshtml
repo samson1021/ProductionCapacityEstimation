@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Task Management";
 }
+
 <link href="~/css/taskmanagement.css" rel="stylesheet" />
 <section class="content-header">
     <div class="container-fluid">
@@ -17,8 +18,9 @@
         </div>
     </div>
 </section>
+
 <section class="content">
-    <div class="container-fluid mt-4">
+    <div class="container container-fluid mt-4">
         <div class="card">
             <div class="card-body">
                 <div class="row d-flex justify-content-between align-items-center">
@@ -83,7 +85,7 @@
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary" id="shareCaseButton">
-                    <span id="shareSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    <span id="shareSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     Share Case
                 </button>
             </div>
@@ -154,6 +156,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("_CommonLibrariesScriptPartial");
         await Html.RenderPartialAsync("_taskDetailModal");
+        await Html.RenderPartialAsync("ScriptPartial/_shareCaseScriptPartial");
         await Html.RenderPartialAsync("ScriptPartial/_sharedTasksScriptPartial");
         await Html.RenderPartialAsync("ScriptPartial/_taskShareCommentDatatableScriptPartial");
     }

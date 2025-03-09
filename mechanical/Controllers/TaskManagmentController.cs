@@ -104,7 +104,18 @@ namespace mechanical.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new {  success=false, message = "Task is not shared successfully" });
+                
+                // return BadRequest(new {  success=false, message = "Task is not shared successfully" });
+                return Json(new
+                {
+                    success = false,
+                    errors = ModelState
+                        .Where(x => x.Value.Errors.Any())
+                        .ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        )
+                });
             }
             try
             {

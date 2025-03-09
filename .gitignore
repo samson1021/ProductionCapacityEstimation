@@ -1,13 +1,14 @@
 .vs/
+Signature management/
+Signature management/obj/
+Signature management/bin/
+
 mechanical/bin
 mechanical/obj
 mechanical/migrations
 mechanical/UploadFile
 mechanical/.vs
 mechanical/.config
-mechanical/appsettings*
-mechanical/mechanical.csproj
-mechanical/mechanical.csproj.user
-Signature management/
-Signature management/obj/
-Signature management/bin/
+mechanical/appsettings.json
+# mechanical/mechanical.csproj
+# mechanical/mechanical.csproj.user
