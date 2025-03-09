@@ -17,7 +17,7 @@ namespace mechanical.Services.NotificationService
         Task<int> GetUnseenCount(Guid userId);
 
         Task<NotificationReturnDto> AddNotification(Guid userId, string content, string type, string link = "");
-        Task<IEnumerable<NotificationReturnDto>> AddNotifications(IEnumerable<Guid> userIds, string content, string type, string link = "");
+        Task<IEnumerable<NotificationReturnDto>> AddNotifications(IEnumerable<(Guid userId, string content, string type, string link)> notificationsBatch);
         Task SendNotification(NotificationReturnDto notification);
         Task SendNotifications(IEnumerable<NotificationReturnDto> notifications);
 

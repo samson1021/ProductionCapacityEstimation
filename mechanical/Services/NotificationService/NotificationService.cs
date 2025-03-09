@@ -67,10 +67,15 @@ namespace mechanical.Services.NotificationService
             {
                 var notification = new Notification
                 {
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Content = content,
                     Type = type,
                     Link = link,
+                    IsRead = false,
+                    IsSeen = false,
+                    IsArchived = false,
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 _cbeContext.Notifications.AddAsync(notification);
@@ -88,22 +93,28 @@ namespace mechanical.Services.NotificationService
 
 
         // Batch notifications for multiple users.
-        public async Task<IEnumerable<NotificationReturnDto>> AddNotifications(IEnumerable<Guid> userIds, string content, string type, string link = "")
+        public async Task<IEnumerable<NotificationReturnDto>> AddNotifications(IEnumerable<(Guid userId, string content, string type, string link)> notificationsBatch)
         {
-            var notifications = userIds.Select(userId => new Notification
+            var notifications = notificationsBatch.Select(n => new Notification
             {
-                UserId = userId,
-                Content = content,
-                Type = type,
-                Link = link
+                Id = Guid.NewGuid(),
+                UserId = n.userId,
+                Content = n.content,
+                Type = n.type,
+                Link = n.link,
+                IsRead = false,
+                IsSeen = false,
+                IsArchived = false,
+                CreatedAt = DateTime.UtcNow
+
             }).ToList();
 
-            _cbeContext.Notifications.AddRangeAsync(notifications);
-            // await _cbeContext.Notifications.AddRangeAsync(notifications);
+            await _cbeContext.Notifications.AddRangeAsync(notifications);
             await _cbeContext.SaveChangesAsync();
 
             return _mapper.Map<IEnumerable<NotificationReturnDto>>(notifications);
         }
+
 
         public async Task MarkAsRead(Guid userId, Guid notificationId)
         {

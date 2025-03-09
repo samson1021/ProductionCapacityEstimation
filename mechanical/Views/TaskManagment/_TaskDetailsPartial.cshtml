@@ -19,6 +19,14 @@
     <dt class="col-sm-4">Status</dt>
     <dd class="col-sm-8">@Model.TaskStatus</dd>
 
+    <dt class="col-sm-4">State</dt>
+    <dd class="col-sm-8">
+        <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">@(Model.IsActive ? "Active" : "Inactive")</span>
+    </dd>
+
     <dt class="col-sm-4">Reason</dt>
     <dd class="col-sm-8">@Model.SharingReason</dd>
 </dl>
+
+<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}&CaseType=Shared'>Go To Case</a>
+<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}&CaseType=Shared'>See Case Detail</a>

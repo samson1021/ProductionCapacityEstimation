@@ -10,10 +10,11 @@ namespace mechanical.Models.Dto.TaskManagmentDto
         public required Guid CaseOrginatorId { get; set; }
         public required string TaskName { get; set; }
         public string SharingReason { get; set; } = string.Empty;
-
         public required string TaskStatus { get; set; }
 
+        public required bool IsActive { get; set; }
         public DateTime AssignedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
         public DateTime CompletionDate { get; set; }
         public DateTime Deadline { get; set; }
         public required string PriorityType { get; set; }
