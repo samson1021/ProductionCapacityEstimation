@@ -223,12 +223,14 @@ namespace mechanical.Mapper
                 .ReverseMap();
 
             //Task Managment
-            CreateMap<TaskManagmentPostDto, TaskManagment>().ReverseMap();
+            CreateMap<TaskManagment, TaskManagmentPostDto>().ReverseMap();
             CreateMap<TaskManagment, TaskManagmentUpdateDto>().ReverseMap();
             CreateMap<TaskManagment, TaskManagmentReturnDto>().ReverseMap();
+            CreateMap<TaskManagmentReturnDto, TaskManagmentUpdateDto>().ReverseMap();
+            CreateMap<TaskManagment, ShareTasksDto>().ReverseMap();
             // CreateMap<TaskManagment, ShareTasksDto>()
             //     .ForMember(dest => dest.SelectedRMs, opt => opt.Ignore());
-            CreateMap<TaskManagment, ShareTasksDto>().ReverseMap();
+
             CreateMap<Notification, NotificationPostDto>().ReverseMap();
             CreateMap<Notification, NotificationReturnDto>().ReverseMap();
         
