@@ -26,13 +26,13 @@
                             render: function (data, type, row, meta) {
                              
                                 if (row.CaseType === 'Shared') {
-                                   // return ''; // Return empty string to hide the checkbox
-                                    return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '" disabled>';
+                                    // return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '" disabled>';
+                                    return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '" class="always-unchecked" disabled >';
+                                    // return "";
                                 } else {
                                     return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">';
                                 }
                             }
-                            
                         },
                         {
                             data: 'CreationAt',
@@ -51,7 +51,6 @@
                             data: 'CaseType',
                             width: '10%',
                         },
-
                         {
                             data: 'TaskName',
                             width: '10%',
@@ -60,8 +59,6 @@
                                 var tasks = data.split(',').map(task => task.trim());
                                 var taskLinks = tasks.map(task => {
                                     if (task === 'Report Generation') {
-                                        // return '<a href="/Case/Detail?Id=' + row.Id + '">' + task + '</a>';
-                                        // Change to the new URL format using dynamic Id
                                         return '<a href="/Case/MyCompleteCase?Id=' + row.Id + '&CaseType=' + encodeURIComponent(row.CaseType) + '">' + task + '</a>';
                                     } else {
                                         return '<a href="/Case/Detail?Id=' + row.Id + '&CaseType=' + encodeURIComponent(row.CaseType) + '">' + task + '</a>';
@@ -70,21 +67,15 @@
                                 return taskLinks.join(', ');
                             }
                         },
-                        // {
-                        //     data: 'TaskName',
-                        //     width: '10%',
-                        // },
                         {
                             data: 'Id',
                             width: '10%',
                             render: function (data, type, row, meta) {
-                                    return '<a href="@Url.Action("Detail", "Case")?Id=' + data + '&CaseType=' + encodeURIComponent(row.CaseType) + '">Details | </a>' +
-                                                    '<a href="@Url.Action("Edit", "Case")?Id=' + data + '"> Edit | </a>' +
-                                                    '<a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '"> <i class="nav-icon fas fa-sitemap ">  </i></a>';
-                                
+                                return '<a href="@Url.Action("Detail", "Case")?Id=' + data + '&CaseType=' + encodeURIComponent(row.CaseType) + '">Details | </a>' +
+                                    (row.CaseType !== "Shared" ? '<a href="@Url.Action("Edit", "Case")?Id=' + data + '"> Edit | </a>' : '') +
+                                    '<a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '"> <i class="nav-icon fas fa-sitemap"></i></a>';
                             }
                         }
-                        
                     ], 
                     order: [[0, 'desc']],
                     responsive: true,
@@ -98,6 +89,20 @@
                 }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
             }
         });
+        // "Select All" Checkbox Logic
+        $('#selectAllNonDisableCheckbox').on('change', function () {
+            var isChecked = $(this).is(':checked');
+            // Only select non-disabled checkboxes (CaseType !== 'Shared')
+            $('#MyNewCase .purple-checkbox:not(:disabled)').prop('checked', isChecked);
+        });
+        // Update "Select All" state when individual checkboxes change
+        $('#MyNewCase').on('change', '.purple-checkbox:not(:disabled)', function () {
+            var allEnabledChecked = $('#MyNewCase .purple-checkbox:not(:disabled)').length ===
+                $('#MyNewCase .purple-checkbox:not(:disabled):checked').length;
+            $('#selectAllNonDisableCheckbox').prop('checked', allEnabledChecked);
+        });
+
+
             });
    
 </script>

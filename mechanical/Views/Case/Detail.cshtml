@@ -9,7 +9,6 @@
     var caseType = ViewData["CaseType"] as string;
     var shareTaskData = ViewData["ShareTaskData"] as ShareTasksDto;
 
-   
     @*
                             SharedCase
                             Owner
@@ -48,21 +47,47 @@
                         <li class="nav-item">
                             <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Collaterals Information</a>
                         </li>
-
-                        @if (shareTaskData == null || ( shareTaskData.TaskName != "Report Generation" && shareTaskData.TaskName != "Collateral Addition"))
+           
+                        @if (shareTaskData == null)
                         {
                             <li class="nav-item">
-                            <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Schedule</a>
-                        </li>
-                    
-
-                        <li class="nav-item">
-                            <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
-                                <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBage"></span>
-                            </a>
-                        </li>
+                                <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">
+                                    <i class="nav-icon fas fa-calendar-alt"></i> Schedules
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
+                                    <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBage"></span>
+                                </a>
+                            </li>
                         }
-                        
+                        else
+                        {
+                            foreach (var taskName in shareTaskData.TaskNames)
+                            {
+                                if (string.IsNullOrEmpty(taskName) ||
+                                taskName == "Report Generation" ||
+                                taskName == "Collateral Addition")
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">
+                                            <i class="nav-icon fas fa-calendar-alt"></i> @taskName
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
+                                            <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBage"></span>
+                                        </a>
+                                    </li>
+                                    break;
+                                }
+
+                            }
+                        }
                     </ul>
                     @if (caseType != "Shared")
                     {
@@ -79,28 +104,18 @@
                     <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                         @await Html.PartialAsync("_GeneralInfo")
                     </div>
-                   @*  <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                        @await Html.PartialAsync("_CreateCollateral")
-                    </div> *@
-
-
+                    
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                         @await Html.PartialAsync("_CreateCollateral", Model, new ViewDataDictionary(ViewData) { { "ShareTaskDatas", shareTaskData } })
                     </div>
 
-
-
-                   
-                    @if (shareTaskData == null || ( shareTaskData.TaskName != "Report Generation" && shareTaskData.TaskName != "Collateral Addition"))
-                    { 
-                        <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                    <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("_CaseSchedule")
                     </div>
-                        <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-                            @await Html.PartialAsync("_CaseComment")
-                        </div>
-                    }
-                  
+                    <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+                        @await Html.PartialAsync("_CaseComment")
+                    </div>
+
                 </div>
             </div>
         </div>

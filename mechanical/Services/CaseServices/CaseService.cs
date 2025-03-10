@@ -81,12 +81,32 @@ namespace mechanical.Services.CaseServices
             return loanCase;
         }
 
+        //public async Task<ShareTasksDto> SharedCaseInfo(Guid id)
+        //{
+        //    //var sharedcaseInfos = await _cbeContext.TaskManagments.FirstOrDefaultAsync(info=>info.CaseId==id);
+        //    var sharedcaseInfos = await _cbeContext.TaskManagments
+        //                        .Where(info => info.CaseId == id)
+        //                        .ToListAsync();
+        //    var sharedcaseinfo = _mapper.Map<ShareTasksDto>(sharedcaseInfos);
+        //    return sharedcaseinfo;
+        //}
+
+
         public async Task<ShareTasksDto> SharedCaseInfo(Guid id)
         {
-            var sharedcaseInfos = await _cbeContext.TaskManagments.FirstOrDefaultAsync(info=>info.CaseId==id);
-            var sharedcaseinfo = _mapper.Map<ShareTasksDto>(sharedcaseInfos);
+            var sharedcaseInfos = await _cbeContext.TaskManagments
+                                    .Where(info => info.CaseId == id)
+                                    .ToListAsync();
+            if (sharedcaseInfos == null || !sharedcaseInfos.Any())
+            {
+                return null; // Or handle the case where no data is found
+            }
+            var sharedcaseinfo = _mapper.Map<ShareTasksDto>(sharedcaseInfos.First());
+            sharedcaseinfo.TaskNames = sharedcaseInfos.Select(info => info.TaskName).ToList();
             return sharedcaseinfo;
         }
+
+
         public async Task<CaseReturntDto> GetCase(Guid userId, Guid id)
         {
             var loanCase = await _cbeContext.Cases
