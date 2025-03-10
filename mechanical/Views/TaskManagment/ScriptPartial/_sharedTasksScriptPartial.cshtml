@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
     // Initialize DataTable with additional functionalities
     
@@ -24,13 +26,13 @@
             ],
             data: data,
             columns: [
-                {
-                    data: null,
-                    render: function (data) {
-                        return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
-                                ((data.TaskStatus !== "New") ? ' disabled' : '') + '>'; 
-                    }
-                },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
+                //                 ((data.TaskStatus !== "New") ? ' disabled' : '') + '>';
+                //     }
+                // },
                 {
                     data: 'Case.CaseNo',
                     width: '10%',
@@ -82,8 +84,8 @@
                         return `
                                 <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" class='details-link'>Details</a>
                                 | ${updateLink} 
-                            | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a> 
-                            | <a class="text-danger" href="javascript:void(0);" onclick="openDeleteModal('${data}')">Delete</a>
+                            @* | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a>  *@
+                            | <a class="text-danger" href="javascript:void(0);" onclick="openRevokeModal('${data}')">Revoke</a>
                         `;
                     }
                 }
@@ -94,9 +96,9 @@
         }).buttons().container().appendTo('#sharedTasksTable_wrapper .col-md-6:eq(0)');
     }
 
-    function loadSharedTasks() {
+    function loadSharedTasks(mode = "active") {
         $.ajax({
-            url: '/TaskManagment/GetSharedTasks',
+            url: `/TaskManagment/GetSharedTasks?mode=${mode}`,
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -115,10 +117,10 @@
 
     let currentTaskId = null;
    
-    // Show task details in modal 
-    function showTaskDetails(taskId) {       
+    // Show task details in modal
+    function showTaskDetails(taskId) {
         $('#TaskId').val(`${taskId}`);
-         $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
+         $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
             $('#detailsContent').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
             var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
@@ -135,14 +137,14 @@
             updateModal.show();
         });
     }
-
+@* 
     // Open reassign modal 
     function openReassignModal(taskId, username, userId) {
         currentTaskId = taskId;
         $.get('/UserManagment/GetPeerRMs', function (users) {
             const dropdown = $('#reassignUserDropdown');
             dropdown.empty();
-            @* dropdown.append($('<option></option>').val(userId).text(username)); *@
+            dropdown.append($('<option diable></option>').val(userId).text(username));
             users.forEach(user => {
                 if(user.Id !== userId){
                     dropdown.append($('<option></option>').val(user.Id).text(user.Name));
@@ -155,7 +157,7 @@
     }
 
     // Submit reassignment via AJAX
-    function submitReassignment() {
+    function submitReassignment(mode = 'active') {
         const newUserId = $('#reassignUserDropdown').val();
         $.post(`/TaskManagment/ReassignTask?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
             if (response.success) {
@@ -163,30 +165,30 @@
                 var reassignModalEl = document.getElementById('reassignModal');
                 var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
                 reassignModal.hide();
-                loadSharedTasks();
+                loadSharedTasks(mode);
             } else {
                 toastr.error(response.message, "Error");
             }
         });
-    }
+    } *@
 
-    // Open delete modal 
-    function openDeleteModal(taskId) {
+    // Open revoke modal 
+    function openRevokeModal(taskId) {
         currentTaskId = taskId;
-        var deleteModalEl = document.getElementById('deleteModal');
-        var deleteModal = bootstrap.Modal.getOrCreateInstance(deleteModalEl);
-        deleteModal.show();
+        var revokeModalEl = document.getElementById('revokeModal');
+        var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+        revokeModal.show();
     }
 
-    // Submit delete via AJAX
-    function submitDelete() {
-        $.post(`/TaskManagment/DeleteTask?id=${currentTaskId}`, function (response) {
+    // Submit revoke via AJAX
+    function submitRevoke(mode = 'active') {
+        $.post(`/TaskManagment/RevokeTask?id=${currentTaskId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
-                var deleteModalEl = document.getElementById('deleteModal');
-                var deleteModal = bootstrap.Modal.getOrCreateInstance(deleteModalEl);
-                deleteModal.hide();
-                loadSharedTasks();
+                var revokeModalEl = document.getElementById('revokeModal');
+                var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+                revokeModal.hide();
+                loadSharedTasks(mode);
             } else {
                 toastr.error(response.message, "Error");
             }
@@ -209,9 +211,19 @@
         });
     } *@
 
+    let currentMode = "active";
+
+    function switchMode(mode) {
+        currentMode = mode;
+        $(".btn-group .btn").removeClass("active");
+        $(`#btn${mode.charAt(0).toUpperCase() + mode.slice(1)}`).addClass("active");
+        loadSharedTasks(mode);
+    }
+
     $(document).ready(function () {
-        loadSharedTasks();
-        
+
+        loadSharedTasks(currentMode);
+
         // Status filter for DataTable
         $('#statusFilter').on('change', function() {
             var status = $(this).val();
@@ -286,7 +298,7 @@
                         var updateTaskModalEl = document.getElementById('updateTaskModal');
                         var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
                         updateTaskModal.hide();
-                        loadSharedTasks();
+                        loadSharedTasks(currentMode);
                     } else {
                         toastr.error(response.message, "Error");
                     }
