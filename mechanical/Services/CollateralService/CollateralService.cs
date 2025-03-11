@@ -37,14 +37,28 @@ namespace mechanical.Services.CollateralService
         public async Task<Collateral> CreateCollateral(Guid userId, Guid caseId, CollateralPostDto createCollateralDto)
         {
             var collateral = _mapper.Map<Collateral>(createCollateralDto);
+            if(collateral.Category == MechanicalCollateralCategory.CMAMachinery)
+            {
+                collateral.PlateNo = createCollateralDto.CPlateNo;
+            }
             collateral.Id = Guid.NewGuid();
             collateral.CaseId = caseId;
             try
             {
-                await this.UploadFile(userId, "Title Deed Certificate", collateral, createCollateralDto.TitleDeed);
+                if (collateral.Category == MechanicalCollateralCategory.MOV || collateral.Category == MechanicalCollateralCategory.CMAMachinery)
+                {
+                    await this.UploadFile(userId, "Proforma inovice", collateral, createCollateralDto.PackingList);
+                    await this.UploadFile(userId, "Title Deed Certificate", collateral, createCollateralDto.TitleDeed);
+                }
+                else if (collateral.Category == MechanicalCollateralCategory.IBFEqupment)
+                {
+                    await this.UploadFile(userId, "Packing List", collateral, createCollateralDto.PackingList);
+                    await this.UploadFile(userId, "LHC", collateral, createCollateralDto.TitleDeed);
+                }
+              
                 await this.UploadFile(userId, "Commercial Invoice", collateral, createCollateralDto.CommercialInvoice);
                 await this.UploadFile(userId, "Custom Declaration", collateral, createCollateralDto.CustomDeclaration);
-                await this.UploadFile(userId, "Packing List", collateral, createCollateralDto.PackingList);
+               
                 await this.UploadFile(userId, "Sales Document", collateral, createCollateralDto.SalesDocument);
                 if(createCollateralDto.OtherDocument != null)
                 {

@@ -1,4 +1,5 @@
 ﻿using mechanical.Models.Enum;
+using mechanical.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace mechanical.Models.Dto.CollateralDto
@@ -8,10 +9,13 @@ namespace mechanical.Models.Dto.CollateralDto
         public required Guid CaseId { get; set; }
         public required string PropertyOwner { get; set; }
         public required string Role { get; set; }
+
         public MechanicalCollateralCategory Category { get; set; }
-        public MechanicalCollateralType Type { get; set; }
+        [RequiredEnum(ErrorMessage = "Please select a collateral type.")]
+        public MechanicalCollateralType? Type { get; set; }
         [RegularExpression(@"^\d{2}-[A-Z]{2}-[A-Z]?\d{5}$", ErrorMessage = "Please enter a valid Plate Number")]
         public string? PlateNo { get; set; }
+        public string? CPlateNo { get; set; }
         public string? ChassisNo { get; set; }
         public string? EngineMotorNo { get; set; }
         public int? ManufactureYear { get; set; }

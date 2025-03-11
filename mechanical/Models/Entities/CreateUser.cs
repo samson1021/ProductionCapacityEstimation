@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using iText.Layout.Properties;
+using mechanical.Models.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
@@ -23,7 +25,9 @@ namespace mechanical.Models.Entities
         public string? Status { get; set; }
         public Guid? SupervisorId { get; set; }
         public string? title { get; set; }
-        public string? company { get; set;}
+        public string? company { get; set; }
+        public Segment? BroadSegment { get; set; }
+        public SubSegement? Unit { get; set; }
 
         public virtual CreateUser? Supervisor { get; set; }
         public virtual District? District { get; set; }

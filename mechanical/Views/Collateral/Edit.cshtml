@@ -197,7 +197,6 @@
                             <tr>
                                 <th>Document Name</th>
                                 <th>Document Catagory</th>
-                                <th>Document Type</th>
                                 <th>Document Action</th>
                             </tr>
                         </thead>
@@ -213,7 +212,6 @@
                                         <tr>
                                             <td>@collateral.Name</td>
                                             <td>@collateral.Catagory</td>
-                                            <td>@collateral.ContentType</td>
                                             <td>
                                                 <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = collateral.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
                                                 <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile" ,new { Id = collateral.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>&nbsp;|&nbsp;
@@ -269,6 +267,9 @@
                         <select name="DocumentCatagory" class="form-control form-control-sm" id="DocumentCatagory" required>
                             <option value="" disabled selected>Select Document Catagory *</option>
                             <option value="Title Deed Certificate">Title Deed Certificate</option>
+                            <option value="Commercial Invoice">Commercial Invoice</option>
+                            <option value="Proforma invoice">Proforma invoice</option>
+                            <option value="LHC">LHC</option>
                             <option value="Custom Declaration">Custom Declaration</option>
                             <option value="Packing List">Packing List</option>
                             <option value="Sales Document">Sales Document</option>
@@ -293,10 +294,9 @@
 </section>
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+       // await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_EditScriptPartial");
     }
-    <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script>
         $(function () {
@@ -327,15 +327,7 @@
                     }
                 });
             });
-        });
-    </script>
-    <script>
-        $(document).ready(function () {
 
-
-
-
-// for deleting the file
             $('.delete-link').on('click', function (e) {
                 e.preventDefault();
                 var itemId = $(this).data('id');
@@ -361,12 +353,9 @@
                 $('#deleteConfirmationModal').modal('hide');
             });
 
-
-
-//for addatinal file upload
-
             $('#uploadLink').on('click', function (e) {
                 e.preventDefault();
+                console.log("from the modal");
                 var caseId = $(this).data('id');
                 $('#uploadModal').data('caseId', caseId);
                 $('#uploadModal').modal('show');
@@ -375,7 +364,7 @@
 
             $('#uploadFile').on('click', function () {
                 var caseId = $('#uploadModal').data('caseId');
-             
+
                 var fileInput = document.getElementById('CollateralDocument');
                 var file = fileInput.files[0];
                 var DocumentCatagory = document.getElementById('DocumentCatagory').value;
@@ -400,37 +389,7 @@
                 });
                 $('#uploadModal').modal('hide');
             });
-
-
         });
     </script>
+ 
 }
-<div class="modal fade" id="sendEvaluationButtonModal1" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form method="post" action="/Case/SendReEvaluation" id="ReevaluationForm">
-                <input asp-for="Id" hidden />
-                <div class="modal-header">
-                    <h4 class="modal-title" id="rejectionModalLabel">Reevaluation Comment</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                        <div class="form-group">
-                            <label for="ReevaluationComment">Are you sure you want to send it to Reevaluation:</label>
-                        </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <button type="button" class="btn bg-purple col-xl-3" onclick="closeModal()">No</button>
-                        </div>
-                        <div class="col-md-6 ">
-                            <button type="submit" class="btn bg-purple col-xl-3">Yes</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            
-        </div>
-    </div>
-</div>

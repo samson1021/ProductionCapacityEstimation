@@ -1,4 +1,7 @@
-﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/bootstrap/js/bootstrap.min.js"></script>﻿
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
 <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
@@ -408,9 +411,10 @@
         }
         $('#addMechanicalCollateralForm').submit(function (e) {
             e.preventDefault();
+
             var formDataArray = $(this).serializeArray();
-            console.log("here");
             var Category = getAttributeByName(formDataArray, 'Category');
+
             if (Category == "MOV" || Category == "CMAMachinery") {
                 var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
                 var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
@@ -429,7 +433,8 @@
                 }
             }
 
-
+            var submitButton = $(this).find('button[type="submit"]');
+            submitButton.prop('disabled', true).text('Processing...');
             var formData = new FormData(this);
 
             $.ajax({
@@ -440,11 +445,16 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-
+                
                     $('#addMechanicalCollateralModal').modal('hide');
+                    $('#addMechanicalCollateralForm')[0].reset();
+
+                    submitButton.prop('disabled', false).text('Add');
+
                     loadCollaterals();
                 },
                 error: function (error) {
+                    submitButton.prop('disabled', false).text('Add');
                     toastr.error("Unable to create collateral");
                     console.log(error);
                 }
@@ -454,25 +464,7 @@
         $('#addCivilCollateralForm').submit(function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
-            console.log("here");
-            var Category = getAttributeByName(formDataArray, 'Category');
-            if (Category == "MOV" || Category == "CMAMachinery") {
-                var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
-                var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
-                if (PlateName === "" || ChassisNo === "") {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
-            } else if (Category == "IBFEqupment") {
-                var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-                var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
-
-
-                if (MachineName === "" || Purpose === "") {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
-            }
+            
 
 
             var formData = new FormData(this);
@@ -500,25 +492,7 @@
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
             console.log("here");
-            var Category = getAttributeByName(formDataArray, 'Category');
-            if (Category == "MOV" || Category == "CMAMachinery") {
-                var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
-                var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
-                if (PlateName === "" || ChassisNo === "") {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
-            } else if (Category == "IBFEqupment") {
-                var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
-                var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
-
-
-                if (MachineName === "" || Purpose === "") {
-                    toastr.error("Please fill in all required fields.");
-                    return;
-                }
-            }
-
+           
 
             var formData = new FormData(this);
 
@@ -558,9 +532,11 @@
         //    loadCollaterals();
         //});
 
-        $("#IndusteryProp").hide();
-        $("#MVprop").hide();
-
+        $(".IndusteryProp").hide();
+        $(".MVprop").hide();
+        $(".MVprop2").hide();
+        $(".conprop").hide();
+        
         var typeDropdown = $("#typeDropdown");
         typeDropdown.prop("disabled", true);
         function populateTypeDropdown() {
@@ -598,8 +574,10 @@
                     typeDropdown.append('<option value="CUV">CUV</option>');
                     typeDropdown.append('<option value="Others">Others, please specify</option>');
 
-                    $("#IndusteryProp").hide();
-                    $("#MVprop").show();
+                    $(".IndusteryProp").hide();
+                    $(".MVprop").show();
+                    $(".MVprop2").show();
+                    $(".conprop").hide();
                     break;
                 case "CMAMachinery":
                     typeDropdown.append('<option value="ChainExcavator">Chain Excavator</option>');
@@ -654,15 +632,20 @@
                     typeDropdown.append('<option value="DiscHarrow">Disc harrow</option>');
                     typeDropdown.append('<option value="Harvester">Harvester</option>');
                     typeDropdown.append('<option value="Other">Others, please specify</option>');
-                    $("#IndusteryProp").hide();
-                    $("#MVprop").show();
+                    $(".IndusteryProp").hide();
+                    $(".MVprop").hide();
+                    $(".conprop").show();
+                    $(".MVprop2").show();
+           
                     break;
                 case "IBFEqupment":
                     typeDropdown.append('<option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>');
                     typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>');
                     typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>');
-                    $("#IndusteryProp").show();
-                    $("#MVprop").hide();
+                    $(".IndusteryProp").show();
+                    $(".MVprop").hide();
+                    $(".conprop").hide();
+                    $(".MVprop2").hide();
                     break;
                 default:
                     break;

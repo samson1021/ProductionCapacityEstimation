@@ -49,7 +49,7 @@
 
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="CaseNo">Case Number</label>
+                            <label asp-for="CaseNo">Case Number <i class="text-danger">*</i></label>
                             <div class="input-group" style="margin:0;">
                                 <input asp-for="CaseNo" type="text" class="form-control col-lg-10" id="caseNumber" required readonly>
                                 <input type="button" class="form-control btn btn-outline-primary  col-lg-2" id="GenerateCaseNo" value="Generate" required>
@@ -59,15 +59,18 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="CustomerId">Customer ID</label>
-                            <input asp-for="CustomerId" type="number" class="form-control" id="CustomerId" maxlength="10" required>
+                            <label asp-for="CustomerId">Customer ID <i class="text-danger">*</i></label>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="CustomerId" type="number" class="form-control col-lg-10" id="CustomerId" maxlength="10" required>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-2" id="GetCustomerName" value="Get Name" required>
+                            </div>
                             <span id="CustomerId-error" asp-validation-for="CustomerId" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name</label>
-                            <input asp-for="ApplicantName" type="text" class="form-control" id="applicantName" required oninvalid="handleInvalidInput()">
+                            <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name <i class="text-danger">*</i></label>
+                            <input asp-for="ApplicantName" readonly type="text" class="form-control" id="applicantName" required oninvalid="handleInvalidInput()">
                             <span id="applicantName-error" asp-validation-for="ApplicantName" class="text-danger"></span>
                         </div>
 
@@ -76,7 +79,7 @@
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CustomerEmail">Customer Email</label>
-                            <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerId">
+                            <input asp-for="CustomerEmail" type="email" class="form-control" >
                             <span asp-validation-for="CustomerEmail" class="text-danger"></span>
                         </div>
                     </div>
@@ -96,31 +99,38 @@
         </div>
     </section>
 </section>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
     <script>
-        document.getElementById('CustomerId').addEventListener('change', function () {
-            // Show loading indicator
+        document.getElementById('GetCustomerName').addEventListener('click', function () {
+            var customerId = document.getElementById('CustomerId').value;
+            if (customerId.length !== 10) {
+                document.getElementById("CustomerId-error").textContent = "Customer ID must be exactly 10 digits.";
+                return;
+            } 
             showLoadingIndicator();
-
-            var customerId = this.value;
+            console.log(customerId);
             $.ajax({
                 type: 'POST',
                 url: '/Case/GetCustomerName',
                 data: { customerId: customerId },
                 success: function (response) {
                     if (response == "err") {
-                        alert("unable to load applicant name");
+                        toastr.error("unable to load applicant name");
+                        document.getElementById('applicantName').readOnly = false;
                     } else {
                         document.getElementById('applicantName').value = response;
+                        document.getElementById('applicantName').readOnly = false;
                     }
                     // Hide loading indicator
                     hideLoadingIndicator();
                 },
                 error: function (xhr, status, error) {
                     // Hide loading indicator
+                    document.getElementById('applicantName').readOnly = false;
                     hideLoadingIndicator();
                 }
             });
@@ -129,18 +139,27 @@
         function showLoadingIndicator() {
             // Disable the page
             document.body.style.pointerEvents = 'none';
-            document.body.style.opacity = '0.5';
+            document.body.style.opacity = '0.9';
 
             // Show a loading indicator
             var loadingIndicator = document.createElement('div');
             loadingIndicator.classList.add('loading-indicator');
+
+            // Style the loading indicator
+            loadingIndicator.style.position = 'fixed';
+            loadingIndicator.style.top = '50%';
+            loadingIndicator.style.left = '50%';
+            loadingIndicator.style.transform = 'translate(-50%, -50%)';
+            loadingIndicator.style.zIndex = '9999'; // Ensure it's on top
+            loadingIndicator.style.opacity = '1'; // Fully visible
+            loadingIndicator.style.textAlign = 'center';
 
             var spinner = document.createElement('div');
             spinner.classList.add('spinner');
             loadingIndicator.appendChild(spinner);
 
             var loadingText = document.createElement('span');
-            loadingText.textContent = 'Getting customer name, please wait...';
+            loadingText.textContent = 'please wait...';
             loadingIndicator.appendChild(loadingText);
 
             document.body.appendChild(loadingIndicator);
@@ -206,7 +225,7 @@
         //this is the input validation for application name
         document.getElementById("applicantName").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
 
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");

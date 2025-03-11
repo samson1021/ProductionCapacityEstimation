@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.Dto.CaseScheduleDto;
+﻿﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
 
 @{
@@ -69,9 +69,9 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
-       await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
-       await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-      
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
+        //await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+
     }
-   
+
 }

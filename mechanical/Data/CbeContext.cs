@@ -107,7 +107,7 @@ namespace mechanical.Data
 	    public virtual DbSet<Reject> TaskManagment { get; set; }
 	    public virtual DbSet<Reject> TaskNotification { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //       => optionsBuilder.UseSqlServer("Server=DESKTOP-OJQ5A2C\\DOMAIN;Database=mechanical;Trusted_Connection=True;TrustServerCertificate=true;");
