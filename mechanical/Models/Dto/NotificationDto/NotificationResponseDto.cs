@@ -13,4 +13,11 @@ namespace mechanical.Models.Dto.NotificationDto
         public int UnreadCount { get; set; }
         public int UnseenCount { get; set; }
     }
+    public class NotificationResponseDto
+    {
+        public IEnumerable<Notification> Notifications { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+    }
 }
+

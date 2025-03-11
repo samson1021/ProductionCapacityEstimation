@@ -26,35 +26,28 @@ namespace mechanical.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index()
         {
-            // var userId = User.Identity.GetUserId();
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdStr, out var userId))
-                return Unauthorized();
+            // // var userId = User.Identity.GetUserId();
+            // var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            // if (!Guid.TryParse(userIdStr, out var userId))
+            //     return Unauthorized();
 
-            var result = await _notificationService.GetNotifications(userId, includeRead: true, page: page, pageSize: pageSize);
+            // var result = await _notificationService.GetNotifications(userId, includeRead: true, page: page, pageSize: pageSize);
             
-            var viewModel = new NotificationViewModel
-            {
-                Notifications = result.Notifications,
-                CurrentPage = page,
-                TotalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize)
-            };
+            // var viewModel = new NotificationViewModel
+            // {
+            //     Notifications = result.Notifications,
+            //     CurrentPage = page,
+            //     TotalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize)
+            // };
 
-            return View(viewModel);
+            return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> Notifications()
         {
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Notifications(Guid id)
-        {
-            var notification = await _notificationService.GetNotification(base.GetCurrentUserId(), id);
             return View();
         }
 
@@ -65,34 +58,22 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Detail(Guid id)
-        {
-            try
-            {
-                var notification = await _notificationService.GetNotification(base.GetCurrentUserId(), id);
-                if (notification == null)
-                {
-                    return NotFound();
-                }
-
-                return PartialView("_NotificationDetailsPartial", notification);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while fetching notification details.");
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetNotifications(int limit = 5)
+        public async Task<IActionResult> GetNotifications(int page = 1, int pageSize = 10, string mode = "active")
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
 
-            var result = await _notificationService.GetNotifications(userId, includeRead: true, pageSize: limit);
-            return Ok(result);
-            // return Json(result);
+            var result = await _notificationService.GetNotifications(userId, includeRead: true, mode: mode, page: page, pageSize: pageSize);
+
+            var response = new NotificationResponseDto
+            {
+                Notifications = result.Notifications,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize)
+            };
+
+            return Ok(response);
         }
 
         [HttpGet]
@@ -131,18 +112,18 @@ namespace mechanical.Controllers
 
         // [HttpPost("MarkAsRead")]
         [HttpPost]
-        public async Task<ActionResult> MarkAsRead(List<Guid> ids)
+        public async Task<IActionResult> MarkAsRead(Guid id)
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized();
-                
-            if (ids == null || !ids.Any())
+
+            if (id == Guid.Empty)
             {
-                return BadRequest("No notification IDs provided.");
+                return BadRequest("No notification ID provided.");
             }
-            
-            await _notificationService.MarkAsRead(userId, ids);
+
+            await _notificationService.MarkAsRead(userId, id);
             return Ok(new { success = true });
         }
 
@@ -185,22 +166,20 @@ namespace mechanical.Controllers
             await _notificationService.MarkAsSeen(userId, ids);
             return Ok(new { success = true });
         }
+        [HttpPost]
+        public async Task<IActionResult> Archive(Guid id)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
 
-        
-        // [HttpPost]
-        // public async Task<IActionResult> MarkAsRead(Guid id)
-        // {
-        //     var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //     if (!Guid.TryParse(userIdStr, out var userId))
-        //         return Unauthorized();
+            if (id == Guid.Empty)
+            {
+                return BadRequest("No notification ID provided.");
+            }
 
-        //     // if (id == null || !id.Empty())
-        //     // {
-        //     //     return BadRequest("No notification IDs provided.");
-        //     // }
-        //     await _notificationService.MarkAsRead(userId, new List<Guid> {id});
-        //     return Ok();
-        // }
-        
+            await _notificationService.Archive(userId, id);
+            return Ok(new { success = true });
+        }
     }
 }

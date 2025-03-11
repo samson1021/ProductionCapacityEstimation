@@ -221,15 +221,16 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.ShiftHours, opt => opt.MapFrom(src => src.ShiftHours))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
                 .ReverseMap();
-           
+
             //Task Managment
-            CreateMap<TaskManagmentPostDto, TaskManagment>().ReverseMap();
+            CreateMap<TaskManagment, TaskManagmentPostDto>().ReverseMap();
             CreateMap<TaskManagment, TaskManagmentUpdateDto>().ReverseMap();
             CreateMap<TaskManagment, TaskManagmentReturnDto>().ReverseMap();
-            CreateMap<UpdateTaskDto, TaskManagmentReturnDto>().ReverseMap();
+            CreateMap<TaskManagmentReturnDto, TaskManagmentUpdateDto>().ReverseMap();
+            CreateMap<TaskManagment, ShareTasksDto>().ReverseMap();
             // CreateMap<TaskManagment, ShareTasksDto>()
             //     .ForMember(dest => dest.SelectedRMs, opt => opt.Ignore());
-            CreateMap<TaskManagment, ShareTasksDto>().ReverseMap();
+
             CreateMap<Notification, NotificationPostDto>().ReverseMap();
             CreateMap<Notification, NotificationReturnDto>().ReverseMap();
         

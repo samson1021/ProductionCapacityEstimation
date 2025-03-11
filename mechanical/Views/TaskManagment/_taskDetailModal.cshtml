@@ -1,0 +1,44 @@
+
+<!-- Task Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-white rounded-3">
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="card card-purple card-outline-0">
+                        <div class="card-header p-0 border-bottom-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                    <li class="nav-item text-dark">
+                                        <a class="nav-link active" id="custom-tabs-four-home-tab" data-bs-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">
+                                            <i class="nav-icon fas fa-home"></i> Task Details</a>
+                                    </li>
+                                    <li class="nav-item text-dark">
+                                        <a class="nav-link" id="custom-tabs-four-settings-tab" data-bs-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
+                                            <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBadge"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body" style="height: 450px;">
+                            <div class="tab-content" id="custom-tabs-four-tabContent">
+                                <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                    <div class="modal-body" id="detailsContent" style="height: 100%; overflow-y: auto;"></div>
+                                </div>
+                                <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+                                    <div>
+                                        @await Html.PartialAsync("_sharedTasksComment")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="modal-footer bg-light mb-2 mt-2">
+                <button type="button" class="btn btn-sm btn-purple btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,4 @@
 ﻿@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto
-@{
-    //var myCase = ViewData["case"] as CaseReturntDto;
-    // var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
-}
 
 <div class="modal fade" id="shareTaskModal" tabindex="-1" role="dialog" aria-labelledby="SendshareTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -16,9 +12,7 @@
             <div class="modal-body">
                 @using (Html.BeginForm("ShareTask", "TaskManagment", FormMethod.Post, new { id = "shareTskForm" }))
                 {
-
-                    @* <input asp-for="CaseId" type="hidden" id="CaseId" /> *@
-
+                    @Html.AntiForgeryToken()
                     <input type="hidden" id="selectedCaseIds" name="selectedCaseIds">
                     <div class="form-group">
                         <label asp-for="AssignedId"> Relation Manager <i class="text-danger">*</i></label>
@@ -39,8 +33,6 @@
                         </select>
                         <span id="TaskNameError" asp-validation-for="TaskName" class="text-danger"></span>
                     </div>
-
-
 
                     <div class="form-group">
                         <label asp-for="PriorityType"> Priority Type <i class="text-danger">*</i></label>
