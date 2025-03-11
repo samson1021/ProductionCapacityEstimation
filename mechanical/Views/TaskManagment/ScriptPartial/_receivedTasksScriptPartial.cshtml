@@ -1,13 +1,10 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     // Initialize DataTable with additional functionalities
     
     function stripTime(date) {
-        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+        return new Date(Date.tUTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
     }
 
     function initializeDataTable(data, emptyMessage) {
@@ -29,13 +26,13 @@
             ],
             data: data,
             columns: [
-                {
-                    data: null,
-                    render: function (data) {
-                        return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
-                                ((data.TaskStatus !== "New") ? ' disabled' : '') + '>'; 
-                    }
-                },
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
+                //                 ((data.TaskStatus !== "New") ? ' disabled' : '') + '>';
+                //     }
+                // },
                 {
                     data: 'Case.CaseNo',
                     width: '10%',
@@ -44,9 +41,6 @@
                         return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}&CaseType=Shared' class="text-purple">${data}</a>`;
                     }
                 },
-                              
-
-
 
                 { data: 'TaskName', width: '10%' },
                 { data: 'TaskStatus', width: '10%' },
@@ -85,13 +79,14 @@
                     data: 'Id',
                     width: '10%',
                     render: function (data, type, row, meta) {
-                        var completeLink = "";
-                        if(row.TaskStatus !== 'Completed'){
-                            completeLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>`;
+                        var completeReturnLink = "";
+                        if(row.TaskStatus !== 'Completed' || row.TaskStatus !== 'Returned'){
+                            completeReturnLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>
+                            | <a class="text-danger" href="javascript:void(0);" onclick="openReturnModal('${data}')">Return</a>`;
                         }
                         return `
                             <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a>
-                            ${completeLink}
+                            ${completeReturnLink}
                         `;
                     }
                 }
@@ -102,9 +97,9 @@
         }).buttons().container().appendTo('#receivedTasksTable_wrapper .col-md-6:eq(0)');
     }
 
-    function loadReceivedTasks() {
+    function loadReceivedTasks(mode = "active") {
         $.ajax({
-            url: '/TaskManagment/GetReceivedTasks',
+            url: `/TaskManagment/GetReceivedTasks?mode=${mode}`,
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -126,7 +121,7 @@
     // Show task details in modal 
     function showTaskDetails(taskId) {
         $('#TaskId').val(`${taskId}`);
-        $.get(`/TaskManagment/DetailPartial?id=${taskId}`, function (data) {
+        $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
             $('#detailsContent').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
             var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
@@ -143,13 +138,48 @@
     }
 
     // Submit complete via AJAX
-    function submitComplete() {
+    function submitComplete(mode = "active") {
         $.post(`/TaskManagment/CompleteTask?id=${currentTaskId}`, function (response) {
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var completeModalEl = document.getElementById('completeModal');
                 var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
                 completeModal.hide();
+                loadReceivedTasks(mode);
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+   @* // Mark task as completed via AJAX
+    function markTaskCompleted(taskId) {
+        $.post(`/TaskManagment/CompleteTask?id=${taskId}`, function(response) {
+            if(response.success) {
+                toastr.success(response.message, "Success");
+                loadReceivedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+     *@
+    // Open return modal 
+    function openReturnModal(taskId) {
+        currentTaskId = taskId;
+        var returnModalEl = document.getElementById('returnModal');
+        var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+        returnModal.show();
+    }
+
+    // Submit return via AJAX
+    function submitReturn() {
+        $.post(`/TaskManagment/ReturnTask?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var returnModalEl = document.getElementById('returnModal');
+                var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+                returnModal.hide();
                 loadReceivedTasks();
             } else {
                 toastr.error(response.message, "Error");
@@ -157,9 +187,19 @@
         });
     }
 
+    let currentMode = "active";
+
+    function switchMode(mode) {
+        currentMode = mode;
+        $(".btn-group .btn").removeClass("active");
+        $(`#btn${mode.charAt(0).toUpperCase() + mode.slice(1)}`).addClass("active");
+        loadReceivedTasks(mode);
+    }
+
     $(document).ready(function () {
-        loadReceivedTasks();
         
+        loadReceivedTasks(currentMode);
+
         // Status filter for DataTable
         $('#statusFilter').on('change', function() {
             var status = $(this).val();

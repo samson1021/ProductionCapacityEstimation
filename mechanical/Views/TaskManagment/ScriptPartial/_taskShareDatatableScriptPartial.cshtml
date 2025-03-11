@@ -1,0 +1,247 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        fetch('/UserManagment/GetRMUsers')
+            .then(response => response.json())
+            .then(data => {
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Relation Manager');
+                $('#CenterDropdown').append(selectOption);
+                data.forEach(function (user) {
+                    var option = $('<option></option>').attr('value', user.Id).text(user.Name);
+                    $('#CenterDropdown').append(option);
+                });
+            })
+            .catch(error => {
+                console.log('Error fetching District data:', error);
+            });
+
+        $('#shareTaskButton').on('click', function () {
+            var checkedCases = $('.purple-checkbox:checked');
+            var selectedCaseIds = [];
+            checkedCases.each(function () {
+                var caseId = $(this).val(); // Get the value from the input
+
+                selectedCaseIds.push(caseId);
+            });
+            if (selectedCaseIds.length === 0) {
+                toastr.error('Please select at least one case');
+
+            } else {
+                $('#selectedCaseIds').val(selectedCaseIds.join(','));
+                $('#shareTaskModal').modal('show');
+            }
+        });
+
+
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#MyNewCase tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+
+
+    
+
+
+        $('#shareTskForm').submit(function (e) {
+            e.preventDefault();
+            if (validateInput()) { // Check if validation passes
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '/TaskManagment/ShareTask',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        $('#shareTaskModal').modal('hide');
+                        $('#shareTskForm')[0].reset();
+                        $('.purple-checkbox').prop('checked', false); // Uncheck all checkboxes
+                        toastr.success("Task has been shared successfully.");
+                    },
+                    error: function (xhr) {
+                        var error = xhr.responseJSON;
+                        toastr.error(error.message || "An error occurred");
+                    }
+                });
+            } else {
+                toastr.error("Unable to share task successfully.");
+            }
+        });
+        // Close button functionality
+        $('#closeButton, .close').on('click', function () {
+            $('#shareTaskModal').modal('hide'); // Use Bootstrap's method to hide the modal
+            $('#shareTskForm')[0].reset(); // Reset the form
+            $('.purple-checkbox').prop('checked', false); // Uncheck all checkboxes
+        });
+
+        //get shared Task
+        $.ajax({
+            url: '/TaskManagment/GetSharedTasks',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#MySharedTask').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: 'AssignedDate',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        {
+                            data: 'Deadline',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        // { data: 'AssignedId', width: '15%' },
+                        { data: 'TaskName', width: '10%' },
+                        { data: 'PriorityType', width: '15%' },
+                        { data: 'TaskStatus', width: '10%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("DetialSharedTask", "TaskManagment")?Id=' + data + '">Details | </a><a href="@Url.Action("UpdateSharedTask", "TaskManagment")?Id=' + data + '"> Edit | </a><a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                            }
+                        }
+                    ],
+                    order: [[0, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: [
+                        { extend: 'copy', title: 'RM Shared Case' },
+                        { extend: 'csv', title: 'RM Shared Case' },
+                        { extend: 'excel', title: 'RM Shared Case' },
+                        { extend: 'pdf', title: 'RM Shared Case - pdf' },
+                        { extend: 'print', title: 'RM Shared Case - Print' },
+                        'colvis'
+                    ]
+                }).buttons().container().appendTo('#MySharedTask_wrapper .col-md-6:eq(0)');
+            }
+        });
+
+
+        // Validate function for the form
+        function validateInput() {
+            const currentDate = stripTime(new Date());
+            var selectedDeadline;
+            var deadlineValue = $('#Deadline').val(); // Get the value
+            var AssignedId = $('#CenterDropdown').val(); // Get the value
+            var TaskName = $('#TaskName').val(); // Get the value
+            var PriorityType = $('#PriorityType').val(); // Get the value
+            var SharingReason = $('#SharingReason').val(); // Get the value
+
+            // Clear previous errors
+            $('#DeadlineError').text('');
+            $('#AssignedIdError').text('');
+            $('#TaskNameError').text('');
+            $('#PriorityTypeError').text('');
+            $('#SharingReasonError').text('');
+
+            // Validate AssignedId
+            if (!AssignedId) {
+                $('#AssignedIdError').text('The assignee name is required');
+                return false;
+            }
+            // Validate TaskName
+            if (!TaskName) {
+                $('#TaskNameError').text('The task list is required');
+                return false;
+            }
+            // Validate PriorityType
+            if (!PriorityType) {
+                $('#PriorityTypeError').text('The priority Type is required');
+                return false;
+            }
+            // Validate Deadline
+            if (deadlineValue) {
+                var parts = deadlineValue.split('-'); // Split the string
+                selectedDeadline = new Date(parts[0], parts[1] - 1, parts[2]); // Create Date object
+                // Check if the date is valid
+                if (isNaN(selectedDeadline.getTime())) {
+                    $('#DeadlineError').text('Invalid date. Please enter a valid date.');
+                    return false;
+                }
+                // Validate if the deadline is in the past
+                if (stripTime(selectedDeadline) < currentDate) {
+                    $('#DeadlineError').text("Deadline cannot be in the past.");
+                    return false; // Exit if deadline is in the past
+                }
+            } else {
+                $('#DeadlineError').text('The deadline is required');
+                return false; // Exit if deadline is not provided
+            }
+            // Validate SharingReason
+            if (!SharingReason) {
+                $('#SharingReasonError').text('The Sharing Reason is required');
+                return false;
+            }
+            // If validation passes
+            return true; // Indicate that validation passed
+        }
+        // Common function to clear error messages
+        function clearError(inputSelector, errorSelector, validationFunction) {
+            $(inputSelector).on('input change', function () {
+                const value = $(this).val();
+                if (value) {
+                    $(errorSelector).text(''); // Clear error if not empty
+                }
+                // Additional validation for the deadline
+                if (validationFunction) {
+                    validationFunction(value, errorSelector);
+                }
+            });
+        }
+
+        // Validation function for the deadline
+        function validateDeadline(value, errorSelector) {
+            const currentDate = stripTime(new Date());
+            const parts = value.split('-');
+            const selectedDeadline = new Date(parts[0], parts[1] - 1, parts[2]);
+
+            if (!isNaN(selectedDeadline.getTime()) && stripTime(selectedDeadline) >= currentDate) {
+                $(errorSelector).text(''); // Clear error if the date is valid
+            } else if (value) {
+                $(errorSelector).text('Deadline cannot be in the past.'); // Show error if date is in the past
+            }
+        }
+
+        // Attach error clearing to each relevant input field
+        clearError('#CenterDropdown', '#AssignedIdError');
+        clearError('#TaskName', '#TaskNameError');
+        clearError('#PriorityType', '#PriorityTypeError');
+        clearError('#Deadline', '#DeadlineError', validateDeadline);
+        clearError('#SharingReason', '#SharingReasonError');
+    });
+
+    function stripTime(date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+</script>
