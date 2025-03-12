@@ -9,7 +9,7 @@ namespace mechanical.Services.TaskManagmentService
         Task<TaskManagmentReturnDto> GetTask(Guid userId, Guid taskId);
         Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId, string? mode);
         Task<IEnumerable<TaskManagmentReturnDto>> GetReceivedTasks(Guid userId, string? mode);
-        Task<TaskManagment> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
+        Task<List<ResultDto>> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
         Task<ResultDto> ShareTasks(Guid userId, ShareTasksDto dto);
         Task<ResultDto> UpdateTask(Guid userId, TaskManagmentUpdateDto dto);
         Task<ResultDto> CompleteTask(Guid userId, Guid taskId);

@@ -48,7 +48,7 @@ namespace mechanical.Services.TaskManagmentService
             _userService = userService;
         }
 
-        public async Task<TaskManagment> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
+        public async Task<List<ResultDto>> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
 
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -68,20 +68,17 @@ namespace mechanical.Services.TaskManagmentService
                     .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId)
                     ?? throw new ArgumentException("Assignee user not found.", nameof(createTaskManagmentDto.AssignedId));
 
-                /* .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId);
-                var sharedCase = await _cbeContext.Cases
-                    .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.CaseId); */
-
-
                 var caseList = selectedCaseIds.Split(',')
                     .Select(x => Guid.Parse(x.Trim()))
                     .ToList();
+                var messages = new List<ResultDto>();
 
                 if (caseList.Count == 0)
                     throw new ArgumentException("No valid case IDs provided.");
 
                 var taskShares = new List<TaskManagment>();
                 var currentDate = DateTime.UtcNow;
+
                 foreach (var caseId in caseList)
                 {
                     var caseData = await _cbeContext.Cases
@@ -92,17 +89,19 @@ namespace mechanical.Services.TaskManagmentService
                         .Where(c => c.CaseId == caseId
                             && c.AssignedId == createTaskManagmentDto.AssignedId
                             && c.CaseOrginatorId == AssignorId
-                            && c.TaskName == createTaskManagmentDto.TaskName
-                            && c.IsActive
+                            && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName=="All")
+                            && c.IsActive==true
                             && c.Deadline < currentDate)
                         .ToListAsync();
 
-                    if (taskData.Any())
-                    {
-                        var taskName = createTaskManagmentDto.TaskName;
-                        // Log the message if needed
-                        _logger.LogInformation($"The '{taskName}' task is already added for case {caseId}. Skipping to the next case.");
-                        continue; // Skip to the next case in the loop
+                    if (taskData.Any()) {
+
+                        messages.Add(new ResultDto
+                        {
+                            Success = false,
+                            Message = $"The '{createTaskManagmentDto.TaskName}' task of case {caseData.CaseNo} has already shared for {user.Role.Name}."
+                        });                      
+
                     }
                     else
                     {
@@ -111,6 +110,7 @@ namespace mechanical.Services.TaskManagmentService
                         task.CaseId = caseId;
                         task.TaskStatus = "New"; // Consider using an enum
                         task.AssignedDate = DateTime.UtcNow;
+                        task.IsActive = true;
                         task.CaseOrginatorId = AssignorId;
 
                         await _cbeContext.TaskManagments.AddAsync(task);
@@ -118,7 +118,7 @@ namespace mechanical.Services.TaskManagmentService
                         await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
                         {
                             CaseId = caseId,
-                            Activity = $"<strong>A case number {caseData.CaseNo} of '{createTaskManagmentDto.TaskName}' has been shared with {asigneeUser.Role.Name} by {user.Role.Name}</strong>",
+                            Activity = $"<strong>A case number {caseData.CaseNo} ralated to '{createTaskManagmentDto.TaskName}' task has been shared with {asigneeUser.Role.Name} by {user.Role.Name}</strong>",
                             CurrentStage = user.Role.Name
                         });
 
@@ -126,14 +126,26 @@ namespace mechanical.Services.TaskManagmentService
                         var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Type", "#");
 
                         taskShares.Add(task);
+                        messages.Add(new ResultDto {
+                            Success = true,
+                            Message = $"The '{task.TaskName}' task of case {caseData.CaseNo} has been successfully shared for {user.Role.Name}." 
+                        });
+                    
                         await _notificationService.SendNotification(notification);
                     }
+
                 }
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-
-                return taskShares.First(); // Returns first task; ensure list is not empty
+                if (!messages.Any())
+                {
+                    messages.Add(new ResultDto{
+                    Success = false,
+                        Message = "No tasks were shared."});
+                }
+                return messages; // Returns first task; ensure list is not empty
+                //return taskShares.First(); // Returns first task; ensure list is not empty
             }
             catch (Exception ex)
             {

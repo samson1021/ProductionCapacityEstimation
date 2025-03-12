@@ -91,8 +91,9 @@ namespace mechanical.Controllers
         {
             try
             {
-                await _taskManagmentService.ShareTask(base.GetCurrentUserId(), selectedCaseIds, createTaskManagmentDto);
-                return RedirectToAction("NewCases", "Case");
+               var MessagetResult= await _taskManagmentService.ShareTask(base.GetCurrentUserId(), selectedCaseIds, createTaskManagmentDto);
+                //return RedirectToAction("NewCases", "Case");
+                return Json(MessagetResult);
             }
             catch (Exception ex)
             {
