@@ -86,7 +86,6 @@ function setupSignalRConnection() {
         .build();
 
     connection.on("ReceiveNotification", (data) => {
-        updateNotificationBadge(1);
         addNotificationToUI(data);
         toastr.info("🔔 " + data.Content);
     });
@@ -426,7 +425,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupSignalRConnection();
     handleDropdownToggle();
     fetchUnreadNotifications();
-    
 });
 
 // Event delegation for marking notifications as read
