@@ -255,7 +255,7 @@ using (var scope = app.Services.CreateScope())
    // context.Database.Migrate(); // Apply migrations
     // Seed.SeedData(app);
     // SeedDistrict.SeedData(app);
-    SeedUsersRolesAndDistricts.SeedData(app);
+    // SeedUsersRolesAndDistricts.SeedData(app);
 }
 
 // Configure the HTTP request pipeline.

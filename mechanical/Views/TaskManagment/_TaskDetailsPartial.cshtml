@@ -1,46 +1,70 @@
 @model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentReturnDto
 
-<dl class="row">
-    <dt class="col-sm-4">Case Number</dt>
-    <dd class="col-sm-8">@Model.Case?.CaseNo</dd>
+<div class="mt-2">
+    <div class="ribbon-wrapper ribbon-lg">
+        <div class="@(Model.IsActive ? "ribbon bg-success" : "ribbon bg-danger")">
+            @(Model.IsActive ? "Active" : "Inactive")
+        </div>
+    </div>
+    <dl class="row mb-0">
+        <dt class="col-sm-4 text-muted">Case Number</dt>
+        <dd class="col-sm-8">
+            <a href='@Url.Action("Detail", "Case")?Id=@Model?.CaseId&CaseType=Shared' class="btn btn-outline-purple btn-sm">
+                <i class="fas fa-external-link-alt me-2"></i>@Model.Case?.CaseNo
+            </a>
+        </dd>
 
-    <dt class="col-sm-4">Task Name</dt>
-    <dd class="col-sm-8">@Model.TaskName</dd>
+        <dt class="col-sm-4 text-muted">Task Name</dt>
+        <dd class="col-sm-8">@Model.TaskName</dd>
 
-    <dt class="col-sm-4">Assigned To</dt>
-    <dd class="col-sm-8">@Model.Assigned?.Name</dd>
+        <dt class="col-sm-4 text-muted">Assigned To</dt>
+        <dd class="col-sm-8">@Model.Assigned?.Name</dd>
 
-    <dt class="col-sm-4">Assigned By</dt>
-    <dd class="col-sm-8">@Model.CaseOrginator?.Name</dd>
-    
-    <dt class="col-sm-4">Assignment Date</dt>
-    <dd class="col-sm-8">@Model.AssignedDate</dd>
+        <dt class="col-sm-4 text-muted">Assigned By</dt>
+        <dd class="col-sm-8">@Model.CaseOrginator?.Name</dd>
 
-    <dt class="col-sm-4">Priority</dt>
-    <dd class="col-sm-8">@Model.PriorityType</dd>
+        <dt class="col-sm-4 text-muted">Assignment Date</dt>
+        <dd class="col-sm-8">@Model.AssignedDate</dd>
 
-    <dt class="col-sm-4">Deadline</dt>
-    <dd class="col-sm-8">@Model.Deadline.ToString("yyyy-MM-dd")</dd>
+        <dt class="col-sm-4 text-muted">Priority</dt>
+        <dd class="col-sm-8">
+            <span class="badge bg-@(Model.PriorityType == "Urgent" ? "danger" : Model.PriorityType == "High" ? "warning" : Model.PriorityType == "Medium" ? "info" : "secondary")">
+                @Model.PriorityType
+            </span>
+        </dd>
 
-    <dt class="col-sm-4">Status</dt>
-    <dd class="col-sm-8">@Model.TaskStatus</dd>
+        <dt class="col-sm-4 text-muted">Status</dt>
+        <dd class="col-sm-8">
+            <span class="badge bg-@(Model.TaskStatus == "New" ? "success" :
+                Model.TaskStatus == "Pending" ? "warning" :
+                Model.TaskStatus == "Returned" ? "danger" :
+                Model.TaskStatus == "Completed" ? "info" : "dark")">
+                @Model.TaskStatus
+            </span>
+        </dd>
 
-    @if (Model.UpdatedDate != null){
-        <dt class="col-sm-4">Updated Date</dt>
-        <dd class="col-sm-8">@Model?.UpdatedDate</dd>
-    }
-    @if (Model.CompletionDate != null && Model.TaskStatus == "Completed"){
-        <dt class="col-sm-4">Completion Date</dt>
-        <dd class="col-sm-8">@Model?.CompletionDate</dd>
-    }
-    <dt class="col-sm-4">State</dt>
-    <dd class="col-sm-8">
-        <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">@(Model.IsActive ? "Active" : "Inactive")</span>
-    </dd>
+        <dt class="col-sm-4 text-muted">Deadline</dt>
+        <dd class="col-sm-8">@Model.Deadline.ToString("yyyy-MM-dd")</dd>
 
-    <dt class="col-sm-4">Reason</dt>
-    <dd class="col-sm-8">@Model.SharingReason</dd>
-</dl>
+        @if (Model.UpdatedDate != null)
+        {
+            <dt class="col-sm-4 text-muted">Updated Date</dt>
+            <dd class="col-sm-8">@Model.UpdatedDate</dd>
+        }
 
-<a href='@Url.Action("Detail", "Case")?Id=@Model?.CaseId&CaseType=Shared'>Go to Case / See Case Detail</a>
+        @if (Model.CompletionDate != null && Model.TaskStatus == "Completed")
+        {
+            <dt class="col-sm-4 text-muted">Completion Date</dt>
+            <dd class="col-sm-8">@Model.CompletionDate</dd>
+        }
 
+        <dt class="col-sm-4 text-muted">Reason</dt>
+        <dd class="col-sm-8">@Model.SharingReason</dd>
+    </dl>
+
+    <div class="d-flex justify-content-begin mt-3">
+        <a href='@Url.Action("Detail", "Case")?Id=@Model?.CaseId&CaseType=Shared' class="btn btn-outline-purple btn-sm">
+            <i class="fas fa-external-link-alt me-2"></i>Go to Case / See Case Detail
+        </a>
+    </div>
+</div>

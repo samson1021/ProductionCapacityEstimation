@@ -80,7 +80,6 @@
                         form.classList.remove("was-validated");
                         $("#shareCaseModal").modal("hide");
                         $('.select2').val(null).trigger('change');
-                        loadSharedTasks();
                     } else {
                         toastr.error(response.message, "Error occurred when sharing Task");
                     }
