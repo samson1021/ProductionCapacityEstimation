@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 
 using mechanical.Data;
-
-using mechanical.Models.Dto.CaseAssignmentDto;
-
 using mechanical.Hubs;
 using mechanical.Utils;
 using mechanical.Models.Dto;
@@ -14,12 +12,11 @@ using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.NotificationDto;
 using mechanical.Models.Dto.TaskManagmentDto;
+using mechanical.Models.Dto.CaseAssignmentDto;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.NotificationService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.UserService;
-using mechanical.Models.PCE.Dto.PCECaseCommentDto;
-using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Services.TaskManagmentService
 {
@@ -112,6 +109,15 @@ namespace mechanical.Services.TaskManagmentService
                         task.TaskStatus = "New"; // Consider using an enum
                         task.AssignedDate = DateTime.UtcNow;
                         task.CaseOrginatorId = AssignorId;
+                        
+                        // task.TaskName = dto.TaskName;
+                        // task.PriorityType = dto.PriorityType;
+                        // task.SharingReason = dto.SharingReason;
+                        // task.Deadline = dto.Deadline;
+                        task.AssignedId = asigneeUser.Id;
+                        task.IsActive = true;
+                        task.UpdatedDate = null;
+                        task.CompletionDate = null;
 
                         await _cbeContext.TaskManagments.AddAsync(task);
 
@@ -122,8 +128,8 @@ namespace mechanical.Services.TaskManagmentService
                             CurrentStage = user.Role.Name
                         });
 
-                        string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
-                        var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Type", "#");
+                    string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
+                    var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                         taskShares.Add(task);
                         await _notificationService.SendNotification(notification);
@@ -179,7 +185,7 @@ namespace mechanical.Services.TaskManagmentService
             await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
 
             string notificationContent = $"New task assigned: {task.TaskName}";
-            var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+            var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
             
             return notification;
         }
@@ -187,7 +193,7 @@ namespace mechanical.Services.TaskManagmentService
         private async Task<IEnumerable<NotificationReturnDto>> AssignCaseToUsers(Case sharedCase, IEnumerable<Guid> userIds, ShareTasksDto dto)
         {
             // Prepare task assignments in bulk
-            var tasks = userIds.Select(userId => new TaskManagment
+            var shareTasks = userIds.Select(userId => new TaskManagment
             {
                 Id = Guid.NewGuid(),
                 CaseId = dto.CaseId,
@@ -204,35 +210,38 @@ namespace mechanical.Services.TaskManagmentService
                 CompletionDate = null
             }).ToList();
 
-            await _cbeContext.TaskManagments.AddRangeAsync(tasks);
+            // Add tasks to the database in bulk
+            await _cbeContext.TaskManagments.AddRangeAsync(shareTasks);
             await _cbeContext.SaveChangesAsync();
 
-            // // Send notifications & log timeline events concurrently
-            // var logTimeLineTasks = tasks.Select(async task =>
-            // {
-            //     var assignedUser = await _userService.GetUserById(task.AssignedId);
-            //     var activity = $"<strong>A {sharedCase.ApplicantName} applicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
-            //     await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
-            // });
-
-            // await Task.WhenAll(logTimeLineTasks);
-
+            // Retrieve the saved tasks with their related entities
+            var tasks = await _cbeContext.TaskManagments
+                                        .Include(t => t.Case)
+                                        .Include(t => t.Assigned)
+                                            .ThenInclude(t => t.Role)
+                                        .Include(t => t.CaseOrginator)
+                                            .ThenInclude(t => t.Role)
+                                        .Where(t => shareTasks.Select(t => t.Id).ToList().Contains(t.Id))
+                                        .ToListAsync();
+                
+            // Use a thread-safe collection for notifications
             var logTimelineTasks = new List<Task>();
-            var notificationsBatch = new List<(Guid userId, string content, string type, string link)>();
+            var notificationsBatch = new ConcurrentBag<(Guid userId, string content, string type, string link)>();
 
+            // Log timeline events and prepare notifications concurrently
             foreach (var task in tasks)
             {
-                var assignedUser = await _userService.GetUserById(task.AssignedId);
-                var activity = $"<strong>A {sharedCase.ApplicantName} applicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
-                logTimelineTasks.Add(LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name));
-                // await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
+                var activity = $"<strong>A {sharedCase.ApplicantName} applicant case has been shared to {task.Assigned.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
+                await LogTimelineEvent(task.CaseId, activity, task.Assigned.Role.Name);
+            
                 string notificationContent = $"New task assigned: {dto.TaskName}";
-                notificationsBatch.Add((task.AssignedId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}"));
+                notificationsBatch.Add((task.AssignedId, notificationContent, "Task", $"/Case/Detail/{task.CaseId}"));
+                // notificationsBatch.Add((task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}"));
             }
 
-            // Execute timeline event logging concurrently
-            await Task.WhenAll(logTimelineTasks);
-            var notifications = await _notificationService.AddNotifications(notificationsBatch);
+            // Wait for all tasks to complete
+            // await Task.WhenAll(logTimelineTasks);
+            var notifications = await _notificationService.AddNotifications(notificationsBatch.ToList());
 
             return notifications;
         }
@@ -255,6 +264,11 @@ namespace mechanical.Services.TaskManagmentService
                 if (sharedCase == null)
                 {
                     return new ResultDto { Success = false, Message = "Case not found." };
+                }
+
+                if (sharedCase.CaseOriginatorId != userId)
+                {
+                    return new ResultDto { Success = false, Message = "Access denied! User cannot share this task (not owner)." };
                 }
                 
                 var notifications = await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
@@ -329,6 +343,11 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { Success = false, Message = "Task not found." };
                 }
 
+                if (task.CaseOrginatorId != userId)
+                {
+                    return new ResultDto { Success = false, Message = "Access denied! User cannot update this task." };
+                }
+
                 // task.TaskName = dto.TaskName;
                 task.Deadline = dto.Deadline;
                 task.PriorityType = dto.PriorityType;
@@ -343,7 +362,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationContent = $"Task '{task.TaskName}' has been updated.";
-                var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -377,6 +396,11 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { Success = false, Message = "Task not found." };
                 }
 
+                if (task.AssignedId != userId)
+                {
+                    return new ResultDto { Success = false, Message = "Access denied! User cannot complete this task (not assigne)." };
+                }
+
                 task.TaskStatus = "Completed";
                 task.CompletionDate = DateTime.UtcNow;
 
@@ -389,7 +413,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationContent = $"Task '{task.TaskName}' has been marked as completed.";
-                var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -423,6 +447,11 @@ namespace mechanical.Services.TaskManagmentService
         //             return new ResultDto { Success = false, Message = "Task not found." };
         //         }
 
+        //         if (task.CaseOrginatorId != userId)
+        //         {
+        //             return new ResultDto { Success = false, Message = "Access denied! User cannot reassign this task (not owner)." };
+        //         }
+
         //         var newAssignedUser = await _userService.GetUserById(reassignedUserId);
         //         if (newAssignedUser == null)
         //         {
@@ -442,7 +471,7 @@ namespace mechanical.Services.TaskManagmentService
 
         //         // Send notification to the new assigned user
         //         string notificationContent = $"Task reassigned: '{task.TaskName}' has been reassigned to you.";
-        //         var notification = await _notificationService.AddNotification(newAssignedUser.Id, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{taskId}"
+        //         var notification = await _notificationService.AddNotification(newAssignedUser.Id, notificationContent, "Task", $"/Taskmanagment/Detail/{taskId}"
         //         );
 
         //         await _cbeContext.SaveChangesAsync();
@@ -474,8 +503,12 @@ namespace mechanical.Services.TaskManagmentService
         //         if (task == null)
         //         {
         //             return new ResultDto { Success = false, Message = "Task not found." };
-        //         }
+        //        }
 
+        //         if (task.CaseOrginatorId != userId)
+        //         {
+        //             return new ResultDto { Success = false, Message = "Access denied! User cannot delete this task (not owner)." };
+        //         }
         //         _cbeContext.TaskManagments.Remove(task);
 
         //         // Log timeline event
@@ -485,7 +518,7 @@ namespace mechanical.Services.TaskManagmentService
 
         //         // Send notification to the assigned user
         //         string notificationContent = $"Task '{task.TaskName}' has been deleted.";
-        //         var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+        //         var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
         //         await _cbeContext.SaveChangesAsync();
         //         await transaction.CommitAsync();
@@ -518,6 +551,10 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { Success = false, Message = "Task not found." };
                 }
 
+                if (task.CaseOrginatorId != userId)
+                {
+                    return new ResultDto { Success = false, Message = "Access denied! User cannot revoke this task (not owner)." };
+                }
                 task.IsActive = false;
                 _cbeContext.TaskManagments.Update(task);
 
@@ -528,11 +565,11 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationContent = $"Task '{task.TaskName}' has been revoked.";
-                var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 // Send notification to the case assigned
                 string notificationContentAssigned = $"Task '{task.TaskName}' has been revoked by {user.Name}.";
-                var notificationOwner = await _notificationService.AddNotification(task.AssignedId, notificationContentAssigned, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                var notificationOwner = await _notificationService.AddNotification(task.AssignedId, notificationContentAssigned, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -563,6 +600,11 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { Success = false, Message = "Task not found." };
                 }
 
+                if (task.AssignedId != userId)
+                {
+                    return new ResultDto { Success = false, Message = "Access denied! User cannot return this task (not assignee)." };
+                }
+
                 task.TaskStatus = "Returned";
                 _cbeContext.TaskManagments.Update(task);
 
@@ -573,11 +615,11 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationContent = $"Task '{task.TaskName}' has been returned.";
-                var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 // Send notification to the case owner
                 string notificationContentOwner = $"Task '{task.TaskName}' has been returned by {user.Name}.";
-                var notificationOwner = await _notificationService.AddNotification(task.CaseOrginatorId, notificationContentOwner, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                var notificationOwner = await _notificationService.AddNotification(task.CaseOrginatorId, notificationContentOwner, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();

@@ -122,7 +122,6 @@ namespace mechanical.Controllers
             }
             try
             {
-                
                 if (dto.Deadline < DateTime.Today)
                 {
                     return Ok(new { success = false, message = "Deadline must be today or in the future." });
@@ -152,7 +151,7 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while fetching task details.");
+                return StatusCode(500, "An error occurred while updating task details.");
             }
         }
 

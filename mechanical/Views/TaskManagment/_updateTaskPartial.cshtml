@@ -1,9 +1,41 @@
 @model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentUpdateDto
 
-<form id="updateTaskForm">
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">Task Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="ribbon-wrapper ribbon-lg">
+            <div class="@(Model.IsActive ? "ribbon bg-success" : "ribbon bg-danger")">
+                @(Model.IsActive ? "Active" : "Inactive")
+            </div>
+        </div>
+        <div class="mb-4">
+            <div>
+                <p><strong>Case Number:</strong> @Model.Case?.CaseNo</p>
+                <p><strong>Task Name:</strong> @Model.TaskName</p>
+                <p><strong>Assigned To:</strong> @Model.Assigned?.Name</p>
+                @if (Model.UpdatedDate != null)
+                {
+                    <p><strong>Updated Date:</strong> @Model.UpdatedDate</p>
+                }
+                <p><strong>Status:</strong>
+                    <span class="badge bg-@(Model.TaskStatus == "New" ? "success" :
+                        Model.TaskStatus == "Pending" ? "warning" :
+                        Model.TaskStatus == "Returned" ? "danger" :
+                        Model.TaskStatus == "Completed" ? "info" : "dark")">
+                        @Model.TaskStatus
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="updateTaskForm" class="needs-validation" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" id="Id" asp-for="Id" />
-    <input id="TaskName" asp-for="TaskName" disabled />
+
     @* <div class="mb-3">
         <label for="TaskName" class="form-label">Task List</label>
         <select class="form-control" id="TaskName" asp-for="TaskName" required>
@@ -21,12 +53,13 @@
         <label for="Deadline" class="form-label">Deadline</label>
         <input type="date" class="form-control" id="updateDeadline" asp-for="Deadline" required>
         <span asp-validation-for="Deadline" class="text-danger"></span>
-        <div class="invalid-feedback">Please select a deadline. Deadline cannot be earlier than today.</div>
+        <div class="invalid-feedback">Please select a valid deadline. Deadline cannot be earlier than today.</div>
     </div>
-    
+
     <div class="mb-3">
         <label for="PriorityType" class="form-label">Priority</label>
-        <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
+        @* <select class="form-control" id="PriorityType" asp-for="PriorityType" required> *@
+        <select class="form-select" id="PriorityType" asp-for="PriorityType" required>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
@@ -38,8 +71,46 @@
 
     <div class="mb-3">
         <label for="Reason" class="form-label">Reason for Task Sharing</label>
-        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
+        <textarea class="form-control" id="Reason" asp-for="SharingReason" rows="3" required></textarea>
         <span asp-validation-for="SharingReason" class="text-danger"></span>
         <div class="invalid-feedback">Please provide a reason for task sharing.</div>
     </div>
 </form>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0;
+    }
+    .form-control, .form-select {
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .btn-primary {
+        background-color: #6f42c1;
+        border: none;
+        border-radius: 5px;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        border-radius: 5px;
+    }
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+    }
+    .was-validated .form-control:invalid, .was-validated .form-select:invalid {
+        border-color: #dc3545;
+    }
+    .was-validated .form-control:invalid ~ .invalid-feedback, .was-validated .form-select:invalid ~ .invalid-feedback {
+        display: block;
+    }
+</style>

@@ -3,9 +3,9 @@
 }
 <link href="~/css/taskmanagement.css" rel="stylesheet" />
 
-<section class="container-fluid content-header">
+<section class="container-fluid">
     <div class="d-flex justify-content-between align-items-center">
-        @* <h2 class="fw-bold text-center">Received Tasks</h2> *@
+        <h2 class="fw-bold text-center">Received Tasks</h2>
         @* <h2 class="fw-bold text-center flex-grow-1">Received Tasks</h2> *@
         <div class="ml-auto">
             <ol class="breadcrumb float-sm-right">
@@ -18,24 +18,13 @@
 </section>
 
 <section class="content">
-    <div class="container-fluid mt-4">
+    <div class="container-fluid mt-1">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h2 class="fw-bold text-center">Received Tasks</h2>
-                <div class="ml-auto">
-                    <div class="btn-group" role="group" aria-label="Notification Toggle">
-                        <button id="btnActive" value="active" class="btn btn-sm btn-primary" onclick="switchMode('active')">Active</button>
-                        <button id="btnInactive" value="inactive" class="btn btn-sm btn-secondary" onclick="switchMode('inactive')">Inactive</button>
-                        <button id="btnAll" value="all" class="btn btn-sm btn-info" onclick="switchMode('all')">All</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card-body">
-                <div class="row d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-end">
-                        <div class="col-md-3">
-                            <div class="input-group">
+            <div class="card-header">
+                <div class="row d-flex align-items-center">
+                    <div class="col-2 d-flex justify-content-start">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text" style="display: flex; width:100%; background-color:#6f42c1);">
                                 <select id="statusFilter" class="form-control custom-select">
                                     <option value="">All</option>
                                     <option value="New">New</option>
@@ -44,18 +33,21 @@
                                     <option value="Completed">Completed</option>
                                     <option value="Returned">Returned</option>
                                 </select>
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-filter"></i>
-                                    </span>
-                                </div>
-                            </div>
+                                <i class="fas fa-filter" style="margin:10px;"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col d-flex justify-content-end">
+                        <div class="btn-group" role="group" aria-label="Notification Toggle">
+                            <button id="btnActive" value="active" class="btn btn-sm btn-primary" onclick="switchMode('active')">Active</button>
+                            <button id="btnInactive" value="inactive" class="btn btn-sm btn-secondary" onclick="switchMode('inactive')">Inactive</button>
+                            <button id="btnAll" value="all" class="btn btn-sm btn-info" onclick="switchMode('all')">All</button>
                         </div>
                     </div>
                 </div>
-
-                <hr />
-
+            </div>
+            
+            <div class="card-body">
                 <table class="table table-bordered table-striped" id="receivedTasksTable">
                     <thead>
                         <tr>

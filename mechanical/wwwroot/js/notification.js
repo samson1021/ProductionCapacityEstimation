@@ -66,7 +66,7 @@ async function ensureSignalRConnection() {
     if (connection.state === signalR.HubConnectionState.Disconnected) {
         try {
             await connection.start();
-            hideConnectionBanner();
+            // hideConnectionBanner();
             // setTimeout(() => connection.start(), 5000);
             console.log("Reconnected to SignalR Hub");
         } catch (err) {
@@ -94,18 +94,18 @@ function setupSignalRConnection() {
     connection.onclose(() => {
         console.warn("SignalR connection lost. Reconnecting...");
         toastr.warning("Connection lost. Reconnecting...");
-        showConnectionBanner("Disconnected. Reconnecting...");
+        // showConnectionBanner("Disconnected. Reconnecting...");
         ensureSignalRConnection();
     });
 
     connection.start()
         .then(() => {
             console.log("Connected to SignalR Hub");
-            hideConnectionBanner();
+            // hideConnectionBanner();
         })
         .catch(err => {
             console.error("SignalR Connection Error:", err);
-            showConnectionBanner("Failed to connect. Retrying...");
+            // showConnectionBanner("Failed to connect. Retrying...");
             toastr.error("Failed to connect to notifications service. Reconnecting...");
             setTimeout(() => connection.start(), 5000);
         });
