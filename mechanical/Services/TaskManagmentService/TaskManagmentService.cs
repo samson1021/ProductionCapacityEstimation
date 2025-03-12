@@ -81,52 +81,54 @@ namespace mechanical.Services.TaskManagmentService
                     throw new ArgumentException("No valid case IDs provided.");
 
                 var taskShares = new List<TaskManagment>();
-
+                var currentDate = DateTime.UtcNow;
                 foreach (var caseId in caseList)
                 {
                     var caseData = await _cbeContext.Cases
                         .FirstOrDefaultAsync(c => c.Id == caseId)
                         ?? throw new ArgumentException($"Case not found: {caseId}");
 
-                    var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
-                    task.Id = Guid.NewGuid();
-                    task.CaseId = caseId;
-                    task.TaskStatus = "New";
-                    task.AssignedDate = DateTime.UtcNow;
-                    task.CaseOrginatorId = AssignorId;
+                    var taskData = await _cbeContext.TaskManagments
+                        .Where(c => c.CaseId == caseId
+                            && c.AssignedId == createTaskManagmentDto.AssignedId
+                            && c.CaseOrginatorId == AssignorId
+                            && c.TaskName == createTaskManagmentDto.TaskName
+                            && c.IsActive
+                            && c.Deadline < currentDate)
+                        .ToListAsync();
 
-                        
-                    // task.TaskName = dto.TaskName;
-                    // task.PriorityType = dto.PriorityType;
-                    // task.SharingReason = dto.SharingReason;
-                    // task.Deadline = dto.Deadline;
-                    task.AssignedId = asigneeUser.Id;
-                    task.IsActive = true;
-                    task.UpdatedDate = null;
-                    task.CompletionDate = null;
-
-                    await _cbeContext.TaskManagments.AddAsync(task);
-                    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                    if (taskData.Any())
                     {
-                        CaseId = caseId,
-                        Activity = $"<strong>A {caseData.ApplicantName} applicant case has been shared to {asigneeUser.Role.Name} by {user.Role.Name}</strong>",
-                        CurrentStage = user.Role.Name
-                    });
+                        var taskName = createTaskManagmentDto.TaskName;
+                        // Log the message if needed
+                        _logger.LogInformation($"The '{taskName}' task is already added for case {caseId}. Skipping to the next case.");
+                        continue; // Skip to the next case in the loop
+                    }
+                    else
+                    {
+                        var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
+                        task.Id = Guid.NewGuid();
+                        task.CaseId = caseId;
+                        task.TaskStatus = "New"; // Consider using an enum
+                        task.AssignedDate = DateTime.UtcNow;
+                        task.CaseOrginatorId = AssignorId;
 
-                    string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
-                    var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Task", $"/Taskmanagment/DetailPartial/{task.Id}");
+                        await _cbeContext.TaskManagments.AddAsync(task);
 
-                    taskShares.Add(task);
+                        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                        {
+                            CaseId = caseId,
+                            Activity = $"<strong>A case number {caseData.CaseNo} of '{createTaskManagmentDto.TaskName}' has been shared with {asigneeUser.Role.Name} by {user.Role.Name}</strong>",
+                            CurrentStage = user.Role.Name
+                        });
 
-                    await _notificationService.SendNotification(notification);
+                        string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
+                        var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Type", "#");
 
+                        taskShares.Add(task);
+                        await _notificationService.SendNotification(notification);
+                    }
                 }
-/*
-                    CaseId = task.CaseId,
-                    Activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {Asigneuser.Role.Name} by {user.Role.Name}</strong>",
-                    CurrentStage = user.Role.Name
-                }); */
-
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();

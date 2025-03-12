@@ -10,7 +10,9 @@ namespace mechanical.Models.Dto.TaskManagmentDto
     {
         public required Guid CaseId { get; set; }
         public required string TaskName { get; set; }
-        public string SharingReason { get; set; }
+        public List<string>? TaskNames { get; set; } // List of TaskNames
+
+        public string? SharingReason { get; set; }
         public DateTime Deadline { get; set; }
         public required string PriorityType { get; set; }
         public IEnumerable<Guid> SelectedRMs { get; set; }

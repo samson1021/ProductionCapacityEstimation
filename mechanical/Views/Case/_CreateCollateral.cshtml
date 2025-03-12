@@ -5,6 +5,7 @@
 
     /// task share 
     var shareTaskData = ViewData["ShareTaskDatas"] as ShareTasksDto;
+    var x = 6;
 }
 
 <div class="card">
@@ -12,10 +13,9 @@
         <div class="col-12">
 
 
-            @if (shareTaskData == null || shareTaskData.TaskName == "All Task" || shareTaskData.TaskName == "Collateral Addition")
+            @if (shareTaskData == null)
             {
-
-                <div class="row">
+                  <div class="row">
                     <div class="col-12 col-sm-6" style="margin-top:1rem;">
                         <div class="btn-group">
                             <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
@@ -36,6 +36,46 @@
                     </div>
                 </div>
             }
+            else
+            {
+                foreach (var taskName in shareTaskData.TaskNames)
+                {
+                    if (string.IsNullOrEmpty(taskName) ||
+                    taskName == "All Task" ||
+                    taskName == "Collateral Addition")
+                    {
+                        <div class="row">
+                            <div class="col-12 col-sm-6" style="margin-top:1rem;">
+                                <div class="btn-group">
+                                    <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
+                                        <i class="fas fa-plus-circle"></i> Add Mechanical Collateral
+                                    </button>
+                                    <button id="addCivilCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addCivilCollateralModal">
+                                        <i class="fas fa-plus-circle"></i> Add Civil Collateral
+                                    </button>
+                                    <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
+                                        <i class="fas fa-plus-circle"></i> Add Agricultural Collateral
+                                    </button>
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = myCase.Id })">
+                                        <i class="nav-icon fas fa-sitemap"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                            </div>
+                        </div>
+
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                }
+            }
+
+
         </div>
     </div>
     <div class="card-body">
@@ -52,10 +92,9 @@
         </table>
 
 
-        @if (shareTaskData == null || shareTaskData.TaskName == "All Task")
+        @if (shareTaskData == null)
         {
             <div class="row">
-                @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
                 <div class="row">
                     <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
                 </div>
@@ -63,8 +102,27 @@
         }
         else
         {
-         
+            foreach (var taskName in shareTaskData.TaskNames)
+            {
+                if (string.IsNullOrEmpty(taskName) ||
+                taskName == "All Task" )
+                {
+                    <div class="row">
+                        <div class="row">
+                            <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+
+            }
         }
+
+
        
     </div>
 </div>
