@@ -159,56 +159,74 @@ namespace mechanical.Services.TaskManagmentService
             });
         }
 
-        private async Task<NotificationReturnDto> AssignCaseToUser(Case sharedCase, Guid userId, ShareTasksDto dto)
+        private async Task<(IEnumerable<NotificationReturnDto> notifications, List<ResultDto> assignmentResults)> AssignCaseToUsers(Case sharedCase, ShareTasksDto dto)
         {
-            var task = new TaskManagment
+            var assignmentResults = new List<ResultDto>();
+            var shareTasks = new List<TaskManagment>();
+
+            foreach (var userId in dto.SelectedRMs)
             {
-                Id = Guid.NewGuid(),
-                CaseId = dto.CaseId,
-                TaskName = dto.TaskName,
-                PriorityType = dto.PriorityType,
-                SharingReason = dto.SharingReason,
-                Deadline = dto.Deadline,
-                CaseOrginatorId = sharedCase.CaseOriginatorId,
-                AssignedId = userId,
-                TaskStatus = "New",
-                IsActive = true,
-                AssignedDate = DateTime.UtcNow,
-                UpdatedDate = null,
-                CompletionDate = null
-            };
+                var existingTask = await _cbeContext.TaskManagments
+                    .AnyAsync(t => t.CaseId == sharedCase.Id &&
+                                t.AssignedId == userId &&
+                                t.TaskName == dto.TaskName &&
+                                t.IsActive &&
+                                t.Deadline > DateTime.UtcNow);
 
-            await _cbeContext.TaskManagments.AddAsync(task);
-            
-            var assignedUser = await _userService.GetUserById(userId);
-            var activity = $"<strong>A {sharedCase.ApplicantName} appicant case has been shared to {assignedUser.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
-            await LogTimelineEvent(sharedCase.Id, activity, assignedUser.Role.Name);
+                if (existingTask)
+                {
+                    assignmentResults.Add(new ResultDto
+                    {
+                        StatusCode = 200,
+                        Success = false,
+                        Message = $"Task '{dto.TaskName}' is already assigned to user {userId} and is still active with a valid deadline."
+                    });
+                    continue;
+                }
 
-            string notificationContent = $"New task assigned: {task.TaskName}";
-            var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
-            
-            return notification;
-        }
+                shareTasks.Add(new TaskManagment
+                {
+                    Id = Guid.NewGuid(),
+                    CaseId = dto.CaseId,
+                    TaskName = dto.TaskName,
+                    PriorityType = dto.PriorityType,
+                    SharingReason = dto.SharingReason,
+                    Deadline = dto.Deadline,
+                    CaseOrginatorId = sharedCase.CaseOriginatorId,
+                    AssignedId = userId,
+                    TaskStatus = "New",
+                    IsActive = true,
+                    AssignedDate = DateTime.UtcNow,
+                    UpdatedDate = null,
+                    CompletionDate = null
+                });
+            }
 
-        private async Task<IEnumerable<NotificationReturnDto>> AssignCaseToUsers(Case sharedCase, IEnumerable<Guid> userIds, ShareTasksDto dto)
-        {
-            // Prepare task assignments in bulk
-            var shareTasks = userIds.Select(userId => new TaskManagment
-            {
-                Id = Guid.NewGuid(),
-                CaseId = dto.CaseId,
-                TaskName = dto.TaskName,
-                PriorityType = dto.PriorityType,
-                SharingReason = dto.SharingReason,
-                Deadline = dto.Deadline,
-                CaseOrginatorId = sharedCase.CaseOriginatorId,
-                AssignedId = userId,
-                TaskStatus = "New",
-                IsActive = true,
-                AssignedDate = DateTime.UtcNow,
-                UpdatedDate = null,
-                CompletionDate = null
-            }).ToList();
+            // // Prepare task assignments in bulk
+            // var shareTasks = dto.SelectedRMs
+            //     .Where(userId => !_cbeContext.TaskManagments
+            //         .Any(t => t.CaseId == sharedCase.Id &&
+            //                 t.AssignedId == userId &&
+            //                 t.TaskName == dto.TaskName &&
+            //                 t.IsActive &&
+            //                 t.Deadline > DateTime.UtcNow))
+            //     .Select(userId => new TaskManagment
+            //     {
+            //         Id = Guid.NewGuid(),
+            //         CaseId = dto.CaseId,
+            //         TaskName = dto.TaskName,
+            //         PriorityType = dto.PriorityType,
+            //         SharingReason = dto.SharingReason,
+            //         Deadline = dto.Deadline,
+            //         CaseOrginatorId = sharedCase.CaseOriginatorId,
+            //         AssignedId = userId,
+            //         TaskStatus = "New",
+            //         IsActive = true,
+            //         AssignedDate = DateTime.UtcNow,
+            //         UpdatedDate = null,
+            //         CompletionDate = null
+            //     })
+            //     .ToList();
 
             // Add tasks to the database in bulk
             await _cbeContext.TaskManagments.AddRangeAsync(shareTasks);
@@ -216,41 +234,43 @@ namespace mechanical.Services.TaskManagmentService
 
             // Retrieve the saved tasks with their related entities
             var tasks = await _cbeContext.TaskManagments
-                                        .Include(t => t.Case)
-                                        .Include(t => t.Assigned)
-                                            .ThenInclude(t => t.Role)
-                                        .Include(t => t.CaseOrginator)
-                                            .ThenInclude(t => t.Role)
-                                        .Where(t => shareTasks.Select(t => t.Id).ToList().Contains(t.Id))
-                                        .ToListAsync();
-                
-            // Use a thread-safe collection for notifications
-            var logTimelineTasks = new List<Task>();
-            var notificationsBatch = new ConcurrentBag<(Guid userId, string content, string type, string link)>();
+                .Include(t => t.Case)
+                .Include(t => t.Assigned)
+                    .ThenInclude(u => u.Role)
+                .Where(t => shareTasks.Select(st => st.Id).Contains(t.Id))
+                .ToListAsync();
 
-            // Log timeline events and prepare notifications concurrently
+            // Prepare notifications
+            var notificationsBatch = new List<(Guid userId, string content, string type, string link)>();
             foreach (var task in tasks)
             {
                 var activity = $"<strong>A {sharedCase.ApplicantName} applicant case has been shared to {task.Assigned.Role.Name} by {sharedCase.CaseOriginator.Role.Name}</strong>";
                 await LogTimelineEvent(task.CaseId, activity, task.Assigned.Role.Name);
-            
+
                 string notificationContent = $"New task assigned: {dto.TaskName}";
                 notificationsBatch.Add((task.AssignedId, notificationContent, "Task", $"/Case/Detail/{task.CaseId}"));
-                // notificationsBatch.Add((task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}"));
+
+                assignmentResults.Add(new ResultDto
+                {
+                    StatusCode = 200,
+                    Success = true,
+                    Message = $"Task '{task.TaskName}' is already assigned to user {task.AssignedId} and is still active with a valid deadline."
+                });
             }
 
-            // Wait for all tasks to complete
-            // await Task.WhenAll(logTimelineTasks);
-            var notifications = await _notificationService.AddNotifications(notificationsBatch.ToList());
+            var notifications = await _notificationService.AddNotifications(notificationsBatch);
 
-            return notifications;
+            return (notifications, assignmentResults);
         }
 
-        public async Task<ResultDto> ShareTasks(Guid userId, ShareTasksDto dto)
+        public async Task<List<ResultDto>> ShareTasks(Guid userId, ShareTasksDto dto)
         {
+            var result = new List<ResultDto>();
+
             if (dto == null)
             {
-                return new ResultDto { Success = false, Message = "Task management DTO cannot be null." };
+                result.Add(new ResultDto { StatusCode = 500, Success = false, Message = "Task management DTO cannot be null." });
+                return result;
             }
 
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
@@ -258,32 +278,36 @@ namespace mechanical.Services.TaskManagmentService
             {
                 // Encode/Sanitize inputs in Dto
                 EncodingHelper.EncodeObject(dto);
-                
+
                 var sharedCase = await _caseService.GetCaseById(dto.CaseId);
-                
+
                 if (sharedCase == null)
                 {
-                    return new ResultDto { Success = false, Message = "Case not found." };
+                    result.Add(new ResultDto { StatusCode = 404, Success = false, Message = "Case not found." });
+                    return result;
                 }
 
                 if (sharedCase.CaseOriginatorId != userId)
                 {
-                    return new ResultDto { Success = false, Message = "Access denied! User cannot share this task (not owner)." };
+                    result.Add(new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot share this task (not owner)." });
+                    return result;
                 }
-                
-                var notifications = await AssignCaseToUsers(sharedCase, dto.SelectedRMs, dto);
+
+                var (notifications, assignmentResults) = await AssignCaseToUsers(sharedCase, dto);
+
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+
                 await _notificationService.SendNotifications(notifications);
 
-                return new ResultDto { Success = true, Message = "Case is shared Successfully!" };
+                return assignmentResults;
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sharing task.");
                 await transaction.RollbackAsync();
-                return new ResultDto { Success = false, Message = $"An error occurred while sharing the task. {ex}" };
+                result.Add(new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while sharing the task. {ex}" });
+                return result;
             }
         }
 
@@ -298,29 +322,29 @@ namespace mechanical.Services.TaskManagmentService
             return _mapper.Map<TaskManagmentReturnDto>(task);
         }
 
-        public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId, string? mode)
+        public async Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId, string? mode = null)
         {
             var tasks = await _cbeContext.TaskManagments
                                         .Include(t => t.Case)
                                         .Include(t => t.Assigned)
                                         .Where(res => res.CaseOrginatorId == userId &&
-                                                    (mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive ||
-                                                    mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive ||
-                                                    mode.Equals("all", StringComparison.OrdinalIgnoreCase)  || string.IsNullOrEmpty(mode)))
+                                                    (string.IsNullOrEmpty(mode) || mode.Equals("all", StringComparison.OrdinalIgnoreCase) ||
+                                                    mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive ||
+                                                    mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive))
                                         .ToListAsync();
 
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
         }
 
-        public async Task<IEnumerable<TaskManagmentReturnDto>> GetReceivedTasks(Guid userId, string? mode)
+        public async Task<IEnumerable<TaskManagmentReturnDto>> GetReceivedTasks(Guid userId, string? mode = null)
         {
             var tasks = await _cbeContext.TaskManagments
                                         .Include(t => t.Case)
                                         .Include(t => t.CaseOrginator)
                                         .Where(res => res.AssignedId == userId &&
-                                                    (mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive ||
-                                                    mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive ||
-                                                    mode.Equals("all", StringComparison.OrdinalIgnoreCase)  || string.IsNullOrEmpty(mode)))
+                                                    (string.IsNullOrEmpty(mode) || mode.Equals("all", StringComparison.OrdinalIgnoreCase) ||
+                                                    mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive ||
+                                                    mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive))
                                         .ToListAsync();
 
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
@@ -340,12 +364,12 @@ namespace mechanical.Services.TaskManagmentService
 
                 if (task == null)
                 {
-                    return new ResultDto { Success = false, Message = "Task not found." };
+                    return new ResultDto { StatusCode = 404, Success = false, Message = "Task not found." };
                 }
 
                 if (task.CaseOrginatorId != userId)
                 {
-                    return new ResultDto { Success = false, Message = "Access denied! User cannot update this task." };
+                    return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot update this task." };
                 }
 
                 // task.TaskName = dto.TaskName;
@@ -368,14 +392,14 @@ namespace mechanical.Services.TaskManagmentService
                 await transaction.CommitAsync();
                 await _notificationService.SendNotification(notification);
 
-                return new ResultDto { Success = true, Message = "Task updated successfully." };
+                return new ResultDto { StatusCode = 200, Success = true, Message = "Task updated successfully." };
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating task.");
                 await transaction.RollbackAsync();
-                return new ResultDto { Success = false, Message = $"An error occurred while updating the task. {ex}" };
+                return new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while updating the task. {ex}" };
             }
         }
 
@@ -393,12 +417,12 @@ namespace mechanical.Services.TaskManagmentService
 
                 if (task == null)
                 {
-                    return new ResultDto { Success = false, Message = "Task not found." };
+                    return new ResultDto { StatusCode = 404, Success = false, Message = "Task not found." };
                 }
 
                 if (task.AssignedId != userId)
                 {
-                    return new ResultDto { Success = false, Message = "Access denied! User cannot complete this task (not assigne)." };
+                    return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot complete this task (not assigne)." };
                 }
 
                 task.TaskStatus = "Completed";
@@ -419,14 +443,14 @@ namespace mechanical.Services.TaskManagmentService
                 await transaction.CommitAsync();
                 await _notificationService.SendNotification(notification);
 
-                return new ResultDto { Success = true, Message = "Task marked as completed." };
+                return new ResultDto { StatusCode = 200, Success = true, Message = "Task marked as completed." };
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error completing task.");
                 await transaction.RollbackAsync();
-                return new ResultDto { Success = false, Message = $"An error occurred while completing the task. {ex}" };
+                return new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while completing the task. {ex}" };
             }
         }
 
@@ -444,18 +468,18 @@ namespace mechanical.Services.TaskManagmentService
 
         //         if (task == null)
         //         {
-        //             return new ResultDto { Success = false, Message = "Task not found." };
+        //             return new ResultDto { StatusCode = 404, Success = false, Message = "Task not found." };
         //         }
 
         //         if (task.CaseOrginatorId != userId)
         //         {
-        //             return new ResultDto { Success = false, Message = "Access denied! User cannot reassign this task (not owner)." };
+        //             return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot reassign this task (not owner)." };
         //         }
 
         //         var newAssignedUser = await _userService.GetUserById(reassignedUserId);
         //         if (newAssignedUser == null)
         //         {
-        //             return new ResultDto { Success = false, Message = "User not found." };
+        //             return new ResultDto { StatusCode = 404, Success = false, Message = "User not found." };
         //         }
 
         //         var previousAssignedUser = task.Assigned.Name;
@@ -478,14 +502,14 @@ namespace mechanical.Services.TaskManagmentService
         //         await transaction.CommitAsync();
         //         await _notificationService.SendNotification(notification);
 
-        //         return new ResultDto { Success = true, Message = "Task reassigned successfully." };
+        //         return new ResultDto { StatusCode = 200, Success = true, Message = "Task reassigned successfully." };
         //     }
 
         //     catch (Exception ex)
         //     {
         //         _logger.LogError(ex, "Error reassigning task.");
         //         await transaction.RollbackAsync();
-        //         return new ResultDto { Success = false, Message = $"An error occurred while reassigning the task. {ex}" };
+        //         return new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while reassigning the task. {ex}" };
         //     }
         // }
 
@@ -502,12 +526,12 @@ namespace mechanical.Services.TaskManagmentService
 
         //         if (task == null)
         //         {
-        //             return new ResultDto { Success = false, Message = "Task not found." };
+        //             return new ResultDto { StatusCode = 404, Success = false, Message = "Task not found." };
         //        }
 
         //         if (task.CaseOrginatorId != userId)
         //         {
-        //             return new ResultDto { Success = false, Message = "Access denied! User cannot delete this task (not owner)." };
+        //             return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot delete this task (not owner)." };
         //         }
         //         _cbeContext.TaskManagments.Remove(task);
 
@@ -524,14 +548,14 @@ namespace mechanical.Services.TaskManagmentService
         //         await transaction.CommitAsync();
         //         await _notificationService.SendNotification(notification);
 
-        //         return new ResultDto { Success = true, Message = "Task deleted successfully." };
+        //         return new ResultDto { StatusCode = 200, Success = true, Message = "Task deleted successfully." };
         //     }
 
         //     catch (Exception ex)
         //     {
         //         _logger.LogError(ex, "Error deleting task.");
         //         await transaction.RollbackAsync();
-        //         return new ResultDto { Success = false, Message = $"An error occurred while deleting the task. {ex}" };
+        //         return new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while deleting the task. {ex}" };
         //     }
         // }
         public async Task<ResultDto> RevokeTask(Guid userId, Guid taskId)
@@ -548,12 +572,12 @@ namespace mechanical.Services.TaskManagmentService
 
                 if (task == null)
                 {
-                    return new ResultDto { Success = false, Message = "Task not found." };
+                    return new ResultDto { StatusCode = 404, Success = false, Message = "Task not found." };
                 }
 
                 if (task.CaseOrginatorId != userId)
                 {
-                    return new ResultDto { Success = false, Message = "Access denied! User cannot revoke this task (not owner)." };
+                    return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot revoke this task (not owner)." };
                 }
                 task.IsActive = false;
                 _cbeContext.TaskManagments.Update(task);
@@ -575,34 +599,35 @@ namespace mechanical.Services.TaskManagmentService
                 await transaction.CommitAsync();
                 await _notificationService.SendNotification(notification);
 
-                return new ResultDto { Success = true, Message = "Task revoked successfully." };
+                return new ResultDto { StatusCode = 200, Success = true, Message = "Task revoked successfully." };
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting task.");
                 await transaction.RollbackAsync();
-                return new ResultDto { Success = false, Message = $"An error occurred while deleting the task. {ex}" };
+                return new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while deleting the task. {ex}" };
             }
         }
+
         public async Task<ResultDto> ReturnTask(Guid userId, Guid taskId)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
                 var task = await _cbeContext.TaskManagments
-                                            .Include(t => t.Case)
-                                                .ThenInclude(c => c.CaseOriginator)
-                                            .FirstOrDefaultAsync(t => t.Id == taskId);
+                    .Include(t => t.Case)
+                        .ThenInclude(c => c.CaseOriginator)
+                    .FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
-                    return new ResultDto { Success = false, Message = "Task not found." };
+                    return new ResultDto { StatusCode = 404, Success = false, Message = "Task not found." };
                 }
 
                 if (task.AssignedId != userId)
                 {
-                    return new ResultDto { Success = false, Message = "Access denied! User cannot return this task (not assignee)." };
+                    return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot return this task (not assignee)." };
                 }
 
                 task.TaskStatus = "Returned";
@@ -625,14 +650,13 @@ namespace mechanical.Services.TaskManagmentService
                 await transaction.CommitAsync();
                 await _notificationService.SendNotification(notification);
 
-                return new ResultDto { Success = true, Message = "Task returned successfully." };
+                return new ResultDto { StatusCode = 200, Success = true, Message = "Task returned successfully." };
             }
-
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting task.");
+                _logger.LogError(ex, "Error returning task.");
                 await transaction.RollbackAsync();
-                return new ResultDto { Success = false, Message = $"An error occurred while deleting the task. {ex}" };
+                return new ResultDto { StatusCode = 500, Success = false, Message = $"An error occurred while returning the task. {ex}" };
             }
         }
 
