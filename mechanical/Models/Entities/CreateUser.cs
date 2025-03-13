@@ -21,7 +21,7 @@ namespace mechanical.Models.Entities
         public Guid RoleId { get; set; }
         [ForeignKey("District")]
         public Guid DistrictId { get; set; }
-        public string Department { get; set; }
+        public string? Department { get; set; }
         public string? Status { get; set; }
         public Guid? SupervisorId { get; set; }
         public string? title { get; set; }
