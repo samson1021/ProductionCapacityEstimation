@@ -74,34 +74,53 @@ namespace mechanical.Services.TaskManagmentService
                     throw new ArgumentException("No valid case IDs provided.");
 
                 var taskShares = new List<TaskManagment>();
+               
                 var currentDate = DateTime.UtcNow;
 
+                var taskData = await _cbeContext.TaskManagments
+                       .Where(c => c.AssignedId == createTaskManagmentDto.AssignedId
+                           && c.CaseOrginatorId == AssignorId                          
+                           && c.IsActive == true
+                           && c.Deadline < currentDate)
+                       .ToListAsync();
+               
                 foreach (var caseId in caseList)
                 {
                     var caseData = await _cbeContext.Cases
                         .FirstOrDefaultAsync(c => c.Id == caseId)
                         ?? throw new ArgumentException($"Case not found: {caseId}");
 
-                    var taskData = await _cbeContext.TaskManagments
-                        .Where(c => c.CaseId == caseId
-                            && c.AssignedId == createTaskManagmentDto.AssignedId
-                            && c.CaseOrginatorId == AssignorId
-                            && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName=="All")
-                            && c.IsActive==true
-                            && c.Deadline < currentDate)
-                        .ToListAsync();
-
-                    if (taskData.Any()) {
+                    var checktask = taskData.Where(c => c.CaseId == caseId                            
+                           && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName == "All"))
+                           .ToList();                     
+                   
+                    if (checktask.Any()) {
 
                         messages.Add(new ResultDto
                         {
+                            StatusCode = 200,
                             Success = false,
-                            Message = $"The '{createTaskManagmentDto.TaskName}' task of case {caseData.CaseNo} has already shared for {user.Role.Name}."
+                            Message = $"The '{createTaskManagmentDto.TaskName}' task of case {caseData.CaseNo} has been already shared for {user.Role.Name}."
                         });                      
 
                     }
                     else
                     {
+                        if (createTaskManagmentDto.TaskName == "All")
+                        {
+                            var tasksToDeactivate = taskData.Where(t => t.CaseId == caseId && t.TaskName != "All").ToList();
+
+                            if (tasksToDeactivate.Any())
+                            {
+                                foreach (var changetaskstatus in tasksToDeactivate)
+                                {
+                                    changetaskstatus.IsActive = false;
+                                }
+
+                                // Save changes after modifying the IsActive property
+                                await _cbeContext.SaveChangesAsync();
+                            }
+                        }
                         var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
                         task.Id = Guid.NewGuid();
                         task.CaseId = caseId;
@@ -109,13 +128,6 @@ namespace mechanical.Services.TaskManagmentService
                         task.AssignedDate = DateTime.UtcNow;
                         task.IsActive = true;
                         task.CaseOrginatorId = AssignorId;
-                        
-                        // task.TaskName = dto.TaskName;
-                        // task.PriorityType = dto.PriorityType;
-                        // task.SharingReason = dto.SharingReason;
-                        // task.Deadline = dto.Deadline;
-                        task.AssignedId = asigneeUser.Id;
-                        task.IsActive = true;
                         task.UpdatedDate = null;
                         task.CompletionDate = null;
 
@@ -133,6 +145,7 @@ namespace mechanical.Services.TaskManagmentService
 
                         taskShares.Add(task);
                         messages.Add(new ResultDto {
+                            StatusCode = 200,
                             Success = true,
                             Message = $"The '{task.TaskName}' task of case {caseData.CaseNo} has been successfully shared for {user.Role.Name}." 
                         });
@@ -147,7 +160,8 @@ namespace mechanical.Services.TaskManagmentService
                 if (!messages.Any())
                 {
                     messages.Add(new ResultDto{
-                    Success = false,
+                        StatusCode = 200,
+                        Success = false,
                         Message = "No tasks were shared."});
                 }
                 return messages; // Returns first task; ensure list is not empty

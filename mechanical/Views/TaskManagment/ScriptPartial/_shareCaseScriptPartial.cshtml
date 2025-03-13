@@ -78,6 +78,7 @@
                     responses.forEach(function (response) {
                         switch (response.StatusCode) {
                             case 200:
+
                                 toastr.success(response.Message, "Success");
                                 break;
                             case 400:
