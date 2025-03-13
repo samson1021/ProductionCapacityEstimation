@@ -68,7 +68,6 @@
             $("#shareCaseButton").prop("disabled", true);
             $("#shareSpinner").removeClass("d-none");
             
-
             $.ajax({
                 url: '/TaskManagment/ShareTasks',
                 type: 'POST',
@@ -78,8 +77,11 @@
                     responses.forEach(function (response) {
                         switch (response.StatusCode) {
                             case 200:
-
-                                toastr.success(response.Message, "Success");
+                                if (response.Su){
+                                    toastr.success(response.Message, "Success");
+                                }else{
+                                    toastr.success(response.Message, "Success");
+                                }
                                 break;
                             case 400:
                                 toastr.error(response.Message, "Bad Request");
@@ -105,6 +107,7 @@
                         form.classList.remove("was-validated");
                         $("#shareCaseModal").modal("hide");
                         $('.select2').val(null).trigger('change');
+                        loadSharedTasks();
                     } else {
                         toastr.error(response.message, "Error occurred when sharing Task");
                     }
