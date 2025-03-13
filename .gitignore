@@ -11,6 +11,6 @@ mechanical/migrations
 mechanical/UploadFile
 mechanical/.vs
 mechanical/.config
-mechanical/appsettings.json
+mechanical/appsettings.Development.json
 # mechanical/mechanical.csproj
 # mechanical/mechanical.csproj.user

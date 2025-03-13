@@ -1,4 +1,6 @@
-﻿namespace mechanical.Models.Dto.TaskManagmentDto
+﻿using mechanical.Models.Entities;
+
+namespace mechanical.Models.Dto.TaskManagmentDto
 {
     public class TaskManagmentUpdateDto
     {
@@ -8,18 +10,18 @@
         public DateTime Deadline { get; set; }
         public required string PriorityType { get; set; }
 
-        // public required Guid CaseId { get; set; }
-        // public required Guid AssignedId { get; set; }
-        // public required Guid CaseOrginatorId { get; set; }
-        // public required string TaskStatus { get; set; }
+        public required Guid CaseId { get; set; }
+        public required Guid AssignedId { get; set; }
+        public required Guid CaseOrginatorId { get; set; }
+        public required string TaskStatus { get; set; }
 
-        // public required bool IsActive { get; set; }
-        // public DateTime AssignedDate { get; set; }
-        // public DateTime? UpdatedDate { get; set; }
-        // public DateTime CompletionDate { get; set; }
+        public required bool IsActive { get; set; }
+        public DateTime AssignedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public DateTime CompletionDate { get; set; }
 
-        // public virtual CreateUser? CaseOrginator { get; set; }
-        // public virtual CreateUser? Assigned { get; set; }
-        // public virtual Case? Case { get; set; }
+        public virtual CreateUser? CaseOrginator { get; set; }
+        public virtual CreateUser? Assigned { get; set; }
+        public virtual Case? Case { get; set; }
     }
 }
