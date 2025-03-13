@@ -16,7 +16,7 @@
             $("#shareCaseButton").prop("disabled", !isValid);
         });
 
-        $('.select2').select2({ placeholder: "Select Relation Managers", allowClear: true });
+        $('.select2').select2({ placeholder: "No Relation Managers", allowClear: true });
 
         // Populate RMs dropdown (for Share Task form)
         $.get("/UserManagment/GetPeerRMs", function (data) {

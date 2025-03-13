@@ -723,5 +723,14 @@ namespace mechanical.Services.TaskManagmentService
             return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
         }
 
+        public async Task<int> GetTaskCommentCount(Guid taskId)
+        {
+            return await _cbeContext.TaskComments
+                                            .Include(res=>res.User)
+                                            .Where(t=>t.TaskId == taskId)
+                                            .OrderBy(d => d.CommentDate)
+                                            .CountAsync();
+        }
+
     }
 }

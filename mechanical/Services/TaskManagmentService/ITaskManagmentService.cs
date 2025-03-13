@@ -22,5 +22,6 @@ namespace mechanical.Services.TaskManagmentService
         Task<ResultDto> ReturnTask(Guid userId, Guid taskId);
         Task<TaskComment> CommentTask(Guid userId, TaskCommentPostDto dto);
         Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId);
+        Task<int> GetTaskCommentCount(Guid taskId);
     }
 }

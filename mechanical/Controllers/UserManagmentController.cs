@@ -18,7 +18,7 @@ using System.Text.Json;
 
 namespace mechanical.Controllers
 {
-    [Authorize(Roles = "Admin,Super Admin,Maker Manager,Maker TeamLeader")]
+    [Authorize(Roles = "Admin,Super Admin,Relation Manager,Maker Manager,Maker TeamLeader")]
     public class UserManagmentController : BaseController
     {
         private readonly CbeContext _context;
@@ -379,5 +379,12 @@ namespace mechanical.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetPeerRMs()
+        {
+            var rms = await _userService.GetPeerRMs(base.GetCurrentUserId());
+            var result = rms.Select(rm => new { Id = rm.Id, Name = rm.Name });
+            return Json(result);
+        }
     }
 }

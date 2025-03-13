@@ -41,5 +41,29 @@ namespace mechanical.Services.UserService
             var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).Include(res => res.District).FirstOrDefaultAsync(res => res.Id == Id);
             return _mapper.Map<ReturnUserDto>(user);
         }
+
+        public async Task<IEnumerable<ReturnUserDto>> GetPeerRMs(Guid userId)
+        {
+            var user = await _cbeContext.CreateUsers
+                                        .AsNoTracking()
+                                        .Where(u => u.Id == userId)
+                                        .Select(u => new { u.SupervisorId, u.Department })
+                                        .FirstOrDefaultAsync();
+
+            if (user == null)
+                return Enumerable.Empty<ReturnUserDto>();
+
+            var rms = await _cbeContext.CreateUsers
+                                        .AsNoTracking()
+                                        // .Where(u => u.SupervisorId == user.SupervisorId
+                                        //             && u.Department == user.Department
+                                        //             && u.Role.Name == "Relation Manager"
+                                        //             && u.BroadSegment == user.BroadSegment
+                                        //             && u.Unit == user.Unit
+                                        // )
+                                        .Include(u => u.Role)
+                                        .ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnUserDto>>(rms);
+        }
     }
 }
