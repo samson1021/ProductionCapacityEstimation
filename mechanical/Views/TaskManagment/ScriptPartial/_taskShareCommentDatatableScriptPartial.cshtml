@@ -1,10 +1,10 @@
-﻿<<script>
+﻿<script>
      $(document).ready(function () {
          var TaskId;
          var chatMessages;
          var errorMessage = $('#error-message'); // Reference to the error message container
-        
-         $('#custom-tabs-four-settings-tab').click(function (e) {
+
+        $('#comments').click(function (e) {
              chatMessages = $('.direct-chat-messages');
              e.preventDefault(); // Prevent default anchor click behavior
              TaskId = $('#TaskId').val(); // Retrieve TaskId from the hidden input
