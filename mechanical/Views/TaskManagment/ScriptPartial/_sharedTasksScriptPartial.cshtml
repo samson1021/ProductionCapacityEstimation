@@ -79,12 +79,17 @@
                     data: 'Id',
                     width: '15%',
                     render: function (data, type, row, meta) {
-                        var updateLink = `<a class="text-info" href="javascript:void(0);" onclick="showUpdateTask('${data}')">Update</a>`;
+                        var updateRevokeLink = "";
+                        if (row.IsActive) {
+                            if(row.TaskStatus !== 'Completed' && row.TaskStatus !== 'Returned'){
+                                updateRevokeLink = ` | <a class="text-info" href="javascript:void(0);" onclick="showUpdateTask('${data}')">Update</a>
+                                | <a class="text-danger" href="javascript:void(0);" onclick="openRevokeModal('${data}')">Revoke</a>`;
+                            }
+                        }
+                        @* | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a>  *@
                         return `
                                 <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" class='details-link'>Details</a>
-                                | ${updateLink} 
-                            @* | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a>  *@
-                            | <a class="text-danger" href="javascript:void(0);" onclick="openRevokeModal('${data}')">Revoke</a>
+                                ${updateRevokeLink}
                         `;
                     }
                 }

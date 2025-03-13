@@ -280,7 +280,7 @@ namespace mechanical.Services.TaskManagmentService
                 {
                     StatusCode = 200,
                     Success = true,
-                    Message = $"Task '{task.TaskName}' is already assigned to user {task.AssignedId} and is still active with a valid deadline."
+                    Message = $"Task '{task.TaskName}' is assigned to user {task.AssignedId} successfully."
                 });
             }
 

@@ -80,9 +80,11 @@
                     width: '10%',
                     render: function (data, type, row, meta) {
                         var completeReturnLink = "";
-                        if(row.TaskStatus !== 'Completed' || row.TaskStatus !== 'Returned'){
-                            completeReturnLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>
-                            | <a class="text-danger" href="javascript:void(0);" onclick="openReturnModal('${data}')">Return</a>`;
+                        if (row.IsActive) {
+                            if (row.TaskStatus !== 'Completed' && row.TaskStatus !== 'Returned'){
+                                completeReturnLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>
+                                | <a class="text-danger" href="javascript:void(0);" onclick="openReturnModal('${data}')">Return</a>`;
+                            }
                         }
                         return `
                             <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a>
