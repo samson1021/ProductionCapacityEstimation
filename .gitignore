@@ -1,4 +1,6 @@
 .vs/
+.vs/mechanical/
+.vs/mechanical/v17/.suo
 Signature management/
 Signature management/obj/
 Signature management/bin/
@@ -9,6 +11,6 @@ mechanical/migrations
 mechanical/UploadFile
 mechanical/.vs
 mechanical/.config
-mechanical/appsettings.json
+mechanical/appsettings.Development.json
 # mechanical/mechanical.csproj
 # mechanical/mechanical.csproj.user

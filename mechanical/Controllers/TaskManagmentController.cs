@@ -108,33 +108,21 @@ namespace mechanical.Controllers
         {
             if (!ModelState.IsValid)
             {
-                
-                // return BadRequest(new {  success=false, message = "Task is not shared successfully" });
-                return Json(new
-                {
-                    success = false,
-                    errors = ModelState
-                        .Where(x => x.Value.Errors.Any())
-                        .ToDictionary(
-                            kvp => kvp.Key,
-                            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                        )
-                });
+                return BadRequest(new { StatusCode = 400, Success=false, Message = "Task is not shared successfully" });
             }
             try
             {
-                
                 if (dto.Deadline < DateTime.Today)
                 {
-                    return Ok(new { success = false, message = "Deadline must be today or in the future." });
+                    return Ok(new { StatusCode = 400, Success = false, Message = "Deadline must be today or in the future." });
                 }
 
                 var response = await _taskManagmentService.ShareTasks(base.GetCurrentUserId(), dto);
-                return Ok(new { success=response.Success, message = response.Message });
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Task is not shared successfully" });
+                return BadRequest(new { StatusCode = 500, Success = false, Message = "Task is not shared successfully" });
             }
         }
 
@@ -153,7 +141,7 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while fetching task details.");
+                return StatusCode(500, "An error occurred while updating task details.");
             }
         }
 

@@ -4,7 +4,7 @@
     // Initialize DataTable with additional functionalities
     
     function stripTime(date) {
-        return new Date(Date.tUTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
     }
 
     function initializeDataTable(data, emptyMessage) {
