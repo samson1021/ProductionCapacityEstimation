@@ -87,7 +87,7 @@
                             }
                         }
                         return `
-                            <a href="javascript:void(0);" onclick="showTaskDetails('${data}')">Details</a>
+                            <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" id="detailBtn" class='details-link'>Details</a>
                             ${completeReturnLink}
                         `;
                     }
@@ -124,10 +124,11 @@
     function showTaskDetails(taskId) {
         $('#TaskId').val(`${taskId}`);
         $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
-            $('#detailsContent').html(data);
+            $('#details .modal-body').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
             var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
             detailsModal.show();
+            loadComments(taskId);
         });
     }
 
@@ -209,17 +210,19 @@
             table.column(3).search(status).draw();
         });
 
-        $('.select2').select2({ allowClear: true });
-
-        // Select all / individual checkboxes
+        @* // Select all / individual checkboxes
         $('#selectAllCheckbox').on('click', function () {
             var isChecked = $(this).prop('checked');
             $('.purple-checkbox').prop('checked', isChecked);
         });
-
         $('#receivedTasksTable tbody').on('change', '.purple-checkbox', function () {
             var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
             $('#selectAllCheckbox').prop('checked', allChecked);
+        }); *@
+
+        $('#detailsModal').on('show.bs.modal', function () {
+            $('#taskTabs a[href="#details"]').tab('show');
         });
+        
     });
 </script>

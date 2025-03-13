@@ -88,7 +88,7 @@
                         }
                         @* | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a>  *@
                         return `
-                                <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" class='details-link'>Details</a>
+                                <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" id="detailBtn" class='details-link'>Details</a>
                                 ${updateRevokeLink}
                         `;
                     }
@@ -125,10 +125,11 @@
     function showTaskDetails(taskId) {
         $('#TaskId').val(`${taskId}`);
         $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
-            $('#detailsContent').html(data);
+            $('#details .modal-body').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
             var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
             detailsModal.show();
+            loadComments(taskId);
         });
     }
     
@@ -246,6 +247,10 @@
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
         
+        $('#detailsModal').on('show.bs.modal', function () {
+            $('#taskTabs a[href="#details"]').tab('show');
+        });
+
         // Populate Cases dropdown
         $.get("/Case/GetMyCases", function (data) {
             var caseDropdown = $("#CaseId");

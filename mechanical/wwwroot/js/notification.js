@@ -110,27 +110,27 @@ function setupSignalRConnection() {
         });
 }
 
-// Show connection status banner
-function showConnectionBanner(message) {
-    let banner = document.getElementById("connectionBanner");
-    if (!banner) {
-        banner = document.createElement("div");
-        banner.id = "connectionBanner";
-        banner.className = "alert alert-warning alert-dismissible fade show";
-        banner.innerHTML = `
-            <strong>${message}</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            <button class="btn btn-sm btn-primary ms-2" onclick="ensureSignalRConnection()">Retry Now</button>
-        `;
-        document.body.prepend(banner);
-    }
-}
+// // Show connection status banner
+// function showConnectionBanner(message) {
+//     let banner = document.getElementById("connectionBanner");
+//     if (!banner) {
+//         banner = document.createElement("div");
+//         banner.id = "connectionBanner";
+//         banner.className = "alert alert-warning alert-dismissible fade show";
+//         banner.innerHTML = `
+//             <strong>${message}</strong>
+//             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+//             <button class="btn btn-sm btn-primary ms-2" onclick="ensureSignalRConnection()">Retry Now</button>
+//         `;
+//         document.body.prepend(banner);
+//     }
+// }
 
-// Hide connection status banner
-function hideConnectionBanner() {
-    const banner = document.getElementById("connectionBanner");
-    if (banner) banner.remove();
-}
+// // Hide connection status banner
+// function hideConnectionBanner() {
+//     const banner = document.getElementById("connectionBanner");
+//     if (banner) banner.remove();
+// }
 
 // Mark notifications as seen
 async function markNotificationsAsSeen() {

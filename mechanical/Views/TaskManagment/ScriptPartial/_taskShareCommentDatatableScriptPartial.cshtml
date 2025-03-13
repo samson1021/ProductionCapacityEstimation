@@ -1,179 +1,221 @@
 ﻿<script>
-     $(document).ready(function () {
-         var TaskId;
-         var chatMessages;
-         var errorMessage = $('#error-message'); // Reference to the error message container
+    // Global variables
+    var chatMessages;
+    var errorMessage = $('#error-message');;
+    var TaskId;
 
-        $('#comments').click(function (e) {
-             chatMessages = $('.direct-chat-messages');
-             e.preventDefault(); // Prevent default anchor click behavior
-             TaskId = $('#TaskId').val(); // Retrieve TaskId from the hidden input
-             errorMessage.hide();             
-             $('#messageinput').val(''); // Clear input field            
-             loadComments(); // Load comments when the tab is clicked
-         });
+    $(document).ready(function () {
+
+        $('#comments-tab').click(function (e) {
+            chatMessages = $('.direct-chat-messages');
+            e.preventDefault(); // Prevent default anchor click behavior
+            TaskId = $('#TaskId').val(); // Retrieve TaskId from the hidden input
+            errorMessage.hide();
+            $('#messageinput').val(''); // Clear input field
+            loadComments(TaskId); // Load comments when the tab is clicked
+        });
          // Handle Send Button click
-         $('#SendButton').click(function (e) {
-             e.preventDefault(); // Prevent default form submission
-             sendMessage(); // Function to send the message            
-             $('#messageinput').val(''); // Clear the input field after sending
-         });
-         // Function to load comments
-         function loadComments() {            
-             $.ajax({
-                 url: `/TaskManagment/GetTaskComment?TaskId=${TaskId}`,
-                 method: 'GET',
-                 success: function (data) {
-                     if (data && data.comments) { // Check if data and Comments exist
-                         updateChatMessages(data); // Update the chat messages
-                         updateContactList(data);   // Update the contact list
-                     } else {
-                         console.log('No comments found or data structure is incorrect.');
-                     }
-                 },
-                 error: function (jqXHR, textStatus, errorThrown) {
-                     console.log('An error occurred while retrieving task comments:', textStatus, errorThrown);
-                     alert('Failed to load comments. Please try again later.'); // User feedback
-                 }
-             });
-         }
-         function sendMessage() {
-             var Comment = $('#messageinput').val().trim();
-             var errorMessage = $('#error-message'); // Reference to the error message container
+        $('#SendButton').click(function (e) {
+            e.preventDefault(); // Prevent default form submission
+            TaskId = $('#TaskId').val();
+            sendMessage(TaskId); // Function to send the message
+            $('#messageinput').val(''); // Clear the input field after sending
+        });
+    });
 
-             // Clear previous error message
-             errorMessage.hide();
+    // Initialize the chat functionality
+    function initializeChat() {
+        chatMessages = $('.direct-chat-messages');
+        errorMessage = $('#error-message'); // Reference to the error message container
 
-             // Check if the comment is empty
-             if (Comment === "") {
-                 // Show error message in the UI
-                 errorMessage.text("Message cannot be empty.").show();
-                 return; // Exit the function if the comment is empty
-             }
+        $('#comments-tab').click(function (e) {
+            e.preventDefault(); // Prevent default anchor click behavior
+            TaskId = $('#TaskId').val(); // Retrieve TaskId from the hidden input
+            errorMessage.hide();
+            $('#messageinput').val(''); // Clear input field
+            loadComments(TaskId); // Load comments when the tab is clicked
+        });
 
-             var requestData = {
-                 Comment: Comment,
-                 TaskId: TaskId,
-             };
+        // Handle Send Button click
+        $('#SendButton').click(function (e) {
+            e.preventDefault(); // Prevent default form submission
+            TaskId = $('#TaskId').val();
+            sendMessage(TaskId); // Function to send the message
+            $('#messageinput').val(''); // Clear the input field after sending
+        });
+    }
 
-             $.ajax({
-                 url: '/TaskManagment/CommentTask',
-                 method: 'POST',
-                 contentType: 'application/json',
-                 data: JSON.stringify(requestData),
-                 success: function (response) {
-                     $('#messageinput').val(''); // Clear the input field after sending
-                     loadComments(); // Reload the comments
-                     console.log('Message sent successfully:', response);
-                    },
-                 error: function (jqXHR, textStatus, errorThrown) {
-                     console.log('Error while sending the message:', textStatus, errorThrown);
-                     alert('Failed to send message. Please try again later.'); // User feedback
-                 }
-             });
+    // Function to load comments
+    function loadComments(TaskId) {
+        $.ajax({
+            url: `/TaskManagment/GetTaskComment?TaskId=${TaskId}`,
+            method: 'GET',
+            success: function (data) {
+                if (data && data.comments) { // Check if data and Comments exist
+                    updateChatMessages(data); // Update the chat messages
+                    updateContactList(data); // Update the contact list
+                } else {
+                    console.log('No comments found or data structure is incorrect.');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('An error occurred while retrieving task comments:', textStatus, errorThrown);
+                alert('Failed to load comments. Please try again later.'); // User feedback
+            }
+        });
+    }
 
-             return false; // Prevent default form submission
-         }
-         function updateChatMessages(data) {
-             var currentUserID = data.userId;
-             var Comments = data.comments || []; // Ensure Comments is an array
-             $(".CommentBage").text(Comments.length); // Update comment count
-             chatMessages.empty(); // Clear previous messages
+    // Function to send a message
+    function sendMessage(TaskId) {
+        var Comment = $('#messageinput').val().trim();
 
-             if (Comments.length > 0) {
-                 let lastDate = '';
-                 Comments.forEach(function (comment) {
-                     var createdAt = new Date(comment.CommentDate);
-                     var options = { year: 'numeric', month: 'long', day: 'numeric' };
-                     var formattedDate = createdAt.toLocaleDateString('en-US', options);
+        // Clear previous error message
+        errorMessage.hide();
 
-                     // Check if the date has changed
-                     if (formattedDate !== lastDate) {
-                         chatMessages.append($('<div>').addClass('chat-date').text(formattedDate));
-                         lastDate = formattedDate;
-                     }
+        // Check if the comment is empty
+        if (Comment === "") {
+            // Show error message in the UI
+            errorMessage.text("Message cannot be empty.").show();
+            return; // Exit the function if the comment is empty
+        }
 
-                     var chatMsg = createChatMessage(comment, currentUserID);
-                     chatMessages.append(chatMsg);
-                 });
-             } else {
-                 chatMessages.append('<div class="no-comments-msg">No comments available for this task.</div>');
-             }
+        var requestData = {
+            Comment: Comment,
+            TaskId: TaskId,
+        };
 
-             scrollToBottom(); // Scroll to the bottom of chat
-         }
-         function createChatMessage(comment, currentUserID) {
-             var chatMsg = $('<div>').addClass('direct-chat-msg');
-             var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
+        $.ajax({
+            url: '/TaskManagment/CommentTask',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                $('#messageinput').val(''); // Clear the input field after sending
+                loadComments(TaskId); // Reload the comments
+                console.log('Message sent successfully:', response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error while sending the message:', textStatus, errorThrown);
+                alert('Failed to send message. Please try again later.'); // User feedback
+            }
+        });
 
-            // Create user profile link
-             var chatName = $('<a>')
-                 .attr('href', `/UserManagment/Profile/${comment.UserId}`)
-                 .text(comment.User?.Name || 'Unknown User'); // Fallback for missing user name
+        return false; // Prevent default form submission
+    }
 
-             var chatText = $('<div>').addClass('direct-chat-text').text(comment.Comment || ''); // Fallback for empty comment
-             var createdAt = new Date(comment.CommentDate);
+    // Function to update chat messages
+    function updateChatMessages(data) {
+        var currentUserID = data.userId;
+        var Comments = data.comments || []; // Ensure Comments is an array
+        $(".CommentBage").text(Comments.length); // Update comment count
+        chatMessages.empty(); // Clear previous messages
 
-             // Format timestamp
-             var chatTimestamp = $('<span>').addClass('direct-chat-timestamp')
-                 .text(createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        if (Comments.length > 0) {
+            let lastDate = '';
+            Comments.forEach(function (comment) {
+                var createdAt = new Date(comment.CommentDate);
+                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                var formattedDate = createdAt.toLocaleDateString('en-US', options);
 
-             chatInfos.append(chatName); // Name at the top
-             chatMsg.append(chatInfos, chatText, chatTimestamp); // Append timestamp last
+                // Check if the date has changed
+                if (formattedDate !== lastDate) {
+                    chatMessages.append($('<div>').addClass('chat-date').text(formattedDate));
+                    lastDate = formattedDate;
+                }
 
-             // Add class for current user's messages
-             if (comment.UserId === currentUserID) {
-                 chatMsg.addClass('right');
-             }
+                var chatMsg = createChatMessage(comment, currentUserID);
+                chatMessages.append(chatMsg);
+            });
+        } else {
+            chatMessages.append('<div class="no-comments-msg">No comments available for this task.</div>');
+        }
 
-             return chatMsg;
-         }
-         function updateContactList(data) {
-             var users = data.comments.map(comment => ({
-                 id: comment.UserId,
-                 name: comment.User?.Name || 'Unknown User', // Fallback if name is not available
-                 avatar: '/img/avatar5.png', // Placeholder avatar
-                 lastMessage: comment.Comment || '', // Fallback for empty comment
-                 date: new Date(comment.CommentDate).toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) // Format date
-             }));
+        scrollToBottom(); // Scroll to the bottom of chat
+    }
 
-             populateContactList(users); // Populate the contact list with users
-         }
-         function populateContactList(users) {
-             var contactList = $('.contacts-list');
-             contactList.empty(); // Clear existing contacts
+    // Function to create a chat message element
+    function createChatMessage(comment, currentUserID) {
+        var chatMsg = $('<div>').addClass('direct-chat-msg');
+        var chatInfos = $('<div>').addClass('direct-chat-infos clearfix');
 
-             if (users.length === 0) {
-                 contactList.append('<li>No contacts available.</li>'); // Message if no users are found
-                 return;
-             }
+        // Create user profile link
+        var chatName = $('<a>')
+            .attr('href', `/UserManagment/Profile/${comment.UserId}`)
+            .text(comment.User?.Name || 'Unknown User'); // Fallback for missing user name
 
-             users.forEach(function (user) {
-                 // Create list item for each user
-                 var listItem = $('<li>').append(
-                     $('<a>').attr('href', `/UserManagment/Profile/${user.id}`)
-                         .append($('<img>').addClass('contacts-list-img').attr('src', user.avatar || '/img/default-avatar.png')) // Default avatar
-                         .append($('<div>').addClass('contacts-list-info')
-                             .append($('<span>').addClass('contacts-list-name').text(user.name || 'Unknown User')) // Fallback for name
-                             .append($('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date))) // Format date
-                             .append($('<span>').addClass('contacts-list-msg').text(user.lastMessage || '')) // Fallback for last message
-                         )
-                 );
-                 contactList.append(listItem); // Append the list item to the contact list
-             });
-         }
-         function scrollToBottom() {
-             if (chatMessages && chatMessages.length) {
-                 chatMessages.animate({ scrollTop: chatMessages.prop('scrollHeight') }, 300); // Smooth scroll to bottom
-             }
-         }
-         function formatDate(date) {
-             var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-             return date.toLocaleString('en-KE', options); // Change locale to Kenya
-         }
+        var chatText = $('<div>').addClass('direct-chat-text').text(comment.Comment || ''); // Fallback for empty comment
+        var createdAt = new Date(comment.CommentDate);
 
-     });
-    
+        // Format timestamp
+        var chatTimestamp = $('<span>').addClass('direct-chat-timestamp')
+            .text(createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+        chatInfos.append(chatName); // Name at the top
+        chatMsg.append(chatInfos, chatText, chatTimestamp); // Append timestamp last
+
+        // Add class for current user's messages
+        if (comment.UserId === currentUserID) {
+            chatMsg.addClass('right');
+        }
+
+        return chatMsg;
+    }
+
+    // Function to update the contact list
+    function updateContactList(data) {
+        var users = data.comments.map(comment => ({
+            id: comment.UserId,
+            name: comment.User?.Name || 'Unknown User', // Fallback if name is not available
+            avatar: '/img/avatar5.png', // Placeholder avatar
+            lastMessage: comment.Comment || '', // Fallback for empty comment
+            date: new Date(comment.CommentDate).toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) // Format date
+        }));
+
+        populateContactList(users); // Populate the contact list with users
+    }
+
+    // Function to populate the contact list
+    function populateContactList(users) {
+        var contactList = $('.contacts-list');
+        contactList.empty(); // Clear existing contacts
+
+        if (users.length === 0) {
+            contactList.append('<li>No contacts available.</li>'); // Message if no users are found
+            return;
+        }
+
+        users.forEach(function (user) {
+            // Create list item for each user
+            var listItem = $('<li>').append(
+                $('<a>').attr('href', `/UserManagment/Profile/${user.id}`)
+                    .append($('<img>').addClass('contacts-list-img').attr('src', user.avatar || '/img/default-avatar.png')) // Default avatar
+                    .append($('<div>').addClass('contacts-list-info')
+                        .append($('<span>').addClass('contacts-list-name').text(user.name || 'Unknown User')) // Fallback for name
+                        .append($('<small>').addClass('contacts-list-date float-right').text(formatDate(user.date))) // Format date
+                        .append($('<span>').addClass('contacts-list-msg').text(user.lastMessage || '')) // Fallback for last message
+                    )
+            );
+            contactList.append(listItem); // Append the list item to the contact list
+        });
+    }
+
+    // Function to scroll to the bottom of the chat
+    function scrollToBottom() {
+        if (chatMessages && chatMessages.length) {
+            chatMessages.animate({ scrollTop: chatMessages.prop('scrollHeight') }, 300); // Smooth scroll to bottom
+        }
+    }
+
+    // Function to format a date
+    function formatDate(date) {
+        var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return date.toLocaleString('en-KE', options); // Change locale to Kenya
+    }
+
+    // Document ready function
+    $(document).ready(function () {
+        initializeChat(); // Initialize the chat functionality
+    });
  </script>
 
 <style>
