@@ -1,0 +1,79 @@
+﻿@model mechanical.Models.Dto.UserDto.UserReturnDto;
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>My Profile</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Profile</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <table class="table  table-borderless" style="width: auto;">
+                    <tbody>
+                        <tr>
+                            <th rowspan="6" style="width:22%"><img src="~/img/avatar5.png" class="img-circle elevation-2" alt="User Image"></th>
+                            <th colspan="2" style="width: auto;">General Information</th>
+                        </tr>
+                        <tr>
+                            <td>Full Name:</td>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <td>Employee Id:</td>
+                            <td>@Model.emp_ID</td>
+                        </tr>
+                        <tr>
+                            <td>Valuation Unit:</td>
+                            <td>@Model.Department</td>
+                        </tr>
+                        <tr>
+                            <td>Center (District):</td>
+                            <td>@Model.District</td>
+                        </tr>
+                        <tr>
+                            <td>Branch:</td>
+                            <td>@Model.Branch</td>
+                        </tr>
+                        <tr>
+                            <td style="width: auto;">@Model.Name</td>
+                            <td style="width: 25%;">Position:</td>
+                            <td style="width: 50%;">@Model.Role</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr />
+                <div class="row">
+                    <div class="col-xl-6">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" class="">Contact Information</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Email:</td>
+                                    <td><i class="fas fa-envelope"></i> @Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td>Mobile No:</td>
+                                    <td><i class="fas fa-phone-alt"></i> @Model.PhoneNO </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
