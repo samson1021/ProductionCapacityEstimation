@@ -1,23 +1,11 @@
-﻿//using CreditBackOffice.Models;
-using mechanical.Data;
+﻿using mechanical.Data;
 using mechanical.Models.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using System.Security.Claims;
-using NuGet.Protocol.Plugins;
-using System.DirectoryServices.AccountManagement;
-using mechanical.Models.Login;
-using mechanical.Services.AuthenticatioinService;
 using System.Text;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System.Net.Http;
-
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using mechanical.Models.Dto.UserDto;
 
 namespace mechanical.Controllers
@@ -37,7 +25,6 @@ namespace mechanical.Controllers
             _authetnicationService = authetnicationService;
         }
 
-       
         public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -50,16 +37,12 @@ namespace mechanical.Controllers
                     {
                         return RedirectToDashboard(loggedUser);
                     }
-
                     return RedirectToAction("Logout");
                 }
             }
-
             return View();
         }
         
-
-
         public IActionResult Privacy()
         {
             return View();
@@ -68,7 +51,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(loginDto logins)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 if (HttpContext.Session.GetString("userId") != null)
                 {
@@ -81,9 +64,7 @@ namespace mechanical.Controllers
 
                     return RedirectToAction("Logout");
                 }
-            
             }
-
             if (logins.Email == null || logins.Password == null)
             {
                 if (logins.Password == null)
@@ -93,14 +74,14 @@ namespace mechanical.Controllers
                 return View("Index", logins);
             }
 
-            var user = _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefault();
+            var user = await _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefaultAsync();
 
             if (user == null)
             {
                 ViewData["Error"] = "You do not have the necessary permissions to use the system.";
                 return View("Index", logins);
             }
-            if (logins.Password=="1234")
+            if (logins.Password == "1234")
             {
                 string userRole = user.Role.Name;
 
@@ -115,13 +96,21 @@ namespace mechanical.Controllers
                     ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
                 };
 
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
                 byte[] userId = Encoding.UTF8.GetBytes(user.Id.ToString());
                 _httpContextAccessor.HttpContext.Session.Set("UserId", userId);
                 HttpContext.Session.SetString("userRole", userRole);
                 HttpContext.Session.SetString("userName", user.Name);
                 HttpContext.Session.SetString("userId", user.Id.ToString());
                 HttpContext.Session.SetString("EmployeeId", user.emp_ID.ToString());
+
+                if (userRole == "Relation Manager")
+                {
+                    HttpContext.Session.SetString("unit", user.Unit.ToString());
+                    HttpContext.Session.SetString("segment", user.BroadSegment.ToString());
+                    HttpContext.Session.SetString("district", user.District.Name.ToString());
+                }
+
                 var viewbagg = ViewBag.UserRole;
                 if (HttpContext.Session.TryGetValue("ExpirationTime", out var expirationTimeBytes))
                 {

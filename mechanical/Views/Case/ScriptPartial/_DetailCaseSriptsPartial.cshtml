@@ -415,14 +415,23 @@
             var formDataArray = $(this).serializeArray();
             var Category = getAttributeByName(formDataArray, 'Category');
 
-            if (Category == "MOV" || Category == "CMAMachinery") {
+            if (Category == "MOV") {
                 var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
                 var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
                 if (PlateName === "" || ChassisNo === "") {
                     toastr.error("Please fill in all required fields.");
                     return;
                 }
-            } else if (Category == "IBFEqupment") {
+            } else if(Category == "CMAMachinery"){
+                 var PlateName = getAttributeByName(formDataArray, 'CPlateNo').trim();
+                 var ChassisNo = document.getElementById('conChassisNoMac').value.trim();
+                console.log(ChassisNo);
+                if (PlateName === "" || ChassisNo === "") {
+                    toastr.error("Please fill in all required fields.");
+                    return;
+                }
+            
+            }else if (Category == "IBFEqupment") {
                 var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
                 var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
 

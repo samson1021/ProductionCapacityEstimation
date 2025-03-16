@@ -1,22 +1,22 @@
 ﻿using AutoMapper;
-using mechanical.Models.Entities;
 using mechanical.Models.Login;
-using Microsoft.Extensions.Options;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.Runtime.Versioning;
 
 namespace mechanical.Services.AuthenticatioinService
 {
     public class LdapAuthenticationService : IAuthenticationService
     {
-        //authenticate user by CBE outlook email and password 
+        [SupportedOSPlatform("windows")]
         public bool AuthenticateUserByAD(string EnterdUsername, string password)
         {
             string username = GetSamAccountName(EnterdUsername);
 
             UserAdAttribute result = new UserAdAttribute();
-            using (PrincipalContext cx = new PrincipalContext(ContextType.Domain, "10.1.11.13"))
+            using (var cx = new PrincipalContext(ContextType.Domain, "10.1.11.13"))
             {
+
                 bool isValid = cx.ValidateCredentials(username, password);
                 if (isValid)
                 {
@@ -27,48 +27,50 @@ namespace mechanical.Services.AuthenticatioinService
                     return false;
                 }
             }
-
         }
 
+        [SupportedOSPlatform("windows")]
         public UserAdAttribute GetEmployeeInfo(string EmpId)
         {
-           var samAccountName = GetSamAccountName(EmpId);
+            var samAccountName = GetSamAccountName(EmpId);
             var result = GetUserDataAD(samAccountName);
             return result;
         }
 
-        //getSamAccount by CBE outlook email
+        [SupportedOSPlatform("windows")]
         public string GetSamAccountName(string username)
         {
-            // Construct a directory search using the username as the search criteria
-            DirectoryEntry directoryEntry = new DirectoryEntry("LDAP://10.1.11.13:389", "yohannessintayhu@cbe.com.et", "True@12346");
-            DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry);
+            var directoryEntry = new DirectoryEntry("LDAP://10.1.11.13:389", "yohannessintayhu@cbe.com.et", "True@12346");
+            var directorySearcher = new DirectorySearcher(directoryEntry);
             directorySearcher.Filter = $"(|(sAMAccountName={username})(mail={username})(employeeID={username}))";
 
-            // Execute the search and retrieve the first matching result
-
-            SearchResult searchResult = directorySearcher.FindOne();
+            var searchResult = directorySearcher.FindOne();
 
             if (searchResult == null)
             {
                 return username;
             }
 
-            // Retrieve the 'sAMAccountName' attribute value for the user
-            DirectoryEntry userDirectoryEntry = searchResult.GetDirectoryEntry();
-            string samAccountName = userDirectoryEntry.Properties["sAMAccountName"].Value.ToString();
+            var userDirectoryEntry = searchResult.GetDirectoryEntry();
+            if (userDirectoryEntry.Properties["sAMAccountName"].Value == null)
+            {
+                return username;
+            }
+
+            string samAccountName = userDirectoryEntry.Properties["sAMAccountName"].Value?.ToString() ?? username;
 
             return samAccountName;
         }
-        // user attributs from ad server for further processing 
+
+        [SupportedOSPlatform("windows")]
         public UserAdAttribute GetUserDataAD(string SmAccountName)
         {
             try
             {
                 UserAdAttribute loginModels = new UserAdAttribute();
                 string domainPath = "LDAP://10.1.11.13:389";
-                DirectoryEntry searchRoot = new DirectoryEntry(domainPath, "yohannessintayhu@cbe.com.et", "True@12346");
-                DirectorySearcher searcher = new DirectorySearcher(searchRoot);
+                var searchRoot = new DirectoryEntry(domainPath, "yohannessintayhu@cbe.com.et", "True@12346");
+                var searcher = new DirectorySearcher(searchRoot);
                 searcher.SearchScope = SearchScope.Subtree;
                 searcher.PageSize = 1000;
                 searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + SmAccountName + "))";
@@ -79,8 +81,8 @@ namespace mechanical.Services.AuthenticatioinService
                 searcher.PropertiesToLoad.Add("company");
                 searcher.PropertiesToLoad.Add("department");
                 searcher.PropertiesToLoad.Add("title");
-                SearchResult searchResult;
-                SearchResult collection = searcher.FindOne();
+                SearchResult? searchResult;
+                SearchResult? collection = searcher.FindOne();
                 if (collection != null)
                 {
                     searchResult = collection;
@@ -89,12 +91,12 @@ namespace mechanical.Services.AuthenticatioinService
                     {
                         UserAdAttribute ObjLogininfo = new UserAdAttribute();
                         ObjLogininfo.Email = (String)searchResult.Properties["mail"][0];
-                        ObjLogininfo.EmployeeID = (String)searchResult.Properties["employeeID"][0];
-                        ObjLogininfo.UserName = (String)searchResult.Properties["sAMAccountName"][0];
-                        ObjLogininfo.DisplayName = (String)searchResult.Properties["displayname"][0];
-                        ObjLogininfo.Department = (String)searchResult.Properties["department"][0];
+                        ObjLogininfo.emp_ID = (String)searchResult.Properties["employeeID"][0];
+                        ObjLogininfo.DisplayName = (String)searchResult.Properties["sAMAccountName"][0];
+                        ObjLogininfo.Name = (String)searchResult.Properties["displayname"][0];
+                        ObjLogininfo.Branch = (String)searchResult.Properties["department"][0];
                         ObjLogininfo.company = (String)searchResult.Properties["company"][0];
-                        ObjLogininfo.jobTitle = (String)searchResult.Properties["title"][0];
+                        ObjLogininfo.title = (String)searchResult.Properties["title"][0];
                         loginModels = ObjLogininfo;
                     }
                 }

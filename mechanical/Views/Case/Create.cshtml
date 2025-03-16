@@ -1,7 +1,10 @@
 ﻿@model mechanical.Models.Dto.CaseDto.CasePostDto;
+@inject IHttpContextAccessor HttpContextAccessor
 @{
     var empId = ViewData["EmployeeId"];
-
+    var unit = HttpContextAccessor.HttpContext.Session.GetString("unit");
+    var segment = HttpContextAccessor.HttpContext.Session.GetString("segment");
+    var district = HttpContextAccessor.HttpContext.Session.GetString("district");
 
 }
 <link href="~/css/spinner.css" rel="stylesheet" />
@@ -32,21 +35,17 @@
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
                     <div class="row">
+                        <input type="hidden" id="unit" value="@unit" />
+                        <input type="hidden" id="segment" value="@segment" />
+                        <input type="hidden" id="district" value="@district" />
                         <div class="form-group col-xl-10">
                             <label asp-for="Segement">Segement <i class="text-danger">*</i></label>
                             <select asp-for="Segement" class="form-control form-control" id="Segement" required>
                                 <option value="" disabled selected>Select Segement</option>
-                                <option value="Wholesale">Wholesale</option>
-                                <option value="Retail">Retail</option>
-                                <option value="Workout">Workout</option>
-                                <option value="Legal">Legal</option>
-                                <option value="Acquired Asset Administration">Acquired Asset Administration</option>
-                                <option value="Facility Management">Facility Management</option>
                             </select>
                             <span asp-validation-for="Segement" class="text-danger"></span>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CaseNo">Case Number <i class="text-danger">*</i></label>
@@ -105,6 +104,112 @@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
     <script>
+        var unitValue = $('#unit').val();
+        var segmentValue = $('#segment').val();
+        var districtValue = $('#district').val();
+
+        console.log(segmentValue);
+
+        if(segmentValue == "WholesaleConventional" || segmentValue =="WholesaleIFB"){
+            console.log('inside....');
+             $("#businessLicnese").show();
+        } else{
+             $("#businessLicnese").hide();
+        }
+        if (segmentValue === 'AcquiredAssetAdministration') {
+            $("#applicantName").val('CBE');
+            $("#applicantName").prop('readonly', true);
+        }
+
+
+        var options = [];
+        if (unitValue === 'LargeCorporate') {
+            options = [
+                { value: districtValue + '-Large Corporate', text: 'Large Corporate' }
+            ];
+        } else if (unitValue === 'MediumCorporate') {
+            options = [
+                 { value: districtValue + '-Medium Corporate', text: 'Medium Corporate' }
+            ];
+        } else if (unitValue === 'SmallCorporate') {
+            options = [
+                 { value: districtValue + '-Small Corporate', text: 'Small Corporate' }
+            ];
+        } else if (unitValue === 'WholesaleDistrict') {
+            options = [
+                 { value: districtValue + '-SME', text: 'SME' },
+                 { value: districtValue + '-Micro', text: 'Micro' },
+                 { value: districtValue + '-Cooperative-primary', text: 'Cooperative-primary' }
+            ];
+        }else if (unitValue === 'CooperativeAndFinancialInstitution') {
+            options = [
+                 { value: districtValue + '-Cooperative-Union', text: 'Cooperative-Union' },
+                 { value: districtValue + '-Cooperative-league', text: 'Cooperative-league' },
+                 { value: districtValue + '-Cooperative-Federation', text: 'Cooperative-Federation' },
+                 { value: districtValue + '-Financial institution', text: 'Financial institution' }
+            ];
+        }else if (unitValue === 'StateOwnedEnterpriseAndOtherPublic') {
+            options = [
+                 { value: districtValue + '-State Owned Enterprise & OtherPublic', text: 'State Owned Enterprise & OtherPublic' }
+            ];
+        }else if (unitValue === 'RegionalGovernment') {
+            options = [
+                 { value: districtValue + '-Regional Government', text: 'Regional Government' }
+            ];
+        }else if (unitValue === 'CentralGovernment') {
+            options = [
+                 { value: districtValue + '-Central Government', text: 'Central Government' }
+            ];
+        }else if (unitValue === 'IFBCorporate') {
+            options = [
+                 { value: districtValue + '-IFB Large Corporate', text: 'Large Corporate' },
+                 { value: districtValue + '-IFB Medium Corporate', text: 'Medium Corporate' },
+                 { value: districtValue + '-IFB Small Corporate', text: 'Small Corporate' }
+            ];
+        }else if (unitValue === 'IFBSMEBanking') {
+            options = [
+                 { value: districtValue + '-IFB SME Banking', text: 'IFB SME Banking' }
+            ];
+        }else if (unitValue === 'IFBDistrict') {
+            options = [
+                 { value: districtValue + '-IFB SME', text: 'SME' },
+                 { value: districtValue + '-IFB Micro', text: 'Micro' },
+                 { value: districtValue + '-IFB Cooperative-primary', text: 'Cooperative-primary' }
+            ];
+        }else if (unitValue === 'Retail') {
+            options = [
+                 { value: districtValue + '-CBE Staff', text: 'CBE Staff' },
+                 { value: districtValue + '-Diaspora', text: 'Diaspora' },
+                 { value: districtValue + '-Employees of NGO & Int. organization', text: 'Employees of NGO & Int. organization' },
+                 { value: districtValue + '-Employees of high valued corporate customers', text: 'Employees of high valued corporate customers' },
+                 { value: districtValue + '-Exporter & General manager of exporter', text: 'Exporter & General manager of exporter' },
+                 { value: districtValue + '-Middle Customers', text: 'Middle Customers' },
+                 { value: districtValue + '-Other FCY generating entity', text: 'Other FCY generating entity' }
+            ];
+        }else if (unitValue === 'Foreclosure') {
+            options = [
+                 { value: districtValue + '-Foreclosure', text: 'Foreclosure' }
+            ];
+        }else if (unitValue === 'Litigation') {
+            options = [
+                 { value: districtValue + '-Litigation', text: 'Litigation' }
+            ];
+        }else if (unitValue === 'AcquiredAssetAdministration') {
+            options = [
+                 { value: districtValue + '-Acquired Asset Administration', text: 'Acquired Asset Administration' }
+            ];
+        }else if (unitValue === 'FacilityManagement') {
+            options = [
+                 { value: districtValue + '-Facility Management', text: 'Facility Management' }
+            ];
+        }
+
+        // Populate the dropdown
+        var $segmentSelect = $('#Segement');
+        options.forEach(function(option) {
+            $segmentSelect.append(new Option(option.text, option.value));
+        });
+
         document.getElementById('GetCustomerName').addEventListener('click', function () {
             var customerId = document.getElementById('CustomerId').value;
             if (customerId.length !== 10) {
@@ -180,21 +285,6 @@
         
         $(document).ready(function () {
 
-            $("#businessLicnese").hide();
-            $("#Segement").change(function () {
-                var Segements = $("#Segement").val();
-                if (Segements == "Wholesale") {
-                    $("#businessLicnese").show();
-
-                } else {
-                    $("#businessLicnese").hide();
-
-                }
-                if (Segements === 'Acquired Asset Administration') {
-                    $("#applicantName").val('CBE');
-                    $("#applicantName").prop('readonly', true);
-                }
-            });
 
             $("#GenerateCaseNo").on('click', function () {
                 var employeeId = @empId;
@@ -222,7 +312,6 @@
             });
         });
 
-        //this is the input validation for application name
         document.getElementById("applicantName").addEventListener("input", function () {
             var input = this.value;
             var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
@@ -235,7 +324,7 @@
                 document.getElementById("applicantName-error").textContent = "";
             }
         });
-        //validate the customer Id length
+
         document.getElementById("CustomerId").addEventListener("input", function () {
             var input = this.value;
             if (input.length !== 10) {
@@ -247,7 +336,6 @@
             }
         });
         var segementSelect = document.getElementById('Segement');
-        var applicantNameLabel = document.getElementById('applicantNameLabel');
         var applicantNameInput = document.getElementById('applicantName');
 
 

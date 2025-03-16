@@ -87,6 +87,9 @@
                         </div>
                     </div>
                     <div class="row" id="RM">
+                            <select name="Department" id="Department" hidden class="form-control" required>
+                                <option value="CRM" selected > </option>
+                            </select>
                         <div class="form-group col-lg-6">
                             <label asp-for="BroadSegment">Broad Segment <i class="text-danger">*</i></label>
                             <select id="BroadSegmentDropdown" asp-for="BroadSegment" required class="form-control form-control-sm"
@@ -195,7 +198,7 @@
                 case "AcquiredAssetAdministration":
                     UnitDropdown.append('<option value="AcquiredAssetAdministration">Acquired Asset Administration</option>');
                     break;
-                case "Litigation":
+                case "FacilityManagement":
                     UnitDropdown.append('<option value="FacilityManagement">Facility Management</option>');
                     break;
                 default:
@@ -319,10 +322,10 @@
                             toastr.warning('No employee information found for the provided ID.');
                             return;
                         }
-                        $('#Name').val(data.DisplayName);
+                        $('#Name').val(data.Name);
                         $('#Email').val(data.Email);
-                        $('#title').val(data.jobTitle);
-                        $('#Branch').val(data.Department);
+                        $('#title').val(data.title);
+                        $('#Branch').val(data.Branch);
                         $('#company').val(data.company);
                     },
                     error: function () {

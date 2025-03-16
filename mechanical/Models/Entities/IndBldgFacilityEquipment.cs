@@ -11,6 +11,7 @@ namespace mechanical.Models.Entities
         public Guid EvaluatorUserID { get; set; }
         public Guid? CheckerUserID { get; set; }
 
+        public string? MechanicalEqpmntName { get; set; }
         public IndustrialBuildingMachineryType IndustrialBuildingMachineryType { get; set; }
         public EngineType EngineType { get; set; }
         public PowerSupply PowerSupply { get; set; }

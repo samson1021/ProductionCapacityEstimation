@@ -15,6 +15,7 @@ using mechanical.Services.UserService;
 using System.Data;
 using mechanical.Services.AuthenticatioinService;
 using System.Text.Json;
+using AutoMapper;
 
 namespace mechanical.Controllers
 {
@@ -25,14 +26,16 @@ namespace mechanical.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
         private readonly IAuthenticationService _authenticationService;
-        public UserManagmentController(CbeContext context, IHttpContextAccessor httpContextAccessor, IUserService userService, IAuthenticationService authenticationService)
+        private readonly IMapper _mapper;
+        public UserManagmentController(CbeContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUserService userService, IAuthenticationService authenticationService)
         {
             _userService = userService;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _authenticationService = authenticationService;
+            _mapper = mapper;
         }
-        // GET: UserManagmentController    
+        
         public IActionResult Index()
         {
 
@@ -300,60 +303,36 @@ namespace mechanical.Controllers
         }
        
         [HttpPost]
-        public ActionResult SaveEdited(CreateUser model)
+        public ActionResult Edit(CreateUser model)
         {
 
             var user = _context.CreateUsers.FirstOrDefault(u => u.Id == model.Id);
-
-            user.Name = model.Name;
-            user.Email = model.Email;
-            
-            user.Branch = model.Branch;
-            user.Status = model.Status;
-            user.Department = model.Department;
-            if (model.RoleId != Guid.Empty && model.RoleId != new Guid())
+            if(user == null)
             {
-                user.RoleId = model.RoleId;
+                ModelState.AddModelError("", "User not found. Please try again.");
+                return View(model);
             }
-            if (model.DistrictId != Guid.Empty && model.DistrictId != new Guid())
-            {
-                user.DistrictId = model.DistrictId;
-            }
-            //if (model.RoleId != 0)
-            //{
-            //    user.RoleId = model.RoleId;
-            //}
+            var employe = _authenticationService.GetEmployeeInfo(user.emp_ID);
+            _mapper.Map(model,user); 
 
-            //if (model.DistrictId != 0)
-            //{
-            //    user.DistrictId = model.DistrictId;
-            //}
+            _mapper.Map(employe, user);
 
-            //_context.CreateUsers.Update(model);
-            _context.Entry(user).State = EntityState.Modified;
-
-            // Save the changes to the database
+            _context.CreateUsers.Update(user);
             _context.SaveChanges();
-               // transaction.Commit();
-                // Redirect to a different action or view
-                
-           
-            
-                return RedirectToAction("Index");
-            
-           
 
-            //_context.CreateUsers.Add(model);
-            //_context.SaveChanges();
-
-            //return RedirectToAction("Index");
+             return RedirectToAction("Index");
         }
-        // GET: UserManagmentController/Edit/5
+
         [HttpGet]
-        public ActionResult Edit(Guid id)
+        public async Task<ActionResult> Edit(Guid id)
         {
             var user = _context.CreateUsers.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
-          
+            ViewBag.Districts = await _context.Districts.ToListAsync();
+            ViewBag.Roles = await _context.CreateRoles.ToListAsync();
+           
+            //var supervisors = JsonConvert.DeserializeObject<IEnumerable<CreateUser>>(GetSupervisors(user.RoleId, user.DistrictId, user.Department).ToString());
+            //ViewBag.Supervisors =  GetSupervisors(user.RoleId, user.DistrictId, user.Department);
+
             return View(user);
         }
         public ActionResult Delete(Guid id)

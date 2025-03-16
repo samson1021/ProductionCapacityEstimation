@@ -178,20 +178,20 @@
     <script>
         $(document).ready(function () {
 
-            $("#Segement").change(function () {
-                var Segements = $("#Segement").val();
-                if (Segements == "Wholesale") {
-                    $("#businessLicnese").show();
-                } else {
-                    $("#businessLicnese").hide();
-                }
-                if (Segements === 'Acquired Asset Administration') {
-                    $("#applicantName").val('CBE');
-                    $("#applicantName").prop('readonly', true);
-                }else{
-                    $("#applicantName").prop('readonly', false);
-                }
-            });
+            // $("#Segement").change(function () {
+            //     var Segements = $("#Segement").val();
+            //     if (Segements == "Wholesale") {
+            //         $("#businessLicnese").show();
+            //     } else {
+            //         $("#businessLicnese").hide();
+            //     }
+            //     if (Segements === 'Acquired Asset Administration') {
+            //         $("#applicantName").val('CBE');
+            //         $("#applicantName").prop('readonly', true);
+            //     }else{
+            //         $("#applicantName").prop('readonly', false);
+            //     }
+            // });
 
             $('.delete-link').on('click', function (e) {
                 e.preventDefault();

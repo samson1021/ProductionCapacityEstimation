@@ -6,6 +6,7 @@ namespace mechanical.Models.Dto.ConstMngAgrMachineryDto
     {
         public Guid Id { get; set; }
         public required Guid CollateralId { get; set; }
+        public string? MechanicalEqpmntName { get; set; }
         public ConstructionMiningAgriculturalMachineryType constructionMiningAgriculturalMachineryType { get; set; }
         public EngineType EngineType { get; set; }
         public PowerSupply PowerSupply { get; set; }

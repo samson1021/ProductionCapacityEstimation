@@ -1,272 +1,152 @@
 ﻿@model mechanical.Models.Entities.CreateUser
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
-<script src="~/bootstrap/js/bootstrap.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-<script src="~/js/adminlte.min.js"></script>
-<script src="~/js/dashboard.js"></script>
-<script src="~/lib/chart.js/chart.min.js"></script>
-<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
-<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
-<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
-<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
-<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
-<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
-<script src="~/lib/datatable/js/jszip.min.js"></script>
-<script src="~/lib/datatable/js/pdfmake.min.js"></script>
-<script src="~/lib/datatable/js/vfs_fonts.js"></script>
-<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
-<script src="~/lib/datatable/js/buttons.print.min.js"></script>
-<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-<script src="~/lib/toastr/toastr.min.js"></script>
-
+@using mechanical.Models.Enum;
 @{
-    ViewData["Title"] = "Edit"; 
+    ViewData["Title"] = "Edit User";
 }
-
-<script>
-    $(document).ready(function () {
-        // AJAX requests to populate dropdowns for roles and districts
-        $.ajax({
-            type: "GET",
-            url: '/UserManagment/GetRoles',
-            dataType: 'json',
-            success: function (data) {
-                var dropdown = $('#RoleId');
-                dropdown.empty(); // Clear existing options
-                dropdown.append($('<option></option>').val('').text('Select role for this user')); // Add default option
-                $(data).each(function (index, role) {
-                    dropdown.append($('<option></option>').val(role.RoleId).text(role.Name));
-                });
-
-                // Set the selected role from the model
-                dropdown.val('@Model.RoleId'); // Pre-select the role from the model
-
-                // Load departments based on the pre-selected role
-                updateDepartmentOptions(dropdown.find(":selected").text());
-            },
-            error: function () {
-                alert('Error getting roles.');
-            }
-        });
-
-        $.ajax({
-            type: "GET",
-            url: '/UserManagment/GetDistrict',
-            dataType: 'json',
-            success: function (datas) {
-                var dropdown = $('#DistrictId');
-                $(datas).each(function (index, district) {
-                    dropdown.append($('<option></option>').val(district.Id).text(district.Name));
-                });
-                // Set the selected district from the model
-                dropdown.val('@Model.DistrictId'); // Pre-select the district from the model
-            },
-            error: function () {
-                alert('Error getting districts.');
-            }
-        });
-
-        // Update department options based on selected role
-        function updateDepartmentOptions(roleId) {
-            var departmentOptions = '';
-            console.log(roleId);
-            if (roleId == 'Relation Manager') {
-                departmentOptions = `
-                        <option value="" selected disabled>Select Department</option>
-                        <option value="Wholesale">Wholesale</option>
-                        <option value="Retail">Retail</option>
-                        <option value="Workout">Workout</option>
-                        <option value="Legal">Legal</option>
-                        <option value="Acquired Asset Administration">Acquired Asset Administration</option>
-                        <option value="Facility Management">Facility Management</option>
-                    `;
-            } else {
-                departmentOptions = `
-                        <option value="" selected disabled>Select valuation unit</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Civil">Civil</option>
-                        <option value="Agriculture">Agriculture</option>
-                    `;
-            }
-
-            $('#Department').html(departmentOptions);
-            $('#Department').val('@Model.Department'); // Pre-select the department from the model
-            console.log('@Model.Department');
-        }
-
-        $("#RoleId").change(function () {
-            var selectedRole = $(this).text();
-            updateDepartmentOptions(selectedRole); // Update department options based on selected role
-        });
-    });
-</script>
-
 
 <section class="content">
     <section class="col-xl-12 connectedSortable">
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-edit"></i>
                     Edit User Access
                 </h3>
             </div>
             <div class="card-body">
-                <form method="POST" action="/UserManagment/SaveEdited"> 
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                <form method="POST" action="/UserManagment/Edit">
+                   <input type="hidden" asp-for="Id" /> 
+
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="row">
                         <div class="form-group col-xl-5">
                             <label asp-for="emp_ID" class="control-label">Employee Id <span class="text-danger">*</span></label>
                             <div class="input-group" style="margin:0;">
-                                <input asp-for="emp_ID" id="emp_ID" class="form-control" readonly required />
-                                <input type="button" class="form-control btn btn-outline-primary col-lg-4" id="GetEmployeeInfo" value="Update Info" required>
+                                <input asp-for="emp_ID" id="emp_ID" class="form-control" disabled required />
                             </div>
                             <span asp-validation-for="emp_ID" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-7">
                             <label asp-for="Name" class="control-label">Full name <span class="text-danger">*</span></label>
-                            <input asp-for="Name" id="Name" class="form-control" readonly required />
+                            <input asp-for="Name" id="Name" class="form-control" disabled required />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-7">
+                        <div class="form-group  col-xl-7">
                             <label asp-for="Email" class="control-label">Email <span class="text-danger">*</span></label>
-                            <input asp-for="Email" id="Email" class="form-control" readonly required />
+                            <input asp-for="Email" id="Email" class="form-control" disabled required />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-5">
+                        <div class="form-group  col-xl-5">
                             <label asp-for="title" class="control-label">Title <span class="text-danger">*</span></label>
-                            <input asp-for="title" id="title" class="form-control" readonly required />
+                            <input asp-for="title" id="title" class="form-control" disabled required />
                             <span asp-validation-for="title" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-6">
                             <label asp-for="Branch" class="control-label">Department <span class="text-danger">*</span></label>
-                            <input asp-for="Branch" id="Branch" class="form-control" readonly required />
+                            <input asp-for="Branch" id="Branch" class="form-control" disabled required />
                             <span asp-validation-for="Branch" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-6">
                             <label asp-for="company" class="control-label">Company <span class="text-danger">*</span></label>
-                            <input asp-for="company" id="company" class="form-control" readonly required />
+                            <input asp-for="company" id="company" class="form-control" disabled required />
                             <span asp-validation-for="company" class="text-danger"></span>
                         </div>
                     </div>
+                    <!-- Rest of form fields with existing values -->
                     <div class="row">
-                        <div class="form-group col-xl-7">
+                        <div class="form-group col-xl-4">
                             <label asp-for="PhoneNO" class="control-label">Phone Number</label>
-                            <input asp-for="PhoneNO" class="form-control" />
+                            <input asp-for="PhoneNO" class="form-control" value="@Model.PhoneNO" />
                             <span asp-validation-for="PhoneNO" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-5">
+                        <div class="form-group col-xl-4">
                             <label asp-for="DistrictId" class="control-label">Center <span class="text-danger">*</span></label>
-                            <select id="DistrictId" name="DistrictId" class="form-control" required></select>
+                            <select id="DistrictId" name="DistrictId" class="form-control" required>
+                                @foreach (var district in ViewBag.Districts)
+                                {
+                                    <option value="@district.Id" selected="@(district.Id == Model.DistrictId)">@district.Name</option>
+                                }
+                            </select>
                             <span asp-validation-for="DistrictId" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="RoleId" class="control-label">Roles <span class="text-danger">*</span></label>
-                            <select id="RoleId" name="RoleId" class="form-control" required></select>
+                            <select id="RoleId" name="RoleId" class="form-control" required>
+                                @foreach (var role in ViewBag.Roles)
+                                {
+                                    <option value="@role.Id" selected="@(role.Id == Model.RoleId)">@role.Name</option>
+                                }
+                            </select>
                             <span asp-validation-for="RoleId" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                    </div>
+
+                    <div class="row" id="CEV" style="display: @(Model.Role?.Name == "Relation Manager" ? "none" : "auto")">
+                        <div class="form-group col-xl-6">
                             <label asp-for="Department" class="control-label">Division <span class="text-danger">*</span></label>
-                            <select name="Department" id="Department" class="form-control" required></select>
+                            <select name="Department" id="Department" class="form-control" @(Model.Role?.Name == "Relation Manager" ? "" : "required")>
+                                <option value="" selected disabled>Select valuation unit</option>
+                                <option value="Mechanical" selected="@(Model.Department == "Mechanical")">Mechanical</option>
+                                <option value="Civil" selected="@(Model.Department == "Civil")">Civil</option>
+                                <option value="Agriculture" selected="@(Model.Department == "Agriculture")">Agriculture</option>
+                            </select>
                             <span asp-validation-for="Department" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
-                            <label asp-for="SupervisorId" class="control-label">Supervisor </label>
+                        <div class="form-group col-xl-6">
+                            <label asp-for="SupervisorId" class="control-label">SuperVisor </label>
                             <select id="SupervisorId" name="SupervisorId" class="form-control">
-                                <option value="@Model.SupervisorId" selected readonly >@Model.Supervisor.Name</option>  
                             </select>
                             <span asp-validation-for="SupervisorId" class="text-danger"></span>
                         </div>
                     </div>
+
+                    <div class="row" id="RM" style="display: @(Model.Role?.Name == "Relation Manager" ? "auto" : "none")">
+                        <select name="Department" id="Department" hidden class="form-control" required>
+                            <option value="CRM" selected> </option>
+                        </select>
+                        <div class="form-group col-xl-6 col-md-6 col-sm-6">
+                            <label asp-for="BroadSegment">Broad Segment <i class="text-danger">*</i></label>
+                            <select id="BroadSegmentDropdown" asp-for="BroadSegment" required class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(Segment)).Cast<Segment>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="" disabled selected>Select Broad Segment </option>
+                            </select>
+                            <span asp-validation-for="BroadSegment" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6 col-md-6 col-sm-6">
+                            <label asp-for="Unit">Unit <i class="text-danger">*</i></label>
+                            <select id="UnitDropdown" name="Unit" required class="form-control form-control-sm">
+                               
+                            </select>
+                            <span asp-validation-for="Unit" class="text-danger"></span>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="form-group">
-                            <input type="submit" value="Update" class="btn btn-primary" /> <!-- Change button text to Update -->
+                            <input type="submit" value="Update" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
                         </div>
                     </div>
                 </form>
-
-                <div>
-                    <a asp-action="Index">Back to List</a>
-                </div>
-                <div id="loadingIndicator" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000;">
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 </section>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-        <script>
-            $(document).ready(function () {
-                $('#loadingIndicator').hide();
-                $('#GetEmployeeInfo').click(function () {
-                    var empId = $('#emp_ID').val();
-                    if (empId) {
-                        $('#loadingIndicator').show();
-                        $.ajax({
-                            url: '/UserManagment/GetEmployeeInfo',
-                            type: 'GET',
-                            data: { id: empId },
-                            success: function (data) {
-                                $('#loadingIndicator').hide();
-                                if (!data || $.isEmptyObject(data)) {
-                                    toastr.warning('No employee information found for the provided ID.');
-                                    return;
-                                }
-                                $('#Name').val(data.DisplayName);
-                                $('#Email').val(data.Email);
-                                $('#title').val(data.jobTitle);
-                                $('#Branch').val(data.Department);
-                                $('#company').val(data.company);
-                            },
-                            error: function () {
-                                $('#loadingIndicator').hide();
-                                alert('Error retrieving employee information.');
-                            }
-                        });
-                    } else {
-                        alert('Please enter an Employee ID.');
-                    }
-                });
-            });
-        </script>
-    }
-}
-
-<style>
-    .spinner-border {
-        width: 3rem; /* Size of the spinner */
-        height: 3rem; /* Size of the spinner */
-        border: 0.25em solid rgba(0, 0, 0, 0.1); /* Light border */
-        border-top-color: #007bff; /* Color of the spinner */
-        border-radius: 50%; /* Rounded */
-        animation: spin 0.75s linear infinite; /* Spinning animation */
-    }
-
-    @@keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-</style>
-
-
-
-
-@*
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
 <script src="~/bootstrap/js/bootstrap.min.js"></script>
@@ -289,69 +169,195 @@
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/toastr/toastr.min.js"></script>
 
+
 <script>
-    $(document).ready(function () {
-        // Make AJAX request to get roles
+    $(function(){
+        const initialSegment = "@Model.BroadSegment";
+      
+            $('#UnitDropdown').val("@Model.Unit");
+        
+             var roleId ="@Model.RoleId";
+            var Department = "@Model.Department";
+            var districtId = "@Model.DistrictId";
+
         $.ajax({
-            type: "GET",
-            url: '/UserManagment/GetRoles',
-            dataType: 'json',
+            url: '/UserManagment/GetSupervisors', // Replace with your endpoint
+            type: 'GET',
+            data: { roleId: roleId, districtId: districtId, Department: Department },
             success: function (data) {
-                // Populate dropdown list with roles
-                console.log("your list of roles are" + data);
-                var dropdown = $('#RoleId');
-                dropdown.empty(); // Clear existing options
-                dropdown.append($('<option></option>').val('').text('Select role for this user')); // Add default option
-                $(data).each(function (index, role) {
-                    dropdown.append($('<option></option>').val(role.RoleId).text(role.Name));
+                var dropdown = $('#SupervisorId');
+                dropdown.empty(); // Clear the "Loading..." option
+
+                // Add default option
+                dropdown.append('<option value="">Select Supervisor</option>');
+
+                // Populate dropdown with fetched data
+                data.forEach(function (supervisor) {
+                    var option = $('<option></option>')
+                        .val(supervisor.id)
+                        .text(supervisor.name);
+
+                    // Set selected value if it matches Model.SupervisorId
+                    if (supervisor.id === "@Model.SupervisorId") {
+                        option.prop('selected', true);
+                    }
+
+                    dropdown.append(option);
                 });
             },
             error: function () {
-                alert('Error getting roles.');
-                console.log("your list of roles are" + data);
+                console.error('Error fetching supervisors.');
+                $('#SupervisorId').html('<option value="">Error loading supervisors</option>');
             }
         });
 
-        // Make AJAX request to get supervisors based on selected role
+         var BroadSegmentDropdown = "@Model.BroadSegment";
+        var selectedUnit = "@Model.Unit"; 
+        console.log(BroadSegmentDropdown);
+        UnitDropdown = $("#UnitDropdown");
+        UnitDropdown.empty();
+        UnitDropdown.append('<option value="" disabled selected>Select Unit</option>');
+
+        switch (BroadSegmentDropdown) {
+            case "WholesaleConventional":
+                appendOption("LargeCorporate", "Large Corporate", selectedUnit);
+                appendOption("MediumCorporate", "Medium Corporate", selectedUnit);
+                appendOption("SmallCorporate", "Small Corporate", selectedUnit);
+                appendOption("WholesaleDistrict", "Wholesale District", selectedUnit);
+                appendOption("CooperativeAndFinancialInstitution", "Cooperative and Financial Institution", selectedUnit);
+                appendOption("StateOwnedEnterpriseAndOtherPublic", "State Owned Enterprise & Other Public", selectedUnit);
+                appendOption("RegionalGovernment", "Regional Government", selectedUnit);
+                appendOption("CentralGovernment", "Central Government", selectedUnit);
+                break;
+            case "WholesaleIFB":
+                appendOption("IFBCorporate", "Corporate", selectedUnit);
+                appendOption("IFBSMEBanking", "SME Banking", selectedUnit);
+                appendOption("IFBDistrict", "District", selectedUnit);
+                break;
+            case "Retail":
+                appendOption("Retail", "Retail", selectedUnit);
+                break;
+            case "Foreclosure":
+                appendOption("Foreclosure", "Foreclosure", selectedUnit);
+                break;
+            case "Litigation":
+                appendOption("Litigation", "Litigation", selectedUnit);
+                break;
+            case "AcquiredAssetAdministration":
+                appendOption("AcquiredAssetAdministration", "Acquired Asset Administration", selectedUnit);
+                break;
+            case "FacilityManagement":
+                appendOption("FacilityManagement", "Facility Management", selectedUnit);
+                break;
+            default:
+                break;
+        }
+
+        function appendOption(value, text, selectedValue) {
+            var option = $('<option></option>')
+                .val(value)
+                .text(text);
+                console.log(selectedValue);
+                console.log(value);
+            // Set selected if the value matches the selected unit
+            if (value === selectedValue) {
+                option.prop('selected', true);
+            }
+
+            UnitDropdown.append(option);
+        }
+
+
+        $("#BroadSegmentDropdown").change(function () {
+            UnitDropdown.prop("disabled", false);
+            populateUnitDropdown();
+        });
+
+        function populateUnitDropdown() {
+            var BroadSegmentDropdown = $("#BroadSegmentDropdown").val();
+            console.log(BroadSegmentDropdown);
+            UnitDropdown = $("#UnitDropdown");
+            UnitDropdown.empty();
+            UnitDropdown.append('<option value="" disabled selected>Select Unit</option>');
+
+            switch (BroadSegmentDropdown) {
+                case "WholesaleConventional":
+                    UnitDropdown.append('<option value="LargeCorporate">Large Corporate</option>');
+                    UnitDropdown.append('<option value="MediumCorporate">Medium Corporate</option>');
+                    UnitDropdown.append('<option value="SmallCorporate">Small Corporate</option>');
+                    UnitDropdown.append('<option value="WholesaleDistrict">Wholesale District</option>');
+                    UnitDropdown.append('<option value="CooperativeAndFinancialInstitution">Cooperative and Financial Institution</option>');
+                    UnitDropdown.append('<option value="StateOwnedEnterpriseAndOtherPublic">State Owned Enterprise & Other Public</option>');
+                    UnitDropdown.append('<option value="RegionalGovernment">Regional Government</option>');
+                    UnitDropdown.append('<option value="CentralGovernment">Central Government</option>');
+                    break;
+                case "WholesaleIFB":
+                    UnitDropdown.append('<option value="IFBCorporate">Corporate</option>');
+                    UnitDropdown.append('<option value="IFBSMEBanking">SME Banking</option>');
+                    UnitDropdown.append('<option value="IFBDistrict">District</option>');
+                    break;
+                case "Retail":
+                    UnitDropdown.append('<option value="Retail">Retail</option>');
+                    break;
+                case "Foreclosure":
+                    UnitDropdown.append('<option value="Foreclosure">Foreclosure</option>');
+                    break;
+                case "Litigation":
+                    UnitDropdown.append('<option value="Litigation">Litigation</option>');
+                    break;
+                case "AcquiredAssetAdministration":
+                    UnitDropdown.append('<option value="AcquiredAssetAdministration">Acquired Asset Administration</option>');
+                    break;
+                case "FacilityManagement":
+                    UnitDropdown.append('<option value="FacilityManagement">Facility Management</option>');
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
         $("#RoleId").change(function () {
             var selectedRole = $(this).find(":selected").text();
             console.log(selectedRole);
             if (selectedRole == 'Relation Manager') {
-                $('#Department').html(`
-                        <option value = "" selected disabled > Select Department </option>
-                        <option value="Wholesale">Wholesale</option>
-                        <option value="Retail">Retail</option>
-                        <option value="Workout">Workout</option>
-                        <option value="Legal">Legal</option>
-                        <option value="Acquired Asset Administration">Acquired Asset Administration</option>
-                        <option value="Facility Management">Facility Management</option>
-                    `);
+                $("#RM").show();
+                $("#CEV").hide();
+               $("#Department").attr("disabled", true);
+                $("#BroadSegmentDropdown").removeAttr("disabled");
+                $("#UnitDropdown").removeAttr("disabled");
             } else {
+                $("#RM").hide();
+                $("#CEV").show();
+                $("#Department").removeAttr("disabled");
+                $("#BroadSegmentDropdown").attr("disabled", true);
+                $("#UnitDropdown").attr("disabled", true);
+
                 $('#Department').html(`
-                        <option value="" selected disabled>Select valuation unit</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Civil">Civil</option>
-                        <option value="Agriculture">Agriculture</option>
-                        `);
+                  <option value="" selected disabled>Select valuation unit</option>
+                  <option value="Mechanical">Mechanical</option>
+                  <option value="Civil">Civil</option>
+                  <option value="Agriculture">Agriculture</option>`);
             }
+        });
 
-
-
-            var roleId = $(this).val();
+        $("#Department").change(function () {
+            var roleId = $("#RoleId").val();
             var Department = $("#Department").val();
             var districtId = $("#DistrictId").val();
             var dropdown = $('#SupervisorId');
-            dropdown.empty(); // Clear existing options
-            dropdown.append($('<option></option>').val('').text('Select Supervisor')); // Add default option
+            dropdown.empty();
+            dropdown.append($('<option></option>').val('').text('Select Supervisor'));
             if (roleId) {
-                // Make an AJAX request to retrieve the supervisors based on the selected role
                 $.ajax({
                     url: '/UserManagment/GetSupervisors',
                     type: 'GET',
                     data: { roleId: roleId, districtId: districtId, Department: Department },
                     dataType: 'json',
                     success: function (data) {
+                        console.log(data);
                         if (data != null && data.length > 0) {
+                            dropdown.prop('disabled', false);
                             $(data).each(function (index, supervisor) {
                                 dropdown.append($('<option></option>').val(supervisor.Id).text(supervisor.Name));
                             });
@@ -365,192 +371,49 @@
                     }
                 });
             } else {
-                dropdown.prop('disabled', true);
             }
         });
     });
-</script>
-
-<script>
-
-
-
     $(document).ready(function () {
+        $('#loadingIndicator').hide();
+        $('#GetEmployeeInfo').click(function () {
+            var empId = $('#emp_ID').val();
 
-        // Make AJAX request to get roles
+            // Check if empId is not empty
+            if (empId) {
+                // Show loading indicator
+                $('#loadingIndicator').show(); // Add a loading element in your HTML
 
-        $.ajax({
+                $.ajax({
+                    url: '/UserManagment/GetEmployeeInfo', // Adjust the URL based on your routing
+                    type: 'GET',
+                    data: { id: empId },
+                    success: function (data) {
+                        // Hide loading indicator
+                        $('#loadingIndicator').hide();
 
-            type: "GET",
+                        // Check if data is null or empty
+                        if (!data || $.isEmptyObject(data)) {
+                            // Show toaster notification
+                            toastr.warning('No employee information found for the provided ID.');
+                            return;
+                        }
+                        $('#Name').val(data.DisplayName);
+                        $('#Email').val(data.Email);
+                        $('#title').val(data.jobTitle);
+                        $('#Branch').val(data.Department);
+                        $('#company').val(data.company);
+                    },
+                    error: function () {
+                        // Hide loading indicator
+                        $('#loadingIndicator').hide();
 
-            url: '/UserManagment/GetDistrict',
-
-            dataType: 'json',
-
-            success: function (datas) {
-
-                // Populate dropdown list with roles
-
-                console.log("your list of district are" + datas);
-
-                var dropdown = $('#DistrictId');
-
-                // dropdown.append($('<option></option>').val(0).text('Select District for this user'));
-
-                $(datas).each(function (index, district) {
-
-                    dropdown.append($('<option></option>').val(district.Id).text(district.Name));
-
+                        alert('Error retrieving employee information.');
+                    }
                 });
-
-            },
-
-            error: function () {
-
-                alert('Error getting roles.');
-
-                console.log("your list of districts are" + datas);
-
-
-
+            } else {
+                alert('Please enter an Employee ID.');
             }
-
         });
-
     });
 </script>
-
-@{
-    ViewData["Title"] = "Edit";
-}
-
-<hr />
-
-
-
-<div class="card card-info">
-    <div class="card-header">
-        <h3 class="card-title">Edit User Data</h3>
-    </div>
-    <div class="card-body">
-
-        <div class="row">
-            <div class="col-md-4">
-                <form method="post" action="/UserManagment/SaveEdited">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="Id" />
-                    <div class="form-group">
-                        <label asp-for="Name" class="control-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Email" class="control-label"></label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="PhoneNO" class="control-label">Phone Number</label>
-                        <input asp-for="PhoneNO" class="form-control" />
-                        <span asp-validation-for="PhoneNO" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="emp_ID" class="control-label">Employee Id:</label>
-                        <input asp-for="emp_ID" class="form-control" />
-                        <span asp-validation-for="emp_ID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="DistrictId" class="control-label"></label>
-                        <select id="DistrictId" name="DistrictId" class="form-control" required></select>
-                        <span asp-validation-for="DistrictId" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Branch" class="control-label"></label>
-                        <input asp-for="Branch" class="form-control" />
-                        <span asp-validation-for="Branch" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="RoleId" class="control-label">Roles</label>
-                        <select id="RoleId" name="RoleId" class="form-control" required></select>
-                        <span asp-validation-for="RoleId" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="SupervisorId" class="control-label">Super Visor:</label>
-                        <select id="SupervisorId" name="SupervisorId" class="form-control"></select>
-                        <span asp-validation-for="SupervisorId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Department" class="control-label">Department</label>
-                        <select name="Department" id="Department" class="form-control" required>
-                        </select>
-                        <span asp-validation-for="Department" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Status" class="control-label"></label>
-                        <select asp-for="Status" class="form-control" id="Status" name="Status">
-                            <option value="Activated">Activate</option>
-                            <option value="Deactivated">Deactivate</option>
-                        </select>
-                        <span asp-validation-for="Status" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Save" class="btn btn-primary" />
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div>
-            <a asp-action="Index">Back to List</a>
-        </div>
-
-    </div>
-
-</div>
-
-
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
-    }
-}
-@* 
-@model CreditBackOffice.Models.CreateUser
-
-<h1>Edit User</h1>
-
-@using (Html.BeginForm("Edit", "UserManagement", FormMethod.Post, new { action = "/UserManagment/Edit" }))
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Name)
-        @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Name)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Email)
-        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Email)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.District)
-        @Html.TextBoxFor(model => model.District, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.District)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Branch)
-        @Html.TextBoxFor(model => model.Branch, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Branch)
-    </div>
-
-    <!-- Add more form fields for other properties of the CreateUser model -->
-
-    <input type="submit" value="Save" class="btn btn-primary" />
-} *@

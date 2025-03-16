@@ -16,8 +16,7 @@ using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
 
-/////
-using mechanical.Models.Dto.UploadFileDto;
+
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
@@ -27,7 +26,8 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-/////
+using mechanical.Models.Login;
+
 
 namespace mechanical.Mapper
 {
@@ -135,8 +135,10 @@ namespace mechanical.Mapper
             CreateMap<CreateUser, ReturnUserDto>()
                     .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
-            ///////
-           
+            CreateMap<CreateUser, UserAdAttribute>().ReverseMap();
+            CreateMap<CreateUser, CreateUser>()
+                .ForMember(dest => dest.Status, opt => opt.Ignore());
+
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
             CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
 
