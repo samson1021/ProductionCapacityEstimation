@@ -46,7 +46,6 @@ namespace mechanical.Services.TaskManagmentService
         }
 
         public async Task<List<ResultDto>> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto)
-
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
@@ -61,39 +60,35 @@ namespace mechanical.Services.TaskManagmentService
 
                 var asigneeUser = await _cbeContext.CreateUsers
                     .Include(u => u.Role)
-
                     .FirstOrDefaultAsync(u => u.Id == createTaskManagmentDto.AssignedId)
                     ?? throw new ArgumentException("Assignee user not found.", nameof(createTaskManagmentDto.AssignedId));
 
-                var caseList = selectedCaseIds.Split(',')
-                    .Select(x => Guid.Parse(x.Trim()))
-                    .ToList();
+                var caseList = selectedCaseIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
                 var messages = new List<ResultDto>();
 
                 if (caseList.Count == 0)
                     throw new ArgumentException("No valid case IDs provided.");
 
                 var taskShares = new List<TaskManagment>();
-               
                 var currentDate = DateTime.UtcNow;
 
                 var taskData = await _cbeContext.TaskManagments
-                       .Where(c => c.AssignedId == createTaskManagmentDto.AssignedId
-                           && c.CaseOrginatorId == AssignorId                          
-                           && c.IsActive == true
-                           && c.Deadline < currentDate)
-                       .ToListAsync();
-               
+                        .Where(c => c.AssignedId == createTaskManagmentDto.AssignedId
+                                && c.CaseOrginatorId == AssignorId
+                                && c.IsActive == true
+                                && c.Deadline < currentDate)
+                        .ToListAsync();
+
                 foreach (var caseId in caseList)
                 {
                     var caseData = await _cbeContext.Cases
                         .FirstOrDefaultAsync(c => c.Id == caseId)
                         ?? throw new ArgumentException($"Case not found: {caseId}");
 
-                    var checktask = taskData.Where(c => c.CaseId == caseId                            
-                           && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName == "All"))
-                           .ToList();                     
-                   
+                    var checktask = taskData.Where(c => c.CaseId == caseId
+                            && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName == "All"))
+                            .ToList();
+
                     if (checktask.Any()) {
 
                         messages.Add(new ResultDto
@@ -101,7 +96,7 @@ namespace mechanical.Services.TaskManagmentService
                             StatusCode = 200,
                             Success = false,
                             Message = $"The '{createTaskManagmentDto.TaskName}' task of case {caseData.CaseNo} has been already shared for {user.Role.Name}."
-                        });                      
+                        });
 
                     }
                     else
@@ -124,7 +119,7 @@ namespace mechanical.Services.TaskManagmentService
                         var task = _mapper.Map<TaskManagment>(createTaskManagmentDto);
                         task.Id = Guid.NewGuid();
                         task.CaseId = caseId;
-                        task.TaskStatus = "New"; // Consider using an enum
+                        task.TaskStatus = "New";
                         task.AssignedDate = DateTime.UtcNow;
                         task.IsActive = true;
                         task.CaseOrginatorId = AssignorId;
@@ -140,8 +135,8 @@ namespace mechanical.Services.TaskManagmentService
                             CurrentStage = user.Role.Name
                         });
 
-                    string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
-                    var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
+                        string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
+                        var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                         taskShares.Add(task);
                         messages.Add(new ResultDto {
@@ -193,11 +188,11 @@ namespace mechanical.Services.TaskManagmentService
             foreach (var userId in dto.SelectedRMs)
             {
                 var existingTask = await _cbeContext.TaskManagments
-                    .AnyAsync(t => t.CaseId == sharedCase.Id &&
-                                t.AssignedId == userId &&
-                                t.TaskName == dto.TaskName &&
-                                t.IsActive &&
-                                t.Deadline > DateTime.UtcNow);
+                                                    .AnyAsync(t => t.CaseId == sharedCase.Id &&
+                                                                    t.AssignedId == userId &&
+                                                                    t.TaskName == dto.TaskName &&
+                                                                    t.IsActive &&
+                                                                    t.Deadline > DateTime.UtcNow);
 
                 if (existingTask)
                 {
@@ -343,7 +338,8 @@ namespace mechanical.Services.TaskManagmentService
                                         .Include(t => t.Case)
                                         .Include(t => t.Assigned)
                                         .Include(t => t.CaseOrginator)
-                                        .FirstOrDefaultAsync(t => t.Id == taskId);
+                                        .FirstOrDefaultAsync(t => t.Id == taskId)
+                                        ?? throw new ArgumentException("Task not found.", nameof(taskId));
             
             return _mapper.Map<TaskManagmentReturnDto>(task);
         }
@@ -386,7 +382,8 @@ namespace mechanical.Services.TaskManagmentService
                                             .Include(t => t.Assigned)
                                                 .ThenInclude(u => u.Role)
                                             .Include(t => t.CaseOrginator)
-                                            .FirstOrDefaultAsync(t => t.Id == dto.Id);
+                                            .FirstOrDefaultAsync(t => t.Id == dto.Id)
+                                            ?? throw new ArgumentException("Task not found.", nameof(dto.Id));
 
                 if (task == null)
                 {
@@ -439,7 +436,8 @@ namespace mechanical.Services.TaskManagmentService
                                             .Include(t => t.Assigned)
                                                 .ThenInclude(u => u.Role)
                                             .Include(t => t.CaseOrginator)
-                                            .FirstOrDefaultAsync(t => t.Id == taskId);
+                                            .FirstOrDefaultAsync(t => t.Id == taskId)
+                                            ?? throw new ArgumentException("Task not found.", nameof(taskId));
 
                 if (task == null)
                 {
@@ -490,7 +488,8 @@ namespace mechanical.Services.TaskManagmentService
         //                                     .Include(t => t.Assigned)
         //                                         .ThenInclude(u => u.Role)
         //                                     .Include(t => t.CaseOrginator)
-        //                                     .FirstOrDefaultAsync(t => t.Id == taskId);
+        //                                     .FirstOrDefaultAsync(t => t.Id == taskId)
+        //                                     ?? throw new ArgumentException("Task not found.", nameof(taskId));
 
         //         if (task == null)
         //         {
@@ -548,7 +547,8 @@ namespace mechanical.Services.TaskManagmentService
         //                                     .Include(t => t.Case)
         //                                     .Include(t => t.Assigned)
         //                                         .ThenInclude(u => u.Role)
-        //                                     .FirstOrDefaultAsync(t => t.Id == taskId);
+        //                                     .FirstOrDefaultAsync(t => t.Id == taskId)
+        //                                     ?? throw new ArgumentException("Task not found.", nameof(taskId));
 
         //         if (task == null)
         //         {
@@ -594,7 +594,8 @@ namespace mechanical.Services.TaskManagmentService
                                             .Include(t => t.Assigned)
                                                 .ThenInclude(u => u.Role)
                                             .Include(t => t.CaseOrginator)
-                                            .FirstOrDefaultAsync(t => t.Id == taskId);
+                                            .FirstOrDefaultAsync(t => t.Id == taskId)
+                                            ?? throw new ArgumentException("Task not found.", nameof(taskId));
 
                 if (task == null)
                 {
@@ -642,9 +643,10 @@ namespace mechanical.Services.TaskManagmentService
             try
             {
                 var task = await _cbeContext.TaskManagments
-                    .Include(t => t.Case)
-                        .ThenInclude(c => c.CaseOriginator)
-                    .FirstOrDefaultAsync(t => t.Id == taskId);
+                                            .Include(t => t.Case)
+                                                .ThenInclude(c => c.CaseOriginator)
+                                            .FirstOrDefaultAsync(t => t.Id == taskId)
+                                            ?? throw new ArgumentException("Task not found.", nameof(taskId));
 
                 if (task == null)
                 {
@@ -722,15 +724,5 @@ namespace mechanical.Services.TaskManagmentService
                                             .ToListAsync();
             return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
         }
-
-        public async Task<int> GetTaskCommentCount(Guid taskId)
-        {
-            return await _cbeContext.TaskComments
-                                            .Include(res=>res.User)
-                                            .Where(t=>t.TaskId == taskId)
-                                            .OrderBy(d => d.CommentDate)
-                                            .CountAsync();
-        }
-
     }
 }

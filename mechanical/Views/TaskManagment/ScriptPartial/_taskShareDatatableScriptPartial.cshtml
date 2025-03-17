@@ -15,7 +15,7 @@
 <script>
     $(document).ready(function () {
 
-        fetch('/UserManagment/GetRMUsers')
+        fetch('/UserManagment/GetPeerRMs')
             .then(response => response.json())
             .then(data => {
                 var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Relation Manager');
