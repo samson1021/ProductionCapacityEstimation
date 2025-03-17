@@ -29,7 +29,26 @@
                     <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
 
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <div class="form-group">
+                                <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                                <div class="input-group">
+                                    <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                                    @{
+                                        try
+                                        {
+                                            if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
+                                        }
+                                        catch (Exception) { }
+                                    }
+                                </div>
+                                <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <div class="form-group">
                                 <label asp-for="constructionMiningAgriculturalMachineryType"> Cons, Min & Agri Machinery Type</label>
                                 <div class="input-group">
@@ -51,7 +70,9 @@
                                 <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="form-group col-xl-4">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
                             <div class="form-group">
                                 <label asp-for="EngineType">Engine/Motor Type</label>
                                 <div class="input-group">
@@ -73,7 +94,7 @@
                                  <span asp-validation-for="EngineType" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
                             <div class="form-group">
                                 <label asp-for="PowerSupply">Power Supply</label>
                                 <div class="input-group">

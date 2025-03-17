@@ -57,33 +57,15 @@
                                 <label asp-for="Type">Type <i class="text-danger">*</i></label>
                                 <select asp-for="Type" required class="form-control form-control-sm" id="typeDropdown" onchange="handleTypeChange(this)">
                                     <option value="" disabled selected>Select Equipment Type *</option>
-                                    <option value="IndustrialMachinery">Industrial (Mfg) Machinery</option>
-                                     <option value="BuildingFacilityEquipment">Building Facility Equipment</option>
-                                     <option value="Other">Others, please specify</option>'
+                                    <option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>
+                                    <option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>
+                                    <option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>'
 
                                  </select>
                                 <input type="text" class="form-control form-control-sm mt-2" id="OtherType" name="Type" style="display: none;">
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
                         </div>
-            @*             <div class="row" id="MVprop">
-                            <div class="form-group col-lg-4">
-                                <label asp-for="PlateNo">Plate Number <i class="text-danger">*</i></label>
-                                <input asp-for="PlateNo" type="text" class="form-control form-control-sm" placeholder="00-XX-X00000" id="PlateName" maxlength="12" required>
-                                <span asp-validation-for="PlateNo" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="ChassisNo">Chassis Number <i class="text-danger">*</i></label>
-                                <input asp-for="ChassisNo" type="text" class="form-control form-control-sm" id="ChassisNo" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" maxlength="17" required>
-                                <span id="ChassisNo-error" asp-validation-for="ChassisNo" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="EngineMotorNo">Engine/Motor Number </label>
-                                <input asp-for="EngineMotorNo" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
-                                <span id="EngineMotorNo-error" asp-validation-for="EngineMotorNo" class="text-danger"></span>
-                            </div>
-                        </div> *@
-                        @*                        industerial collateral attributes *@
 
                         <div class="row" id="IndusteryProp">
                             <div class="form-group col-lg-4">
@@ -185,7 +167,7 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-4">
-                                <label asp-for="TitleDeed">Title Deed</label>
+                                <label asp-for="TitleDeed">LHC</label>
                                 <input asp-for="TitleDeed" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
                                 <span asp-validation-for="TitleDeed" class="text-danger"></span>
                             </div>

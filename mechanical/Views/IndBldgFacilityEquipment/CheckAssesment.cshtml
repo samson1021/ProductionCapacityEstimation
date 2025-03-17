@@ -15,7 +15,12 @@
                 <form method="post" id="checkAssessmentForm" enctype="multipart/form-data" asp-action="CheckAssessment" asp-route-Id="@Model.Id">
                     <input name="CollateralId" asp-for="@indBldgFacilityEquipment.CollateralId" value=@Model.Id type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="@Model.MechanicalEqpmntName">Motor Power (Cc/Kw/Hp)</label>
+                            <input name="MechanicalEqpmntName" asp-for="@indBldgFacilityEquipment.MechanicalEqpmntName" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Motor Power (Cc/Kw/Hp)" required>
+                            <span asp-validation-for="@Model.MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
                             <select name="IndustrialBuildingMachineryType" asp-for="@indBldgFacilityEquipment.IndustrialBuildingMachineryType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialBuildingMachineryType)).Cast<IndustrialBuildingMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -23,6 +28,8 @@
                             </select>
                             <span asp-validation-for="IndustrialBuildingMachineryType" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineType"> Power Source & Fuel Type</label>
                             <select name="EngineType" asp-for="@indBldgFacilityEquipment.EngineType" class="form-control"

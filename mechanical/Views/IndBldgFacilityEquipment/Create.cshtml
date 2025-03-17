@@ -187,7 +187,10 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-5" id="GetExchangeRate" value="Get Exchange Rate" required>
+                            </div>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
@@ -251,24 +254,29 @@
     }
 }
 <script>
-    document.getElementById('Currency').addEventListener('change', function () {
-        showLoadingIndicator();
-        var currency = this.value;
-        $.ajax({
-            type: 'POST',
-            url: '/MotorVehicle/Currency',
-            data: { currency: currency },
-            success: function (response) {
-                console.log(response);
-                document.getElementById("ExchangeRate").value = response.exchangeRate;
-                hideLoadingIndicator();
-            },
-            error: function (xhr, status, error) {
-                toastr.error("Exchange rate service is not working ...");
-                hideLoadingIndicator();
+    document.getElementById('GetExchangeRate').addEventListener('click', function () {
+            var currency = document.getElementById("Currency").value;
+            if(currency == "" || currency == null){
+                  toastr.error("please select currency ...");
+                  return;
             }
+            showLoadingIndicator();
+
+            $.ajax({
+                type: 'POST',
+                url: '/MotorVehicle/Currency',
+                data: { currency: currency },
+                success: function (response) {
+                    console.log(response);
+                    document.getElementById("ExchangeRate").value = response.exchangeRate;
+                    hideLoadingIndicator();
+                },
+                error: function (xhr, status, error) {
+                    toastr.error("Exchange rate service is not working ...");
+                    hideLoadingIndicator();
+                }
+            });
         });
-    });
 
 
     function showLoadingIndicator() {

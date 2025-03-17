@@ -60,7 +60,32 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
+                        <label id="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                        <div class="input-group">
+                            <input id="MechanicalEqpmntName" value=@Model.MechanicalEqpmntName type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-6">
                         <label id="IndustrialBuildingMachineryType">Machinery Name</label>
                         <div class="input-group">
                             <input id="IndustrialBuildingMachineryType" value=@Model.IndustrialBuildingMachineryType type="text" class="form-control" readonly />
@@ -85,55 +110,57 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-6">
                         <label id="lblEngineType">Power Source & Fuel Type</label>
-                            <div class="input-group">
-                                <input id="txtCollateralId" value="@Model.EngineType" type="text" class="form-control" readonly />
-                                <div class="input-group-append">
-                                    @{
-                                        try
+                        <div class="input-group">
+                            <input id="txtCollateralId" value="@Model.EngineType" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["EngineType"] != null && comment["EngineType"] != "")
                                         {
-                                            if (comment?["EngineType"] != null && comment["EngineType"] != "")
-                                            {
-                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment["EngineType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
-                                            }
-                                            else
-                                            {
-                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
-                                            }
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment["EngineType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
                                         }
-                                        catch (Exception)
+                                        else
                                         {
                                             <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
                                         }
                                     }
-                                </div>
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
                             </div>
+                        </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
                         <label id="PowerSupply">Power Supply</label>
-                            <div class="input-group">
+                        <div class="input-group">
                             <input id="PowerSupply" value="@Model.PowerSupply" type="text" class="form-control" readonly />
-                                <div class="input-group-append">
-                                    @{
-                                        try
-                                        {
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
                                         if (comment?["PowerSupply"] != null && comment["PowerSupply"] != "")
-                                            {
-                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment["PowerSupply"]"> <i class="fas fa-exclamation-triangle"></i> </button>
-                                            }
-                                            else
-                                            {
-                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
-                                            }
-                                        }
-                                        catch (Exception)
                                         {
-                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment["PowerSupply"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
                                         }
                                     }
-                                </div>
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
                             </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
