@@ -47,7 +47,7 @@ namespace mechanical.Services.UserService
             var user = await _cbeContext.CreateUsers
                                         .AsNoTracking()
                                         .Where(u => u.Id == userId)
-                                        .Select(u => new { u.SupervisorId, u.Department })
+                                        .Select(u => new { u.SupervisorId, u.Department, u.BroadSegment, u.Unit })
                                         .FirstOrDefaultAsync();
 
             if (user == null)
@@ -57,9 +57,9 @@ namespace mechanical.Services.UserService
                                         .AsNoTracking()
                                         // .Where(u => u.SupervisorId == user.SupervisorId
                                         //             && u.Department == user.Department
-                                        //             && u.Role.Name == "Relation Manager"
                                         //             && u.BroadSegment == user.BroadSegment
                                         //             && u.Unit == user.Unit
+                                        //             && u.Role.Name == "Relation Manager"
                                         // )
                                         .Include(u => u.Role)
                                         .ToListAsync();
