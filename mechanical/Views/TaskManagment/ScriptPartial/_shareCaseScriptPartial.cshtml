@@ -77,10 +77,10 @@
                     responses.forEach(function (response) {
                         switch (response.StatusCode) {
                             case 200:
-                                if (response.Su){
+                                if (response.Success){
                                     toastr.success(response.Message, "Success");
                                 }else{
-                                    toastr.success(response.Message, "Success");
+                                    toastr.warning(response.Message, "Warning");
                                 }
                                 break;
                             case 400:
@@ -102,14 +102,19 @@
                     });
 
                     // Reset form and hide modal if all responses are successful
-                    if (responses.every(response => response.Success)) {
+                    @* if (responses.every(response => response.Success)) { *@
+                    if (responses.some(response => response.Success)) {
                         form.reset();
                         form.classList.remove("was-validated");
                         $("#shareCaseModal").modal("hide");
                         $('.select2').val(null).trigger('change');
-                        loadSharedTasks();
+                        try{
+                            loadSharedTasks();
+                        }catch{
+
+                        }
                     } else {
-                        toastr.error(response.message, "Error occurred when sharing Task");
+                        toastr.error("Error occurred when sharing Task");
                     }
                 },
                 error: function (xhr) {
