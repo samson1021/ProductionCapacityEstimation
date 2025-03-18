@@ -8,10 +8,12 @@ namespace mechanical.Services.TaskManagmentService
     public interface ITaskManagmentService
     {
         Task<TaskManagmentReturnDto> GetTask(Guid userId, Guid taskId);
+
         Task<IEnumerable<TaskManagmentReturnDto>> GetSharedTasks(Guid userId, string? mode = null);
         Task<IEnumerable<TaskManagmentReturnDto>> GetReceivedTasks(Guid userId, string? mode = null);
-        Task<TaskManagment> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
+        Task<List<ResultDto>> ShareTask(Guid AssignorId, string selectedCaseIds, TaskManagmentPostDto createTaskManagmentDto);
         Task<List<ResultDto>> ShareTasks(Guid userId, ShareTasksDto dto);
+
         Task<ResultDto> UpdateTask(Guid userId, TaskManagmentUpdateDto dto);
         Task<ResultDto> CompleteTask(Guid userId, Guid taskId);
         // Task<ResultDto> ReassignTask(Guid userId, Guid taskId, Guid newAssignedId);
@@ -20,5 +22,6 @@ namespace mechanical.Services.TaskManagmentService
         Task<ResultDto> ReturnTask(Guid userId, Guid taskId);
         Task<TaskComment> CommentTask(Guid userId, TaskCommentPostDto dto);
         Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId);
+        Task<int> GetTaskCommentCount(Guid taskId);
     }
 }

@@ -72,10 +72,19 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
+                        response.forEach(item => {
+                            if (item.Success) {
+                                toastr.success(item.Message); // Display success message
+                                console.log("success response Data " + item.Message);
+                            } else {
+                                toastr.error(item.Message); // Display error message
+                                console.log("error response Data " + item.Message);
+                            }
+                        });                    
                         $('#shareTaskModal').modal('hide');
                         $('#shareTskForm')[0].reset();
                         $('.purple-checkbox').prop('checked', false); // Uncheck all checkboxes
-                        toastr.success("Task has been shared successfully.");
+                       
                     },
                     error: function (xhr) {
                         var error = xhr.responseJSON;

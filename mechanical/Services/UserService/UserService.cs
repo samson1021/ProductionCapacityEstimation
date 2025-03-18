@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Services.UserService
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
@@ -38,16 +38,17 @@ namespace mechanical.Services.UserService
 
         public async Task<ReturnUserDto> GetUserById(Guid Id)
         {
-            var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).Include(res => res.District).FirstOrDefaultAsync(res => res.Id == Id);             
+            var user = await _cbeContext.CreateUsers.AsNoTracking().Include(res => res.Role).Include(res => res.District).FirstOrDefaultAsync(res => res.Id == Id);
             return _mapper.Map<ReturnUserDto>(user);
         }
+
         public async Task<IEnumerable<ReturnUserDto>> GetPeerRMs(Guid userId)
         {
             var user = await _cbeContext.CreateUsers
-                                     .AsNoTracking()
-                                     .Where(u => u.Id == userId)
-                                     .Select(u => new { u.SupervisorId, u.Department })
-                                     .FirstOrDefaultAsync();
+                                        .AsNoTracking()
+                                        .Where(u => u.Id == userId)
+                                        .Select(u => new { u.SupervisorId, u.Department })
+                                        .FirstOrDefaultAsync();
 
             if (user == null)
                 return Enumerable.Empty<ReturnUserDto>();
@@ -57,6 +58,8 @@ namespace mechanical.Services.UserService
                                         // .Where(u => u.SupervisorId == user.SupervisorId
                                         //             && u.Department == user.Department
                                         //             && u.Role.Name == "Relation Manager"
+                                        //             && u.BroadSegment == user.BroadSegment
+                                        //             && u.Unit == user.Unit
                                         // )
                                         .Include(u => u.Role)
                                         .ToListAsync();

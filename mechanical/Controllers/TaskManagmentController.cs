@@ -76,8 +76,13 @@ namespace mechanical.Controllers
                 {
                     return NotFound();
                 }
-                TempData["myTaskInfo"] = task.Id;
+                
+                var commentCount = await _taskManagmentService.GetTaskCommentCount(task.Id);
+                
+                // TempData["myTaskInfo"] = task.Id;
+                TempData["CommentCount"] = commentCount;
                 return PartialView("_taskDetailsPartial", task);
+
             }
             catch (Exception ex)
             {
@@ -91,8 +96,9 @@ namespace mechanical.Controllers
         {
             try
             {
-                await _taskManagmentService.ShareTask(base.GetCurrentUserId(), selectedCaseIds, createTaskManagmentDto);
-                return RedirectToAction("NewCases", "Case");
+               var MessagetResult= await _taskManagmentService.ShareTask(base.GetCurrentUserId(), selectedCaseIds, createTaskManagmentDto);
+                //return RedirectToAction("NewCases", "Case");
+                return Json(MessagetResult);
             }
             catch (Exception ex)
             {
