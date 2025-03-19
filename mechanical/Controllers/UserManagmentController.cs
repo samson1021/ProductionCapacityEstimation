@@ -380,11 +380,13 @@ namespace mechanical.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> GetPeerRMs()
+        public async Task<IActionResult> GetPeerRMs()
         {
             var rms = await _userService.GetPeerRMs(base.GetCurrentUserId());
-            var result = rms.Select(rm => new { Id = rm.Id, Name = rm.Name });
-            return Json(result);
+            var result = rms
+                .Where(crm => crm.Id != base.GetCurrentUserId())
+                .Select(rm => new { Id = rm.Id, Name = rm.Name });
+            return Ok(result);
         }
     }
 }
