@@ -233,7 +233,7 @@
         $('#statusFilter').on('change', function() {
             var status = $(this).val();
             var table = $('#sharedTasksTable').DataTable();
-            table.column(3).search(status).draw();
+            table.column(2).search(status).draw();
         });
 
         // Select all / individual checkboxes
