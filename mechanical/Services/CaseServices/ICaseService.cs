@@ -10,6 +10,7 @@ namespace mechanical.Services.CaseServices
         Task<Case> CreateCase(Guid userId, CasePostDto createCaseDto);
 
         Task<CaseReturntDto> GetCase(Guid userId, Guid id);
+        Task<CaseReturntDto> GetShareTaskCase(Guid userId, Guid id);
         Task<string> GetCustomerName(double customerId);
         Task<CaseReturntDto> GetCaseDetail(Guid id);
         Task<IEnumerable<CaseDto>> GetNewCases(Guid userId);

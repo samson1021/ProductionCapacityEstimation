@@ -114,6 +114,15 @@ namespace mechanical.Services.CaseServices
                            .FirstOrDefaultAsync(c => c.Id == id && c.CaseOriginatorId == userId);
             return _mapper.Map<CaseReturntDto>(loanCase);
         }
+
+        public async Task<CaseReturntDto> GetShareTaskCase(Guid userId, Guid id)
+        {
+            var loanCase = await _cbeContext.Cases
+                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+                           .FirstOrDefaultAsync(c => c.Id == id);
+            return _mapper.Map<CaseReturntDto>(loanCase);
+        }
+
         public async Task<CaseReturntDto> GetCaseDetail(Guid id)
         {
             var loanCase = await _cbeContext.Cases
