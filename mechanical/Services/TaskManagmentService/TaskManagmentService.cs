@@ -110,6 +110,7 @@ namespace mechanical.Services.TaskManagmentService
                                 foreach (var changetaskstatus in tasksToDeactivate)
                                 {
                                     changetaskstatus.IsActive = false;
+                                    changetaskstatus.UpdatedDate = DateTime.UtcNow;
                                 }
 
                                 // Save changes after modifying the IsActive property
@@ -188,12 +189,13 @@ namespace mechanical.Services.TaskManagmentService
             foreach (var userId in dto.SelectedRMs)
             {
                 var existingTask = await _cbeContext.TaskManagments
-                                                    .AnyAsync(t => t.CaseId == sharedCase.Id &&
+                                                    .AnyAsync(t => t.CaseId == dto.CaseId &&
                                                                     t.AssignedId == userId &&
                                                                     t.TaskName == dto.TaskName &&
                                                                     t.IsActive &&
-                                                                    t.Deadline > DateTime.UtcNow);
-
+                                                                    t.Deadline.Date >= DateTime.UtcNow.Date
+                                                    );
+                
                 if (existingTask)
                 {
                     assignmentResults.Add(new ResultDto
@@ -203,6 +205,17 @@ namespace mechanical.Services.TaskManagmentService
                         Message = $"Task '{dto.TaskName}' is already assigned to user {userId} and is still active with a valid deadline."
                     });
                     continue;
+                }
+                
+                if (dto.TaskName == "All")
+                {
+                    await _cbeContext.TaskManagments
+                                        .Where(t => t.CaseId == dto.CaseId &&
+                                                        t.AssignedId == userId &&
+                                                        t.IsActive)
+                                        .ExecuteUpdateAsync(setters => setters
+                                            .SetProperty(n => n.IsActive, false)
+                                            .SetProperty(n => n.UpdatedDate, DateTime.UtcNow));
                 }
 
                 shareTasks.Add(new TaskManagment
@@ -223,43 +236,17 @@ namespace mechanical.Services.TaskManagmentService
                 });
             }
 
-            // // Prepare task assignments in bulk
-            // var shareTasks = dto.SelectedRMs
-            //     .Where(userId => !_cbeContext.TaskManagments
-            //         .Any(t => t.CaseId == sharedCase.Id &&
-            //                 t.AssignedId == userId &&
-            //                 t.TaskName == dto.TaskName &&
-            //                 t.IsActive &&
-            //                 t.Deadline > DateTime.UtcNow))
-            //     .Select(userId => new TaskManagment
-            //     {
-            //         Id = Guid.NewGuid(),
-            //         CaseId = dto.CaseId,
-            //         TaskName = dto.TaskName,
-            //         PriorityType = dto.PriorityType,
-            //         SharingReason = dto.SharingReason,
-            //         Deadline = dto.Deadline,
-            //         CaseOrginatorId = sharedCase.CaseOriginatorId,
-            //         AssignedId = userId,
-            //         TaskStatus = "New",
-            //         IsActive = true,
-            //         AssignedDate = DateTime.UtcNow,
-            //         UpdatedDate = null,
-            //         CompletionDate = null
-            //     })
-            //     .ToList();
-
             // Add tasks to the database in bulk
             await _cbeContext.TaskManagments.AddRangeAsync(shareTasks);
             await _cbeContext.SaveChangesAsync();
 
             // Retrieve the saved tasks with their related entities
             var tasks = await _cbeContext.TaskManagments
-                .Include(t => t.Case)
-                .Include(t => t.Assigned)
-                    .ThenInclude(u => u.Role)
-                .Where(t => shareTasks.Select(st => st.Id).Contains(t.Id))
-                .ToListAsync();
+                                        .Include(t => t.Case)
+                                        .Include(t => t.Assigned)
+                                            .ThenInclude(u => u.Role)
+                                        .Where(t => shareTasks.Select(st => st.Id).Contains(t.Id))
+                                        .ToListAsync();
 
             // Prepare notifications
             var notificationsBatch = new List<(Guid userId, string content, string type, string link)>();
@@ -395,6 +382,20 @@ namespace mechanical.Services.TaskManagmentService
                     return new ResultDto { StatusCode = 403, Success = false, Message = "Access denied! User cannot update this task." };
                 }
 
+                // // Handle the edge case where TaskName is updated to "All"
+                // if (dto.TaskName == "All")
+                // {
+                //     await _cbeContext.TaskManagments
+                //                     .Where(t => t.CaseId == task.CaseId &&
+                //                                 t.AssignedId == task.AssignedId &&
+                //                                 t.IsActive &&
+                //                                 t.Id != task.Id)
+                //                     .ExecuteUpdateAsync(setters => setters
+                //                         .SetProperty(t => t.IsActive, false)
+                //                         .SetProperty(t => t.UpdatedDate, DateTime.UtcNow));
+                // }
+
+                // Update the task properties
                 // task.TaskName = dto.TaskName;
                 task.Deadline = dto.Deadline;
                 task.PriorityType = dto.PriorityType;

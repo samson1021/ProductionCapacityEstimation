@@ -60,7 +60,9 @@ namespace mechanical.Services.UserService
                                                      && u.BroadSegment == user.BroadSegment
                                                      && u.Unit == user.Unit
                                                      && u.Role.Name == "Relation Manager"
+
                                                      && u.Id !=userId
+
                                          )
                                         .Include(u => u.Role)
                                         .ToListAsync();
