@@ -217,22 +217,54 @@ namespace mechanical.Controllers
         //    ;
         //    return View();
         //}
-        public async Task<IActionResult> Detail(Guid id, string CaseType)
+        //public async Task<IActionResult> Detail(Guid id, string? CaseType)
+        //{
+        //    object ShareTaskData; 
+
+        //    if (CaseType != "Owner")
+        //    {
+        //        ShareTaskData = await _caseService.SharedCaseInfo(id);
+        //        var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
+        //    }
+        //    else
+        //    {
+        //        ShareTaskData = null;
+        //        var loanCase = await _caseService.GetShareTaskCase(base.GetCurrentUserId(), id, CaseType);
+        //    }
+        //    var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+        //    if (loanCase == null)
+        //    {
+        //        return RedirectToAction("NewCases");
+        //    }
+
+        //    ViewData["case"] = loanCase;
+        //    ViewData["CaseType"] = CaseType;
+        //    ViewData["CaseSchedule"] = caseSchedule;
+        //    ViewData["Id"] = base.GetCurrentUserId();
+        //    ViewData["ShareTaskData"] = ShareTaskData; // Fixed syntax: single quotes to double quotes
+
+        //    return View();
+        //}
+
+        public async Task<IActionResult> Detail(Guid id, string? CaseType)
         {
-            object ShareTaskData; 
+            object ShareTaskData;
+            object loanCase; // Declare loanCase here
 
             if (CaseType != "Owner")
             {
                 ShareTaskData = await _caseService.SharedCaseInfo(id);
+                loanCase = await _caseService.GetShareTaskCase(base.GetCurrentUserId(), id); // Assign here
+
             }
             else
             {
                 ShareTaskData = null;
+                loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id); // Assign here
+
             }
 
-            var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
-
             if (loanCase == null)
             {
                 return RedirectToAction("NewCases");
@@ -242,10 +274,11 @@ namespace mechanical.Controllers
             ViewData["CaseType"] = CaseType;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
-            ViewData["ShareTaskData"] = ShareTaskData; // Fixed syntax: single quotes to double quotes
+            ViewData["ShareTaskData"] = ShareTaskData;
 
             return View();
         }
+
 
         [HttpGet]
         public async Task<IActionResult> PendDetail(Guid id)
