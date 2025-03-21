@@ -110,6 +110,48 @@ namespace mechanical.Data
                        },
                        new CreateUser()
                        {                            
+                           Name = "RM1",
+                           emp_ID = "050212",
+                           Email = "RM1@GMAIL.COM",
+                           PhoneNO = "0925473240",
+                           Branch = "Head Office",
+                           RoleId = context.CreateRoles.Single(r => r.Name == "Relation Manager").Id,
+                           DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,  
+                           //Password = "1234",
+                           Status = "Activated",
+                           SupervisorId = null,
+                           Department = "Mechanical"
+                       },
+                       new CreateUser()
+                       {                            
+                           Name = "RM2",
+                           emp_ID = "050222",
+                           Email = "RM2@GMAIL.COM",
+                           PhoneNO = "0925473240",
+                           Branch = "Head Office",
+                           RoleId = context.CreateRoles.Single(r => r.Name == "Relation Manager").Id,
+                           DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,  
+                           //Password = "1234",
+                           Status = "Activated",
+                           SupervisorId = null,
+                           Department = "Mechanical"
+                       },
+                       new CreateUser()
+                       {                            
+                           Name = "RM3",
+                           emp_ID = "050232",
+                           Email = "RM3@GMAIL.COM",
+                           PhoneNO = "0925473240",
+                           Branch = "Head Office",
+                           RoleId = context.CreateRoles.Single(r => r.Name == "Relation Manager").Id,
+                           DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,  
+                           //Password = "1234",
+                           Status = "Activated",
+                           SupervisorId = null,
+                           Department = "Mechanical"
+                       },
+                       new CreateUser()
+                       {                            
                            Name = "MM",
                            emp_ID = "050121",
                            Email = "MM@GMAIL.COM",

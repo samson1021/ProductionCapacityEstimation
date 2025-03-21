@@ -1,7 +1,6 @@
 ﻿using mechanical.Models.Entities;
 using mechanical.Data;
 using mechanical.Models;
-using mechanical.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

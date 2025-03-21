@@ -137,7 +137,7 @@ namespace mechanical.Services.TaskManagmentService
                         });
 
                         string notificationContent = $"New task assigned: {createTaskManagmentDto.TaskName}";
-                        var notification = await _notificationService.AddNotification(AssignorId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
+                        var notification = await _notificationService.AddNotification(asigneeUser.Id, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                         taskShares.Add(task);
                         messages.Add(new ResultDto {
@@ -460,9 +460,9 @@ namespace mechanical.Services.TaskManagmentService
                 var activity = $"Task '{task.TaskName}' marked as completed by user {user.Name}.";
                 await LogTimelineEvent(task.CaseId, activity, task.Assigned.Role.Name);
 
-                // Send notification to the assigned user
+                // Send notification to the assignor user
                 string notificationContent = $"Task '{task.TaskName}' has been marked as completed.";
-                var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
+                var notification = await _notificationService.AddNotification(task.CaseOrginatorId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -617,11 +617,7 @@ namespace mechanical.Services.TaskManagmentService
 
                 // Send notification to the assigned user
                 string notificationContent = $"Task '{task.TaskName}' has been revoked.";
-                var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
-
-                // Send notification to the case assigned
-                string notificationContentAssigned = $"Task '{task.TaskName}' has been revoked by {user.Name}.";
-                var notificationOwner = await _notificationService.AddNotification(task.AssignedId, notificationContentAssigned, "Task", $"/Taskmanagment/Detail/{task.Id}");
+                var notification = await _notificationService.AddNotification(task.AssignedId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -667,13 +663,9 @@ namespace mechanical.Services.TaskManagmentService
                 var activity = $"Task '{task.TaskName}' returned by user {user.Name}.";
                 await LogTimelineEvent(task.CaseId, activity, task?.Case?.CaseOriginator?.Name);
 
-                // Send notification to the assigned user
-                string notificationContent = $"Task '{task.TaskName}' has been returned.";
-                var notification = await _notificationService.AddNotification(userId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
-
-                // Send notification to the case owner
-                string notificationContentOwner = $"Task '{task.TaskName}' has been returned by {user.Name}.";
-                var notificationOwner = await _notificationService.AddNotification(task.CaseOrginatorId, notificationContentOwner, "Task", $"/Taskmanagment/Detail/{task.Id}");
+                // Send notification to the assignor user
+                string notificationContent = $"Task '{task.TaskName}' has been returned by {user.Name}.";
+                var notification = await _notificationService.AddNotification(task.CaseOrginatorId, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
