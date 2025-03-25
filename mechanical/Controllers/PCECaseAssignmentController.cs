@@ -24,7 +24,7 @@ namespace mechanical.Controllers
     {
         private readonly IUserService _UserService;
         private readonly IPCECaseService _PCECaseService;
-        private readonly ILogger<PCECaseAssignmentController> _logger;
+        //private readonly ILogger<PCECaseAssignmentController> _logger;
         private readonly IPCECaseAssignmentService _PCECaseAssignmentService;
 
         public PCECaseAssignmentController(IUserService UserService, IPCECaseAssignmentService PCECaseAssignmentService, IPCECaseService PCECaseService)

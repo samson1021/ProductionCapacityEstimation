@@ -118,6 +118,7 @@
                                         <tr>
                                             <th>Case No</th>
                                             <th>Creation Date</th>
+                                            <th>Requesting Unit</th>
                                             <th>Applicant Name</th>
                                             <th>Customer Id</th>
                                             <th>Collateral</th>
@@ -130,6 +131,7 @@
                                             <tr>
                                                 <td><a href="@Url.Action("MyCase", "MOCase")?Id=@item.Id">@item.CaseNo</a></td>
                                                 <td>@item.CreationAt</td>
+                                                <td>@item.RequestingUnit</td>
                                                 <td>@item.ApplicantName</td>
                                                 <td>@item.CustomerId</td>
                                                 <td>@item.NoOfCollateral</td>

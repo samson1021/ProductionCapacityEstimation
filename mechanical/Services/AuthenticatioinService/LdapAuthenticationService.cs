@@ -40,7 +40,7 @@ namespace mechanical.Services.AuthenticatioinService
         [SupportedOSPlatform("windows")]
         public string GetSamAccountName(string username)
         {
-            var directoryEntry = new DirectoryEntry("LDAP://10.1.11.13:389", "yohannessintayhu@cbe.com.et", "True@12346");
+            var directoryEntry = new DirectoryEntry("LDAP://10.1.11.13:389", "yohannessintayhu@cbe.com.et", "True@123");
             var directorySearcher = new DirectorySearcher(directoryEntry);
             directorySearcher.Filter = $"(|(sAMAccountName={username})(mail={username})(employeeID={username}))";
 
@@ -69,7 +69,7 @@ namespace mechanical.Services.AuthenticatioinService
             {
                 UserAdAttribute loginModels = new UserAdAttribute();
                 string domainPath = "LDAP://10.1.11.13:389";
-                var searchRoot = new DirectoryEntry(domainPath, "yohannessintayhu@cbe.com.et", "True@12346");
+                var searchRoot = new DirectoryEntry(domainPath, "yohannessintayhu@cbe.com.et", "True@123");
                 var searcher = new DirectorySearcher(searchRoot);
                 searcher.SearchScope = SearchScope.Subtree;
                 searcher.PageSize = 1000;

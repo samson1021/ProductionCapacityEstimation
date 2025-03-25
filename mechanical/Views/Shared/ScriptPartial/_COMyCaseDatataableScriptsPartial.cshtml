@@ -16,8 +16,6 @@
         var CaseId = $('#CaseId').val();
 
 
-
-
         function initializeDataTable(data) {
             caseCollateralsTable = $('#caseCollaterals').DataTable({
                 language: {
@@ -33,7 +31,7 @@
                     { data: 'PropertyOwner', width: '20%' },
                     { data: 'Role', width: '15%' },
                     { data: 'Category', width: '25%' },
-                    { data: 'Type', width: '25%' },
+                    { data: 'MechanicalEqpmntName', width: '25%' },
                     {
                         data: 'Id',
                         width: '15%',
@@ -49,7 +47,7 @@
         function loadCollaterals() {
 
             $.ajax({
-                url: '/Collateral/GetMMCollaterals?CaseId=' + CaseId,
+                url: '/Collateral/GetCMCollaterals?CaseId=' + CaseId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

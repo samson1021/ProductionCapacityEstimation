@@ -67,7 +67,6 @@
                             <span asp-validation-for="company" class="text-danger"></span>
                         </div>
                     </div>
-                    <!-- Rest of form fields with existing values -->
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="PhoneNO" class="control-label">Phone Number</label>
@@ -176,28 +175,29 @@
       
             $('#UnitDropdown').val("@Model.Unit");
         
-             var roleId ="@Model.RoleId";
+            var roleId ="@Model.RoleId";
             var Department = "@Model.Department";
             var districtId = "@Model.DistrictId";
 
+            if("@Model.Role?.Name" != "Relation Manager"){
+                $("#BroadSegmentDropdown, #UnitDropdown").prop("required", false);
+            }
+
         $.ajax({
-            url: '/UserManagment/GetSupervisors', // Replace with your endpoint
+            url: '/UserManagment/GetSupervisors', 
             type: 'GET',
             data: { roleId: roleId, districtId: districtId, Department: Department },
             success: function (data) {
                 var dropdown = $('#SupervisorId');
-                dropdown.empty(); // Clear the "Loading..." option
+                dropdown.empty(); 
 
-                // Add default option
                 dropdown.append('<option value="">Select Supervisor</option>');
 
-                // Populate dropdown with fetched data
                 data.forEach(function (supervisor) {
                     var option = $('<option></option>')
                         .val(supervisor.id)
                         .text(supervisor.name);
 
-                    // Set selected value if it matches Model.SupervisorId
                     if (supervisor.id === "@Model.SupervisorId") {
                         option.prop('selected', true);
                     }
@@ -211,7 +211,7 @@
             }
         });
 
-         var BroadSegmentDropdown = "@Model.BroadSegment";
+        var BroadSegmentDropdown = "@Model.BroadSegment";
         var selectedUnit = "@Model.Unit"; 
         console.log(BroadSegmentDropdown);
         UnitDropdown = $("#UnitDropdown");
@@ -259,7 +259,6 @@
                 .text(text);
                 console.log(selectedValue);
                 console.log(value);
-            // Set selected if the value matches the selected unit
             if (value === selectedValue) {
                 option.prop('selected', true);
             }
@@ -319,7 +318,6 @@
 
         $("#RoleId").change(function () {
             var selectedRole = $(this).find(":selected").text();
-            console.log(selectedRole);
             if (selectedRole == 'Relation Manager') {
                 $("#RM").show();
                 $("#CEV").hide();
@@ -332,6 +330,7 @@
                 $("#Department").removeAttr("disabled");
                 $("#BroadSegmentDropdown").attr("disabled", true);
                 $("#UnitDropdown").attr("disabled", true);
+
 
                 $('#Department').html(`
                   <option value="" selected disabled>Select valuation unit</option>
@@ -379,22 +378,17 @@
         $('#GetEmployeeInfo').click(function () {
             var empId = $('#emp_ID').val();
 
-            // Check if empId is not empty
             if (empId) {
-                // Show loading indicator
-                $('#loadingIndicator').show(); // Add a loading element in your HTML
+                $('#loadingIndicator').show(); 
 
                 $.ajax({
-                    url: '/UserManagment/GetEmployeeInfo', // Adjust the URL based on your routing
+                    url: '/UserManagment/GetEmployeeInfo', 
                     type: 'GET',
                     data: { id: empId },
                     success: function (data) {
-                        // Hide loading indicator
                         $('#loadingIndicator').hide();
 
-                        // Check if data is null or empty
                         if (!data || $.isEmptyObject(data)) {
-                            // Show toaster notification
                             toastr.warning('No employee information found for the provided ID.');
                             return;
                         }
@@ -405,7 +399,6 @@
                         $('#company').val(data.company);
                     },
                     error: function () {
-                        // Hide loading indicator
                         $('#loadingIndicator').hide();
 
                         alert('Error retrieving employee information.');

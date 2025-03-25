@@ -257,6 +257,15 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
         [HttpGet]
+        public async Task<IActionResult> GetCMCollaterals(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetCMCollaterals(base.GetCurrentUserId(), CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
+
+
+        [HttpGet]
         public async Task<IActionResult> GetMMCompleteCollaterals(Guid CaseId)
         {
             var collaterals = await _collateralService.GetMMCompleteCollaterals(base.GetCurrentUserId(), CaseId);
@@ -270,13 +279,7 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }
-        [HttpGet]
-        public async Task<IActionResult> GetCMCollaterals(Guid CaseId)
-        {
-            var collaterals = await _collateralService.GetCMCollaterals(base.GetCurrentUserId(), CaseId);
-            string jsonData = JsonConvert.SerializeObject(collaterals);
-            return Content(jsonData, "application/json");
-        }
+       
         [HttpGet]
         public async Task<IActionResult> GetMMPendCollaterals(Guid CaseId)
         {

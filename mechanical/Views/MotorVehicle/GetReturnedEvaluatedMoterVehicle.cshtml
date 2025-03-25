@@ -33,7 +33,24 @@
                 <input name="Id" id="TxtEquipmentId" value="@Model.ReturnMotorVehicleDto.Id" type="hidden" />
 
                 <div class="row">
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
+                        <label id="lblMechanicalEqpmntName">Mechanical Equipment Name</label>
+                        <div class="input-group">
+                            <input name="MechanicalEqpmntName" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            @{
+                                try
+                                {
+                                    if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                    {
+                                        <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                    }
+                                }
+                                catch (Exception) { }
+                            }
+                        </div>
+                        <span id="MechanicalEqpmntName" asp-validation-for="@Model.ReturnMotorVehicleDto.MechanicalEqpmntName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-xl-6">
                         <label id="lblEngineType">Engine Type</label>
                         <div class="input-group">
                             <select asp-for="@Model.ReturnMotorVehicleDto.EngineType" class="form-control"
@@ -53,7 +70,9 @@
                         </div>
                         <span id="SpEngineType" asp-validation-for="@Model.ReturnMotorVehicleDto.EngineType" class="text-danger"></span>
                     </div>
-                    <div class="form-group col-xl-4">
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-6">
                         <label id="NoOfCylinder">Number of Cylinders</label>
                         <div class="input-group">
                             <select asp-for="@Model.ReturnMotorVehicleDto.NoOfCylinder" class="form-control"
@@ -73,7 +92,7 @@
                         </div>
                         <span id="SpNoOfCylinder" asp-validation-for="@Model.ReturnMotorVehicleDto.NoOfCylinder" class="text-danger"></span>
                     </div>
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
                         <label id="TransmissionType">Transmission Type</label>
                         <div class="input-group">
                             <select asp-for="@Model.ReturnMotorVehicleDto.TransmissionType" class="form-control"

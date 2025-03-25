@@ -132,7 +132,7 @@ namespace mechanical.Controllers
                 var allRoles = _context.CreateRoles.Where(u => u.Name == "Checker TeamLeader").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                 allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department).ToList();
+                 allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
 
             }
             else if (RoleName == "Maker TeamLeader")
@@ -140,7 +140,7 @@ namespace mechanical.Controllers
                 var allRoles = _context.CreateRoles.Where(u => u.Name == "Maker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department).ToList();
+                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
 
             }
             else if (RoleName == "Checker TeamLeader")
@@ -148,7 +148,9 @@ namespace mechanical.Controllers
                 var allRoles = _context.CreateRoles.Where(u => u.Name == "Checker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department).ToList();
+
+
+                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
             }
             else {
                 allUsers = null;

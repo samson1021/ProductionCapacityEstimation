@@ -369,7 +369,35 @@ namespace mechanical.Services.CollateralService
             {
                 var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status == "New").ToListAsync();
                 var collaterals = caseAssignments.Select(res => res.Collateral);
-                return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+                var returnCollateralDtos = _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+                foreach (var collateral in returnCollateralDtos)
+                {
+                    if (collateral.Category == "MOTOR VEHICLE")
+                    {
+                        var mov = await _cbeContext.MotorVehicles.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                        if (mov != null)
+                        {
+                            collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                        }
+                    }
+                    else if (collateral.Category == "CONST, MNG & AGR MACHINERY")
+                    {
+                        var mov = await _cbeContext.ConstMngAgrMachineries.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                        if (mov != null)
+                        {
+                            collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                        }
+                    }
+                    else if (collateral.Category == "IND (Mfg) & BLDG FACILITY EQUIPMENT")
+                    {
+                        var mov = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                        if (mov != null)
+                        {
+                            collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                        }
+                    }
+                }
+                return returnCollateralDtos;
 
             }
             else

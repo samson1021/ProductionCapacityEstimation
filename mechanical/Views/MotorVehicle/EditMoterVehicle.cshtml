@@ -28,7 +28,12 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-route-Id="@Model.Id">
                     <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="EngineType">Engine Type</label>
                             <select asp-for="@Model.EngineType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem
@@ -40,14 +45,16 @@
                             </select>
                             <span asp-validation-for="EngineType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
                             <label asp-for="NoOfCylinder">Number of Cylinders</label>
                             <select asp-for="@Model.NoOfCylinder " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.NoOfCylinder.ToString()) }), "Value", "Text"))">
                             </select>
                             <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
                             <label asp-for="TransmissionType">Transmission Type</label>
                             <select asp-for="@Model.TransmissionType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(),Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.TransmissionType.ToString()) }), "Value", "Text"))">

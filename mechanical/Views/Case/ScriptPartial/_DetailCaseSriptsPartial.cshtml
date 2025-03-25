@@ -1,6 +1,5 @@
 ﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-<script src="~/bootstrap/js/bootstrap.min.js"></script>﻿
 <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
@@ -16,12 +15,12 @@
 <script src="~/lib/toastr/toastr.min.js"></script>
 <script>
     console.log("debug");
-    $(document).ready(function () {
+    $(function () {
         $('#UpdateSchedule').on('click', function (event) {
             event.preventDefault();
             $('#datetimepicker-modal').modal('show');
         });
-        $('#datetimepicker-form').submit(function (event) {
+        $('#datetimepicker-form').on('submit', function (event) {
             event.preventDefault();
             var formData = new FormData(this);
             var Id = $('#CaseSchedulleId').val();
@@ -41,7 +40,7 @@
                 }
             });
         });
-        $('#AcceptButton').click(function (event) {
+        $('#AcceptButton').on('click',function (event) {
             event.preventDefault();
             var formData = new FormData();
             var Id = $('#CaseScheduleId').val();
@@ -114,10 +113,10 @@
             });
 
         var CaseId = $('#CaseId').val();
-        $('#addCollateralButton').click(function () {
+        $('#addCollateralButton').on('click',function () {
             $('#addCollateralModal').modal('show');
         });
-        $('#proposeNewScheduleButton').click(function () {
+        $('#proposeNewScheduleButton').on('click',function () {
             $('#proposeNewSchedule-modal').modal('show');
         });
         var caseCollateralsTable;
@@ -166,7 +165,7 @@
             var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
-        $('#assignForm').submit(function (e) {
+        $('#assignForm').on('submit',function (e) {
             e.preventDefault();
 
             var formData = new FormData(this);
@@ -311,7 +310,7 @@
             });
         }
 
-        $('#SendButton').click(function (e) {
+        $('#SendButton').on('click',function (e) {
             e.preventDefault();
             var message = $('input[name="message"]').val();
             if (message.trim() !== '') {
@@ -409,9 +408,9 @@
                 }
             });
         }
-        $('#addMechanicalCollateralForm').submit(function (e) {
+        $('#addMechanicalCollateralForm').on('submit',function (e) {
             e.preventDefault();
-
+            console.log('jquerryyy...');
             var formDataArray = $(this).serializeArray();
             var Category = getAttributeByName(formDataArray, 'Category');
 
@@ -454,9 +453,9 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                
+                    // $('#addMechanicalCollateralForm')[0].reset();
                     $('#addMechanicalCollateralModal').modal('hide');
-                    $('#addMechanicalCollateralForm')[0].reset();
+             
 
                     submitButton.prop('disabled', false).text('Add');
 
@@ -470,12 +469,9 @@
             });
         });
         loadCollaterals();
-        $('#addCivilCollateralForm').submit(function (e) {
+        $('#addCivilCollateralForm').on('submit',function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
-            
-
-
             var formData = new FormData(this);
 
             $.ajax({
@@ -497,7 +493,7 @@
             });
         });
         loadCollaterals();
-        $('#addAgricultureCollateralForm').submit(function (e) {
+        $('#addAgricultureCollateralForm').on('submit',function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
             console.log("here");
@@ -660,7 +656,7 @@
                     break;
             }
         }
-        $("#categoryDropdown").change(function () {
+        $("#categoryDropdown").on('change',function () {
             typeDropdown.prop("disabled", false);
             populateTypeDropdown();
         });
@@ -669,7 +665,7 @@
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
 
-        $('#proposeNewSchedule-form').submit(function (event) {
+        $('#proposeNewSchedule-form').on('submit',function (event) {
             event.preventDefault();
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();
