@@ -7,6 +7,7 @@ Signature management/bin/
 .vs/mechanical
 mechanical/bin
 mechanical/obj
+mechanical/publish
 mechanical/migrations
 mechanical/UploadFile
 mechanical/.vs

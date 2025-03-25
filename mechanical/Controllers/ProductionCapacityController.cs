@@ -123,7 +123,7 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                // _logger.LogError(ex, "Error fetching Production capacity details for ID: {Id}", Id);
+                _logger.LogError(ex, "Error fetching Production capacity details for ID: {Id}", Id);
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }

@@ -32,7 +32,7 @@ namespace mechanical.Services.AuthenticatioinService
 
         public UserAdAttribute GetEmployeeInfo(string EmpId)
         {
-           var samAccountName = GetSamAccountName(EmpId);
+            var samAccountName = GetSamAccountName(EmpId);
             var result = GetUserDataAD(samAccountName);
             return result;
         }
@@ -46,7 +46,6 @@ namespace mechanical.Services.AuthenticatioinService
             directorySearcher.Filter = $"(|(sAMAccountName={username})(mail={username})(employeeID={username}))";
 
             // Execute the search and retrieve the first matching result
-
             SearchResult searchResult = directorySearcher.FindOne();
 
             if (searchResult == null)

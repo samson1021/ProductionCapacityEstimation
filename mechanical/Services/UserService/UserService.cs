@@ -47,25 +47,24 @@ namespace mechanical.Services.UserService
             var user = await _cbeContext.CreateUsers
                                         .AsNoTracking()
                                         .Where(u => u.Id == userId)
-                                        .Select(u => new { u.SupervisorId, u.Department, u.BroadSegment, u.Unit })
+                                        .Select(u => new { u.Id, u.SupervisorId, u.Department, u.BroadSegment, u.Unit })
                                         .FirstOrDefaultAsync();
 
             if (user == null)
                 return Enumerable.Empty<ReturnUserDto>();
-
+                
             var rms = await _cbeContext.CreateUsers
                                         .AsNoTracking()
-                                         .Where(u => u.SupervisorId == user.SupervisorId
-                                                     && u.Department == user.Department
-                                                     && u.BroadSegment == user.BroadSegment
-                                                     && u.Unit == user.Unit
-                                                     && u.Role.Name == "Relation Manager"
-
-                                                     && u.Id !=userId
-
-                                         )
                                         .Include(u => u.Role)
+                                        .Where(u => u.Id != user.Id
+                                                    && u.SupervisorId == user.SupervisorId
+                                                    && u.Department == user.Department
+                                                    && u.BroadSegment == user.BroadSegment
+                                                    && u.Unit == user.Unit
+                                                    && u.Role.Name == "Relation Manager"
+                                         )
                                         .ToListAsync();
+                                        
             return _mapper.Map<IEnumerable<ReturnUserDto>>(rms);
         }
     }
