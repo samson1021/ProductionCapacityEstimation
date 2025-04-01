@@ -381,7 +381,6 @@ namespace mechanical.Services.PCE.PCECaseService
                                     .Where(c => productions.Select(p => p.PCECaseId).Contains(c.Id))
                                     .FirstOrDefault();
             var pceEvaluations = await _cbeContext.PCEEvaluations
-                                                    .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
                                                     .Include(res => res.Evaluator).Where(res => res.PCEId == Id).ToListAsync();
             var pceCaseSchedule = await _cbeContext.PCECaseSchedules
@@ -402,7 +401,6 @@ namespace mechanical.Services.PCE.PCECaseService
             var pceCase = _cbeContext.PCECases.Where(c => c.Id==Id).FirstOrDefault();
             var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == Id).ToListAsync();
             var pceEvaluations = await _cbeContext.PCEEvaluations
-                                                .Include(e => e.ShiftHours)
                                                 .Include(e => e.TimeConsumedToCheck)
                                                 .Where(c=>productions.Select(d=>d.Id).Contains(c.PCEId)).ToListAsync();
          

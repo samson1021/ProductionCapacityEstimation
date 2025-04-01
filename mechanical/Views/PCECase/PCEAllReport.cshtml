@@ -120,7 +120,7 @@
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <p class="mb-1 mr-4">
-                                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToShortDateString()</u>
+                                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToString("dd/MM/yyyy")</u>
                                         </p>
                                     </div>
                                     <div class="d-flex justify-content-end">
@@ -274,18 +274,7 @@
                                             <u class="  "> @evaluation.TechnicalObsolescenceStatus</u>
                                         </p>
                                     </div>
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">B.&nbsp; &nbsp; Depreciation Rate Applied:</label>
-                                            <u class="  ">@evaluation.DepreciationRateApplied</u>
-                                        </p>
-                                    </div>
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
-                                            <u class="  ">  @evaluation.Discrepancies </u>
-                                        </p>
-                                    </div>
+                                  
                                 </div>
                                 <div class="form-group mb-1">
                                     <label class=" col-form-label font-weight-bold">Survey remark:</label>
@@ -296,18 +285,7 @@
                                 <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
 
                                 <div class="pl-4">
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">A.&nbsp; &nbsp;Type of Output it Produces</label>
-                                            <u class="  "> @evaluation.OutputType </u>
-                                        </p>
-                                    </div>
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">B.&nbsp; &nbsp; Phase of the Output, (Finished Product, Raw Material for Next Line)</label>
-                                            <u class="  "> @evaluation.OutputPhase </u>
-                                        </p>
-                                    </div>
+                                 
                                     <table class="table table-border-none table-responsive">
                                         <thead style="border-bottom: 3px solid #6f42c1;">
                                             <tr>
@@ -322,9 +300,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>1</td>
-                                                <td>@evaluation.ProductionLineOrEquipmentName</td>
-                                                <td>@pce.ManufactureYear</td>                                                   
-                                                <td>@evaluation.ProductionUnit</td>
+                                                <td>@pce.ManufactureYear</td>       
                                                 <td>@evaluation.ProductionMeasurement</td>
                                                 <td>@evaluation.ActualProductionCapacity</td>
                                             </tr>
@@ -423,7 +399,7 @@
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <p class="mb-1 mr-4">
-                                        Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToShortDateString()</u>
+                                        Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToString("dd/MM/yyyy")</u>
                                     </p>
                                 </div>
                                 <div class="d-flex justify-content-end">

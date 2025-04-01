@@ -14,6 +14,7 @@
     var caseSchedule = ViewData["caseSchedule"] as CaseSchedule;
     var commaSeparatedRegions = "";
     var commaSeparatedPropertyof = "";
+    var commaSeparatedequipmentName = "";
     var commaSeparatedType = "";
 
     if (collaterals != null)
@@ -24,6 +25,8 @@
         commaSeparatedPropertyof = CapitalizeEachWord(string.Join(", ", ProportyOF));
         var Type = collaterals.Select(m => m.Type).Distinct();
         commaSeparatedType = string.Join(", ", Type);
+        var name = constMngAgrMachinery.Select(m => m.MechanicalEqpmntName).Distinct();
+        commaSeparatedequipmentName = string.Join(", ", name);
     }
 
     var maker = constMngAgrMachinery.Select(m => m.EvaluatorUser).Distinct();
@@ -70,7 +73,7 @@
                 <div class="d-flex flex-column py-2">
                     <div class="d-flex justify-content-end">
                         <p class="mb-1 mr-4">
-                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToShortDateString()</u>
+                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
                     <div class="d-flex justify-content-end">
@@ -90,7 +93,7 @@
                     <p style="font-size: 18px;" class="py-0">
                         This is to notify that on request of  <label class="col-form-label">@cases.ApplicantName</label> we have visited
                         the mechanical equipment of <label class="col-form-label">@commaSeparatedPropertyof</label> found at <label class="col-form-label">(@commaSeparatedRegions)</label>
-                        area on date <label class="col-form-label"> @caseScheduleDate.ToShortDateString() </label> to carry out valuation of <label class="col-form-label">Construction Minging Agriculture</label>  found there in.
+                        area on date <label class="col-form-label"> @caseScheduleDate.ToString("dd/MM/yyyy") </label> to carry out valuation of <label class="col-form-label">Construction Minging Agriculture</label>  found there in.
                     </p>
                 </div>
                 <div class="row my-0 py-0">
@@ -108,6 +111,12 @@
                     </div>
                     <div class="form-group row my-0">
                         <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Mechanical Equipment Name:</label>
+                            <u class=" ">@commaSeparatedequipmentName</u>
+                        </p>
+                    </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
                             <label class="col-form-label pr-2"> Machiery & Equipment Location:</label>
                             <u class=" ">@commaSeparatedRegions</u>
                         </p>
@@ -121,7 +130,7 @@
                     <div class="form-group row my-0">
                         <p style="font-size: 16px;" class="my-0 py-0">
                             <label class="col-form-label pr-2">Date as on which Valuation is made: </label>
-                            <u class=" ">@caseScheduleDate.ToShortDateString()</u>
+                            <u class=" ">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
                 </div>
@@ -156,7 +165,7 @@
                     <div class="row my-0 py-0">
                         <p style="font-size: 18px;" class="py-0">
                             Assumptions are made to the best of our knowledge and belief.Reliance is based on the information furnished to us by the identifier AND/OR owner.This valuation report shall not be used for any other purpose, other than specified in purpose of valuation.
-                            Exchange Rate as of Date of <label class="col-form-label"> @caseScheduleDate.ToShortDateString() </label>
+                            Exchange Rate as of Date of <label class="col-form-label"> @caseScheduleDate.ToString("dd/MM/yyyy") </label>
                         </p>
                     </div>
                 </div>
@@ -261,7 +270,7 @@
                     <div class="row my-0 py-0">
                         <p style="font-size: 18px;" class="py-0">
                             Based on above, we certify that, "Total present market value of <label class="col-form-label">@commaSeparatedPropertyof</label>
-                            Construction, Minning & Agricultural Machinery as of <label class="col-form-label"> @caseScheduleDate.ToShortDateString() </label> is
+                            Construction, Minning & Agricultural Machinery as of <label class="col-form-label"> @caseScheduleDate.ToString("dd/MM/yyyy") </label> is
                             <label style="font-size: 20px;" class="col-form-label"> @NumberToWordsConverter.ConvertDoubleToWords(NAvrValue)</label>
                         </p>
                     </div>
@@ -282,7 +291,7 @@
                                         <span>Not Registered</span>
                                     }
                                 </span>
-                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToString("dd/MM/yyyy")</strong></u>
                             </p>
                         }
                     }
@@ -304,7 +313,7 @@
                                         <span>Not Registered</span>
                                     }
                                 </span>
-                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToString("dd/MM/yyyy")</strong></u>
                             </p>
                         }
                     }

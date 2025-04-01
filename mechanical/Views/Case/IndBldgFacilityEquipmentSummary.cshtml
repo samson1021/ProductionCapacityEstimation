@@ -86,7 +86,7 @@
                 <div class="d-flex flex-column py-2">
                     <div class="d-flex justify-content-end">
                         <p class="mb-1 mr-4">
-                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToShortDateString()</u>
+                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
                     <div class="d-flex justify-content-end">
@@ -115,7 +115,7 @@
                     <div class="form-group row my-0">
                         <p style="font-size: 16px;" class="my-0 py-0">
                             <label class="col-form-label pr-2">Date of Valuation: </label>
-                            <u class=" ">@caseScheduleDate.ToShortDateString()</u>
+                            <u class=" ">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
                     <div class="form-group row my-0">
@@ -136,7 +136,8 @@
                         <thead style="border-bottom: 3px solid #6f42c1;">
                             <tr>
                                 <th>S/No.</th>
-                                <th>Machine Name</th>
+                                <th>Name</th>
+                                <th>type</th>
                                 <th>YoMfg</th>
                                 <th>Origin</th>
                                 <th>Model No.</th>
@@ -157,6 +158,7 @@
                                 {
                                     <tr>
                                         <td class="col-sno"> @x</td>
+                                        <td>@item.MechanicalEqpmntName</td>
                                         <td>@EnumHelper.GetEnumDisplayName(item.Collateral.Type)</td>
                                         <td>@item.YearOfManufacture</td>
                                         <td>@item.CountryOfOrigin</td>
@@ -219,7 +221,7 @@
                                         <span>Not Registered</span>
                                     }
                                 </span>
-                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToString("dd/MM/yyyy")</strong></u>
                             </p>
                         }
                     }
@@ -241,7 +243,7 @@
                                         <span>Not Registered</span>
                                     }
                                 </span>
-                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToString("dd/MM/yyyy")</strong></u>
                             </p>
                         }
                     }

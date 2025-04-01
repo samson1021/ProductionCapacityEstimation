@@ -8,51 +8,17 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 {
     public class PCEEvaluationPostDto
     {
-        public required Guid PCEId { get; set; } 
-
-        [Display(Name = "Production Line/Equipment Name")]
-        public string ProductionLineOrEquipmentName { get; set; }
-
-        [Display(Name = "Type of Output")]
-        public string OutputType { get; set; }
-
-        [Display(Name = "Phase of Output")]
-        public OutputPhase OutputPhase { get; set; }
+        public required Guid PCEId { get; set; }
+        public string? MachineName { get; set; }
 
         [Display(Name = "Country of Origin")]
         public string? OriginCountry { get; set; }
 
-        [Display(Name = "Shifts Per Day")]
-        [Range(1, 5, ErrorMessage = "Shifts per day must be between 1 and 5.")]
-        public int? ShiftsPerDay { get; set; }
-
-        [ShiftHoursValidation]
-        [Display(Name = "Shift Hours")]
-        public virtual List<TimeIntervalPostDto>? ShiftHours { get; set; } = new List<TimeIntervalPostDto>();
-
-        [Display(Name = "Working Days Per Month")]
-        public int? WorkingDaysPerMonth { get; set; }
-
-        [Display(Name = "Effective Production Hour Type")]
-        public ProductionHourType? EffectiveProductionHourType { get; set; }
-
-        [Display(Name = "Effective Production Hour")]
-        public decimal? EffectiveProductionHour { get; set; }
-
-        [Display(Name = "Unit of Production")]
-        public ProductionUnit ProductionUnit { get; set; }
-
         [Display(Name = "Production Measurement")]
         public ProductionMeasurement ProductionMeasurement { get; set; }
-        
-        [Display(Name = "Estimated Production Capacity")]
-        public string EstimatedProductionCapacity { get; set; }
 
         [Display(Name = "Bottleneck Production Line Capacity")]
         public string? BottleneckProductionLineCapacity { get; set; }
-
-        [Display(Name = "Overall Actual Current Capacity")]
-        public string OverallActualCurrentCapacity { get; set; }
 
         [Display(Name = "Time Consumed to Check")]
         public virtual DateTimeRangePostDto TimeConsumedToCheck { get; set; }
@@ -60,11 +26,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Technical Obsolescence Status")]
         public string TechnicalObsolescenceStatus { get; set; }
 
-        [Display(Name = "Depreciation Rate Applied")]
-        public decimal DepreciationRateApplied { get; set; }
-
-        [Display(Name = "Discrepancies")]
-        public string? Discrepancies { get; set; }
+    
 
         [Display(Name = "Actual Production Capacity")]
         public string ActualProductionCapacity { get; set; }
@@ -76,7 +38,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? AttainableProductionCapacity { get; set; }
 
         [Display(Name = "Factors Affecting Production Capacity")]
-        public string FactorsAffectingProductionCapacity { get; set; }
+        public string? FactorsAffectingProductionCapacity { get; set; }
 
         [Display(Name = "Machine Functionality Status")]
         public MachineFunctionalityStatus MachineFunctionalityStatus { get; set; }
@@ -95,15 +57,17 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Survey Remark")]
         public string? SurveyRemark { get; set; }
-        
+
         [Display(Name = "Remark")]
         public string? Remark { get; set; } = string.Empty;
 
         [Display(Name = "Supporting Evidences")]
-        public ICollection<IFormFile> SupportingEvidences { get; set; }
+        public ICollection<IFormFile>? SupportingEvidences { get; set; }
 
-        [Display(Name = "Production Process Flow Diagrams")] 
-        public ICollection<IFormFile> ProductionProcessFlowDiagrams { get; set; } 
+        [Display(Name = "Production Process Flow Diagrams")]
+        public ICollection<IFormFile> ProductionProcessFlowDiagrams { get; set; }
+
+        public List<ProductionLineEvaluationDto> ProductionLineEvaluations { get; set; } = new List<ProductionLineEvaluationDto>();
     }
 
     public class TimeIntervalPostDto: ITimeInterval

@@ -486,12 +486,6 @@ namespace mechanical.Controllers
             ViewData["caseSchedule"] = caseSchedule;
             return View();
         }
-
-        //[HttpGet]
-        //public IActionResult MyPendingCases()
-        //{
-        //    return View();
-        //}
         [HttpGet]
         public IActionResult MyCompleteCases()
         {
@@ -541,7 +535,6 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                // Handle the exception (e.g., log the error, display a message, etc.)
                 Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
             }
             List<ConstMngAgrMachinery> conMngAgr = null;
@@ -551,7 +544,6 @@ namespace mechanical.Controllers
             }
             catch (Exception ex)
             {
-                // Handle the exception (e.g., log the error, display a message, etc.)
                 Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
             }
             List<IndBldgFacilityEquipment> indBldgFacEq = null;

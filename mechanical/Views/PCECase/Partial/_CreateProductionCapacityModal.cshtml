@@ -432,6 +432,7 @@
                 toastr.success(response.message);
                 loadProductions(fetchUrl, emptyMessage);
                 $('#addProductionModal').modal('hide');
+               
                 $('#addProductionForm')[0].reset();
             },
             error: function (error) {

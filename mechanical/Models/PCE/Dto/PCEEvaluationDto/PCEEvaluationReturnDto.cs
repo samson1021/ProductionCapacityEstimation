@@ -111,7 +111,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public ICollection<ReturnFileDto> ProductionProcessFlowDiagrams { get; set; }  
 
         [Display(Name = "Created At")]
-        public DateTime CreatedAt { get; set; } 
+        public DateTime CreatedAt { get; set; }
+        public List<ProductionLineEvaluationDto>? ProductionLineEvaluations { get; set; }
     }
     
     public class TimeIntervalReturnDto: ITimeInterval

@@ -16,14 +16,7 @@ namespace mechanical.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<PCEEvaluation>()
-                .Property(e => e.DepreciationRateApplied)
-                .HasColumnType("decimal(18,2)");
-
-            modelBuilder.Entity<PCEEvaluation>()
-                .Property(e => e.EffectiveProductionHour)
-                .HasColumnType("decimal(18,2)");
-
+   
 
             modelBuilder.Entity<Signatures>()
                 .HasOne(c => c.SignatureFile)
@@ -43,10 +36,7 @@ namespace mechanical.Data
  
             base.OnModelCreating(modelBuilder);
             
-            modelBuilder.Entity<PCEEvaluation>()
-                .HasMany(e => e.ShiftHours)
-                .WithOne()
-                .HasForeignKey(ti => ti.PCEEId);          
+      
 
             modelBuilder.Entity<PCEEvaluation>()
                 .HasOne(pe => pe.TimeConsumedToCheck)
@@ -70,6 +60,7 @@ namespace mechanical.Data
         public DbSet<PCECase> PCECases { get; set; }  
         public DbSet<ProductionCapacity> ProductionCapacities { get; set; } 
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        public DbSet<ProductionLineEvaluation> ProductionLineEvaluations { get; set; }
         public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }  
         public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }  
         public DbSet<PCECaseSchedule> PCECaseSchedules { get; set; }
