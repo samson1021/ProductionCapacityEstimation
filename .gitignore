@@ -4,7 +4,12 @@
 Signature management/
 Signature management/obj/
 Signature management/bin/
-.vs/mechanical
+
+.vs/
+.github/
+.vscode/
+FirstPublish/
+Signature management/
 mechanical/bin
 mechanical/obj
 mechanical/publish
