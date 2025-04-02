@@ -143,7 +143,7 @@ namespace mechanical.Services.TaskManagmentService
                         messages.Add(new ResultDto {
                             StatusCode = 200,
                             Success = true,
-                            Message = $"The '{task.TaskName}' task of case {caseData.CaseNo} has been successfully shared for {user.Role.Name}." 
+                            Message = $"The '{task.TaskName}' task of case {caseData.CaseNo} has been successfully shared for {user.Name}." 
                         });
                     
                         await _notificationService.SendNotification(notification);
@@ -262,7 +262,7 @@ namespace mechanical.Services.TaskManagmentService
                 {
                     StatusCode = 200,
                     Success = true,
-                    Message = $"Task '{task.TaskName}' is assigned to user {task.AssignedId} successfully."
+                    Message = $"Task '{task.TaskName}' is assigned to user {task.Assigned.Name} successfully."
                 });
             }
 
