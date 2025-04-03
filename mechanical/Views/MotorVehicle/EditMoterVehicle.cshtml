@@ -252,7 +252,7 @@
                         // Handle the response from the controller if needed
                         toastr.success('Rejection comment saved successfully');
                         $('#rejectionModal1').modal('hide');
-                        window.location.href = "https://localhost:7166/MOCase/MyCases";
+                        window.location.reload();
                     },
                     error: function (error) {
                         // Handle the error if needed
