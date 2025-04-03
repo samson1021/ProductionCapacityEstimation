@@ -297,7 +297,6 @@
         await Html.RenderPartialAsync("ScriptPartial/_EditScriptPartial");
     }
     <script src="~/lib/toastr/toastr.min.js"></script>
-    <script src="~/lib/toastr/toastr.min.js"></script>
     <script>
         $(function () {
             $('#sendEvaluationButtonModal1').on('shown.bs.modal', function () {
@@ -319,7 +318,7 @@
                         // Handle the response from the controller if needed
                         toastr.success('Rejection comment saved successfully');
                         $('#sendEvaluationButtonModal1').modal('hide');
-                        window.location.href = "https://localhost:7166/MOCase/MyCases";
+                        window.location.reload();
                     },
                     error: function (error) {
                         // Handle the error if needed
