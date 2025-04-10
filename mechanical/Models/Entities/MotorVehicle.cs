@@ -4,6 +4,7 @@ namespace mechanical.Models.Entities
     public class MotorVehicle
     {
         public Guid Id { get; set; }
+        public string? MechanicalEqpmntName { get; set; }
         public required Guid CollateralId { get; set; }
         public Guid EvaluatorUserID { get; set; }
         public Guid? CheckerUserID { get; set; }

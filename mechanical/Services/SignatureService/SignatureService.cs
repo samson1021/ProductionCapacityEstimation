@@ -54,7 +54,7 @@ namespace mechanical.Services.SignatureService
                 addSignature.SignatureBase64String = Convert.ToBase64String(fileBytes);
                 addSignature.Emp_Id = signatureDto.Emp_Id;
                 addSignature.SignatureFileId = await _uploadFileService.CreateUploadFile(userId, signatureFee);
-
+                addSignature.CreateUserId = userId;
                 addSignature.CreatedBy = userIdss;
                 addSignature.CreatedDate = DateTime.Now;
 

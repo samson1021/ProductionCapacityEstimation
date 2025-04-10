@@ -364,39 +364,39 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 RelatedFiles = relatedFiles,
                 ReturnedProductions = _mapper.Map<IEnumerable<ReturnedProductionDto>>(returnedProductions)
             };
-        }                
+        }
 
         public async Task<IEnumerable<ProductionReturnDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
             var productions = await _cbeContext.PCECaseAssignments
                                             .AsNoTracking()
-                                            .Where(a => a.UserId == UserId 
-                                                && (Status == null || Status == "All" || a.Status == Status))                                            
+                                            .Where(a => a.UserId == UserId
+                                                && (Status == null || Status == "All" || a.Status == Status))
                                             .Join(
                                                 _cbeContext.ProductionCapacities,
                                                 pca => pca.ProductionCapacityId,
                                                 pc => pc.Id,
-                                                (pca, pc) => new 
+                                                (pca, pc) => new
                                                 {
                                                     ProductionCapacity = pc,
                                                     AssignmentStatus = pca.Status,
                                                     AssignmentDate = pca.AssignmentDate,
-                                                    PCECase = pc.PCECase 
+                                                    PCECase = pc.PCECase
                                                 })
-                                            .Where(x => (x.AssignmentStatus != null || x.ProductionCapacity.AssignedEvaluatorId == UserId) 
+                                            .Where(x => (x.AssignmentStatus != null || x.ProductionCapacity.AssignedEvaluatorId == UserId)
                                                 && (PCECaseId == null || x.ProductionCapacity.PCECaseId == PCECaseId)
-                                                && (Stage == null || x.ProductionCapacity.CurrentStage == Stage) 
-                                                // && (Status == null || Status.Equals("All", StringComparison.OrdinalIgnoreCase) || x.ProductionCapacity.CurrentStatus == Status) 
-                                                // && (string.IsNullOrEmpty(Status) || x.ProductionCapacity.CurrentStatus != "Returned")
+                                                && (Stage == null || x.ProductionCapacity.CurrentStage == Stage)
+                                            // && (Status == null || Status.Equals("All", StringComparison.OrdinalIgnoreCase) || x.ProductionCapacity.CurrentStatus == Status) 
+                                            // && (string.IsNullOrEmpty(Status) || x.ProductionCapacity.CurrentStatus != "Returned")
                                             )
                                             .OrderByDescending(x => x.AssignmentDate)
                                             .ToListAsync();
 
-            return productions.Select(x => 
+            return productions.Select(x =>
             {
                 var dto = _mapper.Map<ProductionReturnDto>(x.ProductionCapacity);
                 dto.AssignmentStatus = x.AssignmentStatus;
-                dto.PCECase = x.PCECase;                
+                dto.PCECase = x.PCECase;
                 return dto;
             }).ToList();
         }

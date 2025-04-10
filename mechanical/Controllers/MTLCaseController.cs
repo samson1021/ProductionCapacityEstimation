@@ -6,6 +6,10 @@ using mechanical.Services.MMCaseService;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.CaseAssignmentService;
+using mechanical.Services.UploadFileService;
+using mechanical.Data;
+using mechanical.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Controllers
 {
@@ -16,18 +20,28 @@ namespace mechanical.Controllers
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly ICaseAssignmentService _caseAssignmentService;
+        private readonly IUploadFileService _uploadFileService;
+        private readonly CbeContext _cbeContext;
 
-        public MTLCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService)
+        public MTLCaseController(ICaseService caseService,IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService, CbeContext cbeContext)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
             _mmCaseService = mMCaseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
+            _uploadFileService = uploadFileService;
+            _cbeContext = cbeContext;
         }
 
         [HttpGet]
         public IActionResult MyCases()
+        {
+
+            return View();
+        }
+        [HttpGet]
+        public IActionResult MyCompletedCases()
         {
 
             return View();
@@ -37,6 +51,14 @@ namespace mechanical.Controllers
         public async Task<IActionResult> GetMyCases()
         {
             var myCase = await _mmCaseService.GetMMNewCases(GetCurrentUserId());
+            if (myCase == null) { return BadRequest("Unable to load case"); }
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMyCompletedCases()
+        {
+            var myCase = await _mmCaseService.GetMTLCompletedCases(GetCurrentUserId());
             if (myCase == null) { return BadRequest("Unable to load case"); }
             string jsonData = JsonConvert.SerializeObject(myCase);
             return Content(jsonData, "application/json");
@@ -58,6 +80,8 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }      
 
@@ -71,6 +95,53 @@ namespace mechanical.Controllers
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> MyCompleteCase(Guid Id)
+        {
+            var loanCase = await _caseService.GetCaseDetail(Id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);
+            //var motorvechiel = await _cbeContext.MotorVehicles.Where(res => res.Collaterial.CaseId == CaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            List<MotorVehicle> motorVehicle = null;
+            try
+            {
+                motorVehicle = await _cbeContext.MotorVehicles.Where(res => res.Collateral.CaseId == Id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            List<ConstMngAgrMachinery> conMngAgr = null;
+            try
+            {
+                conMngAgr = await _cbeContext.ConstMngAgrMachineries.Where(res => res.Collateral.CaseId == Id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            List<IndBldgFacilityEquipment> indBldgFacEq = null;
+            try
+            {
+                indBldgFacEq = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.Collateral.CaseId == Id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log the error, display a message, etc.)
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            ViewData["motorVehicle"] = motorVehicle;
+            ViewData["indBldgFacEq"] = indBldgFacEq;
+            ViewData["conMngAgr"] = conMngAgr;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpPost]

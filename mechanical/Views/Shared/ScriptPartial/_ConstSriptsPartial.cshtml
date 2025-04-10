@@ -66,7 +66,9 @@
         });
         $(document).ready(function () {
             $("#checkedButton").click(function () {
-                sendRequest("Complete");
+                if (confirm("Are you sure you want to send this evaluation to the Relational Manager?")) {
+                    sendRequest("Complete");
+                }
             });
 
             $("#saveButton").click(function () {

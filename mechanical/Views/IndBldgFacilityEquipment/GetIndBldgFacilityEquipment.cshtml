@@ -38,32 +38,42 @@
                     <h4 class="text-center">General Information</h4>
                 </div>
             </div>
-            <div class="row" style="margin-top:1.25rem;">
-                <div class="row col-lg-4">
-                    <div class="col-lg-6">
-                        <label>Indu(Mfg) & Bud Facility Machinery Type:</label>
+                <div class="row" style="margin-top:1.25rem;">
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Mechanical Equipment Name:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.MechanicalEqpmntName </div>
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div>@Model.IndustrialBuildingMachineryType </div>
-                    </div>
-                </div>
-                <div class="row col-lg-4">
-                    <div class="col-lg-6">
-                        <label>Power Source & Fuel Type:</label>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>@Model.EngineType</div>
-                    </div>
-                </div>
-                <div class="row col-lg-4">
-                    <div class="col-lg-6">
-                        <label>Power Supply:</label>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>@Model.PowerSupply</div>
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Indu(Mfg) & Bud Facility Machinery Type:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.IndustrialBuildingMachineryType </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="row" style="margin-top:1.25rem;">
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Power Source & Fuel Type:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.EngineType</div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Power Supply:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.PowerSupply</div>
+                        </div>
+                    </div>
+                </div>
             <div class="row" style="margin-top:1.25rem;">
                 <div class="row col-lg-4">
                     <div class="col-lg-6">
@@ -331,30 +341,30 @@
 
             $(document).ready(function () {
                 $('#sendCheckForm').on('submit', function (e) {
-
                     e.preventDefault(); // Prevent the default form submission
-
-                    var formData = $(this).serialize(); // Serialize the form data
-                    console.log(formData)
-                    $.ajax({
-                        url: '/MOCase/SendCheking', // Ensure this URL is correct
-                        type: 'POST', // Ensure the method is POST
-                        data: formData,
-                        success: function (result) {
-                            if (result.redirect) {
-                                window.location.href = result.redirect; // Redirect if needed
-                            } else {
-                                alert('An error occurred. Please try again.'); // Show error message
+                    if (confirm("Are you sure you want to send this evaluation to the Checker?")) {
+                        var formData = $(this).serialize(); // Serialize the form data
+                        console.log(formData)
+                        $.ajax({
+                            url: '/MOCase/SendCheking', // Ensure this URL is correct
+                            type: 'POST', // Ensure the method is POST
+                            data: formData,
+                            success: function (result) {
+                                if (result.redirect) {
+                                    window.location.href = result.redirect; // Redirect if needed
+                                } else {
+                                    alert('An error occurred. Please try again.'); // Show error message
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('AJAX Error: ', status, error); // For debugging
+                                var errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                                    ? xhr.responseJSON.message
+                                    : 'An unexpected error occurred.';
+                                alert(errorMessage); // Show error message
                             }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('AJAX Error: ', status, error); // For debugging
-                            var errorMessage = xhr.responseJSON && xhr.responseJSON.message
-                                ? xhr.responseJSON.message
-                                : 'An unexpected error occurred.';
-                            alert(errorMessage); // Show error message
-                        }
-                    });
+                        });
+                    }
                 });
             });
         </script>

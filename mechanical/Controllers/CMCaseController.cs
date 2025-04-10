@@ -6,6 +6,7 @@ using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MOCaseService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using mechanical.Services.UploadFileService;
 
 namespace mechanical.Controllers
 {
@@ -18,8 +19,9 @@ namespace mechanical.Controllers
         private readonly ICaseService _caseService;
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
+        private readonly IUploadFileService _uploadFileService;
 
-        public CMCaseController(/*ICaseService caseService*/ ICaseTerminateService caseTermnateService, IMMCaseService mMCaseService,ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment, ICaseService caseService)
+        public CMCaseController(/*ICaseService caseService*/ ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService,IMMCaseService mMCaseService,ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment, ICaseService caseService)
         {
             //_caseService = caseService;
             _caseAssignmentService = caseAssignment;
@@ -28,6 +30,7 @@ namespace mechanical.Controllers
             _caseService = caseService; 
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
+            _uploadFileService = uploadFileService;
         }
 
         [HttpGet]
@@ -45,6 +48,8 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }
 
@@ -75,6 +80,8 @@ namespace mechanical.Controllers
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             return View();
         }
         [HttpPost]

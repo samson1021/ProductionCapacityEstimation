@@ -81,13 +81,15 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? HouseNo { get; set; }
         
         [Display(Name = "Product Description")]
-        public string ProductDescription { get; set; }       
+        public string? ProductDescription { get; set; }       
         
         [Display(Name = "Remark")]
         public string? Remark { get; set; } = string.Empty;        
         
         [Display(Name = "LHC Document")]
         public IFormFile? LHCDocument { get; set; }
+
+
         [Display(Name = "Shade Rent Agreement")]
         public IFormFile? ShadeRentAgreement { get; set; } 
         [Display(Name = "Business License")]       

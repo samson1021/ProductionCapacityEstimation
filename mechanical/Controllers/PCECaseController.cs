@@ -338,9 +338,10 @@ namespace mechanical.Controllers.PCE
             if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
             {
                 var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
-                var EvaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                var EvaluatorNames = _cbeContext.CreateUsers.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();
+                var EvaluatorName = EvaluatorNames.Name;
                 var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
-
+                ViewData["signiture"] = EvaluatorNames;
 
                 var evaluatorReportDto = new EvaluatorReportDto
                 {

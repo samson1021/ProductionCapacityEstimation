@@ -9,6 +9,8 @@ namespace mechanical.Models.Dto.MotorVehicleDto
         public required Guid CollateralId { get; set; }
         public Guid EvaluatorUserID { get; set; }
         public Guid CheckerUserID { get; set; }
+        public string? MechanicalEqpmntName { get; set; }
+
         public string EngineType { get; set; } = string.Empty;
         public string NoOfCylinder { get; set; } = string.Empty;
         public string TransmissionType { get; set; } = string.Empty;

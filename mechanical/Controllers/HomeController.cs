@@ -1,23 +1,12 @@
-﻿//using CreditBackOffice.Models;
-using mechanical.Data;
+﻿using mechanical.Data;
 using mechanical.Models.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using System.Security.Claims;
-using NuGet.Protocol.Plugins;
-using System.DirectoryServices.AccountManagement;
-using mechanical.Models.Login;
-using mechanical.Services.AuthenticatioinService;
 using System.Text;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System.Net.Http;
-
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using mechanical.Models.Dto.UserDto;
 
 namespace mechanical.Controllers
 {
@@ -26,16 +15,16 @@ namespace mechanical.Controllers
         private readonly CbeContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private mechanical.Services.AuthenticatioinService.IAuthenticationService _authetnicationService;
 
-        public HomeController(CbeContext context, ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
+        public HomeController(CbeContext context, ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor, mechanical.Services.AuthenticatioinService.IAuthenticationService authetnicationService)
         {
             _context = context;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
-            //this.authService = authService;
+            _authetnicationService = authetnicationService;
         }
 
-       
         public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -48,49 +37,25 @@ namespace mechanical.Controllers
                     {
                         return RedirectToDashboard(loggedUser);
                     }
-
                     return RedirectToAction("Logout");
                 }
             }
-
             return View();
         }
         
-
-
         public IActionResult Privacy()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Index(CreateUser logins)
+        public async Task<IActionResult> Index(loginDto logins)
         {
-            //String UserEmail = "";
-            //if (logins == null)
-            //{
-            //    return null;
-            //}
-            //else
-            //{
-            //    LdapAuthenticationService _authtenticate = new LdapAuthenticationService();
-
-            //      UserEmail= _authtenticate.AuthenticateUserByAD(logins.Email, logins.Password);
-            //}
-            //if (UserEmail==null)
-            //{
-            //    ModelState.AddModelError(string.Empty, "Invalid email or a password");
-            //    ViewBag.ShowErrorModal = true;
-            //    ViewBag.ErrorMessage = "Invalid email or a password";
-            //    return View("Index", logins);
-            //}
-
-
-            if (User.Identity.IsAuthenticated)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 if (HttpContext.Session.GetString("userId") != null)
                 {
-                    var loggedUser = _context.CreateUsers.Include(c => c.Role).Include(c => c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
+                    var loggedUser = await _context.CreateUsers.Include(c => c.Role).Include(c => c.District).FirstOrDefaultAsync(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
 
                     if (loggedUser != null)
                     {
@@ -100,7 +65,6 @@ namespace mechanical.Controllers
                     return RedirectToAction("Logout");
                 }
             }
-
             if (logins.Email == null || logins.Password == null)
             {
                 if (logins.Password == null)
@@ -110,25 +74,20 @@ namespace mechanical.Controllers
                 return View("Index", logins);
             }
 
-            var user = _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email == logins.Email.ToUpper()).FirstOrDefault();
+            var user = await _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefaultAsync();
 
-            if (user == null || (user.Password != logins.Password))
+            if (user == null)
             {
-                ViewData["Error"] = "Incorrect Username or Password";
-                // ModelState.AddModelError(string.Empty, "Invalid email or a password");
-                // ViewBag.ShowErrorModal = true;
-                // ViewBag.ErrorMessage = "Invalid email or a password";
+                ViewData["Error"] = "You do not have the necessary permissions to use the system.";
                 return View("Index", logins);
-
             }
-            else
+            if (logins.Password == "1234")
             {
-                //var district = _context.Districts.FirstOrDefault(c => c.Id == id);
                 string userRole = user.Role.Name;
 
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Role, userRole) // Set the role for the user
+                    new Claim(ClaimTypes.Role, userRole)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -137,13 +96,21 @@ namespace mechanical.Controllers
                     ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
                 };
 
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
                 byte[] userId = Encoding.UTF8.GetBytes(user.Id.ToString());
                 _httpContextAccessor.HttpContext.Session.Set("UserId", userId);
                 HttpContext.Session.SetString("userRole", userRole);
                 HttpContext.Session.SetString("userName", user.Name);
                 HttpContext.Session.SetString("userId", user.Id.ToString());
                 HttpContext.Session.SetString("EmployeeId", user.emp_ID.ToString());
+
+                if (userRole == "Relation Manager")
+                {
+                    HttpContext.Session.SetString("unit", user.Unit.ToString());
+                    HttpContext.Session.SetString("segment", user.BroadSegment.ToString());
+                    HttpContext.Session.SetString("district", user.District.Name.ToString());
+                }
+
                 var viewbagg = ViewBag.UserRole;
                 if (HttpContext.Session.TryGetValue("ExpirationTime", out var expirationTimeBytes))
                 {
@@ -153,12 +120,16 @@ namespace mechanical.Controllers
                         throw new SessionTimeoutException("Session has expired.");
                     }
                 }
-                return RedirectToDashboard(user);                
+                return RedirectToDashboard(user);
+            }
+            else
+            {
+                ViewData["Error"] = "Incorrect username or password.";
+                return View("Index", logins);
             }
         }
 
         // [Authorize]
-        // [HttpGet("logout")]
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
@@ -189,12 +160,12 @@ namespace mechanical.Controllers
                     case "Admin":
                         return RedirectToAction("Index", "UserManagment");
                     case "Checker TeamLeader":
-                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                        return RedirectToAction("CTL", "Dashboard", user.Role.Name);
                     case "Checker Manager":
                         ViewData["Center"] = user.District.Name;
-                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                        return RedirectToAction("CM", "Dashboard", user.Role.Name);
                     case "Checker Officer":
-                        return RedirectToAction("MM", "Dashboard", user.Role.Name);
+                        return RedirectToAction("CO", "Dashboard", user.Role.Name);
                     case "District Valuation Manager":
                         return RedirectToAction("DVM", "Dashboard", user.Role.Name);
                     default:

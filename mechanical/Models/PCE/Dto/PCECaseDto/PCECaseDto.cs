@@ -8,7 +8,8 @@
 
         public required string ApplicantName { get; set; }
         public required string CustomerId { get; set; }
-        public string CustomerEmail { get; set; } = string.Empty;
+        public string? CustomerEmail { get; set; } = string.Empty;
+        public IFormFile? BussinessLicence { get; set; }
         public Guid DistrictId { get; set; }
     }
 }

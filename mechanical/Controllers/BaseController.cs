@@ -6,8 +6,6 @@ namespace mechanical.Controllers
 {
     public class BaseController : Controller
     {
-
-
         protected Guid GetCurrentUserId()
         {
             var httpContext = HttpContext;
@@ -16,9 +14,7 @@ namespace mechanical.Controllers
                 var userId = Guid.Parse(httpContext.Session.GetString("userId") ?? Guid.Empty.ToString());
                 if (userId != Guid.Empty)
                 {
-
                     return userId;
-
                 }
             }
             RedirectToAction("Login", "Account");

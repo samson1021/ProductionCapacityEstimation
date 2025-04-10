@@ -17,6 +17,7 @@ using mechanical.Services.MailService;
 using mechanical.Models.Dto.MailDto;
 using mechanical.Models.Dto.MotorVehicleDto;
 using mechanical.Services.CaseTerminateService;
+using mechanical.Services.UploadFileService;
 
 namespace mechanical.Controllers
 {
@@ -30,7 +31,8 @@ namespace mechanical.Controllers
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly IMailService _mailService;
         private readonly ICaseTerminateService _caseTermnateService;
-        public MOCaseController(ICaseService caseService, ICaseTerminateService caseTermnateService, ICollateralService collateralService,ICaseScheduleService caseScheduleService, IMMCaseService mOCaseService,ICOCaseService coCaseService, IMailService mailService)
+        private readonly IUploadFileService _uploadFileService;
+        public MOCaseController(ICaseService caseService, IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICollateralService collateralService,ICaseScheduleService caseScheduleService, IMMCaseService mOCaseService,ICOCaseService coCaseService, IMailService mailService)
         {
             _caseService = caseService;
             _collateralService = collateralService;
@@ -39,6 +41,7 @@ namespace mechanical.Controllers
             _caseScheduleService = caseScheduleService;
             _mailService = mailService;
             _caseTermnateService = caseTermnateService;
+            _uploadFileService = uploadFileService;
         }
 
         [HttpGet]
@@ -55,6 +58,8 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
@@ -150,6 +155,8 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);
             if (loanCase == null) { return RedirectToAction("NewCases"); }
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
+            ViewData["moFile"] = moFile;
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"] = base.GetCurrentUserId();
@@ -162,11 +169,13 @@ namespace mechanical.Controllers
             var loanCase = await _caseService.GetCaseDetail(Id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(Id);
             var caseTerminate = await _caseTermnateService.GetCaseTerminates(Id);
+            var moFile = await _uploadFileService.GetMoUploadFile(Id);
             ViewData["caseTerminate"] = caseTerminate;
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
             ViewData["Id"]=base.GetCurrentUserId();
+            ViewData["moFile"] = moFile;
             return View();
         }
 

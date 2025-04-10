@@ -32,12 +32,13 @@ namespace mechanical.Controllers
         private readonly IPCECaseScheduleService _PCECaseScheduleService;
         private readonly IProductionCapacityService _ProductionCapacityService;
 
-        public ProductionCapacityController(IUserService UserService, IProductionCapacityService ProductionCapacityService, IPCECaseScheduleService PCECaseScheduleService, IUploadFileService UploadFileService)
+        public ProductionCapacityController(IUserService UserService, IProductionCapacityService ProductionCapacityService, IPCECaseScheduleService PCECaseScheduleService, IUploadFileService UploadFileService, ILogger<ProductionCapacityController> logger)
         {
             _UserService = UserService;
             _UploadFileService = UploadFileService;
             _PCECaseScheduleService = PCECaseScheduleService;
             _ProductionCapacityService = ProductionCapacityService;
+            _logger = logger;
         }
 
         public IActionResult Index()

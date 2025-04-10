@@ -1,6 +1,85 @@
 @using mechanical.Models.Dto.UploadFileDto
-
+@using mechanical.Models.PCE.Dto.PCEEvaluationDto
+@using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 @model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationReturnDto
+@{
+    var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
+}
+
+
+
+<!-- Capacity Information -->
+<div class="col-md-12">
+    <div class="border my-2 p-4 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:2px">
+        <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle"><h5>Capacity Information </h5></div>
+            <dl class="row">
+                <dt class="col-sm-3">Machine Name</dt>
+            <dd class="col-sm-3"><p>@latestEvaluation.PCE.MachineName</p></dd>
+
+            <dt class="col-sm-3">Country of Origin</dt>
+                <dd class="col-sm-3"><p>@latestEvaluation.PCE.CountryOfOrgin</p></dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus)</dt>
+            <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.MachineFunctionalityStatus)</h6></dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
+                <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.ActualProductionCapacity)</h6></dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
+                <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.DesignProductionCapacity)</h6></dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
+                <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.AttainableProductionCapacity)</h6></dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.BottleneckProductionLineCapacity)</dt>
+            <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.BottleneckProductionLineCapacity)</h6></dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProductionMeasurement)</dt>
+                <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.ProductionMeasurement)</h6></dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</dt>
+            <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.TechnicalObsolescenceStatus)</h6></dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</dt>
+            <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.SurveyRemark)</h6></dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProductionMeasurement)</dt>
+            <dd class="col-sm-3"><h6>@Html.DisplayFor(model => model.ProductionMeasurement)</h6></dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="card bg-light">
+        <div class="card-header text-white">
+            <h3 class="card-title">Additional Information</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.TechnicalObsolescenceStatus)</h6></dd>
+
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.DepreciationRateApplied)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.DepreciationRateApplied)</h6></dd>
+
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.FactorsAffectingProductionCapacity)</h6></dd>
+
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Discrepancies)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.Discrepancies)</h6></dd>
+
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.MachineFunctionalityStatus)</h6></dd>
+
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.MachineNonFunctionalityReason)</h6></dd>
+
+                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason)</dt>
+                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OtherMachineNonFunctionalityReason)</h6></dd>
+            </dl>
+        </div>
+    </div>
+</div>
 
 <!-- General Information -->
 <div class="col-md-6">
@@ -92,72 +171,7 @@
     </div>
 </div>
 
-<!-- Capacity Information -->
-<div class="col-md-6">
-    <div class="card bg-light">
-        <div class="card-header text-white">
-            <h3 class="card-title">Capacity Information</h3>
-        </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.DesignProductionCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.DesignProductionCapacity)</h6></dd>
 
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.AttainableProductionCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.AttainableProductionCapacity)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ActualProductionCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.ActualProductionCapacity)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.EstimatedProductionCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.EstimatedProductionCapacity)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.BottleneckProductionLineCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.BottleneckProductionLineCapacity)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OverallActualCurrentCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OverallActualCurrentCapacity)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionUnit)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.ProductionUnit)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.ProductionMeasurement)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.ProductionMeasurement)</h6></dd>
-            </dl>
-        </div>
-    </div>
-
-    <!-- Additional Information -->
-    <div class="card bg-light">
-        <div class="card-header text-white">
-            <h3 class="card-title">Additional Information</h3>
-        </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.TechnicalObsolescenceStatus)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.DepreciationRateApplied)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.DepreciationRateApplied)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.FactorsAffectingProductionCapacity)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.Discrepancies)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.Discrepancies)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.MachineFunctionalityStatus)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.MachineNonFunctionalityReason)</h6></dd>
-
-                <dt class="col-sm-6">@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason)</dt>
-                <dd class="col-sm-6"><h6>@Html.DisplayFor(model => model.OtherMachineNonFunctionalityReason)</h6></dd>
-            </dl>
-        </div>
-    </div>
-</div>
 
 <div class="card bg-light">
     <div class="card-header text-white">

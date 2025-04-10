@@ -6,7 +6,9 @@ namespace mechanical.Services.MMCaseService
     public interface IMMCaseService
     {
         Task<IEnumerable<CaseDto>> GetMMNewCases(Guid userId);
+        Task<IEnumerable<CaseDto>> GetMTLCompletedCases(Guid userId);
         Task<IEnumerable<CaseDto>> GetCMNewCases(Guid userId);
+        
         Task<IEnumerable<CaseDto>> GetMyAssignmentCases(Guid userId);
         
         Task<IEnumerable<CaseDto>> GetMoRemarkedCases(Guid userId);

@@ -8,10 +8,11 @@ namespace mechanical.Models.Entities
         public required string CaseNo { get; set; }
         public required string ApplicantName { get; set; }
         public string CustomerId { get; set; } = string.Empty;
-        public string CustomerEmail { get; set; } = string.Empty;
+        public string? CustomerEmail { get; set; } = string.Empty;
         public Guid DistrictId { get; set; }
         [ForeignKey("BussinessLicence")]
         public Guid? BussinessLicenceId { get; set; }
+        public bool SharedTask { get; set; }
 
         public required string Status { get; set; }
         public required string Segement { get; set; }

@@ -6,6 +6,7 @@
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
     var caseTerminate = ViewData["caseTerminate"] as IEnumerable<CaseTerminateReturnDto>;
+    var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
 }
 
 <section class="content-header">

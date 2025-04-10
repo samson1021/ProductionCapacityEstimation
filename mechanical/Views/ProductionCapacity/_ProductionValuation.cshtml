@@ -13,6 +13,7 @@
     var reestimation = ViewData["Reestimation"] as ProductionReestimation;
     var latestEvaluation = ViewData["LatestEvaluation"] as PCEEvaluationReturnDto;
     var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
+    var PCECase = ViewData["PCECase"] as ProductionDetailDto;
 
     var currentUserRole = currentUser?.Role?.Name as string;
 }

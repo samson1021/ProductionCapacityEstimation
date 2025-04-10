@@ -1,5 +1,5 @@
 ﻿
-@model mechanical.Models.Entities.CreateUser
+@model mechanical.Models.Dto.UserDto.loginDto
 
 @{
     Layout = null;
@@ -65,7 +65,7 @@
 
                         </div>
                    
-                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                        @*@Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })*@
                     </div>
                         
                         <div class="row">

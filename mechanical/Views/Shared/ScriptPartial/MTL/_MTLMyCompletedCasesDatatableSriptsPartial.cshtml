@@ -1,0 +1,108 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+   
+    $(document).ready(function () {
+        $('#showCollateralFile').click(function () {
+            $('#CollateralFileModal').modal('show');
+        });
+        var caseId;
+        $.ajax({
+            url: '/MTLCase/GetMyCompletedCases',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Initialize the DataTable
+                var table = $('#MTLMyCasesDatatable').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: 'CreationAt',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString();
+                            }
+                        },
+                        { data: 'CaseNo', width: '10%' },
+                        { data: 'RequestingUnit', width: '15%' },
+                        { data: 'ApplicantName', width: '15%' },
+                        { data: 'CustomerId', width: '15%' },
+                        { data: 'NoOfCollateral', width: '10%' },
+                        { data: 'TotalNoOfCollateral', width: '10%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("MyCompleteCase", "MTLCase")?Id=' + data + '">Details | </a><a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                            }
+                        }
+
+                    ],
+                    order: [[1, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My Case - pdf' }, { extend: 'print', title: 'My Case - Print' }, "colvis"]
+                }).buttons().container().appendTo('#MTLMyCasesDatatable_wrapper .col-md-6:eq(0)');
+
+                
+                $('#MOMyCasesDatatable').on('click', '.assignBtn', function () {
+                    caseId = $(this).data('id');
+                    $('#userSelect').val('');
+                    $.ajax({
+                        url: '/UserManagment/GetUsers',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (users) {
+                            var userSelect = $('#userSelect');
+                            userSelect.empty();
+                            $.each(users, function (index, user) {
+                                userSelect.append($('<option></option>').val(user.Id).text(user.Name));
+                            });
+                            $('#assignModal').modal('show');
+                        },
+                        error: function (error) {
+                        }
+                    });
+                });
+
+                $('#assignCaseBtn').on('click', function () {
+                    var selectedUserId = $('#userSelect').val();
+                    console.log(selectedUserId);
+                    console.log(caseId);
+                    $.ajax({
+                        url: '/Case/AssignCaseOfficer',
+                        type: 'POST',
+                        data: {
+                            CaseId: caseId,
+                            UserId: selectedUserId
+                        },
+                        success: function (response) {
+                            toastr.success(response.message)
+                        },
+                        error: function (error) {
+                            toastr.error("Unable to assign a maker officer");
+                        }
+                    });
+
+                    $('#assignModal').modal('hide');
+                });
+            },
+            error: function (error) {
+                
+            }
+        });
+    });
+</script>

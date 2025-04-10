@@ -4,6 +4,108 @@
 
     $(document).ready(function () {
 
+
+         let productionLineIndex = 1;
+
+            // Add new production line form
+            $('#addProductionLineBtn').click(function() {
+                const newForm = $(`
+                    <div class="production-line-form border my-2 p-2 position-relative shadow mt-4" style="border-color: darkgray !important;border-radius:1px" data-index="${productionLineIndex}">
+                     <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Production Line `+ (productionLineIndex+1)+`</h6></div>
+                    <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label>Production Line/Equipment Name <i class="text-danger">*</i></label>
+                                <input name="ProductionLineEvaluations[${productionLineIndex}].ProductionLineOrEquipmentName" class="form-control form-control-sm" required />
+                                <span class="text-danger productionLineOrEquipmentName-error"></span>
+                            </div>
+                             <div class="form-group col-lg-6">
+                                <label>Production Unit <i class="text-danger">*</i></label>
+                                <select name="ProductionLineEvaluations[${productionLineIndex}].ProductionUnit" class="form-control form-control-sm">
+                                    <option value="" disabled selected>Select Unit of Production</option>
+    @foreach (var value in Enum.GetValues(typeof(ProductionUnit)))
+    {
+                                                    <option value="@value">@value</option>
+    }
+                                </select>
+                                <span class="text-danger productionUnit-error"></span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                             <div class="form-group col-lg-4">
+                                <label>Output Type <i class="text-danger">*</i></label>
+                                <input name="ProductionLineEvaluations[${productionLineIndex}].OutputType" class="form-control form-control-sm" required />
+                                <span class="text-danger outputType-error"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label>Output Phase <i class="text-danger">*</i></label>
+                                <select name="ProductionLineEvaluations[${productionLineIndex}].OutputPhase" class="form-control form-control-sm">
+                                    <option value="" disabled selected>Select Phase of Output</option>
+    @foreach (var value in Enum.GetValues(typeof(OutputPhase)))
+    {
+                                                <option value="@value">@value</option>
+    }
+                                </select>
+                                <span class="text-danger outputPhase-error"></span>
+                            </div>
+                             <div class="form-group col-lg-4">
+                                <label>Output Quantity <i class="text-danger">*</i></label>
+                                <input name="ProductionLineEvaluations[${productionLineIndex}].OutputQuantity" class="form-control form-control-sm" required />
+                                <span class="text-danger outputQuantity-error"></span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="form-group col-lg-5">
+                                <label>Input Type <i class="text-danger">*</i></label>
+                                <input name="ProductionLineEvaluations[${productionLineIndex}].InputType" class="form-control form-control-sm" required />
+                                <span class="text-danger inputType-error"></span>
+                            </div>
+                            <div class="form-group col-lg-5">
+                                <label>Input/Output Conversion <i class="text-danger">*</i></label>
+                                <input name="ProductionLineEvaluations[${productionLineIndex}].InputOutputConversion" class="form-control form-control-sm" required />
+                                <span class="text-danger inputOutputConversion-error"></span>
+                            </div>
+                             <div class="form-group col-lg-2">
+                             <br>
+                                 <button type="button" class="btn btn-sm btn-danger remove-line-btn" style="display: none;">
+                                        <i class="fas fa-trash"></i> Remove
+                                 </button>
+                             </div>
+                        </div>
+                    </div>
+                `);
+
+                $('#productionLineContainer').append(newForm);
+                productionLineIndex++;
+
+                // Show remove button on all forms if there's more than one
+                if ($('.production-line-form').length > 1) {
+                    $('.remove-line-btn').show();
+                }
+            });
+
+            // Remove production line form
+            $(document).on('click', '.remove-line-btn', function() {
+                $(this).closest('.production-line-form').remove();
+
+                // Hide remove buttons if only one form remains
+                if ($('.production-line-form').length <= 1) {
+                    $('.remove-line-btn').hide();
+                }
+
+                // Reindex remaining forms
+                $('.production-line-form').each(function(index) {
+                    $(this).attr('data-index', index);
+                    $(this).find('[name^="ProductionLineEvaluations"]').each(function() {
+                        const name = $(this).attr('name').replace(/\[\d+\]/, `[${index}]`);
+                        $(this).attr('name', name);
+                    });
+                });
+
+                productionLineIndex = $('.production-line-form').length;
+            });
+
+
+
         var outputPhaseElement = document.getElementById("OutputPhase");
 
         if (outputPhaseElement) {
