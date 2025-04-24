@@ -12,19 +12,14 @@
     function handleMachineryInstalledPlaceChange(selectElement) {
         var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace");
         var PrivateownedLHC = document.getElementById("PrivateownedLHC");
-<<<<<<< HEAD
-        var IndustrialParkrow = document.getElementById("IndustrialParkrow");
-        if (selectElement.value === "Private Owned LHC") {
-            PrivateownedLHC.style.display = "block";
-            IndustrialParkrow.style.display = "none";
-=======
+
         var IndustrialPark = document.getElementById("IndustrialPark");
         var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");
         if (selectElement.value === "Private Owned LHC") {
             PrivateownedLHC.style.display = "block";
             IndustrialPark.style.display = "none";
             PrivateRentedLHC.style.display = "none";
->>>>>>> main
+
 
         } else if (selectElement.value === "Industrial Park") {
             IndustrialParkrow.style.display = "block";
