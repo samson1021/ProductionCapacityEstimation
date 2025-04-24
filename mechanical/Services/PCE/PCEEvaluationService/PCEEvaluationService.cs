@@ -509,6 +509,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.PCE)
                                                         .ThenInclude(e => e.PCECase)
                                                     .Where(e => e.PCE.PCECaseId == PCECaseId)
+                                                    .Include(e => e.productionLineEvaluations) // Ensure this references the correct entity
+                                                  // .Where(e=>e.EvaluatorId== UserId)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
                                                     .ToListAsync();
