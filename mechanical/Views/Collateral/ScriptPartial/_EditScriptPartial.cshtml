@@ -10,7 +10,8 @@
 <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <script>
     $(document).ready(function () {
         var selectedCategory = document.getElementById("selectedCategory").value;
@@ -112,9 +113,9 @@
                     typeDropdown.append('<option value="Other">Others, please specify</option>');
                     break;
                 case "IBFEqupment":
-                    typeDropdown.append('<option value="IndustrialMachinery">Industrial (Mfg) Machinery</option>');
-                    typeDropdown.append('<option value="BuildingFacilityEquipment">Building Facility Equipment</option>');
-                    typeDropdown.append('<option value="Other">Others, please specify</option>');
+                    typeDropdown.append('<option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>');
+                    typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>');
+                    typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>');
                     break;
                 default:
                     break;

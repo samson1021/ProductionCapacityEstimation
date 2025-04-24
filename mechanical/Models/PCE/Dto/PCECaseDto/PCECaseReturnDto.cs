@@ -12,7 +12,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
         // public required string RequestingUnit { get; set; }
         public  string? Type { get; set; } 
         public string CustomerId { get; set; } = string.Empty; 
-        public string CustomerEmail { get; set; } = string.Empty;
+        public string? CustomerEmail { get; set; } = string.Empty;
         
         public Guid DistrictId { get; set; }
         public DateTime CreatedAt { get; set; }

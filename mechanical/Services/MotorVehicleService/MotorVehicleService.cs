@@ -30,18 +30,17 @@ namespace mechanical.Services.MotorVehicleService
         public async Task<MotorVehicle> CreateMotorVehicle( Guid userId, CreateMotorVehicleDto createMotorVehicleDto)
         {
             var motorVehicle = _mapper.Map<MotorVehicle>(createMotorVehicleDto);
-            motorVehicle.InvoiceValue = motorVehicle.InvoiceValue * motorVehicle.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(motorVehicle.CollateralId);
 
             motorVehicle.MarketShareFactor = await _motorVehicleAnnexService.GetMOVMarketShareFactor(motorVehicle.MotorVehicleMake, motorVehicle.BodyType);
             motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.Now.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
-            motorVehicle.ReplacementCost = motorVehicle.InvoiceValue;
+            motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
             motorVehicle.EvaluatorUserID = userId;
             _cbeContext.MotorVehicles.Add(motorVehicle);
-            _cbeContext.Update(collateral);
+      
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
@@ -57,6 +56,7 @@ namespace mechanical.Services.MotorVehicleService
             double ExchangeRate;
             try
             {
+                currency = currency.ToUpper();
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => { return true; };
                 var request = (HttpWebRequest)WebRequest.Create("http://172.31.6.113:9095/CREDITVAL1/services?xsd=3");
 
@@ -123,21 +123,20 @@ namespace mechanical.Services.MotorVehicleService
             catch (System.Exception e)
             {
 
-                return 0;
+                return 1;
             }
 
         }
         public async Task<ReturnMotorVehicleDto> CheckMotorVehicle(Guid userId, Guid Id,CreateMotorVehicleDto createMotorVehicleDto)
         {
             var motorVehicle = _mapper.Map<MotorVehicle>(createMotorVehicleDto);
-            motorVehicle.InvoiceValue = motorVehicle.InvoiceValue * motorVehicle.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(motorVehicle.CollateralId);
 
             motorVehicle.MarketShareFactor = await _motorVehicleAnnexService.GetMOVMarketShareFactor(motorVehicle.MotorVehicleMake, motorVehicle.BodyType);
             motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.Now.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
-            motorVehicle.ReplacementCost = motorVehicle.InvoiceValue;
+            motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
             var motervechleReturn = _mapper.Map<ReturnMotorVehicleDto>(motorVehicle);
             motervechleReturn.Id = Id;
@@ -184,13 +183,12 @@ namespace mechanical.Services.MotorVehicleService
 
             _mapper.Map(createMotorVehicleDto, motorVehicle);
 
-            motorVehicle.InvoiceValue = motorVehicle.InvoiceValue * motorVehicle.ExchangeRate;
             var collateral = await _cbeContext.Collaterals.FindAsync(motorVehicle.CollateralId);
 
             motorVehicle.MarketShareFactor = await _motorVehicleAnnexService.GetMOVMarketShareFactor(motorVehicle.MotorVehicleMake, motorVehicle.BodyType);
             motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.Now.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
-            motorVehicle.ReplacementCost = motorVehicle.InvoiceValue;
+            motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
            
             _cbeContext.Update(motorVehicle);

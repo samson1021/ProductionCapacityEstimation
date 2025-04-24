@@ -26,7 +26,24 @@
         <form method="post" enctype="multipart/form-data" asp-action="EditIndBldgFacilityEquipment" asp-route-Id="@Model.Id">
             <input asp-for="CollateralId" value=@Model.Id type="hidden" />
             <div class="row">
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-6">
+                    <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                    <div class="input-group">
+                        <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Motor Power (Cc/Kw/Hp)" required>
+                        @{
+                            try
+                            {
+                                if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                {
+                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                }
+                            }
+                            catch (Exception) { }
+                        }
+                    </div>
+                    <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-xl-6">
                     <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
                     <div class="input-group">
                         <select asp-for="IndustrialBuildingMachineryType" class="form-control"
@@ -46,7 +63,8 @@
                     </div>
                     <span asp-validation-for="IndustrialBuildingMachineryType" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+            </div><div class="row">
+                <div class="form-group col-xl-6">
                     <label asp-for="EngineType"> Power Source & Fuel Type</label>
                     <div class="input-group">
                         <select asp-for="EngineType" class="form-control"
@@ -66,7 +84,7 @@
                     </div>
                     <span asp-validation-for="EngineType" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-6">
                     <label asp-for="PowerSupply">Power Supply</label>
                     <div class="input-group">
                         <select asp-for="PowerSupply" class="form-control"
@@ -797,7 +815,7 @@
     <option value="Slovakia" />
     <option value="Slovenia" />
     <option value="Solomon Islands" />
-    <option value="Somalia" />
+    <option value="Somali" />
     <option value="South Africa" />
     <option value="South Georgia and The South Sandwich Islands" />
     <option value="Spain" />

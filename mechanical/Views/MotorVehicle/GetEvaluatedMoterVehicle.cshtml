@@ -10,8 +10,22 @@
     var collateral = ViewData["collateral"] as ReturnEvaluatedCaseDto;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
     var comment = ViewData["comments"] as Dictionary<string, string>;
+    var motorVehicle = ViewData["motorVehicleDto"] as MotorVehicle;
     Console.WriteLine(collateral);
 }
+<script>
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        console.log(element.value);
+        var value = parseFloat(element.value); // Use .value
+        var formattedValue = formatNumber(value);
+       element.value = formattedValue; // Update the value of the input
+    }
+</script>
  <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -39,15 +53,40 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-append">
-                                <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2">Checked <i class="fas fa-check"></i></button>
-                                <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2">Send for Correction <i class="fas fa-reply-all"></i></button>
+                                <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2 checkedButton">Checked <i class="fas fa-check"></i></button>
+                                <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2 correctionButton">Send for Correction <i class="fas fa-reply-all"></i></button>
                                 <button id="CheckAssesmentButton" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#CheckAssesmentModal"> Evaluation Tool <i class="fas fa-toolbox"></i> </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
+                        <label id="lblMechanicalEqpmntName">Mechanical Equipment Name</label>
+                        <div class="input-group">
+                            <input id="txtMechanicalEqpmntName" value="@Model.ReturnMotorVehicleDto.MechanicalEqpmntName" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-6">
                         <label id="lblEngineType">Engine Type</label>
                         <div class="input-group">
                             <input id="txtCollateralId" value="@Model.ReturnMotorVehicleDto.EngineType" type="text" class="form-control" readonly />
@@ -72,7 +111,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                </div> 
+                <div class="row">
+                    <div class="form-group col-xl-6">
                         <label id="NoOfCylinder">Number of Cylinders</label>
                         <div class="input-group">
                             <input id="NoOfCylinders" value=@Model.ReturnMotorVehicleDto.NoOfCylinder type="text" class="form-control" readonly />
@@ -97,7 +138,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
                         <label id="TransmissionType">Transmission Type</label>
                         <div class="input-group">
                             <input id="TransmissionTypes" value="@Model.ReturnMotorVehicleDto.TransmissionType" type="text" class="form-control" readonly />
@@ -666,7 +707,7 @@
                     <div class="form-group col-xl-4">
                         <label id="lblInvoiceValue">Invoice Value</label>
                         <div class="input-group">
-                            <input id="txtInvoiceValue" type="number" class="form-control" value="@Model.ReturnMotorVehicleDto.InvoiceValue" class="form-control" readonly />
+                            <input id="txtInvoiceValue" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.InvoiceValue"  readonly />
                             <div class="input-group-append">
                                 @{
                                     try
@@ -834,7 +875,7 @@
                             <div class="form-group col-sm-6">
                                 <label>Replacement Cost</label>
                                 <div class="input-group">
-                                    <p class="form-control">@Model.ReturnMotorVehicleDto.ReplacementCost</p>
+                                    <input id="ReplacementCost" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.ReplacementCost" readonly />
                                     <div class="input-group-append">
                                         @{
                                             try
@@ -861,7 +902,7 @@
                             <div class="form-group col-sm-6">
                                 <label>Net Estimation Value</label>
                                 <div class="input-group">
-                                    <p class="form-control">@Model.ReturnMotorVehicleDto.NetEstimationValue</p>
+                                    <input id="NetEstimationValue" type="text" class="form-control" value="@Model.ReturnMotorVehicleDto.NetEstimationValue" readonly />
                                     <div class="input-group-append">
                                         @{
                                             try
@@ -917,8 +958,8 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <div class="input-group-append">
-                                        <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2">Checked <i class="fas fa-check"></i></button>
-                                        <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2">Send for Correction <i class="fas fa-reply-all"></i></button>
+                                        <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2 checkedButton">Checked <i class="fas fa-check"></i></button>
+                                        <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2 correctionButton">Send for Correction <i class="fas fa-reply-all"></i></button>
                                         <button id="CheckAssesmentButton" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#CheckAssesmentModal"> Evaluation Tool <i class="fas fa-toolbox"></i> </button>
                                     </div>
                                 </div>
@@ -942,6 +983,11 @@
 </script>
 @section Scripts {
     @{
+        <script>
+            formatAndDisplayValue('ReplacementCost');
+            formatAndDisplayValue('txtInvoiceValue');
+            formatAndDisplayValue('NetEstimationValue');
+        </script>
        await Html.RenderPartialAsync("ScriptPartial/_MVSriptsPartial");
        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
      }

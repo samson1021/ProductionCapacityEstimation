@@ -5,6 +5,7 @@
     var myCase = ViewData["case"] as CaseReturntDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<mechanical.Models.Dto.CaseScheduleDto.CaseScheduleReturnDto>;
     var caseTerminate = ViewData["caseTerminate"] as IEnumerable<CaseTerminateReturnDto>;
+    var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
 }
 
 <section class="content-header">
@@ -62,7 +63,7 @@
                         @await Html.PartialAsync("_GeneralInfo")
                     </div>
                     <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                        @await Html.PartialAsync("_CreateCollateral")
+                        @await Html.PartialAsync("_CreateNewCollateral")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         @await Html.PartialAsync("_CaseSchedule")
@@ -107,13 +108,38 @@
         </div>
     </div>
 </div>
-
+<script src="~/lib/toastr/toastr.min.js"></script>
 @section Scripts {
 
     <script>
 
         $(document).ready(function () {
-           
+            $('#addMechanicalCollateralFormm').on('submit', function (e) {
+                e.preventDefault();
+                console.log("from jquery");
+                var formData = new FormData(this);
+                var uploadButton = $('#assignButton'); 
+                uploadButton.prop('disabled', true).text('Uploading...');
+
+                $.ajax({
+                    url: '@Url.Action("CreateMoDocument", "Collateral")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.message) {
+                            toastr.success(response.message);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error('An error occurred while uploading the document.');
+                    }
+                });
+            });
             $('#evaluationForm').submit(function (event) {
                 event.preventDefault();
 

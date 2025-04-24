@@ -49,19 +49,32 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
                 EncodingHelper.EncodeObject(Dto);
-                // SanitizerHelper.SanitizeObject(Dto)
 
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
+
+                if (pceEvaluation.productionLineEvaluations != null && pceEvaluation.productionLineEvaluations.Any())
+                {
+                    foreach (var productionLineEvaluationDto in pceEvaluation.productionLineEvaluations)
+                    {
+                        productionLineEvaluationDto.PCEEvaluationId = pceEvaluation.Id;
+                        productionLineEvaluationDto.EvaluatorId = UserId;
+                    }
+                }
                 pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
                 pceEvaluation.CreatedBy = UserId;
                 pceEvaluation.CreatedAt = DateTime.Now;
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEvaluation);
+                await _cbeContext.SaveChangesAsync();
+               
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
+                pce.MachineName = Dto.MachineName;
+                pce.CountryOfOrgin = Dto.OriginCountry;
+
+                 _cbeContext.ProductionCapacities.Update(pce);
 
                 await HandleFileUploads(UserId, Dto.SupportingEvidences, "Supporting Evidence", pce.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.ProductionProcessFlowDiagrams, "Production Process Flow Diagram", pce.PCECaseId, pceEvaluation.Id);
@@ -171,6 +184,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 _logger.LogError(ex, "Error evaluating production capacity.");
                 await transaction.RollbackAsync();
+                throw new Exception(ex.Message);
                 throw new ApplicationException("An error occurred while evaluating production capacity.");
             }
         }
@@ -268,7 +282,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         private async Task<PCEEvaluation> FindValuation(Guid Id)
         {
             var pceEvaluation = await _cbeContext.PCEEvaluations
-                                                .Include(pce => pce.ShiftHours)
                                                 .Include(pce => pce.TimeConsumedToCheck)
                                                 .Include(pce => pce.PCE)
                                                     .ThenInclude(pc => pc.PCECase)
@@ -383,7 +396,11 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (MOSupervisor.Role.Name == "Maker TeamLeader")
             {
                 var MTLSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
-                await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+                if(MTLSupervisor != null)
+                {
+                    await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+                }
+        
             }  
         }
 
@@ -418,7 +435,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var pceEvaluation = await _cbeContext.PCEEvaluations
                                                 .AsNoTracking()
-                                                .Include(e => e.ShiftHours)
                                                 .Include(e => e.TimeConsumedToCheck)
                                                 .Include(e => e.PCE)
                                                     .ThenInclude(e => e.PCECase)
@@ -453,8 +469,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var pceEvaluation = await _cbeContext.PCEEvaluations
                                                     .AsNoTracking()
-                                                    .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(res=>res.productionLineEvaluations)
                                                     .Include(e => e.PCE)
                                                         .ThenInclude(e => e.PCECase)
                                                     // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
@@ -489,11 +505,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var pceEntities = await _cbeContext.PCEEvaluations
                                                     .AsNoTracking()
-                                                    .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
                                                     .Include(e => e.PCE)
                                                         .ThenInclude(e => e.PCECase)
                                                     .Where(e => e.PCE.PCECaseId == PCECaseId)
+                                                    .Include(e => e.productionLineEvaluations) // Ensure this references the correct entity
+                                                  // .Where(e=>e.EvaluatorId== UserId)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
                                                     .ToListAsync();
@@ -539,6 +556,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             var previousEvaluations = await _cbeContext.PCEEvaluations
                                                         .AsNoTracking()
+                                                        .Include(p=>p.productionLineEvaluations)
                                                         .Include(p => p.PCE)
                                                             .ThenInclude(pc => pc.PCECase)
                                                         .Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id))

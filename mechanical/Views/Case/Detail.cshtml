@@ -1,9 +1,11 @@
-﻿@using mechanical.Models.Dto.CaseScheduleDto;
+﻿﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
+
 @{
     var myCase = ViewData["case"] as CaseReturntDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+    var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
 }
 
 <section class="content-header">
@@ -67,8 +69,9 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
-       await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
-       await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
+        //await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+
     }
-   
+
 }

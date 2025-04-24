@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Authorization;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UserService;
 using System.Data;
+using mechanical.Services.AuthenticatioinService;
+using System.Text.Json;
+using AutoMapper;
 
 namespace mechanical.Controllers
 {
@@ -22,127 +25,17 @@ namespace mechanical.Controllers
         private readonly CbeContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
-        public UserManagmentController(CbeContext context, IHttpContextAccessor httpContextAccessor, IUserService userService)
+        private readonly IAuthenticationService _authenticationService;
+        private readonly IMapper _mapper;
+        public UserManagmentController(CbeContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUserService userService, IAuthenticationService authenticationService)
         {
             _userService = userService;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationService = authenticationService;
+            _mapper = mapper;
         }
-        private string GenerateValidPassword(int length)
-        {
-
-            const string lowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
-
-            const string upperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-            const string numericChars = "0123456789";
-
-            const string specialChars = "!@#$%^&*()";
-
-            int requiredLength = 8;
-
-            int requiredLowerCase = 1;
-
-            int requiredUpperCase = 1;
-
-            int requiredNumeric = 1;
-
-            int requiredSpecialChars = 1;
-
-
-
-            var random = new Random();
-
-
-
-            var passwordChars = new List<char>();
-
-
-
-            // Generate required characters
-
-            for (int i = 0; i < requiredLowerCase; i++)
-
-            {
-
-                passwordChars.Add(lowerCaseChars[random.Next(lowerCaseChars.Length)]);
-
-            }
-
-            for (int i = 0; i < requiredUpperCase; i++)
-
-            {
-
-                passwordChars.Add(upperCaseChars[random.Next(upperCaseChars.Length)]);
-
-            }
-
-            for (int i = 0; i < requiredNumeric; i++)
-
-            {
-
-                passwordChars.Add(numericChars[random.Next(numericChars.Length)]);
-
-            }
-
-            for (int i = 0; i < requiredSpecialChars; i++)
-
-            {
-
-                passwordChars.Add(specialChars[random.Next(specialChars.Length)]);
-
-            }
-            // Generate remaining random characters
-
-            int remainingLength = requiredLength - passwordChars.Count;
-
-            for (int i = 0; i < remainingLength; i++)
-
-            {
-
-                string charSet = lowerCaseChars + upperCaseChars + numericChars + specialChars;
-
-                passwordChars.Add(charSet[random.Next(charSet.Length)]);
-
-            }
-            // Shuffle the characters
-
-            for (int i = passwordChars.Count - 1; i > 0; i--)
-            {
-                int j = random.Next(i + 1);
-
-                var temp = passwordChars[i];
-
-                passwordChars[i] = passwordChars[j];
-
-                passwordChars[j] = temp;
-
-            }
-            return new string(passwordChars.ToArray());
-
-        }
-        private bool IsValidPassword(string password)
-        {
-            const string passwordRegexPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$";
-            return Regex.IsMatch(password, passwordRegexPattern);
-        }
-        public static string HashPassword(string password)
-        {
-
-            using (var sha256 = SHA256.Create())
-
-            {
-
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-                var hash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-
-                return hash;
-
-            }
-
-        }
-        // GET: UserManagmentController    
+        
         public IActionResult Index()
         {
 
@@ -161,14 +54,6 @@ namespace mechanical.Controllers
 
         public JsonResult GetUsers()
         {
-            //    var usersWithDistricts = dbContext.Users
-            //.Include(u => u.District) // Include the District navigation property
-            //.ToList();
-
-            //    return View(usersWithDistricts);
-            //var usersWithDistricts = _context.CreateUsers.Include(u => u.District).ToList();
-            // return Json(usersWithDistricts);
-
             var response = base.GetCurrentUserId();
             var role = _context.CreateUsers.Include(c => c.Role).Where(res => res.Id == response).FirstOrDefault();
             List<CreateUser> usersWithDistricts = new List<CreateUser>();
@@ -182,11 +67,10 @@ namespace mechanical.Controllers
             }
             var usersData = usersWithDistricts.Select(u => new
             {
+                u.emp_ID,
                 u.Name,
-                u.Email,
                 DistrictName = u.District != null ? u.District.Name : "",
                 RoleName = u.Role != null ? u.Role.Name : "",
-                u.Branch,
                 u.Department,
                 u.Status,
                 u.Id
@@ -248,7 +132,7 @@ namespace mechanical.Controllers
                 var allRoles = _context.CreateRoles.Where(u => u.Name == "Checker TeamLeader").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                 allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department).ToList();
+                 allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
 
             }
             else if (RoleName == "Maker TeamLeader")
@@ -256,7 +140,7 @@ namespace mechanical.Controllers
                 var allRoles = _context.CreateRoles.Where(u => u.Name == "Maker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department).ToList();
+                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
 
             }
             else if (RoleName == "Checker TeamLeader")
@@ -264,12 +148,24 @@ namespace mechanical.Controllers
                 var allRoles = _context.CreateRoles.Where(u => u.Name == "Checker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department).ToList();
+
+
+                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
             }
             else {
                 allUsers = null;
             }
             return Json(allUsers);
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetUserDetails(Guid id)
+        {
+            var user = await _context.CreateUsers.FindAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
         [HttpGet]
         [AllowAnonymous]
@@ -364,50 +260,33 @@ namespace mechanical.Controllers
 
         }
         [HttpPost]
-        public IActionResult CreateUser(CreateUser model)
+        public async Task<IActionResult> Create(CreateUser model)
         {
-            var password = "1234";
-            //var password = GenerateValidPassword(8);
-            string EncryptedPass = null;
-          //  EncryptedPass = HashPassword(password);
-
-            //if (IsValidPassword(password))
-            //{
-            //    model.Password = EncryptedPass;
-            //}
-            model.Password = password;
+            var existingUser = await _context.CreateUsers.FirstOrDefaultAsync(res => res.Email == model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "A user with this email already exists.");
+                return View(model);
+            }
+            existingUser = await _context.CreateUsers.FirstOrDefaultAsync(res => res.emp_ID == model.emp_ID);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("emp_ID", "A user with this Employee Id already exists.");
+                return View(model);
+            }
             model.Status = "Activated";
-            var UpperEmail = model.Email.ToUpper();
-            model.Email = UpperEmail;
-            
-                _context.CreateUsers.Add(model);
-                _context.SaveChanges();
-            
-                // Save the form data to the database
-                // You can use your data access logic or an ORM here
-                //using (var dbContext = new CbeCreditContext())
-                //{
-                //    // Map the form data to your database entity
-                //    var user = new CreateUser
-                //    {
-                //        Name = model.Name,
-                //        Email = model.Email,
-                //        District = model.District,
-                //        Branch = model.Branch,
-                //        Password = model.Password
-                //    };
+            await _context.CreateUsers.AddAsync(model);
+            await _context.SaveChangesAsync();
 
-                //    // Add the user entity to the context and save changes
-                //    dbContext.CreateUsers.Add(user);
-                //    dbContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public ActionResult GetEmployeeInfo(string id)
+        {
+            var employe = _authenticationService.GetEmployeeInfo(id);
+            string jsonData = JsonConvert.SerializeObject(employe);
 
-                    // Redirect to a success page or perform any other necessary actions
-                    return RedirectToAction("Index");
-                //}
-            //}
-            // If the model state is not valid, return the same view with the validation errors
-    
-
+            return Content(jsonData, "application/json");
         }
         public JsonResult GetRoles()
         {   var userId = base.GetCurrentUserId();
@@ -424,100 +303,40 @@ namespace mechanical.Controllers
 
             return Json(roles);
         }
-        //public JsonResult GetId()
-        //{
-        //    var AllData = _context.CreateRoles.Select(c => new { Id = c.Id}).ToList();
-        //    return Json(AllData);
-        //}
-
-
-
-
-        // POST: UserManagmentController/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
+       
         [HttpPost]
-        public ActionResult SaveEdited(CreateUser model)
+        public ActionResult Edit(CreateUser model)
         {
 
             var user = _context.CreateUsers.FirstOrDefault(u => u.Id == model.Id);
-
-            user.Name = model.Name;
-            user.Email = model.Email;
-            
-            user.Branch = model.Branch;
-            user.Status = model.Status;
-            user.Department = model.Department;
-            if (model.RoleId != Guid.Empty && model.RoleId != new Guid())
+            if(user == null)
             {
-                user.RoleId = model.RoleId;
+                ModelState.AddModelError("", "User not found. Please try again.");
+                return View(model);
             }
-            if (model.DistrictId != Guid.Empty && model.DistrictId != new Guid())
-            {
-                user.DistrictId = model.DistrictId;
-            }
-            //if (model.RoleId != 0)
-            //{
-            //    user.RoleId = model.RoleId;
-            //}
+            var employe = _authenticationService.GetEmployeeInfo(user.emp_ID);
+            _mapper.Map(model,user); 
 
-            //if (model.DistrictId != 0)
-            //{
-            //    user.DistrictId = model.DistrictId;
-            //}
+            _mapper.Map(employe, user);
 
-            //_context.CreateUsers.Update(model);
-            _context.Entry(user).State = EntityState.Modified;
-
-            // Save the changes to the database
+            _context.CreateUsers.Update(user);
             _context.SaveChanges();
-               // transaction.Commit();
-                // Redirect to a different action or view
-                
-           
-            
-                return RedirectToAction("Index");
-            
-           
 
-            //_context.CreateUsers.Add(model);
-            //_context.SaveChanges();
-
-            //return RedirectToAction("Index");
+             return RedirectToAction("Index");
         }
-        // GET: UserManagmentController/Edit/5
+
         [HttpGet]
-        public ActionResult Edit(Guid id)
+        public async Task<ActionResult> Edit(Guid id)
         {
-            //var user = _userRepository.GetUserById(id);
-            var user = _context.CreateUsers.FirstOrDefault(c => c.Id == id);
-            //var model = new CreateUser
-            //{
-            //    Id = user.Id,
-            //    Name = user.Name,
-            //    Email = user.Email,
-            //    District = user.District,
-            //    Branch = user.Branch,
-            //    RoleId = user.RoleId,
-            //    Password = user.Password,
-            //    Status = user.Status
-            //};
+            var user = _context.CreateUsers.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
+            ViewBag.Districts = await _context.Districts.ToListAsync();
+            ViewBag.Roles = await _context.CreateRoles.ToListAsync();
+           
+            //var supervisors = JsonConvert.DeserializeObject<IEnumerable<CreateUser>>(GetSupervisors(user.RoleId, user.DistrictId, user.Department).ToString());
+            //ViewBag.Supervisors =  GetSupervisors(user.RoleId, user.DistrictId, user.Department);
 
             return View(user);
-            //return View(userData);
         }
-        // GET: UserManagmentController/Delete/5
         public ActionResult Delete(Guid id)
         {
             var user = _context.CreateUsers.FirstOrDefault(c => c.Id == id);

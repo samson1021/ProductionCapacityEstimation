@@ -3,19 +3,9 @@
     var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
     var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
     var currentStage = Model.CurrentStage;
+    var currentStatus = Model.CurrentStatus;
 }
-<script>
-    function formatNumber(number) {
-        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
 
-    function formatAndDisplayValue(elementId) {
-        var element = document.getElementById(elementId);
-        var value = parseFloat(element.textContent);
-        var formattedValue = formatNumber(value);
-        element.textContent = formattedValue;
-    }
-</script>
 <section class="content">
     <section class="col-xl-12 connectedSortable">
         <div class="card">
@@ -37,7 +27,15 @@
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top:1.25rem;">
-                                    <div class="row col-lg-4">
+                                    <div class="row col-lg-6">
+                                        <div class="col-lg-6">
+                                            <label>Mechanical Equipment Name":</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@movaluation.MechanicalEqpmntName"</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-6">
                                         <div class="col-lg-6">
                                             <label>Motor Vehicle Make:</label>
                                         </div>
@@ -45,8 +43,9 @@
                                             <div>@movaluation.MotorVehicleMake</div>
                                         </div>
                                     </div>
-
-                                    <div class="row col-lg-4">
+                                </div>       
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-6">
                                         <div class="col-lg-6">
                                             <label>Year Of Manufacture:</label>
                                         </div>
@@ -54,7 +53,7 @@
                                             <div>@movaluation.YearOfManufacture</div>
                                         </div>
                                     </div>
-                                    <div class="row col-lg-4">
+                                    <div class="row col-lg-6">
                                         <div class="col-lg-6">
                                             <label>Country Of Origin:</label>
                                         </div>
@@ -62,7 +61,6 @@
                                             <div>@movaluation.CountryOfOrigin</div>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="row" style="margin-top:1.25rem;">
                                     <div class="row col-lg-4">
@@ -89,7 +87,6 @@
                                             <div>@movaluation.TDNo</div>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="row" style="margin-top:1.25rem;">
                                     <div class="row col-lg-4">
@@ -237,9 +234,9 @@
                         <div class="row col-12">
 
                             @{
-                                if (movaluation.EvaluatorUserID == CurrentUserId && currentStage == "Maker Officer")
+                                if (movaluation.EvaluatorUserID == CurrentUserId && currentStage == "Maker Officer" && !currentStatus.Contains("Remark"))
                                 {
-                                    @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post, new { id = "sendCheckForm" }))
+                                    @using (Html.BeginForm("SendCheking", "MOCase", FormMethod.Post, new { @class = "sendCheckForm" }))
                                     {
                                         <div class="row col-12">
                                             <div style="margin-top:1.25rem;" class="col-2">
@@ -277,45 +274,3 @@
 
     </section>
 </section>
-@section Scripts {
-    @{
-
-
-        <script>
-
-            formatAndDisplayValue('ReplacementCost');
-            formatAndDisplayValue('InvoiceValue');
-            formatAndDisplayValue('NetEstimationValue');
-
-            $(document).ready(function () {
-                $('#sendCheckForm').on('submit', function (e) {
-
-                    e.preventDefault(); // Prevent the default form submission
-
-                    var formData = $(this).serialize(); // Serialize the form data
-                    console.log(formData)
-                    $.ajax({
-                        url: '/MOCase/SendCheking', // Ensure this URL is correct
-                        type: 'POST', // Ensure the method is POST
-                        data: formData,
-                        success: function (result) {
-                            if (result.redirect) {
-                                window.location.href = result.redirect; // Redirect if needed
-                            } else {
-                                alert('An error occurred. Please try again.'); // Show error message
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('AJAX Error: ', status, error); // For debugging
-                            var errorMessage = xhr.responseJSON && xhr.responseJSON.message
-                                ? xhr.responseJSON.message
-                                : 'An unexpected error occurred.';
-                            alert(errorMessage); // Show error message
-                        }
-                    });
-                });
-            });
-        </script>
-
-    }
-}

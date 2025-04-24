@@ -2,7 +2,6 @@
 @{
     var myCase = ViewData["case"] as CaseReturntDto;
 }
-
 <div class="card">
     <div class="Card-header">
         <div class="col-12">
@@ -41,10 +40,10 @@
             </thead>
         </table>
         <div class="row">
-                @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
-                <div class="row">
+            @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
+            <div class="row">
                 <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
-                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -69,13 +68,15 @@
         </div>
     </div>
 </div>
+
 @await Html.PartialAsync("CreateAgricultureCollateral")
 @await Html.PartialAsync("CreateCivilCollateral")
- <script>
+
+<script>
     const addAgricultureCollateralButton = document.getElementById("addAgricultureCollateralButton");
     const addCivilCollateralButton = document.getElementById("addCivilCollateralButton");
 
-    const myCaseId = "@myCase.Id"; 
+    const myCaseId = "@myCase.Id";
 
     addAgricultureCollateralButton.addEventListener("click", function () {
         $('#addAgricultureCollateralModal').modal('show');
@@ -84,7 +85,7 @@
     addCivilCollateralButton.addEventListener("click", function () {
         $('#addCivilCollateralModal').modal('show');
     });
-</script> 
+</script>
 <div class="modal fade" id="addMechanicalCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
@@ -99,7 +100,7 @@
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
                         <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
-                         <div class="row">
+                        <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwnerMac" placeholder="Property Owner *" required>
@@ -141,16 +142,16 @@
                             </div>
                             <div class="form-group col-lg-6">
                                 <label asp-for="Type">Type <i class="text-danger">*</i></label>
-                                <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
+                                <select id="typeDropdown" name="Type" required class="form-control form-control-sm">
                                     <option value="" disabled selected>Select Equipment Type *</option>
                                 </select>
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="row" id="MVprop">
+                        <div class="row MVprop">
                             <div class="form-group col-lg-4">
                                 <label asp-for="PlateNo">Plate Number <i class="text-danger">*</i></label>
-                                <input asp-for="PlateNo" type="text" class="form-control form-control-sm" placeholder="00-XX-X00000" id="PlateName" maxlength="12" required >
+                                <input asp-for="PlateNo" type="text" class="form-control form-control-sm" placeholder="00-XX-X00000" id="PlateName" maxlength="12" required>
                                 <span asp-validation-for="PlateNo" class="text-danger"></span>
                             </div>
                             <div class="form-group col-lg-4">
@@ -164,9 +165,26 @@
                                 <span id="EngineMotorNoMac-error" asp-validation-for="EngineMotorNo" class="text-danger"></span>
                             </div>
                         </div>
-@*                        industerial collateral attributes *@
+                        <div class="row conprop">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CPlateNo">Plate Number <i class="text-danger">*</i></label>
+                                <input asp-for="CPlateNo" type="text" class="form-control form-control-sm" id="conPlateName" required>
+                                <span asp-validation-for="CPlateNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="ChassisNo">Chassis Number <i class="text-danger">*</i></label>
+                                <input asp-for="ChassisNo" type="text" class="form-control form-control-sm" id="conChassisNoMac" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" maxlength="25" required>
+                                <span id="ChassisNoMac-error" asp-validation-for="ChassisNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="EngineMotorNo">Engine/Motor Number </label>
+                                <input asp-for="EngineMotorNo" type="text" class="form-control form-control-sm" id="EngineMotorNoMac" placeholder="XXXXXXXXXXX">
+                                <span id="EngineMotorNoMac-error" asp-validation-for="EngineMotorNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        @*                        industerial collateral attributes *@
 
-                        <div class="row" id="IndusteryProp">
+                        <div class="row IndusteryProp">
                             <div class="form-group col-lg-4">
                                 <label asp-for="MachineName">Machine Name <i class="text-danger">*</i></label>
                                 <input asp-for="MachineName" type="text" class="form-control form-control-sm" placeholder="Enter Machine Name" id="MachineNameMac" required>
@@ -184,7 +202,7 @@
                             </div>
                         </div>
 
-                            <div class="row">
+                        <div class="row">
                             <div class="form-group col-lg-4">
                                 <label asp-for="ManufactureYear">Manufactuing Year</label>
                                 <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
@@ -219,7 +237,7 @@
                                             <option value="Harrari">Harrari</option>
                                             <option value="Oromia">Oromia</option>
                                             <option value="Sidama">Sidama</option>
-                                            <option value="Somalia">Somalia</option>
+                                            <option value="Somali">Somali</option>
                                             <option value="South western Ethiopia">South western Ethiopia</option>
                                             <option value="Southern Ethiopia">Southern Ethiopia</option>
                                             <option value="Tigray">Tigray</option>
@@ -245,7 +263,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    
+
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Wereda">Wereda</label>
                                         <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="WeredaMac" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
@@ -270,9 +288,43 @@
                             </div>
 
                         </div>
-                        <div class="row">
+                        <div class="row MVprop2">
                             <div class="form-group col-lg-4">
                                 <label asp-for="TitleDeed">Title Deed<i class="text-danger">*</i></label>
+                                <input asp-for="TitleDeed" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
+                                <span asp-validation-for="TitleDeed" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CommercialInvoice">Commercial Invoice</label>
+                                <input asp-for="CommercialInvoice" type="file" class="form-control  form-control-sm" id="businessLicenseCertificate">
+                                <span asp-validation-for="CommercialInvoice" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="CustomDeclaration">Custom Declaration</label>
+                                <input asp-for="CustomDeclaration" type="file" class="form-control  form-control-sm" id="ownerCertificate">
+                                <span asp-validation-for="CustomDeclaration" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row MVprop2">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="PackingList">Proforma invoice</label>
+                                <input asp-for="PackingList" type="file" class="form-control form-control-sm" id="PackingList">
+                                <span asp-validation-for="PackingList" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="SalesDocument">Sales Agreement</label>
+                                <input asp-for="SalesDocument" type="file" class="form-control  form-control-sm" id="SalesDocument">
+                                <span asp-validation-for="SalesDocument" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label asp-for="OtherDocument">Other Supportive Document</label>
+                                <input asp-for="OtherDocument" type="file" class="form-control form-control-sm" id="OtherDocument" multiple>
+                                <span asp-validation-for="OtherDocument" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row IndusteryProp">
+                            <div class="form-group col-lg-4">
+                                <label asp-for="TitleDeed">LHC<i class="text-danger">*</i></label>
                                 <input asp-for="TitleDeed" type="file" class="form-control  form-control-sm" id="landHoldingCertificate" required>
                                 <span asp-validation-for="TitleDeed" class="text-danger"></span>
                             </div>
@@ -287,7 +339,7 @@
                                 <span asp-validation-for="CustomDeclaration" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row IndusteryProp">
                             <div class="form-group col-lg-4">
                                 <label asp-for="PackingList">Packing List</label>
                                 <input asp-for="PackingList" type="file" class="form-control form-control-sm" id="PackingList">
@@ -351,25 +403,10 @@
 }
 
 <script>
-    
-    // function validateInputMac(inputId, errorId) {
-    //     var input = document.getElementById(inputId).value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     console.log("from Mac");
-    //     if (!alphanumericRegex.test(input)) {
-    //         document.getElementById(inputId).setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById(errorId).textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         document.getElementById(inputId).setCustomValidity("");
-    //         document.getElementById(errorId).textContent = "";
-    //     }
-    // }
     function validateInputMac(inputId, errorId, isRequired) {
         var input = document.getElementById(inputId).value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
         var errorMessage = "";
-        console.log("from vaidate mech");
-        // Check if the field is required and empty
         if (isRequired && input.trim() === "") {
             errorMessage = "This field is required.";
         } else if (!alphanumericRegex.test(input)) {
@@ -383,160 +420,43 @@
             document.getElementById(errorId).textContent = "";
         }
     }
-    document.getElementById("addMechanicalCollateralForm").addEventListener("submit", function (event) {
-        validateInputMac("ModelNo", "ModelNo-error", true);
-        validateInputMac("EngineNo", "EngineNo-error", true);
-        console.log("from submit mech");
-        if (!this.checkValidity()) {
-            event.preventDefault();  // Prevent form submission
-            alert("Please fix the errors in the form.");
-        }
-    });
-        document.getElementById("PropertyOwnerMac").addEventListener("input", function () {
-            validateInputMac("PropertyOwnerMac", "PropertyOwnerMac-error", true);
-        });
-        
-        document.getElementById("InvoiceNoMac").addEventListener("input", function () {
-            validateInputMac("InvoiceNoMac", "InvoiceNoMac-error",true);
-        });
-        document.getElementById("SerialNoMac").addEventListener("input", function () {
-            validateInputMac("SerialNoMac", "SerialNoMac-error",true);
-        });
-        document.getElementById("EngineMotorNoMac").addEventListener("input", function () {
-        validateInputMac("EngineMotorNoMac", "EngineMotorNoMac-error", false);
-        });
-        document.getElementById("ModelNoMac").addEventListener("input", function () {
-            validateInputMac("ModelNoMac", "ModelNoMac-error",true);
-        });
-        document.getElementById("ChassisNoMac").addEventListener("input", function () {
-            validateInputMac("ChassisNoMac", "ChassisNoMac-error",true);
-        });
-        document.getElementById("MachineNameMac").addEventListener("input", function () {
-        validateInputMac("MachineNameMac", "MachineNameMac-error", true);
-        });
-        document.getElementById("PurposeMac").addEventListener("input", function () {
-        validateInputMac("PurposeMac", "PurposeMac-error", true);
-        });
-        document.getElementById("ZoneMac").addEventListener("input", function () {
-        validateInputMac("ZoneMac", "ZoneMac-error", false);
-        });
-        document.getElementById("CityMac").addEventListener("input", function () {
-        validateInputMac("CityMac", "CityMac-error", false);
-        });
-        document.getElementById("SubCityMac").addEventListener("input", function () {
-        validateInputMac("SubCityMac", "SubCityMac-error", false);
-        });
-        document.getElementById("WeredaMac").addEventListener("input", function () {
-        validateInputMac("WeredaMac", "WeredaMac-error", false);
-        });
-        document.getElementById("KebeleMac").addEventListener("input", function () {
-        validateInputMac("KebeleMac", "KebeleMac-error", false);
-        });
-        document.getElementById("HouseNoMac").addEventListener("input", function () {
-        validateInputMac("HouseNoMac", "HouseNoMac-error", false);
-        });
-        document.getElementById("LHCNoMac").addEventListener("input", function () {
-        validateInputMac("LHCNoMac", "LHCNoMac-error", false);
-        });
-        // document.getElementById("PropertyOwner").addEventListener("input", function () {
-        //     var input = this.value;
-        //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        //  console.log("From PropertyOwner");
-        //     if (!alphanumericRegex.test(input)) {
-        //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-        //         document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
-        //     } else {
-        //         this.setCustomValidity("");
-        //         document.getElementById("PropertyOwner-error").textContent = "";
-        //     }
-        // });
-        // document.getElementById("PropertyOwnerMac").addEventListener("input", function () {
-        //     var input = this.value;
-        //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        //     console.log("From PropertyOwner from mrech");
-        //     if (!alphanumericRegex.test(input)) {
-        //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-        //         console.log("From if PropertyOwner");
-        //         document.getElementById("PropertyOwnerMac-error").textContent = "Only alphanumeric characters are allowed.";
-        //     } else {
-        //         console.log("From PropertyOwner");
-        //         this.setCustomValidity("");
-        //         document.getElementById("PropertyOwnerMac-error").textContent = "";
-        //     }
-        // });
-    // document.getElementById("ChassisNoMac").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("ChassisNoMac-error").textContent = "Only alphanumeric characters are allowed.";
-    //         console.log("this is");
-    //     } else {
-    //         this.setCustomValidity("");
-    //                     console.log("this is");
-    //         document.getElementById("ChassisNoMac-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("InvoiceNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("InvoiceNo-error").textContent = "";
-    //     }
-    // });
-   
-    // document.getElementById("EngineMotorNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("EngineMotorNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("EngineMotorNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("PropertyOwner").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
-    //         console.log("here");
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("PropertyOwner-error").textContent = "";
-    //     }
-    // });
-    
-    // document.getElementById("SerialNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("SerialNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("ModelNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("ModelNo-error").textContent = "";
-    //     }
-    // });
 
-    // function for the Region dropdown value 
+    document.getElementById("PropertyOwnerMac").addEventListener("input", function () {
+        validateInputMac("PropertyOwnerMac", "PropertyOwnerMac-error", true);
+    });
+
+    document.getElementById("MachineNameMac").addEventListener("input", function () {
+        validateInputMac("MachineNameMac", "MachineNameMac-error", true);
+    });
+
+    document.getElementById("PurposeMac").addEventListener("input", function () {
+        validateInputMac("PurposeMac", "PurposeMac-error", true);
+    });
+
+    document.getElementById("ZoneMac").addEventListener("input", function () {
+        validateInputMac("ZoneMac", "ZoneMac-error", false);
+    });
+
+    document.getElementById("CityMac").addEventListener("input", function () {
+        validateInputMac("CityMac", "CityMac-error", false);
+    });
+
+    document.getElementById("SubCityMac").addEventListener("input", function () {
+        validateInputMac("SubCityMac", "SubCityMac-error", false);
+    });
+
+    document.getElementById("WeredaMac").addEventListener("input", function () {
+        validateInputMac("WeredaMac", "WeredaMac-error", false);
+    });
+
+    document.getElementById("KebeleMac").addEventListener("input", function () {
+        validateInputMac("KebeleMac", "KebeleMac-error", false);
+    });
+
+    document.getElementById("HouseNoMac").addEventListener("input", function () {
+        validateInputMac("HouseNoMac", "HouseNoMac-error", false);
+    });
+
     function handleRegionChange(selectElement) {
         var otherRegionInput = document.getElementById("OtherRegion");
         if (selectElement.value === "Others") {
@@ -549,73 +469,5 @@
             otherRegionInput.removeAttribute("name"); // Remove the name attribute
         }
     }
-    // //this is to validate all collateral addresses
-    // function validateZoneInput(inputElement) {
-    //     var zoneError = document.getElementById("Zone-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "Zone must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateCityInput(inputElement) {
-    //     var zoneError = document.getElementById("City-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "City must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateSubCityInput(inputElement) {
-    //     var zoneError = document.getElementById("SubCity-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "SubCity must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateWeredaInput(inputElement) {
-    //     var zoneError = document.getElementById("Wereda-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "Wereda must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateKebeleInput(inputElement) {
-    //     var zoneError = document.getElementById("Kebele-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "Kebele must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateHouseNoInput(inputElement) {
-    //     var zoneError = document.getElementById("HouseNo-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-   
 
 </script>

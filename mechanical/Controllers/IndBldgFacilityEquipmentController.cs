@@ -138,7 +138,7 @@ namespace mechanical.Controllers
             var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetEvaluatedIndBldgFacilityEquipment(Id);
             var comments = await _indBldgFacilityEquipment.GetCollateralComment(Id);
             ViewData["comments"] = comments;
-
+            ViewData["indBldgFacilityEquipmentReturnDto"]  = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.CollateralId == Id);
             return View(indBldgFacilityEquipment);
         }
 

@@ -189,11 +189,11 @@ namespace mechanical.Services.CaseServices
             return new CaseCountDto()
             {
                 NewCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New")).CountAsync(),
-                NewCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
+                NewCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
                 PendingCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => (collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete") && collateral.CurrentStage != "Relation Manager" )).CountAsync(),
-                PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
+                PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId &&  collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
                 CompletedCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete")).CountAsync(),
-                CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
+                CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId &&  collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
                 TotalCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId).CountAsync(),
                 TotalCollateralCount = await _cbeContext.Collaterals.Where(res=>res.CreatedById == userId).CountAsync(),
             };
@@ -233,9 +233,17 @@ namespace mechanical.Services.CaseServices
             var reject = _mapper.Map<Reject>(moRejectCaseDto);
             reject.CreationDate = DateTime.Now;
             reject.RejectedBy = Guid.Parse(httpContext.Session.GetString("userId"));
-            await _cbeContext.Rejects.AddAsync(reject);
-           
 
+            var prevReject = await _cbeContext.Rejects.Where(res => res.CollateralId == moRejectCaseDto.CollateralId && res.RejectedBy == reject.RejectedBy).FirstOrDefaultAsync();
+            if(prevReject != null)
+            {
+                _mapper.Map(reject, prevReject);
+                 _cbeContext.Rejects.Update(prevReject);
+            }
+            else
+            {
+                await _cbeContext.Rejects.AddAsync(reject);
+            }
             assignedCases.CurrentStage = "Relation Manager";
             assignedCases.CurrentStatus = "Reject";
             _cbeContext.Collaterals.Update(assignedCases);
@@ -267,7 +275,59 @@ namespace mechanical.Services.CaseServices
             //});
             return true;
         }
+        public async Task<bool> RetrunToMaker(Guid Id)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var assignedCases = await _cbeContext.Collaterals.FirstOrDefaultAsync(res => res.Id == Id);
+            if (assignedCases == null)
+            {
+                return false;
+            }
+            var reject = await _cbeContext.Rejects.FirstOrDefaultAsync(res => res.CollateralId == Id);
+            if(reject == null)
+            {
+                return false;
+            }
+            //reject.CreationDate = DateTime.Now;
+            //reject.RejectedBy = Guid.Parse(httpContext.Session.GetString("userId"));
+            //await _cbeContext.Rejects.AddAsync(reject);
 
+
+            assignedCases.CurrentStage = "Maker Officer";
+            assignedCases.CurrentStatus = "New";
+            _cbeContext.Collaterals.Update(assignedCases);
+            await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            {
+                CaseId = assignedCases.CaseId,
+                Activity = $"<strong>Collateral is retuned to Maker.</strong> <br> <i class='text-purple'>",
+                CurrentStage = "Maker Manager",
+            });
+
+            var caseAssignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(res => res.CollateralId == Id && res.UserId == reject.RejectedBy);
+            if(caseAssignment == null)
+            {
+                return false;
+            }
+            caseAssignment.Status = "New";
+            _cbeContext.Update(caseAssignment);
+            await _cbeContext.SaveChangesAsync();
+
+            //var maker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
+            //await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            //{
+            //    CaseId = CaseId,
+            //    Activity = $"<strong>Case send for evaluation to Maker Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {assignedCases.District.Name}.",
+            //    CurrentStage = "Relation Manager"
+            //});
+            //await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            //{
+            //    CaseId = CaseId,
+            //    Activity = $"<strong>New Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {assignedCases.District.Name}.",
+            //    CurrentStage = "Maker Manager",
+            //    UserId = maker.Id
+            //});
+            return true;
+        }
         //public async Task<RmNewCaseDto> GetRmNewCase(Guid Id)
         //{
         //    var loanCase = await _cbeContext.Cases.Include(res => res.District).FirstOrDefaultAsync(c => c.Id == Id);
@@ -359,7 +419,7 @@ namespace mechanical.Services.CaseServices
                      <CBECREDITNPVNOFILEENQType>
                      <enquiryInputCollection>
                      <columnName>CUSTOMER.ID</columnName>
-                     <criteriaValue>" + f + @"</criteriaValue>
+                     <criteriaValue>" + customerId + @"</criteriaValue>
                      <operand>EQ</operand>
                      </enquiryInputCollection>
                      </CBECREDITNPVNOFILEENQType>

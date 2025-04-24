@@ -1,5 +1,7 @@
 ﻿@model mechanical.Models.Dto.IndBldgFacilityEquipmentDto.IndBldgFacilityEquipmentReturnDto;
-
+@{
+    var indBldgFacilityEquipment = ViewData["indBldgFacilityEquipmentReturnDto"] as IndBldgFacilityEquipment;
+}
 <div class="modal fade" id="CheckAssesmentModal" tabindex="-1" role="dialog" aria-labelledby="CheckAssesmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
@@ -11,19 +13,26 @@
             </div>
             <div class="modal-body">
                 <form method="post" id="checkAssessmentForm" enctype="multipart/form-data" asp-action="CheckAssessment" asp-route-Id="@Model.Id">
-                    <input asp-for="CollateralId" value=@Model.Id type="hidden" />
+                    <input name="CollateralId" asp-for="@indBldgFacilityEquipment.CollateralId" value=@Model.Id type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="@Model.MechanicalEqpmntName">Motor Power (Cc/Kw/Hp)</label>
+                            <input name="MechanicalEqpmntName" asp-for="@indBldgFacilityEquipment.MechanicalEqpmntName" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Motor Power (Cc/Kw/Hp)" required>
+                            <span asp-validation-for="@Model.MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
-                            <select asp-for="IndustrialBuildingMachineryType" class="form-control"
+                            <select name="IndustrialBuildingMachineryType" asp-for="@indBldgFacilityEquipment.IndustrialBuildingMachineryType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialBuildingMachineryType)).Cast<IndustrialBuildingMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled>Select Indu(Mfg) & Bud Facility Machinery Type</option>
                             </select>
                             <span asp-validation-for="IndustrialBuildingMachineryType" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineType"> Power Source & Fuel Type</label>
-                            <select asp-for="EngineType" class="form-control"
+                            <select name="EngineType" asp-for="@indBldgFacilityEquipment.EngineType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled> Select Power Source & Fuel Type </option>
                             </select>
@@ -31,7 +40,7 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="PowerSupply">Power Supply</label>
-                            <select asp-for="PowerSupply" class="form-control"
+                            <select name="PowerSupply" asp-for="@indBldgFacilityEquipment.PowerSupply" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled>Select Power Supply</option>
                             </select>
@@ -41,29 +50,29 @@
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="@Model.MotorPower">Motor Power (Cc/Kw/Hp)</label>
-                            <input asp-for="@Model.MotorPower" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Motor Power (Cc/Kw/Hp)" required>
+                            <input name="MotorPower" asp-for="@indBldgFacilityEquipment.MotorPower" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Motor Power (Cc/Kw/Hp)" required>
                             <span asp-validation-for="@Model.MotorPower" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="@Model.WorkingProductionCapacity">Working/Production Capacity</label>
-                            <input asp-for="@Model.WorkingProductionCapacity" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Working/Production Capacity" required>
+                            <input name="WorkingProductionCapacity" asp-for="@indBldgFacilityEquipment.WorkingProductionCapacity" type="text" class="form-control form-control-sm" id="enginePower" placeholder="Working/Production Capacity" required>
                             <span asp-validation-for="@Model.WorkingProductionCapacity" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="OtherTechSpec">Insert Other Tech. Spec.(if any)</label>
-                            <input asp-for="OtherTechSpec" type="text" class="form-control form-control-sm" id="OtherTechSpec" placeholder="Insert Other Tech. Spec.(if any)" required>
+                            <input name="OtherTechSpec" asp-for="@indBldgFacilityEquipment.OtherTechSpec" type="text" class="form-control form-control-sm" id="OtherTechSpec" placeholder="Insert Other Tech. Spec.(if any)" required>
                             <span asp-validation-for="OtherTechSpec" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="MakerCompany">Insert Maker Company </label>
-                            <input asp-for="MakerCompany" type="text" class="form-control form-control-sm" id="MakerCompany" placeholder="Insert Other Tech. Spec.(if any)" required>
+                            <input name="MakerCompany" asp-for="@indBldgFacilityEquipment.MakerCompany" type="text" class="form-control form-control-sm" id="MakerCompany" placeholder="Insert Other Tech. Spec.(if any)" required>
                             <span asp-validation-for="MakerCompany" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="TechnologyStandard">Technology Standard</label>
-                            <select asp-for="TechnologyStandard" class="form-control form-control-sm"
+                            <select name="TechnologyStandard" asp-for="@indBldgFacilityEquipment.TechnologyStandard" class="form-control form-control-sm"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(MachineryTechnologyStandard)).Cast<MachineryTechnologyStandard>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled>Select Technology Standard</option>
                             </select>
@@ -71,7 +80,7 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="MakerPreferenceType">Type of Maker Preference</label>
-                            <select asp-for="MakerPreferenceType" class="form-control form-control-sm" id="enginePower" required>
+                            <select name="MakerPreferenceType" asp-for="@indBldgFacilityEquipment.MakerPreferenceType" class="form-control form-control-sm" id="enginePower" required>
                                 <option value="" disabled>Select the preference</option>
                                 <option value="Normal Preference">Normal Preference</option>
                                 <option value="Exceptional Preference">Exceptional Preference</option>
@@ -82,7 +91,7 @@
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="CurrentEqpmntCondition">Current Equipment Condition</label>
-                            <select asp-for="CurrentEqpmntCondition" class="form-control form-control-sm"
+                            <select name="CurrentEqpmntCondition" asp-for="@indBldgFacilityEquipment.CurrentEqpmntCondition" class="form-control form-control-sm"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EquipmentCondition)).Cast<EquipmentCondition>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled>Select Current Equipment Condition</option>
                             </select>
@@ -90,7 +99,7 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
-                            <select asp-for="AllocatedPointsRange" class="form-control form-control-sm"
+                            <select name="AllocatedPointsRange" asp-for="@indBldgFacilityEquipment.AllocatedPointsRange" class="form-control form-control-sm"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled>Select Current Equipment Condition</option>
                             </select>
@@ -98,31 +107,31 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ModelNo">Model Number</label>
-                            <input asp-for="ModelNo" type="text" value="@Model.ModelNo" class="form-control form-control-sm" placeholder="Model Number" required>
+                            <input name="ModelNo" indBldgFacilityEquipment.ModelNo" type="text" value="@Model.ModelNo" class="form-control form-control-sm" placeholder="Model Number" required>
                             <span asp-validation-for="ModelNo" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineNo">Motor Number</label>
-                            <input asp-for="EngineNo" type="text" value="@Model.EngineNo" class="form-control form-control-sm" placeholder="Engine Number" required>
+                            <input name="EngineNo" asp-for="@indBldgFacilityEquipment.EngineNo" type="text" value="@Model.EngineNo" class="form-control form-control-sm" placeholder="Engine Number" required>
                             <span asp-validation-for="EngineNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="SerialNo">Serial Number</label>
-                            <input asp-for="SerialNo" type="text" value="@Model.SerialNo" class="form-control form-control-sm" placeholder="Serial Number" required>
+                            <input name="SerialNo" asp-for="@indBldgFacilityEquipment.SerialNo" type="text" value="@Model.SerialNo" class="form-control form-control-sm" placeholder="Serial Number" required>
                             <span asp-validation-for="SerialNo" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="YearOfManufacture">Year of Manufacture</label>
-                            <input asp-for="YearOfManufacture" value="@Model.YearOfManufacture" type="number" class="form-control" min="1900" max="2099" step="1" required>
+                            <input name="YearOfManufacture" asp-for="@indBldgFacilityEquipment.YearOfManufacture" value="@Model.YearOfManufacture" type="number" class="form-control" min="1900" max="2099" step="1" required>
                             <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="@Model.ScaleOfOperation">Scale of Operation</label>
-                            <select asp-for="@Model.ScaleOfOperation" class="form-control form-control-sm" required>
+                            <select name="ScaleOfOperation" asp-for="@indBldgFacilityEquipment.ScaleOfOperation" class="form-control form-control-sm" required>
                                 <option value="" disabled >Scale of Operation</option>
                                 <option value="Small">Small</option>
                                 <option value="large">Large</option>
@@ -131,46 +140,46 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="@Model.NoOfProductionLine">Number of Production Line</label>
-                            <input asp-for="@Model.NoOfProductionLine" id="NoOfProductionLine" type="text" class="form-control form-control-sm" placeholder="Number of Production Line" required oninput="validateSerialNoInput(this)">
+                            <input name="NoOfProductionLine" asp-for="@indBldgFacilityEquipment.NoOfProductionLine" id="NoOfProductionLine" type="text" class="form-control form-control-sm" placeholder="Number of Production Line" required oninput="validateSerialNoInput(this)">
                             <span id="NoOfProductionLine-error" asp-validation-for="@Model.NoOfProductionLine" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="CountryOfOrigin">Country of Origin</label>
-                            <input asp-for="CountryOfOrigin" type="text" class="form-control form-control-sm" placeholder="Select Country of Origin" list="country" required>
+                            <input name="CountryOfOrigin" asp-for="@indBldgFacilityEquipment.CountryOfOrigin" type="text" class="form-control form-control-sm" placeholder="Select Country of Origin" list="country" required>
                             <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="Remark">Remark</label>
-                            <textarea asp-for="Remark" class="form-control form-control-sm" placeholder="Remark" rows="3" required></textarea>
+                            <textarea name="Remark" asp-for="@indBldgFacilityEquipment.Remark" class="form-control form-control-sm" placeholder="Remark" rows="3" required></textarea>
                             <span asp-validation-for="Remark" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="PhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
-                            <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control form-control-sm" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
+                            <textarea name="PhysicalAndInstallationAssesment" asp-for="@indBldgFacilityEquipment.PhysicalAndInstallationAssesment" class="form-control form-control-sm" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
                             <span asp-validation-for="PhysicalAndInstallationAssesment" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="OverallSurveyAssesment">Overall Survey Assessment</label>
-                            <textarea asp-for="OverallSurveyAssesment" class="form-control form-control-sm" placeholder="Overall Survey Assessment" rows="3" required></textarea>
+                            <textarea name="OverallSurveyAssesment" asp-for="@indBldgFacilityEquipment.OverallSurveyAssesment" class="form-control form-control-sm" placeholder="Overall Survey Assessment" rows="3" required></textarea>
                             <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="InvoiceValue">Invoice Value</label>
-                            <input asp-for="InvoiceValue" type="number" class="form-control form-control-sm" placeholder="Invoice Value" required>
+                            <input name="InvoiceValue" asp-for="@indBldgFacilityEquipment.InvoiceValue" type="number" class="form-control form-control-sm" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" list="currencyList" type="text" class="form-control form-control-sm" placeholder="Select Currency" required>
+                            <input name="Currency" asp-for="@indBldgFacilityEquipment.Currency" list="currencyList" type="text" class="form-control form-control-sm" placeholder="Select Currency" required>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ExchangeRate">Exchange Rate</label>
-                            <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control form-control-sm" placeholder="Enter Exchange Rate" required>
+                            <input name="ExchangeRate" asp-for="@indBldgFacilityEquipment.ExchangeRate" list="currencyList" type="text" class="form-control form-control-sm" placeholder="Enter Exchange Rate" required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>
                         </div>
                     </div>
@@ -453,7 +462,7 @@
     <option value="Slovakia" />
     <option value="Slovenia" />
     <option value="Solomon Islands" />
-    <option value="Somalia" />
+    <option value="Somali" />
     <option value="South Africa" />
     <option value="South Georgia and The South Sandwich Islands" />
     <option value="Spain" />

@@ -9,7 +9,7 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
         public required Guid CollateralId { get; set; }
         public Guid EvaluatorUserID { get; set; }
         public Guid CheckerUserID { get; set; }
-
+        public string? MechanicalEqpmntName { get; set; }
         public string IndustrialBuildingMachineryType { get; set; } = string.Empty;
         public string EngineType { get; set; } = string.Empty;
         public string PowerSupply { get; set; } = string.Empty;

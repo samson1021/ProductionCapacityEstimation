@@ -1,4 +1,6 @@
-﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+﻿
+
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
 <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
@@ -10,9 +12,9 @@
 <script src="~/lib/datatable/js/buttons.html5.min.js"></script>
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
-<script src="~/lib/toastr/toastr.min.js"></script>
+@* <script src="~/lib/toastr/toastr.min.js"></script> *@
 <script>
-    $(document).ready(function () {
+    $(function () {
         var CaseId = $('#CaseId').val();
 
         fetch('/UserManagment/GetCheckerTeamleader')
@@ -80,7 +82,7 @@
                     { data: 'PropertyOwner', width: '20%' },
                     { data: 'Role', width: '15%' },
                     { data: 'Category', width: '25%' },
-                    { data: 'Type', width: '25%' },
+                    { data: 'MechanicalEqpmntName', width: '25%' },
                     {
                         data: 'Id',
                         width: '15%',

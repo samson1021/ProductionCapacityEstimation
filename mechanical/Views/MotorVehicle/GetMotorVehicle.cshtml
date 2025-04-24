@@ -40,7 +40,15 @@
                             </div>
                         </div>
                         <div class="row" style="margin-top:1.25rem;">
-                            <div class="row col-lg-4">
+                            <div class="row col-lg-6">
+                                <div class="col-lg-6">
+                                    <label>Mechanical Equipment Name:</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>@Model.MechanicalEqpmntName</div>
+                                </div>
+                            </div>
+                            <div class="row col-lg-6">
                                 <div class="col-lg-6">
                                     <label>Engine Type:</label>
                                 </div>
@@ -48,8 +56,9 @@
                                     <div>@Model.EngineType</div>
                                 </div>
                             </div>
-
-                            <div class="row col-lg-4">
+                        </div> 
+                        <div class="row">
+                            <div class="row col-lg-6">
                                 <div class="col-lg-6">
                                     <label>Number of Cylinders:</label>
                                 </div>
@@ -57,7 +66,7 @@
                                     <div>@Model.NoOfCylinder</div>
                                 </div>
                             </div>
-                            <div class="row col-lg-4">
+                            <div class="row col-lg-6">
                                 <div class="col-lg-6">
                                     <label>Transmission Type:</label>
                                 </div>
@@ -65,7 +74,6 @@
                                     <div>@Model.TransmissionType</div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="row" style="margin-top:1.25rem;">
                             <div class="row col-lg-4">
@@ -76,7 +84,6 @@
                                     <div>@Model.coolingSystem</div>
                                 </div>
                             </div>
-
                             <div class="row col-lg-4">
                                 <div class="col-lg-6">
                                     <label>Engine Power(Cc/Kw/Hp):</label>
@@ -104,7 +111,6 @@
                                     <div>@Model.BodyType</div>
                                 </div>
                             </div>
-
                             <div class="row col-lg-4">
                                 <div class="col-lg-6">
                                     <label>Cabin Type:</label>
@@ -131,7 +137,6 @@
                                     <div>@Model.Color</div>
                                 </div>
                             </div>
-
                             <div class="row col-lg-4">
                                 <div class="col-lg-6">
                                     <label>Motor Vehicle Make:</label>
@@ -259,7 +264,7 @@
                                     <label>Invoice Value:</label>
                                 </div>
                                 <div class="col-lg-6">
-                                    <div>@Model.InvoiceValue</div>
+                                    <div id="InvoiceValue">@Model.InvoiceValue</div>
                                 </div>
                             </div>
                             <div class="row col-lg-4">
@@ -378,30 +383,30 @@
 
             $(document).ready(function () {
                 $('#sendCheckForm').on('submit', function (e) {
-
                     e.preventDefault(); // Prevent the default form submission
-
-                    var formData = $(this).serialize(); // Serialize the form data
-                    console.log(formData)
-                    $.ajax({
-                        url: '/MOCase/SendCheking', // Ensure this URL is correct
-                        type: 'POST', // Ensure the method is POST
-                        data: formData,
-                        success: function (result) {
-                            if (result.redirect) {
-                                window.location.href = result.redirect; // Redirect if needed
-                            } else {
-                                alert('An error occurred. Please try again.'); // Show error message
+                    if (confirm("Are you sure you want to send this evaluation to the Checker?")) {
+                        var formData = $(this).serialize(); // Serialize the form data
+                        console.log(formData)
+                        $.ajax({
+                            url: '/MOCase/SendCheking', // Ensure this URL is correct
+                            type: 'POST', // Ensure the method is POST
+                            data: formData,
+                            success: function (result) {
+                                if (result.redirect) {
+                                    window.location.href = result.redirect; // Redirect if needed
+                                } else {
+                                    alert('An error occurred. Please try again.'); // Show error message
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('AJAX Error: ', status, error); // For debugging
+                                var errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                                    ? xhr.responseJSON.message
+                                    : 'An unexpected error occurred.';
+                                alert(errorMessage); // Show error message
                             }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('AJAX Error: ', status, error); // For debugging
-                            var errorMessage = xhr.responseJSON && xhr.responseJSON.message
-                                ? xhr.responseJSON.message
-                                : 'An unexpected error occurred.';
-                            alert(errorMessage); // Show error message
-                        }
-                    });
+                        });
+                    }
                 });
             });
         </script>

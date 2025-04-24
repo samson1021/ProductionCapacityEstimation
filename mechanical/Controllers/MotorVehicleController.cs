@@ -123,7 +123,7 @@ namespace mechanical.Controllers
             var motorVehicleDto = await _motorVehicleService.GetEvaluatedMotorVehicle(Id);
             var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
             ViewData["comments"] = comments;
-
+            ViewData["motorVehicleDto"]  = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.CollateralId == Id);
             return View(motorVehicleDto);
         }
 

@@ -28,14 +28,13 @@ namespace mechanical.Services.ConstMngAgrMachineryService
         public async Task<ConstMngAgrMachinery> CreateConstMngAgrMachinery(Guid userId, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto)
         {
             var constMngAgrMachinery = _mapper.Map<ConstMngAgrMachinery>(constMngAgrMachineryPostDto);
-            constMngAgrMachinery.InvoiceValue = constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachinery.CollateralId);
 
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
             constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
-            constMngAgrMachinery.ReplacementCost = constMngAgrMachineryPostDto.InvoiceValue;
+            constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
             constMngAgrMachinery.EvaluatorUserID = userId;
             await _cbeContext.ConstMngAgrMachineries.AddAsync(constMngAgrMachinery);
@@ -52,14 +51,13 @@ namespace mechanical.Services.ConstMngAgrMachineryService
         public async Task<ConstMngAgMachineryReturnDto> CheckConstMngAgrMachinery(Guid userId,Guid Id, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto)
         {
             var constMngAgrMachinery = _mapper.Map<ConstMngAgrMachinery>(constMngAgrMachineryPostDto);
-            constMngAgrMachinery.InvoiceValue = constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate;
 
             var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachinery.CollateralId);
 
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
             constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
-            constMngAgrMachinery.ReplacementCost = constMngAgrMachinery.InvoiceValue;
+            constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
             var constMngAgrMachineryCheck = _mapper.Map<ConstMngAgMachineryReturnDto>(constMngAgrMachinery);
             constMngAgrMachineryCheck.Id = Id;
@@ -112,14 +110,12 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             _mapper.Map(constMngAgrMachineryPostDto, constMngAgrMachinery);
 
 
-            constMngAgrMachinery.InvoiceValue = constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate;
-
             var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachinery.CollateralId);
 
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
             constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
-            constMngAgrMachinery.ReplacementCost = constMngAgrMachineryPostDto.InvoiceValue;
+            constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
 
             _cbeContext.Update(constMngAgrMachinery);

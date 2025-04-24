@@ -31,6 +31,11 @@ namespace mechanical.Controllers
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return View(latestCase);
         }
+        public async Task<IActionResult> CM()
+        {
+            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            return View(latestCase);
+        }
         public async Task<IActionResult> DVM()
         {
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
@@ -41,7 +46,17 @@ namespace mechanical.Controllers
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return View(latestCase);
         }
+        public async Task<IActionResult> CTL()
+        {
+            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            return View(latestCase);
+        }
         public async Task<IActionResult> MO()
+        {
+            var latestCase = await _caseService.GetMoLatestCases(base.GetCurrentUserId());
+            return View(latestCase);
+        }
+        public async Task<IActionResult> CO()
         {
             var latestCase = await _caseService.GetMoLatestCases(base.GetCurrentUserId());
             return View(latestCase);
@@ -74,11 +89,11 @@ namespace mechanical.Controllers
             else if (Role == "Maker Officer")
                 return RedirectToAction("MO");
             else if (Role == "Checker Manager")
-                return RedirectToAction("MM");
+                return RedirectToAction("CM");
             else if (Role == "Checker TeamLeader")
-                return RedirectToAction("MM");
+                return RedirectToAction("CTL");
             else if (Role == "Checker Officer")
-                return RedirectToAction("MM");
+                return RedirectToAction("CO");
             else return RedirectToAction("Admin");
 
             // if (role.Role.Name == "Relation Manager")

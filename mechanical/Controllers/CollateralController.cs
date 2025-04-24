@@ -41,7 +41,7 @@ namespace mechanical.Controllers
             return View();
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
+     //   [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Guid caseId, CollateralPostDto collateralDto)
         {
             if (ModelState.IsValid)
@@ -51,6 +51,21 @@ namespace mechanical.Controllers
                 return Ok(response);
             }
             return BadRequest();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateMoDocument(Guid CaseId, string DocumentType, IEnumerable<IFormFile>? Document)
+        {
+            try
+            {
+                await _collateralService.CreateMOFile(base.GetCurrentUserId(), CaseId, DocumentType, Document);
+                var response = new { message = "Document created successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -193,10 +208,10 @@ namespace mechanical.Controllers
                 ViewData["user"] = user;
 
             }
-
             if (response.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
             {
                 var motorVehicleDto = await _motorVehicleService.GetMotorVehicleByCollateralId(id);
+                ViewData["movaluation"] = motorVehicleDto;
             }
             else if (response.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
             {
@@ -220,7 +235,13 @@ namespace mechanical.Controllers
             return View(response);
         }
 
-
+        [HttpGet]
+        public async Task<IActionResult> GetRMRemarkCollaterals(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetRmRemarkCollaterals(base.GetCurrentUserId(), CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
         [HttpGet]
         public async Task<IActionResult> GetRemarkCollaterals(Guid CaseId)
         {
@@ -236,19 +257,29 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
         [HttpGet]
-        public async Task<IActionResult> GetMyAssigmentCollateral(Guid CaseId)
-        {
-            var collaterals = await _collateralService.GetMyAssignmentCollateral(base.GetCurrentUserId(), CaseId);
-            string jsonData = JsonConvert.SerializeObject(collaterals);
-            return Content(jsonData, "application/json");
-        }
-        [HttpGet]
         public async Task<IActionResult> GetCMCollaterals(Guid CaseId)
         {
             var collaterals = await _collateralService.GetCMCollaterals(base.GetCurrentUserId(), CaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetMMCompleteCollaterals(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetMMCompleteCollaterals(base.GetCurrentUserId(), CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMyAssigmentCollateral(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetMyAssignmentCollateral(base.GetCurrentUserId(), CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
+       
         [HttpGet]
         public async Task<IActionResult> GetMMPendCollaterals(Guid CaseId)
         {
@@ -309,9 +340,45 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> changeCollateralStatus(Guid Id, string status)
         {
-            var collaterals = await _collateralService.ChangeStatus(base.GetCurrentUserId(), Id, status);
-
-            return RedirectToAction("MyCases", "CO");
+            try
+            {
+                var collaterals = await _collateralService.ChangeStatus(base.GetCurrentUserId(), Id, status);
+                if (collaterals)
+                {
+                    return Json(new { success = true, message = "Status changed successfully.", data = collaterals });
+                }
+                else
+                {
+                 
+                    return Json(new { success = false, message = "unexpected error occur please contact the Systme Admin" });
+                }
+            }
+            catch (Exception ex)
+            {
+                if(ex.Message!=null && ex.Message != string.Empty)
+                {
+                    if (ex.Message == "correction")
+                    {
+                        return Json(new { success = false, message = "add comment before send to correction" });
+                    }
+                    else if (ex.Message == "Complete")
+                    {
+                        return Json(new { success = false, message = "Remove all comment before complete and  send to Relation Manager" });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "unexpected error occur please contact the Systme Admin" });
+                    }
+                }
+                else
+                {
+                    return Json(new { success = false, message = "unexpected error occur please contact the Systme Admin" });
+                }
+                
+            }
+              
+         
+                
         }
         //[HttpGet]
         //public async Task<IActionResult> GetCMCollaterals(Guid CaseId)

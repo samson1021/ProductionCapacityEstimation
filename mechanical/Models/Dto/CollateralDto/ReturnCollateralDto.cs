@@ -5,6 +5,9 @@ namespace mechanical.Models.Dto.CollateralDto
     {
         public Guid Id { get; set; }
         public required Guid CaseId { get; set; }
+
+        public string? MechanicalEqpmntName { get; set; }
+
         public required string PropertyOwner { get; set; }
         public required string Role { get; set; }
         public string? Category { get; set; } 

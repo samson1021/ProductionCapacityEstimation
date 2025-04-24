@@ -4,11 +4,24 @@
 @* @model mechanical.Models.Dto.MotorVehicleDto.CreateMotorVehicleDto;
  *@
 @model mechanical.Models.Dto.ConstMngAgrMachineryDto.ConstMngAgMachineryReturnDto;
+<script>
+    function formatNumber(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
+    function formatAndDisplayValue(elementId) {
+        var element = document.getElementById(elementId);
+        console.log(element.value);
+        var value = parseFloat(element.value); // Use .value
+        var formattedValue = formatNumber(value);
+        element.value = formattedValue; // Update the value of the input
+    }
+</script>
 @{
     var collateral = ViewData["collateral"] as ReturnEvaluatedCaseDto;
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
     var comment = ViewData["comments"] as Dictionary<string, string>;
+    var constMngAgMachinery = ViewData["constMngAgMachinery"];
 }
 <div class="content-header">
     <div class="container-fluid">
@@ -37,8 +50,8 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-append">
-                                <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2">Checked <i class="fas fa-check"></i></button>
-                                <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2">Send for Correction <i class="fas fa-reply-all"></i></button>
+                                <button type="submit"  class="btn btn-outline-success  mr-2 checkedButton">Checked <i class="fas fa-check"></i></button>
+                                <button type="submit" class="btn btn-outline-danger mr-2 correctionButton">Send for Correction <i class="fas fa-reply-all"></i></button>
                                 <button id="CheckAssesmentButton" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#CheckAssesmentModal">
                                     Evaluation Tool <i class="fas fa-toolbox"></i>
                                 </button>
@@ -47,7 +60,34 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
+                        <div class="form-group">
+                            <label id="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <div class="input-group">
+                                <input id="MechanicalEqpmntName" value=@Model.MechanicalEqpmntName type="text" class="form-control" readonly />
+                                <div class="input-group-append">
+                                    @{
+                                        try
+                                        {
+                                            if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                            {
+                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                        catch (Exception)
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-6">
                         <div class="form-group">
                             <label id="constructionMiningAgriculturalMachineryType">Cons, Min & Agri Machinery Type</label>
                             <div class="input-group">
@@ -74,7 +114,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-6">
                         <div class="form-group">
                             <label id="lblEngineType">Engine/Motor Type</label>
                             <div class="input-group">
@@ -102,7 +144,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
                         <div class="form-group">
                             <label id="PowerSupply">Power Supply</label>
                             <div class="input-group">
@@ -831,7 +873,7 @@
                         <div class="form-group">
                             <label id="lblInvoiceValue">Invoice Value</label>
                             <div class="input-group">
-                                <input id="txtInvoiceValue" type="number" class="form-control" value="@Model.InvoiceValue" readonly />
+                               <input id="txtInvoiceValue" type="text" class="form-control" value="@Model.InvoiceValue"  readonly />
                                 <div class="input-group-append">
                                     @{
                                         try
@@ -1013,7 +1055,7 @@
                                 <div class="form-group">
                                     <label>Replacement Cost</label>
                                     <div class="input-group">
-                                        <p class="form-control">@Model.ReplacementCost</p>
+                                        <input id="ReplacementCost" type="text" class="form-control" value="@Model.ReplacementCost" readonly />
                                         <div class="input-group-append">
                                             @{
                                                 try
@@ -1042,7 +1084,7 @@
                                 <div class="form-group">
                                     <label>Net Estimation Value</label>
                                     <div class="input-group">
-                                        <p class="form-control">@Model.NetEstimationValue</p>
+                                        <input id="NetEstimationValue" type="text" class="form-control" value="@Model.NetEstimationValue" readonly />
                                         <div class="input-group-append">
                                             @{
                                                 try
@@ -1095,8 +1137,8 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <div class="input-group-append">
-                                            <button type="submit" id="checkedButton" class="btn btn-outline-success  mr-2">Checked <i class="fas fa-check"></i></button>
-                                            <button type="submit" id="correctionButton" class="btn btn-outline-danger mr-2">Send for Correction <i class="fas fa-reply-all"></i></button>
+                                            <button type="submit"  class="btn btn-outline-success  mr-2 checkedButton">Checked <i class="fas fa-check"></i></button>
+                                            <button type="submit" class="btn btn-outline-danger mr-2 correctionButton">Send for Correction <i class="fas fa-reply-all"></i></button>
                                             <button id="CheckAssesmentButton" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#CheckAssesmentModal"> Evaluation Tool <i class="fas fa-toolbox"></i> </button>
                                         </div>
                                     </div>
@@ -1119,6 +1161,9 @@
     }
 }
 <script>
+        formatAndDisplayValue('ReplacementCost');
+    formatAndDisplayValue('txtInvoiceValue');
+    formatAndDisplayValue('NetEstimationValue');
     const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
 
     // const myCaseId = "myCase.Id";
@@ -1151,8 +1196,6 @@
                     @{
                         if (collateralFiles != null)
                         {
-
-
                             foreach (var collateralFile in collateralFiles)
                             {
                                 <tr>

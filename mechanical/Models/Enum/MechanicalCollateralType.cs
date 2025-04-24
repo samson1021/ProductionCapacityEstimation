@@ -4,9 +4,7 @@ namespace mechanical.Models.Enum
 {
     public enum MechanicalCollateralType
     {
-        [Display(Name = "Industrial (Mfg) Machinery")]
-        IndustrialMachinery,
-
+        Null,
         [Display(Name = "Industrial (Mfg.) Process Line Equipment")]
         IndustrialMfgProcessLineEquipment,
 
@@ -95,7 +93,9 @@ namespace mechanical.Models.Enum
         CUV,
 
         [Display(Name = "Others, please specify")]
-        Others, [Display(Name = "Chain Excavator")]
+        Others, 
+        
+        [Display(Name = "Chain Excavator")]
         ChainExcavator,
 
         [Display(Name = "Bull Dozer")]

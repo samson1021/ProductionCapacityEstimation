@@ -1,9 +1,12 @@
 @model mechanical.Models.PCE.Dto.PCECaseDto.PCECaseDto;
-
+@inject IHttpContextAccessor HttpContextAccessor
 @{
     var empId = ViewData["EmployeeId"];
-}
+    var unit = HttpContextAccessor.HttpContext.Session.GetString("unit");
+    var segment = HttpContextAccessor.HttpContext.Session.GetString("segment");
+    var district = HttpContextAccessor.HttpContext.Session.GetString("district");
 
+}
 <link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
@@ -13,9 +16,8 @@
             </div>
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
-                    <li class="breadcrumb-item active">Create New PCE Case</li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("RM", "Dashboard")">Home</a></li>
+                    <li class="breadcrumb-item active">Create new case</li>
                 </ol>
             </div>
         </div>
@@ -33,24 +35,22 @@
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create" onsubmit="return validateForm()">
                     <div class="row">
+                        <input type="hidden" id="unit" value="@unit" />
+                        <input type="hidden" id="segment" value="@segment" />
+                        <input type="hidden" id="district" value="@district" />
                         <div class="form-group col-xl-10">
-                            <label asp-for="Segment">Segment <i class="text-danger">*</i></label>
-                            <select asp-for="Segment" class="form-control form-control" id="Segment" required>
-                                <option value="" disabled selected>Select Segment</option>
-                                <option value="Wholesale">Wholesale</option>
+                            <label asp-for="Segment">Segement <i class="text-danger">*</i></label>
+                            <select asp-for="Segment" class="form-control form-control" id="Segement" required>
+                                <option value="" disabled selected>Select Segement</option>
+                                <option value="Whole" >Whole</option>
                                 <option value="Retail">Retail</option>
-                                <option value="Workout">Workout</option>
-                                <option value="Legal">Legal</option>
-                                <option value="Acquired Asset Administration">Acquired Asset Administration</option>
-                                <option value="Facility Management">Facility Management</option>
                             </select>
                             <span asp-validation-for="Segment" class="text-danger"></span>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="CaseNo">Case Number</label>
+                            <label asp-for="CaseNo">Case Number <i class="text-danger">*</i></label>
                             <div class="input-group" style="margin:0;">
                                 <input asp-for="CaseNo" type="text" class="form-control col-lg-10" id="caseNumber" required readonly>
                                 <input type="button" class="form-control btn btn-outline-primary  col-lg-2" id="GenerateCaseNo" value="Generate" required>
@@ -60,15 +60,18 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="CustomerId">Customer ID</label>
-                            <input asp-for="CustomerId" type="number" class="form-control" id="CustomerId" maxlength="10" required>
+                            <label asp-for="CustomerId">Customer ID <i class="text-danger">*</i></label>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="CustomerId" type="number" class="form-control col-lg-10" id="CustomerId" maxlength="10" required>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-2" id="GetCustomerName" value="Get Name" required>
+                            </div>
                             <span id="CustomerId-error" asp-validation-for="CustomerId" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xl-10">
-                            <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name</label>
-                            <input asp-for="ApplicantName" type="text" class="form-control" id="applicantName" required oninvalid="handleInvalidInput()">
+                            <label asp-for="ApplicantName" id="applicantNameLabel">Applicant Name <i class="text-danger">*</i></label>
+                            <input asp-for="ApplicantName" readonly type="text" class="form-control" id="applicantName" required oninvalid="handleInvalidInput()">
                             <span id="applicantName-error" asp-validation-for="ApplicantName" class="text-danger"></span>
                         </div>
 
@@ -77,45 +80,165 @@
                     <div class="row">
                         <div class="form-group col-xl-10">
                             <label asp-for="CustomerEmail">Customer Email</label>
-                            <input asp-for="CustomerEmail" type="email" class="form-control" id="CustomerId">
+                            <input asp-for="CustomerEmail" type="email" class="form-control">
                             <span asp-validation-for="CustomerEmail" class="text-danger"></span>
                         </div>
                     </div>
+                    <div class="row" id="businessLicnese">
+                        <div class="form-group col-lg-10">
 
+                            <label asp-for="BussinessLicence">Business License  <i class="text-danger">*</i></label>
+                            <input asp-for="BussinessLicence" type="file" class="form-control" id="ownerCertificate" required>
+                            <span asp-validation-for="BussinessLicence" class="text-danger"></span>
+                        </div>
+                    </div>
                     <div class="row">
                         <button type="submit" class="col-xl-4  btn bg-purple">Register</button>
                     </div>
                 </form>
             </div>
         </div>
+    </section>
 </section>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");    
     }
     <script>
-        document.getElementById('CustomerId').addEventListener('blur', function () {
-         
-            // Show loading indicator
-            showLoadingIndicator();
+        var unitValue = $('#unit').val();
+        var segmentValue = $('#segment').val();
+        var districtValue = $('#district').val();
 
-            var CustomerId = this.value;
+        console.log(segmentValue);
+
+        if(segmentValue == "WholesaleConventional" || segmentValue =="WholesaleIFB"){
+            console.log('inside....');
+             $("#businessLicnese").show();
+        } else{
+             $("#businessLicnese").hide();
+        }
+        if (segmentValue === 'AcquiredAssetAdministration') {
+            $("#applicantName").val('CBE');
+            $("#applicantName").prop('readonly', true);
+        }
+
+
+        var options = [];
+        if (unitValue === 'LargeCorporate') {
+            options = [
+                { value: districtValue + '-Large Corporate', text: 'Large Corporate' }
+            ];
+        } else if (unitValue === 'MediumCorporate') {
+            options = [
+                 { value: districtValue + '-Medium Corporate', text: 'Medium Corporate' }
+            ];
+        } else if (unitValue === 'SmallCorporate') {
+            options = [
+                 { value: districtValue + '-Small Corporate', text: 'Small Corporate' }
+            ];
+        } else if (unitValue === 'WholesaleDistrict') {
+            options = [
+                 { value: districtValue + '-SME', text: 'SME' },
+                 { value: districtValue + '-Micro', text: 'Micro' },
+                 { value: districtValue + '-Cooperative-primary', text: 'Cooperative-primary' }
+            ];
+        }else if (unitValue === 'CooperativeAndFinancialInstitution') {
+            options = [
+                 { value: districtValue + '-Cooperative-Union', text: 'Cooperative-Union' },
+                 { value: districtValue + '-Cooperative-league', text: 'Cooperative-league' },
+                 { value: districtValue + '-Cooperative-Federation', text: 'Cooperative-Federation' },
+                 { value: districtValue + '-Financial institution', text: 'Financial institution' }
+            ];
+        }else if (unitValue === 'StateOwnedEnterpriseAndOtherPublic') {
+            options = [
+                 { value: districtValue + '-State Owned Enterprise & OtherPublic', text: 'State Owned Enterprise & OtherPublic' }
+            ];
+        }else if (unitValue === 'RegionalGovernment') {
+            options = [
+                 { value: districtValue + '-Regional Government', text: 'Regional Government' }
+            ];
+        }else if (unitValue === 'CentralGovernment') {
+            options = [
+                 { value: districtValue + '-Central Government', text: 'Central Government' }
+            ];
+        }else if (unitValue === 'IFBCorporate') {
+            options = [
+                 { value: districtValue + '-IFB Large Corporate', text: 'Large Corporate' },
+                 { value: districtValue + '-IFB Medium Corporate', text: 'Medium Corporate' },
+                 { value: districtValue + '-IFB Small Corporate', text: 'Small Corporate' }
+            ];
+        }else if (unitValue === 'IFBSMEBanking') {
+            options = [
+                 { value: districtValue + '-IFB SME Banking', text: 'IFB SME Banking' }
+            ];
+        }else if (unitValue === 'IFBDistrict') {
+            options = [
+                 { value: districtValue + '-IFB SME', text: 'SME' },
+                 { value: districtValue + '-IFB Micro', text: 'Micro' },
+                 { value: districtValue + '-IFB Cooperative-primary', text: 'Cooperative-primary' }
+            ];
+        }else if (unitValue === 'Retail') {
+            options = [
+                 { value: districtValue + '-CBE Staff', text: 'CBE Staff' },
+                 { value: districtValue + '-Diaspora', text: 'Diaspora' },
+                 { value: districtValue + '-Employees of NGO & Int. organization', text: 'Employees of NGO & Int. organization' },
+                 { value: districtValue + '-Employees of high valued corporate customers', text: 'Employees of high valued corporate customers' },
+                 { value: districtValue + '-Exporter & General manager of exporter', text: 'Exporter & General manager of exporter' },
+                 { value: districtValue + '-Middle Customers', text: 'Middle Customers' },
+                 { value: districtValue + '-Other FCY generating entity', text: 'Other FCY generating entity' }
+            ];
+        }else if (unitValue === 'Foreclosure') {
+            options = [
+                 { value: districtValue + '-Foreclosure', text: 'Foreclosure' }
+            ];
+        }else if (unitValue === 'Litigation') {
+            options = [
+                 { value: districtValue + '-Litigation', text: 'Litigation' }
+            ];
+        }else if (unitValue === 'AcquiredAssetAdministration') {
+            options = [
+                 { value: districtValue + '-Acquired Asset Administration', text: 'Acquired Asset Administration' }
+            ];
+        }else if (unitValue === 'FacilityManagement') {
+            options = [
+                 { value: districtValue + '-Facility Management', text: 'Facility Management' }
+            ];
+        }
+
+        // Populate the dropdown
+        var $segmentSelect = $('#Segement');
+        options.forEach(function(option) {
+            $segmentSelect.append(new Option(option.text, option.value));
+        });
+
+        document.getElementById('GetCustomerName').addEventListener('click', function () {
+            var customerId = document.getElementById('CustomerId').value;
+            if (customerId.length !== 10) {
+                document.getElementById("CustomerId-error").textContent = "Customer ID must be exactly 10 digits.";
+                return;
+            }
+            showLoadingIndicator();
+            console.log(customerId);
             $.ajax({
                 type: 'POST',
                 url: '/Case/GetCustomerName',
-                data: { customerId: CustomerId },
+                data: { customerId: customerId },
                 success: function (response) {
                     if (response == "err") {
-                        alert("unable to load applicant name");
+                        toastr.error("unable to load applicant name");
+                        document.getElementById('applicantName').readOnly = false;
                     } else {
                         document.getElementById('applicantName').value = response;
+                        document.getElementById('applicantName').readOnly = false;
                     }
                     // Hide loading indicator
                     hideLoadingIndicator();
                 },
                 error: function (xhr, status, error) {
                     // Hide loading indicator
+                    document.getElementById('applicantName').readOnly = false;
                     hideLoadingIndicator();
                 }
             });
@@ -124,18 +247,27 @@
         function showLoadingIndicator() {
             // Disable the page
             document.body.style.pointerEvents = 'none';
-            document.body.style.opacity = '0.5';
+            document.body.style.opacity = '0.9';
 
             // Show a loading indicator
             var loadingIndicator = document.createElement('div');
             loadingIndicator.classList.add('loading-indicator');
+
+            // Style the loading indicator
+            loadingIndicator.style.position = 'fixed';
+            loadingIndicator.style.top = '50%';
+            loadingIndicator.style.left = '50%';
+            loadingIndicator.style.transform = 'translate(-50%, -50%)';
+            loadingIndicator.style.zIndex = '9999'; // Ensure it's on top
+            loadingIndicator.style.opacity = '1'; // Fully visible
+            loadingIndicator.style.textAlign = 'center';
 
             var spinner = document.createElement('div');
             spinner.classList.add('spinner');
             loadingIndicator.appendChild(spinner);
 
             var loadingText = document.createElement('span');
-            loadingText.textContent = 'Getting customer name, please wait...';
+            loadingText.textContent = 'please wait...';
             loadingIndicator.appendChild(loadingText);
 
             document.body.appendChild(loadingIndicator);
@@ -155,7 +287,6 @@
 
 
         $(document).ready(function () {
-
 
 
             $("#GenerateCaseNo").on('click', function () {
@@ -184,10 +315,9 @@
             });
         });
 
-        //this is the input validation for application name
         document.getElementById("applicantName").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
+            var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
 
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
@@ -197,7 +327,7 @@
                 document.getElementById("applicantName-error").textContent = "";
             }
         });
-        //validate the customer Id length
+
         document.getElementById("CustomerId").addEventListener("input", function () {
             var input = this.value;
             if (input.length !== 10) {
@@ -208,10 +338,23 @@
                 document.getElementById("CustomerId-error").textContent = "";
             }
         });
-        var applicantNameLabel = document.getElementById('applicantNameLabel');
+        var segementSelect = document.getElementById('Segement');
         var applicantNameInput = document.getElementById('applicantName');
 
 
+        segementSelect.addEventListener('change', function () {
+            var selectedSegement = segementSelect.value;
+            console.log(selectedSegement);
 
+
+            if (selectedSegement === 'Workout' || selectedSegement === 'Legal') {
+                applicantNameLabel.textContent = 'Defaulter Name';
+            } else {
+                applicantNameLabel.textContent = 'Applicant Name';
+            }
+
+
+        });
     </script>
 }
+

@@ -46,18 +46,16 @@ using mechanical.Services.CaseTerminateService;
 
 /////////////
 using mechanical.Mapper;
-using mechanical.Controllers;
-using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.ProductionCapacityService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
 using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
+using Microsoft.AspNetCore.Authentication;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,7 +81,6 @@ builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = null; // For Newtonsoft.Json
-            options.JsonSerializerOptions.IgnoreNullValues = true; // Ignore null values
             options.JsonSerializerOptions.WriteIndented = true; // Indent the JSON output
             // Add any other serialization options you need
 
@@ -96,7 +93,7 @@ builder.Services.AddSwaggerGen();
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
 //            throw new InvalidOperationException("Connection string 'CbeCreditContext' not found.")));
 builder.Services.AddDbContext<CbeContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("CbeCreditContext") ??
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CbeContext") ??
                          throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
 
 //production capacity estimation
@@ -130,6 +127,7 @@ builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
+builder.Services.AddScoped<mechanical.Services.AuthenticatioinService.IAuthenticationService, LdapAuthenticationService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -137,12 +135,14 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Registering PCE services
 // builder.Services.AddHttpClient();
 // builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+
 // builder.Services.AddTransient<IReportService, ReportService>();
 //////////////////////////////////////////////////////////////////////////////////////////////
-
 // Add services to the container.
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(options =>
@@ -174,23 +174,21 @@ builder.Services.AddAuthorization(options =>
 //builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
-if (args.Length == 1 && args[0].ToLower() == "seeddata")
-{
-    // Seed.SeedData(app);
-    // SeedDistrict.SeedData(app);
-    // SeedUsersRolesAndDistricts.SeedData(app);
-}
+//if (args.Length == 1 && args[0].ToLower() == "seeddata")
+//{
+//    Seed.SeedData(app);
+//    SeedDistrict.SeedData(app);
+//    SeedUsersRolesAndDistricts.SeedData(app);
+//}
 
 // Apply database migrations automatically (if any)
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-    context.Database.Migrate(); // Apply migrations
-    // Seed.SeedData(app);
-    // SeedDistrict.SeedData(app);
-    SeedUsersRolesAndDistricts.SeedData(app);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
+//    context.Database.Migrate();
+//    SeedUsersRolesAndDistricts.SeedData(app);
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

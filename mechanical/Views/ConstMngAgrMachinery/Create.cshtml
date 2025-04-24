@@ -28,7 +28,12 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
                     <input asp-for="CollateralId" value=@collateral.Id type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="constructionMiningAgriculturalMachineryType">Cons, Min & Agri Machinery Type</label>
                             <select asp-for="constructionMiningAgriculturalMachineryType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -36,6 +41,8 @@
                             </select>
                             <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineType"> Engine/Motor Type </label>
                             <select asp-for="EngineType" class="form-control"
@@ -52,8 +59,6 @@
                             </select>
                             <span asp-validation-for="PowerSupply" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="NoOfCylinder"> No. Cylinder</label>
                             <select asp-for="NoOfCylinder" class="form-control"
@@ -62,6 +67,9 @@
                             </select>
                             <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                     
                         <div class="form-group col-xl-4">
                             <label asp-for="TransmissionType">Transmission Type</label>
                             <select asp-for="TransmissionType" class="form-control"
@@ -78,8 +86,6 @@
                             </select>
                             <span asp-validation-for="IgnitionSystem" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="CoolingType">Cooling System</label>
                             <select asp-for="CoolingType" class="form-control"
@@ -88,6 +94,9 @@
                             </select>
                             <span asp-validation-for="CoolingType" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                      
                         <div class="form-group col-xl-4">
                             <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
                             <input asp-for="EnginePower" type="text" class="form-control" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
@@ -98,8 +107,6 @@
                             <input asp-for="WorkingProductionCapacity" type="text" class="form-control" id="enginePower" placeholder="Working/Production Capacity" required>
                             <span asp-validation-for="WorkingProductionCapacity" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="TechnologyStandard">Technology Standard</label>
                             <select asp-for="TechnologyStandard" class="form-control"
@@ -108,6 +115,9 @@
                             </select>
                             <span asp-validation-for="TechnologyStandard" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                       
                         <div class="form-group col-xl-4">
                             <label asp-for="MakerPreferenceType">Type of Maker Preference</label>
                             <select asp-for="MakerPreferenceType" class="form-control" id="enginePower" required>
@@ -125,8 +135,6 @@
                             </select>
                             <span asp-validation-for="CabinType" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="NumberOfAxle">Number of Axles</label>
                             <select asp-for="NumberOfAxle" class="form-control"
@@ -135,6 +143,9 @@
                             </select>
                             <span asp-validation-for="NumberOfAxle" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                      
                         <div class="form-group col-xl-4">
                             <label asp-for="Color">Color</label>
                             <input asp-for="Color" list="carColors" type="text" class="form-control" placeholder="Select Car Color" required>
@@ -145,8 +156,6 @@
                             <input asp-for="MakerCompany" type="text" class="form-control" id="MakerCompany" placeholder="Insert Maker Company" required>
                             <span asp-validation-for="MakerCompany" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="CurrentEqpmntCondition">Current Equipment Condition</label>
                             <select asp-for="CurrentEqpmntCondition" class="form-control"
@@ -155,6 +164,9 @@
                             </select>
                             <span asp-validation-for="CurrentEqpmntCondition" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                       
                         <div class="form-group col-xl-4">
                             <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
                             <select asp-for="AllocatedPointsRange" class="form-control"
@@ -168,13 +180,14 @@
                             <input asp-for="ModelNo" type="text" value="@collateral.ModelNo" class="form-control" placeholder="Model Number" required>
                             <span asp-validation-for="ModelNo" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="EngineNo">Engine Number</label>
                             <input asp-for="EngineNo" type="text" value="@collateral.EngineMotorNo" class="form-control" placeholder="Engine Number" required>
                             <span asp-validation-for="EngineNo" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                       
                         <div class="form-group col-xl-4">
                             <label asp-for="ChassisNo">Chassis Number</label>
                             <input asp-for="ChassisNo" type="text" value="@collateral.ChassisNo" class="form-control" placeholder="Chassis Number" required>
@@ -185,13 +198,14 @@
                             <input asp-for="SerialNo" type="text" value="@collateral.SerialNo" class="form-control" placeholder="Serial Number" required>
                             <span asp-validation-for="SerialNo" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xl-4">
                             <label asp-for="PlateNo">Plate Number</label>
                             <input asp-for="PlateNo" type="text" value="@collateral.PlateNo" class="form-control" placeholder="Plate Number" required>
                             <span asp-validation-for="PlateNo" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="row">
+                       
                         <div class="form-group col-xl-4">
                             <label asp-for="TDNo">TD Number</label>
                             <input asp-for="TDNo" type="text" class="form-control" placeholder="TD Number" required>
@@ -202,13 +216,15 @@
                             <input asp-for="YearOfManufacture" value="@collateral.ManufactureYear" type="number" class="form-control" min="1900" max="2099" step="1" required>
                             <span asp-validation-for="YearOfManufacture" class="text-danger"></span>
                         </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="CountryOfOrigin">Country of Origin</label>
+                            <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
+                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
+                        </div>
+                       
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-4">
-                            <label asp-for="Remark">Remark</label>
-                            <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
-                            <span asp-validation-for="Remark" class="text-danger"></span>
-                        </div>
+                     
                         <div class="form-group col-xl-4">
                             <label asp-for="PhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
                             <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
@@ -219,21 +235,26 @@
                             <textarea asp-for="OverallSurveyAssesment" class="form-control" placeholder="Overall Survey Assessment" rows="3" required></textarea>
                             <span asp-validation-for="OverallSurveyAssesment" class="text-danger"></span>
                         </div>
+                        <div class="form-group col-xl-4">
+                            <label asp-for="Remark">Remark</label>
+                            <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
+                            <span asp-validation-for="Remark" class="text-danger"></span>
+                        </div>
+                      
                     </div>
                     <div class="row">
-                        <div class="form-group col-xl-3">
-                            <label asp-for="CountryOfOrigin">Country of Origin</label>
-                            <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
-                            <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-xl-3">
+                      
+                        <div class="form-group col-xl-4">
                             <label asp-for="InvoiceValue">Invoice Value</label>
                             <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
                             <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-5" id="GetExchangeRate" value="Get Exchange Rate" required>
+                            </div>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
@@ -249,9 +270,6 @@
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-sm bg-purple mr-2">Save <i class="fas fa-save"></i></button>
 
-                                    <button type="button" id="RejectButton" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectionModal1">
-                                        Return <i class="fas fa-backward"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -263,9 +281,14 @@
 </section>
 @section Scripts {
     <script>
-        document.getElementById('Currency').addEventListener('change', function () {
+         document.getElementById('GetExchangeRate').addEventListener('click', function () {
+            var currency = document.getElementById("Currency").value;
+            if(currency == "" || currency == null){
+                  toastr.error("please select currency ...");
+                  return;
+            }
             showLoadingIndicator();
-            var currency = this.value;
+
             $.ajax({
                 type: 'POST',
                 url: '/MotorVehicle/Currency',
@@ -285,7 +308,7 @@
 
         function showLoadingIndicator() {
             document.body.style.pointerEvents = 'none';
-            document.body.style.opacity = '0.5';
+            document.body.style.opacity = '0.7';
 
             var loadingIndicator = document.createElement('div');
             loadingIndicator.classList.add('loading-indicator');
@@ -294,7 +317,7 @@
             spinner.classList.add('spinner');
             loadingIndicator.appendChild(spinner);
 
-            var loadingText = document.createElement('span');
+            var loadingText = document.createElement('h6');
             loadingText.textContent = 'Getting Currency name, please wait...';
             loadingIndicator.appendChild(loadingText);
 
@@ -629,7 +652,7 @@
     <option value="Slovakia" />
     <option value="Slovenia" />
     <option value="Solomon Islands" />
-    <option value="Somalia" />
+    <option value="Somali" />
     <option value="South Africa" />
     <option value="South Georgia and The South Sandwich Islands" />
     <option value="Spain" />

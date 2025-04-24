@@ -11,7 +11,7 @@ namespace mechanical.Models.PCE.Entities
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Only letters and spaces are allowed.")]
         public string ApplicantName { get; set; }
         public string CustomerId { get; set; } = string.Empty;
-        public string CustomerEmail { get; set; } = string.Empty;
+        public string? CustomerEmail { get; set; } = string.Empty;
         public required string Segment { get; set; }
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
