@@ -37,7 +37,7 @@ namespace mechanical.Models.PCE.Enum.ProductionCapacity
         [Display(Name = "Mekelle")]
         Mekelle,   
              
-        [Display(Name = "Others please specify")]
-        Otherspleasespecify
+        [Display(Name = "Others")]
+        Others
     }
 }

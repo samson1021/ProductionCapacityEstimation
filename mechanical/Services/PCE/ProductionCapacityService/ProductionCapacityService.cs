@@ -87,6 +87,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 production.CreatedById = UserId;
                 production.CurrentStage = "Relation Manager";
                 production.CurrentStatus = "New";
+                production.ProductionType = "Manufacturing";
 
                 await _cbeContext.ProductionCapacities.AddAsync(production);
 
