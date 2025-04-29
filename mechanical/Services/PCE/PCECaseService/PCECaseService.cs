@@ -380,9 +380,19 @@ namespace mechanical.Services.PCE.PCECaseService
                                     .Include(res => res.ProductionCapacities)
                                     .Where(c => productions.Select(p => p.PCECaseId).Contains(c.Id))
                                     .FirstOrDefault();
+            //var pceEvaluations = await _cbeContext.PCEEvaluations
+            //                                        .Include(e => e.TimeConsumedToCheck)
+            //                                        .Include(res => res.Evaluator).Where(res => res.PCEId == Id).ToListAsync();
+
+            // Get PCE evaluations with related data including production line evaluations
             var pceEvaluations = await _cbeContext.PCEEvaluations
-                                                    .Include(e => e.TimeConsumedToCheck)
-                                                    .Include(res => res.Evaluator).Where(res => res.PCEId == Id).ToListAsync();
+                                                .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.Evaluator)
+                                                .Include(e => e.productionLineEvaluations)
+                                                    .ThenInclude(ple => ple.Evaluator)
+                                                .Where(res => res.PCEId == Id)
+                                                .ToListAsync();
+
             var pceCaseSchedule = await _cbeContext.PCECaseSchedules
                                                     .Where(res => res.PCECaseId == Id && res.Status == "Approved")
                                                     .FirstOrDefaultAsync();                    
@@ -392,25 +402,40 @@ namespace mechanical.Services.PCE.PCECaseService
                 PCECases = pceCase,
                 Productions = productions,
                 PCEEvaluations = pceEvaluations,
-                PCECaseSchedule = pceCaseSchedule
+                PCECaseSchedule = pceCaseSchedule,
+                ProductionLineEvaluations = pceEvaluations
+                                             .SelectMany(e => e.productionLineEvaluations ?? Enumerable.Empty<ProductionLineEvaluation>())
+                                             .ToList()
             };
+
+
         }
         public async Task<PCEReportDataDto> GetPCEAllReportData(Guid Id)
         {
 
             var pceCase = _cbeContext.PCECases.Where(c => c.Id==Id).FirstOrDefault();
             var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == Id).ToListAsync();
+            //var pceEvaluations = await _cbeContext.PCEEvaluations
+            //                                    .Include(e => e.TimeConsumedToCheck)
+            //                                    .Where(c=>productions.Select(d=>d.Id).Contains(c.PCEId)).ToListAsync();
             var pceEvaluations = await _cbeContext.PCEEvaluations
-                                                .Include(e => e.TimeConsumedToCheck)
-                                                .Where(c=>productions.Select(d=>d.Id).Contains(c.PCEId)).ToListAsync();
-         
+                                    .Include(e => e.TimeConsumedToCheck)
+                                    .Include(e => e.Evaluator)
+                                    .Include(e => e.productionLineEvaluations)
+                                        .ThenInclude(ple => ple.Evaluator)
+                                    .Where(res => res.PCEId == Id)
+                                    .ToListAsync();
+
             var pceCaseSchedule = await _cbeContext.PCECaseSchedules.Where(res => res.PCECaseId == Id && res.Status == "Approved").FirstOrDefaultAsync();
             return new PCEReportDataDto
             {
                 PCECases = pceCase,
                 Productions = productions,
                 PCEEvaluations = pceEvaluations,
-                PCECaseSchedule = pceCaseSchedule
+                PCECaseSchedule = pceCaseSchedule,
+                                ProductionLineEvaluations = pceEvaluations
+                                             .SelectMany(e => e.productionLineEvaluations ?? Enumerable.Empty<ProductionLineEvaluation>())
+                                             .ToList()
             };
         }
         
