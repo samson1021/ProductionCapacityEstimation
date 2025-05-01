@@ -56,6 +56,7 @@ using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
 using Microsoft.AspNetCore.Authentication;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -114,6 +115,7 @@ builder.Services.AddScoped<ICaseCommentService, CaseCommentService>();
 builder.Services.AddScoped<ICollateralService, CollateralService>();
 builder.Services.AddScoped<IConstMngAgrMachineryService, ConstMngAgrMachineryService>();
 builder.Services.AddScoped<IIndBldgFacilityEquipmentService, IndBldgFacilityEquipmentService>();
+builder.Services.AddScoped<IIndBldgFacilityEquipmentCostService, IndBldgFacilityEquipmentCostService>();
 builder.Services.AddScoped<ICMCaseService, CMCaseService>();
 builder.Services.AddScoped<IMailService, MailService>();
 //builder.Services.AddScoped<ICTLCaseService, CTLCaseService>();

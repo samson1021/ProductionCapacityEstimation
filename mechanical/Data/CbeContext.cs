@@ -82,6 +82,7 @@ namespace mechanical.Data
         public DbSet<Collateral> Collaterals { get; set; }
         public DbSet<ConstMngAgrMachinery> ConstMngAgrMachineries { get; set; }
         public DbSet<IndBldgFacilityEquipment> IndBldgFacilityEquipment { get; set; }
+        public DbSet<IndBldgFacilityEquipmentCosts> IndBldgFacilityEquipmentCosts { get; set; }
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
 
