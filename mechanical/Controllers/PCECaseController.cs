@@ -328,10 +328,18 @@ namespace mechanical.Controllers.PCE
 
             double customerId = Convert.ToDouble(pceReportData.PCECases.CustomerId);
 
-            //var customerinfo = await _caseService.GetCustomerName(customerId);
-            var customerinfo = "err";
-            if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
-            ViewData["customerinfo"] = customerinfo;
+            var customerinfo = await _caseService.GetCustomerName(customerId);
+
+            if (customerinfo == null || customerinfo== "err") { 
+            
+            ViewData["customerinfo"] = "Unable Customer Name";
+
+            }
+            else
+            {
+                ViewData["customerinfo"] = customerinfo;
+
+            }
 
 
 
@@ -366,6 +374,7 @@ namespace mechanical.Controllers.PCE
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
             ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            ViewData["ProductionLineEvaluations"] = pceReportData.ProductionLineEvaluations;
 
             return View();
         }
