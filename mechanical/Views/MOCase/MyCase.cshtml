@@ -219,17 +219,12 @@
                 contentType: 'application/json'
             })
             .done(function(data) {
-                // Destroy existing DataTable if it exists
                 if ($.fn.DataTable.isDataTable('#industrialCollateralTable')) {
                     $('#industrialCollateralTable').DataTable().destroy();
-                    $('#industrialCollateralTable').empty();
                 }
-                console.log(data);
-                // Initialize with new data
                 initializeDataTable(data);
-                toastr.success("Collaterals loaded successfully");
+                // toastr.success("Collaterals loaded successfully");
 
-                // Add event handlers for dynamic buttons
                 $(document).off('click', '.edit-btn, .delete-btn').on('click', '.edit-btn, .delete-btn', function() {
                     const id = $(this).data('id');
                     if ($(this).hasClass('edit-btn')) {
@@ -246,9 +241,10 @@
             });
         }
 
-        // Set this when your page loads with the correct case ID
-        // currentCaseId = 'your-case-id-here';
-        loadCollaterals(currentCaseId);
+      
+        $("#addCostOfInsuranceFreightButton").click(function(){
+              loadCollaterals(currentCaseId);
+        })
 
         $('#addNewCollateralButton').click(function() {
             $('#formModalTitle').text('Add New Industrial Collateral');
@@ -256,41 +252,44 @@
             $('#collateralFormModal').data('editMode', false);
             $('#collateralFormModal').modal('show');
         });
+         $('#collateralForm').on('submit', function(e) {
+            e.preventDefault(); 
 
-        function saveCollateral() {
-            try {
-                const formData = {
-                    insuranceFreightOthersCost: parseFloat($('#insuranceFreightCost').val()),
-                    collateralCount: parseInt($('#collateralCount').val()),
-                    // Add other fields as needed
-                };
+            var caseId = $('#CaseId').val();
+            var insuranceCost = $('#insuranceCost').val();
+            var machineCount = $('#machineCount').val();
 
-                const url = $('#collateralFormModal').data('editMode')
-                    ? `/api/IndustrialCollateralCosts/${$('#collateralFormModal').data('editId')}`
-                    : `/api/IndustrialCollateralCosts/${currentCaseId}`;
+            var postData = {
+                InsuranceFreightOthersCost: parseFloat(insuranceCost),
+                CollateralCount: parseInt(machineCount)
+            };
 
-                const method = $('#collateralFormModal').data('editMode') ? 'PUT' : 'POST';
-
-                const response =  fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (!response.ok) throw new Error('Failed to save collateral');
-
-                $('#collateralFormModal').modal('hide');
-                loadCollaterals(currentCaseId);
-                toastr.success("Collateral saved successfully");
-            } catch (error) {
-                console.error('Error saving collateral:', error);
-                toastr.error("Failed to save collateral");
+            if (!insuranceCost || !machineCount) {
+                alert('Please fill all required fields');
+                return;
             }
-        }
 
-        $('#confirmSaveCollateral').click(saveCollateral);
+            $.ajax({
+                url: `/api/IndustrialCollateralCosts/${caseId}`,
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: function(response) {
+                    $('#collateralFormModal').modal('hide');
+                     toastr.success('Data saved successfully');
+                     loadCollaterals(currentCaseId)
+                },
+                error: function(xhr, status, error) {
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        toastr.error('Error: ' + xhr.responseJSON.message);
+                    } else {
+                        toastr.error('Failed to save data. Please try again.');
+                    }
+                }
+            });
+        });
 
         $(document).on('click', '.edit-btn',  function() {
             const id = $(this).data('id');

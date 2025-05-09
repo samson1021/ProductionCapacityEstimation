@@ -17,16 +17,17 @@ namespace mechanical.Controllers
         }
 
         [HttpPost("{caseId}")]
-        public async Task<IActionResult> Create(Guid caseId, [FromBody] IndBldgFacilityEquipmentPostDto indBldgFacilityEquipmentPostDto)
+        public async Task<IActionResult> Create(Guid caseId, [FromBody] IndBldgFacilityEquipmentCostsPostDto indBldgFacilityEquipmentCostsPostDto)
         {
             try
             {
-                var result = await _indBldgFacilityEquipmentCostService.Create(caseId, indBldgFacilityEquipmentPostDto);
-                return result ? Ok() : BadRequest("Failed to create industrial collateral cost");
+                var result = await _indBldgFacilityEquipmentCostService.Create(caseId, indBldgFacilityEquipmentCostsPostDto);
+                return result ? Ok(new { success = true, message = "Data saved successfully" })
+                             : BadRequest(new { success = false, message = "Failed to create industrial collateral cost" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
 

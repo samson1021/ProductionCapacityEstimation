@@ -128,7 +128,7 @@ namespace mechanical.Mapper
              .ForMember(dest => dest.AllocatedPointsRange, opt => opt.MapFrom(src => EnumToDisplayName(src.AllocatedPointsRange)))
              .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
 
-            CreateMap<IndBldgFacilityEquipmentPostDto, IndBldgFacilityEquipmentCosts>();
+            CreateMap<IndBldgFacilityEquipmentCostsPostDto, IndBldgFacilityEquipmentCosts>();
             CreateMap<IndBldgFacilityEquipmentCosts, IndBldgFacilityEquipmentCostsReturnDto>();
             CreateMap<IndBldgFacilityEquipmentCosts,IndBldgFacilityEquipmentCostsDto>().ReverseMap();
 

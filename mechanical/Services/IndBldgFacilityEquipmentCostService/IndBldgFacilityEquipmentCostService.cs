@@ -18,7 +18,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
             _cbeContext = cbeContext;
             _mapper = mapper;
         }
-        public async Task<bool> Create(Guid caseId, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipmentPostDto)
+        public async Task<bool> Create(Guid caseId, IndBldgFacilityEquipmentCostsPostDto indBldgFacilityEquipmentCostsPostDto)
         {
             var Case = await _cbeContext.Cases.FindAsync(caseId);
             if (Case == null)
@@ -27,7 +27,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
             }
             try
             {
-                var indBldgFacilityEquipmentCosts = _mapper.Map<IndBldgFacilityEquipmentCosts>(indBldgFacilityEquipmentPostDto);
+                var indBldgFacilityEquipmentCosts = _mapper.Map<IndBldgFacilityEquipmentCosts>(indBldgFacilityEquipmentCostsPostDto);
                 indBldgFacilityEquipmentCosts.CaseId = caseId;
                 await _cbeContext.IndBldgFacilityEquipmentCosts.AddAsync(indBldgFacilityEquipmentCosts);
                 await _cbeContext.SaveChangesAsync();
