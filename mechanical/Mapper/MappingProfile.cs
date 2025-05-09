@@ -129,7 +129,7 @@ namespace mechanical.Mapper
              .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
 
             CreateMap<IndBldgFacilityEquipmentPostDto, IndBldgFacilityEquipmentCosts>();
-            CreateMap<IndBldgFacilityEquipmentCosts, IndBldgFacilityEquipmentReturnDto>();
+            CreateMap<IndBldgFacilityEquipmentCosts, IndBldgFacilityEquipmentCostsReturnDto>();
             CreateMap<IndBldgFacilityEquipmentCosts,IndBldgFacilityEquipmentCostsDto>().ReverseMap();
 
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentPostDto>();

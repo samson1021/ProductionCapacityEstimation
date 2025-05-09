@@ -66,12 +66,16 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
                     double marketShare = 0;
                     double Depreciated = 0;
                     double equipmentcondition = 0;
+                    double totalReplacmentCost = 0;
+                    double totalNetEstimationValue = 0;
                     foreach (var indBldg in indBldgFacilityEquipment)
                     {
                         invoiceValue += indBldg.InvoiceValue * indBldg.ExchangeRate;
                         marketShare += indBldg.MarketShareFactor;
                         Depreciated += indBldg.DepreciationRate;
                         equipmentcondition += indBldg.EqpmntConditionFactor;
+                        totalReplacmentCost += indBldg.ReplacementCost;
+                        totalNetEstimationValue += indBldg.NetEstimationValue;
                     }
                     if(indBldgFacilityEquipment.Count() > 0)
                     {
@@ -82,6 +86,8 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
                     item.LandTransportLoadingUnloadingInstallationCommissioningCost = invoiceValue *0.075;
                     item.DepreciatedInsuranceFreightOthersCost = item.InsuranceFreightOthersCost * marketShare * Depreciated * equipmentcondition;
                     item.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost = item.LandTransportLoadingUnloadingInstallationCommissioningCost * marketShare * Depreciated * equipmentcondition;
+                    item.TotalReplacementCost = totalReplacmentCost + item.LandTransportLoadingUnloadingInstallationCommissioningCost + item.InsuranceFreightOthersCost;
+                    item.TotalNetEstimationValue = totalNetEstimationValue + item.DepreciatedInsuranceFreightOthersCost + item.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost;
                 }
 
                 return indBldgFacilityEquipmentCostsReturnDto;

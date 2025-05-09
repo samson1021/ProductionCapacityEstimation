@@ -8,10 +8,12 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CollateralService;
 using mechanical.Services.IndBldgF;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
 using mechanical.Services.MailService;
 using mechanical.Services.MotorVehicleService;
 using mechanical.Services.UploadFileService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -25,7 +27,8 @@ namespace mechanical.Controllers
         private readonly CbeContext _cbeContext;
         private readonly IMailService _mailService;
         private readonly ICaseScheduleService _caseScheduleService;
-        public IndBldgFacilityEquipmentController(IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, IMailService mailService, ICollateralService collateralService,IIndBldgFacilityEquipmentService indBldgFacilityEquipment , IMotorVehicleService motorVehicleService,CbeContext cbeContext)
+        private readonly IIndBldgFacilityEquipmentCostService _indBldgFacilityEquipmentCostService;
+        public IndBldgFacilityEquipmentController(IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, IMailService mailService, ICollateralService collateralService,IIndBldgFacilityEquipmentService indBldgFacilityEquipment , IMotorVehicleService motorVehicleService,CbeContext cbeContext, IIndBldgFacilityEquipmentCostService indBldgFacilityEquipmentCostService)
         {
             _collateralService = collateralService;
             _indBldgFacilityEquipment = indBldgFacilityEquipment;
@@ -33,6 +36,7 @@ namespace mechanical.Controllers
             _uploadFileService = uploadFileService;
             _mailService = mailService;
             _caseScheduleService = caseScheduleService;
+            _indBldgFacilityEquipmentCostService = indBldgFacilityEquipmentCostService;
         }
 
 
@@ -54,6 +58,14 @@ namespace mechanical.Controllers
             {
                 return RedirectToAction("MyCase", "MOCase");
             }
+            var costs = await _indBldgFacilityEquipmentCostService.GetByCaseId(collateral.CaseId);
+            ViewBag.IndBldgFacilityEquipmentCostsList = costs
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = $"{x.InsuranceFreightOthersCost:N2}" 
+                })
+                .ToList();
             ViewData["collateral"] = collateral;
             return View();
         }

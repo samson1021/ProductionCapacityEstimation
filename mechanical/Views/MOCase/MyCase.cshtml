@@ -137,46 +137,53 @@
                 }, "colvis"],
                 data: data,
                 columns: [
-                    { data: 'id', title: 'ID', visible: false },
                     {
                         data: null,
-                        title: 'No.',
                         width: '8%',
                         render: function(data, type, row, meta) {
                             return meta.row + 1;
                         }
                     },
                     {
-                        data: 'insuranceFreightOthersCost',
-                        title: 'CIF(ETB)',
+                        data: 'InsuranceFreightOthersCost',
                         width: '18%',
                         render: $.fn.dataTable.render.number(',', '.', 2, '')
                     },
                     {
-                        data: 'depreciatedInsuranceFreightOthersCost',
-                        title: 'Depreciated CIF (ETB)',
+                        data: 'DepreciatedInsuranceFreightOthersCost',
                         width: '18%',
                         render: $.fn.dataTable.render.number(',', '.', 2, '')
                     },
                     {
-                        data: 'landTransportLoadingUnloadingInstallationCommissioningCost',
-                        title: 'LT&LUCC (ETB)',
+                        data: 'LandTransportLoadingUnloadingInstallationCommissioningCost',
                         width: '18%',
                         render: $.fn.dataTable.render.number(',', '.', 2, '')
                     },
                     {
-                        data: 'depreciatedLandTransportLoadingUnloadingInstallationCommissioningCost',
-                        title: 'Depreciated LT&LUCC (ETB)',
+                        data: 'DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost',
                         width: '18%',
                         render: $.fn.dataTable.render.number(',', '.', 2, '')
                     },
                     {
-                        data: 'collateralCount',
-                        title: 'No. of Collateral',
+                        data: 'TotalReplacementCost',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'TotalNetEstimationValue',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'CollateralCount',
+                        width: '10%'
+                    },
+                     {
+                        data: 'CollateralCount',
                         width: '10%'
                     },
                     {
-                        title: 'Actions',
+                        data:null,
                         width: '10%',
                         orderable: false,
                         searchable: false,
@@ -204,28 +211,44 @@
             }).buttons().container().appendTo('#industrialCollateralTable_wrapper .col-md-6:eq(0)');
         }
 
-        async function loadCollaterals(caseId) {
-            try {
-                const response = await fetch(`/api/IndustrialCollateralCosts/by-case/${caseId}`);
-                if (!response.ok) throw new Error('Failed to load collaterals');
-
-                const data = await response.json();
-
+         function loadCollaterals(caseId) {
+            $.ajax({
+                url: `/api/IndustrialCollateralCosts/by-case/${caseId}`,
+                method: 'GET',
+                dataType: 'json',
+                contentType: 'application/json'
+            })
+            .done(function(data) {
+                // Destroy existing DataTable if it exists
                 if ($.fn.DataTable.isDataTable('#industrialCollateralTable')) {
                     $('#industrialCollateralTable').DataTable().destroy();
+                    $('#industrialCollateralTable').empty();
                 }
-
+                console.log(data);
+                // Initialize with new data
                 initializeDataTable(data);
                 toastr.success("Collaterals loaded successfully");
-            } catch (error) {
+
+                // Add event handlers for dynamic buttons
+                $(document).off('click', '.edit-btn, .delete-btn').on('click', '.edit-btn, .delete-btn', function() {
+                    const id = $(this).data('id');
+                    if ($(this).hasClass('edit-btn')) {
+                        handleEdit(id);
+                    } else {
+                        handleDelete(id);
+                    }
+                });
+            })
+            .fail(function(xhr, status, error) {
                 console.error('Error loading collaterals:', error);
-                toastr.error("Failed to load collaterals");
-            }
+                const message = xhr.responseJSON || error;
+                toastr.error(`Failed to load collaterals: ${message}`);
+            });
         }
 
         // Set this when your page loads with the correct case ID
         // currentCaseId = 'your-case-id-here';
-        // loadCollaterals(currentCaseId);
+        loadCollaterals(currentCaseId);
 
         $('#addNewCollateralButton').click(function() {
             $('#formModalTitle').text('Add New Industrial Collateral');
@@ -234,7 +257,7 @@
             $('#collateralFormModal').modal('show');
         });
 
-        async function saveCollateral() {
+        function saveCollateral() {
             try {
                 const formData = {
                     insuranceFreightOthersCost: parseFloat($('#insuranceFreightCost').val()),
@@ -248,7 +271,7 @@
 
                 const method = $('#collateralFormModal').data('editMode') ? 'PUT' : 'POST';
 
-                const response = await fetch(url, {
+                const response =  fetch(url, {
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
@@ -269,13 +292,13 @@
 
         $('#confirmSaveCollateral').click(saveCollateral);
 
-        $(document).on('click', '.edit-btn', async function() {
+        $(document).on('click', '.edit-btn',  function() {
             const id = $(this).data('id');
             try {
-                const response = await fetch(`/api/IndustrialCollateralCosts/${id}`);
+                const response =  fetch(`/api/IndustrialCollateralCosts/${id}`);
                 if (!response.ok) throw new Error('Failed to load collateral');
 
-                const data = await response.json();
+                const data =  response.json();
 
                 $('#formModalTitle').text('Edit Industrial Collateral');
                 $('#insuranceFreightCost').val(data.insuranceFreightOthersCost);
@@ -291,12 +314,12 @@
             }
         });
 
-        $(document).on('click', '.delete-btn', async function() {
+        $(document).on('click', '.delete-btn',  function() {
             const id = $(this).data('id');
             if (!confirm('Are you sure you want to delete this industrial collateral record?')) return;
 
             try {
-                const response = await fetch(`/api/IndustrialCollateralCosts/${id}`, {
+                const response =  fetch(`/api/IndustrialCollateralCosts/${id}`, {
                     method: 'DELETE'
                 });
 
