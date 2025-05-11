@@ -1,0 +1,626 @@
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Entities
+@using mechanical.Models.Dto.UploadFileDto
+
+@{
+    // Simplified model extraction
+    var PCECase = ViewData["PCECase"] as PCECase;
+    var productions = ViewData["Productions"] as List<ProductionCapacity>;
+    var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
+    var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
+    var Signiture = ViewData["signiture"] as CreateUser;
+    var productionLineEvaluations = ViewData["ProductionLineEvaluations"] as List<ProductionLineEvaluation>;
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
+
+    var customerinfo = ViewData["customerinfo"];
+
+    // Essential variables only
+    var evaluatorName = evaluatorReport?.EvaluatorName;
+    var createdAt = evaluatorReport?.CreatedAt;
+    var stampImagePath = Url.Content("~/img/stamp.png");
+}
+
+
+
+<style>
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        position: relative;
+    }
+
+    .content {
+        max-width: 300mm;
+        margin: 0 auto;
+        text-align: justify;
+    }
+
+    .underline {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        min-width: 50px;
+        padding-bottom: 2px;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+        border: 1px solid #6f42c1;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a36a8;
+            color: white;
+        }
+
+    .pdf-stamp {
+        display: none !important;
+    }
+
+    .pdf-stamp1 {
+        display: none !important;
+    }
+
+    .stamp-container {
+        display: none !important;
+    }
+    /* Print-specific styles */
+    @@media print {
+        footer, .printbtn, .downloadbtn, #requieddoc {
+            display: none !important;
+        }
+
+        .pdf-stamp {
+            display: block !important;
+        }
+
+        .pdf-stamp1 {
+            display: block !important;
+        }
+
+        .requieddoc {
+            display: none !important
+        }
+
+        .approvedby {
+            display: block !important;
+        }
+
+        @@page {
+            size: auto;
+            margin: 20mm 20mm 30mm 20mm;
+        }
+
+        body {
+            counter-reset: page;
+            margin: 0;
+            padding: 0;
+        }
+            /* Page numbers */
+            body::after {
+                content: "Page " counter(page);
+                position: fixed;
+                bottom: 10mm;
+                right: 20mm;
+                font-size: 10pt;
+            }
+        /* Stamp positioning */
+        .stamp-container {
+            display: block !important position: fixed;
+            bottom: 15mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 1000;
+        }
+
+
+            .stamp-container img {
+                max-width: 150px;
+                height: auto;
+                opacity: 0.9;
+            }
+
+        .digital-stamp {
+            display: none !important;
+        }
+        /* Page breaks */
+        .page-break {
+            page-break-before: always;
+            /* page-break-after: always; */
+        }
+
+        .page-number:after {
+            counter-increment: page;
+            content: "Page " counter(page);
+            position: fixed;
+            bottom: 10mm;
+            right: 20mm;
+            font-size: 10pt;
+        }
+        /* Stamp on every page */
+        .stamp-container {
+            position: fixed;
+            bottom: 20mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        h5 {
+            page-break-after: avoid;
+        }
+
+        label, p, span {
+            page-break-inside: avoid !important;
+        }
+    }
+    /* For PDF generation */
+    .pdf-page {
+        position: relative;
+        margin-bottom: 30mm; /* Space for stamp */
+    }
+
+    .pdf-stamp {
+        position: absolute;
+        bottom: 10mm;
+        left: 0;
+        right: 0;
+        text-align: center;
+        z-index: 1000;
+    }
+
+    .pdf-stamp1 {
+        position: absolute;
+        bottom: 10mm;
+        left: 0;
+        right: 0;
+        text-align: center;
+        z-index: 1000;
+    }
+
+    .pdf-page-number {
+        position: absolute;
+        bottom: 5mm;
+        right: 20mm;
+        font-size: 10pt;
+    }
+
+    .content {
+        max-width: 300mm;
+        margin: 0 auto;
+        text-align: justify;
+    }
+
+    .content-section {
+        padding: 4mm 20mm;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+    }
+
+    .table-fixed {
+        table-layout: fixed;
+        width: 100%;
+        word-wrap: break-word;
+    }
+
+    .table-borderless td,
+    .table-borderless th {
+        border: none !important;
+        padding: 8px 12px;
+        vertical-align: top;
+    }
+
+    .table-border-none {
+        border: none;
+    }
+
+    .text-wrap {
+        white-space: normal !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .underline {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        min-width: 50px;
+        padding-bottom: 2px;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+        border: 1px solid #6f42c1;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a36a8;
+            color: white;
+        }
+
+    .py-1 {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+
+    .py-2 {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .pl-4 {
+        padding-left: 1.5rem !important;
+    }
+
+    .mr-1 {
+        margin-right: 0.25rem !important;
+    }
+
+    .mr-2 {
+        margin-right: 0.5rem !important;
+    }
+
+    .mr-3 {
+        margin-right: 1rem !important;
+    }
+
+    .mr-4 {
+        margin-right: 1.5rem !important;
+    }
+
+    .ml-1 {
+        margin-left: 0.25rem !important;
+    }
+
+    .ml-2 {
+        margin-left: 0.5rem !important;
+    }
+
+    .ml-3 {
+        margin-left: 1rem !important;
+    }
+
+    .ml-4 {
+        margin-left: 1.5rem !important;
+    }
+
+    .px-2 {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    .font-weight-bold {
+        font-weight: 700 !important;
+    }
+
+    .stamp-container {
+        display: none;
+    }
+</style>
+
+
+
+<section class="content">
+    <div class="d-flex justify-content-end mb-3" style="padding-right: 10mm;padding-top:5mm; margin-top:0mm;">
+        <button id="print-btn" class="btn btn-purple printbtn mr-2"><i class="fas fa-print"></i> Print</button>
+        <button id="download-btn" class="btn btn-purple downloadbtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
+    </div>
+
+    <div class="content-section">
+        <!-- Header -->
+        <div class="text-center mb-3">
+            <img src="@Url.Content("~/img/cbelogo.png")" alt="Logo" style="max-height: 50px;">
+            <h4>Commercial Bank of Ethiopia</h4>
+            <h5>Production Capacity Estimation</h5>
+            <div class="d-flex justify-content-end">
+                <p>Date: <u>@DateTime.Now.ToString("dd/MM/yyyy")</u></p>
+            </div>
+            <div class="d-flex justify-content-end">
+                <p>Reference No: <u>@productions[0].Id</u></p>
+            </div>
+        </div>
+
+
+
+        <!-- Section A: General Data Collection -->
+        <h5 class="mt-4">A. General Data Collection</h5>
+        <div class="table-responsive">
+            <table class="table table-borderless">
+                <colgroup>
+                    <col style="width: 5%;">
+                    <col style="width: 35%;">
+                    <col style="width: 60%;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>CBE Branch:</td>
+                        <td><u class="underline"></u></td>
+                    </tr>
+                    <tr>
+                        <td>1.</td>
+                        <td>Segment:</td>
+                        <td><u>@PCECase.Segment</u></td>
+                    </tr>
+                    <tr>
+                        <td>2.</td>
+                        <td>Applicant name:</td>
+                        <td><u>@PCECase.ApplicantName</u></td>
+                    </tr>
+                    <tr>
+                        <td>3.</td>
+                        <td>Address of Applicant:</td>
+                        <td>
+                            <div style="display: inline-block;">
+                                <span>Town:</span>
+                                <u class="underline ml-1" style="min-width: 80px;">     ;</u>
+                                <span class="ml-3">Sub-City:</span>
+                                <u class="underline ml-1" style="min-width: 80px;">    ;</u>
+                                <span class="ml-3">Woreda:</span>
+                                <u class="underline ml-1" style="min-width: 60px;">  </u>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-1"></td>
+                        <td class="py-1 text-wrap pl-4">A. Is the Production Machine Purchased by CBE's partial Financing?</td>
+                        <td class="py-1 text-wrap"><u>   No</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">4.</td>
+                        <td class="py-1 text-wrap">Production Machine Location:</td>
+                        <td class="py-1 text-wrap">
+                            <div style="display: inline-block;">
+                                <span>Town:</span>
+                                <u class="underline ml-1" style="min-width: 80px;">@productions[0].Region  ;</u>
+                                <span class="ml-3">Sub-City:</span>
+                                <u class="underline ml-1" style="min-width: 80px;">@productions[0].SubCity  ;</u>
+                                <span class="ml-3">Woreda:</span>
+                                <u class="underline ml-1" style="min-width: 60px;">@productions[0].Wereda</u>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">5.</td>
+                        <td class="py-1 text-wrap">Business or Trade License no:</td>
+                        <td class="py-1 text-wrap"><u>@productions[0].BusinessLicenseNumber</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">6.</td>
+                        <td class="py-1 text-wrap">LHC number where the equipment Installed:</td>
+                        <td class="py-1 text-wrap"><u>@productions[0].MachineryInstalledPlace</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1"></td>
+                        <td class="py-1 text-wrap pl-4">A. Owner Name in the LHC:</td>
+                        <td class="py-1 text-wrap"><u>@productions[0].OwnerName</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">7.</td>
+                        <td class="py-1 text-wrap">Name/Type of the equipment:</td>
+                        <td class="py-1 text-wrap"><u>@productions[0].Type</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">8.</td>
+                        <td class="py-1 text-wrap">Year of manufacturing:</td>
+                        <td class="py-1 text-wrap">
+                            <u>@productions[0].ManufactureYear  </u>
+                            <span>Country of Origin:</span>
+                            <u>@productions[0].CountryOfOrgin</u>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">9.</td>
+                        <td class="py-1 text-wrap">Place of inspection:</td>
+                        <td class="py-1 text-wrap">
+                            <u>@PCEEvaluations[0].InspectionPlace</u>
+                            <span>Date of inspection:</span>
+                            <u>@PCEEvaluations[0].InspectionDate</u>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">10.</td>
+                        <td class="py-1 text-wrap">Name of CRM who accompanied the Inspection:</td>
+                        <td class="py-1 text-wrap"><u>Relational Manager</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">11.</td>
+                        <td class="py-1 text-wrap">Purpose of capacity estimation:</td>
+                        <td class="py-1 text-wrap"><u>@productions[0].Purpose</u></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1"></td>
+                        <td class="py-1 text-wrap pl-4">A. Time Consumed to Check Production Process:</td>
+                        <td class="py-1 text-wrap">
+                            <span>From</span>
+                            <u>@PCEEvaluations[0].TimeConsumedToCheck.Start</u>
+                            <span>To</span>
+                            <u>@PCEEvaluations[0].TimeConsumedToCheck.End</u>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="py-1">12.</td>
+                        <td class="py-1 text-wrap">Equipment Machinery Status:</td>
+                        <td class="py-1 text-wrap"></td>
+                    </tr>
+                    <tr>
+                        <td class="py-1"></td>
+                        <td class="py-1 text-wrap pl-4">A. Technical obsolescence status</td>
+                        <td class="py-1 text-wrap"><u>@PCEEvaluations[0].TechnicalObsolescenceStatus</u></td>
+                    </tr>
+                    <!-- Continue with all other rows similarly -->
+                </tbody>
+            </table>
+        </div>
+        <div class="pdf-stamp1">
+            <img src="@Url.Content("~/img/stamp.png")" alt="Official Stamp" style="max-width: 150px; height: auto; opacity: 0.9;" />
+        </div>
+        <div class="pdf-page-number"></div>
+
+
+        <!-- Section B: Production Capacity Estimation Summary -->
+        <div class="page-break"></div>
+        <h5 class="mt-4">B. Production Capacity Estimation Summary</h5>
+        <div class="pl-4">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Production Line / Equipment Name</th>
+                            <th>Year Manufg</th>
+                            <th>Unit Meast</th>
+                            <th>Qty.</th>
+                            <th>Total Actual Capacity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>@productions[0].ManufactureYear</td>
+                            <td>@PCEEvaluations[0].ProductionMeasurement</td>
+                            <td>@PCEEvaluations[0].ActualProductionCapacity</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="approvedby mt-4">
+            Capacity estimated by: <u><strong>@evaluatorName</strong></u>; Signature:
+            <span style="text-decoration: underline; margin: 0 5px;">
+                @if (Signiture?.Signatures != null)
+                {
+                    <img src="@Url.Content("~/" + Signiture.Signatures.SignatureFile.Path)"
+                         alt="Signature"
+                         style="max-width: 70px; min-width: 60px; min-height: 50px; max-height: 60px;" />
+                }
+                else
+                {
+                    <span>Not Registered</span>
+                }
+            </span>
+            Evaluated Date: <u><strong>@createdAt?.ToString("dd/MM/yyyy")</strong></u>
+        </div>
+
+        <!-- Section D: Production Line Evaluations -->
+        @if (productionLineEvaluations?.Any() == true)
+        {
+            <div class="mt-4">
+                <h5>C. Production Line Evaluations</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Production Line/Equipment</th>
+                                <th>Output Type</th>
+                                <th>Output Quantity</th>
+                                <th>Input Type</th>
+                                <th>Input-Output Conversion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (eval, index) in productionLineEvaluations.Select((e, i) => (e, i + 1)))
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@eval.ProductionLineOrEquipmentName</td>
+                                    <td>@eval.OutputType</td>
+                                    <td>@eval.OutputQuantity</td>
+                                    <td>@eval.InputType</td>
+                                    <td>@eval.InputOutputConversion</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+
+
+        <div class="pdf-stamp">
+            <img src="@Url.Content("~/img/stamp.png")" alt="Official Stamp" style="max-width: 150px; height: auto; opacity: 0.9;" />
+        </div>
+        <div class="pdf-page-number"></div>
+        <!-- Documents Section -->
+        <div class="requieddoc mt-4">
+            <h5>D. Documents used for production evaluation</h5>
+
+            @if (productionFiles?.Any() == true)
+            {
+                <table class="table">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 20%;">
+                        <col style="width: 30%;">
+                    </colgroup>
+                    <thead style="border-bottom: 3px solid #6f42c1;">
+                        <tr>
+                            <th class="text-wrap">File Name</th>
+                            <th class="text-wrap">File Category</th>
+                            <th class="text-wrap">Content Type</th>
+                            <th class="text-wrap">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var file in productionFiles)
+                        {
+                            <tr>
+                                <td>@file.Name</td>
+                                <td class="text-wrap">@file.Catagory</td>
+                                <td class="text-wrap">@file.ContentType</td>
+                                <td>
+                                    <a href="@Url.Action("ViewFile","UploadFile", new { Id = file.Id })" target="_blank">View</a> |
+                                    <a href="@Url.Action("DownloadFile","UploadFile", new { Id = file.Id })">Download</a>
+                                </td>
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No documents available</p>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Print functionality
+            document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+            // PDF generation
+            document.getElementById('download-btn').addEventListener('click', async () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const element = document.querySelector('.content-section');
+
+                const canvas = await html2canvas(element, { scale: 2 });
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                doc.save('PCE_Report.pdf');
+            });
+        });
+    </script>
+}
+

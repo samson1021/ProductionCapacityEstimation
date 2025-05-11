@@ -27,6 +27,7 @@ using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Login;
+using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 
 
 namespace mechanical.Mapper
@@ -126,6 +127,11 @@ namespace mechanical.Mapper
              .ForMember(dest => dest.TechnologyStandard, opt => opt.MapFrom(src => EnumToDisplayName(src.TechnologyStandard)))
              .ForMember(dest => dest.AllocatedPointsRange, opt => opt.MapFrom(src => EnumToDisplayName(src.AllocatedPointsRange)))
              .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
+
+            CreateMap<IndBldgFacilityEquipmentCostsPostDto, IndBldgFacilityEquipmentCosts>();
+            CreateMap<IndBldgFacilityEquipmentCosts, IndBldgFacilityEquipmentCostsReturnDto>();
+            CreateMap<IndBldgFacilityEquipmentCosts,IndBldgFacilityEquipmentCostsDto>().ReverseMap();
+
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentPostDto>();
 
             CreateMap<CreateUser, UserReturnDto>()

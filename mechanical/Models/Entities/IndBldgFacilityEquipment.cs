@@ -10,6 +10,7 @@ namespace mechanical.Models.Entities
         public required Guid CollateralId { get; set; }
         public Guid EvaluatorUserID { get; set; }
         public Guid? CheckerUserID { get; set; }
+        public Guid? IndBldgFacilityEquipmentCostsId { get; set; }
 
         public string? MechanicalEqpmntName { get; set; }
         public IndustrialBuildingMachineryType IndustrialBuildingMachineryType { get; set; }
@@ -50,5 +51,6 @@ namespace mechanical.Models.Entities
         public virtual CreateUser? EvaluatorUser { get; set; }
         public virtual CreateUser? CheckerUser { get; set; }
         public virtual Collateral? Collateral { get; set; }
+        public virtual IndBldgFacilityEquipmentCosts? IndBldgFacilityEquipmentCosts { get; set; }
     }
 }
