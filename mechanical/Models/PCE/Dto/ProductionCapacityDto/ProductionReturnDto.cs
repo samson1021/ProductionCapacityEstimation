@@ -108,6 +108,6 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? AssignmentStatus { get; set; }
         
         public virtual PCECase PCECase { get; set; }
-        public IEnumerable<ProductionLineEvaluationDto> ProductionLineEvaluations { get; set; }
+        public IEnumerable<ProductionLineReturnDto> ProductionLines { get; set; }
     }
 }

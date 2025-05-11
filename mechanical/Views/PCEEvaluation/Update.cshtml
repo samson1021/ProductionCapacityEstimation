@@ -14,22 +14,15 @@
     ViewData["ReturnPost"] = ReturnPost;
 }
 
-<section class="content-header">
+<section class="content-header" style="padding-top:5px;padding-bottom:0px;">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6 col-xl-4">
-                <div class="row align-items-center">
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-6 offset-xl-1">
-                <h4 class="m-0">Update PCE Evaluation</h4>
-            </div>
-            <div class="col-sm-6 col-xl-4">
+            <div class="col-sm-4 offset-xl-8">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
                     <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
                     <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
-                   <li class="breadcrumb-item active">Update</li>
+                    <li class="breadcrumb-item active">Update Evaluation</li>
                 </ol>
             </div>
         </div>
@@ -42,7 +35,7 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <img src="~/img/assignment_add_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Update Icon">
-                    Update PCE Evaluation
+                    Update PCE Evaluation Form
                 </h3>
             </div>
             <div class="card-body">
@@ -52,23 +45,23 @@
                     @Html.HiddenFor(model => model.Id)
                     <input asp-for="PCEId" value='@Model.PCEId' type="hidden" />
                     <input asp-for="DeletedFileIds" id="DeletedFileIds" type="hidden" />
-         
+
                     @await Html.PartialAsync("Partial/_EvaluationUpdateFormPartial")
 
-                    <div class="form-group row justify-content-center">
-                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
+                    <div class="form-group row">
+                        <div class="col-xl-2">
                             <a href="@Url.Action("Detail", "ProductionCapacity", new { Id = @Model.PCEId })" class="btn btn-secondary btn-block">
                                 <i class="fas fa-times mr-2"></i> Cancel
                             </a>
                         </div>
-                        <div class="col-xl-3"></div>
-                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
+                        @* <div class="col-xl-3"></div>
+                        <div class="col-xl-2 offset-xl-8">
                             <button type="button" id="return-btn" class="btn btn-danger btn-block" data-toggle="modal" data-target="#returnModal1">
                                 <i class="fas fa-undo mr-2"></i> Return
                             </button>
                         </div>
-                        <div class="col-xl-3"></div>
-                        <div class="col-xl-2" style="margin-top:2rem;margin-bottom:1rem;">
+                        <div class="col-xl-3"></div> *@
+                        <div class="col-xl-2">
                             <button type="submit" class="btn btn-primary btn-block">
                                 <i class="fas fa-save mr-2"></i> Update
                             </button>
@@ -86,6 +79,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
+        await Html.RenderPartialAsync("Partial/_ProductionLineScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal", ViewData["ReturnPost"]);
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }

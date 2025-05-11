@@ -196,9 +196,7 @@ namespace mechanical.Mapper
 
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();
-            CreateMap<TimeInterval, TimeIntervalPostDto>().ReverseMap();
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
-            CreateMap<TimeInterval, TimeIntervalReturnDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
             CreateMap<ReturnedProductionPostDto, ReturnedProduction>();           
             CreateMap<ReturnedProduction, ReturnedProductionDto>();
@@ -207,6 +205,7 @@ namespace mechanical.Mapper
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
 
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
+                .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
@@ -214,6 +213,7 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
 
             CreateMap<PCEEvaluation, PCEEvaluationUpdateDto>()
+                .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
@@ -224,7 +224,17 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
                 .ReverseMap();
 
-            CreateMap<ProductionLineEvaluation,ProductionLineEvaluationDto>().ReverseMap();
+            CreateMap<ProductionLine, ProductionLineReturnDto>().ReverseMap();
+            CreateMap<ProductionLine, ProductionLineUpdateDto>().ReverseMap();
+            CreateMap<ProductionLine, ProductionLinePostDto>().ReverseMap();
+
+            CreateMap<ProductionLineInput, ProductionLineInputReturnDto>().ReverseMap();
+            CreateMap<ProductionLineInput, ProductionLineInputUpdateDto>().ReverseMap();
+            CreateMap<ProductionLineInput, ProductionLineInputPostDto>().ReverseMap();
+
+            CreateMap<Justification, JustificationReturnDto>().ReverseMap();
+            CreateMap<Justification, JustificationUpdateDto>().ReverseMap();
+            CreateMap<Justification, JustificationPostDto>().ReverseMap();
             ///////
         }
 

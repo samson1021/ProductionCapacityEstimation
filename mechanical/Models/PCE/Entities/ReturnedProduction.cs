@@ -8,6 +8,6 @@
         public required string Reason { get; set; }
         public DateTime ReturnedAt { get; set; }
 
-        public CreateUser ReturnedBy { get; set; }
+        public CreateUser? ReturnedBy { get; set; }
     }
 }
