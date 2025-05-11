@@ -31,7 +31,6 @@
             const lineIndex = $('.production-line-form').index($line);
             const $inputsContainer = $line.find('.inputs-container');
             const inputIndex = $line.find('.input-item').length;
-            // const inputIndex = $inputsContainer.children().length;
             
             const html = inputTemplate
                 .replace(/\${lineIndex}/g, lineIndex)
@@ -216,12 +215,10 @@
                 if ($checkbox.is(':checked')) {
                     $otherJustification.show();
                     $otherTextarea.prop('disabled', false).focus();
-                    // Clear the default value when enabling
                     $otherTextarea.val('');
                 } else {
                     $otherJustification.hide();
                     $otherTextarea.prop('disabled', true);
-                    // Restore default value
                     $justificationItem.find('.default-justification-text').val($checkbox.next('label').text());
                 }
             }

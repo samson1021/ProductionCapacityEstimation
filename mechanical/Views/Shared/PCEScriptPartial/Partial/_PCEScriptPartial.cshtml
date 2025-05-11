@@ -43,6 +43,9 @@
         $('.toggle-inputs').click(function() {
             $(this).find('i').toggleClass('fa-boxes fa-box-open');
             $(this).toggleClass('btn-outline-secondary btn-secondary');
+            const currentText = $(this).text().trim();
+            $(this).text(currentText === "Show Inputs" ? "Hide Inputs" : "Show Inputs");
+        });
         });
 
 
