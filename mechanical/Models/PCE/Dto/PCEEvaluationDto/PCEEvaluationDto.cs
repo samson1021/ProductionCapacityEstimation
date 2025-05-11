@@ -27,7 +27,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [StringLength(100)]
         [Display(Name = "Country of Origin")]
-        public string? CountryOfOrgin { get; set; }
+        public string? CountryOfOrigin { get; set; }
 
         [Required]
         [Display(Name = "Has Input-Output Data?")]

@@ -63,7 +63,7 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ProductionEdittDto ProductionDto)
+        public async Task<IActionResult> Edit(Guid id, ProductionEditDto ProductionDto)
         {
             if (ModelState.IsValid)
             {

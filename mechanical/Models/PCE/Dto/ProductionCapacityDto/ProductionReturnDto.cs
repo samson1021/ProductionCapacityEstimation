@@ -29,7 +29,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string MachineName { get; set; }     
         
         [Display(Name = "Country of Origin")]
-        public string CountryOfOrgin { get; set; }
+        public string CountryOfOrigin { get; set; }
         
         [Display(Name = "Business License Number")]
         public string BusinessLicenseNumber { get; set; } 

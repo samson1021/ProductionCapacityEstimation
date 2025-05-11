@@ -79,7 +79,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
                 pce.MachineName = Dto.MachineName;
-                pce.CountryOfOrgin = Dto.CountryOfOrgin;
+                pce.CountryOfOrigin = Dto.CountryOfOrigin;
 
                 _cbeContext.ProductionCapacities.Update(pce);
 

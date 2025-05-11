@@ -26,7 +26,7 @@ namespace mechanical.Models.PCE.Entities
         public string MachineName { get; set; }
 
         [StringLength(100)]
-        public string? CountryOfOrgin { get; set; }
+        public string? CountryOfOrigin { get; set; }
 
         [Required]
         public bool HasInputOutputData { get; set; }
