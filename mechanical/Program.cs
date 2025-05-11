@@ -12,13 +12,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.WebSockets;
 using System.Collections.Concurrent;
 using System.Web.Services.Description;
 
 using mechanical;
 using mechanical.Data;
-using mechanical.WebSockets;
 using mechanical.Controllers;
 using mechanical.Models.Entities;
 
@@ -184,13 +182,12 @@ var app = builder.Build();
 //}
 
 // Apply database migrations automatically (if any)
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-//    context.Database.Migrate();
-//    SeedUsersRolesAndDistricts.SeedData(app);
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
+    context.Database.Migrate();
+    SeedUsersRolesAndDistricts.SeedData(app);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -199,24 +196,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-/////////////////////////////// Chat web sockets //////////////////////////
-// Enable WebSocket support
-app.UseWebSockets();
-
-
-// Create an instance of your WebSocket handler
-var webSocketHandler = new WebSocketHandler();
-
-// Map the WebSocket endpoint
-app.Map("/ws", async context =>
-{
-    await webSocketHandler.HandleWebSocket(context);
-});
-
-// Start cleanup task for disconnected clients
-_ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
-///////////////////////////////////////////////////////////////////////////
 
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
