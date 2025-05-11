@@ -330,32 +330,15 @@ namespace mechanical.Services.PCE.ProductionCapacityService
 
             var pce = await GetProduction(UserId, Id);
             var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id); 
-            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);       
+            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);
             var valuationHistory = await _PCEEvaluationService.GetValuationHistory(UserId, Id);
             var returnedProductions = await _cbeContext.ReturnedProductions
                                                         .AsNoTracking()
-                                                        .Include(pr => pr.ReturnedBy) 
+                                                        .Include(pr => pr.ReturnedBy)
                                                         .Where(pr => pr.PCEId == Id)
                                                         .OrderByDescending(pr => pr.ReturnedAt)
                                                         .ToListAsync();
-            
-            // var returnedByUserIds = returnedProductions.Select(pr => pr.ReturnedBy).Distinct().ToList();
-            // var returnedByUsers = (await _cbeContext.CreateUsers
-            //                                         .AsNoTracking()
-            //                                         .Include(u => u.Role)
-            //                                         .Where(cu => returnedByUserIds
-            //                                         .Contains(cu.Id))
-            //                                         .ToListAsync()
-            //                         ).ToDictionary(cu => cu.Id);
 
-            // var returnedProductionsDto = returnedProductions.Select(pr =>
-            // {
-            //     var productionDto = _mapper.Map<ReturnedProductionDto>(pr);
-            //     productionDto.ReturnedBy =  returnedByUsers.TryGetValue(pr.RejectedBy, out var user)? user : null;
-            //     return productionDto;
-
-            // }).ToList();
-            
             return new ProductionDetailDto
             {
                 PCECase = pce.PCECase,

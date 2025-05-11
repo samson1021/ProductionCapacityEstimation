@@ -13,9 +13,6 @@ namespace mechanical.Models.PCE.Entities
         public Guid UserId { get; set; }
         public Guid PCECaseId { get; set; }
         public virtual PCECase? PCECase { get; set; }
-        public virtual CreateUser? User
-        {
-            get; set;
-        }
+        public virtual CreateUser? User { get; set; }
     }
 }

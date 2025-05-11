@@ -1,4 +1,4 @@
-@using mechanical.Models.PCE.Dto.PCECaseDto
+@* @using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Entities
 @using mechanical.Models.Dto.UploadFileDto
 
@@ -9,7 +9,7 @@
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
     var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
     var Signiture = ViewData["signiture"] as CreateUser;
-    var productionLineEvaluations = ViewData["ProductionLineEvaluations"] as List<ProductionLineEvaluation>;
+    var productionLines = ViewData["ProductionLines"] as List<ProductionLine>;
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
 
     var customerinfo = ViewData["customerinfo"];
@@ -514,7 +514,7 @@
         </div>
 
         <!-- Section D: Production Line Evaluations -->
-        @if (productionLineEvaluations?.Any() == true)
+        @if (productionLines?.Any() == true)
         {
             <div class="mt-4">
                 <h5>C. Production Line Evaluations</h5>
@@ -531,11 +531,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var (eval, index) in productionLineEvaluations.Select((e, i) => (e, i + 1)))
+                            @foreach (var (eval, index) in productionLines.Select((e, i) => (e, i + 1)))
                             {
                                 <tr>
                                     <td>@index</td>
-                                    <td>@eval.ProductionLineOrEquipmentName</td>
+                                    <td>@eval.LineName</td>
                                     <td>@eval.OutputType</td>
                                     <td>@eval.OutputQuantity</td>
                                     <td>@eval.InputType</td>
@@ -623,4 +623,4 @@
         });
     </script>
 }
-
+ *@

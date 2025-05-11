@@ -8,7 +8,7 @@
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluation>;
     var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
     var Signiture = ViewData["signiture"] as CreateUser;
-    var productionLineEvaluations = ViewData["ProductionLineEvaluations"] as List<ProductionLineEvaluation>;
+    var productionLines = ViewData["ProductionLines"] as List<ProductionLine>;
     var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
     var customerinfo = ViewData["customerinfo"];
 
@@ -397,10 +397,10 @@
                             <tr>
                                 <td class="text-wrap">1</td>
                                 <td class="text-wrap">@productions[0].ManufactureYear</td>
-                                <td class="text-wrap">@PCEEvaluations[0].ProductionMeasurement</td>
-                                <td class="text-wrap">@PCEEvaluations[0].ActualProductionCapacity</td>
+                                <td class="text-wrap">PCEEvaluations[0].ProductionMeasurement</td>
+                                <td class="text-wrap">PCEEvaluations[0].ActualProductionCapacity</td>
                                 <td class="text-wrap">@PCEEvaluations[0].MachineFunctionalityStatus</td>
-                                <td class="text-wrap">@PCEEvaluations[0].DesignProductionCapacity</td>
+                                <td class="text-wrap">PCEEvaluations[0].DesignProductionCapacity</td>
                                 <td class="text-wrap">@PCEEvaluations[0].InspectionPlace</td>
                                 <td class="text-wrap">@PCEEvaluations[0].InspectionDate</td>
                             </tr>
@@ -412,7 +412,7 @@
             </div>
 
 
-            @if (productionLineEvaluations != null && productionLineEvaluations.Any())
+            @if (productionLines != null && productionLines.Any())
             {
                 <div class="production-line-evaluations" style="margin-top: 0rem; page-break-inside: avoid;">
                     <h5 class="mt-4 pl-4">C. Production Line Evaluations</h5>
@@ -434,15 +434,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var (eval, index) in productionLineEvaluations.Select((e, i) => (e, i + 1)))
+                                @foreach (var (eval, index) in productionLines.Select((e, i) => (e, i + 1)))
                                 {
                                     <tr>
                                         <td>@index</td>
-                                        <td>@eval.ProductionLineOrEquipmentName</td>
+                                        <td>@eval.LineName</td>
                                         <td>@eval.OutputType</td>
-                                        <td>@eval.OutputQuantity</td>
-                                        <td>@eval.InputType</td>
-                                        <td>@eval.InputOutputConversion</td>
+                                        <td>eval.OutputQuantity</td>
+                                        <td>eval.InputType</td>
+                                        <td>eval.InputOutputConversion</td>
                                         <td>@eval.OutputPhase</td>
                                         <td>@eval.ProductionUnit</td>
                                     </tr>

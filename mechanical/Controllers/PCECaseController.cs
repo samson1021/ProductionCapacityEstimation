@@ -374,7 +374,7 @@ namespace mechanical.Controllers.PCE
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
             ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
-            ViewData["ProductionLineEvaluations"] = pceReportData.ProductionLineEvaluations;
+            ViewData["ProductionLines"] = pceReportData.ProductionLines;
 
             return View();
         }

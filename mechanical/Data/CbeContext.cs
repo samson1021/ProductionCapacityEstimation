@@ -36,13 +36,6 @@ namespace mechanical.Data
  
             base.OnModelCreating(modelBuilder);
             
-      
-
-            modelBuilder.Entity<PCEEvaluation>()
-                .HasOne(pe => pe.TimeConsumedToCheck)
-                .WithOne() 
-                .HasForeignKey<DateTimeRange>(dt => dt.PCEEId); 
-
             var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
                 v => v.ToDateTime(TimeOnly.MinValue),
                 v => DateOnly.FromDateTime(v));
@@ -57,18 +50,19 @@ namespace mechanical.Data
         }
 
         //production capacity estimation
-        public DbSet<PCECase> PCECases { get; set; }  
-        public DbSet<ProductionCapacity> ProductionCapacities { get; set; } 
+        public DbSet<PCECase> PCECases { get; set; }
+        public DbSet<ProductionCapacity> ProductionCapacities { get; set; }
         public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
-        public DbSet<ProductionLineEvaluation> ProductionLineEvaluations { get; set; }
-        public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }  
-        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }  
+        public DbSet<ProductionLine> ProductionLines { get; set; }
+        public DbSet<ProductionLineInput> ProductionLineInputs { get; set; }
+        public DbSet<Justification> Justifications { get; set; }
+        public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }
+        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
         public DbSet<PCECaseSchedule> PCECaseSchedules { get; set; }
         public DbSet<PCECaseTerminate> PCECaseTerminates { get; set; }
-        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }    
+        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
         public DbSet<ReturnedProduction> ReturnedProductions { get; set; }
         public DbSet<PCECaseComment> PCECaseComments { get; set; }
-        public DbSet<TimeInterval> TimeIntervals { get; set; }
         public DbSet<DateTimeRange> DateTimeRanges { get; set; }
         
         public DbSet<Case> Cases { get; set; }

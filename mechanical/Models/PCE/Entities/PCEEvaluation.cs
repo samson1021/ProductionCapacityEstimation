@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using mechanical.Utils;
-using mechanical.Models.Entities;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
+using mechanical.Models.Entities;
 
 namespace mechanical.Models.PCE.Entities
 {
@@ -13,88 +13,117 @@ namespace mechanical.Models.PCE.Entities
     {
         [Key]
         public Guid Id { get; set; }
-        [ForeignKey("PCEId")]
-        public required Guid PCEId { get; set; }
-        public required Guid EvaluatorId { get; set; }
+
+        [Required]
+        [ForeignKey("PCE")]
+        public Guid PCEId { get; set; }
+
+        [Required]
+        public Guid EvaluatorId { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string MachineName { get; set; }
+
+        [StringLength(100)]
+        public string? CountryOfOrgin { get; set; }
+
+        [Required]
+        public bool HasInputOutputData { get; set; }
+        
+        public virtual ICollection<Justification> Justifications { get; set; } = new List<Justification>();
+
+        [Required]
+        public ProductionLineType ProductionLineType { get; set; }
+        public virtual ICollection<ProductionLine> ProductionLines { get; set; } = new List<ProductionLine>();
+
+        [Required]
+        [StringLength(100)]
+        public string TechnicalObsolescenceStatus { get; set; }
+
+        [Required]
+        public MachineFunctionalityStatus MachineFunctionalityStatus { get; set; }
+        public MachineNonFunctionalityReason? MachineNonFunctionalityReason { get; set; }
+
+        [StringLength(500)]
+        public string? OtherMachineNonFunctionalityReason { get; set; }
+
+        [StringLength(1000)]
+        public string? FactorsAffectingProductionCapacity { get; set; }
+
+        public virtual DateTimeRange? TimeConsumedToCheck { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string InspectionPlace { get; set; }
+
+        public DateOnly InspectionDate { get; set; }
+
+        [StringLength(2000)]
+        public string? SurveyRemark { get; set; }
+
+        [StringLength(2000)]
+        public string? Remark { get; set; }
+
+        public DateTime? CompletedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual ProductionCapacity? PCE { get; set; }
         public virtual CreateUser? Evaluator { get; set; }
-
-
-        public ProductionMeasurement ProductionMeasurement { get; set; }
-        public string? BottleneckProductionLineCapacity { get; set; }
-        public virtual DateTimeRange? TimeConsumedToCheck { get; set; }
-
-        public required string TechnicalObsolescenceStatus { get; set; }
-
-        public required string ActualProductionCapacity { get; set; }
-        public string? DesignProductionCapacity { get; set; }
-        public string? AttainableProductionCapacity { get; set; }
-
-        public string? FactorsAffectingProductionCapacity { get; set; }
-        public MachineFunctionalityStatus MachineFunctionalityStatus { get; set; }
-        public MachineNonFunctionalityReason? MachineNonFunctionalityReason { get; set; }
-        public string? OtherMachineNonFunctionalityReason { get; set; }
-        public string? InspectionPlace { get; set; }
-        public DateOnly InspectionDate { get; set; }
-        public string? SurveyRemark { get; set; }
-        public string? Remark { get; set; } = string.Empty;
-
-        public DateTime? CompletedAt { get; set; }
-        public Guid CreatedBy { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public Guid? UpdatedBy { get; set; } = null;
-        public DateTime? UpdatedAt { get; set; } = null;
-
-
-        public IEnumerable<ProductionLineEvaluation>? productionLineEvaluations { get; set; }
-    }
-    public interface ITimeInterval
-    {
-        TimeSpan Start { get; set; }
-        TimeSpan End { get; set; }
     }
 
-    public class TimeInterval: ITimeInterval
+    [Index(nameof(PCEEvaluationId))]
+    public class Justification 
     {
         [Key]
         public Guid Id { get; set; }
-        [ForeignKey("PCEEId")]
-        public Guid PCEEId { get; set; }
 
-        public TimeSpan Start { get; set; }
-        public TimeSpan End { get; set; }
+        [Required]
+        [ForeignKey("PCEEvaluation")]
+        public Guid PCEEvaluationId { get; set; }
 
-            
-        public bool Contains(TimeSpan time)
-        {
-            return time >= Start && time <= End;
-        }
+        [Required]
+        public JustificationReason Reason { get; set; }
 
-        public TimeSpan Duration
-        {
-            get { return End - Start; }
-        }
+        [StringLength(1000)]
+        public string? JustificationText { get; set; }
+
+        public virtual PCEEvaluation? PCEEvaluation { get; set; }
     }
-
+    
     public class DateTimeRange
     {
         [Key]
         public Guid Id { get; set; }
-        [ForeignKey("PCEEId")]
-        public Guid PCEEId { get; set; }
 
+        [Required]
+        [ForeignKey("PCEEvaluation")]
+        public Guid PCEEvaluationId { get; set; }
+        public virtual PCEEvaluation? PCEEvaluation { get; set; }
+
+        [Required]
         public DateTime Start { get; set; }
+
+        [Required]
         public DateTime End { get; set; }
 
-        public bool Contains(DateTime dateTime)
-        {
-            return dateTime >= Start && dateTime <= End;
-        }
+        public bool Contains(DateTime dateTime) => dateTime >= Start && dateTime <= End;
+        
+        [NotMapped]
+        public TimeSpan Duration => End - Start;
 
-        public TimeSpan Duration
+        [NotMapped]
+        public bool IsValid => End > Start;
+
+        public void Validate()
         {
-            get { return End - Start; }
+            if (End <= Start)
+            {
+                throw new ValidationException("End must be after Start.");
+            }
         }
     }
 }

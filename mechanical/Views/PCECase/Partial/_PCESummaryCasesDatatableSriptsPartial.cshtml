@@ -91,7 +91,7 @@
                     }
                 },
                 { data: "PropertyOwner" },
-                { data: "ProductionLineOrEquipmentName" },
+                { data: "LineName" },
                 { data: "InputType" },
                 { data: "OutputType" },
                 { data: "OutputQuantity" },
@@ -128,15 +128,15 @@
     data.forEach(function (evaluation) {
         console.log(`PCE Evaluation: ${evaluation.Id}`);
 
-        if (evaluation.ProductionLineEvaluations) {
-            evaluation.ProductionLineEvaluations.forEach(function (lineEvaluation) {
+        if (evaluation.ProductionLines) {
+            evaluation.ProductionLines.forEach(function (lineEvaluation) {
                 console.log(`  Line Evaluation: ${lineEvaluation.Id}`);
                 console.log(`  Output Type: ${lineEvaluation.OutputType}`);
 
                 // Gather data for DataTable
                 const entry = {
                     PropertyOwner: evaluation.PCE.PropertyOwner,
-                    ProductionLineOrEquipmentName: lineEvaluation.ProductionLineOrEquipmentName,
+                    LineName: lineEvaluation.LineName,
                     InputType: lineEvaluation.InputType,
                     OutputType: lineEvaluation.OutputType,
                     OutputQuantity: lineEvaluation.OutputQuantity,

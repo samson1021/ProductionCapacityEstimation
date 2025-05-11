@@ -104,6 +104,15 @@ namespace mechanical.Controllers
                     ModelState.AddModelError("", "An error occurred while creating the production valuation.");
                 }
             }
+
+            //debugging
+            foreach (var state in ModelState){
+                var key = state.Key;
+                var errors = state.Value.Errors;
+                foreach (var error in errors){
+                    Console.WriteLine($"Key: {key}, Error: {error.ErrorMessage}");
+                }
+            }
             return View(Dto);
         }
 
@@ -133,7 +142,7 @@ namespace mechanical.Controllers
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid Id, PCEEvaluationUpdateDto Dto)
@@ -183,15 +192,18 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail(Guid Id)
         {
-            try{                    
+            try{
                 var pceValuation = await _PCEEvaluationService.GetValuation(base.GetCurrentUserId(), Id);
 
                 if (pceValuation == null)
                 {
                     return RedirectToAction("PCECases", "PCECase");
-                }               
-
-                return View(pceValuation);
+                }
+                
+                // return View(pceValuation);
+                string jsonData = JsonConvert.SerializeObject(pceValuation, 
+                                    new JsonSerializerSettings{ ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+                return Content(jsonData, "application/json");
             }
             catch (Exception ex)
             {
@@ -240,25 +252,25 @@ namespace mechanical.Controllers
         // [HttpPost]
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reevaluate(Guid Id)
-        {                       
+        {
             var userId = base.GetCurrentUserId();
             var pceEvaluation = await _PCEEvaluationService.GetValuation(userId, Id);
             var pce = await _ProductionCapacityService.GetProduction(userId, Id);
 
-            // var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(Id); 
-            // ViewData["RelatedFiles"] = RelatedFiles;        
+            // var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(Id);
+            // ViewData["RelatedFiles"] = RelatedFiles;
             // string jsonData = JsonConvert.SerializeObject(pce, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            // return Content(jsonData, "application/json");  
-            return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));            
+            // return Content(jsonData, "application/json");
+            return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));
         }
 
         [HttpPost]
         public async Task<IActionResult> HandleRemark(Guid PCEId, String RemarkType, CreateFileDto FileDto, Guid EvaluatorId)
-        {            
+        {
             var userId = base.GetCurrentUserId();
             try
             {
-                await _PCEEvaluationService.HandleRemark(userId, PCEId, RemarkType, FileDto, EvaluatorId);                
+                await _PCEEvaluationService.HandleRemark(userId, PCEId, RemarkType, FileDto, EvaluatorId);
                 return Json(new { success = true });
             }
             catch (Exception ex)
