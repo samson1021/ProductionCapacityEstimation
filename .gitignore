@@ -361,14 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-# /mechanical/Services/SignatureService/SignatureService.cs
-/Signature management/Service/AcknowledgementService/AcknowledgementService.cs
+
+FirstPublish/
+Signature management/
 mechanical/UploadFile/*
 mechanical/Migrations
 mechanical/Migrations/*
-# mechanical/appsettings.*
-mechanical/appsettings.json
 mechanical/appsettings.Development.json
 .vscode/
-.gitignore
-.gitattributes
