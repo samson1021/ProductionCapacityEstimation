@@ -28,41 +28,52 @@
         <div class="card" style="overflow: hidden; padding: 20px;">
             <div class="card-body">
                 <input value="@myPCECase.Id" type="hidden" id="PCECaseId" />
+                <h2 style="font-size: 1.5em; text-align: center; font-weight: bold; margin-bottom: 10px;">
+                    Commercial Bank Of Ethiopia
+                </h2>
+                <h3 style="font-size: 0.5em; text-align: left; font-weight: bold; margin-bottom: 10px;"> <h3>PART I: PCE Case Summary </h3></h3>
                 <table id="headertable" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em;">
-                    <thead>
+                     <thead>
+                       
                         <tr>
-                            <th colspan="14" class="text-center" style="font-size: 1.5em;"><h3>Commercial Bank Of Ethiopia</h3></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Segment</th>
-                            <th colspan="4">Applicant Name</th>
+                            <th colspan="3">Case No.</th>
+                            <th colspan="3">Applicant Name</th>
                             <th colspan="3">Applicant Address</th>
-                            <th colspan="3">Date Of Evaluation</th>
-                            <th colspan="4">Mechanical Equipment Type</th>
+                            <th colspan="3">Segment</th>                                                    
+                            @* <th colspan="3">Equipment </th> *@
+                            <th colspan="3">No of Evaluated Productions</th>
+                            <th colspan="3">Status</th>
+                            <th colspan="3">Completed Date</th>
                         </tr>
 
 
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="4" id="Segment">@myPCECase.Segment</td>
-                            <td colspan="4" id="ApplicantName">@myPCECase.ApplicantName</td>
-                            <td colspan="3">Unable to load the address of the Customer</td>
+                            <td colspan="3">@myPCECase.CaseNo</td>                           
+                            <td colspan="3" id="ApplicantName">@myPCECase.ApplicantName</td>
+                            <td colspan="3">Unable to load </td>
+                            <td colspan="3" id="Segment">@myPCECase.Segment</td>
+                            @* <td colspan="3">Mechanical</td> *@
+                            <td colspan="3">@myPCECase.NoOfProductions</td>
+                            <td colspan="3">@myPCECase.Status</td>
                             <td colspan="3">@myPCECase.CompletedAt</td>
-                            <td colspan="4">Mechanical Manufacturing Production</td>
                         </tr>
                     </tbody>
                 </table>
+                  
+                <br/> 
+                <h4 style="font-size: 0.5em; text-align: left; font-weight: bold;margin-bottom: 10px;"> <h4>PART II: Summary of evaluated productions of case @myPCECase.CaseNo</h4> </h4>
 
-                <br />
-                <h5>PART II: Summary Of Valuation</h5>
-                
                 <table id="summaryProductions" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
                     <thead>
+                       @*  <tr>
+                            <th colspan="14" class="text-left" style="font-size: 0.5em;"><h3> PART II: Summary Of Valuations </h3></th>
+                        </tr> *@
                         <tr>
-                            <th>S/No.</th>
+                            <th>#SN</th>
                             <th>Property Owner</th>
-                            <th>Mechanical Equipment Name</th>
+                            @* <th>Mechanical Equipment Name</th> *@
                             <th>YoMfg</th>
                             <th>Origin</th>
                             <th>Model No</th>
@@ -70,13 +81,45 @@
                             <th>LHC No</th>
                             <th>Type Manufacturing</th>
                             <th>Serial No.</th>
+                          @*   <th>Depreciation Rate</th>
+                            <th>Actual PC</th>
+                            <th>Estimated PC</th>
+                            <th>Remark</th> *@
+                        </tr>
+                    </thead>
+                </table>
+                <br/> 
+                <h4 style="font-size: 0.5em; text-align: left; font-weight: bold;margin-bottom: 10px;"> <h4>PART III: Summary of valuations</h4> </h4>
+
+                <table id="summaryEvaluatons" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
+                    <thead>
+                        @*  <tr>
+                            <th colspan="14" class="text-left" style="font-size: 0.5em;"><h3> PART II: Summary Of Valuations </h3></th>
+                        </tr> *@
+                        <tr>
+                            <th>#SN</th>
+                             <th>Property Owner</th>
+                            @* <th>YoMfg</th>
+                            <th>Origin</th>
+                            <th>Model No</th>
+                            <th>Invoice No.</th>
+                            <th>LHC No</th>
+                            <th>Type Manufacturing</th>
+                            <th>Serial No.</th> *@
                             <th>Depreciation Rate</th>
-                            <th>Actual Production Capacity</th>
-                            <th>Estimated Production Capacity</th>
+                            <th>Actual PC</th>
+                            <th>Estimated PC</th>
                             <th>Remark</th>
                         </tr>
                     </thead>
                 </table>
+
+
+                <br/> 
+               <h3 style="font-size: 0.5em; text-align: left; font-weight: bold; margin-bottom: 10px;"><h3> PART IV: Summary of line valuations </h3></h3>
+                @* Summary of line valuations *@
+               <div id="tablesContainer"></div>
+
             </div>
         </div>
     </div>

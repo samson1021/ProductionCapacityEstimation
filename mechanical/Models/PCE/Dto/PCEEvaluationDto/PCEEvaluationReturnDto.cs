@@ -112,7 +112,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; }
-        public List<ProductionLineEvaluationDto>? ProductionLineEvaluations { get; set; }
+        //public List<ProductionLineEvaluationDto>? ProductionLineEvaluations { get; set; }
+        public virtual ICollection<ProductionLineEvaluation> ProductionLineEvaluations { get; set; }
     }
     
     public class TimeIntervalReturnDto: ITimeInterval

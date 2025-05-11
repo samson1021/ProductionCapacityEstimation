@@ -48,7 +48,7 @@ namespace mechanical.Models.PCE.Entities
         public string? CurrentStatus { get; set; }
         public string? Remark { get; set; } = string.Empty;
         
-        // public string? ProductionType { get; set; }
+        public string? ProductionType { get; set; }
         public Guid? AssignedEvaluatorId { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid CreatedById { get; set; }       

@@ -12,6 +12,7 @@
     function handleMachineryInstalledPlaceChange(selectElement) {
         var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace");
         var PrivateownedLHC = document.getElementById("PrivateownedLHC");
+
         var IndustrialPark = document.getElementById("IndustrialPark");
         var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");
         if (selectElement.value === "Private Owned LHC") {
@@ -19,8 +20,9 @@
             IndustrialPark.style.display = "none";
             PrivateRentedLHC.style.display = "none";
 
+
         } else if (selectElement.value === "Industrial Park") {
-            IndustrialPark.style.display = "block";
+            IndustrialParkrow.style.display = "block";
             PrivateownedLHC.style.display = "none";
             PrivateRentedLHC.style.display = "none";
 
@@ -31,68 +33,11 @@
 
         } else {
             PrivateownedLHC.style.display = "none";
-            IndustrialPark.style.display = "none";
+            IndustrialParkrow.style.display = "none";
         }
     }
-    function validateForm() {
-        var isValid = true;
-
-        if (document.getElementById("PropertyOwner").value.trim() === "") {
-            document.getElementById("PropertyOwner-error").textContent = "Property Owner is required.";
-            document.getElementById("PropertyOwner").style.borderColor = "red";
-
-            isValid = false;
-        } else {
-            document.getElementById("PropertyOwner").style.borderColor = "";
-            document.getElementById("PropertyOwner-error").textContent = "";
-        }
-        if (document.getElementById("MachineryInstalledPlace").value.trim() === "") {
-            document.getElementById("MachineryInstalledPlace-error").textContent = "Machinery Installed Place is required.";
-            document.getElementById("MachineryInstalledPlace").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("MachineryInstalledPlace").style.borderColor = "";
-            document.getElementById("MachineryInstalledPlace-error").textContent = "";
-        }
-
-        if (document.getElementById("Region").value.trim() === "") {
-            document.getElementById("Region-error").textContent = "Region is required.";
-            document.getElementById("Region").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("Region").style.borderColor = "";
-            document.getElementById("Region-error").textContent = "";
-        }
-
-        if (document.getElementById("BusinessLicenseNumber").value.trim() === "") {
-            document.getElementById("BusinessLicenseNumber-error").textContent = "Business License is required.";
-            document.getElementById("LHC").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("BusinessLicenseNumber").style.borderColor = "";
-            document.getElementById("BusinessLicenseNumber-error").textContent = "";
-        }
-
-
-        if (document.getElementById("MachineSpecificationDocument").value.trim() === "") {
-            document.getElementById("MachineSpecificationDocument-error").textContent = "Machine Specification Document is required.";
-            document.getElementById("MachineSpecificationDocument").style.borderColor = "red";
-            isValid = false;
-
-        }
-        else {
-            document.getElementById("MachineSpecificationDocument").style.borderColor = "";
-            document.getElementById("MachineSpecificationDocument-error").textContent = "";
-        }
-        return isValid;
-    }
-    // function for the Region dropdown value 
+   
+    // // function for the Region dropdown value 
     function handleRegionChange(selectElement) {
         var otherRegionInput = document.getElementById("OtherRegion");
         if (selectElement.value === "Others") {
