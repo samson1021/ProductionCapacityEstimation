@@ -234,17 +234,32 @@
                         <table class="table table-bordered table-hover mb-0">
                             <thead class="bg-light">
                                 <tr>
-                                    <th></th>
+                                    <th>No</th>
                                     <th>Line/Equipment</th>
+                                    <th>Output Type</th>
                                     <th>Output Phase</th>
                                     <th>Actual Capacity</th>
-                                    <th>Capacity Status</th>
+                                    <th>Design Capacity</th>
+                                    <th>Attainable Capacity</th>
+                                    <th>Unit</th>
+                                    <th>Measurement</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @{ var index = 0; }
                                 @foreach (var line in Model.ProductionLines)
                                 {
                                     <tr>
+                                        <td>@index</td>
+                                        <td>@(string.IsNullOrEmpty(line.LineName) ? "N/A" : line.LineName)</td>
+                                        <td>@(string.IsNullOrEmpty(line.OutputType) ? "N/A" : line.OutputType)</td>
+                                        <td>@(line.OutputPhase  == null ? "N/A" : line.OutputPhase)</td>
+                                        <td>@(line.ActualCapacity == null ? "N/A" : line.ActualCapacity)</td>
+                                        <td>@(line.DesignCapacity == null ? "N/A" : line.DesignCapacity)</td>
+                                        <td>@(line.AttainableCapacity == null ? "N/A" : line.AttainableCapacity)</td>
+                                        <td>@(line.ProductionUnit == null ? "N/A" : line.ProductionUnit)</td>
+                                        <td>@(line.ProductionMeasurement == null ? "N/A" : line.ProductionMeasurement)</td>
                                         <td>
                                             @if (line.ProductionLineInputs != null && line.ProductionLineInputs.Any())
                                             {
@@ -253,113 +268,78 @@
                                                         data-toggle="collapse"
                                                         aria-expanded="false"
                                                         aria-controls="details-@line.Id">
-                                                    <i class="fas fa-chevron-right"></i>
+                                                    <i class="fas fa-chevron-right"></i> Details
                                                 </button>
                                             }
                                             else
                                             {
                                                 <span class="btn btn-sm btn-outline-secondary disabled">
-                                                    <i class="fas fa-minus"></i>
+                                                    <i class="fas fa-minus"></i> No input details
                                                 </span>
                                             }
                                         </td>
-                                        <td>@(string.IsNullOrEmpty(line.LineName) ? "N/A" : line.LineName)</td>
-                                        <td>@(line.OutputPhase  == null ? "N/A" : line.OutputPhase)</td>
-                                        <td>@(line.ActualCapacity == null ? "N/A" : line.ActualCapacity)</td>
-                                        <td>
-                                            @if (line.DesignCapacity != null && line.DesignCapacity > 0)
-                                            {
-                                                <div class="progress progress-xs mb-1">
-                                                    <div class="progress-bar bg-@(line.ActualCapacity >= line.DesignCapacity ? "success" : "warning")" 
-                                                        style="width: @((line.ActualCapacity / line.DesignCapacity) * 100)%">
-                                                    </div>
-                                                </div>
-                                                <small class="text-muted">@line.ActualCapacity/@line.DesignCapacity @line.ProductionUnit</small>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">No capacity data</span>
-                                            }
-                                        </td>
                                     </tr>
-                                    
                                     <tr class="collapse" id="details-@line.Id">
-                                        <td colspan="5" class="p-0">
-                                            <div class="p-3 border-top">
+                                        <td colspan="10" class="p-0" style="grid-column: 2 / span 7;">
+                                            <div class="p-1 border-top">
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <h5 class="mb-3"><i class="fas fa-info-circle me-2 text-primary"></i>Detailed Metrics</h5>
-                                                        <dl class="row">
-                                                            <dt class="col-sm-4 text-muted">Design Capacity</dt>
-                                                            <dd class="col-sm-8">@(line.DesignCapacity == null ? "N/A" : line.DesignCapacity)</dd>
-
-                                                            <dt class="col-sm-4 text-muted">Attainable Capacity</dt>
-                                                            <dd class="col-sm-8">@(line.AttainableCapacity == null ? "N/A" : line.AttainableCapacity)</dd>
-
-                                                            <dt class="col-sm-4 text-muted">Production Measurement</dt>
-                                                            <dd class="col-sm-8">@(line.ProductionMeasurement == null ? "N/A" : line.ProductionMeasurement)</dd>
-
-                                                            <dt class="col-sm-4 text-muted">Output Type</dt>
-                                                            <dd class="col-sm-8">@(string.IsNullOrEmpty(line.OutputType) ? "N/A" : line.OutputType)</dd>
-                                                            
-                                                            <dt class="col-sm-4 text-muted">Production Unit</dt>
-                                                            <dd class="col-sm-8">@(line.ProductionUnit == null ? "N/A" : line.ProductionUnit)</dd>
-                                                        </dl>
+                                                        @if (line.ProductionLineInputs != null && line.ProductionLineInputs.Any())
+                                                        {
+                                                            <div>
+                                                                <button class="btn btn-sm btn-outline-secondary toggle-inputs mb-2" 
+                                                                        data-target="#inputs-@line.Id" 
+                                                                        data-toggle="collapse"
+                                                                        aria-expanded="false"
+                                                                        aria-controls="inputs-@line.Id"
+                                                                        onclick="$(this).find('span').text($(this).find('span').text() === 'Show Inputs (@line.ProductionLineInputs.Count())' ? 'Hide Inputs' : 'Show Inputs (@line.ProductionLineInputs.Count())')">
+                                                                    <i class="fas fa-boxes me-1"></i> <span>Show Inputs (@line.ProductionLineInputs.Count())</span>
+                                                                </button>
+                                                                
+                                                                <div class="collapse" id="inputs-@line.Id">
+                                                                    <div class="card card-body shadow-sm">
+                                                                        <h5><i class="fas fa-box-open me-2 text-primary"></i>Production Inputs</h5>
+                                                                        <div class="table-responsive">
+                                                                            <table class="table table-sm table-hover">
+                                                                                <thead class="bg-light">
+                                                                                    <tr>
+                                                                                        <th>Type</th>
+                                                                                        <th>Quantity</th>
+                                                                                        <th>Unit</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    @foreach (var input in line.ProductionLineInputs)
+                                                                                    {
+                                                                                        <tr>
+                                                                                            <td>@(string.IsNullOrEmpty(input.Type) ? "N/A" : input.Type)</td>
+                                                                                            <td>@(input.Quantity == null ? "N/A" : input.Quantity)</td>
+                                                                                            <td>@(input.Unit == null ? "N/A" : input.Unit)</td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <h5 class="mb-3"><i class="fas fa-calculator me-2 text-primary"></i>Calculations</h5>
-                                                        <dl class="row">
+                                                        <h5 class="mb-2" style="margin-left: 1rem;"><i class="fas fa-calculator me-2 text-primary"></i>Calculations</h5>
+                                                        <dl class="row" style="margin-left: 1rem;">
                                                             <dt class="col-sm-4 text-muted">Total Input</dt>
                                                             <dd class="col-sm-8">@(line.TotalInput == null ? "N/A" : line.TotalInput)</dd>
                                                             
                                                             <dt class="col-sm-4 text-muted">Conversion Rate</dt>
-                                                            <dd class="col-sm-8">@(line.ConversionRatio != null ? line.ConversionRatio + "%": "N/A")</dd>
+                                                            <dd class="col-sm-8">@(line.ConversionRatio != null ? line.ConversionRatio + "%" : "N/A")</dd>
                                                         </dl>
                                                     </div>
                                                 </div>
-                                                
-                                                @if (line.ProductionLineInputs != null && line.ProductionLineInputs.Any())
-                                                {
-                                                    <div class="mt-4">
-                                                        <button class="btn btn-sm btn-outline-secondary toggle-inputs mb-3" 
-                                                                data-target="#inputs-@line.Id" 
-                                                                data-toggle="collapse"
-                                                                aria-expanded="false"
-                                                                aria-controls="inputs-@line.Id">
-                                                            <i class="fas fa-boxes me-1"></i> Show Inputs (@line.ProductionLineInputs.Count())
-                                                        </button>
-                                                        
-                                                        <div class="collapse" id="inputs-@line.Id">
-                                                            <div class="card card-body shadow-sm">
-                                                                <h5><i class="fas fa-box-open me-2 text-primary"></i>Production Inputs</h5>
-                                                                <div class="table-responsive">
-                                                                    <table class="table table-sm table-hover">
-                                                                        <thead class="bg-light">
-                                                                            <tr>
-                                                                                <th>Type</th>
-                                                                                <th>Quantity</th>
-                                                                                <th>Unit</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            @foreach (var input in line.ProductionLineInputs)
-                                                                            {
-                                                                                <tr>
-                                                                                    <td>@(string.IsNullOrEmpty(input.Type) ? "N/A" : input.Type)</td>
-                                                                                    <td>@(input.Quantity == null ? "N/A" : input.Quantity)</td>
-                                                                                    <td>@(input.Unit == null ? "N/A" : input.Unit)</td>
-                                                                                </tr>
-                                                                            }
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }
                                             </div>
                                         </td>
                                     </tr>
+                                    index = index + 1;
                                 }
                             </tbody>
                         </table>
