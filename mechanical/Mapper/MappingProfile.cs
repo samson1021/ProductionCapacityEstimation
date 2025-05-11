@@ -171,7 +171,7 @@ namespace mechanical.Mapper
 
             //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>().ReverseMap();
-            CreateMap<ProductionCapacity, ProductionEdittDto>().ReverseMap();
+            CreateMap<ProductionCapacity, ProductionEditDto>().ReverseMap();
             CreateMap<ProductionCapacity, ProductionReturnDto>()
 
                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))

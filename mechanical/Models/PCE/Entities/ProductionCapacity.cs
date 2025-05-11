@@ -17,7 +17,7 @@ namespace mechanical.Models.PCE.Entities
         [Display(Name = "Manufacturing Sub-Sector")]
         public required string Type { get; set; }
         public required string MachineName { get; set; }
-        public required string CountryOfOrgin { get; set; }
+        public required string CountryOfOrigin { get; set; }
         public required string BusinessLicenseNumber { get; set; }
         // public string TradeLicenseNumber { get; set; }
 
