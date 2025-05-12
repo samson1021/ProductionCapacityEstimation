@@ -237,7 +237,9 @@
                                     <th>No</th>
                                     <th>Line/Equipment</th>
                                     <th>Output Type</th>
-                                    <th>Output Phase</th>
+                                    @if(Model.ProductionLineType != null && Model.ProductionLineType == ProductionLineType.Interdependent){
+                                        <th>Output Phase</th>
+                                    }
                                     <th>Actual Capacity</th>
                                     <th>Design Capacity</th>
                                     <th>Attainable Capacity</th>
@@ -254,7 +256,9 @@
                                         <td>@index</td>
                                         <td>@(string.IsNullOrEmpty(line.LineName) ? "N/A" : line.LineName)</td>
                                         <td>@(string.IsNullOrEmpty(line.OutputType) ? "N/A" : line.OutputType)</td>
-                                        <td>@(line.OutputPhase  == null ? "N/A" : line.OutputPhase)</td>
+                                        @if(Model.ProductionLineType != null && Model.ProductionLineType == ProductionLineType.Interdependent){
+                                            <td>@(line.OutputPhase  == null ? "N/A" : line.OutputPhase)</td>
+                                        }
                                         <td>@(line.ActualCapacity == null ? "N/A" : line.ActualCapacity)</td>
                                         <td>@(line.DesignCapacity == null ? "N/A" : line.DesignCapacity)</td>
                                         <td>@(line.AttainableCapacity == null ? "N/A" : line.AttainableCapacity)</td>
@@ -274,7 +278,7 @@
                                             else
                                             {
                                                 <span class="btn btn-sm btn-outline-secondary disabled">
-                                                    <i class="fas fa-minus"></i> No input details
+                                                    <i class="fas fa-minus"></i> No inputs
                                                 </span>
                                             }
                                         </td>

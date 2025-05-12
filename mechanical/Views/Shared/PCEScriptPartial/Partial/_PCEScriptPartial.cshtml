@@ -10,6 +10,12 @@
             machineFunctionalityStatus.addEventListener('change', function() {
                 const isNonFunctional = this.value === '@((int)MachineFunctionalityStatus.NonFunctional)';
                 document.getElementById('functionalityReasonRow').style.display = isNonFunctional ? 'block' : 'none';
+                document.getElementById('functionalityReasonRow').required = isNonFunctional;
+                if (isNonFunctional) {
+                    machineNonFunctionalityReason.setAttribute('required', 'required');
+                } else {
+                    machineNonFunctionalityReason.removeAttribute('required');
+                }
                 document.getElementById('otherReasonRow').style.display = 
                     (isNonFunctional && machineNonFunctionalityReason && machineNonFunctionalityReason.value === '@((int)MachineNonFunctionalityReason.Other)') 
                     ? 'block' : 'none';
@@ -22,29 +28,20 @@
                     this.value === '@((int)MachineNonFunctionalityReason.Other)' ? 'block' : 'none';
             });
         }
-        var outputPhaseElement = document.getElementById("OutputPhase");
 
-        if (outputPhaseElement) {
-            outputPhaseElement.addEventListener("change", function () {
-                handleDropdownChange(this, "OtherOutputPhase");
-            });
-        }
-
-        
         // Initialize validation
         $.validator.unobtrusive.parse(document);
 
-        @* $('.toggle-details').click(function() {
-            $(this).find('i').toggleClass('fa-chevron-left fa-chevron-up');
+        $('.toggle-details').click(function() {
+            $(this).find('i').toggleClass('fa-chevron-down fa-chevron-down');
             $(this).toggleClass('btn-outline-primary btn-primary');
-        }); *@
+        });
 
         // Handle toggle icons for inputs
         $('.toggle-inputs').click(function() {
             $(this).find('i').toggleClass('fa-boxes fa-box-open');
             $(this).toggleClass('btn-outline-secondary btn-secondary');
         });
-
 
         // Initialize tooltips
         $('[title]').tooltip();
@@ -91,11 +88,9 @@
 
     // Alphanumeric validation
     function addAlphanumericValidation(elementId, errorElementId) {
-        
-        var element = document.getElementById(buttonId);
+        var element = document.getElementById(elementId); // Fixed variable reference
 
         if (element) {
-
             element.addEventListener("input", function () {
                 var input = this.value;
                 var alphanumericRegex = /^[A-Za-z0-9]+$/;
@@ -107,22 +102,6 @@
                     document.getElementById(errorElementId).textContent = "";
                 }
             });
-        }
-    }
-
-    // Function for handling dropdown value changes
-    function handleDropdownChange(selectElement, otherInputId) {
-
-        var otherInput = document.getElementById(otherInputId);
-
-        if (otherInput) {
-            if (selectElement.value === "Other") {
-                otherInput.style.display = "block";
-                otherInput.setAttribute("required", "required");
-            } else {
-                otherInput.style.display = "none";
-                otherInput.removeAttribute("required");
-            }
         }
     }
 
