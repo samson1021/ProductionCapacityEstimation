@@ -24,11 +24,20 @@
     <div class="form-group mb-3">
         <label class="form-label">Relation Managers</label>
         <select class="form-control select2" asp-for="SelectedRMs" required multiple>
-            <option value="" disabled>Select RMs</option>
+            <option value="" disabled>Select Relatioin Managers</option>
         </select>
         <span asp-validation-for="SelectedRMs" class="text-danger"></span>
         <div class="invalid-feedback">Please select at least one relations manager.</div>
     </div>
+
+   @*  <div class="form-group mb-3">
+        <label class="form-label">Relation Managers</label>
+        <select class="form-control select2" id="SelectedRMs" name="SelectedRMs" multiple style="width: 100%" required>
+            <!-- Options will be added by JS -->
+        </select>
+        <span class="text-danger"></span>
+        <div class="invalid-feedback">Please select at least one relation manager.</div>
+    </div> *@
 
     <div class="mb-3">
         <label for="Deadline" class="form-label">Deadline</label>
@@ -57,3 +66,49 @@
         <div class="invalid-feedback">Please provide a reason for task sharing.</div>
     </div>
 </form>
+<!-- Optional: Custom CSS -->
+<style>
+    .select2-container {
+        width: 100% !important; /* Force full width */
+    }
+
+    .select2-container--default .select2-selection--multiple {
+        min-height: 38px;
+        padding: 0.4rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background-color: #fff;
+    }
+
+    .select2-selection__choice {
+        background-color: #f8f9fa; /* Light background */
+        color: #000 !important; /* Force black text */
+        border: 1px solid #ccc;
+        padding: 2px 5px 2px 8px;
+        margin: 2px;
+        font-size: 1rem;
+        position: relative;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: red !important; /* Force red color for the remove button */
+    }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: darkred !important; /* Force dark red on hover */
+        }
+
+    /* Additional styles for the selected items */
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        color: #000 !important; /* Black text for selected items */
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        color: #000 !important; /* Black text for choices */
+    }
+        
+
+</style>
+
+
+
