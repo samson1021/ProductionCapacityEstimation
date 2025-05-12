@@ -37,8 +37,8 @@
 
                     <!-- Production Line Details -->
                     <div class="form-group col-md-3">
-                        <label class="form-label">Production Line Type<span class="text-danger">*</span></label>
-                        <select asp-for="ProductionLineType" class="form-select" 
+                        <label class="form-label">Production Line Type <span class="text-danger">*</span></label>
+                        <select asp-for="ProductionLineType" class="form-select production-line-type"
                                 asp-items="Html.GetEnumSelectList<ProductionLineType>()" required>
                             <option value="" disabled selected>Select Production Line Type</option>
                         </select>

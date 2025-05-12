@@ -1,3 +1,5 @@
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+
 <script>
     $(document).ready(function () {
         const $container = $('#productionLineContainer');
@@ -23,9 +25,6 @@
             
             updateRemoveButtons();
             updateLineNumbers();
-
-            // Update visibility for the new line
-            toggleOutputPhaseVisibility();
         }
 
         function addInputMaterial($line) {
@@ -197,16 +196,16 @@
         function toggleOutputPhaseVisibility() {
             $('.production-line-form').each(function () {
                 const $form = $(this);
-                const productionLineType = $form.find('[name$=".ProductionLineType"]').val();
+                const productionLineType = document.getElementById('ProductionLineType').value;
                 const $outputPhaseContainer = $form.find('.output-phase-container');
-                const $outputPhaseSelect = $form.find('[name$=".OutputPhase"]');
+                const $outputPhaseSelect = $form.find('.output-phase');
 
-                if (productionLineType === 'Interdependent') {
+                if (parseInt(productionLineType) === @((int)ProductionLineType.Interdependent)) {
                     $outputPhaseContainer.show();
+                    $outputPhaseSelect.prop('required', true);
                 } else {
                     $outputPhaseContainer.hide();
-                    // Clear the value of Output Phase to avoid submitting it
-                    $outputPhaseSelect.val('').trigger('change'); // Trigger change to ensure validation updates
+                    $outputPhaseSelect.prop('required', false).val('');
                 }
             });
         }
@@ -363,14 +362,8 @@
         // Initialize the first line's inputs
         addProductionLine();
 
-        // Update phase container visibility when dropdown changes
-        $container.on('change', '[name$=".ProductionLineType"]', function () {
-            toggleOutputPhaseVisibility();
-        });
-
-        $(document).on('change', '[name$=".ProductionLineType"]', function () {
-            toggleOutputPhaseVisibility();
-        });
+        // Consolidated event listener for ProductionLineType changes
+        $(document).on('change', '#ProductionLineType', toggleOutputPhaseVisibility);
         
         // Attach event listener to bottleneck checkboxes
         $(document).on('change', '.is-bottleneck', function () {
@@ -385,8 +378,5 @@
 
         // Initialize tooltips
         $('[title]').tooltip();
-
-        // Initialize phase container visibility on page load
-        toggleOutputPhaseVisibility();
     });
 </script>
