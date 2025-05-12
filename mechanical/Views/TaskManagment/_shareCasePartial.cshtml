@@ -24,20 +24,11 @@
     <div class="form-group mb-3">
         <label class="form-label">Relation Managers</label>
         <select class="form-control select2" asp-for="SelectedRMs" required multiple>
-            <option value="" disabled>Select Relatioin Managers</option>
+            <option value="" disabled>Select Relation Managers</option>
         </select>
         <span asp-validation-for="SelectedRMs" class="text-danger"></span>
         <div class="invalid-feedback">Please select at least one relations manager.</div>
     </div>
-
-   @*  <div class="form-group mb-3">
-        <label class="form-label">Relation Managers</label>
-        <select class="form-control select2" id="SelectedRMs" name="SelectedRMs" multiple style="width: 100%" required>
-            <!-- Options will be added by JS -->
-        </select>
-        <span class="text-danger"></span>
-        <div class="invalid-feedback">Please select at least one relation manager.</div>
-    </div> *@
 
     <div class="mb-3">
         <label for="Deadline" class="form-label">Deadline</label>
