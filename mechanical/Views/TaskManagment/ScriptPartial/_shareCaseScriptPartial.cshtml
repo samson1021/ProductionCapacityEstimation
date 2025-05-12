@@ -1,3 +1,9 @@
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
 <script>
     
     function stripTime(date) {
@@ -16,17 +22,33 @@
             $("#shareCaseButton").prop("disabled", !isValid);
         });
 
-        $('.select2').select2({ placeholder: "No Relation Managers", allowClear: true });
+        const $dropdown = $("#SelectedRMs");
+        $dropdown.empty();
 
-        // Populate RMs dropdown (for Share Task form)
-        $.get("/UserManagment/GetPeerRMs", function (data) {
-            var rmDropdown = $("#SelectedRMs");
-            rmDropdown.empty();
-            $.each(data, function (index, item) {
-                rmDropdown.append($('<option></option>').val(item.Id).text(item.Name));
+        $.get("/UserManagment/GetPeerRMs")
+            .done(function (data) {
+                if (Array.isArray(data) && data.length) {
+                    data.forEach(item => {
+                        $dropdown.append(
+                            $('<option></option>').val(item.Id.toString()).text(item.Name)
+                        );
+                    });
+                } else {
+                    console.warn("No valid data received.");
+                }
+
+                $dropdown.select2({
+                    placeholder: "Select Relation Managers",
+                    allowClear: true,
+                    width: '100%',                   
+                    dropdownParent: $('#shareCaseForm')
+                });
+            })
+            .fail(function (xhr, status, error) {
+                console.error("Error loading RMs:", error);
             });
-            rmDropdown.select2();
-        });
+
+
 
         // Deadline validation for Share Task form before submission
         $("#shareCaseButton").click(function (e) {
@@ -145,5 +167,6 @@
                 }
             });
         });
+   
     });
 </script>
