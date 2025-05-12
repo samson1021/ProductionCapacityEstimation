@@ -11,11 +11,11 @@
                 const isNonFunctional = this.value === '@((int)MachineFunctionalityStatus.NonFunctional)';
                 document.getElementById('functionalityReasonRow').style.display = isNonFunctional ? 'block' : 'none';
                 document.getElementById('functionalityReasonRow').required = isNonFunctional;
-                if (isNonFunctional) {
-                    machineNonFunctionalityReason.setAttribute('required', 'required');
-                } else {
-                    machineNonFunctionalityReason.removeAttribute('required');
-                }
+                // if (isNonFunctional) {
+                //     machineNonFunctionalityReason.setAttribute('required', 'required');
+                // } else {
+                //     machineNonFunctionalityReason.removeAttribute('required');
+                // }
                 document.getElementById('otherReasonRow').style.display = 
                     (isNonFunctional && machineNonFunctionalityReason && machineNonFunctionalityReason.value === '@((int)MachineNonFunctionalityReason.Other)') 
                     ? 'block' : 'none';
@@ -32,19 +32,15 @@
         // Initialize validation
         $.validator.unobtrusive.parse(document);
 
+        // Rotate chevron when details are shown
         $('.toggle-details').click(function() {
-            $(this).find('i').toggleClass('fa-chevron-down fa-chevron-down');
+            $(this).find('i').toggleClass('fa-chevron-up fa-chevron-down');
             $(this).toggleClass('btn-outline-primary btn-primary');
-        });
-
-        // Handle toggle icons for inputs
-        $('.toggle-inputs').click(function() {
-            $(this).find('i').toggleClass('fa-boxes fa-box-open');
-            $(this).toggleClass('btn-outline-secondary btn-secondary');
         });
 
         // Initialize tooltips
         $('[title]').tooltip();
+        $('[data-toggle="tooltip"]').tooltip();
 
         // Initialize all collapses as closed
         $('.collapse').collapse('hide');

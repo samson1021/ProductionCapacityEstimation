@@ -484,9 +484,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
                 pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
-                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
-                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
-                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+                // pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                // pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                // pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
 
                 var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
                 pceEvaluationDto.TotalCapacity = totalCapacity;
@@ -537,9 +537,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
                 pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
-                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
-                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
-                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+                // pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                // pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                // pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
 
                 var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
                 pceEvaluationDto.TotalCapacity = totalCapacity;
@@ -596,9 +596,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 foreach (var dto in pceEntitiesDto)
                 {
                     dto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
-                    dto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
-                    dto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
-                    dto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+                    // dto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                    // dto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                    // dto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
 
                     var totalCapacity = dto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
                     dto.TotalCapacity = totalCapacity;
