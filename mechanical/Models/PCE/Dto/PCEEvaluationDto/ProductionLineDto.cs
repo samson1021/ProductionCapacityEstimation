@@ -11,7 +11,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
     {
         [Required]
         [StringLength(200)]
-        [Display(Name = "Machine/Equipment Name")]
+        [Display(Name = "Line/Machine/Equipment Name")]
         public string LineName { get; set; }
 
         [Required]
@@ -52,7 +52,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public decimal? TotalInput { get; set; }
 
         [Display(Name = "Conversion Ratio")]
-        public string? ConversionRatio { get; set; }
+        public decimal? ConversionRatio { get; set; }
         
         public abstract List<TProductionLineInput> ProductionLineInputs { get; set; }
     }
