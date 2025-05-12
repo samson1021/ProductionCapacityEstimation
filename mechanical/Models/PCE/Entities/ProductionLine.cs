@@ -32,7 +32,7 @@ namespace mechanical.Models.PCE.Entities
         public OutputPhase? OutputPhase { get; set; }
 
         [Required]
-        public bool IsBottleneck { get; set; }
+        public bool IsBottleneck { get; set; } = false;
 
         [Required]
         [Range(0, double.MaxValue)]

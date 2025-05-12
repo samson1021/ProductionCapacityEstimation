@@ -8,8 +8,8 @@
             let lineCount = $('#productionLineContainer .production-line-evaluation-item').length;
             const index = lineCount++;
             const html = template
-                .replace(/\${index}/g, index)
-                .replace(/\${index1}/g, index + 1);
+                .replace(/__INDEX__/g, index)
+                .replace(/__INDEX_1__/g, index + 1);
             
             const $newLine = $(html).hide();
             $container.append($newLine);
@@ -23,7 +23,9 @@
             
             updateRemoveButtons();
             updateLineNumbers();
-            @* updatePhaseContainerVisibility(); *@
+
+            // Update visibility for the new line
+            toggleOutputPhaseVisibility();
         }
 
         function addInputMaterial($line) {
@@ -33,8 +35,8 @@
             const inputIndex = $line.find('.input-item').length;
             
             const html = inputTemplate
-                .replace(/\${lineIndex}/g, lineIndex)
-                .replace(/\${inputIndex}/g, inputIndex);
+                .replace(/__LINE_INDEX__/g, lineIndex)
+                .replace(/__INPUT_INDEX__/g, inputIndex);
 
             const $newInput = $(html).hide();
             $inputsContainer.append($newInput);
@@ -175,6 +177,40 @@
             $('.remove-line-btn').toggle($lines.length > 1);
         }
 
+        // Handle bottleneck toggle
+        function handleBottleneckToggle() {
+            const $bottleneckCheckboxes = $('.is-bottleneck');
+            $bottleneckCheckboxes.each(function () {
+                const $checkbox = $(this);
+                if ($checkbox.is(':checked')) {
+                    // Disable all other checkboxes
+                    $bottleneckCheckboxes.not($checkbox).prop('disabled', true);
+                } else {
+                    // Enable all checkboxes if none are checked
+                    if ($bottleneckCheckboxes.filter(':checked').length === 0) {
+                        $bottleneckCheckboxes.prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        function toggleOutputPhaseVisibility() {
+            $('.production-line-form').each(function () {
+                const $form = $(this);
+                const productionLineType = $form.find('[name$=".ProductionLineType"]').val();
+                const $outputPhaseContainer = $form.find('.output-phase-container');
+                const $outputPhaseSelect = $form.find('[name$=".OutputPhase"]');
+
+                if (productionLineType === 'Interdependent') {
+                    $outputPhaseContainer.show();
+                } else {
+                    $outputPhaseContainer.hide();
+                    // Clear the value of Output Phase to avoid submitting it
+                    $outputPhaseSelect.val('').trigger('change'); // Trigger change to ensure validation updates
+                }
+            });
+        }
+
         $('form').on('submit', function(e) {
             if(!$(this).valid()) {
                 e.preventDefault();
@@ -280,7 +316,7 @@
             e.preventDefault();
             addProductionLine();
             toggleInputsSection();
-            updatePhaseContainerVisibility();
+            toggleOutputPhaseVisibility();
         });
 
         // Toggle input-output data sections
@@ -324,56 +360,33 @@
             }
         });
 
-        // Update phase container visibility for all production lines
-        function updatePhaseContainerVisibility() {
-            $('.production-line-form').each(function () {
-                const $form = $(this);
-                const productionLineTypeSelect = $form.find('select[asp-for="ProductionLineType"]');
-                const outputPhaseContainer = $form.find('.output-phase-container');
-                if (productionLineTypeSelect.length && outputPhaseContainer.length) {
-                    if (productionLineTypeSelect.val() !== 'Interdependent') {
-                        outputPhaseContainer.show();
-                    } else {
-                        outputPhaseContainer.hide();
-                    }
-                }
-            });
-        }
-
-        // Update phase container visibility when dropdown changes
-        $container.on('change', 'select[asp-for="ProductionLineType"]', function () {
-            updatePhaseContainerVisibility();
-        });
-
         // Initialize the first line's inputs
         addProductionLine();
 
+        // Update phase container visibility when dropdown changes
+        $container.on('change', '[name$=".ProductionLineType"]', function () {
+            toggleOutputPhaseVisibility();
+        });
+
+        $(document).on('change', '[name$=".ProductionLineType"]', function () {
+            toggleOutputPhaseVisibility();
+        });
+        
+        // Attach event listener to bottleneck checkboxes
+        $(document).on('change', '.is-bottleneck', function () {
+            handleBottleneckToggle();
+        });
+
+        // Initialize bottleneck toggle state on page load
+        handleBottleneckToggle();
+        
         // Initialize validation
         $.validator.unobtrusive.parse(document);
 
         // Initialize tooltips
         $('[title]').tooltip();
-    });
 
-    function toggleOutputPhaseVisibility() {
-        $('.production-line-form').each(function () {
-            const $form = $(this);
-            const productionLineType = $form.find('[name$=".ProductionLineType"]').val();
-            const $outputPhaseContainer = $form.find('[name$=".OutputPhase"]').closest('.form-group');
-
-            if (productionLineType === 'Interdependent') {
-                $outputPhaseContainer.show();
-            } else {
-                $outputPhaseContainer.hide();
-            }
-        });
-    }
-
-    $(document).on('change', '[name$=".ProductionLineType"]', function () {
-        toggleOutputPhaseVisibility();
-    });
-
-    $(document).ready(function () {
+        // Initialize phase container visibility on page load
         toggleOutputPhaseVisibility();
     });
 </script>

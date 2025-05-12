@@ -24,7 +24,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
         [Required]
         [Display(Name = "Is Bottleneck")]
-        public bool IsBottleneck { get; set; }
+        public bool IsBottleneck { get; set; } = false;
 
         [Required]
         [Range(0, double.MaxValue)]
