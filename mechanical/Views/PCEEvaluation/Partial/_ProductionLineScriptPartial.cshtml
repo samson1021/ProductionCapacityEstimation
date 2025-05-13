@@ -16,15 +16,25 @@
             const $newLine = $(html).hide();
             $container.append($newLine);
             
+            // Initialize bottleneck toggle
+            $newLine.find('.is-bottleneck').on('change', function() {
+                if ($(this).is(':checked')) {
+                    // Uncheck all other bottlenecks
+                    $('.is-bottleneck').not(this).prop('checked', false);
+                }
+                handleBottleneckToggle();
+            });
+            
             // Initialize validation
             $.validator.unobtrusive.parse($newLine);
-            
+
             $newLine.slideDown(300, function() {
                 if (lineCount > 1) $(this).find('input:first').focus();
             });
             
             updateRemoveButtons();
             updateLineNumbers();
+            handleBottleneckToggle();
         }
 
         function addInputMaterial($line) {
@@ -60,6 +70,7 @@
                 $(this).remove();
                 updateLineNumbers();
                 updateRemoveButtons();
+                handleBottleneckToggle();
             });
         }
 
@@ -179,16 +190,23 @@
         // Handle bottleneck toggle
         function handleBottleneckToggle() {
             const $bottleneckCheckboxes = $('.is-bottleneck');
+            const anyChecked = $bottleneckCheckboxes.is(':checked');
             $bottleneckCheckboxes.each(function () {
                 const $checkbox = $(this);
-                if ($checkbox.is(':checked')) {
+                @* if ($checkbox.is(':checked')) {
                     // Disable all other checkboxes
                     $bottleneckCheckboxes.not($checkbox).prop('disabled', true);
                 } else {
                     // Enable all checkboxes if none are checked
                     if ($bottleneckCheckboxes.filter(':checked').length === 0) {
                         $bottleneckCheckboxes.prop('disabled', false);
+                        $checkbox.prop('disabled', false);
                     }
+                } *@
+                if (anyChecked) {
+                    $checkbox.prop('disabled', !$checkbox.is(':checked'));
+                } else {
+                    $checkbox.prop('disabled', false);
                 }
             });
         }
@@ -211,7 +229,21 @@
         }
 
         $('form').on('submit', function(e) {
-            if(!$(this).valid()) {
+            // Manually re-parse validation to include dynamic elements
+            $(this).removeData('validator');
+            $(this).removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($(this));
+
+            $('.is-bottleneck').each(function() {
+                const $hidden = $(this).prev('input[type="hidden"]');
+                if ($(this).is(':checked')) {
+                    $hidden.remove();
+                } else if (!$hidden.length) {
+                    $(this).before('<input type="hidden" name="' + $(this).attr('name') + '" value="false" />');
+                }
+            });
+            
+            if (!$(this).valid()) {
                 e.preventDefault();
                 // Scroll to first error
                 $('html, body').animate({
@@ -220,15 +252,6 @@
             }
         });
 
-        /* const $newInput = $(html).hide();
-        $newInput.find('input, select').each(function() {
-            $(this).attr('data-val', 'true');
-            if($(this).is('[required]')) {
-                $(this).attr('data-val-required', 'This field is required');
-            }
-        });
-        */
-        
         // On page load
         $('.justification-checkbox').each(function() {
             const $checkbox = $(this);
@@ -236,36 +259,6 @@
                 $checkbox.trigger('change');
             }
         });
-
-        // Handle justification checkbox changes
-        $(document).on('change', '.justification-checkbox', function() {
-            const $checkbox = $(this);
-            const $justificationItem = $checkbox.closest('.form-check');
-            const isOthersReason = $checkbox.data('reason') === 'Others';
-            
-            if (isOthersReason) {
-                const $otherJustification = $justificationItem.find('.other-justification');
-                const $otherTextarea = $justificationItem.find('.other-justification-text');
-                
-                if ($checkbox.is(':checked')) {
-                    $otherJustification.show();
-                    $otherTextarea.prop('disabled', false).focus();
-                    $otherTextarea.val('');
-                } else {
-                    $otherJustification.hide();
-                    $otherTextarea.prop('disabled', true);
-                    $justificationItem.find('.default-justification-text').val($checkbox.next('label').text());
-                }
-            }
-            
-            // Update the hidden default justification text field
-            if (!$checkbox.is(':checked')) {
-                $justificationItem.find('.default-justification-text').val($checkbox.next('label').text());
-            }
-        });
-        
-        // Initialize any pre-checked boxes
-        $('.justification-checkbox:checked').trigger('change');
 
         // Event delegation for dynamic elements
         $container.on('click', '.add-input-btn', function() {
@@ -339,28 +332,30 @@
             }
         });
 
-        // Handle other justification text visibility
+
+        // Update justification checkbox handling
         $(document).on('change', '.justification-checkbox', function() {
             const $checkbox = $(this);
-            const $otherDiv = $checkbox.closest('.form-check').find('.other-justification');
-            const $hiddenInput = $checkbox.siblings('input[type="hidden"]');
+            const $otherTextarea = $checkbox.closest('.form-check').find('.other-justification-text');
             
-            if ($checkbox.data('reason') === 'Others') {
-                $otherDiv.toggle($checkbox.is(':checked'));
+            if ($checkbox.val() === '@JustificationReason.Others') {
                 if ($checkbox.is(':checked')) {
-                    $otherDiv.find('textarea').prop('required', true);
-                    $hiddenInput.prop('disabled', true);
+                    $otherTextarea.show().prop('disabled', false).attr('required', true);
                 } else {
-                    $otherDiv.find('textarea').prop('required', false).val('');
-                    $hiddenInput.prop('disabled', false);
+                    $otherTextarea.hide().prop('disabled', true).removeAttr('required');
                 }
-            } else {
-                $hiddenInput.prop('disabled', $checkbox.is(':checked'));
             }
+            
+            // Re-parse validation
+            const $form = $('form');
+            $form.removeData('validator');
+            $form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($form);
         });
 
-        // Initialize the first line's inputs
-        addProductionLine();
+        // Initialize any pre-checked boxes
+        $('.justification-checkbox:checked').trigger('change');
+        
 
         // Consolidated event listener for ProductionLineType changes
         $(document).on('change', '#ProductionLineType', toggleOutputPhaseVisibility);
@@ -370,8 +365,8 @@
             handleBottleneckToggle();
         });
 
-        // Initialize bottleneck toggle state on page load
-        handleBottleneckToggle();
+        // Initialize the first line's inputs
+        addProductionLine();
         
         // Initialize validation
         $.validator.unobtrusive.parse(document);

@@ -40,6 +40,7 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         [StringLength(100)]
         public string TechnicalObsolescenceStatus { get; set; }
+        // public ObsolescenceStatus TechnicalObsolescenceStatus { get; set; }
 
         [Required]
         public MachineFunctionalityStatus MachineFunctionalityStatus { get; set; }

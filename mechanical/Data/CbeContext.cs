@@ -7,48 +7,10 @@ using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
 
 //using mechanical.Migrations;
-
 namespace mechanical.Data
 {
     public class CbeContext : DbContext
-
     {
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-   
-
-            modelBuilder.Entity<Signatures>()
-                .HasOne(c => c.SignatureFile)
-                .WithOne()
-                .HasForeignKey<Signatures>(c => c.SignatureFileId);
-
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                var entity = modelBuilder.Entity(entityType.ClrType);
-                var idProperty = entity.Property("Id");
-                if (idProperty != null && idProperty.Metadata.ClrType == typeof(Guid))
-                {
-                    idProperty.HasDefaultValueSql("NEWID()");
-                    idProperty.ValueGeneratedOnAdd();
-                }
-            }
- 
-            base.OnModelCreating(modelBuilder);
-            
-            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
-                v => v.ToDateTime(TimeOnly.MinValue),
-                v => DateOnly.FromDateTime(v));
-
-            modelBuilder.Entity<PCEEvaluation>(entity =>
-            {
-                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
-            });
-        }
-        public CbeContext(DbContextOptions<CbeContext> options) : base(options)
-        {
-        }
-
         //production capacity estimation
         public DbSet<PCECase> PCECases { get; set; }
         public DbSet<ProductionCapacity> ProductionCapacities { get; set; }
@@ -80,7 +42,6 @@ namespace mechanical.Data
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
 
-
         public virtual DbSet<CreateRole> CreateRoles { get; set; }
         public virtual DbSet<CreateUser> CreateUsers { get; set; }
         public virtual DbSet<District> Districts { get; set; }
@@ -89,14 +50,83 @@ namespace mechanical.Data
         public virtual DbSet<Correction> Corrections { get; set; }
         public virtual DbSet<Reject> Rejects { get; set; }
         public virtual DbSet<Reject> TaskComment { get; set; }
-	
 	    public virtual DbSet<Reject> TaskManagment { get; set; }
 	    public virtual DbSet<Reject> TaskNotification { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            // Configure CreateUsers self-referencing relationship
+            modelBuilder.Entity<CreateUser>()
+                .HasOne(u => u.Supervisor)
+                .WithMany()
+                .HasForeignKey(u => u.SupervisorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Collateral>()
+                .HasOne(c => c.Case)
+                .WithMany()
+                .HasForeignKey(c => c.CaseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PCECase>()
+                .HasOne(p => p.PCECaseOriginator)
+                .WithMany()
+                .HasForeignKey(p => p.PCECaseOriginatorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProductionCapacity>()
+                .HasOne(p => p.PCECase)
+                .WithMany()
+                .HasForeignKey(p => p.PCECaseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Signatures>()
+                .HasOne(c => c.SignatureFile)
+                .WithOne()
+                .HasForeignKey<Signatures>(s => s.SignatureFileId);
+
+            modelBuilder.Entity<Signatures>()
+                .HasOne(s => s.CreateUser)
+                .WithOne()
+                .HasForeignKey<Signatures>(s => s.CreateUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var entity = modelBuilder.Entity(entityType.ClrType);
+                var idProperty = entity.Property("Id");
+                if (idProperty != null && idProperty.Metadata.ClrType == typeof(Guid))
+                {
+                    idProperty.HasDefaultValueSql("NEWID()");
+                    idProperty.ValueGeneratedOnAdd();
+                }
+            }
+
+            modelBuilder.Entity<ProductionLine>()
+                .HasOne(pl => pl.PCEEvaluation)
+                .WithMany(pe => pe.ProductionLines)
+                .HasForeignKey(pl => pl.PCEEvaluationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+                v => v.ToDateTime(TimeOnly.MinValue),
+                v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<PCEEvaluation>(entity =>
+            {
+                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
+            });
+
+            base.OnModelCreating(modelBuilder);
+        }
+        public CbeContext(DbContextOptions<CbeContext> options) : base(options)
+        {
+        }
+        
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //       => optionsBuilder.UseSqlServer("Server=DESKTOP-OJQ5A2C\\DOMAIN;Database=mechanical;Trusted_Connection=True;TrustServerCertificate=true;");
-
     }
 }

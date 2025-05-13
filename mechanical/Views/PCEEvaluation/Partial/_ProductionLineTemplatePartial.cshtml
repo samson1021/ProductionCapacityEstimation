@@ -137,11 +137,13 @@
                 <div class="col-md-3">
                     <div class="form-check form-switch my-2">
                         <input type="hidden" name="ProductionLines[__INDEX__].IsBottleneck" value="false" />
+                        
+                        <!-- Checkbox will override the hidden  field when checked -->
                         <input name="ProductionLines[__INDEX__].IsBottleneck"
-                               class="form-check-input is-bottleneck"
-                               type="checkbox"
-                               role="switch"
-                               value="true" />
+                            class="form-check-input is-bottleneck"
+                            type="checkbox"
+                            role="switch"
+                            value="true" />
                         <label class="form-check-label">
                             <h6><strong>Is Bottleneck?</strong></h6>
                         </label>

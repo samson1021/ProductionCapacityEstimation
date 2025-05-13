@@ -69,6 +69,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         }
                     }
                 }
+                // pceEvaluation.Justifications = pceEvaluation.Justifications?
+                //     .Where(j => j.Reason != JustificationReason.None)
+                //     .ToList();
+
+                // foreach (var justification in pceEvaluation.Justifications)
+                // {
+                //     if (justification.Reason != JustificationReason.Others)
+                //     {
+                //         justification.JustificationText = null;
+                //     }
+                // }
                 pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
                 pceEvaluation.CreatedBy = UserId;
@@ -469,6 +480,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .Include(e => e.ProductionLines)
                                                     .ThenInclude(e => e.ProductionLineInputs)
                                                 .Include(e => e.Justifications)
+                                                .Include(e => e.Evaluator)
                                                 .FirstOrDefaultAsync(e => e.Id == Id);
 
                 if (pceEvaluation == null)
@@ -521,6 +533,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.ProductionLines)
                                                         .ThenInclude(e => e.ProductionLineInputs)
                                                     .Include(e => e.Justifications)
+                                                    .Include(e => e.Evaluator)
                                                     // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
@@ -574,6 +587,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.ProductionLines)
                                                         .ThenInclude(e => e.ProductionLineInputs)
                                                     .Include(e => e.Justifications)
+                                                    .Include(e => e.Evaluator)
                                                     .Where(e => e.PCE.PCECaseId == PCECaseId)
                                                   // .Where(e=>e.EvaluatorId== UserId)
                                                     .OrderByDescending(e => e.UpdatedAt)
@@ -641,6 +655,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                         .Include(e => e.ProductionLines)
                                                             .ThenInclude(e => e.ProductionLineInputs)
                                                         .Include(e => e.Justifications)
+                                                        .Include(e => e.Evaluator)
                                                         .Where(e => e.PCEId == PCEId && (latestEvaluation == null || e.Id != latestEvaluation.Id))
                                                         .ToListAsync();
             
