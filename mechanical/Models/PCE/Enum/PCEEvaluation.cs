@@ -191,7 +191,7 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "The purpose of the site visit is not well-explained by CRM, hence, the company is not willing to provide the necessary information.")]
         PurposeNotExplained,
 
-        [Display(Name = "Others, please explain (comment box).")]
+        [Display(Name = "Others, please specify the reason (comment box).")]
         Others
     }
 

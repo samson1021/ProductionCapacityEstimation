@@ -188,40 +188,51 @@
     @if (!Model.HasInputOutputData)
     {
         <div class="col-md-12">
-            <div class="card mb-4 shadow-sm border-white">
+            <div class="card mb-4 shadow-sm border-light">
                 <div class="card-header bg-white text-dark">
-                    <h3 class="card-title mb-0"><i class="fas fa-database me-2"></i>Input-Output Data Collection Status</h3>
+                    <h3 class="card-title mb-0"><i class="fas fa-database me-2"></i> Input-Output Data Collection Status</h3>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-warning d-flex align-items-center">
+                    <div class="alert alert-warning d-flex align-items-center p-4">
                         <i class="fas fa-exclamation-circle fa-2x me-3"></i>
                         <div>
-                            <h5 class="alert-heading">No input-output data was collected during site visit</h5>
+                            <h5 class="alert-heading fw-bold"> No input-output data was collected during site visit</h5>
                             @if (Model.Justifications != null && Model.Justifications.Any())
                             {
-                                <div class="mt-3">
-                                    <h6><i class="fas fa-comment-dots me-2"></i>Justifications:</h6>
+                                <div class="mt-4">
+                                    <h6 class="fw-semibold"><i class="fas fa-comment-dots me-2"></i> Justifications:</h6>
                                     <div class="justification-container">
-                                        @foreach (var justification in Model.Justifications)
-                                        {
-                                            <div class="justification-item mb-2 p-2 bg-light rounded">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <strong class="text-capitalize">
-                                                        @(justification.Reason.GetType()
-                                                            .GetField(justification.Reason.ToString())
-                                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
-                                                            .OfType<DisplayAttribute>()
-                                                            .FirstOrDefault()?.Name ?? justification.Reason.ToString())
-                                                    </strong>
-                                                    <span class="badge bg-secondary ms-2">
-                                                        @(justification.Reason.ToString())
-                                                    </span>
+                                        @{
+                                            var justifications = Model.Justifications.OrderBy(j => (int)j.Reason).ToList();
+                                            foreach (var justification in justifications)
+                                            {
+                                                <div class="justification-item mb-3 p-3 bg-light border border-secondary rounded">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <strong class="text-capitalize text-dark">
+                                                            @(justification.Reason == JustificationReason.Others
+                                                                ? justification.JustificationText.ToString()
+                                                                :  justification.JustificationText.ToString())
+                                                                @*
+                                                                ? justification.Reason.ToString()
+                                                                : justification.Reason.GetType()
+                                                                    .GetField(justification.Reason.ToString())
+                                                                    ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                                    .OfType<DisplayAttribute>()
+                                                                    .FirstOrDefault()?.Name ?? justification.Reason.ToString())
+                                                                *@
+                                                        </strong>
+                                                        <span class="badge bg-secondary ms-2">
+                                                            @(justification.Reason.ToString())
+                                                        </span>
+                                                    </div>
+                                                    @* @if (justification.Reason == JustificationReason.Others && !string.IsNullOrEmpty(justification.JustificationText))
+                                                    {
+                                                        <div class="mt-1 text-muted small">
+                                                            @justification.JustificationText
+                                                        </div>
+                                                    } *@
                                                 </div>
-                                                @* @if (!string.IsNullOrEmpty(justification.JustificationText))
-                                                {
-                                                    <div class="mt-1 text-muted">@justification.JustificationText</div>
-                                                } *@
-                                            </div>
+                                            }
                                         }
                                     </div>
                                 </div>
@@ -262,9 +273,9 @@
                                     {
                                         <th>Output Phase</th>
                                     }
-                                    <th class="text-end">Actual</th>
-                                    <th class="text-end">Design</th>
-                                    <th class="text-end">Attainable</th>
+                                    <th>Actual</th>
+                                    <th>Design</th>
+                                    <th>Attainable</th>
                                     <th>Unit</th>
                                     <th>Measurement</th>
                                     <th>Status</th>
@@ -294,9 +305,9 @@
                                                 .FirstOrDefault()?.Name ?? line.OutputPhase.ToString())
                                             </td>
                                         }
-                                        <td class="text-end">@(line.ActualCapacity != null ? line.ActualCapacity.ToString() : "N/A")</td>
-                                        <td class="text-end">@(line.DesignCapacity != null ? line.DesignCapacity.ToString() : "N/A")</td>
-                                        <td class="text-end">@(line.AttainableCapacity != null ? line.AttainableCapacity.ToString() : "N/A")</td>
+                                        <td>@(line.ActualCapacity != null ? line.ActualCapacity.ToString() : "N/A")</td>
+                                        <td>@(line.DesignCapacity != null ? line.DesignCapacity.ToString() : "N/A")</td>
+                                        <td>@(line.AttainableCapacity != null ? line.AttainableCapacity.ToString() : "N/A")</td>
                                         <td>@(line.ProductionUnit == null ? "N/A" : line.ProductionUnit)</td>
                                         <td>
                                             @(line.ProductionMeasurement == null ? "N/A" : line.ProductionMeasurement.GetType()

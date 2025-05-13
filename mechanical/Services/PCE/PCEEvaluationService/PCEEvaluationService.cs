@@ -52,6 +52,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 EncodingHelper.EncodeObject(Dto);
 
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
+                pceEvaluation.Id = Guid.NewGuid();
+                pceEvaluation.EvaluatorId = UserId;
+                pceEvaluation.CreatedBy = UserId;
+                pceEvaluation.CreatedAt = DateTime.Now;
+                
+                var allInputs = new List<ProductionLineInput>();
 
                 if (pceEvaluation.ProductionLines != null && pceEvaluation.ProductionLines.Any())
                 {
@@ -65,28 +71,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                             foreach (var input in productionLine.ProductionLineInputs)
                             {
                                 input.ProductionLineId = productionLine.Id;
+                                allInputs.Add(input);
                             }
                         }
                     }
                 }
-                // pceEvaluation.Justifications = pceEvaluation.Justifications?
-                //     .Where(j => j.Reason != JustificationReason.None)
-                //     .ToList();
-
-                // foreach (var justification in pceEvaluation.Justifications)
-                // {
-                //     if (justification.Reason != JustificationReason.Others)
-                //     {
-                //         justification.JustificationText = null;
-                //     }
-                // }
-                pceEvaluation.Id = Guid.NewGuid();
-                pceEvaluation.EvaluatorId = UserId;
-                pceEvaluation.CreatedBy = UserId;
-                pceEvaluation.CreatedAt = DateTime.Now;
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEvaluation);
-                await _cbeContext.SaveChangesAsync();
+                // await _cbeContext.ProductionLines.AddRangeAsync(pceEvaluation.ProductionLines);
+                // await _cbeContext.ProductionLineInputs.AddRangeAsync(allInputs);
+                // await _cbeContext.SaveChangesAsync();
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
                 pce.MachineName = Dto.MachineName;

@@ -98,45 +98,36 @@
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Justifications</h5>
                 </div>
-                <div class="mt-4">
+                <div class="mt-4" id="justificationContainer">
                     @{
-                        var justificationIndex = 0;
+                        foreach (var reason in justificationReasons)
+                        {
+                            var justification = justificationList.FirstOrDefault(j => j.Reason == reason);
+                            var displayAttribute = reason.GetType().GetField(reason.ToString())
+                                                    .GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                    .FirstOrDefault() as DisplayAttribute;
+                            <div class="form-check mb-2" data-reason="@reason">
+                                <input type="checkbox"
+                                    class="form-check-input justification-checkbox"
+                                    data-reason="@reason"
+                                    data-display="@(displayAttribute?.Name ?? reason.ToString())"
+                                    @(justification != null ? "checked" : "") />
+                                <label class="form-check-label">@(displayAttribute?.Name ?? reason.ToString())</label>
+                                <textarea class="form-control justification-text mt-2"
+                                    style="@(reason == JustificationReason.Others && justification != null ? "" : "display:none;")"
+                                    placeholder="@(reason == JustificationReason.Others ? "Enter other justification" : null)"
+                                            @(reason != JustificationReason.Others && justification == null ? "hidden" : null)
+                                            @(reason != JustificationReason.Others && justification == null ? "disabled" : null)
+                                    data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea>
+                                    @* data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea> *@
+                            </div>
+                        }
                     }
-                    @foreach (var reason in justificationReasons)
-                    {
-                        var displayAttribute = reason.GetType().GetField(reason.ToString())
-                            .GetCustomAttributes(typeof(DisplayAttribute), false)
-                            .FirstOrDefault() as DisplayAttribute;
-                        
-                        var justification = justificationList.FirstOrDefault(j => j.Reason == reason);
-                        var isChecked = justification != null;
-                        var displayText = displayAttribute?.Name ?? reason.ToString();
-                        
-                        <div class="form-check mb-2">
-                            <input type="checkbox"
-                                class="form-check-input justification-checkbox"
-                                name="Justifications[@justificationIndex].Reason"
-                                value="@reason"
-                                @(justificationList.Any(j => j.Reason == reason) ? "checked" : "") />
-                            <label class="form-check-label" for="justification-@justificationIndex">@displayText</label>
-                            
-                            @if (reason == JustificationReason.Others)
-                            {
-                                <textarea class="form-control other-justification-text" 
-                                        name="Justifications[@justificationIndex].JustificationText"
-                                        style="@(justificationList.Any(j => j.Reason == reason) ? "" : "display:none;")"
-                                        @(justificationList.Any(j => j.Reason == reason) ? "" : "disabled")>
-                                    @* @(justificationList.FirstOrDefault(j => j.Reason == reason)?.JustificationText *@
-                                </textarea>
-                            }
-                            @{
-                                justificationIndex++;
-                            }
-                        </div>
-                        
-                    }
-                    <span asp-validation-for="Justifications" class="text-danger small"></span>
                 </div>
+                <span asp-validation-for="Justifications" class="text-danger small"></span>
+                
+                <!-- Inject serialized checked justifications here -->
+                <div id="justificationHiddenFields"></div>
             </div>
 
             <!-- Production Line Evaluation Section -->

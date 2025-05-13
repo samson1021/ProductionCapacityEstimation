@@ -72,8 +72,8 @@ namespace mechanical.Models.PCE.Entities
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ProductionCapacity? PCE { get; set; }
-        public virtual CreateUser? Evaluator { get; set; }
+        public virtual ProductionCapacity PCE { get; set; }
+        public virtual CreateUser Evaluator { get; set; }
     }
 
     [Index(nameof(PCEEvaluationId))]
@@ -92,7 +92,7 @@ namespace mechanical.Models.PCE.Entities
         [StringLength(1000)]
         public string? JustificationText { get; set; }
 
-        public virtual PCEEvaluation? PCEEvaluation { get; set; }
+        public virtual PCEEvaluation PCEEvaluation { get; set; }
     }
     
     public class DateTimeRange
@@ -103,7 +103,7 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         [ForeignKey("PCEEvaluation")]
         public Guid PCEEvaluationId { get; set; }
-        public virtual PCEEvaluation? PCEEvaluation { get; set; }
+        public virtual PCEEvaluation PCEEvaluation { get; set; }
 
         [Required]
         public DateTime Start { get; set; }
