@@ -50,6 +50,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [StringLength(100)]
         [Display(Name = "Technical Obsolescence Status")]
         public string TechnicalObsolescenceStatus { get; set; }
+        // public ObsolescenceStatus TechnicalObsolescenceStatus { get; set; }
 
         [Required]
         [Display(Name = "Machine Functionality Status")]

@@ -1,3 +1,4 @@
+@using System.ComponentModel.DataAnnotations
 @using mechanical.Models.Dto.UploadFileDto
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
@@ -13,31 +14,89 @@
     <div class="col-md-12">
         <div class="card mb-2 shadow-sm">
             <div class="card-header bg-white text-white">
-                <h3 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Machine Information</h3>
+                <h3 class="card-title mb-0"><i class="fas fa-industry me-2"></i>Machine Information</h3>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row mt-2">
+                    <!-- Basic Details Section -->
                     <div class="col-md-6">
-                        <div class="machine-info-section">
-                            <h5 class="section-title"><i class="fas fa-info-circle text-purple me-2"></i>Basic Details</h5>
+                        <div class="machine-details-section">
+                            <h5 class="section-title"><i class="fas fa-info-circle text-primary me-2"></i>Basic Details</h5>
                             <dl class="row">
-                                <dt class="col-sm-4">Machine Name</dt>
-                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.MachineName) ? "N/A" : Model.MachineName)</dd>
+                                <dt class="col-sm-5"><i class="fas fa-tools me-2"></i>Machine Name</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.MachineName) ? "N/A" : Model.MachineName)</dd>
                                 
-                                <dt class="col-sm-4">Country of Origin</dt>
-                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.CountryOfOrigin) ? "N/A" : Model.CountryOfOrigin)</dd>
+                                <dt class="col-sm-5"><i class="fas fa-flag me-2"></i>Country of Origin</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.CountryOfOrigin) ? "N/A" : Model.CountryOfOrigin)</dd>
                                 
-                                <dt class="col-sm-4">Production Line Type</dt>
-                                <dd class="col-sm-8">@(Model.ProductionLineType == null ? "N/A" : Model.ProductionLineType)</dd>
-                                
-                                <dt class="col-sm-4">Technical Status</dt>
-                                <dd class="col-sm-8">
+                                <dt class="col-sm-5"><i class="fas fa-stream me-2"></i>Production Line Type</dt>
+                                <dd class="col-sm-7">
+                                    @(Model.ProductionLineType == null 
+                                        ? "N/A" 
+                                        : Model.ProductionLineType.GetType()
+                                            .GetField(Model.ProductionLineType.ToString())
+                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                            .OfType<DisplayAttribute>()
+                                            .FirstOrDefault()?.Name ?? Model.ProductionLineType.ToString())
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <!-- Capacity Details Section -->
+                    <div class="col-md-6">
+                        <div class="capacity-details-section">
+                            <h5 class="section-title"><i class="fas fa-chart-line text-success me-2"></i>Capacity Details</h5>
+                            <dl class="row">
+                                @if (Model.BottleneckProductionLine != null)
+                                {
+                                    <dt class="col-sm-5"><i class="fas fa-exclamation-triangle me-2"></i>Bottleneck Line</dt>
+                                    <dd class="col-sm-7">@Model.BottleneckProductionLine.LineName</dd>
+
+                                    <dt class="col-sm-5"><i class="fas fa-tachometer-alt me-2"></i>Bottleneck Capacity</dt>
+                                    <dd class="col-sm-7">
+                                        @Model.BottleneckProductionLine.Capacity 
+                                        @(Model.BottleneckProductionLine.Unit != null 
+                                            ? Model.BottleneckProductionLine.Unit.GetType()
+                                                .GetField(Model.BottleneckProductionLine.Unit.ToString())
+                                                ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                .Cast<DisplayAttribute>()
+                                                .FirstOrDefault()?.Name ?? Model.BottleneckProductionLine.Unit.ToString()
+                                            : "N/A")
+                                    </dd>
+                                }
+
+                                @if (Model.TotalCapacity != null)
+                                {
+                                    <dt class="col-sm-5"><i class="fas fa-layer-group me-2"></i>Total Capacity</dt>
+                                    <dd class="col-sm-7">@Model.TotalCapacity</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <!-- Machine Status Section -->
+                    <div class="col-md-6">
+                        <div class="machine-status-section">
+                            <h5 class="section-title"><i class="fas fa-cogs text-danger me-2"></i>Machine Status</h5>
+                            <dl class="row">
+                                <dt class="col-sm-5"><i class="fas fa-history me-2"></i>Technical Status</dt>
+                                <dd class="col-sm-7">
                                     @if (!string.IsNullOrEmpty(Model.TechnicalObsolescenceStatus))
                                     {
                                         <span class="badge @(Model.TechnicalObsolescenceStatus == "Current" ? "bg-success" : 
                                             Model.TechnicalObsolescenceStatus == "ObsoleteSoon" ? "bg-warning" : "bg-danger")">
                                             @Model.TechnicalObsolescenceStatus
                                         </span>
+                                        @* <span class="badge @(Model.TechnicalObsolescenceStatus == TechnicalObsolescenceStatus.Current ? "bg-success" : 
+                                            Model.TechnicalObsolescenceStatus == TechnicalObsolescenceStatus.ObsoleteSoon ? "bg-warning" : "bg-danger")">
+                                            @(Model.TechnicalObsolescenceStatus.GetType()
+                                                .GetField(Model.TechnicalObsolescenceStatus.ToString())
+                                                ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                .OfType<DisplayAttribute>()
+                                                .FirstOrDefault()?.Name ?? Model.TechnicalObsolescenceStatus.ToString())
+                                        </span> *@
                                     }
                                     else
                                     {
@@ -45,36 +104,64 @@
                                     }
                                 </dd>
                                 
-                                @if (Model.BottleneckProductionLine != null)
-                                {
-                                    <dt class="col-sm-4">Bottleneck Line</dt>
-                                    <dd class="col-sm-8">@Model.BottleneckProductionLine.LineName</dd>
-
-                                    <dt class="col-sm-4">Bottleneck Capacity</dt>
-                                    <dd class="col-sm-8">@Model.BottleneckProductionLine.Capacity @Model.BottleneckProductionLine.Unit</dd>
-                                }
-
-                                @if (Model.TotalCapacity != null)
-                                {
-                                    <dt class="col-sm-4">Total Capacity</dt>
-                                    <dd class="col-sm-8">@Model.TotalCapacity</dd>
-                                }
+                                <dt class="col-sm-5"><i class="fas fa-history me-2"></i>Functionality Status</dt>
+                                <dd class="col-sm-7">
+                                    @if (Model.MachineFunctionalityStatus != null)
+                                    {
+                                        <span class="badge @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.Functional ? "bg-success" : "bg-danger")">
+                                            @(Model.MachineFunctionalityStatus.GetType()
+                                                .GetField(Model.MachineFunctionalityStatus.ToString())
+                                                ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                .OfType<DisplayAttribute>()
+                                                .FirstOrDefault()?.Name ?? Model.MachineFunctionalityStatus.ToString())
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                </dd>
                             </dl>
+                            
+                            @if (Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional)
+                            {
+                                <div class="alert alert-danger">
+                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Non-Functional Details</h6>
+                                    <div class="mt-2">
+                                        <strong>Reason:</strong>
+                                        <span class="badge bg-secondary ms-2">
+                                            @(Model.MachineNonFunctionalityReason != null 
+                                                ? Model.MachineNonFunctionalityReason.GetType()
+                                                    .GetField(Model.MachineNonFunctionalityReason.ToString())
+                                                    ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                    .OfType<DisplayAttribute>()
+                                                    .FirstOrDefault()?.Name ?? Model.MachineNonFunctionalityReason.ToString()
+                                                : "N/A")
+                                        </span>
+                                        @if (Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other && !string.IsNullOrEmpty(Model.OtherMachineNonFunctionalityReason))
+                                        {
+                                            <div class="mt-2">
+                                                <strong>Details:</strong> @Model.OtherMachineNonFunctionalityReason
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
-                    
+                    <!-- Evaluation Details Section -->
                     <div class="col-md-6">
-                        <div class="machine-info-section mt-3">
-                            <h5 class="section-title"><i class="fas fa-user-check text-purple me-2"></i>Evaluation Details</h5>
+                        <div class="evaluation-details-section">
+                            <h5 class="section-title"><i class="fas fa-user-check text-info me-2"></i>Evaluation Details</h5>
                             <dl class="row">
-                                <dt class="col-sm-4">Evaluated By</dt>
-                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Evaluator?.Name) ? "N/A" : Model.Evaluator?.Name)</dd>
+                                <dt class="col-sm-5"><i class="fas fa-user me-2"></i>Evaluated By</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.Evaluator?.Name) ? "N/A" : Model.Evaluator?.Name)</dd>
                                 
-                                <dt class="col-sm-4">Created At</dt>
-                                <dd class="col-sm-8">@(Model.CreatedAt.ToString("g") ?? "Not completed")</dd>
+                                <dt class="col-sm-5"><i class="fas fa-calendar-alt me-2"></i>Created At</dt>
+                                <dd class="col-sm-7">@(Model.CreatedAt.ToString("dddd, MMMM d, yyyy h:mm tt") ?? "Not completed")</dd>
                                 
-                                <dt class="col-sm-4">Completion Status</dt>
-                                <dd class="col-sm-8">
+                                <dt class="col-sm-5"><i class="fas fa-tasks me-2"></i>Completion Status</dt>
+                                <dd class="col-sm-7">
                                     @if (Model.CompletedAt != null)
                                     {
                                         <span class="badge bg-success">Completed</span>
@@ -86,42 +173,10 @@
                                 </dd>
                                 @if (Model.CompletedAt != null)
                                 {
-                                    <dt class="col-sm-4">Completed At</dt>
-                                    <dd class="col-sm-8">@Model.CompletedAt?.ToString("g")</dd>
+                                    <dt class="col-sm-5"><i class="fas fa-check-circle me-2"></i>Completed At</dt>
+                                    <dd class="col-sm-7">@Model.CompletedAt?.ToString("dddd, MMMM d, yyyy h:mm tt")</dd>
                                 }
                             </dl>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Functionality Status Card -->
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <div class="card @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.Functional ? "border-white" : "border-danger")">
-                            <div class="card-header @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.Functional ? "bg-white text-white" : "bg-danger text-white")">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.Functional ? "fa-check-circle" : "fa-exclamation-circle") me-2"></i>
-                                    Machine Functionality: @Model.MachineFunctionalityStatus
-                                </h5>
-                            </div>
-                            @if (Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional)
-                            {
-                                <div class="card-body">
-                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Non-Functional Details</h6>
-                                    <div class="mt-2">
-                                        <strong>Reason:</strong>
-                                        <span class="badge bg-secondary ms-2">
-                                            @(Model.MachineNonFunctionalityReason.HasValue ? Model.MachineNonFunctionalityReason.Value.ToString() : "N/A")
-                                        </span>
-                                        @if (Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other && !string.IsNullOrEmpty(Model.OtherMachineNonFunctionalityReason))
-                                        {
-                                            <div class="mt-2">
-                                                <strong>Details:</strong> @Model.OtherMachineNonFunctionalityReason
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
                         </div>
                     </div>
                 </div>
@@ -150,11 +205,22 @@
                                         @foreach (var justification in Model.Justifications)
                                         {
                                             <div class="justification-item mb-2 p-2 bg-light rounded">
-                                                <div class="d-flex justify-content-between">
-                                                    <strong class="text-capitalize">@justification.Reason.ToString():</strong>
-                                                    <span class="badge bg-secondary ms-2">@justification.Reason</span>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <strong class="text-capitalize">
+                                                        @(justification.Reason.GetType()
+                                                            .GetField(justification.Reason.ToString())
+                                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                            .OfType<DisplayAttribute>()
+                                                            .FirstOrDefault()?.Name ?? justification.Reason.ToString())
+                                                    </strong>
+                                                    <span class="badge bg-secondary ms-2">
+                                                        @(justification.Reason.ToString())
+                                                    </span>
                                                 </div>
-                                                <div class="mt-1">@justification.JustificationText</div>
+                                                @* @if (!string.IsNullOrEmpty(justification.JustificationText))
+                                                {
+                                                    <div class="mt-1 text-muted">@justification.JustificationText</div>
+                                                } *@
                                             </div>
                                         }
                                     </div>
@@ -179,7 +245,7 @@
                 </div>
                 @if (Model.ProductionLines != null && Model.ProductionLines.Any())
                 {
-                    <span class="badge bg-light text-purple float-end">@Model.ProductionLines.Count() lines</span>
+                    <span class="badge bg-light text-primary float-end">@Model.ProductionLines.Count() line(s)</span>
                 }
             </div>
             <div class="card-body p-0">
@@ -220,13 +286,25 @@
                                         <td>@(string.IsNullOrEmpty(line.OutputType) ? "N/A" : line.OutputType)</td>
                                         @if(Model.ProductionLineType != null && Model.ProductionLineType == ProductionLineType.Interdependent)
                                         {
-                                            <td>@(line.OutputPhase  == null ? "N/A" : line.OutputPhase)</td>
+                                            <td>
+                                                @(line.OutputPhase == null ? "N/A" : line.OutputPhase.GetType()
+                                                .GetField(line.OutputPhase.ToString())
+                                                ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                .Cast<DisplayAttribute>()
+                                                .FirstOrDefault()?.Name ?? line.OutputPhase.ToString())
+                                            </td>
                                         }
                                         <td class="text-end">@(line.ActualCapacity != null ? line.ActualCapacity.ToString() : "N/A")</td>
                                         <td class="text-end">@(line.DesignCapacity != null ? line.DesignCapacity.ToString() : "N/A")</td>
                                         <td class="text-end">@(line.AttainableCapacity != null ? line.AttainableCapacity.ToString() : "N/A")</td>
                                         <td>@(line.ProductionUnit == null ? "N/A" : line.ProductionUnit)</td>
-                                        <td>@(line.ProductionMeasurement == null ? "N/A" : line.ProductionMeasurement)</td>
+                                        <td>
+                                            @(line.ProductionMeasurement == null ? "N/A" : line.ProductionMeasurement.GetType()
+                                            .GetField(line.ProductionMeasurement.ToString())
+                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                            .OfType<DisplayAttribute>()
+                                            .FirstOrDefault()?.Name ?? line.ProductionMeasurement.ToString())
+                                        </td>
                                         <td>
                                             @if (line.ConversionRatio.HasValue)
                                             {
@@ -259,7 +337,7 @@
                                             }
                                             else
                                             {
-                                                <span class="text-muted small"><i class="fas fa-minus">No inputs</span>
+                                                <span class="text-muted small">No inputs</span>
                                             }
                                         </td>
                                     </tr>
@@ -282,9 +360,9 @@
                                                                     <table class="table table-sm mb-0">
                                                                         <thead>
                                                                             <tr class="bg-light">
-                                                                                <th>Type</th>
-                                                                                <th class="text-end">Quantity</th>
-                                                                                <th>Unit</th>
+                                                                                <th style="width: 40%;">Type</th>
+                                                                                <th style="width: 30%;">Quantity</th>
+                                                                                <th style="width: 30%;">Unit</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -292,8 +370,14 @@
                                                                             {
                                                                                 <tr>
                                                                                     <td>@(string.IsNullOrEmpty(input.Type) ? "N/A" : input.Type)</td>
-                                                                                    <td class="text-end">@(input.Quantity != null ? input.Quantity.ToString() : "N/A")</td>
-                                                                                    <td>@(input.Unit == null ? "N/A" : input.Unit)</td>
+                                                                                    <td>@(input.Quantity != null ? input.Quantity.ToString() : "N/A")</td>
+                                                                                    <td>
+                                                                                        @(input.Unit == null ? "N/A" : input.Unit.GetType()
+                                                                                                            .GetField(input.Unit.ToString())
+                                                                                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                                                                            .OfType<DisplayAttribute>()
+                                                                                                            .FirstOrDefault()?.Name ?? input.Unit.ToString())
+                                                                                    </td>
                                                                                 </tr>
                                                                             }
                                                                         </tbody>
@@ -378,7 +462,7 @@
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-white text-white">
                 <h3 class="card-title mb-0"><i class="fas fa-clipboard-check me-2"></i>Inspection Details</h3>
-                <div class="card-tools"></div>
+                <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
                     </button>
@@ -424,7 +508,7 @@
                                 </div>
                                 <div class="meta-content">
                                     <h6>Inspection Date</h6>
-                                    <p>@(Model.InspectionDate != default(DateOnly) ? Model.InspectionDate.ToString("d") : "N/A")</p>
+                                    <p>@(Model.InspectionDate != default(DateOnly) ? Model.InspectionDate.ToString("dddd, MMMM d, yyyy") : "N/A")</p>
                                 </div>
                             </div>
                             
@@ -449,8 +533,11 @@
                                     <div class="meta-content">
                                         <h6>Inspection Duration</h6>
                                         <p>
-                                            @Model.TimeConsumedToCheck.Start.ToString(@"hh\:mm") - @Model.TimeConsumedToCheck.End.ToString(@"hh\:mm")
-                                            <span class="badge bg-light text-dark ms-2">(for: @Model.TimeConsumedToCheck.Duration.ToString(@"hh\:mm"))</span>
+                                            From <strong>@Model.TimeConsumedToCheck.Start.ToString("h:mm tt")</strong> 
+                                            to <strong>@Model.TimeConsumedToCheck.End.ToString("h:mm tt")</strong>
+                                            <span class="badge bg-light text-dark ms-2">
+                                                (Duration: <strong>@Model.TimeConsumedToCheck.Duration.ToString("h' hours 'm' minutes'")</strong>)
+                                            </span>
                                         </p>
                                     </div>
                                 </div>
@@ -467,15 +554,15 @@
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-white text-white">
                 <h3 class="card-title mb-0"><i class="fas fa-paperclip me-2"></i>Attachments</h3>
-                @if (Model.UploadedFiles.Any())
-                {
-                    <span class="badge bg-light text-purple float-end">@Model.UploadedFiles.Count() files</span>
-                }
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
                     </button>
                 </div>
+                @if (Model.UploadedFiles.Any())
+                {
+                    <span class="badge bg-light text-primary float-end">@Model.UploadedFiles.Count() file(s)</span>
+                }
             </div>
             <div class="card-body">
                 @if (!Model.UploadedFiles.Any())
@@ -547,7 +634,7 @@
     .progress-xs {
         height: 8px;
     }
-    
+
     .card {
         border-radius: 0.5rem;
         overflow: hidden;
@@ -568,19 +655,19 @@
     }
     
     /* Machine Info Sections */
-    .machine-info-section {
+    .machine-details-section, .evaluation-details-section, .machine-status-section, .capacity-details-section {
         background-color: #f8f9fa;
         border-radius: 0.5rem;
         padding: 1rem;
         height: 100%;
     }
     
-    .machine-info-section dl dt {
+    .machine-details-section, .evaluation-details-section, .machine-status-section, .capacity-details-section, dl dt {
         font-weight: 500;
         color: #6c757d;
     }
     
-    .machine-info-section dl dd {
+    .machine-details-section, .evaluation-details-section, .machine-status-section, .capacity-details-section, dl dd {
         font-weight: 600;
         color: #343a40;
     }
@@ -677,7 +764,7 @@
     
     /* Responsive Adjustments */
     @@media (max-width: 768px) {
-        .machine-info-section {
+        .machine-details-section, .evaluation-details-section, .machine-status-section, .capacity-details-section  {
             margin-bottom: 1rem;
         }
         
