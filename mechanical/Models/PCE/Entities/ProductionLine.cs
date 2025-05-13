@@ -57,8 +57,8 @@ namespace mechanical.Models.PCE.Entities
 
         public decimal? ConversionRatio { get; set; }
 
-        public virtual PCEEvaluation? PCEEvaluation { get; set; }
-        public virtual CreateUser? Evaluator { get; set; }
+        public virtual PCEEvaluation PCEEvaluation { get; set; }
+        public virtual CreateUser Evaluator { get; set; }
     }
 
     public class ProductionLineInput
@@ -81,6 +81,6 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         public MeasurementUnit Unit { get; set; }
 
-        public virtual ProductionLine? ProductionLine { get; set; }
+        public virtual ProductionLine ProductionLine { get; set; }
     }
 }
