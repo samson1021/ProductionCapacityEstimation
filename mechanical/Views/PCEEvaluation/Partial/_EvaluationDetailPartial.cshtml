@@ -209,26 +209,26 @@
                                                 <div class="justification-item mb-3 p-3 bg-light border border-secondary rounded">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <strong class="text-capitalize text-dark">
-                                                            @(justification.Reason == JustificationReason.Others
-                                                                ? justification.JustificationText.ToString()
-                                                                :  justification.JustificationText.ToString())
+                                                            @(justification?.Reason == JustificationReason.Others
+                                                                ? justification?.JustificationText?.ToString()
+                                                                :  justification?.JustificationText?.ToString())
                                                                 @*
-                                                                ? justification.Reason.ToString()
-                                                                : justification.Reason.GetType()
-                                                                    .GetField(justification.Reason.ToString())
+                                                                ? justification?.Reason.ToString()
+                                                                : justification?.Reason.GetType()
+                                                                    .GetField(justification?.Reason.ToString())
                                                                     ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                                     .OfType<DisplayAttribute>()
-                                                                    .FirstOrDefault()?.Name ?? justification.Reason.ToString())
+                                                                    .FirstOrDefault()?.Name ?? justification?.Reason.ToString())
                                                                 *@
                                                         </strong>
                                                         <span class="badge bg-secondary ms-2">
-                                                            @(justification.Reason.ToString())
+                                                            @(justification?.Reason.ToString())
                                                         </span>
                                                     </div>
-                                                    @* @if (justification.Reason == JustificationReason.Others && !string.IsNullOrEmpty(justification.JustificationText))
+                                                    @* @if (justification?.Reason == JustificationReason.Others && !string.IsNullOrEmpty(justification?.JustificationText))
                                                     {
                                                         <div class="mt-1 text-muted small">
-                                                            @justification.JustificationText
+                                                            @justification?.JustificationText
                                                         </div>
                                                     } *@
                                                 </div>
