@@ -196,12 +196,18 @@ namespace mechanical.Mapper
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
+            CreateMap<DateTimeRangeReturnDto, DateTimeRangeUpdateDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
             CreateMap<ReturnedProductionPostDto, ReturnedProduction>();
             CreateMap<ReturnedProduction, ReturnedProductionDto>();
 
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
-            CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
+            CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>()
+                .ForMember(dest => dest.WitnessForm, opt => opt.MapFrom(src => src.WitnessForm))
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingEvidences))
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.ProductionProcessFlowDiagrams))
+                .ReverseMap()
+                .ForMember(dest => dest.UploadedFiles, opt => opt.Ignore());
 
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
                 .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
@@ -227,24 +233,31 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.ProductionLines, opt => opt.MapFrom(src => src.ProductionLines.OrderBy(pl => pl.LineName)))
                 .ForMember(dest => dest.Justifications, opt => opt.MapFrom(src => src.Justifications.OrderBy(j => (int)j.Reason)))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
+                .ForMember(dest => dest.UploadedFiles, opt => opt.Ignore())
+                .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
                 .ReverseMap();
 
             CreateMap<ProductionLine, ProductionLineReturnDto>()
-                .ForMember(dest => dest.ProductionLineInputs, opt => opt.MapFrom(src => src.ProductionLineInputs.OrderBy(input => input.Quantity)))
+                .ForMember(dest => dest.ProductionLineInputs, opt => opt.MapFrom(src => src.ProductionLineInputs.OrderBy(input => input.Type)))
                 .ReverseMap();
 
             CreateMap<ProductionLine, ProductionLineUpdateDto>()
-                .ForMember(dest => dest.ProductionLineInputs, opt => opt.MapFrom(src => src.ProductionLineInputs.OrderBy(input => input.Quantity)))
+                .ForMember(dest => dest.ProductionLineInputs, opt => opt.MapFrom(src => src.ProductionLineInputs.OrderBy(input => input.Type)))
                 .ReverseMap();
             CreateMap<ProductionLine, ProductionLinePostDto>().ReverseMap();
+            CreateMap<ProductionLineReturnDto, ProductionLineUpdateDto>().ReverseMap();
 
             CreateMap<ProductionLineInput, ProductionLineInputReturnDto>().ReverseMap();
             CreateMap<ProductionLineInput, ProductionLineInputUpdateDto>().ReverseMap();
             CreateMap<ProductionLineInput, ProductionLineInputPostDto>().ReverseMap();
+            CreateMap<ProductionLineInputReturnDto, ProductionLineInputUpdateDto>().ReverseMap();
 
             CreateMap<Justification, JustificationReturnDto>().ReverseMap();
             CreateMap<Justification, JustificationUpdateDto>().ReverseMap();
             CreateMap<Justification, JustificationPostDto>().ReverseMap();
+            CreateMap<JustificationReturnDto, JustificationUpdateDto>().ReverseMap();
             ///////
         }
 
