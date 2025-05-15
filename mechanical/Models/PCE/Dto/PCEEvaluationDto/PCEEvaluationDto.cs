@@ -118,15 +118,17 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Total Capacity")]
         public decimal TotalCapacity { get; set; }
 
-        // [Display(Name = "Witness Form")]
-        // public ReturnFileDto WitnessForm { get; set; }
+        [Required]
+        [Display(Name = "Witness Form")]
+        public ReturnFileDto WitnessForm { get; set; }
 
-        // [Display(Name = "Production Process Flow Diagrams")]
-        // public List<ReturnFileDto> ProductionProcessFlowDiagrams { get; set; } = new List<ReturnFileDto>();
+        [Display(Name = "Production Process Flow Diagrams")]
+        public List<ReturnFileDto> ProductionProcessFlowDiagrams { get; set; } = new List<ReturnFileDto>();
 
-        // [Display(Name = "Supporting Evidences")]
-        // public List<ReturnFileDto> SupportingEvidences { get; set; } = new List<ReturnFileDto>();
+        [Display(Name = "Supporting Evidences")]
+        public List<ReturnFileDto> SupportingEvidences { get; set; } = new List<ReturnFileDto>();
 
+        [Required]
         [Display(Name = "Uploaded Files")]
         public List<ReturnFileDto> UploadedFiles { get; set; } = new List<ReturnFileDto>();
 
@@ -156,6 +158,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Evaluated By")]
         public Guid EvaluatorId { get; set; }
 
+        [Required]
         [Display(Name = "Witness Form")]
         public ReturnFileDto WitnessForm { get; set; }
 

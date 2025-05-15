@@ -26,7 +26,7 @@ namespace mechanical.Data
         public DbSet<ReturnedProduction> ReturnedProductions { get; set; }
         public DbSet<PCECaseComment> PCECaseComments { get; set; }
         public DbSet<DateTimeRange> DateTimeRanges { get; set; }
-        
+
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }
@@ -45,13 +45,13 @@ namespace mechanical.Data
         public virtual DbSet<CreateRole> CreateRoles { get; set; }
         public virtual DbSet<CreateUser> CreateUsers { get; set; }
         public virtual DbSet<District> Districts { get; set; }
-        public virtual DbSet<Signatures>  Signatures { get; set; }
+        public virtual DbSet<Signatures> Signatures { get; set; }
         public virtual DbSet<EmployeeInfoes> Employees { get; set; }
         public virtual DbSet<Correction> Corrections { get; set; }
         public virtual DbSet<Reject> Rejects { get; set; }
         public virtual DbSet<Reject> TaskComment { get; set; }
-	    public virtual DbSet<Reject> TaskManagment { get; set; }
-	    public virtual DbSet<Reject> TaskNotification { get; set; }
+        public virtual DbSet<Reject> TaskManagment { get; set; }
+        public virtual DbSet<Reject> TaskNotification { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,7 +108,13 @@ namespace mechanical.Data
                 .WithMany(pe => pe.ProductionLines)
                 .HasForeignKey(pl => pl.PCEEvaluationId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
+            modelBuilder.Entity<ProductionLineInput>()
+                .HasOne(pli => pli.ProductionLine)
+                .WithMany(pl => pl.ProductionLineInputs)
+                .HasForeignKey(pli => pli.ProductionLineId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
                 v => v.ToDateTime(TimeOnly.MinValue),
                 v => DateOnly.FromDateTime(v));
@@ -123,7 +129,7 @@ namespace mechanical.Data
         public CbeContext(DbContextOptions<CbeContext> options) : base(options)
         {
         }
-        
+
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
