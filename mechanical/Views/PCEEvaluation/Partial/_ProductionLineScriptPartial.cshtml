@@ -386,8 +386,14 @@
         });
         
         // Initialize the first line's inputs
-        addProductionLine();
-        
+        try {
+            if ($('#productionLineContainer .production-line-evaluation-item').length === 0) {
+                addProductionLine();
+            }
+        } catch (error) {
+            console.error('Error initializing the first production line:', error);
+        }
+
         // Initialize validation
         $.validator.unobtrusive.parse(document);
 
