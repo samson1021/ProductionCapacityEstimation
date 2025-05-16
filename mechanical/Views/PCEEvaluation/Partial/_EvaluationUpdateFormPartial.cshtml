@@ -353,7 +353,6 @@
 
                 <div class="form-group">
                     <label class="form-label">@Html.DisplayNameFor(model => model.WitnessForm) <span class="text-danger">*</span></label>
-                    
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>
@@ -377,7 +376,7 @@
                                         <td class="text-truncate">@Model.WitnessForm.Name</td>
                                         <td>
                                             <a href="@Url.Action("ViewFile", "UploadFile", new { id = Model.WitnessForm.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
-                                            <a href="#" data-file-id="@Model.WitnessForm.Id" onclick="deleteFile('@Model.WitnessForm.Id', event)" style="color: red;"><i class="fas fa-trash">  Delete</i></a>
+                                            <a href="#" data-file-id="@Model.WitnessForm.Id" onclick="deleteFile('@Model.WitnessForm.Id', event)" style="color: red;"><i class="fas fa-trash">Delete</i></a>
                                         </td>
                                     </tr>
                                 }
@@ -386,9 +385,9 @@
                     </div>
                     <div class="input-group">
                         <input asp-for="NewWitnessForm" type="file" class="form-control" />
-                        <span class="input-group-text"><i class="fas fa-file-pdf"></i></span>
+                        <span class="input-group-text"><i class="fas fa-upload"></i></span>
                     </div>
-                    <small class="form-text text-muted">Update uploaded signed witness form</small>
+                    <small class="form-text text-muted">Update uploaded signed witness form. Leave empty to keep existing file</small>
                     <span asp-validation-for="NewWitnessForm" class="text-danger small"></span>
                 </div>
                 <div class="form-group">
@@ -460,7 +459,7 @@
                                             <td class="text-truncate">@file.Name</td>
                                             <td>
                                                 <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
-                                                <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;"><i class="fas fa-trash">  Delete</i></a>
+                                                <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;"><i class="fas fa-trash">Delete</i></a>
                                             </td>
                                         </tr>
                                     }
@@ -470,7 +469,7 @@
                     </div>
                     <div class="input-group">
                         <input asp-for="NewSupportingEvidences" type="file" class="form-control" multiple />
-                        <span class="input-group-text"><i class="fas fa-file-image"></i></span>
+                        <span class="input-group-text"><i class="fas fa-file"></i></span>
                     </div>
                     <small class="form-text text-muted">Multiple files allowed</small>
                     <span asp-validation-for="NewSupportingEvidences" class="text-danger small"></span>
@@ -513,17 +512,17 @@
                         <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger small"></span>
                     </div>
                     <div class="form-group col-md-3">
-                        <label class="form-label">@Html.DisplayNameFor(model => model.InspectionPlace) <span class="text-danger">*</span></label>
-                        <input asp-for="InspectionPlace" class="form-control" required 
-                                placeholder="Location of inspection" />
-                        <span asp-validation-for="InspectionPlace" class="text-danger small"></span>
-                    </div>
-                    <div class="form-group col-md-3">
                         <label class="form-label">@Html.DisplayNameFor(model => model.InspectionDate) <span class="text-danger">*</span></label>
                         <input asp-for="InspectionDate" class="form-control" 
                                 type="date" value="@(Model.InspectionDate.ToString("yyyy-MM-dd"))" required />
                         @Html.ValidationMessageFor(m => m.InspectionDate)
                         <span asp-validation-for="InspectionDate" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.InspectionPlace) <span class="text-danger">*</span></label>
+                        <input asp-for="InspectionPlace" class="form-control" required 
+                                placeholder="Location of inspection" />
+                        <span asp-validation-for="InspectionPlace" class="text-danger small"></span>
                     </div>
                 </div>
             </div>

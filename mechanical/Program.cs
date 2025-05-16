@@ -93,9 +93,14 @@ builder.Services.AddSwaggerGen();
 //            throw new InvalidOperationException("Connection string 'CbeCreditContext' not found.")));
 builder.Services.AddDbContext<CbeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CbeContext") ??
-                         throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
+                            throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// builder.Services.AddHttpClient();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //production capacity estimation
+builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
@@ -131,18 +136,7 @@ builder.Services.AddScoped<mechanical.Services.AuthenticatioinService.IAuthentic
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// Registering PCE services
-// builder.Services.AddHttpClient();
-// builder.Services.AddAutoMapper(typeof(Program));
-
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
-
-// builder.Services.AddTransient<IReportService, ReportService>();
-//////////////////////////////////////////////////////////////////////////////////////////////
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(options =>

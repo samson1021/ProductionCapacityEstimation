@@ -55,7 +55,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
                 pceEvaluation.CreatedBy = UserId;
-                pceEvaluation.CreatedAt = DateTime.Now;
+                pceEvaluation.CreatedAt = DateTime.UtcNow;
 
                 if (pceEvaluation.ProductionLines != null && pceEvaluation.ProductionLines.Any())
                 {
@@ -112,104 +112,26 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEvaluation = await FindValuation(Id);
                 _mapper.Map(Dto, pceEvaluation);
                 pceEvaluation.UpdatedBy = UserId;
-                pceEvaluation.UpdatedAt = DateTime.Now;
+                pceEvaluation.UpdatedAt = DateTime.UtcNow;
 
-                // Update Justifications
-                if (Dto.Justifications != null)
+                UpdateJustifications(pceEvaluation, Dto);
+                UpdateProductionLines(pceEvaluation, Dto);
+
+                if (Dto.NewWitnessForm != null)
                 {
-                    var existingJustifications = pceEvaluation.Justifications.ToList();
-                    var updatedJustificationIds = Dto.Justifications.Select(j => j.Id).ToList();
-
-                    // Remove deleted justifications
-                    var justificationsToRemove = existingJustifications
-                        .Where(j => !updatedJustificationIds.Contains(j.Id))
-                        .ToList();
-                    _cbeContext.Justifications.RemoveRange(justificationsToRemove);
-
-                    // Update existing justifications
-                    foreach (var justification in existingJustifications)
+                    await HandleFileUploads(UserId, new List<IFormFile> { Dto.NewWitnessForm }, "Witness Form",  pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
+                    
+                    if (Dto.WitnessForm != null)
                     {
-                        var updatedJustification = Dto.Justifications.FirstOrDefault(j => j.Id == justification.Id);
-                        if (updatedJustification != null)
-                        {
-                            _mapper.Map(updatedJustification, justification);
-                        }
+                        Dto.DeletedFileIds ??= new List<Guid>();
+                        Dto.DeletedFileIds.Add(Dto.WitnessForm.Id);
                     }
-
-                    // Add new justifications
-                    var newJustifications = Dto.Justifications
-                        .Where(j => !existingJustifications.Any(ej => ej.Id == j.Id))
-                        .Select(j => _mapper.Map<Justification>(j))
-                        .ToList();
-                    // pceEvaluation.Justifications.AddRange(newJustifications);
-                }
-
-                // Update ProductionLines and ProductionLineInputs
-                if (Dto.ProductionLines != null)
-                {
-                    var existingProductionLines = pceEvaluation.ProductionLines.ToList();
-                    var updatedProductionLineIds = Dto.ProductionLines.Select(pl => pl.Id).ToList();
-
-                    // Remove deleted production lines and their inputs
-                    var productionLinesToRemove = existingProductionLines
-                        .Where(pl => !updatedProductionLineIds.Contains(pl.Id))
-                        .ToList();
-                    foreach (var line in productionLinesToRemove)
-                    {
-                        _cbeContext.ProductionLineInputs.RemoveRange(line.ProductionLineInputs);
-                    }
-                    _cbeContext.ProductionLines.RemoveRange(productionLinesToRemove);
-
-                    // Update existing production lines and their inputs
-                    foreach (var productionLine in existingProductionLines)
-                    {
-                        var updatedLine = Dto.ProductionLines.FirstOrDefault(pl => pl.Id == productionLine.Id);
-                        if (updatedLine != null)
-                        {
-                            _mapper.Map(updatedLine, productionLine);
-
-                            // Update inputs
-                            var existingInputs = productionLine.ProductionLineInputs.ToList();
-                            var updatedInputIds = updatedLine.ProductionLineInputs.Select(input => input.Id).ToList();
-
-                            // Remove deleted inputs
-                            var inputsToRemove = existingInputs
-                                .Where(input => !updatedInputIds.Contains(input.Id))
-                                .ToList();
-                            _cbeContext.ProductionLineInputs.RemoveRange(inputsToRemove);
-
-                            // Update existing inputs
-                            foreach (var input in existingInputs)
-                            {
-                                var updatedInput = updatedLine.ProductionLineInputs.FirstOrDefault(i => i.Id == input.Id);
-                                if (updatedInput != null)
-                                {
-                                    _mapper.Map(updatedInput, input);
-                                }
-                            }
-
-                            // Add new inputs
-                            var newInputs = updatedLine.ProductionLineInputs
-                                .Where(input => !existingInputs.Any(ei => ei.Id == input.Id))
-                                .Select(input => _mapper.Map<ProductionLineInput>(input))
-                                .ToList();
-                            // productionLine.ProductionLineInputs.AddRange(newInputs);
-                        }
-                    }
-
-                    // Add new production lines
-                    var newProductionLines = Dto.ProductionLines
-                        .Where(pl => !existingProductionLines.Any(epl => epl.Id == pl.Id))
-                        .Select(pl => _mapper.Map<ProductionLine>(pl))
-                        .ToList();
-                    // pceEvaluation.ProductionLines.AddRange(newProductionLines);
                 }
 
                 // Handle file uploads
                 var filesToDelete = await GetFilesToDelete(FileIds: Dto.DeletedFileIds);
                 var filePathsToDelete = await GetFilePathsToDelete(filesToDelete);
 
-                // await HandleFileUploads(UserId, new List<IFormFile> { Dto.WitnessForm }, "Witness Form",  pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is updated.");
@@ -237,18 +159,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = await FindValuation(Id);
-
-                // // Delete related ProductionLineInputs
-                // var productionLineInputs = _cbeContext.ProductionLineInputs
-                //                                 .Where(input => pceEvaluation.ProductionLines
-                //                                             .Select(line => line.Id)
-                //                                             .Contains(input.ProductionLineId));
-                // _cbeContext.ProductionLineInputs.RemoveRange(productionLineInputs);
-
-                // // Delete related ProductionLines
-                // var productionLines = _cbeContext.ProductionLines
-                //                             .Where(line => line.PCEEvaluationId == pceEvaluation.Id);
-                // _cbeContext.ProductionLines.RemoveRange(productionLines);
 
                 // Delete the PCEEvaluation
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);
@@ -289,7 +199,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pceEvaluation = await FindValuation(Id);
 
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.UtcNow);
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
                 await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE.PCECase);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
@@ -315,7 +225,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var returnPCE = _mapper.Map<ReturnedProduction>(Dto);
                 returnPCE.ReturnedById = UserId;
-                returnPCE.ReturnedAt = DateTime.Now;
+                returnPCE.ReturnedAt = DateTime.UtcNow;
 
                 await _cbeContext.ReturnedProductions.AddAsync(returnPCE);
 
@@ -354,7 +264,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     await _UploadFileService.CreateUploadFile(UserId, FileDto);
                 }
                 await UpdatePCEStatus(pce, currentStatus, "Maker Officer");
-                await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.Now);
+                await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.UtcNow);
                 await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -380,7 +290,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.Update(pceEvaluation);
 
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.UtcNow);
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
 
@@ -410,6 +320,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .ThenInclude(pc => pc.PCECase)
                                                         .ThenInclude(p => p.ProductionCapacities)
                                                 .FirstOrDefaultAsync(pce => pce.Id == Id);
+                                                // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
 
             if (pceEvaluation == null)
             {
@@ -440,7 +351,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         }
 
         private async Task<List<UploadFile>> GetFilesToDelete(Guid? PCEEId = null, List<Guid>? FileIds = null)
-        // private async Task<List<UploadFile>> GetFilesToDelete(Guid? PCEEId = null, string? FileIds = null)
         {
             List<UploadFile> filesToDelete = null;
             
@@ -453,11 +363,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var fileGuids = FileIds.ToList();
                 filesToDelete = await _cbeContext.UploadFiles.Where(file => fileGuids.Contains(file.Id)).ToListAsync();
             }
-            // else if (!string.IsNullOrEmpty(FileIds))
-            // {
-            //     var fileGuids = FileIds.Split(',').Select(Guid.Parse).ToList();
-            //     filesToDelete = await _cbeContext.UploadFiles.Where(file => fileGuids.Contains(file.Id)).ToListAsync();
-            // }
             
             return filesToDelete;
         }
@@ -506,7 +411,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             if (allCompleted)
             {
                 PCECase.Status = "Completed";
-                PCECase.CompletedAt = DateTime.Now;
+                PCECase.CompletedAt = DateTime.UtcNow;
                 _cbeContext.PCECases.Update(PCECase);
             }
         }
@@ -537,7 +442,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var assignment = await _cbeContext.PCECaseAssignments
                                                 .Where(pca => pca.ProductionCapacityId == PCEId && pca.UserId == UserId)
                                                 .OrderByDescending(pca => pca.AssignmentDate)
-                                                .FirstOrDefaultAsync();
+                                                .FirstOrDefaultAsync()
+                                                ?? throw new KeyNotFoundException("PCECase Assignment not found.");
             if (assignment != null)
             {
                 assignment.Status = Status;
@@ -559,6 +465,96 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
+        private void UpdateJustifications(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
+        {
+            var newJustifications = dto.Justifications ?? new List<JustificationUpdateDto>();
+            var existingJustifications = evaluation.Justifications ??= new List<Justification>();
+
+            // Map by ID for efficient lookup
+            var newJustificationsById = newJustifications.Where(j => j.Id != Guid.Empty).ToDictionary(j => j.Id);
+            var existingJustificationsById = existingJustifications.ToDictionary(j => j.Id);
+
+            // 1. Remove deleted justifications
+            foreach (var existingJustification in existingJustifications.ToList())
+            {
+                if (!newJustificationsById.ContainsKey(existingJustification.Id))
+                    existingJustifications.Remove(existingJustification);
+            }
+
+            // 2. Update or add justifications
+            foreach (var newJustification in newJustifications)
+            {
+                if (newJustification.Id != Guid.Empty && existingJustificationsById.TryGetValue(newJustification.Id, out var existingJustification))
+                {
+                    _mapper.Map(newJustification, existingJustification);
+                }
+                else
+                {
+                    existingJustifications.Add(_mapper.Map<Justification>(newJustification));
+                }
+            }
+        }
+
+
+        private void UpdateProductionLines(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
+        {
+            var newProductionLines = dto.ProductionLines ?? new List<ProductionLineUpdateDto>();
+            var existingProductionLines = evaluation.ProductionLines ??= new List<ProductionLine>();
+
+            var newProductionLinesById = newProductionLines.Where(p => p.Id != Guid.Empty).ToDictionary(p => p.Id);
+            var existingProductionLinesById = existingProductionLines.ToDictionary(p => p.Id);
+
+            // 1. Remove deleted lines
+            foreach (var existingLine in existingProductionLines.ToList())
+            {
+                if (!newProductionLinesById.ContainsKey(existingLine.Id))
+                    existingProductionLines.Remove(existingLine);
+            }
+
+            // 2. Add or update lines
+            foreach (var newLine in newProductionLines)
+            {
+                if (newLine.Id != Guid.Empty && existingProductionLinesById.TryGetValue(newLine.Id, out var existingLine))
+                {
+                    _mapper.Map(newLine, existingLine);
+                    UpdateProductionLineInputs(existingLine, newLine.ProductionLineInputs);
+                }
+                else
+                {
+                    existingProductionLines.Add(_mapper.Map<ProductionLine>(newLine));
+                }
+            }
+        }
+        private void UpdateProductionLineInputs(ProductionLine line, List<ProductionLineInputUpdateDto> newInputs)
+        {
+            var newProductionLineInputs = newInputs ?? new List<ProductionLineInputUpdateDto>();
+            var existingProductionLineInputs = line.ProductionLineInputs ??= new List<ProductionLineInput>();
+
+            var newProductionLineInputsById = newProductionLineInputs.Where(i => i.Id != Guid.Empty).ToDictionary(i => i.Id);
+            var existingProductionLineInputsById = existingProductionLineInputs.ToDictionary(i => i.Id);
+
+            // Remove missing
+            foreach (var existingInput in existingProductionLineInputs.ToList())
+            {
+                if (!newProductionLineInputsById.ContainsKey(existingInput.Id))
+                    existingProductionLineInputs.Remove(existingInput);
+            }
+
+            // Add or update
+            foreach (var newInput in newProductionLineInputs)
+            {
+                if (newInput.Id != Guid.Empty && existingProductionLineInputsById.TryGetValue(newInput.Id, out var existingInput))
+                {
+                    _mapper.Map(newInput, existingInput);
+                }
+                else
+                {
+                    existingProductionLineInputs.Add(_mapper.Map<ProductionLineInput>(newInput));
+                }
+            }
+        }
+
+
         ///////// PCE Evaluation //////////////
         public async Task<PCEEvaluationReturnDto> GetValuation(Guid UserId, Guid Id)
         {
@@ -575,6 +571,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .ThenInclude(pc => pc.PCECase)
                                                         .ThenInclude(p => p.ProductionCapacities)
                                                 .FirstOrDefaultAsync(e => e.Id == Id);
+                                                // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
 
                 if (pceEvaluation == null)
                 {
@@ -632,6 +629,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
                                                     .FirstOrDefaultAsync(e => e.PCEId == PCEId);
+                                                    // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
 
                 if (pceEvaluation == null)
                 {
@@ -733,11 +731,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         public async Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId)
         {
 
-            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().FirstOrDefaultAsync(res => res.Id == PCEId);
+            var pce = await _cbeContext.ProductionCapacities
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(res => res.Id == PCEId)
+                                        ?? throw new KeyNotFoundException("Production Capacity not found.");
 
             PCEEvaluationReturnDto latestEvaluation = null;
 
-            if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Returned")
+            if (pce != null && pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Returned")
             {
                 latestEvaluation = await GetValuationByPCEId(UserId, PCEId);
             }

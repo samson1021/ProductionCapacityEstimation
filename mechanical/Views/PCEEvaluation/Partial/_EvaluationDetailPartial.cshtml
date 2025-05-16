@@ -61,7 +61,7 @@
                                                 .GetField(Model.BottleneckProductionLine.Unit.ToString())
                                                 ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                 .Cast<DisplayAttribute>()
-                                                .FirstOrDefault()?.Name.ToLower() ?? Model.BottleneckProductionLine.Unit.ToString().ToLower()) + "s")
+                                                .FirstOrDefault()?.Name ?? Model.BottleneckProductionLine.Unit.ToString()) + "s")
                                     </dd>
                                 }
 
@@ -296,17 +296,15 @@
                                                 .FirstOrDefault()?.Name ?? line.OutputPhase.ToString())
                                             </td>
                                         }
-                                        @{
-                                            var lineUnit = line.ProductionUnit == null ? "units" : (line.ProductionUnit.GetType()
+                                        <td>@(line.ActualCapacity != null ? line.ActualCapacity.ToString() : "N/A")</td>
+                                        <td>@(line.DesignCapacity != null ? line.DesignCapacity.ToString() : "N/A")</td>
+                                        <td>@(line.AttainableCapacity != null ? line.AttainableCapacity.ToString() : "N/A")</td>
+                                        <td>@(line.ProductionUnit == null ? "units" : (line.ProductionUnit.GetType()
                                                             .GetField(line.ProductionUnit.ToString())
                                                             ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                             .OfType<DisplayAttribute>()
-                                                            .FirstOrDefault()?.Name.ToLower() ?? line.ProductionUnit.ToString().ToLower()) + "s";
-                                        }
-                                        <td>@(line.ActualCapacity != null ? line.ActualCapacity.ToString() + " " + lineUnit : "N/A")</td>
-                                        <td>@(line.DesignCapacity != null ? line.DesignCapacity.ToString() + " " + lineUnit : "N/A")</td>
-                                        <td>@(line.AttainableCapacity != null ? line.AttainableCapacity.ToString() + " " + lineUnit : "N/A")</td>
-                                        <td>@lineUnit</td>
+                                                            .FirstOrDefault()?.Name ?? line.ProductionUnit.ToString()) + "s")
+                                        </td>
                                         
                                         <td>
                                             @(line.ProductionMeasurement == null ? "N/A" : line.ProductionMeasurement.GetType()
@@ -390,7 +388,7 @@
                                                                                                             .GetField(input.Unit.ToString())
                                                                                                             ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                                                                             .OfType<DisplayAttribute>()
-                                                                                                            .FirstOrDefault()?.Name.ToLower() ?? input.Unit.ToString().ToLower()) + "s")
+                                                                                                            .FirstOrDefault()?.Name ?? input.Unit.ToString()) + "s")
                                                                                     </td>
                                                                                 </tr>
                                                                             }
@@ -411,11 +409,11 @@
                                                             <div class="card-body">
                                                                 <dl class="row mb-0">
                                                                     <dt class="col-sm-5">Total Input</dt>
-                                                                    <dd class="col-sm-7">@(line.TotalInput?.ToString() ?? "N/A" + " " + (inputUnit == null ? "units" : (inputUnit.GetType()
+                                                                    <dd class="col-sm-7">@((line.TotalInput?.ToString() ?? "N/A") + " " + (inputUnit == null ? "units" : (inputUnit.GetType()
                                                                                                         .GetField(inputUnit.ToString())
                                                                                                         ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                                                                         .OfType<DisplayAttribute>()
-                                                                                                        .FirstOrDefault()?.Name.ToLower() ?? inputUnit.ToString().ToLower()) + "s"))
+                                                                                                        .FirstOrDefault()?.Name ?? inputUnit.ToString()) + "s"))
                                                                     </dd>
                                                                     
                                                                     <dt class="col-sm-5">Conversion Rate</dt>

@@ -152,15 +152,12 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
     {
         [Required]
         public Guid Id { get; set; }
-        public ProductionCapacity PCE { get; set; }
-        public CreateUser Evaluator { get; set; }
 
         [Display(Name = "Evaluated By")]
         public Guid EvaluatorId { get; set; }
 
-        [Required]
         [Display(Name = "Witness Form")]
-        public ReturnFileDto WitnessForm { get; set; }
+        public ReturnFileDto? WitnessForm { get; set; }
 
         [Display(Name = "Production Process Flow Diagrams")]
         public List<ReturnFileDto>? ProductionProcessFlowDiagrams { get; set; } = new List<ReturnFileDto>();
@@ -190,7 +187,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
     public class JustificationUpdateDto: JustificationBaseDto
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
     }
     public class JustificationReturnDto: JustificationBaseDto
     {
