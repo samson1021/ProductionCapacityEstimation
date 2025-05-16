@@ -141,7 +141,9 @@
                                             name="Justifications[@justificationIndex].JustificationText" 
                                             placeholder="Please specify"
                                             @(isChecked ? "" : "disabled")>@(isChecked ? justification?.JustificationText : "")</textarea>
-                                    <span asp-validation-for="Justifications[@justificationIndex].JustificationText" class="text-danger small"></span>
+                                    @* <span asp-validation-for="Justifications[@justificationIndex].JustificationText" class="text-danger small"></span> *@
+                                    <span asp-validation-for="Justifications[(justificationIndex)].JustificationText" class="text-danger small"></span>
+
                                 </div>
                             }
                         </div>
