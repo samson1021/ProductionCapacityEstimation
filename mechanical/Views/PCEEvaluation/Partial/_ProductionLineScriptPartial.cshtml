@@ -402,18 +402,18 @@
                 // Update input unit labels
                 $line.find('.input-item').each(function () {
                     const $inputItem = $(this);
-                    const selectedInputUnit = parseInt($inputItem.find('.input-unit-dropdown').val());
-                    const displayInputUnitName = selectedInputUnit && measurementUnits[selectedInputUnit] && measurementUnits[selectedInputUnit] != "Other" ? measurementUnits[selectedInputUnit].toLowerCase() : 'units';
+                    const selectedInputUnit = $inputItem.find('.input-unit-dropdown').val();
+                    const displayInputUnitName = selectedInputUnit && measurementUnits[selectedInputUnit] && measurementUnits[selectedInputUnit] != "Other" ? measurementUnits[selectedInputUnit].toLowerCase() + "s" : 'units';
                     $inputItem.find('.input-unit-label').text(displayInputUnitName);
                 });
 
                 // Update production unit label
-                const selectedUnit = parseInt($line.find('.input-unit-dropdown').val());
-                const displayUnitName = selectedUnit && measurementUnits[selectedUnit] && measurementUnits[selectedUnit] != "Others" ? measurementUnits[selectedUnit].toLowerCase() : 'units';
+                const selectedTotalUnit = $line.find('.input-unit-dropdown').val();
+                const displayUnitName = selectedTotalUnit && measurementUnits[selectedTotalUnit] && measurementUnits[selectedTotalUnit] != "Other" ? measurementUnits[selectedTotalUnit].toLowerCase() + "s" : 'units';
                 $line.find('.total-input-unit-label').text(displayUnitName);
 
-                const productionUnit = parseInt($line.find('.production-unit-dropdown').val());
-                const displayName = productionUnit && measurementUnits[productionUnit] && measurementUnits[productionUnit] != "Other" ? measurementUnits[productionUnit].toLowerCase() : 'units';
+                const selectedProductionUnit = $line.find('.production-unit-dropdown').val();
+                const displayName = selectedProductionUnit && measurementUnits[selectedProductionUnit] && measurementUnits[selectedProductionUnit] != "Other" ? measurementUnits[selectedProductionUnit].toLowerCase() + "s" : 'units';
                 $line.find('.production-unit-label').text(displayName);
             });
         }
@@ -426,12 +426,12 @@
         // Attach event listeners to update unit labels on change
         $container.on('change', '.input-unit-dropdown', function () {
             updateUnitLabels();
-            // calculateTotals();
+            calculateTotals();
         });
-@* 
-        $container.on('change', '.total-input-unit', function () {
-            updateUnitLabels();
-        }); *@
+
+        $container.on('input', '.input-quantity', function () {
+            calculateTotals();
+        });
 
         // Call updateUnitLabels on page load to initialize labels
         updateUnitLabels();
