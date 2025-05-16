@@ -2,8 +2,8 @@
 
 @model PCEEvaluationReturnDto
 
-@{    
-    ViewData["Title"] = ViewBag.Title as string; 
+@{
+    ViewData["Title"] = ViewBag.Title as string;
 }
 
 <section class="content-header" style="padding-top:5px;padding-bottom:0px;">
@@ -24,7 +24,7 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="container-fluid">
-            <div class="card card-purple card-outline card-outline-tabs">    
+            <div class="card card-purple card-outline card-outline-tabs">
                 <div class="card-header bg-primary text-white">
                     <h3 class="card-title text-success text-center mb-0"><i class="fas fa-industry me-2"></i>Valuation Detail</h3>
                 </div>
@@ -34,13 +34,13 @@
                         {
                             <div class="row">
                                 @await Html.PartialAsync("Partial/_EvaluationDetailPartial", Model)
-                            </div>                                                                  
-                        }                                                         
-                    }                 
-                </div>          
-            </div>   
-        </div> 
-    </div> 
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 @section Scripts {

@@ -39,9 +39,9 @@ namespace mechanical.Controllers
         {
             _mapper = mapper;
             _logger = logger;
-            _MailService = MailService;   
+            _MailService = MailService;
             _PCEEvaluationService = PCEEvaluationService;
-            _ProductionCapacityService = ProductionCapacityService;            
+            _ProductionCapacityService = ProductionCapacityService;
         }
 
         [HttpGet]
@@ -52,29 +52,29 @@ namespace mechanical.Controllers
                 var userId = base.GetCurrentUserId();
                 var pceEvaluation = await _PCEEvaluationService.GetValuationByPCEId(userId, PCEId);
                 
-                if (pceEvaluation != null){                    
+                if (pceEvaluation != null){
                     if (pceEvaluation.PCE.AssignedEvaluatorId != userId)
-                    {            
+                    {
                         return BadRequest("Unauthorized access!");
                     }
                     if (pceEvaluation.PCE.CurrentStatus != "Reestimate")
-                    {            
+                    {
                         return RedirectToAction("Detail", "ProductionCapacity", new { Id = pceEvaluation.PCEId });
                     }
                 }
                 
-                var productionDetail = await _ProductionCapacityService.GetProductionDetails(userId, PCEId);     
+                var productionDetail = await _ProductionCapacityService.GetProductionDetails(userId, PCEId);
 
                 if (productionDetail.ProductionCapacity == null)
                 {
                     return RedirectToAction("PCECases", "PCECase");
                 }
             
+                ViewData["Production"] = productionDetail.ProductionCapacity;
                 ViewData["Reestimation"] = productionDetail.Reestimation;
                 ViewData["LatestEvaluation"] = productionDetail.PCEValuationHistory.LatestEvaluation;
-                ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
-                ViewData["PCECase"] = productionDetail.PCECase;
-                ViewData["Production"] = productionDetail.ProductionCapacity;
+                // ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
+                // ViewData["PCECase"] = productionDetail.PCECase;
 
                 return View();
             }
@@ -129,10 +129,9 @@ namespace mechanical.Controllers
                     return RedirectToAction("PCECases", "PCECase");
                 }
 
-                var pce = await _ProductionCapacityService.GetProduction(userId, pceEvaluation.PCEId);
-
-                ViewData["Production"] = pce;
-                ViewData["PCECase"] = pce.PCECase;
+                // var pce = await _ProductionCapacityService.GetProduction(userId, pceEvaluation.PCEId);
+                // ViewData["Production"] = pce;
+                // ViewData["PCECase"] = pce.PCECase;
 
                 return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));
             }
@@ -200,8 +199,8 @@ namespace mechanical.Controllers
                     return RedirectToAction("PCECases", "PCECase");
                 }
                 
-                // return View(pceValuation);
-                string jsonData = JsonConvert.SerializeObject(pceValuation, 
+                return View(pceValuation);
+                string jsonData = JsonConvert.SerializeObject(pceValuation,
                                     new JsonSerializerSettings{ ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
                 return Content(jsonData, "application/json");
             }

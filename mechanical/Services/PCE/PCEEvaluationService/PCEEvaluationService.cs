@@ -82,7 +82,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
                 pce.MachineName = Dto.MachineName;
                 pce.CountryOfOrigin = Dto.CountryOfOrigin;
-
                 _cbeContext.ProductionCapacities.Update(pce);
 
                 await HandleFileUploads(UserId, new List<IFormFile> { Dto.WitnessForm }, "Witness Form", pce.PCECaseId, pceEvaluation.Id);
@@ -239,17 +238,17 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 var pceEvaluation = await FindValuation(Id);
 
-                // Delete related ProductionLineInputs
-                var productionLineInputs = _cbeContext.ProductionLineInputs
-                                                .Where(input => pceEvaluation.ProductionLines
-                                                            .Select(line => line.Id)
-                                                            .Contains(input.ProductionLineId));
-                _cbeContext.ProductionLineInputs.RemoveRange(productionLineInputs);
+                // // Delete related ProductionLineInputs
+                // var productionLineInputs = _cbeContext.ProductionLineInputs
+                //                                 .Where(input => pceEvaluation.ProductionLines
+                //                                             .Select(line => line.Id)
+                //                                             .Contains(input.ProductionLineId));
+                // _cbeContext.ProductionLineInputs.RemoveRange(productionLineInputs);
 
-                // Delete related ProductionLines
-                var productionLines = _cbeContext.ProductionLines
-                                            .Where(line => line.PCEEvaluationId == pceEvaluation.Id);
-                _cbeContext.ProductionLines.RemoveRange(productionLines);
+                // // Delete related ProductionLines
+                // var productionLines = _cbeContext.ProductionLines
+                //                             .Where(line => line.PCEEvaluationId == pceEvaluation.Id);
+                // _cbeContext.ProductionLines.RemoveRange(productionLines);
 
                 // Delete the PCEEvaluation
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);

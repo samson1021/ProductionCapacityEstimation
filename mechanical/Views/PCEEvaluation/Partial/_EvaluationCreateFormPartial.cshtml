@@ -9,7 +9,6 @@
 @{
     var myProduction = ViewData["Production"] as ProductionReturnDto;
     var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
-
     var justificationReasons = Enum.GetValues(typeof(JustificationReason)).Cast<JustificationReason>();
     var justificationList = Model?.Justifications ?? new List<JustificationPostDto>();
 }
