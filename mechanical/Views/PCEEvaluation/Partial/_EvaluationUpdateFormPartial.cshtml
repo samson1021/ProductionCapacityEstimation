@@ -1,12 +1,10 @@
-@using mechanical.Models.Dto.UploadFileDto
+@* @using mechanical.Models.Dto.UploadFileDto *@
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
+@model PCEEvaluationUpdateDto
 
 @{
-    var myProduction = ViewData["Production"] as ProductionReturnDto;
     var justificationReasons = Enum.GetValues(typeof(JustificationReason)).Cast<JustificationReason>();
     var justificationList = Model?.Justifications;
 }
@@ -22,11 +20,11 @@
                 <div class="row mt-3">
                     <div class="form-group col-md-3">
                         <label class="form-label">Machine Name</label>
-                        <input id="MachineName" type="text" type="text" class="form-control form-control-sm" required>
+                        <input asp-for="MachineName" type="text" type="text" class="form-control form-control-sm" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">Country of Origin</label>
-                        <input id="CountryOfOrigin" type="text" type="text" class="form-control form-control-sm" required>
+                        <input asp-for="CountryOfOrigin" type="text" type="text" class="form-control form-control-sm" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger small">*</span></label>
@@ -125,8 +123,17 @@
                 <div id="productionLineContainer" class="mt-4">
                     @if (Model.ProductionLines != null && Model.ProductionLines.Any())
                     {
+                        
                         for (var i = 0; i < Model.ProductionLines.Count(); i++)
                         {
+                            
+                            var lineUnit = Model.ProductionLines[i].ProductionUnit == null ? "units" : (Model.ProductionLines[i].ProductionUnit.GetType()
+                                            .GetField(Model.ProductionLines[i].ProductionUnit.ToString())
+                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                            .OfType<DisplayAttribute>()
+                                            .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionUnit.ToString().ToLower()) + "s";
+                            object totlaInputUnit = "units";
+
                             <div class="card shadow-sm production-line-form border mb-4 position-relative production-line-evaluation-item">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
                                     <h6 class="line-number mb-0">
@@ -151,7 +158,6 @@
                                                 placeholder="Enter machine name" />
                                             <span asp-validation-for="ProductionLines[i].LineName" class="text-danger small"></span>
                                         </div>
-
                                         <div class="col-md-8">
                                             <div class="row">
                                                 <div class="col-md-4">
@@ -161,7 +167,7 @@
                                                             class="form-control capacity-input"
                                                             type="number" step="0.01" min="0"
                                                             placeholder="0.00" required />
-                                                        <span class="input-group-text">units</span>
+                                                        <span class="input-group-text production-unit-label">@lineUnit</span>
                                                     </div>
                                                     <span asp-validation-for="ProductionLines[i].ActualCapacity" class="text-danger small"></span>
                                                 </div>
@@ -172,7 +178,7 @@
                                                             class="form-control capacity-input"
                                                             type="number" step="0.01" min="0"
                                                             placeholder="0.00" />
-                                                        <span class="input-group-text">units</span>
+                                                        <span class="input-group-text production-unit-label">@lineUnit</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -182,7 +188,7 @@
                                                             class="form-control capacity-input"
                                                             type="number" step="0.01" min="0"
                                                             placeholder="0.00" />
-                                                        <span class="input-group-text">units</span>
+                                                        <span class="input-group-text production-unit-label">@lineUnit</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -204,7 +210,7 @@
                                                 <div class="col-md-4">
                                                     <label class="form-label">Production Unit <span class="text-danger">*</span></label>
                                                     <select asp-for="ProductionLines[i].ProductionUnit" 
-                                                            class="form-select" asp-items="Html.GetEnumSelectList<MeasurementUnit>()" required>
+                                                            class="form-select production-unit-dropdown" asp-items="Html.GetEnumSelectList<MeasurementUnit>()" required>
                                                         <option value="" disabled selected>Select Unit</option>
                                                     </select>
                                                     <span asp-validation-for="ProductionLines[i].ProductionUnit" class="text-danger small"></span>
@@ -246,6 +252,12 @@
                                             {
                                                 for (int j = 0; j < Model.ProductionLines[i].ProductionLineInputs.Count; j++)
                                                 {
+                                                    var lineInputUnit = Model.ProductionLines[i].ProductionLineInputs[j].Unit == null ? "units" : (Model.ProductionLines[i].ProductionLineInputs[j].Unit.GetType()
+                                                                    .GetField(Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString())
+                                                                    ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                                    .OfType<DisplayAttribute>()
+                                                                    .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString().ToLower()) + "s";
+                                                    totlaInputUnit = lineInputUnit;
                                                     <div class="input-item card mb-2">
                                                         <div class="card-body py-2">
                                                             <div class="row">
@@ -260,12 +272,12 @@
                                                                             class="form-control input-quantity"
                                                                             type="number" step="0.01" min="0"
                                                                             placeholder="0.00" required />
-                                                                        <span class="input-group-text">units</span>
+                                                                        <span class="input-group-text total-input-unit-label">@lineInputUnit</span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <select asp-for="ProductionLines[i].ProductionLineInputs[j].Unit"
-                                                                            class="form-select form-select-sm input-unit"
+                                                                            class="form-select form-select-sm input-unit-dropdown"
                                                                             asp-items="Html.GetEnumSelectList<MeasurementUnit>()" required>
                                                                         <option value="" disabled selected>Select Unit</option>
                                                                     </select>
@@ -311,7 +323,7 @@
                                                         <input asp-for="ProductionLines[i].TotalInput"
                                                             class="form-control total-input"
                                                             type="number" step="0.01" readonly />
-                                                        <span class="input-group-text">units</span>
+                                                        <span class="input-group-text input-unit-label">@totlaInputUnit</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">

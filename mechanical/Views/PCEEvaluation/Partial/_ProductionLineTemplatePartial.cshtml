@@ -38,7 +38,7 @@
                                         class="form-control capacity-input" 
                                         required type="number" step="0.01" min="0"
                                         placeholder="0.00" />
-                                <span class="input-group-text">units</span>
+                                <span class="input-group-text production-unit-label">units</span>
                             </div>
                         </div>
                         
@@ -49,7 +49,7 @@
                                         class="form-control capacity-input" 
                                         type="number" step="0.01" min="0"
                                         placeholder="0.00" />
-                                <span class="input-group-text">units</span>
+                                <span class="input-group-text production-unit-label">units</span>
                             </div>
                         </div>
                         
@@ -60,7 +60,7 @@
                                         class="form-control capacity-input" 
                                         type="number" step="0.01" min="0"
                                         placeholder="0.00" />
-                                <span class="input-group-text">units</span>
+                                <span class="input-group-text production-unit-label">units</span>
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                         <div class="col-md-4">
                             <label class="form-label">Production Unit <span class="text-danger">*</span></label>
                             <select name="ProductionLines[__INDEX__].ProductionUnit" 
-                                    class="form-select" required>
+                                    class="form-select production-unit-dropdown" required>
                                 <option value="" disabled selected>Select Unit</option>
                                 @foreach (var unit in Html.GetEnumSelectList<MeasurementUnit>())
                                 {
@@ -158,7 +158,7 @@
                                 <input name="ProductionLines[__INDEX__].TotalInput"
                                         type="number" step="0.01"
                                         class="form-control total-input" readonly />
-                                <span class="input-group-text">units</span>
+                                <span class="input-group-text total-input-unit-label">units</span>
                             </div>
                         </div>
                         
@@ -194,12 +194,12 @@
                                 type="number" step="0.01" min="0"
                                 class="form-control input-quantity"
                                 placeholder="0.00" required />
-                        <span class="input-group-text">units</span>
+                        <span class="input-group-text input-unit-label">units</span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <select name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Unit" 
-                            class="form-select form-select-sm input-unit" required>
+                            class="form-select form-select-sm input-unit-dropdown" required>
                         <option value="" disabled selected>Select Unit</option>
                         @foreach (var unit in Html.GetEnumSelectList<MeasurementUnit>())
                         {
