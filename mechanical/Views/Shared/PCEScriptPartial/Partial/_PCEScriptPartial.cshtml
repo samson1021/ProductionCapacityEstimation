@@ -102,33 +102,31 @@
     }
 
     function deleteFile(fileId, event) {
-
         event.preventDefault();
 
         if (confirm("Are you sure you want to delete this file?")) {
+            // Append hidden input for deleted file ID
+            const container = document.getElementById('deleted-files-container');
 
-            // Add the fileId to the hidden input for deleted files
-            var deletedFileIdsInput = document.getElementById('DeletedFileIds');
-            
-            if (deletedFileIdsInput){
-                
-                var deletedFileIds = deletedFileIdsInput.value ? deletedFileIdsInput.value.split(',') : [];
-                deletedFileIds.push(fileId);
-                deletedFileIdsInput.value = deletedFileIds.join(',');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'DeletedFileIds'; // Important for model binding!
+            input.value = fileId;
 
-                // Remove the file row from the view
-                $(`#file-${fileId}`).remove();
+            container.appendChild(input);
 
-                // Check if there are no more files and add the appropriate message
-                if ($("#file-list1 .file-row").length == 0) {
-                    $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
-                }
-                if ($("#file-list2 .file-row").length == 0) {
-                    $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
-                }
+            // Remove file row
+            $(`#file-${fileId}`).remove();
+
+            if ($("#file-list1 .file-row").length === 0) {
+                $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
+            }
+            if ($("#file-list2 .file-row").length === 0) {
+                $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
             }
         }
     }
+
 
 </script>
 

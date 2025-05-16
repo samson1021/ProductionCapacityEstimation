@@ -146,6 +146,7 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.Status, opt => opt.Ignore());
 
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+
             CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
 
 
@@ -196,6 +197,7 @@ namespace mechanical.Mapper
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
+            CreateMap<DateTimeRange, DateTimeRangeUpdateDto>().ReverseMap();
             CreateMap<DateTimeRangeReturnDto, DateTimeRangeUpdateDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
             CreateMap<ReturnedProductionPostDto, ReturnedProduction>();
@@ -207,6 +209,7 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingEvidences))
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.ProductionProcessFlowDiagrams))
                 .ReverseMap()
+                // .ForMember(dest => dest.PCE, opt => opt.Ignore())
                 .ForMember(dest => dest.UploadedFiles, opt => opt.Ignore());
 
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
