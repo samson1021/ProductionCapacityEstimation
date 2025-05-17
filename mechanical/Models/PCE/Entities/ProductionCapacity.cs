@@ -1,12 +1,16 @@
-﻿using mechanical.Models.Entities;
-using mechanical.Models.PCE.Enum.ProductionCapacity;
-using mechanical.Models.PCE.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using mechanical.Models.PCE.Enum.ProductionCapacity;
+using mechanical.Models.Entities;
 
 namespace mechanical.Models.PCE.Entities
 {
+    [Index(nameof(PCECaseId))]
     public class ProductionCapacity
     {
+        [Key]
         public Guid Id { get; set; }
         public required Guid PCECaseId { get; set; }
         
@@ -55,7 +59,9 @@ namespace mechanical.Models.PCE.Entities
         public Guid? UpdatedById { get; set; } = null;
         public DateTime? UpdatedAt { get; set; } = null;
 
+        [ForeignKey("CreatedById")]
         public virtual CreateUser? CreatedBy { get; set; }
+        [ForeignKey("PCECaseId")]
         public virtual PCECase? PCECase { get; set; }
     }
 }
