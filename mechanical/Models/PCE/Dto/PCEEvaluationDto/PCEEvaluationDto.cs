@@ -153,9 +153,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Required]
         public Guid Id { get; set; }
 
-        [Display(Name = "Evaluated By")]
-        public Guid EvaluatorId { get; set; }
-
         [Display(Name = "Witness Form")]
         public ReturnFileDto? WitnessForm { get; set; }
 

@@ -74,8 +74,6 @@ namespace mechanical.Controllers
                 ViewData["Production"] = productionDetail.ProductionCapacity;
                 ViewData["Reestimation"] = productionDetail.Reestimation;
                 ViewData["LatestEvaluation"] = productionDetail.PCEValuationHistory.LatestEvaluation;
-                // ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
-                // ViewData["PCECase"] = productionDetail.PCECase;
 
                 return View();
             }
@@ -136,7 +134,7 @@ namespace mechanical.Controllers
                 }
 
                 var dto = _mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation);
-                dto.DeletedFileIds = new List<Guid>(); // Initialize DeletedFileIds to avoid validation errors
+                dto.DeletedFileIds = new List<Guid>();
 
                 return View(dto);
             }
@@ -273,12 +271,6 @@ namespace mechanical.Controllers
         {
             var userId = base.GetCurrentUserId();
             var pceEvaluation = await _PCEEvaluationService.GetValuation(userId, Id);
-            var pce = await _ProductionCapacityService.GetProduction(userId, Id);
-
-            // var relatedFiles = await _uploadFileService.GetUploadFileByCollateralId(Id);
-            // ViewData["RelatedFiles"] = RelatedFiles;
-            // string jsonData = JsonConvert.SerializeObject(pce, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            // return Content(jsonData, "application/json");
             return View(_mapper.Map<PCEEvaluationUpdateDto>(pceEvaluation));
         }
 

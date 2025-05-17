@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using Microsoft.EntityFrameworkCore;
-
 using mechanical.Models.PCE.Enum.PCEEvaluation;
-using mechanical.Models.Entities;
 
 namespace mechanical.Models.PCE.Entities
 {
@@ -15,11 +13,7 @@ namespace mechanical.Models.PCE.Entities
         public Guid Id { get; set; }
 
         [Required]
-        [ForeignKey("PCEEvaluation")]
         public Guid PCEEvaluationId { get; set; }
-
-        [Required]
-        public Guid EvaluatorId { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -57,17 +51,17 @@ namespace mechanical.Models.PCE.Entities
 
         public decimal? ConversionRatio { get; set; }
 
+        [ForeignKey("PCEEvaluationId")]
         public virtual PCEEvaluation PCEEvaluation { get; set; }
-        public virtual CreateUser Evaluator { get; set; }
     }
 
+    [Index(nameof(ProductionLineId))]
     public class ProductionLineInput
     {
         [Key]
         public Guid Id { get; set; }
 
         [Required]
-        [ForeignKey("ProductionLine")]
         public Guid ProductionLineId { get; set; }
 
         [Required]
@@ -81,6 +75,7 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         public MeasurementUnit Unit { get; set; }
 
+        [ForeignKey("ProductionLineId")]
         public virtual ProductionLine ProductionLine { get; set; }
     }
 }

@@ -1,10 +1,14 @@
-﻿using mechanical.Models.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using mechanical.Models.Entities;
 
 namespace mechanical.Models.PCE.Entities
 {
     public class PCECase
     {
+        [Key]
         public Guid Id { get; set; }
         public required string CaseNo { get; set; }
         [Required]
@@ -21,8 +25,14 @@ namespace mechanical.Models.PCE.Entities
         public Guid? BusinessLicenseId { get; set; }
         public required Guid PCECaseOriginatorId { get; set; }
 
+
+        [ForeignKey("DistrictId")]
         public virtual District? District { get; set; }
+
+        [ForeignKey("PCECaseOriginatorId")]
         public virtual CreateUser? PCECaseOriginator { get; set; }
+
+        [ForeignKey("BusinessLicenseId")]
         public virtual UploadFile? BusinessLicense { get; set; }
         public virtual ICollection<ProductionCapacity>? ProductionCapacities { get; set; }
     }

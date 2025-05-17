@@ -17,13 +17,8 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
-using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
-using mechanical.Models.Dto.Correction;
-using mechanical.Models.PCE.Dto.ProductionCapacityDto;
-using mechanical.Models.PCE.Dto.PCECaseDto;
-using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
@@ -62,7 +57,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     foreach (var productionLine in pceEvaluation.ProductionLines)
                     {
                         productionLine.PCEEvaluationId = pceEvaluation.Id;
-                        productionLine.EvaluatorId = UserId;
 
                         if (productionLine.ProductionLineInputs != null && productionLine.ProductionLineInputs.Any())
                         {
@@ -114,8 +108,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 pceEvaluation.UpdatedBy = UserId;
                 pceEvaluation.UpdatedAt = DateTime.UtcNow;
 
-                UpdateJustifications(pceEvaluation, Dto);
-                UpdateProductionLines(pceEvaluation, Dto);
+                // UpdateProductionLines(pceEvaluation, Dto);
 
                 if (Dto.NewWitnessForm != null)
                 {
@@ -201,7 +194,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.UtcNow);
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE.PCECase);
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE.PCECaseId);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -318,7 +311,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .Include(e => e.Evaluator)
                                                 .Include(e => e.PCE)
                                                     .ThenInclude(pc => pc.PCECase)
-                                                        .ThenInclude(p => p.ProductionCapacities)
+                                                        // .ThenInclude(p => p.ProductionCapacities)
                                                 .FirstOrDefaultAsync(pce => pce.Id == Id);
                                                 // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
 
@@ -403,16 +396,25 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             _cbeContext.ProductionCapacities.Update(PCE);
         }
 
-        private async Task UpdatePCECaseStatusIfAllCompleted(PCECase PCECase)
+        private async Task UpdatePCECaseStatusIfAllCompleted(Guid PCECaseId)
         {
-            // await _cbeContext.Entry(PCECase).Collection(p => p.ProductionCapacities).LoadAsync();
-            var allCompleted = PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "Completed") ?? false;
+            // Check if all capacities are completed (loads only the status)
+            var caseInfo = await _cbeContext.PCECases
+                    .Where(p => p.Id == PCECaseId)
+                    .Select(p => new {
+                        HasCapacities = p.ProductionCapacities.Any(),
+                        AllCompleted = p.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed")
+                    })
+                    .FirstOrDefaultAsync();
 
-            if (allCompleted)
+            if (caseInfo?.HasCapacities == true && caseInfo.AllCompleted)
             {
-                PCECase.Status = "Completed";
-                PCECase.CompletedAt = DateTime.UtcNow;
-                _cbeContext.PCECases.Update(PCECase);
+                // Update status
+                await _cbeContext.PCECases
+                    .Where(p => p.Id == PCECaseId)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(p => p.Status, "Completed")
+                        .SetProperty(p => p.CompletedAt, DateTime.UtcNow));
             }
         }
         
@@ -465,36 +467,35 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private void UpdateJustifications(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
-        {
-            var newJustifications = dto.Justifications ?? new List<JustificationUpdateDto>();
-            var existingJustifications = evaluation.Justifications ??= new List<Justification>();
+        // private void UpdateJustifications(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
+        // {
+        //     var newJustifications = dto.Justifications ?? new List<JustificationUpdateDto>();
+        //     var existingJustifications = evaluation.Justifications ??= new List<Justification>();
 
-            // Map by ID for efficient lookup
-            var newJustificationsById = newJustifications.Where(j => j.Id != Guid.Empty).ToDictionary(j => j.Id);
-            var existingJustificationsById = existingJustifications.ToDictionary(j => j.Id);
+        //     // Map by ID for efficient lookup
+        //     var newJustificationsById = newJustifications.Where(j => j.Id != Guid.Empty).ToDictionary(j => j.Id);
+        //     var existingJustificationsById = existingJustifications.ToDictionary(j => j.Id);
 
-            // 1. Remove deleted justifications
-            foreach (var existingJustification in existingJustifications.ToList())
-            {
-                if (!newJustificationsById.ContainsKey(existingJustification.Id))
-                    existingJustifications.Remove(existingJustification);
-            }
+        //     foreach (var existingJustification in existingJustifications.ToList())
+        //     {
+        //         if (!newJustificationsById.ContainsKey(existingJustification.Id))
+        //             existingJustifications.Remove(existingJustification);
+        //     }
 
-            // 2. Update or add justifications
-            foreach (var newJustification in newJustifications)
-            {
-                if (newJustification.Id != Guid.Empty && existingJustificationsById.TryGetValue(newJustification.Id, out var existingJustification))
-                {
-                    _mapper.Map(newJustification, existingJustification);
-                }
-                else
-                {
-                    existingJustifications.Add(_mapper.Map<Justification>(newJustification));
-                }
-            }
-        }
-
+        //     foreach (var newJustification in newJustifications)
+        //     {
+        //         if (newJustification.Id != Guid.Empty && existingJustificationsById.TryGetValue(newJustification.Id, out var existingJustification))
+        //         {
+        //             _mapper.Map(newJustification, existingJustification);
+        //         }
+        //         else
+        //         {
+        //             var justification = _mapper.Map<Justification>(newJustification);
+        //             justification.Id = Guid.NewGuid();
+        //             existingJustifications.Add(justification);
+        //         }
+        //     }
+        // }
 
         private void UpdateProductionLines(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
         {
@@ -504,14 +505,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var newProductionLinesById = newProductionLines.Where(p => p.Id != Guid.Empty).ToDictionary(p => p.Id);
             var existingProductionLinesById = existingProductionLines.ToDictionary(p => p.Id);
 
-            // 1. Remove deleted lines
             foreach (var existingLine in existingProductionLines.ToList())
             {
                 if (!newProductionLinesById.ContainsKey(existingLine.Id))
                     existingProductionLines.Remove(existingLine);
             }
 
-            // 2. Add or update lines
             foreach (var newLine in newProductionLines)
             {
                 if (newLine.Id != Guid.Empty && existingProductionLinesById.TryGetValue(newLine.Id, out var existingLine))
@@ -521,39 +520,44 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
                 else
                 {
-                    existingProductionLines.Add(_mapper.Map<ProductionLine>(newLine));
+                    var line = _mapper.Map<ProductionLine>(newLine);
+                    line.Id = Guid.NewGuid();
+                    UpdateProductionLineInputs(line, newLine.ProductionLineInputs);
+                    existingProductionLines.Add(line);
                 }
             }
         }
-        private void UpdateProductionLineInputs(ProductionLine line, List<ProductionLineInputUpdateDto> newInputs)
+        
+        private void UpdateProductionLineInputs(ProductionLine line, List<ProductionLineInputUpdateDto> newProductionLineInputs)
         {
-            var newProductionLineInputs = newInputs ?? new List<ProductionLineInputUpdateDto>();
-            var existingProductionLineInputs = line.ProductionLineInputs ??= new List<ProductionLineInput>();
+            var newInputs = newProductionLineInputs ?? new List<ProductionLineInputUpdateDto>();
+            var existingInputs = line.ProductionLineInputs ??= new List<ProductionLineInput>();
 
-            var newProductionLineInputsById = newProductionLineInputs.Where(i => i.Id != Guid.Empty).ToDictionary(i => i.Id);
-            var existingProductionLineInputsById = existingProductionLineInputs.ToDictionary(i => i.Id);
+            var newInputsById = newInputs.Where(i => i.Id != Guid.Empty).ToDictionary(i => i.Id);
+            var existingInputsById = existingInputs.ToDictionary(i => i.Id);
 
-            // Remove missing
-            foreach (var existingInput in existingProductionLineInputs.ToList())
+            // Remove deleted
+            foreach (var existingInput in existingInputs.ToList())
             {
-                if (!newProductionLineInputsById.ContainsKey(existingInput.Id))
-                    existingProductionLineInputs.Remove(existingInput);
+                if (!newInputsById.ContainsKey(existingInput.Id))
+                    existingInputs.Remove(existingInput);
             }
 
             // Add or update
-            foreach (var newInput in newProductionLineInputs)
+            foreach (var newInput in newInputs)
             {
-                if (newInput.Id != Guid.Empty && existingProductionLineInputsById.TryGetValue(newInput.Id, out var existingInput))
+                if (newInput.Id != Guid.Empty && existingInputsById.TryGetValue(newInput.Id, out var existingInput))
                 {
                     _mapper.Map(newInput, existingInput);
                 }
                 else
                 {
-                    existingProductionLineInputs.Add(_mapper.Map<ProductionLineInput>(newInput));
+                    var input = _mapper.Map<ProductionLineInput>(newInput);
+                    input.Id = Guid.NewGuid();
+                    existingInputs.Add(input);
                 }
             }
         }
-
 
         ///////// PCE Evaluation //////////////
         public async Task<PCEEvaluationReturnDto> GetValuation(Guid UserId, Guid Id)
@@ -569,7 +573,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .Include(e => e.Evaluator)
                                                 .Include(e => e.PCE)
                                                     .ThenInclude(pc => pc.PCECase)
-                                                        .ThenInclude(p => p.ProductionCapacities)
+                                                        // .ThenInclude(p => p.ProductionCapacities)
                                                 .FirstOrDefaultAsync(e => e.Id == Id);
                                                 // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
 
@@ -624,7 +628,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.Evaluator)
                                                     .Include(e => e.PCE)
                                                         .ThenInclude(pc => pc.PCECase)
-                                                            .ThenInclude(p => p.ProductionCapacities)
+                                                            // .ThenInclude(p => p.ProductionCapacities)
                                                     // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
@@ -680,7 +684,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                     .Include(e => e.Evaluator)
                                                     .Include(e => e.PCE)
                                                         .ThenInclude(pc => pc.PCECase)
-                                                            .ThenInclude(p => p.ProductionCapacities)
+                                                            // .ThenInclude(p => p.ProductionCapacities)
                                                     .Where(e => e.PCE.PCECaseId == PCECaseId) // && e.EvaluatorId == UserId)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
@@ -752,7 +756,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                         .Include(e => e.Evaluator)
                                                         .Include(e => e.PCE)
                                                             .ThenInclude(pc => pc.PCECase)
-                                                                .ThenInclude(p => p.ProductionCapacities)
+                                                                // .ThenInclude(p => p.ProductionCapacities)
                                                         .Where(e => e.PCEId == PCEId && (latestEvaluation == null || e.Id != latestEvaluation.Id))
                                                         .ToListAsync();
 
