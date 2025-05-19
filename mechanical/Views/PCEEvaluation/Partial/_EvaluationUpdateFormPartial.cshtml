@@ -350,7 +350,6 @@
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Update Documents</h5>
                 </div>
-
                 <div class="form-group">
                     <label class="form-label">@Html.DisplayNameFor(model => model.WitnessForm) <span class="text-danger">*</span></label>
                     <div class="table-responsive">
@@ -361,7 +360,7 @@
                                     <th class="col-md-2"></th>
                                 </tr>
                             </thead>
-                            <tbody id="file-list1">
+                            <tbody id="file-list0">
                                 @if (Model.WitnessForm == null)
                                 {
                                     <tr id="no-witness-form" class="text-center file-row" data-file-id="0">
@@ -376,18 +375,17 @@
                                         <td class="text-truncate">@Model.WitnessForm.Name</td>
                                         <td>
                                             <a href="@Url.Action("ViewFile", "UploadFile", new { id = Model.WitnessForm.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
-                                            <a href="#" data-file-id="@Model.WitnessForm.Id" onclick="deleteFile('@Model.WitnessForm.Id', event)" style="color: red;"><i class="fas fa-trash">Delete</i></a>
+                                            <a href="#" data-file-id="@Model.WitnessForm.Id" onclick="deleteFile('@Model.WitnessForm.Id', event)" style="color: red;"><i class="fas fa-trash"> Delete</i></a>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" id="new-witness-form-upload" style="@(Model.WitnessForm == null ? "" : "display: none;")">
                         <input asp-for="NewWitnessForm" type="file" class="form-control" />
                         <span class="input-group-text"><i class="fas fa-upload"></i></span>
                     </div>
-                    <small class="form-text text-muted">Update uploaded signed witness form. Leave empty to keep existing file</small>
                     <span asp-validation-for="NewWitnessForm" class="text-danger small"></span>
                 </div>
                 <div class="form-group">
@@ -397,13 +395,13 @@
                             <thead>
                                 <tr>
                                     <th class="col-md-10">File Name</th>
-                                    <th class="col-md-2"></th>
+                                <th class="col-md-2"></th>
                                 </tr>
                             </thead>
-                            <tbody id="file-list2">
+                            <tbody id="file-list1">
                                 @if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
                                 {
-                                    <tr id="no-diagram" class="text-center file-row" data-file-id="0">
+                                    <tr id="no-process-diagram" class="text-center file-row" data-file-id="0">
                                         <td colspan="2">
                                             <h6>No production process flow diagram</h6>
                                         </td>
@@ -442,10 +440,10 @@
                                     <th class="col-md-2"></th>
                                 </tr>
                             </thead>
-                            <tbody id="file-list1">
+                            <tbody id="file-list2">
                                 @if (Model.SupportingEvidences == null || !Model.SupportingEvidences.Any())
                                 {
-                                    <tr id="no-evidence" class="text-center file-row" data-file-id="0">
+                                    <tr id="no-supporting-evidence" class="text-center file-row" data-file-id="0">
                                         <td colspan="2">
                                             <h6>No supporting evidence</h6>
                                         </td>
