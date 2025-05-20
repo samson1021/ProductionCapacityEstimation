@@ -1,330 +1,528 @@
-@using mechanical.Models.Dto.UploadFileDto
+@* @using mechanical.Models.Dto.UploadFileDto *@
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
-@using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
+@model PCEEvaluationUpdateDto
+
 @{
-    var myProduction = ViewData["Production"] as ProductionReturnDto;
+    var justificationReasons = Enum.GetValues(typeof(JustificationReason)).Cast<JustificationReason>();
+    var justificationList = Model?.Justifications;
 }
-
 <div class="row">
     <div class="card border-0 shadow-lg mb-4">
-        <div class="card-body p-4">
-            <!-- Capacity Information -->
-            <div class="border my-2 p-2 position-relative shadow custom-form">
-                <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Capacity Information </h6></div>
+        <div class="card-body p-2">
+
+            <!-- Capacity Information Section -->
+            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+                <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
+                    <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Capacity Information</h5>
+                </div>
                 <div class="row mt-3">
-                    <div class="form-group col-lg-4">
-                        <label>Machine Name</label>
-                        <input id="MachineName" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.MachineName)" required>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">Machine Name</label>
+                        <input asp-for="MachineName" type="text" type="text" class="form-control form-control-sm" required>
                     </div>
-                    <div class="form-group col-lg-4">
-                        <label>Country of Origin</label>
-                        <input id="CountryOfOrigin" type="text" type="text" class="form-control form-control-sm" value="@(myProduction.CountryOfOrigin)" required>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">Country of Origin</label>
+                        <input asp-for="CountryOfOrigin" type="text" type="text" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger small">*</span></label>
+                        <select asp-for="ProductionLineType" class="form-select production-line-type" 
+                            asp-items="Html.GetEnumSelectList<ProductionLineType>()" required></select>
+                        <span asp-validation-for="ProductionLineType" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <span class="text-danger small">*</span></label>
+                        @*  <select asp-for="TechnicalObsolescenceStatus" class="form-select" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()" required></select> *@
+                        <select asp-for="TechnicalObsolescenceStatus" class="form-select" required>
+                            <option value="Current">Current</option>
+                            <option value="ObsoleteSoon">Obsolete Soon</option>
+                            <option value="Obsolete">Obsolete</option>
+                        </select>
+                        <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger small"></span>
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="form-group col-lg-4">
-                        <label>@Html.DisplayNameFor(model => model.ProductionLineType) <i class="text-danger">*</i></label>
-                        <select asp-for="ProductionLineType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<ProductionLineType>()"></select>
-                        <span asp-validation-for="ProductionLineType" class="text-danger"></span>
+                    <div class="form-group col-md-4">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <span class="text-danger small">*</span></label>
+                        <select asp-for="MachineFunctionalityStatus" class="form-select" 
+                                asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()" required></select>
+                        <span asp-validation-for="MachineFunctionalityStatus" class="text-danger small"></span>
                     </div>
-                    <div class="form-group col-lg-4">
-                        <label>@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <i class="text-danger">*</i></label>
-                        <input asp-for="TechnicalObsolescenceStatus" class="form-control form-control-sm" required />
-                        <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger"></span>
+                    <div class="form-group col-md-4" id="functionalityReasonRow" @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? "" : "style=\"display: none;\"")>
+                        <label class="form-label">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <span class="text-danger small">*</span></label>
+                        <select asp-for="MachineNonFunctionalityReason" class="form-select" 
+                                asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()"></select>
+                        <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger small"></span>
                     </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="form-group col-lg-4">
-                        <label>@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <i class="text-danger">*</i></label>
-                        <select asp-for="MachineFunctionalityStatus" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()"></select>
-                        <span asp-validation-for="MachineFunctionalityStatus" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-lg-4" id="functionalityReasonRow" @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? "" : "style=\"display: none;\"")>
-                        <label>@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <i class="text-danger">*</i></label>
-                        <select asp-for="MachineNonFunctionalityReason" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()"></select>
-                        <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-lg-4" id="otherReasonRow" @(Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other ? "" : "style=\"display: none;\"")>
-                        <label>@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <i class="text-danger">*</i></label>
-                        <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control form-control-sm"></textarea>
-                        <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger"></span>
+                    <div class="form-group col-md-4" id="otherReasonRow" @(Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other ? "" : "style=\"display: none;\"")>
+                        <label class="form-label">@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <span class="text-danger small">*</span></label>
+                        <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control" rows="1"></textarea>
+                        <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger small"></span>
                     </div>
                 </div>
             </div>
+            
+            <!-- Input-Output Data Toggle -->
+            <div class="form-check form-switch my-4">
+                <input class="form-check-input" type="checkbox" role="switch"
+                    asp-for="HasInputOutputData" id="hasInputOutputData">
+                <label class="form-check-label" for="hasInputOutputData">
+                    <h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5>
+                </label>
+            </div>
 
-            <!-- Production Line Evaluations -->
-            <div class="border my-2 p-2 position-relative shadow custom-form">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Production Line Evaluation</h6></div>
-                    <button type="button" id="addProductionLineBtn" class="btn btn-sm btn-primary ms-auto mt-3">
-                        <i class="fas fa-plus"></i> Add Production Line
+            <!-- No Input/Output Data Justification Section -->
+            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form" id="justificationSection"  @(Model.HasInputOutputData ? "style=\"display: none;\"" : "")>
+                <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
+                    <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Justifications</h5>
+                </div>
+                <div class="mt-4" id="justificationContainer">
+                    @{
+                        foreach (var reason in justificationReasons)
+                        {
+                            var justification = justificationList.FirstOrDefault(j => j.Reason == reason);
+                            var displayAttribute = reason.GetType().GetField(reason.ToString())
+                                                    .GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                    .FirstOrDefault() as DisplayAttribute;
+                            <div class="form-check mb-2" data-reason="@reason">
+                                <input type="checkbox"
+                                    class="form-check-input justification-checkbox"
+                                    data-reason="@reason"
+                                    data-display="@(displayAttribute?.Name ?? reason.ToString())"
+                                    @(justification != null ? "checked" : "") />
+                                <label class="form-check-label">@(displayAttribute?.Name ?? reason.ToString())</label>
+                                <textarea class="form-control justification-text mt-2"
+                                    style="@(reason == JustificationReason.Others && justification != null ? "" : "display:none;")"
+                                    placeholder="@(reason == JustificationReason.Others ? "Enter other justification" : null)"
+                                            @(reason != JustificationReason.Others && justification == null ? "hidden" : null)
+                                            @(reason != JustificationReason.Others && justification == null ? "disabled" : null)
+                                    data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea>
+                                    @* data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea> *@
+                            </div>
+                        }
+                    }
+                </div>
+                <span asp-validation-for="Justifications" class="text-danger small"></span>
+                
+                <!-- Inject serialized checked justifications here -->
+                <div id="justificationHiddenFields"></div>
+            </div>
+
+            <!-- Production Line Evaluation Section -->
+            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form" id="input-outputs-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
+                        <h5 class="mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Production Line Evaluation</h5>
+                    </div>
+                    <button type="button" id="addProductionLineBtn" class="btn btn-primary ms-auto mt-3">
+                        <i class="fas fa-plus me-1"></i> Add Production Line
                     </button>
                 </div>
-                <div id="productionLineContainer">
+                <div id="productionLineContainer" class="mt-4">
                     @if (Model.ProductionLines != null && Model.ProductionLines.Any())
                     {
+                        
                         for (var i = 0; i < Model.ProductionLines.Count(); i++)
                         {
-                            <div class="card shadow-sm production-line-evaluation-item production-line-form border my-2 p-2 position-relative shadow mt-4 custom-form" data-index="@i">
-                                <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Production Line @(i + 1)</h6></div>
-                                <div class="production-line-form my-0 p-0 mt-4">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Machine/Equipment Name <span class="text-danger">*</span></label>
-                                                <input asp-for="ProductionLines[i].LineName" class="form-control form-control-sm" required />
-                                                <span asp-validation-for="ProductionLines[i].LineName" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Output Type <span class="text-danger">*</span></label>
-                                                <input asp-for="ProductionLines[i].OutputType" class="form-control form-control-sm" required />
-                                                <span asp-validation-for="ProductionLines[i].OutputType" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Output Phase <span class="text-danger">*</span></label>
-                                                <select asp-for="ProductionLines[i].OutputPhase" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<OutputPhase>()" required>
-                                                    <option value="" disabled selected>Select Phase</option>
-                                                </select>
-                                                <span asp-validation-for="ProductionLines[i].OutputPhase" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                    </div>
+                            
+                            var lineUnit = Model.ProductionLines[i].ProductionUnit == null ? "units" : (Model.ProductionLines[i].ProductionUnit.GetType()
+                                            .GetField(Model.ProductionLines[i].ProductionUnit.ToString())
+                                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                            .OfType<DisplayAttribute>()
+                                            .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionUnit.ToString().ToLower()) + "s";
+                            object totlaInputUnit = "units";
 
-                                    <div class="row mt-2">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Production Unit <span class="text-danger">*</span></label>
-                                                <select asp-for="ProductionLines[i].ProductionUnit" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<MeasurementUnit>()" required>
-                                                    <option value="" disabled selected>Select Unit</option>
-                                                </select>
-                                                <span asp-validation-for="ProductionLines[i].ProductionUnit" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Input/Output Conversion <span class="text-danger">*</span></label>
-                                                <input asp-for="ProductionLines[i].ConversionRatio" class="form-control form-control-sm" required />
-                                                <span asp-validation-for="ProductionLines[i].ConversionRatio" class="text-danger"></span>
-                                            </div>
-                                        </div>
-
-                                        <div class="inputs-container">
-                                            @if (Model.ProductionLines[i].ProductionLineInputs != null && Model.ProductionLines[i].ProductionLineInputs.Any()) 
-                                            {
-                                                for (int j = 0; j < Model.ProductionLines[i].ProductionLineInputs.Count(); j++)
-                                                {
-                                                <div class="input-item row">
-                                                    <div class="col-md-3">
-                                                        <label>Input Type</label>
-                                                        <input asp-for="ProductionLines[i].ProductionLineInputs[j].Type" 
-                                                            class="form-control form-control-sm" />
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label>Quantity</label>
-                                                        <input asp-for="ProductionLines[i].ProductionLineInputs[j].Quantity" 
-                                                            class="form-control form-control-sm" />
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label>Unit</label>
-                                                        <select asp-for="ProductionLines[i].ProductionLineInputs[j].Unit" 
-                                                                class="form-control form-control-sm" 
-                                                                asp-items="Html.GetEnumSelectList<MeasurementUnit>()">
-                                                            <option value="">Select Unit</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-1">
-                                                        <button type="button" 
-                                                                class="btn btn-danger btn-sm mt-4 remove-input">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            }
-                                        } 
-                                        </div> 
-
-                                        <button type="button" class="btn btn-sm btn-secondary add-input-btn">
-                                            Add Input
+                            <div class="card shadow-sm production-line-form border mb-4 position-relative production-line-evaluation-item">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                                    <h6 class="line-number mb-0">
+                                        <i class="fas fa-industry me-2 text-primary"></i>Production Line<span class="line-counter ms-1 d-inline">@Html.Raw(i + 1)</span>
+                                    </h6>
+                                    <div class="ms-auto">
+                                        <button type="button" class="btn btn-sm btn-danger px-2 py-1 remove-line-btn"
+                                                title="Remove this production line"
+                                                @(Model.ProductionLines.Count <= 1 ? "style=display:none" : "")>
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </div>
 
-                                <button type="button"
-                                        class="btn btn-sm btn-danger px-2 py-1 remove-line-btn position-absolute top-0 end-0 m-2"
-                                        title="Remove this production line"
-                                        @(Model.ProductionLines.Count() <= 1 ? "style=display:none" : "")>
-                                    <i class="fas fa-times fa-md"></i>
-                                </button>
+                                <div class="card-body">
+                                    <!-- Basic Information Row -->
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Machine/Equipment Name <span class="text-danger">*</span></label>
+                                            <input asp-for="ProductionLines[i].LineName" 
+                                                class="form-control" required maxlength="100"
+                                                placeholder="Enter machine name" />
+                                            <span asp-validation-for="ProductionLines[i].LineName" class="text-danger small"></span>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Actual Capacity <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input asp-for="ProductionLines[i].ActualCapacity" 
+                                                            class="form-control capacity-input"
+                                                            type="number" step="0.01" min="0"
+                                                            placeholder="0.00" required />
+                                                        <span class="input-group-text production-unit-label">@lineUnit</span>
+                                                    </div>
+                                                    <span asp-validation-for="ProductionLines[i].ActualCapacity" class="text-danger small"></span>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Design Capacity</label>
+                                                    <div class="input-group">
+                                                        <input asp-for="ProductionLines[i].DesignCapacity" 
+                                                            class="form-control capacity-input"
+                                                            type="number" step="0.01" min="0"
+                                                            placeholder="0.00" />
+                                                        <span class="input-group-text production-unit-label">@lineUnit</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Attainable Capacity</label>
+                                                    <div class="input-group">
+                                                        <input asp-for="ProductionLines[i].AttainableCapacity" 
+                                                            class="form-control capacity-input"
+                                                            type="number" step="0.01" min="0"
+                                                            placeholder="0.00" />
+                                                        <span class="input-group-text production-unit-label">@lineUnit</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Production Details Row -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Output Type <span class="text-danger">*</span></label>
+                                            <input asp-for="ProductionLines[i].OutputType" 
+                                                class="form-control" required 
+                                                placeholder="Type of output produced" />
+                                            <span asp-validation-for="ProductionLines[i].OutputType" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Production Unit <span class="text-danger">*</span></label>
+                                                    <select asp-for="ProductionLines[i].ProductionUnit" 
+                                                            class="form-select production-unit-dropdown" asp-items="Html.GetEnumSelectList<MeasurementUnit>()" required>
+                                                        <option value="" disabled selected>Select Unit</option>
+                                                    </select>
+                                                    <span asp-validation-for="ProductionLines[i].ProductionUnit" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Production Measurement <span class="text-danger">*</span></label>
+                                                    <select asp-for="ProductionLines[i].ProductionMeasurement" 
+                                                            class="form-select" asp-items="Html.GetEnumSelectList<ProductionMeasurement>()" required>
+                                                        <option value="" disabled selected>Select Measurement</option>
+                                                    </select>
+                                                    <span asp-validation-for="ProductionLines[i].ProductionMeasurement" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-4 output-phase-container" style="display: none;">
+                                                    <label class="form-label">Output Phase <span class="text-danger">*</span></label>
+                                                    <select asp-for="ProductionLines[i].OutputPhase"
+                                                            class="form-select output-phase"
+                                                            data-production-line-type="ProductionLines[i].ProductionLineType"
+                                                            asp-items="Html.GetEnumSelectList<OutputPhase>()">
+                                                        <option value="" disabled selected>Select Phase</option>
+                                                    </select>
+                                                    <span asp-validation-for="ProductionLines[i].OutputPhase" class="text-danger small"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Inputs Section -->
+                                    <div class="inputs-section mt-4 p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="mb-0"><i class="fas fa-boxes me-2 text-primary"></i>Input Materials</h6>
+                                            <button type="button" class="btn btn-sm btn-primary add-input-btn">
+                                                <i class="fas fa-plus me-1"></i> Add Input
+                                            </button>
+                                        </div>
+                                        <div class="inputs-container">
+                                            @if (Model.ProductionLines[i].ProductionLineInputs != null && Model.ProductionLines[i].ProductionLineInputs.Any())
+                                            {
+                                                for (int j = 0; j < Model.ProductionLines[i].ProductionLineInputs.Count; j++)
+                                                {
+                                                    var lineInputUnit = Model.ProductionLines[i].ProductionLineInputs[j].Unit == null ? "units" : (Model.ProductionLines[i].ProductionLineInputs[j].Unit.GetType()
+                                                                    .GetField(Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString())
+                                                                    ?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                                                    .OfType<DisplayAttribute>()
+                                                                    .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString().ToLower()) + "s";
+                                                    totlaInputUnit = lineInputUnit;
+                                                    <div class="input-item card mb-2">
+                                                        <div class="card-body py-2">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <input asp-for="ProductionLines[i].ProductionLineInputs[j].Type"
+                                                                        class="form-control form-control-sm input-type"
+                                                                        placeholder="Material Type" required />
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="input-group input-group-sm">
+                                                                        <input asp-for="ProductionLines[i].ProductionLineInputs[j].Quantity"
+                                                                            class="form-control input-quantity"
+                                                                            type="number" step="0.01" min="0"
+                                                                            placeholder="0.00" required />
+                                                                        <span class="input-group-text total-input-unit-label">@lineInputUnit</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <select asp-for="ProductionLines[i].ProductionLineInputs[j].Unit"
+                                                                            class="form-select form-select-sm input-unit-dropdown"
+                                                                            asp-items="Html.GetEnumSelectList<MeasurementUnit>()" required>
+                                                                        <option value="" disabled selected>Select Unit</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-2 text-end">
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-input">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="alert alert-info">No input materials added yet.</div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Calculations Row -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-3">
+                                            <div class="form-check form-switch my-2">
+                                                <input type="hidden" name="ProductionLines[@i].IsBottleneck" value="false" />
+                                                <input asp-for="ProductionLines[i].IsBottleneck"
+                                                    class="form-check-input is-bottleneck"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    value="true" />
+                                                <label class="form-check-label">
+                                                    <h6><strong>Is Bottleneck?</strong></h6>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 offset-md-3 total-input-conversion-ratio-container">
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Total Input</label>
+                                                    <div class="input-group">
+                                                        <input asp-for="ProductionLines[i].TotalInput"
+                                                            class="form-control total-input"
+                                                            type="number" step="0.01" readonly />
+                                                        <span class="input-group-text input-unit-label">@totlaInputUnit</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Conversion Ratio</label>
+                                                    <div class="input-group">
+                                                        <input asp-for="ProductionLines[i].ConversionRatio"
+                                                            class="form-control conversion-ratio"
+                                                            type="number" step="0.01" readonly />
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         }
                     }
                 </div>
             </div>
 
-            <!-- Inspection Information -->
-            <div class="border my-2 p-2 position-relative shadow custom-form">
-                <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Inspection Information </h6></div>
-                <div class="row mt-3">
-                    <div class="form-group col-lg-6">
-                        <label>@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity)</label>
-                        <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control form-control-sm"></textarea>
-                        <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label>@Html.DisplayNameFor(model => model.SurveyRemark)</label>
-                        <textarea asp-for="SurveyRemark" class="form-control form-control-sm"></textarea>
-                        <span asp-validation-for="SurveyRemark" class="text-danger"></span>
-                    </div>
+            <!-- Update Documents -->
+            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+                <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
+                    <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Update Documents</h5>
                 </div>
 
-                <div class="row mt-3">
-                    <div class="form-group col-lg-3">
-                        <label>@Html.DisplayNameFor(model => model.InspectionPlace) <i class="text-danger">*</i></label>
-                        <input asp-for="InspectionPlace" class="form-control form-control-sm" required />
-                        <span asp-validation-for="InspectionPlace" class="text-danger"></span>
+                <div class="form-group">
+                    <label class="form-label">@Html.DisplayNameFor(model => model.WitnessForm) <span class="text-danger">*</span></label>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-10">File Names</th>
+                                    <th class="col-md-2"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list1">
+                                @if (Model.WitnessForm == null)
+                                {
+                                    <tr id="no-witness-form" class="text-center file-row" data-file-id="0">
+                                        <td colspan="2">
+                                            <h6>No witness form submitted</h6>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr id="file-@Model.WitnessForm.Id" class="file-row" data-file-id="@Model.WitnessForm.Id">
+                                        <td class="text-truncate">@Model.WitnessForm.Name</td>
+                                        <td>
+                                            <a href="@Url.Action("ViewFile", "UploadFile", new { id = Model.WitnessForm.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
+                                            <a href="#" data-file-id="@Model.WitnessForm.Id" onclick="deleteFile('@Model.WitnessForm.Id', event)" style="color: red;"><i class="fas fa-trash">Delete</i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="form-group col-lg-3">
-                        <label>@Html.DisplayNameFor(model => model.InspectionDate) <i class="text-danger">*</i></label>
-                        <input asp-for="InspectionDate" class="form-control form-control-sm" type="date" value="@(Model.InspectionDate.ToString("yyyy-MM-dd"))" required />
-                        @Html.ValidationMessageFor(m => m.InspectionDate)
-                        <span asp-validation-for="InspectionDate" class="text-danger"></span>
+                    <div class="input-group">
+                        <input asp-for="NewWitnessForm" type="file" class="form-control" />
+                        <span class="input-group-text"><i class="fas fa-upload"></i></span>
                     </div>
-                    <div class="form-group col-lg-3">
-                        <label>Checking Started At <i class="text-danger">*</i></label>
-                        <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" type="datetime-local" value="@Model.TimeConsumedToCheck.Start.ToString("yyyy-MM-ddTHH:mm:ss")" required />
-                        <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger"></span>
+                    <small class="form-text text-muted">Update uploaded signed witness form. Leave empty to keep existing file</small>
+                    <span asp-validation-for="NewWitnessForm" class="text-danger small"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">@Html.DisplayNameFor(model => model.ProductionProcessFlowDiagrams) </label>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-10">File Name</th>
+                                    <th class="col-md-2"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list2">
+                                @if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
+                                {
+                                    <tr id="no-diagram" class="text-center file-row" data-file-id="0">
+                                        <td colspan="2">
+                                            <h6>No production process flow diagram</h6>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var file in Model.ProductionProcessFlowDiagrams)
+                                    {
+                                        <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
+                                            <td class="text-truncate">@file.Name</td>
+                                            <td>
+                                                <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
+                                                <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;"><i class="fas fa-trash"> Delete</i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="form-group col-lg-3">
-                        <label>Checking Ended At <i class="text-danger">*</i></label>
-                        <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" type="datetime-local" value="@Model.TimeConsumedToCheck.End.ToString("yyyy-MM-ddTHH:mm:ss")" required />
-                        <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger"></span>
+                    <div class="input-group">
+                        <input asp-for="NewProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
+                        <span class="input-group-text"><i class="fas fa-project-diagram"></i></span>
                     </div>
+                    <small class="form-text text-muted">Multiple files allowed</small>
+                    <span asp-validation-for="NewProductionProcessFlowDiagrams" class="text-danger small"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">@Html.DisplayNameFor(model => model.SupportingEvidences) </label>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-10">File Names</th>
+                                    <th class="col-md-2"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list1">
+                                @if (Model.SupportingEvidences == null || !Model.SupportingEvidences.Any())
+                                {
+                                    <tr id="no-evidence" class="text-center file-row" data-file-id="0">
+                                        <td colspan="2">
+                                            <h6>No supporting evidence</h6>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var file in Model.SupportingEvidences)
+                                    {
+                                        <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
+                                            <td class="text-truncate">@file.Name</td>
+                                            <td>
+                                                <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
+                                                <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;"><i class="fas fa-trash">Delete</i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="input-group">
+                        <input asp-for="NewSupportingEvidences" type="file" class="form-control" multiple />
+                        <span class="input-group-text"><i class="fas fa-file"></i></span>
+                    </div>
+                    <small class="form-text text-muted">Multiple files allowed</small>
+                    <span asp-validation-for="NewSupportingEvidences" class="text-danger small"></span>
                 </div>
             </div>
 
-            <!-- Update Documents -->
-            <div class="border my-2 p-2 position-relative shadow custom-form"></div>
-                <div class="bg-white px-2 position-absolute top-0 start-50 translate-middle"><h6>Update Documents </h6></div>
-                <div class="row">
-                    <div class="form-group col-xl-6">
-                        <label>Witness Form<i class="text-danger">*</i></label>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="col-md-10">File Names</th>
-                                        <th class="col-md-2">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="file-list1">
-                                    @if (Model.WitnessForm == null)
-                                    {
-                                        <tr id="no-witness-form" class="text-center file-row" data-file-id="0">
-                                            <td colspan="2">
-                                                <h6>No witness form submitted</h6>
-                                            </td>
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        <tr id="file-@Model.WitnessForm.Id" class="file-row" data-file-id="@Model.WitnessForm.Id">
-                                            <td class="text-truncate">@Model.WitnessForm.Name</td>
-                                            <td>
-                                                <a href="@Url.Action("ViewFile", "UploadFile", new { id = Model.WitnessForm.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
-                                                <a href="#" data-file-id="@Model.WitnessForm.Id" onclick="deleteFile('@Model.WitnessForm.Id', event)" style="color: red;"><i class="fas fa-trash">  Delete</i></a>
-                                            </td>
-                                        </tr>
-                                        
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <input asp-for="NewSupportingEvidences" type="file" class="form-control" multiple />
-                        <span asp-validation-for="NewSupportingEvidences" class="text-danger"></span>
+            <!-- Inspection Information Section -->
+            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+                <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-check me-2 text-primary"></i>Inspection Information</h5>
+                </div>
+
+                <!-- Remarks and Factors -->
+                <div class="row mt-3">
+                    <div class="form-group col-md-6">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity) </label>
+                        <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control" rows="3" 
+                                    placeholder="Describe any factors affecting production capacity"></textarea>
+                        <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger small"></span>
                     </div>
-                    <div class="form-group col-xl-6">
-                        <label>Production Process Flow Diagrams</label>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="col-md-10">File Name</th>
-                                        <th class="col-md-2">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="file-list2">
-                                    @if (Model.ProductionProcessFlowDiagrams == null || !Model.ProductionProcessFlowDiagrams.Any())
-                                    {
-                                        <tr id="no-diagram" class="text-center file-row" data-file-id="0">
-                                            <td colspan="2">
-                                                <h6>No production process flow diagram</h6>
-                                            </td>
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var file in Model.ProductionProcessFlowDiagrams)
-                                        {
-                                            <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
-                                                <td class="text-truncate">@file.Name</td>
-                                                <td>
-                                                    <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
-                                                    <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;"><i class="fas fa-trash"> Delete</i></a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <input asp-for="NewProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
-                        <span asp-validation-for="NewProductionProcessFlowDiagrams" class="text-danger"></span>
+                    <div class="form-group col-md-6">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.SurveyRemark) </label>
+                        <textarea asp-for="SurveyRemark" class="form-control" rows="3"
+                                    placeholder="Enter any additional survey remarks"></textarea>
+                        <span asp-validation-for="SurveyRemark" class="text-danger small"></span>
                     </div>
-                    <div class="form-group col-xl-6">
-                        <label>Supporting Evidences</label>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="col-md-10">File Names</th>
-                                        <th class="col-md-2">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="file-list1">
-                                    @if (Model.SupportingEvidences == null || !Model.SupportingEvidences.Any())
-                                    {
-                                        <tr id="no-evidence" class="text-center file-row" data-file-id="0">
-                                            <td colspan="2">
-                                                <h6>No supporting evidence</h6>
-                                            </td>
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var file in Model.SupportingEvidences)
-                                        {
-                                            <tr id="file-@file.Id" class="file-row" data-file-id="@file.Id">
-                                                <td class="text-truncate">@file.Name</td>
-                                                <td>
-                                                    <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" target="_blank"><i class="fas fa-eye"> View</i></a> |
-                                                    <a href="#" data-file-id="@file.Id" onclick="deleteFile('@file.Id', event)" style="color: red;"><i class="fas fa-trash">  Delete</i></a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <input asp-for="NewSupportingEvidences" type="file" class="form-control" multiple />
-                        <span asp-validation-for="NewSupportingEvidences" class="text-danger"></span>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="form-group col-md-3">
+                        <label class="form-label">Inspection Started At <span class="text-danger">*</span></label>
+                        <input asp-for="TimeConsumedToCheck.Start" class="form-control form-control-sm" 
+                                type="datetime-local" value="@Model.TimeConsumedToCheck.Start.ToString("yyyy-MM-ddTHH:mm:ss")" required />
+                        <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">Inspection Ended At <span class="text-danger">*</span></label>
+                        <input asp-for="TimeConsumedToCheck.End" class="form-control form-control-sm" 
+                                type="datetime-local" value="@Model.TimeConsumedToCheck.End.ToString("yyyy-MM-ddTHH:mm:ss")" required />
+                        <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.InspectionDate) <span class="text-danger">*</span></label>
+                        <input asp-for="InspectionDate" class="form-control" 
+                                type="date" value="@(Model.InspectionDate.ToString("yyyy-MM-dd"))" required />
+                        @Html.ValidationMessageFor(m => m.InspectionDate)
+                        <span asp-validation-for="InspectionDate" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.InspectionPlace) <span class="text-danger">*</span></label>
+                        <input asp-for="InspectionPlace" class="form-control" required 
+                                placeholder="Location of inspection" />
+                        <span asp-validation-for="InspectionPlace" class="text-danger small"></span>
                     </div>
                 </div>
             </div>

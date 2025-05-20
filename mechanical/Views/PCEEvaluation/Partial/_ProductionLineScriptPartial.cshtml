@@ -2,6 +2,7 @@
 
 <script>
     $(document).ready(function () {
+        const measurementUnits = @Html.Raw(Json.Serialize(((MeasurementUnit[])Enum.GetValues(typeof(MeasurementUnit))).ToDictionary(e => (int)e, e => Enum.GetName(typeof(MeasurementUnit), e))));
         const $container = $('#productionLineContainer');
 
         // Add production line
@@ -59,7 +60,8 @@
 
             // Calculate totals when input changes
             $newInput.find('.input-quantity').on('input', calculateTotals);
-            $newInput.find('.input-unit').on('change', calculateTotals);
+            $newInput.find('.input-unit-dropdown').on('change', calculateTotals);
+            @* $newInput.find('.input-unit-dropdown').on('change', updateUnitLabels); *@
 
             calculateTotals();
         }
@@ -109,7 +111,7 @@
                 $line.find('.input-quantity').each(function() {
                     const $input = $(this);
                     const val = parseFloat($input.val());
-                    const unit = $input.closest('.input-item').find('.input-unit').val();
+                    const unit = $input.closest('.input-item').find('.input-unit-dropdown').val();
 
                     if (unit) {
                         units.add(unit);
@@ -384,12 +386,60 @@
         });
         
         // Initialize the first line's inputs
-        addProductionLine();
-        
+        try {
+            if ($('#productionLineContainer .production-line-evaluation-item').length === 0) {
+                addProductionLine();
+            }
+        } catch (error) {
+            console.error('Error initializing the first production line:', error);
+        }
+
         // Initialize validation
         $.validator.unobtrusive.parse(document);
 
         // Initialize tooltips
         $('[title]').tooltip();
+
+        // Update unit labels based on selected dropdown values
+        function updateUnitLabels() {
+            $('.production-line-form').each(function () {
+                const $line = $(this);
+
+                // Update input unit labels
+                $line.find('.input-item').each(function () {
+                    const $inputItem = $(this);
+                    const selectedInputUnit = $inputItem.find('.input-unit-dropdown').val();
+                    const displayInputUnitName = selectedInputUnit && measurementUnits[selectedInputUnit] && measurementUnits[selectedInputUnit] != "Other" ? measurementUnits[selectedInputUnit].toLowerCase() + "s" : 'units';
+                    $inputItem.find('.input-unit-label').text(displayInputUnitName);
+                });
+
+                // Update production unit label
+                const selectedTotalUnit = $line.find('.input-unit-dropdown').val();
+                const displayUnitName = selectedTotalUnit && measurementUnits[selectedTotalUnit] && measurementUnits[selectedTotalUnit] != "Other" ? measurementUnits[selectedTotalUnit].toLowerCase() + "s" : 'units';
+                $line.find('.total-input-unit-label').text(displayUnitName);
+
+                const selectedProductionUnit = $line.find('.production-unit-dropdown').val();
+                const displayName = selectedProductionUnit && measurementUnits[selectedProductionUnit] && measurementUnits[selectedProductionUnit] != "Other" ? measurementUnits[selectedProductionUnit].toLowerCase() + "s" : 'units';
+                $line.find('.production-unit-label').text(displayName);
+            });
+        }
+
+        // Attach event listeners to update unit labels on change
+        $container.on('change', '.production-unit-dropdown', function () {
+            updateUnitLabels();
+        });
+
+        // Attach event listeners to update unit labels on change
+        $container.on('change', '.input-unit-dropdown', function () {
+            updateUnitLabels();
+            calculateTotals();
+        });
+
+        $container.on('input', '.input-quantity', function () {
+            calculateTotals();
+        });
+
+        // Call updateUnitLabels on page load to initialize labels
+        updateUnitLabels();
     });
 </script>

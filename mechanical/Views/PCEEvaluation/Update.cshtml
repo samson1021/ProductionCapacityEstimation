@@ -1,9 +1,7 @@
-@using mechanical.Models.Dto.UploadFileDto
-@using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationUpdateDto
+@model PCEEvaluationUpdateDto
 @{
     ViewData["Title"] = ViewBag.Title as string;
     var ReturnPost = new ReturnedProductionPostDto
@@ -13,7 +11,6 @@
     };
     ViewData["ReturnPost"] = ReturnPost;
 }
-
 <section class="content-header" style="padding-top:5px;padding-bottom:0px;">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -39,12 +36,32 @@
                 </h3>
             </div>
             <div class="card-body">
+                <div class="error-container">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Error:</strong> @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    @* @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <ul>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    } *@
+                </div>
                 <form method="post" enctype="multipart/form-data" asp-action="Update" id="evaluationForm">
                     
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)
                     <input asp-for="PCEId" value='@Model.PCEId' type="hidden" />
-                    <input asp-for="DeletedFileIds" id="DeletedFileIds" type="hidden" />
+                    <div id="deleted-files-container"></div>
 
                     @await Html.PartialAsync("Partial/_EvaluationUpdateFormPartial")
 

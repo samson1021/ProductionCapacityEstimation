@@ -180,12 +180,12 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                     _cbeContext.PCECases.Update(production.PCECase);
                 }
 
-                //var allNew = production.PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "New") ?? false;
-                //if (allNew)
-                //{
-                //    production.PCECase.Status = "New";
-                //    _cbeContext.PCECases.Update(production.PCECase);
-                //}
+                var allNew = production.PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "New") ?? false;
+                if (allNew)
+                {
+                   production.PCECase.Status = "New";
+                   _cbeContext.PCECases.Update(production.PCECase);
+                }
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
