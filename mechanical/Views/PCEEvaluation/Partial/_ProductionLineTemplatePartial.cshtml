@@ -2,173 +2,175 @@
 
 <!-- Production Line Template -->
 <template id="productionLineTemplate">
-    <div class="card shadow-sm production-line-form border mb-4 position-relative production-line-evaluation-item">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
-            <h6 class="line-number mb-0">
-                <i class="fas fa-industry me-2 text-primary"></i>Production Line<span class="line-counter ms-1 d-inline">@Html.Raw("__INDEX_1__")</span>
-            </h6>
-            <div class="ms-auto">
-                <button type="button"
-                    class="btn btn-sm btn-danger px-2 py-1 remove-line-btn"
-                    title="Remove this production line">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
-        </div>
-        <div class="card-body">
-            <!-- Basic Information Row -->
-            <div class="row">
-                <div class="col-md-4">
-                    <label class="form-label">Machine/Equipment Name <span class="text-danger">*</span></label>
-                    <input name="ProductionLines[__INDEX__].LineName" 
-                            class="form-control" 
-                            required maxlength="100"
-                            placeholder="Enter machine name" />
-                    <div class="invalid-feedback">
-                        Please provide a machine/equipment name.
-                    </div>
-                </div>
-                
-                <div class="col-md-8">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label class="form-label">Actual Capacity <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input name="ProductionLines[__INDEX__].ActualCapacity" 
-                                        class="form-control capacity-input" 
-                                        required type="number" step="0.01" min="0"
-                                        placeholder="0.00" />
-                                <span class="input-group-text production-unit-label">units</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <label class="form-label">Design Capacity</label>
-                            <div class="input-group">
-                                <input name="ProductionLines[__INDEX__].DesignCapacity" 
-                                        class="form-control capacity-input" 
-                                        type="number" step="0.01" min="0"
-                                        placeholder="0.00" />
-                                <span class="input-group-text production-unit-label">units</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <label class="form-label">Attainable Capacity</label>
-                            <div class="input-group">
-                                <input name="ProductionLines[__INDEX__].AttainableCapacity" 
-                                        class="form-control capacity-input" 
-                                        type="number" step="0.01" min="0"
-                                        placeholder="0.00" />
-                                <span class="input-group-text production-unit-label">units</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Production Details Row -->
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <label class="form-label">Output Type <span class="text-danger">*</span></label>
-                    <input name="ProductionLines[__INDEX__].OutputType" 
-                            class="form-control" required 
-                            placeholder="Type of output produced" />
-                </div>
-                <div class="col-md-8">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label class="form-label">Production Unit <span class="text-danger">*</span></label>
-                            <select name="ProductionLines[__INDEX__].ProductionUnit" 
-                                    class="form-select production-unit-dropdown" required>
-                                <option value="" disabled selected>Select Unit</option>
-                                @foreach (var unit in Html.GetEnumSelectList<MeasurementUnit>())
-                                {
-                                    <option value="@unit.Value">@unit.Text</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Production Measurement <span class="text-danger">*</span></label>
-                            <select name="ProductionLines[__INDEX__].ProductionMeasurement" 
-                                    class="form-select" required>
-                                <option value="" disabled selected>Select Measurement</option>
-                                @foreach (var measurement in Html.GetEnumSelectList<ProductionMeasurement>())
-                                {
-                                    <option value="@measurement.Value">@measurement.Text</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-4 output-phase-container" style="display: none;">
-                            <label class="form-label">Output Phase <span class="text-danger">*</span></label>
-                            <select name="ProductionLines[__INDEX__].OutputPhase" 
-                                    class="form-select output-phase" 
-                                    data-production-line-type="ProductionLines[__INDEX__].ProductionLineType">
-                                <option value="" disabled selected>Select Phase</option>
-                                @foreach (var phase in Html.GetEnumSelectList<OutputPhase>())
-                                {
-                                    <option value="@phase.Value">@phase.Text</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Inputs Section -->
-            <div class="inputs-section mt-4 p-3 bg-light rounded">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="mb-0">
-                        <i class="fas fa-boxes me-2 text-primary"></i>Input Materials
-                    </h6>
-                    <button type="button" class="btn btn-sm btn-primary add-input-btn">
-                        <i class="fas fa-plus me-1"></i> Add Input
+    <div class="production-line-container" data-line-index="__INDEX__"> 
+        <div class="card shadow-sm production-line-form border mb-4 position-relative production-line-evaluation-item">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                <h6 class="line-number mb-0">
+                    <i class="fas fa-industry me-2 text-primary"></i>Production Line<span class="line-counter ms-1 d-inline">@Html.Raw("__INDEX_1__")</span>
+                </h6>
+                <div class="ms-auto">
+                    <button type="button"
+                        class="btn btn-sm btn-danger px-2 py-1 remove-line-btn"
+                        title="Remove this production line">
+                        <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
-                <div class="inputs-container">
-                    <div class="alert alert-info">
-                        No input materials added yet.
-                    </div>
-                </div>
             </div>
-
-            <!-- Calculations Row -->
-            <div class="row mt-3">
-                <div class="col-md-3">
-                    <div class="form-check form-switch my-2">
-                        <input type="hidden" name="ProductionLines[__INDEX__].IsBottleneck" value="false" />
-                        
-                        <!-- Checkbox will override the hidden  field when checked -->
-                        <input name="ProductionLines[__INDEX__].IsBottleneck"
-                            class="form-check-input is-bottleneck"
-                            type="checkbox"
-                            role="switch"
-                            value="true" />
-                        <label class="form-check-label">
-                            <h6><strong>Is Bottleneck?</strong></h6>
-                        </label>
+            <div class="card-body">
+                <!-- Basic Information Row -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Machine/Equipment Name <span class="text-danger">*</span></label>
+                        <input name="ProductionLines[__INDEX__].LineName" 
+                                class="form-control" 
+                                required maxlength="100"
+                                placeholder="Enter machine name" />
+                        <div class="invalid-feedback">
+                            Please provide a machine/equipment name.
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-6 offset-md-3 total-input-conversion-ratio-container">
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Total Input</label>
-                            <div class="input-group">
-                                <input name="ProductionLines[__INDEX__].TotalInput"
-                                        type="number" step="0.01"
-                                        class="form-control total-input" readonly />
-                                <span class="input-group-text total-input-unit-label">units</span>
+                    
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Actual Capacity <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input name="ProductionLines[__INDEX__].ActualCapacity" 
+                                            class="form-control capacity-input" 
+                                            required type="number" step="0.01" min="0"
+                                            placeholder="0.00" />
+                                    <span class="input-group-text production-unit-label">units</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Design Capacity</label>
+                                <div class="input-group">
+                                    <input name="ProductionLines[__INDEX__].DesignCapacity" 
+                                            class="form-control capacity-input" 
+                                            type="number" step="0.01" min="0"
+                                            placeholder="0.00" />
+                                    <span class="input-group-text production-unit-label">units</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Attainable Capacity</label>
+                                <div class="input-group">
+                                    <input name="ProductionLines[__INDEX__].AttainableCapacity" 
+                                            class="form-control capacity-input" 
+                                            type="number" step="0.01" min="0"
+                                            placeholder="0.00" />
+                                    <span class="input-group-text production-unit-label">units</span>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label">Conversion Ratio</label>
-                            <div class="input-group">
-                                <input name="ProductionLines[__INDEX__].ConversionRatio"
-                                        type="number" step="0.01" 
-                                        class="form-control conversion-ratio" readonly />
-                                <span class="input-group-text">%</span>
+                    </div>
+                </div>
+
+                <!-- Production Details Row -->
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Output Type <span class="text-danger">*</span></label>
+                        <input name="ProductionLines[__INDEX__].OutputType" 
+                                class="form-control" required 
+                                placeholder="Type of output produced" />
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Production Unit <span class="text-danger">*</span></label>
+                                <select name="ProductionLines[__INDEX__].ProductionUnit" 
+                                        class="form-select production-unit-dropdown" required>
+                                    <option value="" disabled selected>Select Unit</option>
+                                    @foreach (var unit in Html.GetEnumSelectList<MeasurementUnit>())
+                                    {
+                                        <option value="@unit.Value">@unit.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Production Measurement <span class="text-danger">*</span></label>
+                                <select name="ProductionLines[__INDEX__].ProductionMeasurement" 
+                                        class="form-select" required>
+                                    <option value="" disabled selected>Select Measurement</option>
+                                    @foreach (var measurement in Html.GetEnumSelectList<ProductionMeasurement>())
+                                    {
+                                        <option value="@measurement.Value">@measurement.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4 output-phase-container" style="display: none;">
+                                <label class="form-label">Output Phase <span class="text-danger">*</span></label>
+                                <select name="ProductionLines[__INDEX__].OutputPhase" 
+                                        class="form-select output-phase" 
+                                        data-production-line-type="ProductionLines[__INDEX__].ProductionLineType">
+                                    <option value="" disabled selected>Select Phase</option>
+                                    @foreach (var phase in Html.GetEnumSelectList<OutputPhase>())
+                                    {
+                                        <option value="@phase.Value">@phase.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inputs Section -->
+                <div class="inputs-section mt-4 p-3 bg-light rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">
+                            <i class="fas fa-boxes me-2 text-primary"></i>Input Materials
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-primary add-input-btn">
+                            <i class="fas fa-plus me-1"></i> Add Input
+                        </button>
+                    </div>
+                    <div class="inputs-container">
+                        <div class="alert alert-info">
+                            No input materials added yet.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculations Row -->
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <div class="form-check form-switch my-2">
+                            <input type="hidden" name="ProductionLines[__INDEX__].IsBottleneck" value="false" />
+                            
+                            <!-- Checkbox will override the hidden  field when checked -->
+                            <input name="ProductionLines[__INDEX__].IsBottleneck"
+                                class="form-check-input is-bottleneck"
+                                type="checkbox"
+                                role="switch"
+                                value="true" />
+                            <label class="form-check-label">
+                                <h6><strong>Is Bottleneck?</strong></h6>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 offset-md-3 total-input-conversion-ratio-container">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Total Input</label>
+                                <div class="input-group">
+                                    <input name="ProductionLines[__INDEX__].TotalInput"
+                                            type="number" step="0.01"
+                                            class="form-control total-input" readonly />
+                                    <span class="input-group-text total-input-unit-label">units</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Conversion Ratio</label>
+                                <div class="input-group">
+                                    <input name="ProductionLines[__INDEX__].ConversionRatio"
+                                            type="number" step="0.01" 
+                                            class="form-control conversion-ratio" readonly />
+                                    <span class="input-group-text">%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
