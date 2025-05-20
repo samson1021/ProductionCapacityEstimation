@@ -110,7 +110,7 @@
 
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'DeletedFileIds'; // Important for model binding!
+            input.name = 'DeletedFileIds';
             input.value = fileId;
 
             container.appendChild(input);
@@ -118,16 +118,19 @@
             // Remove file row
             $(`#file-${fileId}`).remove();
 
+            if ($("#file-list0 .file-row").length === 0) {
+                $("#file-list0").append('<tr id="no-witness=form" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No witness form</h6></td></tr>');
+                document.getElementById('new-witness-form-upload').style.display = "";
+                document.getElementById('NewWitnessForm').required = true;
+            }
             if ($("#file-list1 .file-row").length === 0) {
-                $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
+                $("#file-list1").append('<tr id="no-process-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
             }
             if ($("#file-list2 .file-row").length === 0) {
-                $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
+                $("#file-list2").append('<tr id="no-supporting-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
             }
         }
     }
-
-
 </script>
 
 <style>

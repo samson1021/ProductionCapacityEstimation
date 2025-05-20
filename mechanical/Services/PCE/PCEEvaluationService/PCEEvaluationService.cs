@@ -117,8 +117,16 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     if (Dto.WitnessForm != null)
                     {
                         Dto.DeletedFileIds ??= new List<Guid>();
-                        Dto.DeletedFileIds.Add(Dto.WitnessForm.Id);
+
+                        if(!Dto.DeletedFileIds.Contains(Dto.WitnessForm.Id))
+                        {
+                            Dto.DeletedFileIds.Add(Dto.WitnessForm.Id);
+                        }
                     }
+                }
+                else if (Dto.WitnessForm != null && Dto.DeletedFileIds?.Contains(Dto.WitnessForm.Id) == true)
+                {
+                    Dto.DeletedFileIds.Remove(Dto.WitnessForm.Id);
                 }
 
                 // Handle file uploads
