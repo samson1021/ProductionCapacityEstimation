@@ -368,7 +368,6 @@ namespace mechanical.Controllers.PCE
                 ViewData["EvaluatorReport"] = evaluatorReportDto;
             }
 
-
             ViewData["PCECase"] = pceReportData.PCECases;
             ViewData["Productions"] = pceReportData.Productions;
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
