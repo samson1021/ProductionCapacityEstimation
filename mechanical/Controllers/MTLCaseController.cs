@@ -23,11 +23,11 @@ namespace mechanical.Controllers
         private readonly IUploadFileService _uploadFileService;
         private readonly CbeContext _cbeContext;
 
-        public MTLCaseController(ICaseService caseService,IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment,IMMCaseService mMCaseService, CbeContext cbeContext)
+        public MTLCaseController(ICaseService caseService, IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment, IMMCaseService mMCaseService, CbeContext cbeContext)
         {
             _caseService = caseService;
             _caseAssignmentService = caseAssignment;
-            _mmCaseService = mMCaseService; 
+            _mmCaseService = mMCaseService;
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
             _uploadFileService = uploadFileService;
@@ -83,7 +83,7 @@ namespace mechanical.Controllers
             var moFile = await _uploadFileService.GetMoUploadFile(Id);
             ViewData["moFile"] = moFile;
             return View();
-        }      
+        }
 
         [HttpGet]
         public async Task<IActionResult> MyCase(Guid Id)
@@ -147,8 +147,8 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignMakerOfficer(string selectedCollateralIds, string employeeId)
         {
-            
-            await _caseAssignmentService.AssignMakerTeamleader(base.GetCurrentUserId(),selectedCollateralIds, employeeId);
+
+            await _caseAssignmentService.AssignMakerTeamleader(base.GetCurrentUserId(), selectedCollateralIds, employeeId);
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }
@@ -159,8 +159,8 @@ namespace mechanical.Controllers
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }
-        
-        
+
+
 
         //[HttpGet]
         //public IActionResult MyPendingCases()

@@ -28,6 +28,7 @@ using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Login;
 using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
+using mechanical.Models.Dto.InternalReport;
 
 
 namespace mechanical.Mapper
@@ -58,10 +59,22 @@ namespace mechanical.Mapper
             CreateMap<Case, CaseReturntDto>()
                 .ForMember(dest => dest.District,opt=>opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+
             CreateMap<Case, CaseDto>()
                 .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src=>src.CaseOriginator.Department))
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+
+            ///////////
+            ///
+
+
+            CreateMap<Case, InternalCaseReportDto>()
+                .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src => src.CaseOriginator.Department))
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+            ////////
+
 
             CreateMap<Case, CaseTerminateDto>()
                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
