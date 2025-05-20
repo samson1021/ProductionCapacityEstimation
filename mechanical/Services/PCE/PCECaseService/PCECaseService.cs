@@ -617,7 +617,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                     .Include(e => e.TimeConsumedToCheck)
                                     .Include(e => e.Evaluator)
                                     .Include(e => e.ProductionLines)
-                                        .ThenInclude(ple => ple.Evaluator)
+                                        .ThenInclude(pl => pl.ProductionLineInputs)
                                     .Where(res => res.PCEId == Id)
                                     .ToListAsync();
 

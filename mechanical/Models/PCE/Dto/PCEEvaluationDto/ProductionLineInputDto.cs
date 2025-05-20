@@ -37,7 +37,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
     public class ProductionLineInputUpdateDto : ProductionLineInputBaseDto
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public Guid ProductionLineId { get; set; }

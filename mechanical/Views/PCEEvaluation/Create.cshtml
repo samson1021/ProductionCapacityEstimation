@@ -3,7 +3,7 @@
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
-@model mechanical.Models.PCE.Dto.PCEEvaluationDto.PCEEvaluationPostDto
+@model PCEEvaluationPostDto
 @{
     ViewData["Title"] = ViewBag.Title as string;
     var myProduction = ViewData["Production"] as ProductionReturnDto;
@@ -57,6 +57,26 @@
                 </h3>
             </div>
             <div class="card-body">
+                <div class="error-container">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Error:</strong> @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    @* @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <ul>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    } *@
+                </div>
                 <form method="post" enctype="multipart/form-data" asp-action="Create" id="evaluationForm">
 
                     @Html.AntiForgeryToken()

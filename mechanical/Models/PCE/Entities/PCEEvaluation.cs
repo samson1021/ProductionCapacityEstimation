@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,13 +7,13 @@ using mechanical.Models.Entities;
 
 namespace mechanical.Models.PCE.Entities
 {
+    [Index(nameof(PCEId))]
     public class PCEEvaluation
     {
         [Key]
         public Guid Id { get; set; }
 
         [Required]
-        [ForeignKey("PCE")]
         public Guid PCEId { get; set; }
 
         [Required]
@@ -40,6 +38,7 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         [StringLength(100)]
         public string TechnicalObsolescenceStatus { get; set; }
+        // public ObsolescenceStatus TechnicalObsolescenceStatus { get; set; }
 
         [Required]
         public MachineFunctionalityStatus MachineFunctionalityStatus { get; set; }
@@ -71,8 +70,10 @@ namespace mechanical.Models.PCE.Entities
         public Guid? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ProductionCapacity? PCE { get; set; }
-        public virtual CreateUser? Evaluator { get; set; }
+        [ForeignKey("PCEId")]
+        public virtual ProductionCapacity PCE { get; set; }
+        [ForeignKey("EvaluatorId")]
+        public virtual CreateUser Evaluator { get; set; }
     }
 
     [Index(nameof(PCEEvaluationId))]
@@ -82,7 +83,6 @@ namespace mechanical.Models.PCE.Entities
         public Guid Id { get; set; }
 
         [Required]
-        [ForeignKey("PCEEvaluation")]
         public Guid PCEEvaluationId { get; set; }
 
         [Required]
@@ -91,18 +91,21 @@ namespace mechanical.Models.PCE.Entities
         [StringLength(1000)]
         public string? JustificationText { get; set; }
 
-        public virtual PCEEvaluation? PCEEvaluation { get; set; }
+        [ForeignKey("PCEEvaluationId")]
+        public virtual PCEEvaluation PCEEvaluation { get; set; }
     }
     
+    [Index(nameof(PCEEvaluationId))]
     public class DateTimeRange
     {
         [Key]
         public Guid Id { get; set; }
 
         [Required]
-        [ForeignKey("PCEEvaluation")]
         public Guid PCEEvaluationId { get; set; }
-        public virtual PCEEvaluation? PCEEvaluation { get; set; }
+
+        [ForeignKey("PCEEvaluationId")]
+        public virtual PCEEvaluation PCEEvaluation { get; set; }
 
         [Required]
         public DateTime Start { get; set; }

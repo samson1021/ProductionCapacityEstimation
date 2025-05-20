@@ -10,6 +10,12 @@
             machineFunctionalityStatus.addEventListener('change', function() {
                 const isNonFunctional = this.value === '@((int)MachineFunctionalityStatus.NonFunctional)';
                 document.getElementById('functionalityReasonRow').style.display = isNonFunctional ? 'block' : 'none';
+                document.getElementById('functionalityReasonRow').required = isNonFunctional;
+                // if (isNonFunctional) {
+                //     machineNonFunctionalityReason.setAttribute('required', 'required');
+                // } else {
+                //     machineNonFunctionalityReason.removeAttribute('required');
+                // }
                 document.getElementById('otherReasonRow').style.display = 
                     (isNonFunctional && machineNonFunctionalityReason && machineNonFunctionalityReason.value === '@((int)MachineNonFunctionalityReason.Other)') 
                     ? 'block' : 'none';
@@ -22,32 +28,19 @@
                     this.value === '@((int)MachineNonFunctionalityReason.Other)' ? 'block' : 'none';
             });
         }
-        var outputPhaseElement = document.getElementById("OutputPhase");
 
-        if (outputPhaseElement) {
-            outputPhaseElement.addEventListener("change", function () {
-                handleDropdownChange(this, "OtherOutputPhase");
-            });
-        }
-
-        
         // Initialize validation
         $.validator.unobtrusive.parse(document);
 
-        @* $('.toggle-details').click(function() {
-            $(this).find('i').toggleClass('fa-chevron-left fa-chevron-up');
+        // Rotate chevron when details are shown
+        $('.toggle-details').click(function() {
+            $(this).find('i').toggleClass('fa-chevron-up fa-chevron-up'); // rotate-180
             $(this).toggleClass('btn-outline-primary btn-primary');
-        }); *@
-
-        // Handle toggle icons for inputs
-        $('.toggle-inputs').click(function() {
-            $(this).find('i').toggleClass('fa-boxes fa-box-open');
-            $(this).toggleClass('btn-outline-secondary btn-secondary');
         });
-
 
         // Initialize tooltips
         $('[title]').tooltip();
+        $('[data-toggle="tooltip"]').tooltip();
 
         // Initialize all collapses as closed
         $('.collapse').collapse('hide');
@@ -91,11 +84,9 @@
 
     // Alphanumeric validation
     function addAlphanumericValidation(elementId, errorElementId) {
-        
-        var element = document.getElementById(buttonId);
+        var element = document.getElementById(elementId); // Fixed variable reference
 
         if (element) {
-
             element.addEventListener("input", function () {
                 var input = this.value;
                 var alphanumericRegex = /^[A-Za-z0-9]+$/;
@@ -110,50 +101,32 @@
         }
     }
 
-    // Function for handling dropdown value changes
-    function handleDropdownChange(selectElement, otherInputId) {
-
-        var otherInput = document.getElementById(otherInputId);
-
-        if (otherInput) {
-            if (selectElement.value === "Other") {
-                otherInput.style.display = "block";
-                otherInput.setAttribute("required", "required");
-            } else {
-                otherInput.style.display = "none";
-                otherInput.removeAttribute("required");
-            }
-        }
-    }
-
     function deleteFile(fileId, event) {
-
         event.preventDefault();
 
         if (confirm("Are you sure you want to delete this file?")) {
+            // Append hidden input for deleted file ID
+            const container = document.getElementById('deleted-files-container');
 
-            // Add the fileId to the hidden input for deleted files
-            var deletedFileIdsInput = document.getElementById('DeletedFileIds');
-            
-            if (deletedFileIdsInput){
-                
-                var deletedFileIds = deletedFileIdsInput.value ? deletedFileIdsInput.value.split(',') : [];
-                deletedFileIds.push(fileId);
-                deletedFileIdsInput.value = deletedFileIds.join(',');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'DeletedFileIds'; // Important for model binding!
+            input.value = fileId;
 
-                // Remove the file row from the view
-                $(`#file-${fileId}`).remove();
+            container.appendChild(input);
 
-                // Check if there are no more files and add the appropriate message
-                if ($("#file-list1 .file-row").length == 0) {
-                    $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
-                }
-                if ($("#file-list2 .file-row").length == 0) {
-                    $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
-                }
+            // Remove file row
+            $(`#file-${fileId}`).remove();
+
+            if ($("#file-list1 .file-row").length === 0) {
+                $("#file-list1").append('<tr id="no-evidence" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No supporting evidence</h6></td></tr>');
+            }
+            if ($("#file-list2 .file-row").length === 0) {
+                $("#file-list2").append('<tr id="no-diagram" class="text-center file-row" data-file-id="0"><td colspan="2"><h6>No production process flow diagram</h6></td></tr>');
             }
         }
     }
+
 
 </script>
 

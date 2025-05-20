@@ -11,6 +11,30 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         RawMaterialForNextLine
     }
 
+    public enum ObsolescenceStatus
+    {
+        [Display(Name = "Current")]
+        Current,
+
+        [Display(Name = "Obsolete Soon")]
+        ObsoleteSoon,
+
+        [Display(Name = "Obsolete")]
+        Obsolete,
+
+        [Display(Name = "Under Review")]
+        UnderReview,
+
+        [Display(Name = "Not Applicable")]
+        NotApplicable,
+
+        [Display(Name = "Upgradable")]
+        Upgradable,
+
+        [Display(Name = "Requires Immediate Replacement")]
+        RequiresImmediateReplacement
+    }
+
     public enum MachineFunctionalityStatus
     {
         [Display(Name = "Functional at Time of Visit")]
@@ -167,7 +191,7 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "The purpose of the site visit is not well-explained by CRM, hence, the company is not willing to provide the necessary information.")]
         PurposeNotExplained,
 
-        [Display(Name = "Others, please explain (comment box).")]
+        [Display(Name = "Others, please specify the reason (comment box).")]
         Others
     }
 

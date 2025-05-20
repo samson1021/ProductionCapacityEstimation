@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
@@ -30,15 +31,15 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         public string? CountryOfOrigin { get; set; }
 
         [Required]
+        [Display(Name = "Production Line Type")]
+        public ProductionLineType ProductionLineType { get; set; }
+
+        [Required]
         [Display(Name = "Has Input-Output Data?")]
         public bool HasInputOutputData { get; set; }
 
         [Display(Name = "Justifications")]
         public List<TJustification> Justifications { get; set; } = new List<TJustification>();
-
-        [Required]
-        [Display(Name = "Production Line Type")]
-        public ProductionLineType ProductionLineType { get; set; }
 
         [Required]
         [MinLength(1, ErrorMessage = "At least one production line is required")]
@@ -49,6 +50,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [StringLength(100)]
         [Display(Name = "Technical Obsolescence Status")]
         public string TechnicalObsolescenceStatus { get; set; }
+        // public ObsolescenceStatus TechnicalObsolescenceStatus { get; set; }
 
         [Required]
         [Display(Name = "Machine Functionality Status")]
@@ -65,6 +67,14 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Factors Affecting Production Capacity")]
         public string? FactorsAffectingProductionCapacity { get; set; }
 
+        [StringLength(2000)]
+        [Display(Name = "Survey Remark")]
+        public string? SurveyRemark { get; set; }
+
+        [StringLength(2000)]
+        [Display(Name = "Remark")]
+        public string? Remark { get; set; }
+
         [Display(Name = "Time Consumed to Check")]
         public TDateTimeRange TimeConsumedToCheck { get; set; } = new TDateTimeRange();
 
@@ -76,14 +86,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Required]
         [Display(Name = "Inspection Date")]
         public DateOnly InspectionDate { get; set; }
-
-        [StringLength(2000)]
-        [Display(Name = "Survey Remark")]
-        public string? SurveyRemark { get; set; }
-
-        [StringLength(2000)]
-        [Display(Name = "Remark")]
-        public string? Remark { get; set; }
     }
 
     public class PCEEvaluationPostDto : PCEEvaluationBaseDto<ProductionLinePostDto, JustificationPostDto, DateTimeRangePostDto, ProductionLineInputPostDto>
@@ -105,6 +107,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
     {
         public Guid Id { get; set; }
         public ProductionCapacity PCE { get; set; }
+        public CreateUser Evaluator { get; set; }
 
         [Display(Name = "Evaluated By")]
         public Guid EvaluatorId { get; set; }
@@ -115,6 +118,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Total Capacity")]
         public decimal TotalCapacity { get; set; }
 
+        [Required]
         [Display(Name = "Witness Form")]
         public ReturnFileDto WitnessForm { get; set; }
 
@@ -124,6 +128,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Display(Name = "Supporting Evidences")]
         public List<ReturnFileDto> SupportingEvidences { get; set; } = new List<ReturnFileDto>();
 
+        [Required]
         [Display(Name = "Uploaded Files")]
         public List<ReturnFileDto> UploadedFiles { get; set; } = new List<ReturnFileDto>();
 
@@ -147,13 +152,9 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
     {
         [Required]
         public Guid Id { get; set; }
-        public ProductionCapacity PCE { get; set; }
-
-        [Display(Name = "Evaluated By")]
-        public Guid EvaluatorId { get; set; }
 
         [Display(Name = "Witness Form")]
-        public ReturnFileDto WitnessForm { get; set; }
+        public ReturnFileDto? WitnessForm { get; set; }
 
         [Display(Name = "Production Process Flow Diagrams")]
         public List<ReturnFileDto>? ProductionProcessFlowDiagrams { get; set; } = new List<ReturnFileDto>();
@@ -183,7 +184,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
     public class JustificationUpdateDto: JustificationBaseDto
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
     }
     public class JustificationReturnDto: JustificationBaseDto
     {
