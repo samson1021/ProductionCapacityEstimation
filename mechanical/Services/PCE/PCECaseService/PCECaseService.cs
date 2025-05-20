@@ -367,131 +367,6 @@ namespace mechanical.Services.PCE.PCECaseService
             }
         }
 
-        //public async Task<PCEReportDataDto> GetPCEReportData(Guid Id)
-        //{
-        //    var productions = await _cbeContext.ProductionCapacities
-        //                                    .Where(res => res.Id == Id && res.CurrentStatus == "Completed" && 
-        //                                                  res.CurrentStage == "Relation Manager")
-        //                                    .ToListAsync();            
-        //    var pceCase = _cbeContext.PCECases
-        //                            .Include(res => res.District)
-        //                            .Include(res => res.BusinessLicense)
-        //                            .Include(res => res.ProductionCapacities)
-        //                            .Where(c => productions.Select(p => p.PCECaseId).Contains(c.Id))
-        //                            .FirstOrDefault();
-
-        //    var pceEvaluations = await _cbeContext.PCEEvaluations
-        //                                            .Include(e => e.TimeConsumedToCheck)
-        //                                            .Include(e => e.Evaluator)
-        //                                            .Include(e => e.Justifications)
-        //                                            .Include(e => e.ProductionLines)
-        //                                                .ThenInclude(pl => pl.Evaluator)
-        //                                            .Include(e => e.ProductionLines)
-        //                                                .ThenInclude(pl => pl.ProductionLineInputs)
-        //                                            .Where(res => res.PCEId == Id)
-        //                                            .ToListAsync();
-        //    var pceCaseSchedule = await _cbeContext.PCECaseSchedules
-        //                                            .Where(res => res.PCECaseId == Id && res.Status == "Approved")
-        //                                            .FirstOrDefaultAsync();                    
-        //    return new PCEReportDataDto
-        //    {
-        //        PCECases = pceCase,
-        //        Productions = productions,
-        //        PCEEvaluations = pceEvaluations,
-        //        PCECaseSchedule = pceCaseSchedule,
-        //        ProductionLines = pceEvaluations
-        //                                     .SelectMany(e => e.ProductionLines ?? Enumerable.Empty<ProductionLine>())
-        //                                     .ToList()
-        //    };
-
-
-        //}
-
-        //public async Task<PCEReportDatalastDto> GetPCEReportData(Guid Id)
-        //{
-        //    var productions = await _cbeContext.ProductionCapacities
-        //                                    .Where(res => res.Id == Id && res.CurrentStatus == "Completed" &&
-        //                                                  res.CurrentStage == "Relation Manager")
-        //                                    .ToListAsync();
-        //    var pceCase = _cbeContext.PCECases
-        //                            .Include(res => res.District)
-        //                            .Include(res => res.BusinessLicense)
-        //                            .Include(res => res.ProductionCapacities)
-        //                            .Where(c => productions.Select(p => p.PCECaseId).Contains(c.Id))
-        //                            .FirstOrDefault();
-
-        //    var pceEvaluations = await _cbeContext.PCEEvaluations
-        //                                            .Include(e => e.TimeConsumedToCheck)
-        //                                            .Include(e => e.Evaluator)
-        //                                            .Include(e => e.Justifications)
-        //                                            .Include(e => e.ProductionLines)
-        //                                                .ThenInclude(pl => pl.Evaluator)
-        //                                            .Include(e => e.ProductionLines)
-        //                                                .ThenInclude(pl => pl.ProductionLineInputs)
-        //                                            .Where(res => res.PCEId == Id)
-        //                                            .ToListAsync();
-        //    var pceCaseSchedule = await _cbeContext.PCECaseSchedules
-        //                                            .Where(res => res.PCECaseId == Id && res.Status == "Approved")
-        //                                            .FirstOrDefaultAsync();
-
-        //    // Map entities to DTOs
-        //    var evaluationDtos = pceEvaluations.Select(e => new PCEEvaluationDto
-        //    {
-        //        Id = e.Id,
-        //        PCEId = e.PCEId,
-        //        EvaluatorId = e.EvaluatorId,
-        //        MachineName = e.MachineName,
-        //        CountryOfOrigin = e.CountryOfOrigin,
-        //        HasInputOutputData = e.HasInputOutputData,
-        //        Justifications = e.Justifications.Select(j => new JustificationDto
-        //        {
-        //            Id = j.Id,
-        //            PCEEvaluationId = j.PCEEvaluationId,
-        //            Reason = j.Reason,
-        //            JustificationText = j.JustificationText
-        //        }).ToList(),
-        //        ProductionLines = e.ProductionLines.Select(pl => new ProductionLineDto
-        //        {
-        //            Id = pl.Id,
-        //            PCEEvaluationId = pl.PCEEvaluationId,
-        //            EvaluatorId = pl.EvaluatorId,
-        //            LineName = pl.LineName,
-        //            OutputType = pl.OutputType,
-        //            OutputPhase = pl.OutputPhase,
-        //            IsBottleneck = pl.IsBottleneck,
-        //            ActualCapacity = pl.ActualCapacity,
-        //            DesignCapacity = pl.DesignCapacity,
-        //            AttainableCapacity = pl.AttainableCapacity,
-        //            ProductionUnit = pl.ProductionUnit,
-        //            ProductionMeasurement = pl.ProductionMeasurement,
-        //            ProductionLineInputs = pl.ProductionLineInputs.Select(pli => new ProductionLineInputDto
-        //            {
-        //                Id = pli.Id,
-        //                ProductionLineId = pli.ProductionLineId,
-        //                Type = pli.Type,
-        //                Quantity = pli.Quantity,
-        //                Unit = pli.Unit
-        //            }).ToList(),
-        //            TotalInput = pl.TotalInput,
-        //            ConversionRatio = pl.ConversionRatio
-        //        }).ToList(),
-        //        // Map other properties...
-        //    }).ToList();
-
-        //    return new PCEReportDatalastDto
-        //    {
-        //        PCECases = pceCase,
-        //        Productions = productions,
-        //        PCEEvaluations = evaluationDtos,
-        //        PCECaseSchedule = pceCaseSchedule,
-        //        ProductionLines = evaluationDtos
-        //                                 .SelectMany(e => e.ProductionLines ?? Enumerable.Empty<ProductionLineDto>())
-        //                                 .ToList()
-        //    };
-        //}
-
-
-
         public async Task<PCEReportDatalastDto> GetPCEReportData(Guid Id)
         {
             var productions = await _cbeContext.ProductionCapacities
@@ -509,8 +384,6 @@ namespace mechanical.Services.PCE.PCECaseService
                                                     .Include(e => e.TimeConsumedToCheck)
                                                     .Include(e => e.Evaluator)
                                                     .Include(e => e.Justifications)
-                                                    .Include(e => e.ProductionLines)
-                                                        .ThenInclude(pl => pl.Evaluator)
                                                     .Include(e => e.ProductionLines)
                                                         .ThenInclude(pl => pl.ProductionLineInputs)
                                                     .Where(res => res.PCEId == Id)
@@ -542,7 +415,6 @@ namespace mechanical.Services.PCE.PCECaseService
                 {
                     Id = pl.Id,
                     PCEEvaluationId = pl.PCEEvaluationId,
-                    EvaluatorId = pl.EvaluatorId,
                     LineName = pl.LineName ?? string.Empty,
                     OutputType = pl.OutputType ?? string.Empty,
                     OutputPhase = pl.OutputPhase,

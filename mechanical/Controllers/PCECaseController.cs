@@ -368,10 +368,6 @@ namespace mechanical.Controllers.PCE
                 ViewData["EvaluatorReport"] = evaluatorReportDto;
             }
 
-            // In your controller action
-            var evaluations = pceReportData.PCEEvaluations;
-            Console.WriteLine($"Type in controller: {evaluations?.GetType().FullName}");
-
             ViewData["PCECase"] = pceReportData.PCECases;
             ViewData["Productions"] = pceReportData.Productions;
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;

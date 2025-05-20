@@ -7,7 +7,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
     {
         public PCECase PCECases { get; set; }
         public List<ProductionCapacity> Productions { get; set; }
-        public List<PCEEvaluation>? PCEEvaluations { get; set; }
+        public List<PCEEvaluation> PCEEvaluations { get; set; }
         public PCECaseSchedule PCECaseSchedule { get; set; }
         public List<ProductionLine>? ProductionLines { get; set; }
 
