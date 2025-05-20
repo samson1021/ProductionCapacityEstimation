@@ -21,18 +21,18 @@
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Capacity Information</h5>
                 </div>
-                
+
                 <!-- Machine Details -->
                 <div class="row mt-3">
                     <div class="form-group col-md-3">
                         <label class="form-label">Machine Name <span class="text-danger">*</span></label>
-                        <input asp-for="MachineName" id="MachineName" type="text" 
-                                class="form-control" value="@(myProduction.MachineName)" required>
+                        <input asp-for="MachineName" id="MachineName" type="text"
+                               class="form-control" value="@(myProduction.MachineName)" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">Country of Origin <span class="text-danger">*</span></label>
-                        <input asp-for="CountryOfOrigin" id="CountryOfOrigin" type="text" 
-                                class="form-control" value="@(myProduction.CountryOfOrigin ?? "Unknown")" required>
+                        <input asp-for="CountryOfOrigin" id="CountryOfOrigin" type="text"
+                               class="form-control" value="@(myProduction.CountryOfOrigin ?? "Unknown")" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger">*</span></label>
@@ -59,7 +59,7 @@
                 <div class="row mt-3">
                     <div class="form-group col-md-4">
                         <label class="form-label">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <span class="text-danger">*</span></label>
-                        <select asp-for="MachineFunctionalityStatus" class="form-select" 
+                        <select asp-for="MachineFunctionalityStatus" class="form-select"
                                 asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()" required>
                             <option value="" disabled selected>Select Functionality</option>
                         </select>
@@ -67,7 +67,7 @@
                     </div>
                     <div class="form-group col-md-4" id="functionalityReasonRow" style="display: none;">
                         <label class="form-label">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <span class="text-danger">*</span></label>
-                        <select asp-for="MachineNonFunctionalityReason" class="form-select" 
+                        <select asp-for="MachineNonFunctionalityReason" class="form-select"
                                 asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()">
                             <option value="" disabled selected>Select Reason</option>
                         </select>
@@ -80,16 +80,16 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Input-Output Data Toggle -->
             <div class="form-check form-switch my-4">
                 <input class="form-check-input" type="checkbox" role="switch"
-                    asp-for="HasInputOutputData" id="hasInputOutputData" checked>
+                       asp-for="HasInputOutputData" id="hasInputOutputData" checked>
                 <label class="form-check-label" for="hasInputOutputData">
                     <h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5>
                 </label>
             </div>
-            
+
             <!-- No Input/Output Data Justification Section -->
             <div class="border rounded-3 p-2 position-relative shadow-sm mb-4 bg-light" id="justificationSection" style="display: none;">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
@@ -101,28 +101,28 @@
                         {
                             var justification = justificationList.FirstOrDefault(j => j.Reason == reason);
                             var displayAttribute = reason.GetType().GetField(reason.ToString())
-                                                    .GetCustomAttributes(typeof(DisplayAttribute), false)
-                                                    .FirstOrDefault() as DisplayAttribute;
+                            .GetCustomAttributes(typeof(DisplayAttribute), false)
+                            .FirstOrDefault() as DisplayAttribute;
                             <div class="form-check mb-2" data-reason="@reason">
                                 <input type="checkbox"
-                                    class="form-check-input justification-checkbox"
-                                    data-reason="@reason"
-                                    data-display="@(displayAttribute?.Name ?? reason.ToString())"
-                                    @(justification != null ? "checked" : "") />
+                                       class="form-check-input justification-checkbox"
+                                       data-reason="@reason"
+                                       data-display="@(displayAttribute?.Name ?? reason.ToString())"
+                                @(justification != null ? "checked" : "") />
                                 <label class="form-check-label">@(displayAttribute?.Name ?? reason.ToString())</label>
                                 <textarea class="form-control justification-text mt-2"
-                                    style="@(reason == JustificationReason.Others && justification != null ? "" : "display:none;")"
-                                    placeholder="@(reason == JustificationReason.Others ? "Enter other justification" : null)"
-                                            @(reason != JustificationReason.Others && justification == null ? "hidden" : null)
-                                            @(reason != JustificationReason.Others && justification == null ? "disabled" : null)
-                                    data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea>
-                                    @* data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea> *@
+                                          style="@(reason == JustificationReason.Others && justification != null ? "" : "display:none;")"
+                                          placeholder="@(reason == JustificationReason.Others ? "Enter other justification" : null)"
+                                @(reason != JustificationReason.Others && justification == null ? "hidden" : null)
+                                @(reason != JustificationReason.Others && justification == null ? "disabled" : null)
+                                          data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea>
+                                @* data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea> *@
                             </div>
                         }
                     }
                 </div>
                 <span asp-validation-for="Justifications" class="text-danger small"></span>
-                
+
                 <!-- Inject serialized checked justifications here -->
                 <div id="justificationHiddenFields"></div>
             </div>
@@ -145,19 +145,19 @@
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-clipboard-check me-2 text-primary"></i>Inspection Information</h5>
                 </div>
-                
+
                 <!-- Remarks and Factors -->
                 <div class="row mt-3">
                     <div class="form-group col-md-6">
                         <label class="form-label">@Html.DisplayNameFor(model => model.FactorsAffectingProductionCapacity) </label>
-                        <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control" rows="3" 
-                                    placeholder="Describe any factors affecting production capacity"></textarea>
+                        <textarea asp-for="FactorsAffectingProductionCapacity" class="form-control" rows="3"
+                                  placeholder="Describe any factors affecting production capacity"></textarea>
                         <span asp-validation-for="FactorsAffectingProductionCapacity" class="text-danger small"></span>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="form-label">@Html.DisplayNameFor(model => model.SurveyRemark) </label>
                         <textarea asp-for="SurveyRemark" class="form-control" rows="3"
-                                    placeholder="Enter any additional survey remarks"></textarea>
+                                  placeholder="Enter any additional survey remarks"></textarea>
                         <span asp-validation-for="SurveyRemark" class="text-danger small"></span>
                     </div>
                 </div>
@@ -197,26 +197,26 @@
                 <div class="row mt-3">
                     <div class="form-group col-md-3">
                         <label class="form-label">Inspection Started At <span class="text-danger">*</span></label>
-                        <input asp-for="TimeConsumedToCheck.Start" class="form-control" 
-                                type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                        <input asp-for="TimeConsumedToCheck.Start" class="form-control"
+                               type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
                         <span asp-validation-for="TimeConsumedToCheck.Start" class="text-danger small"></span>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">Inspection Ended At <span class="text-danger">*</span></label>
-                        <input asp-for="TimeConsumedToCheck.End" class="form-control" 
-                                type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                        <input asp-for="TimeConsumedToCheck.End" class="form-control"
+                               type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
                         <span asp-validation-for="TimeConsumedToCheck.End" class="text-danger small"></span>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">@Html.DisplayNameFor(model => model.InspectionDate) <span class="text-danger">*</span></label>
-                        <input asp-for="InspectionDate" class="form-control" 
-                                type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" required />
+                        <input asp-for="InspectionDate" class="form-control"
+                               type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" required />
                         <span asp-validation-for="InspectionDate" class="text-danger small"></span>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="form-label">@Html.DisplayNameFor(model => model.InspectionPlace) <span class="text-danger">*</span></label>
-                        <input asp-for="InspectionPlace" class="form-control" required 
-                                placeholder="Location of inspection" />
+                        <input asp-for="InspectionPlace" class="form-control" required
+                               placeholder="Location of inspection" />
                         <span asp-validation-for="InspectionPlace" class="text-danger small"></span>
                     </div>
                 </div>

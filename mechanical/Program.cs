@@ -55,6 +55,7 @@ using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
 using Microsoft.AspNetCore.Authentication;
 using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Services.InternalReportService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -110,7 +111,10 @@ builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
+// report
+builder.Services.AddScoped<IInternalReportService, InternalReportService>();
 
+//
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService, CaseAssignmentService>();
 builder.Services.AddScoped<ICaseTimeLineService, CaseTimeLineService>();

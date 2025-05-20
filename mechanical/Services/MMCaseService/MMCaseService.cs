@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Services.MMCaseService
 {
-    public class MMCaseService:IMMCaseService
+    public class MMCaseService: IMMCaseService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
