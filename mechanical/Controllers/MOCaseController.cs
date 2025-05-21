@@ -32,7 +32,7 @@ namespace mechanical.Controllers
         private readonly IMailService _mailService;
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
-        public MOCaseController(ICaseService caseService, IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICollateralService collateralService,ICaseScheduleService caseScheduleService, IMMCaseService mOCaseService,ICOCaseService coCaseService, IMailService mailService)
+        public MOCaseController(ICaseService caseService, IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICollateralService collateralService, ICaseScheduleService caseScheduleService, IMMCaseService mOCaseService, ICOCaseService coCaseService, IMailService mailService)
         {
             _caseService = caseService;
             _collateralService = collateralService;
@@ -76,7 +76,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyCases()
         {
-            
+
             var myCase = await _mOCaseService.GetMMNewCases(GetCurrentUserId());
             if (myCase == null) { return BadRequest("Unable to load case"); }
             string jsonData = JsonConvert.SerializeObject(myCase);
@@ -98,7 +98,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Evaluation(Guid Id)
         {
-            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
 
             var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
 
@@ -116,9 +116,9 @@ namespace mechanical.Controllers
                 var redirectUrl = Url.Action("Create", "MotorVehicle", new { Id = Id });
                 return Json(new { success = true, redirectUrl });
             }
-            else  if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
+            else if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
             {
-               
+
                 var redirectUrl = Url.Action("Create", "ConstMngAgrMachinery", new { Id = Id });
                 return Json(new { success = true, redirectUrl });
             }
@@ -174,7 +174,7 @@ namespace mechanical.Controllers
             if (loanCase == null) { return RedirectToAction("NewCases"); }
             ViewData["case"] = loanCase;
             ViewData["CaseSchedule"] = caseSchedule;
-            ViewData["Id"]=base.GetCurrentUserId();
+            ViewData["Id"] = base.GetCurrentUserId();
             ViewData["moFile"] = moFile;
             return View();
         }
@@ -184,23 +184,23 @@ namespace mechanical.Controllers
         {
             var caseSchedule = await _caseScheduleService.CreateCaseSchedule(base.GetCurrentUserId(), CaseSchedulePostDto);
             if (caseSchedule == null) { return BadRequest("Unable to Create case Schdule"); }
-            var CaseInfo= await _caseService.GetCaseDetail(caseSchedule.CaseId);
+            var CaseInfo = await _caseService.GetCaseDetail(caseSchedule.CaseId);
             await _mailService.SendEmail(new MailPostDto
             {
                 SenderEmail = "getnetadane1@cbe.com.et",
                 SenderPassword = "Gechlove@1234",
                 RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Valuation Schedule for Case Number "+CaseInfo.CaseNo,
-                Body  = "Dear! Valuation Schedule  For Applicant:-"+ CaseInfo.ApplicantName+" Is "+ caseSchedule.ScheduleDate + " For further Detail please check Collateral Valuation System",
+                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                Body = "Dear! Valuation Schedule  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + " For further Detail please check Collateral Valuation System",
             });
             string jsonData = JsonConvert.SerializeObject(caseSchedule);
             return Ok(caseSchedule);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateSchedule(Guid Id,CaseSchedulePostDto CaseSchedulePostDto)
+        public async Task<IActionResult> UpdateSchedule(Guid Id, CaseSchedulePostDto CaseSchedulePostDto)
         {
-            var caseSchedule = await _caseScheduleService.UpdateCaseSchedule(base.GetCurrentUserId(),Id, CaseSchedulePostDto);
+            var caseSchedule = await _caseScheduleService.UpdateCaseSchedule(base.GetCurrentUserId(), Id, CaseSchedulePostDto);
             if (caseSchedule == null) { return BadRequest("Unable to update case Schdule"); }
             var CaseInfo = await _caseService.GetCaseDetail(caseSchedule.CaseId);
             await _mailService.SendEmail(new MailPostDto
@@ -230,7 +230,7 @@ namespace mechanical.Controllers
 
         public async Task<IActionResult> MyReturnedCollateral(Guid CollateralId)
         {
-            var collaterals =await _collateralService.MyReturnedCollateral( base.GetCurrentUserId(), CollateralId);
+            var collaterals = await _collateralService.MyReturnedCollateral(base.GetCurrentUserId(), CollateralId);
             return View(collaterals);
         }
 

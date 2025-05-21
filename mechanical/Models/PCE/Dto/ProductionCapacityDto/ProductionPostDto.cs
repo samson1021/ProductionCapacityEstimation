@@ -21,10 +21,10 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string Type { get; set; }
         
         [Display(Name = "Machine Name")]
-        public string MachineName { get; set; }     
+        public required string MachineName { get; set; }     
         
         [Display(Name = "Country of Origin")]
-        public string CountryOfOrgin { get; set; }
+        public string CountryOfOrigin { get; set; }
 
         [Display(Name = "Business License Number")]
         public string BusinessLicenseNumber { get; set; }  
@@ -32,20 +32,20 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         // public string TradeLicenseNumber { get; set; }
         
         [Display(Name = "Purpose")]
-        public string? Purpose { get; set; }
+        public required string Purpose { get; set; }
         
         [Display(Name = "Model Number")]
-        public string? ModelNo { get; set; }  
+        public required string ModelNo { get; set; }  
         
         [Display(Name = "Manufacture Year")]
         [Range(1900, 2024)]
-        public int? ManufactureYear { get; set; }
+        public required int ManufactureYear { get; set; }
         
         [Display(Name = "Invoice Number")]
-        public string? InvoiceNo { get; set; }
+        public required string InvoiceNo { get; set; }
         
         [Display(Name = "Serial Number")]
-        public string? SerialNo { get; set; }
+        public required string SerialNo { get; set; }
         
         [Display(Name = "Machinery Installed Place")]
         public string MachineryInstalledPlace { get; set; }

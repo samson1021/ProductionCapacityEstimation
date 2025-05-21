@@ -2,20 +2,17 @@
 
 @model PCEEvaluationReturnDto
 
-@{    
-    ViewData["Title"] = ViewBag.Title as string; 
+@{
+    ViewData["Title"] = ViewBag.Title as string;
 }
 
-<section class="content-header">
+<section class="content-header" style="padding-top:5px;padding-bottom:0px;">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6">
-                @* <h4>PCE Valuation</h4> *@
-            </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4 offset-xl-8">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
                     <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
                     <li class="breadcrumb-item active">Valuation Detail</li>
                 </ol>
@@ -27,9 +24,9 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="container-fluid">
-            <div class="card card-purple card-outline card-outline-tabs">    
-                <div class="card-header">
-                    <h3 class="card-title text-success text-center">Valuation Detail</h3>
+            <div class="card card-purple card-outline card-outline-tabs">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title text-success text-center mb-0"><i class="fas fa-industry me-2"></i>Valuation Detail</h3>
                 </div>
                 <div class="card-body">
                     @{
@@ -37,17 +34,17 @@
                         {
                             <div class="row">
                                 @await Html.PartialAsync("Partial/_EvaluationDetailPartial", Model)
-                            </div>                                                                  
-                        }                                                         
-                    }                 
-                </div>          
-            </div>   
-        </div> 
-    </div> 
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 @section Scripts {
-    @{      
+    @{
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }

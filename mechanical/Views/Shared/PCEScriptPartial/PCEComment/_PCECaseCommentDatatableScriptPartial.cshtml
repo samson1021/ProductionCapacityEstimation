@@ -1,35 +1,12 @@
 ﻿<script>
-    const socketUrl = 'wss://localhost:5021/ws';
-    @* const socketUrl = 'ws://localhost:5021/ws'; *@
     const PCECaseId = $('#PCECaseId').val();
     const chatMessages = $('.direct-chat-messages');
-    @* let socket = new WebSocket(socketUrl);  *@
 
-    $(document).ready(function () {       
-
-        @* socket.onopen = function() { 
-            console.log('WebSocket connection established'); 
-        };
-        socket.onclose = function() { 
-            console.log('WebSocket connection closed'); 
-            reconnect();
-        };
-        socket.onerror = function(error) { 
-            console.error('WebSocket error:', error); 
-        };
-        
-        socket.onmessage = function(event) {
-            const message = event.data;
-            if (message && message.length > 0) {
-                console.log("message: ", message);
-                updateChatMessages(message);
-                scrollToBottom();
-            }
-        }; *@
+    $(document).ready(function () {
 
         $('#SendButton').click(function (e) {
             e.preventDefault();
-            sendMessage();            
+            sendMessage();
         });
 
         @* setInterval(loadComments, 5000); *@
@@ -162,13 +139,6 @@
         var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
         return date.toLocaleString('en-US', options);
     }
-
-    @* function reconnect() {
-        setTimeout(() => {
-            console.log('Attempting to reconnect...');
-            socket = new WebSocket(socketUrl);
-        }, 5000); 
-    } *@
 
 </script>
 

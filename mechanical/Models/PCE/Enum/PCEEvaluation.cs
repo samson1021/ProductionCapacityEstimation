@@ -11,13 +11,37 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         RawMaterialForNextLine
     }
 
+    public enum ObsolescenceStatus
+    {
+        [Display(Name = "Current")]
+        Current,
+
+        [Display(Name = "Obsolete Soon")]
+        ObsoleteSoon,
+
+        [Display(Name = "Obsolete")]
+        Obsolete,
+
+        [Display(Name = "Under Review")]
+        UnderReview,
+
+        [Display(Name = "Not Applicable")]
+        NotApplicable,
+
+        [Display(Name = "Upgradable")]
+        Upgradable,
+
+        [Display(Name = "Requires Immediate Replacement")]
+        RequiresImmediateReplacement
+    }
+
     public enum MachineFunctionalityStatus
     {
         [Display(Name = "Functional at Time of Visit")]
         Functional,
 
         [Display(Name = "Not Functional at Time of Visit")]
-        NotFunctional
+        NonFunctional
     }
 
     public enum MachineNonFunctionalityReason
@@ -35,13 +59,13 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         Other
     }
 
-    public enum ProductionHourType
+    public enum ProductionLineType
     {
-        [Display(Name = "Per Shift")]
-        PerShift,
+        [Display(Name = "Mutually Exclusive")]
+        MutuallyExclusive,
 
-        [Display(Name = "Per Day")]
-        PerDay
+        [Display(Name = "Interdependent")]
+        Interdependent,
     }
 
     public enum ProductionMeasurement
@@ -62,7 +86,7 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         PerYear
     }
 
-    public enum ProductionUnit
+    public enum MeasurementUnit
     {
         [Display(Name = "Number")]
         Number,
@@ -127,4 +151,48 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "Other")]
         Other
     }
+
+    
+    public enum JustificationReason
+    {
+        [Display(Name = "The company refused to share input-output data as it considers confidential.")]
+        Confidentiality,
+
+        [Display(Name = "Legal or contractual obligations with partners prevent the disclosure of specific production details.")]
+        LegalObligations,
+
+        [Display(Name = "The company is not permitted for site visit team to access detailed production records.")]
+        AccessRestricted,
+
+        [Display(Name = "The site visit is too short to gather primary data in real-time.")]
+        InsufficientTime,
+
+        [Display(Name = "The plant is not operational during the visit.")]
+        PlantNotOperational,
+
+        [Display(Name = "Tracking input-output data is challenging due to highly complex or multi-stage processes.")]
+        ComplexProcesses,
+
+        [Display(Name = "Lack of cooperation by plant personnel to provide detailed information.")]
+        LackOfCooperation,
+
+        [Display(Name = "Measurement difficulties of some inputs or outputs that is hard to quantify accurately.")]
+        MeasurementDifficulties,
+
+        [Display(Name = "The company avoids scrutiny to hide inefficiencies, waste, or non-compliance with regulations by withholding data.")]
+        AvoidScrutiny,
+
+        [Display(Name = "The company assumes sharing input-output details may reveal competitive advantages or disadvantages.")]
+        CompetitiveConcerns,
+
+        [Display(Name = "The company avoids sharing data believing that the information will reflect poorly on its operations.")]
+        FearOfNegativeReflection,
+
+        [Display(Name = "The purpose of the site visit is not well-explained by CRM, hence, the company is not willing to provide the necessary information.")]
+        PurposeNotExplained,
+
+        [Display(Name = "Others, please specify the reason (comment box).")]
+        Others
+    }
+
 }

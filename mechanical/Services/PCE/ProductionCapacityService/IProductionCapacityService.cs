@@ -8,7 +8,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
     public interface IProductionCapacityService
     {
         Task<ProductionCapacity> CreateProductionCapacity(Guid UserId, Guid PCECaseId, ProductionPostDto createProductionDto);
-        Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionEdittDto createProductionDto);
+        Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionEditDto createProductionDto);
         Task<bool> DeleteProduction(Guid UserId, Guid Id);
         
         Task<bool> DeleteProductionFile(Guid UserId, Guid Id);

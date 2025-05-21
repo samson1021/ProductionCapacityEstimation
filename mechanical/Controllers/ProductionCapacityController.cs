@@ -17,6 +17,7 @@ using mechanical.Models.PCE.Enum.ProductionCapacity;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.ProductionCapacityService;
+using mechanical.Models.Entities;
 
 namespace mechanical.Controllers
 {
@@ -62,12 +63,14 @@ namespace mechanical.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ProductionEdittDto ProductionDto)
+        public async Task<IActionResult> Edit(Guid id, ProductionEditDto ProductionDto)
         {
             if (ModelState.IsValid)
             {
                 var production = await _ProductionCapacityService.EditProduction(base.GetCurrentUserId(), id, ProductionDto);
-                return RedirectToAction("Detail", "ProductionCapacity", new { Id = production.Id });
+               // return RedirectToAction("Detail", "ProductionCapacity", new { Id = production.Id });
+                return RedirectToAction("Detail", "PCECase", new { Id = production.PCECaseId });
+
             }
             var response = await _ProductionCapacityService.GetProduction(base.GetCurrentUserId(), id);
             var file = await _UploadFileService.GetUploadFileByCollateralId(id);

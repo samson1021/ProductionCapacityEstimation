@@ -28,6 +28,7 @@ using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Login;
 using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
+using mechanical.Models.Dto.InternalReport;
 
 
 namespace mechanical.Mapper
@@ -40,8 +41,8 @@ namespace mechanical.Mapper
             CreateMap<CivilCollateralPostDto, Collateral>();
             CreateMap<AgricultureCollateralPostDto, Collateral>();
             CreateMap<Collateral, ReturnCollateralDto>()
-                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
-                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => EnumToDisplayName(src.Category)))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => EnumToDisplayName(src.Type)));
 
             CreateMap<CaseCommentPostDto, CaseComment>();
             CreateMap<CaseComment,CaseCommentReturnDto>()
@@ -58,22 +59,34 @@ namespace mechanical.Mapper
             CreateMap<Case, CaseReturntDto>()
                 .ForMember(dest => dest.District,opt=>opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+
             CreateMap<Case, CaseDto>()
                 .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src=>src.CaseOriginator.Department))
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
 
+            ///////////
+            ///
+
+
+            CreateMap<Case, InternalCaseReportDto>()
+                .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src => src.CaseOriginator.Department))
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+            ////////
+
+
             CreateMap<Case, CaseTerminateDto>()
-               .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-               .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
             CreateMap<Case, RMCaseDto>()
-              .ForMember(dest => dest.Center, opt => opt.MapFrom(src => src.District.Name))
-              .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+                .ForMember(dest => dest.Center, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
             CreateMap<Case,MMNewCaseDto>()
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
             CreateMap<Case, MMCaseDto>()
-               .ForMember(dest => dest.Center, opt => opt.MapFrom(src => src.District.Name))
-               .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+                .ForMember(dest => dest.Center, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
 
             CreateMap<CaseTimeLinePostDto, CaseTimeLine>();
             CreateMap<CorrectionPostDto, Correction>();
@@ -99,7 +112,7 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.MotorVehicleMake, opt => opt.MapFrom(src => EnumToDisplayName(src.MotorVehicleMake)))
                 .ForMember(dest => dest.AllocatedPointsRange, opt => opt.MapFrom(src => EnumToDisplayName(src.AllocatedPointsRange)))
                 .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
-         
+
             CreateMap<ConstMngAgrMachinery, ConstMngAgMachineryReturnDto>()
                 .ForMember(dest => dest.constructionMiningAgriculturalMachineryType, opt => opt.MapFrom(src => EnumToDisplayName(src.constructionMiningAgriculturalMachineryType)))
                 .ForMember(dest => dest.TransmissionType, opt => opt.MapFrom(src => EnumToDisplayName(src.TransmissionType)))
@@ -118,15 +131,15 @@ namespace mechanical.Mapper
             CreateMap<ConstMngAgrMachineryPostDto, ConstMngAgrMachinery>();
             CreateMap<ConstMngAgrMachinery, ConstMngAgrMachineryPostDto>();
             CreateMap<MoRejectCaseDto, Reject>();
-          
+
             CreateMap<IndBldgFacilityEquipmentPostDto, IndBldgFacilityEquipment>();
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentReturnDto>()
-             .ForMember(dest => dest.IndustrialBuildingMachineryType, opt => opt.MapFrom(src => EnumToDisplayName(src.IndustrialBuildingMachineryType)))
-             .ForMember(dest => dest.EngineType, opt => opt.MapFrom(src => EnumToDisplayName(src.EngineType)))
-             .ForMember(dest => dest.PowerSupply, opt => opt.MapFrom(src => EnumToDisplayName(src.PowerSupply)))
-             .ForMember(dest => dest.TechnologyStandard, opt => opt.MapFrom(src => EnumToDisplayName(src.TechnologyStandard)))
-             .ForMember(dest => dest.AllocatedPointsRange, opt => opt.MapFrom(src => EnumToDisplayName(src.AllocatedPointsRange)))
-             .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
+                .ForMember(dest => dest.IndustrialBuildingMachineryType, opt => opt.MapFrom(src => EnumToDisplayName(src.IndustrialBuildingMachineryType)))
+                .ForMember(dest => dest.EngineType, opt => opt.MapFrom(src => EnumToDisplayName(src.EngineType)))
+                .ForMember(dest => dest.PowerSupply, opt => opt.MapFrom(src => EnumToDisplayName(src.PowerSupply)))
+                .ForMember(dest => dest.TechnologyStandard, opt => opt.MapFrom(src => EnumToDisplayName(src.TechnologyStandard)))
+                .ForMember(dest => dest.AllocatedPointsRange, opt => opt.MapFrom(src => EnumToDisplayName(src.AllocatedPointsRange)))
+                .ForMember(dest => dest.CurrentEqpmntCondition, opt => opt.MapFrom(src => EnumToDisplayName(src.CurrentEqpmntCondition)));
 
             CreateMap<IndBldgFacilityEquipmentCostsPostDto, IndBldgFacilityEquipmentCosts>();
             CreateMap<IndBldgFacilityEquipmentCosts, IndBldgFacilityEquipmentCostsReturnDto>();
@@ -146,6 +159,7 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.Status, opt => opt.Ignore());
 
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
+
             CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
 
 
@@ -171,17 +185,16 @@ namespace mechanical.Mapper
 
             //manufatring PCE
             CreateMap<ProductionPostDto, ProductionCapacity>().ReverseMap();
-            CreateMap<ProductionCapacity, ProductionEdittDto>().ReverseMap();
+            CreateMap<ProductionCapacity, ProductionEditDto>().ReverseMap();
             CreateMap<ProductionCapacity, ProductionReturnDto>()
-
-                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
-                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+                    .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                    .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
             CreateMap<PCECaseAssignmentDto, PCECaseAssignment>().ReverseMap();
             ////////////
             CreateMap<PCECase, PCECaseTerminateDto>()
-              .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-              .ForMember(dest => dest.TotalNoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
+                .ForMember(dest => dest.TotalNoOfProductions, opt => opt.MapFrom(src => src.ProductionCapacities.Count()));
 
             CreateMap<PCECaseTerminatePostDto, PCECaseTerminate>().ReverseMap();
             CreateMap<PCECaseTerminateReturnDto, PCECaseTerminate>().ReverseMap();
@@ -196,17 +209,24 @@ namespace mechanical.Mapper
 
             /////////////
             CreateMap<DateTimeRange, DateTimeRangePostDto>().ReverseMap();
-            CreateMap<TimeInterval, TimeIntervalPostDto>().ReverseMap();
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
-            CreateMap<TimeInterval, TimeIntervalReturnDto>().ReverseMap();
+            CreateMap<DateTimeRange, DateTimeRangeUpdateDto>().ReverseMap();
+            CreateMap<DateTimeRangeReturnDto, DateTimeRangeUpdateDto>().ReverseMap();
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
-            CreateMap<ReturnedProductionPostDto, ReturnedProduction>();           
+            CreateMap<ReturnedProductionPostDto, ReturnedProduction>();
             CreateMap<ReturnedProduction, ReturnedProductionDto>();
 
             CreateMap<PCEEvaluationReturnDto, PCEEvaluationPostDto>();
-            CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>().ReverseMap();
+            CreateMap<PCEEvaluationReturnDto, PCEEvaluationUpdateDto>()
+                .ForMember(dest => dest.WitnessForm, opt => opt.MapFrom(src => src.WitnessForm))
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.MapFrom(src => src.SupportingEvidences))
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.MapFrom(src => src.ProductionProcessFlowDiagrams))
+                .ReverseMap()
+                // .ForMember(dest => dest.PCE, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedFiles, opt => opt.Ignore());
 
             CreateMap<PCEEvaluation, PCEEvaluationPostDto>()
+                .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
@@ -214,17 +234,46 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
 
             CreateMap<PCEEvaluation, PCEEvaluationUpdateDto>()
+                .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
                 .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductionLines, opt => opt.MapFrom(src => src.ProductionLines.OrderBy(pl => pl.LineName)))
+                .ForMember(dest => dest.Justifications, opt => opt.MapFrom(src => src.Justifications.OrderBy(j => (int)j.Reason)))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
                 .ReverseMap()
+                .ForMember(dest => dest.ProductionLines, opt => opt.MapFrom(src => src.ProductionLines.OrderBy(pl => pl.LineName)))
+                .ForMember(dest => dest.Justifications, opt => opt.MapFrom(src => src.Justifications.OrderBy(j => (int)j.Reason)))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck));
 
             CreateMap<PCEEvaluation, PCEEvaluationReturnDto>()
+                .ForMember(dest => dest.ProductionLines, opt => opt.MapFrom(src => src.ProductionLines.OrderBy(pl => pl.LineName)))
+                .ForMember(dest => dest.Justifications, opt => opt.MapFrom(src => src.Justifications.OrderBy(j => (int)j.Reason)))
                 .ForMember(dest => dest.TimeConsumedToCheck, opt => opt.MapFrom(src => src.TimeConsumedToCheck))
+                .ForMember(dest => dest.UploadedFiles, opt => opt.Ignore())
+                .ForMember(dest => dest.WitnessForm, opt => opt.Ignore())
+                .ForMember(dest => dest.SupportingEvidences, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductionProcessFlowDiagrams, opt => opt.Ignore())
                 .ReverseMap();
 
-            CreateMap<ProductionLineEvaluation,ProductionLineEvaluationDto>().ReverseMap();
+            CreateMap<ProductionLine, ProductionLineReturnDto>()
+                .ForMember(dest => dest.ProductionLineInputs, opt => opt.MapFrom(src => src.ProductionLineInputs.OrderBy(input => input.Type)))
+                .ReverseMap();
+
+            CreateMap<ProductionLine, ProductionLineUpdateDto>()
+                .ForMember(dest => dest.ProductionLineInputs, opt => opt.MapFrom(src => src.ProductionLineInputs.OrderBy(input => input.Type)))
+                .ReverseMap();
+            CreateMap<ProductionLine, ProductionLinePostDto>().ReverseMap();
+            CreateMap<ProductionLineReturnDto, ProductionLineUpdateDto>().ReverseMap();
+
+            CreateMap<ProductionLineInput, ProductionLineInputReturnDto>().ReverseMap();
+            CreateMap<ProductionLineInput, ProductionLineInputUpdateDto>().ReverseMap();
+            CreateMap<ProductionLineInput, ProductionLineInputPostDto>().ReverseMap();
+            CreateMap<ProductionLineInputReturnDto, ProductionLineInputUpdateDto>().ReverseMap();
+
+            CreateMap<Justification, JustificationReturnDto>().ReverseMap();
+            CreateMap<Justification, JustificationUpdateDto>().ReverseMap();
+            CreateMap<Justification, JustificationPostDto>().ReverseMap();
+            CreateMap<JustificationReturnDto, JustificationUpdateDto>().ReverseMap();
             ///////
         }
 

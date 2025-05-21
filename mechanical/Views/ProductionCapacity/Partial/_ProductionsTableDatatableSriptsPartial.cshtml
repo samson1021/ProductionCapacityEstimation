@@ -83,8 +83,6 @@
                                     if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
                                     {                           
                                         <text>
-                                        console.log("sdfsdgfdsg", row.AssignedEvaluatorId);
-                                                console.log("sdfsdgfdsg", '@currentUser?.Id');
                                             if (row.AssignedEvaluatorId === '@currentUser?.Id' && row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                                 
                                                 const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=' + data;

@@ -12,13 +12,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.WebSockets;
 using System.Collections.Concurrent;
 using System.Web.Services.Description;
 
 using mechanical;
 using mechanical.Data;
-using mechanical.WebSockets;
 using mechanical.Controllers;
 using mechanical.Models.Entities;
 
@@ -57,6 +55,7 @@ using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
 using Microsoft.AspNetCore.Authentication;
 using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Services.InternalReportService;
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,9 +94,14 @@ builder.Services.AddSwaggerGen();
 //            throw new InvalidOperationException("Connection string 'CbeCreditContext' not found.")));
 builder.Services.AddDbContext<CbeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CbeContext") ??
-                         throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
+                            throw new InvalidOperationException("Connection string 'CbeContext' not found.")));
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// builder.Services.AddHttpClient();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //production capacity estimation
+builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
@@ -107,7 +111,10 @@ builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
+// report
+builder.Services.AddScoped<IInternalReportService, InternalReportService>();
 
+//
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService, CaseAssignmentService>();
 builder.Services.AddScoped<ICaseTimeLineService, CaseTimeLineService>();
@@ -133,18 +140,7 @@ builder.Services.AddScoped<mechanical.Services.AuthenticatioinService.IAuthentic
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// Registering PCE services
-// builder.Services.AddHttpClient();
-// builder.Services.AddAutoMapper(typeof(Program));
-
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
-
-// builder.Services.AddTransient<IReportService, ReportService>();
-//////////////////////////////////////////////////////////////////////////////////////////////
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(options =>
@@ -184,13 +180,12 @@ var app = builder.Build();
 //}
 
 // Apply database migrations automatically (if any)
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-//    context.Database.Migrate();
-//    SeedUsersRolesAndDistricts.SeedData(app);
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
+    context.Database.Migrate();
+    SeedUsersRolesAndDistricts.SeedData(app);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -199,24 +194,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-/////////////////////////////// Chat web sockets //////////////////////////
-// Enable WebSocket support
-app.UseWebSockets();
-
-
-// Create an instance of your WebSocket handler
-var webSocketHandler = new WebSocketHandler();
-
-// Map the WebSocket endpoint
-app.Map("/ws", async context =>
-{
-    await webSocketHandler.HandleWebSocket(context);
-});
-
-// Start cleanup task for disconnected clients
-_ = Task.Run(() => webSocketHandler.CleanupDisconnectedClients());
-///////////////////////////////////////////////////////////////////////////
 
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();

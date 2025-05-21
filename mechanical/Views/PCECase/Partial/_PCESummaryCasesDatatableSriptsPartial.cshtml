@@ -2,51 +2,207 @@
     $(document).ready(function () {
         var PCECaseId = $('#PCECaseId').val();
 
-        function initializeDataTable(data) {
-            $('#summaryProductions').DataTable({
-                language: {
-                    emptyTable: "There is no production register for this PCE case."
+           function initializeDataTableProduction(data) {
+        $('#summaryProductions').DataTable({
+            language: {
+                emptyTable: "There is no production register for this PCE case."
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            scrollX: false,
+            data: data,
+            columns: [
+                {
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
+                    }
                 },
-                responsive: true,
-                pageLength: 8,
-                lengthChange: false,
-                autoWidth: false,
-                scrollX: true,
-                data: data,
-                columns: [
-                    { data: "PCE.SerialNo" },
-                    { data: "PCE.PropertyOwner" },
-                    { data: "ProductionLineOrEquipmentName" },
-                    { data: "PCE.ManufactureYear" },
-                    { data: "PCE.CountryOfOrgin" },
-                    { data: "PCE.ModelNo" },
-                    { data: "PCE.InvoiceNo" },
-                    { data: "PCE.LHCNumber" },
-                    { data: "PCE.Type" },
-                    { data: "PCE.SerialNo" },
-                    { data: "DepreciationRateApplied" },
-                    { data: "ActualProductionCapacity" },
-                    { data: "EstimatedProductionCapacity" },
-                    { data: "SurveyRemark" }
-                ]
+                { data: "PCE.PropertyOwner" },
+                { data: "PCE.ManufactureYear" },
+                { data: "PCE.CountryOfOrigin" },
+                { data: "PCE.ModelNo" },
+                { data: "PCE.InvoiceNo" },
+                { data: "PCE.LHCNumber" },
+                { data: "PCE.Type" },
+                { data: "PCE.SerialNo" },
+                // { data: "DepreciationRateApplied" },
+                // { data: "ActualProductionCapacity" },
+                // { data: "EstimatedProductionCapacity" },
+                // { data: "SurveyRemark" }
+            ]
+        });
+    }
+
+     function initializeDataTableEvalauion(data) {
+        $('#summaryEvaluatons').DataTable({
+            language: {
+                emptyTable: "There is no evalauton register for the above PCE."
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            scrollX: false,
+            data: data,
+            columns: [
+                {
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
+                    }
+                },
+                { data: "PCE.PropertyOwner" },
+                // { data: "PCE.ManufactureYear" },
+                // { data: "PCE.CountryOfOrigin" },
+                // { data: "PCE.ModelNo" },
+                // { data: "PCE.InvoiceNo" },
+                // { data: "PCE.LHCNumber" },
+                // { data: "PCE.Type" },
+                // { data: "PCE.SerialNo" },
+                { data: "DepreciationRateApplied" },
+                { data: "ActualProductionCapacity" },
+                { data: "EstimatedProductionCapacity" },
+                { data: "SurveyRemark" }
+            ]
+        });
+    }
+
+     
+       // Function to initialize the data table and populate it with evaluations
+           function initializeDataTableLinEvalatione(data, tableId) {
+        $(`#${tableId}`).DataTable({
+            language: {
+                emptyTable: "There is no line valuation registered for the above PCE valuation."
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            scrollX: false,
+            data: data,
+            columns: [
+                {
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
+                    }
+                },
+                { data: "PropertyOwner" },
+                { data: "LineName" },
+                { data: "InputType" },
+                { data: "OutputType" },
+                { data: "OutputQuantity" },
+                { data: "InputOutputConversion" },
+                { data: "OutputPhase" },
+                { data: "ProductionUnit" }
+            ]
+        });
+    }
+
+        function loadProductions() {
+        $.ajax({
+            url: '/PCECase/GetPCESummary?PCECaseId=' + PCECaseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#summaryProductions')) {
+                    $('#summaryProductions').DataTable().destroy();
+                }
+                if ($.fn.DataTable.isDataTable('#summaryEvaluatons')) {
+                    $('#summaryEvaluatons').DataTable().destroy();
+                }
+
+                if ($.fn.DataTable.isDataTable('#summaryProductionsoflineValuations')) {
+                    $('#summaryProductionsoflineValuations').DataTable().destroy();
+                }
+                initializeDataTableProduction(data);
+                initializeDataTableEvalauion(data);
+
+                    // Create an object to hold arrays of evaluations grouped by PCEEvaluationId
+    const groupedEvaluations = {};
+
+    // Loop through each evaluation
+    data.forEach(function (evaluation) {
+        console.log(`PCE Evaluation: ${evaluation.Id}`);
+
+        if (evaluation.ProductionLines) {
+            evaluation.ProductionLines.forEach(function (lineEvaluation) {
+                console.log(`  Line Evaluation: ${lineEvaluation.Id}`);
+                console.log(`  Output Type: ${lineEvaluation.OutputType}`);
+
+                // Gather data for DataTable
+                const entry = {
+                    PropertyOwner: evaluation.PCE.PropertyOwner,
+                    LineName: lineEvaluation.LineName,
+                    InputType: lineEvaluation.InputType,
+                    OutputType: lineEvaluation.OutputType,
+                    OutputQuantity: lineEvaluation.OutputQuantity,
+                    InputOutputConversion: lineEvaluation.InputOutputConversion,
+                    OutputPhase: lineEvaluation.OutputPhase,
+                    ProductionUnit: lineEvaluation.ProductionUnit,
+                    PCEEvaluationId: lineEvaluation.PCEEvaluationId,
+                };
+
+                // Group by PCEEvaluationId
+                if (!groupedEvaluations[lineEvaluation.PCEEvaluationId]) {
+                    groupedEvaluations[lineEvaluation.PCEEvaluationId] = [];
+                }
+                groupedEvaluations[lineEvaluation.PCEEvaluationId].push(entry);
             });
         }
-        function loadProductions() {
-            $.ajax({
-                url: '/PCECase/GetPCESummary?PCECaseId=' + PCECaseId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#summaryProductions')) {
-                        $('#summaryProductions').DataTable().destroy();
-                    }
-                    initializeDataTable(data);
-                },
-                error: function (error) {
-                    toastr.error("Failed to load Productions");
-                    console.log(error);
-                }
-            });
+    });
+
+    // Initialize a DataTable for each group of evaluations
+        // Initialize a counter for valuations
+    let Numberofvaluation = 0;
+
+    // Initialize a DataTable for each group of evaluations
+    for (const pceId in groupedEvaluations) {
+        const evaluationArray = groupedEvaluations[pceId];
+
+        // Increment the valuation number for each table
+        Numberofvaluation++;
+
+        // Create a unique table ID for each PCEEvaluationId
+        const tableId = `summaryEvaluatons_${pceId}`;
+
+        // Append a new table to the HTML (make sure you have a container for this)
+        $('#tablesContainer').append(`
+            <table id="${tableId}" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
+                <thead>
+                    <tr>
+                        <th colspan="9" style="text-align: left;"> Production line valuation of number #${Numberofvaluation} valuation</th>
+                    </tr>
+                    <tr>
+                        <th>SN</th>
+                        <th>Property Owner</th>
+                        <th>Production Line</th>
+                        <th>Input Type</th>
+                        <th>Output Type</th>
+                        <th>Output Quantity</th>
+                        <th>Input/Output Conversion</th>
+                        <th>Output Phase</th>
+                        <th>Production Unit</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        `);
+
+        // Initialize the DataTable
+        initializeDataTableLinEvalatione(evaluationArray, tableId);
+    }
+    
+            },
+            error: function (error) {
+                toastr.error("Failed to load Productions");
+                console.log(error);
+            }
+        });
+
         }
         loadProductions();
     });
