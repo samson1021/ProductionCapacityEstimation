@@ -33,7 +33,7 @@ namespace mechanical.Services.PCE.PCECaseService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             { 
-                var user = _cbeContext.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
+                var user = _cbeContext.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
                 var pceCase = _mapper.Map<PCECase>(pceCaseDto);
                 
                 pceCase.Id = Guid.NewGuid();
@@ -373,6 +373,7 @@ namespace mechanical.Services.PCE.PCECaseService
                                             .Where(res => res.Id == Id && res.CurrentStatus == "Completed" &&
                                                           res.CurrentStage == "Relation Manager")
                                             .ToListAsync();
+
             var pceCase = _cbeContext.PCECases
                                     .Include(res => res.District)
                                     .Include(res => res.BusinessLicense)
@@ -472,16 +473,12 @@ namespace mechanical.Services.PCE.PCECaseService
             };
         }
 
-
-        //
-        //
-        //
-
         public async Task<PCEReportDataDto> GetPCEAllReportData(Guid Id)
         {
 
             var pceCase = _cbeContext.PCECases.Where(c => c.Id==Id).FirstOrDefault();
             var productions = await _cbeContext.ProductionCapacities.Where(res => res.PCECaseId == Id).ToListAsync();
+
             //var pceEvaluations = await _cbeContext.PCEEvaluations
             //                                    .Include(e => e.TimeConsumedToCheck)
             //                                    .Where(c=>productions.Select(d=>d.Id).Contains(c.PCEId)).ToListAsync();

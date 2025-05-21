@@ -41,6 +41,7 @@ namespace mechanical.Services.CollateralService
             {
                 collateral.PlateNo = createCollateralDto.CPlateNo;
             }
+
             collateral.Id = Guid.NewGuid();
             collateral.CaseId = caseId;
             try
@@ -55,10 +56,10 @@ namespace mechanical.Services.CollateralService
                     await this.UploadFile(userId, "Packing List", collateral, createCollateralDto.PackingList);
                     await this.UploadFile(userId, "LHC", collateral, createCollateralDto.TitleDeed);
                 }
-              
+
                 await this.UploadFile(userId, "Commercial Invoice", collateral, createCollateralDto.CommercialInvoice);
                 await this.UploadFile(userId, "Custom Declaration", collateral, createCollateralDto.CustomDeclaration);
-               
+
                 await this.UploadFile(userId, "Sales Document", collateral, createCollateralDto.SalesDocument);
                 if(createCollateralDto.OtherDocument != null)
                 {
@@ -84,7 +85,7 @@ namespace mechanical.Services.CollateralService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Relation Manager"
             });
 
@@ -102,7 +103,7 @@ namespace mechanical.Services.CollateralService
                         {
                             File = otherDocument ?? throw new ArgumentNullException(nameof(otherDocument)),
                             CaseId = caseId,
-                            Catagory = DocumentType
+                            Category = DocumentType
                         };
                         await _uploadFileService.CreateUploadFile(userId, moDocuments);
                     }
@@ -116,6 +117,7 @@ namespace mechanical.Services.CollateralService
             }
            
         }
+
         public async Task<Collateral> CreateCivilCollateral(Guid userId, Guid caseId, CivilCollateralPostDto createCivilCollateralDto)
         {
             var collateral = _mapper.Map<Collateral>(createCivilCollateralDto);
@@ -157,7 +159,7 @@ namespace mechanical.Services.CollateralService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Relation Manager"
             });
 
@@ -198,7 +200,7 @@ namespace mechanical.Services.CollateralService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Relation Manager"
             });
 
@@ -207,7 +209,7 @@ namespace mechanical.Services.CollateralService
 
         public async Task<IEnumerable<CollateralAssignmentDto>> GetMyAssignmentCollateral(Guid UserId, Guid CaseId)
         {
-            var userSupervised= await _cbeContext.CreateUsers.Where(res=>res.SupervisorId==UserId).ToListAsync();
+            var userSupervised= await _cbeContext.Users.Where(res=>res.SupervisorId==UserId).ToListAsync();
             var collateralAssigmentDtos = new List<CollateralAssignmentDto>();
 
             foreach (var item in userSupervised)
@@ -300,7 +302,7 @@ namespace mechanical.Services.CollateralService
                     File = file,
                     CaseId = collateral.CaseId,
                     CollateralId = collateral.Id,
-                    Catagory = Category
+                    Category = Category
                 });
             }
         }
@@ -390,9 +392,10 @@ namespace mechanical.Services.CollateralService
             }
             return returnCollateralDtos;
         }
+
         public async Task<IEnumerable<ReturnCollateralDto>> GetCMCollaterals(Guid userId, Guid CaseId)
         {
-            var user = await _cbeContext.CreateUsers.Include(res=>res.District).FirstOrDefaultAsync(res=>res.Id == userId);
+            var user = await _cbeContext.Users.Include(res=>res.District).FirstOrDefaultAsync(res=>res.Id == userId);
             if(user.District.Name == "Head Office")
             {
                 var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status == "New").ToListAsync();
@@ -748,7 +751,7 @@ namespace mechanical.Services.CollateralService
             }
             return false;
         }
-        public async Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory)
+        public async Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCategory)
         {
             var collateral = await _cbeContext.Collaterals.FindAsync(caseId);
             if (collateral == null)
@@ -760,7 +763,7 @@ namespace mechanical.Services.CollateralService
             {
                 File = file ?? throw new ArgumentNullException(nameof(file)),
                 CollateralId = caseId,
-                Catagory = DocumentCatagory,
+                Category = DocumentCategory,
                
             };
              if(await _uploadFileService.CreateUploadFile(userId, CollateralFile)!=Guid.Empty)

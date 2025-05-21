@@ -10,7 +10,7 @@ namespace mechanical.Models.Entities
         public required string Content { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public CreateUser? Author { get; set; }
+        public User? Author { get; set; }
         public Case? Case { get; set; }
     }
 }

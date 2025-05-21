@@ -18,8 +18,8 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         Task<ProductionReturnDto> GetProduction(Guid UserId, Guid Id);
         Task<IEnumerable<ProductionReturnDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
         Task<int> GetProductionCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
-       
+
         Task<IEnumerable<ProductionReturnDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId);
-        Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId);        
+        Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId);
     }
 }

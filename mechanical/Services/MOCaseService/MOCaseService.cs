@@ -77,14 +77,14 @@ namespace mechanical.Services.MOCaseService
             await _cbeContext.SaveChangesAsync();
 
             var cases = await _cbeContext.Cases.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == collateral.CaseId);
-            var user = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == userId);
+            var user = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == userId);
             if(user == null)
             {
                 return false;
             }
             if(user?.District?.Name == "Head Office")
             {
-                var checker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
+                var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
                 if(checker == null) return false;
                 var caseAssignment = new CaseAssignment()
                 {
@@ -110,7 +110,7 @@ namespace mechanical.Services.MOCaseService
             }
             else
             {
-                var checker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == user.DistrictId && res.Role.Name == "District Valuation Manager");
+                var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == user.DistrictId && res.Role.Name == "District Valuation Manager");
                 var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == CollateralId && res.UserId == checker.Id).FirstOrDefaultAsync();
                 if(caseAssignment == null) return false;
                 caseAssignment.Status = "Checker New";

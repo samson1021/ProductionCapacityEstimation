@@ -171,11 +171,33 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>       
+                    </li>
+
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p> Task Management<i class="fas fa-angle-left right"></i> </p>
+                        </a>
+                        <ul class="nav nav-treeview pl-3">
+                            <li class="nav-item">
+                                <a href="@Url.Action("SharedTasks", "TaskManagment")" class="nav-link">
+                                    <i class="fas fa-user-friends nav-icon"></i>
+                                    <p>Shared Tasks</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("ReceivedTasks", "TaskManagment")" class="nav-link">
+                                    @* <i class="fas fa-inbox nav-icon"></i> *@
+                                    <i class="fas fa-tasks nav-icon"></i>
+                                    <p>Received Tasks</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 }
                 else if (@userRole == "Maker Manager")
                 {
-                     <li class="nav-item has-treeview">
+                    <li class="nav-item has-treeview">
 
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
@@ -218,8 +240,8 @@
                                     <p> Interanl Report  </p>
                                 </a>
                             </li>
-                       </ul>
-                    </li> 
+                        </ul>
+                    </li>
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
@@ -716,3 +738,34 @@
         </nav>
     </div>
 </aside>
+
+<style>
+    .nav-link {
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-link:hover {
+        background-color: #007bff;
+        color: white;
+        border-radius: 0.25rem;
+    }
+
+    .nav-icon {
+        margin-right: 8px;
+    }
+
+    .nav-treeview {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+
+    .nav-treeview .nav-link {
+        color: #555;
+    }
+
+    .nav-treeview .nav-link:hover {
+        background-color: #e2e6ea;
+        color: #007bff;
+    }
+</style>

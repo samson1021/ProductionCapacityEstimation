@@ -226,7 +226,7 @@
 @section Scripts {
     <script>
         $(function () {
-                    document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.getElementById('insuranceCostDropdown');
 
             if (dropdown && dropdown.options.length <= 1) {
@@ -280,29 +280,28 @@
 }
 <script>
     document.getElementById('GetExchangeRate').addEventListener('click', function () {
-            var currency = document.getElementById("Currency").value;
-            if(currency == "" || currency == null){
-                  toastr.error("please select currency ...");
-                  return;
+        var currency = document.getElementById("Currency").value;
+        if(currency == "" || currency == null){
+                toastr.error("please select currency ...");
+                return;
+        }
+        showLoadingIndicator();
+
+        $.ajax({
+            type: 'POST',
+            url: '/MotorVehicle/Currency',
+            data: { currency: currency },
+            success: function (response) {
+                console.log(response);
+                document.getElementById("ExchangeRate").value = response.exchangeRate;
+                hideLoadingIndicator();
+            },
+            error: function (xhr, status, error) {
+                toastr.error("Exchange rate service is not working ...");
+                hideLoadingIndicator();
             }
-            showLoadingIndicator();
-
-            $.ajax({
-                type: 'POST',
-                url: '/MotorVehicle/Currency',
-                data: { currency: currency },
-                success: function (response) {
-                    console.log(response);
-                    document.getElementById("ExchangeRate").value = response.exchangeRate;
-                    hideLoadingIndicator();
-                },
-                error: function (xhr, status, error) {
-                    toastr.error("Exchange rate service is not working ...");
-                    hideLoadingIndicator();
-                }
-            });
         });
-
+    });
 
     function showLoadingIndicator() {
         document.body.style.pointerEvents = 'none';
@@ -644,7 +643,7 @@
     <option value="Slovakia" />
     <option value="Slovenia" />
     <option value="Solomon Islands" />
-    <option value="Somali" />
+    <option value="Somalia" />
     <option value="South Africa" />
     <option value="South Georgia and The South Sandwich Islands" />
     <option value="Spain" />

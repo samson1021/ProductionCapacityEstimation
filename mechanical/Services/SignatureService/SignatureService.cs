@@ -27,7 +27,7 @@ namespace mechanical.Services.SignatureService
 
         public async Task<Signatures> CreateSignature(Guid userId, SignatureDto signatureDto)
         {
-            var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == userId).Select(c => c.emp_ID).FirstOrDefault();
+            var userIdss = _cbeContext.Users.Where(c => c.Id == userId).Select(c => c.emp_ID).FirstOrDefault();
 
             var isSignatureExist = await _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.Emp_Id).FirstOrDefaultAsync();
              if (isSignatureExist == null)
@@ -41,7 +41,7 @@ namespace mechanical.Services.SignatureService
                 {
                     File = signatureDto.File ?? throw new ArgumentNullException(nameof(signatureDto.File)),
                     CaseId = addSignature.Id,
-                    Catagory = "Signature"
+                    Category = "Signature"
                 };
                 byte[] fileBytes;
                 using (var memoryStream = new MemoryStream())
@@ -54,7 +54,7 @@ namespace mechanical.Services.SignatureService
                 addSignature.SignatureBase64String = Convert.ToBase64String(fileBytes);
                 addSignature.Emp_Id = signatureDto.Emp_Id;
                 addSignature.SignatureFileId = await _uploadFileService.CreateUploadFile(userId, signatureFee);
-                addSignature.CreateUserId = userId;
+                addSignature.UserId = userId;
                 addSignature.CreatedBy = userIdss;
                 addSignature.CreatedDate = DateTime.Now;
 
@@ -69,7 +69,7 @@ namespace mechanical.Services.SignatureService
         }
         public async Task<IEnumerable<ReturnSignatureDto>> Getsignature(string Id)
         {
-            var userId = _cbeContext.CreateUsers.Where(c => c.Id.ToString() == Id).Select(c => c.emp_ID).FirstOrDefault();
+            var userId = _cbeContext.Users.Where(c => c.Id.ToString() == Id).Select(c => c.emp_ID).FirstOrDefault();
             var signatureresponse = await _cbeContext.Signatures.Where(c => c.Emp_Id == userId).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnSignatureDto>>(signatureresponse);
         }

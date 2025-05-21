@@ -32,7 +32,7 @@ namespace mechanical.Services.CaseAssignmentService
         public async Task<List<CaseAssignmentDto>> SendForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
         {
             var centerId = Guid.Parse(CenterId);
-            var user = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Role.Name == "Maker Manager");
+            var user = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Role.Name == "Maker Manager");
             if (user == null)
             {
                 throw new Exception("sorry the center is not ready.");
@@ -81,7 +81,7 @@ namespace mechanical.Services.CaseAssignmentService
                             CurrentStage = "Maker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
 
                 }
                 var caseReEvaluation = new CollateralReestimation
@@ -100,9 +100,9 @@ namespace mechanical.Services.CaseAssignmentService
         {
             var centerId = Guid.Parse(CenterId);
             var districtName = await _cbeContext.Districts.Where(c=>c.Id== centerId).Select(c=>c.Name).FirstOrDefaultAsync();
-            var CivilUser = await _cbeContext.CreateUsers.Include(res=>res.District).FirstOrDefaultAsync(res=>res.DistrictId == centerId && res.Department =="Civil"&& (res.Role.Name=="Maker Manager" || res.Role.Name == "District Valuation Manager"));
-            var MechanicalUser = await _cbeContext.CreateUsers.Include(res=>res.District).FirstOrDefaultAsync(res=>res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name=="Maker Manager" || res.Role.Name == "District Valuation Manager"));
-            var AgricultureUser = await _cbeContext.CreateUsers.Include(res=>res.District).FirstOrDefaultAsync(res=>res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name=="Maker Manager" || res.Role.Name == "District Valuation Manager"));
+            var CivilUser = await _cbeContext.Users.Include(res=>res.District).FirstOrDefaultAsync(res=>res.DistrictId == centerId && res.Department =="Civil"&& (res.Role.Name=="Maker Manager" || res.Role.Name == "District Valuation Manager"));
+            var MechanicalUser = await _cbeContext.Users.Include(res=>res.District).FirstOrDefaultAsync(res=>res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name=="Maker Manager" || res.Role.Name == "District Valuation Manager"));
+            var AgricultureUser = await _cbeContext.Users.Include(res=>res.District).FirstOrDefaultAsync(res=>res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name=="Maker Manager" || res.Role.Name == "District Valuation Manager"));
              
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
                 List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -196,7 +196,7 @@ namespace mechanical.Services.CaseAssignmentService
                                 CurrentStage = "Maker Manager"
                             };
                         }
-                        caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+                        caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
 
                     }
                 }
@@ -209,7 +209,7 @@ namespace mechanical.Services.CaseAssignmentService
 
             Guid collateralCaseId = Guid.Empty;
             var UserId = Guid.Parse(employeeId);
-            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
+            var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
 
             List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -254,7 +254,7 @@ namespace mechanical.Services.CaseAssignmentService
                             CurrentStage = "Maker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
 
                     if (collateralCaseId == Guid.Empty)
                     {
@@ -275,7 +275,7 @@ namespace mechanical.Services.CaseAssignmentService
         {
             Guid collateralCaseId = Guid.Empty;
             var UserId = Guid.Parse(employeeId);
-            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
+            var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
 
             List<Guid> caseAssigmentIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -303,7 +303,7 @@ namespace mechanical.Services.CaseAssignmentService
                             CurrentStage = "Maker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
                     caseAssignments.Add(_mapper.Map<CaseAssignmentDto>(caseAssignment));
                     if (collateralCaseId == Guid.Empty)
                     {
@@ -324,7 +324,7 @@ namespace mechanical.Services.CaseAssignmentService
 
             Guid collateralCaseId = Guid.Empty;
             var UserId = Guid.Parse(employeeId);
-            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
+            var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
 
             List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -369,7 +369,7 @@ namespace mechanical.Services.CaseAssignmentService
                             CurrentStage = "Checker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
 
                     if (collateralCaseId == Guid.Empty)
                     {
@@ -390,7 +390,7 @@ namespace mechanical.Services.CaseAssignmentService
 
             Guid collateralCaseId = Guid.Empty;
             var UserId = Guid.Parse(employeeId);
-            var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
+            var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
 
             List<Guid> caseAssigmentIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -418,7 +418,7 @@ namespace mechanical.Services.CaseAssignmentService
                             CurrentStage = "Checker Manager"
                         };
                     }
-                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+                    caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
                     caseAssignments.Add(_mapper.Map<CaseAssignmentDto>(caseAssignment));
                     if (collateralCaseId == Guid.Empty)
                     {
@@ -462,7 +462,7 @@ namespace mechanical.Services.CaseAssignmentService
             //    Guid collateralCaseId = Guid.Empty;
             //    var httpContext = _httpContextAccessor.HttpContext;
             //    var UserId = Guid.Parse(employeeId);
-            //    var user = await _cbeContext.CreateUsers.FindAsync(UserId);
+            //    var user = await _cbeContext.Users.FindAsync(UserId);
             //    List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
 
             //    List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -495,7 +495,7 @@ namespace mechanical.Services.CaseAssignmentService
             //                    CurrentStage = "Checker Manager"
             //                };
             //            }
-            //            caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+            //            caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
             //            caseAssignments.Add(_mapper.Map<CaseAssignmentDto>(caseAssignment));
             //            if (collateralCaseId == Guid.Empty)
             //            {
@@ -513,7 +513,7 @@ namespace mechanical.Services.CaseAssignmentService
             //    Guid collateralCaseId = Guid.Empty;
             //    var httpContext = _httpContextAccessor.HttpContext;
             //    var UserId = Guid.Parse(employeeId);
-            //    var user = await _cbeContext.CreateUsers.FindAsync(UserId);
+            //    var user = await _cbeContext.Users.FindAsync(UserId);
             //    List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
 
             //    List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
@@ -552,7 +552,7 @@ namespace mechanical.Services.CaseAssignmentService
             //                    CurrentStage = "Checker Manager"
             //                };
             //            }
-            //            caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
+            //            caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
             //            caseAssignments.Add(_mapper.Map<CaseAssignmentDto>(caseAssignment));
             //            if (collateralCaseId == Guid.Empty)
             //            {

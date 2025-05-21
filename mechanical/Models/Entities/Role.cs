@@ -2,7 +2,7 @@
 
 namespace mechanical.Models.Entities
 {
-    public class CreateRole
+    public class Role
     {
         [Key]
         public Guid Id { get; set; }

@@ -28,6 +28,7 @@
         <div class="card" style="overflow: hidden; padding: 20px;">
             <div class="card-body">
                 <input value="@myPCECase.Id" type="hidden" id="PCECaseId" />
+
                 <h2 style="font-size: 1.5em; text-align: center; font-weight: bold; margin-bottom: 10px;">
                     Commercial Bank Of Ethiopia
                 </h2>
@@ -50,6 +51,7 @@
                     </thead>
                     <tbody>
                         <tr>
+
                             <td colspan="3">@myPCECase.CaseNo</td>                           
                             <td colspan="3" id="ApplicantName">@myPCECase.ApplicantName</td>
                             <td colspan="3">Unable to load </td>
@@ -107,19 +109,17 @@
                             <th>Type Manufacturing</th>
                             <th>Serial No.</th> *@
                             <th>Depreciation Rate</th>
-                            <th>Actual PC</th>
-                            <th>Estimated PC</th>
+                            <th>Actual Production Capacity</th>
+                            <th>Estimated Production Capacity</th>
                             <th>Remark</th>
                         </tr>
                     </thead>
                 </table>
 
-
                 <br/> 
                <h3 style="font-size: 0.5em; text-align: left; font-weight: bold; margin-bottom: 10px;"><h3> PART IV: Summary of line valuations </h3></h3>
                 @* Summary of line valuations *@
                <div id="tablesContainer"></div>
-
             </div>
         </div>
     </div>

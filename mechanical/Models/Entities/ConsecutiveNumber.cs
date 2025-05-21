@@ -6,7 +6,7 @@
         public Guid UserId { get; set; }
         public int NextNumber { get; set; }
 
-        public virtual CreateUser? User { get; set; }
+        public virtual User? User { get; set; }
 
     }
 }

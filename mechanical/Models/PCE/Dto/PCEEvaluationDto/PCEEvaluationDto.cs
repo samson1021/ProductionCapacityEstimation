@@ -107,7 +107,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
     {
         public Guid Id { get; set; }
         public ProductionCapacity PCE { get; set; }
-        public CreateUser Evaluator { get; set; }
+        public User Evaluator { get; set; }
 
         [Display(Name = "Evaluated By")]
         public Guid EvaluatorId { get; set; }

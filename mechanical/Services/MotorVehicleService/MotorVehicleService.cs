@@ -45,7 +45,7 @@ namespace mechanical.Services.MotorVehicleService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong class=\"text-sucess\">collateral maker Evaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong class=\"text-sucess\">collateral maker Evaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Maker Manager"
             });
 
@@ -196,7 +196,7 @@ namespace mechanical.Services.MotorVehicleService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong class=\"text-sucess\">collateral maker Revaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong class=\"text-sucess\">collateral maker Revaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Maker Manager"
             });
 

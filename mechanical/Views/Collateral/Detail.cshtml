@@ -9,11 +9,11 @@
     var Cavaluation = ViewData["Cavaluation"] as ConstMngAgMachineryReturnDto;
     var Ibvaluation = ViewData["Ibvaluation"] as IndBldgFacilityEquipmentReturnDto;
     var rejectedCollateral = ViewData["RejectedCollateral"] as Reject;
-    var user = ViewData["user"] as CreateUser;
-    var loggedRole = ViewData["loggedRole"] as CreateRole;
+    var user = ViewData["user"] as User;
+    var loggedRole = ViewData["loggedRole"] as Role;
     var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
     var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as Collateral;
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var restimation = ViewData["restimation"] as CollateralReestimation;
     // var motorVehicle = ViewData["motorVehicle"] as List<MotorVehicle>;
     // var indBldgFacEq = ViewData["indBldgFacEq"] as List<IndBldgFacilityEquipment>;

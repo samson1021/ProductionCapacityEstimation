@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace mechanical.Models.Enum
 {
-    public enum SubSegement
+    public enum SubSegment
     {
         [Display(Name ="Large Corporate")]
         LargeCorporate,

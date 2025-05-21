@@ -29,7 +29,6 @@
         commaPurposeType = string.Join(", ", Purpose);
         var name = IndBldgFacilityEquipment.Select(m => m.MechanicalEqpmntName).Distinct();
         commaSeparatedequipmentName = string.Join(", ", name);
-
     }
 
     var maker = IndBldgFacilityEquipment.Select(m => m.EvaluatorUser).Distinct();

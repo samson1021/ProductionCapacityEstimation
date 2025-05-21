@@ -40,7 +40,7 @@ namespace mechanical.Models.Dto.CollateralDto
         public string? HouseArea { get; set; }
         public string? Ownership { get; set; }
         public string? LHCNo { get; set; }
-       
+
         public required IFormFile?  TitleDeed { get; set; }
         public required IFormFile? CommercialInvoice { get; set; }
         public required IFormFile? CustomDeclaration { get; set; }

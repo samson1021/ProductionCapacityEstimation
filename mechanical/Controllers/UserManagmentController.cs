@@ -1,25 +1,26 @@
-﻿using mechanical.Models.Entities;
-using mechanical.Models;
-using mechanical.Data;
+﻿using AutoMapper;
+using Newtonsoft.Json;
+using System.Data;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
-using mechanical.Services.CaseTimeLineService;
+
+using mechanical.Data;
+using mechanical.Models;
+using mechanical.Models.Entities;
 using mechanical.Services.UserService;
-using System.Data;
+using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.AuthenticatioinService;
-using System.Text.Json;
-using AutoMapper;
 
 namespace mechanical.Controllers
 {
-    [Authorize(Roles = "Admin,Super Admin,Maker Manager,Maker TeamLeader")]
+    [Authorize(Roles = "Admin,Super Admin,Relation Manager,Maker Manager,Maker TeamLeader")]
     public class UserManagmentController : BaseController
     {
         private readonly CbeContext _context;
@@ -55,15 +56,15 @@ namespace mechanical.Controllers
         public JsonResult GetUsers()
         {
             var response = base.GetCurrentUserId();
-            var role = _context.CreateUsers.Include(c => c.Role).Where(res => res.Id == response).FirstOrDefault();
-            List<CreateUser> usersWithDistricts = new List<CreateUser>();
+            var role = _context.Users.Include(c => c.Role).Where(res => res.Id == response).FirstOrDefault();
+            List<User> usersWithDistricts = new List<User>();
             if (role.Name == "Admin")
             {
-                usersWithDistricts = _context.CreateUsers.Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Admin").ToList();
+                usersWithDistricts = _context.Users.Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Admin").ToList();
             }
             else
             {
-                usersWithDistricts = _context.CreateUsers.Include(u => u.District).Include(c => c.Role).ToList();
+                usersWithDistricts = _context.Users.Include(u => u.District).Include(c => c.Role).ToList();
             }
             var usersData = usersWithDistricts.Select(u => new
             {
@@ -104,7 +105,7 @@ namespace mechanical.Controllers
         }
         public JsonResult GetSupervisors(Guid roleId , Guid districtId,string Department)
         {
-            var result = _context.CreateRoles
+            var result = _context.Roles
                 .Where(u => u.Id == roleId)
                 .Select(u => new {
                     u.Id,
@@ -121,36 +122,34 @@ namespace mechanical.Controllers
             }
             //string RoleName = result.FirstOrDefault()?.Name;
             //Guid RoleId = (Guid)(result.FirstOrDefault()?.Id);
-            var allUsers = _context.CreateUsers.Where(u => u.RoleId == roleId).ToList();
+            var allUsers = _context.Users.Where(u => u.RoleId == roleId).ToList();
 
             if (RoleName == "Maker Officer")
             {
-                 allUsers = _context.CreateUsers.Where(u => u.Role.Name == "Maker TeamLeader" && u.DistrictId == districtId && u.Department == Department).ToList();
+                allUsers = _context.Users.Where(u => u.Role.Name == "Maker TeamLeader" && u.DistrictId == districtId && u.Department == Department).ToList();
             }
             else if (RoleName == "Checker Officer")
             {
-                var allRoles = _context.CreateRoles.Where(u => u.Name == "Checker TeamLeader").Select(
+                var allRoles = _context.Roles.Where(u => u.Name == "Checker TeamLeader").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                 allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
+                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
 
             }
             else if (RoleName == "Maker TeamLeader")
             {
-                var allRoles = _context.CreateRoles.Where(u => u.Name == "Maker Manager").Select(
+                var allRoles = _context.Roles.Where(u => u.Name == "Maker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
+                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
 
             }
             else if (RoleName == "Checker TeamLeader")
             {
-                var allRoles = _context.CreateRoles.Where(u => u.Name == "Checker Manager").Select(
+                var allRoles = _context.Roles.Where(u => u.Name == "Checker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-
-
-                allUsers = _context.CreateUsers.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
+                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
             }
             else {
                 allUsers = null;
@@ -160,7 +159,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<ActionResult> GetUserDetails(Guid id)
         {
-            var user = await _context.CreateUsers.FindAsync();
+            var user = await _context.Users.FindAsync();
             if (user == null)
             {
                 return NotFound();
@@ -173,12 +172,12 @@ namespace mechanical.Controllers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var teamLeaderId = Guid.Parse(httpContext.Session.GetString("userId"));
-            var manager = await _context.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == teamLeaderId);
+            var manager = await _context.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == teamLeaderId);
             if (manager == null || manager.Role.Name != "Maker TeamLeader")
             {
                 return BadRequest();
             }
-            var makerTeamleaders = _context.CreateUsers.Where(res => res.Role.Name == "Maker Officer" && res.SupervisorId == teamLeaderId).ToList();
+            var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.SupervisorId == teamLeaderId).ToList();
             return Json(makerTeamleaders);
         }
         [HttpGet]
@@ -187,12 +186,12 @@ namespace mechanical.Controllers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var teamLeaderId = Guid.Parse(httpContext.Session.GetString("userId"));
-            var manager = await _context.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == teamLeaderId);
+            var manager = await _context.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == teamLeaderId);
             if (manager == null || manager.Role.Name != "Checker TeamLeader")
             {
                 return BadRequest();
             }
-            var makerTeamleaders = _context.CreateUsers.Where(res => res.Role.Name == "Checker Officer" && res.SupervisorId == teamLeaderId).ToList();
+            var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Checker Officer" && res.SupervisorId == teamLeaderId).ToList();
             return Json(makerTeamleaders);
         }
         [AllowAnonymous]
@@ -201,81 +200,80 @@ namespace mechanical.Controllers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var managerId = Guid.Parse(httpContext.Session.GetString("userId"));
-            var manager = await _context.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
+            var manager = await _context.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
             if (manager.Role.Name == "District Valuation Manager")
             {
-                var makerTeamleader = _context.CreateUsers.Where(res => res.Role.Name == "Maker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+                var makerTeamleader = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
                 return Json(makerTeamleader);
             }
-            if (manager == null || manager.Role.Name != "Maker Manager" )
+
+            if (manager == null || manager.Role.Name != "Maker Manager")
             {
                 return BadRequest();
             }
             else
             {
-            var makerTeamleaders = _context.CreateUsers.Where(res=>res.Role.Name == "Maker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
-            return Json(makerTeamleaders);
+                var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Maker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+                return Json(makerTeamleaders);
             }
 
         }
         [HttpGet]
         [AllowAnonymous]
- 
         public async Task<ActionResult> GetCheckerTeamleader()
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var managerId = Guid.Parse(httpContext.Session.GetString("userId"));
-            var manager = await _context.CreateUsers.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
+            var manager = await _context.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
             if (manager.Role.Name == "District Valuation Manager")
             {
-                var checkerTeamleader = _context.CreateUsers.Where(res => res.Role.Name == "Checker Officer" && res.Department==manager.Department && res.DistrictId == manager.DistrictId).ToList();
+                var checkerTeamleader = _context.Users.Where(res => res.Role.Name == "Checker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
                 return Json(checkerTeamleader);
             }
             if (manager == null || manager.Role.Name != "Checker Manager")
             {
                 return BadRequest();
             }
-            var checkerTeamleaders = _context.CreateUsers.Where(res => res.Role.Name == "Checker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+            var checkerTeamleaders = _context.Users.Where(res => res.Role.Name == "Checker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
             return Json(checkerTeamleaders);
         }
         public JsonResult GetRole()
         {
             //var districts = _context.Districts.ToList();
-            var roles = _context.CreateRoles.Select(c => new { RoleId = c.Id, Name = c.Name }).ToList();
+            var roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).ToList();
             return Json(roles);
 
         }
         // GET: UserManagmentController/Create
         public IActionResult Create()
         {
-            //var roles = _context.CreateRoles.ToList();
+            //var roles = _context.Roles.ToList();
             return View();
-            
             /* var userrole = new UserRoleList
             {
                 ValueTask = IDataTokensMetadata;
             diplay=name;
           }
-        CreateUser.UserRoleList=userrole*/
+        User.UserRoleList=userrole*/
 
         }
         [HttpPost]
-        public async Task<IActionResult> Create(CreateUser model)
+        public async Task<IActionResult> Create(User model)
         {
-            var existingUser = await _context.CreateUsers.FirstOrDefaultAsync(res => res.Email == model.Email);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(res => res.Email == model.Email);
             if (existingUser != null)
             {
                 ModelState.AddModelError("Email", "A user with this email already exists.");
                 return View(model);
             }
-            existingUser = await _context.CreateUsers.FirstOrDefaultAsync(res => res.emp_ID == model.emp_ID);
+            existingUser = await _context.Users.FirstOrDefaultAsync(res => res.emp_ID == model.emp_ID);
             if (existingUser != null)
             {
                 ModelState.AddModelError("emp_ID", "A user with this Employee Id already exists.");
                 return View(model);
             }
             model.Status = "Activated";
-            await _context.CreateUsers.AddAsync(model);
+            await _context.Users.AddAsync(model);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
@@ -289,74 +287,122 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
         public JsonResult GetRoles()
-        {   var userId = base.GetCurrentUserId();
-            var RoleName = _context.CreateUsers.Include(res => res.Role).Where(c => c.Id == userId).FirstOrDefault();
+        {
+            var userId = base.GetCurrentUserId();
+            var RoleName = _context.Users.Include(res => res.Role).Where(c => c.Id == userId).FirstOrDefault();
             var roles = new List<object>();
             if (RoleName.Role.Name == "Super Admin")
             {
-                roles = _context.CreateRoles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name == "Admin").Cast<object>().ToList();
+                roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name == "Admin").Cast<object>().ToList();
             }
             if (RoleName.Role.Name == "Admin")
             {
-                roles = _context.CreateRoles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin").Cast<object>().ToList();
+                roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin").Cast<object>().ToList();
             }
 
             return Json(roles);
         }
+// <<<<<<< HEAD
        
+        // [HttpPost]
+        // public ActionResult Edit(User model)
+        // {
+
+        //     var user = _context.Users.FirstOrDefault(u => u.Id == model.Id);
+        //     if(user == null)
+        //     {
+        //         ModelState.AddModelError("", "User not found. Please try again.");
+        //         return View(model);
+        //     }
+        //     var employe = _authenticationService.GetEmployeeInfo(user.emp_ID);
+        //     _mapper.Map(model,user); 
+
+        //     _mapper.Map(employe, user);
+
+        //     _context.Users.Update(user);
+        //     _context.SaveChanges();
+
+        //     return RedirectToAction("Index");
+        // }
+
+        // [HttpGet]
+        // public async Task<ActionResult> Edit(Guid id)
+        // {
+        //     var user = _context.Users.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
+        //     ViewBag.Districts = await _context.Districts.ToListAsync();
+        //     ViewBag.Roles = await _context.Roles.ToListAsync();
+
+        //     //var supervisors = JsonConvert.DeserializeObject<IEnumerable<User>>(GetSupervisors(user.RoleId, user.DistrictId, user.Department).ToString());
+        //     //ViewBag.Supervisors =  GetSupervisors(user.RoleId, user.DistrictId, user.Department);
+// =======
+
         [HttpPost]
-        public ActionResult Edit(CreateUser model)
+        public ActionResult SaveEdited(User model)
         {
 
-            var user = _context.CreateUsers.FirstOrDefault(u => u.Id == model.Id);
-            if(user == null)
+            var user = _context.Users.FirstOrDefault(u => u.Id == model.Id);
+
+            user.Name = model.Name;
+            user.Email = model.Email;
+
+            user.Branch = model.Branch;
+            user.Status = model.Status;
+            user.Department = model.Department;
+            if (model.RoleId != Guid.Empty && model.RoleId != new Guid())
             {
-                ModelState.AddModelError("", "User not found. Please try again.");
-                return View(model);
+                user.RoleId = model.RoleId;
             }
-            var employe = _authenticationService.GetEmployeeInfo(user.emp_ID);
-            _mapper.Map(model,user); 
+            if (model.DistrictId != Guid.Empty && model.DistrictId != new Guid())
+            {
+                user.DistrictId = model.DistrictId;
+            }
 
-            _mapper.Map(employe, user);
+            //_context.Users.Update(model);
+            _context.Entry(user).State = EntityState.Modified;
 
-            _context.CreateUsers.Update(user);
+            // Save the changes to the database
             _context.SaveChanges();
+            // transaction.Commit();
+            // Redirect to a different action or view
 
-             return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
-
+        // GET: UserManagmentController/Edit/5
         [HttpGet]
-        public async Task<ActionResult> Edit(Guid id)
+        public ActionResult Edit(Guid id)
         {
-            var user = _context.CreateUsers.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
-            ViewBag.Districts = await _context.Districts.ToListAsync();
-            ViewBag.Roles = await _context.CreateRoles.ToListAsync();
-           
-            //var supervisors = JsonConvert.DeserializeObject<IEnumerable<CreateUser>>(GetSupervisors(user.RoleId, user.DistrictId, user.Department).ToString());
-            //ViewBag.Supervisors =  GetSupervisors(user.RoleId, user.DistrictId, user.Department);
+            var user = _context.Users.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
+// >>>>>>> upstream2/master
 
             return View(user);
         }
         public ActionResult Delete(Guid id)
         {
-            var user = _context.CreateUsers.FirstOrDefault(c => c.Id == id);
+            var user = _context.Users.FirstOrDefault(c => c.Id == id);
 
             return View(user);
-            
-            
         }
         // POST: UserManagmentController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid id, IFormCollection collection)
         {
-            var user = _context.CreateUsers.Find(id);
+            var user = _context.Users.Find(id);
 
-            _context.CreateUsers.Remove(user);
+            _context.Users.Remove(user);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPeerRMs()
+        {
+            var rms = await _userService.GetPeerRMs(base.GetCurrentUserId());
+            var result = rms
+                .Where(crm => crm.Id != base.GetCurrentUserId())
+                .Select(rm => new { Id = rm.Id, Name = rm.Name });
+            return Ok(result);
+        }
     }
 }

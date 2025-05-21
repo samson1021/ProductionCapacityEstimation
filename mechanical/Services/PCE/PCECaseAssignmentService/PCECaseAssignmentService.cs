@@ -122,18 +122,18 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             }
         }
 
-        private async Task<CreateUser> GetAssignedUser(string id, string OperationType)
+        private async Task<User> GetAssignedUser(string id, string OperationType)
         {
             if (OperationType == "Assign")
             {
-                return await _cbeContext.CreateUsers
+                return await _cbeContext.Users
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.Id == Guid.Parse(id));
             }
             else
             {
-                return await _cbeContext.CreateUsers
+                return await _cbeContext.Users
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
@@ -148,7 +148,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 
         }
 
-        private async Task AssignOrUpdateCase(Guid UserId, Guid PCEId, CreateUser assignedUser, List<PCECaseAssignmentDto> caseAssignments, string ReestimationReason, string OperationType)
+        private async Task AssignOrUpdateCase(Guid UserId, Guid PCEId, User assignedUser, List<PCECaseAssignmentDto> caseAssignments, string ReestimationReason, string OperationType)
         {
             var existingAssignment = await _cbeContext.PCECaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == assignedUser.Id);
 
@@ -193,7 +193,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             }
         }
 
-        private async Task UpdateProduction(ProductionCapacity production, CreateUser assignedUser, string OperationType)
+        private async Task UpdateProduction(ProductionCapacity production, User assignedUser, string OperationType)
         {
             production.CurrentStage = assignedUser.Role.Name;
 
@@ -230,7 +230,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             _cbeContext.ProductionCapacities.Update(production);
         }
 
-        private PCECaseTimeLinePostDto CreateTimelineDto(Guid PCECaseId, CreateUser assignedUser, bool isReassign, string OperationType)
+        private PCECaseTimeLinePostDto CreateTimelineDto(Guid PCECaseId, User assignedUser, bool isReassign, string OperationType)
         {
             string activity = $"<strong>Production has been {(isReassign ? "re-assigned" : "assigned")} to {assignedUser.Name} ({assignedUser.Role.Name}).</strong><br>";
             if (OperationType == "Reestimation" || OperationType == "Valuation")

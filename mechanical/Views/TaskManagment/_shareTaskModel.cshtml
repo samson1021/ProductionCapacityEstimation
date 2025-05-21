@@ -1,0 +1,69 @@
+﻿@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto
+
+<div class="modal fade" id="shareTaskModal" tabindex="-1" role="dialog" aria-labelledby="SendshareTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignshareTaskModalLabel">Task Share Resquest</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("ShareTask", "TaskManagment", FormMethod.Post, new { id = "shareTskForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="selectedCaseIds" name="selectedCaseIds">
+                    <div class="form-group">
+                        <label asp-for="AssignedId"> Relation Manager <i class="text-danger">*</i></label>
+                        <select class="form-control" id="CenterDropdown" name="AssignedId">
+                        </select>
+                        <span id="AssignedIdError" asp-validation-for="AssignedId" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="TaskName"> Task List <i class="text-danger">*</i></label>
+                        <select asp-for="TaskName" class="form-control" id="TaskName">
+                            <option value="" disabled selected>Select Task List</option>
+                            <option value="All">All</option>
+                            <option value="Collateral Addition">Collateral Addition</option>
+                            <option value="Case Follow">Case Follow</option>
+                            <option value="Report Generation">Report Generation</option>
+                        </select>
+                        <span id="TaskNameError" asp-validation-for="TaskName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="PriorityType"> Priority Type <i class="text-danger">*</i></label>
+                        <select asp-for="PriorityType" class="form-control" id="PriorityType">
+                            <option value="" disabled selected>Select Priority</option>
+                            <option value="Urgent">High Priority</option>
+                            <option value="Medium Priority">Medium Priority</option>
+                            <option value="Normal Priority">Normal Priority</option>
+                        </select>
+                        <span id="PriorityTypeError" asp-validation-for="PriorityType" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Deadline">Deadline <i class="text-danger">*</i></label>
+                        <input asp-for="Deadline" type="date" class="form-control" id="Deadline" value='@DateTime.Now.ToString("yyyy-MM-dd")' required>
+                        <span id="DeadlineError" asp-validation-for="Deadline" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SharingReason">Sharing Reason <i class="text-danger">*</i></label>
+                        <textarea asp-for="SharingReason" rows="2" class="form-control" placeholder="Write sharing reason" id="SharingReason"></textarea>  <span asp-validation-for="SharingReason" class="text-danger"></span>
+                        <span id="SharingReasonError" asp-validation-for="SharingReason" class="text-danger"></span>
+                    </div>
+
+                    <div class="row col-12 mt-2">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-sm bg-purple col-6  ms-1" id="assignTaskButton">Assign Task</button>
+                            <button type="button" class="btn btn-sm btn-secondary col-6  ms-1" data-dismiss="modal" id="closeButton">Close</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

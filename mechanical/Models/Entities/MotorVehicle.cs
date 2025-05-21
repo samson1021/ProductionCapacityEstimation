@@ -43,8 +43,8 @@ namespace mechanical.Models.Entities
         public double InvoiceValue { get; set; }
         public string Currency { get; set; } = string.Empty;
         public double ExchangeRate { get; set; }
-        public virtual CreateUser? EvaluatorUser { get; set; }
-        public virtual CreateUser? CheckerUser { get; set; }
+        public virtual User? EvaluatorUser { get; set; }
+        public virtual User? CheckerUser { get; set; }
         public virtual Collateral? Collateral { get; set; }
     }
 }

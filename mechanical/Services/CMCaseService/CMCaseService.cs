@@ -40,7 +40,7 @@ namespace mechanical.Services.MMCaseService
         public async Task<IEnumerable<RMCaseDto>> GetMmPendingCases()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var user = await _cbeContext.CreateUsers.FindAsync(Guid.Parse(httpContext.Session.GetString("userId")));
+            var user = await _cbeContext.Users.FindAsync(Guid.Parse(httpContext.Session.GetString("userId")));
             var cases = await _cbeContext.Cases.Include(ca => ca.District).Include(ca => ca.Collaterals.Where(ca => ca.CurrentStatus != "New" && ca.CurrentStatus != "Complete"))
                 .Where(Ca => Ca.DistrictId == user.DistrictId && Ca.Status == "Maker" && Ca.Collaterals.Any(ca => ca.CurrentStatus != "New" && ca.CurrentStatus != "Complete")).ToListAsync();
 
@@ -49,7 +49,7 @@ namespace mechanical.Services.MMCaseService
         public async Task<IEnumerable<MMNewCaseDto>> GetCMNewCases()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var user = await _cbeContext.CreateUsers.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Checker Manager");
+            var user = await _cbeContext.Users.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Checker Manager");
             if (user == null)
             {
                 return null;
@@ -62,7 +62,7 @@ namespace mechanical.Services.MMCaseService
         public async Task<IEnumerable<MMCaseDto>> GetMmLatestCases()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var user = await _cbeContext.CreateUsers.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Maker Manager");
+            var user = await _cbeContext.Users.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Maker Manager");
             if (user == null)
             {
                 return null;
@@ -77,7 +77,7 @@ namespace mechanical.Services.MMCaseService
         public async Task<CaseCountDto> GetDashboardCaseCount()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var user = await _cbeContext.CreateUsers.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Maker Manager");
+            var user = await _cbeContext.Users.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Maker Manager");
             if (user == null)
             {
                 return null;

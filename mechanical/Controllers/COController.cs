@@ -21,7 +21,6 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
 
-
         public COController(ICaseService caseService, ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, ICMCaseService CoCaseService, IMMCaseService mOCaseService, ICollateralService collateralService)
         {
             _caseService = caseService;
@@ -31,7 +30,6 @@ namespace mechanical.Controllers
             _CoCaseService = CoCaseService;
             _caseTermnateService = caseTermnateService;
             _uploadFileService = uploadFileService;
-
         }
 
         [HttpGet]

@@ -15,11 +15,11 @@ namespace mechanical.Models.Entities
         public bool SharedTask { get; set; }
 
         public required string Status { get; set; }
-        public required string Segement { get; set; }
+        public required string Segment { get; set; }
         public required Guid CaseOriginatorId { get; set; }
         public DateTime CreationAt { get; set; }
         public virtual District? District { get; set; }
-        public virtual CreateUser? CaseOriginator { get; set; }
+        public virtual User? CaseOriginator { get; set; }
         public virtual UploadFile? BussinessLicence { get; set; }
         public virtual ICollection<Collateral>? Collaterals { get; set; }
     }

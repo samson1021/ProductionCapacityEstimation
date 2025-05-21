@@ -11,7 +11,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseTerminateDto
         
         public Guid PCECaseId { get; set; }
 
-        public virtual CreateUser? PCECaseOriginator { get; set; }
+        public virtual User? PCECaseOriginator { get; set; }
 
 
     }

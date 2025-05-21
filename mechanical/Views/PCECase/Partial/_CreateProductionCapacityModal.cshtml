@@ -24,9 +24,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-
-           
-            @using (Html.BeginForm("Create", "ProductionCapacity", FormMethod.Post, new { id = "addProductionForm"}))
+            @using (Html.BeginForm("Create", "ProductionCapacity", FormMethod.Post, new { id = "addProductionForm" }))
             {
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
@@ -64,8 +62,6 @@
                                 <span id="Type-error" asp-validation-for="Type" class="text-danger"></span>
                             </div>
                         </div>
-                      
-@*                        industerial production attributes *@
 
                         <div class="row" id="IndusteryProp">
                             <div class="form-group col-lg-3">
@@ -84,7 +80,7 @@
                                 <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                             </div>
 
-                             @* <div class="form-group col-lg-3">
+                            @* <div class="form-group col-lg-3">
                                 <label asp-for="CountryOfOrigin">Country Of Orgin <i class="text-danger">*</i></label>
                                 <input asp-for="CountryOfOrigin" type="text" class="form-control form-control-sm" id="CountryOfOrigin" placeholder="Enter Country Of Orgin" required>
 
@@ -94,7 +90,7 @@
                                 <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>
                                 <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
                                 <span id="CountryOfOrigin-error" asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                             </div>
+                            </div>
                             <div class="row">
                                 <div class="form-group col-lg-3">
                                     <label asp-for="BusinessLicenseNumber">Business License Number <i class="text-danger">*</i></label>
@@ -118,8 +114,6 @@
                                 </div>
                             </div>
                         </div>
-                                                  
-                        @* place of where machine installed *@
 
                         <div class="row" id="MachineryInstalledPlace">
                             <div class="form-group col-lg-4">
@@ -131,31 +125,26 @@
                                     <option value="Industrial Park">Industrial Park</option>
                                 </select>
                                 <span id="MachineryInstalledPlace-error" asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
-                                   
                             </div>
-                           
-                              
                         </div>
-                @*       <div class="row" id="MachineryInstalledPlaceProp"> *@
                         <div id="PrivateownedLHC" style="display: none;">
                             <div class="row">
-                             <div class="form-group col-lg-4">
-
-                                <label asp-for="LHCNumber">LHC Number: </label>
-                                    <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber" >
-                                    <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="LHCNumber">LHC Number: </label>
+                                        <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber" >
+                                        <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="OwnerName">Owner Name in the LHC </label>
+                                        <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX" >
+                                    <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="LHCDocument">Upload LHC Document </label>
+                                        <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument" >
+                                        <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
+                                </div>
                             </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="OwnerName">Owner Name in the LHC </label>
-                                    <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX" >
-                                <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="LHCDocument">Upload LHC Document </label>
-                                    <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument" >
-                                    <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
-                            </div>
-                           </div>
                         </div>
                         <div id="PrivateRentedLHC" style="display: none;">
                             <div class="row">
@@ -183,7 +172,7 @@
                         </div>
 
                         <div id="IndustrialParkrow" style="display: none;">
-                           <div class="row">
+                            <div class="row">
                                 <div class="form-group col-lg-4">
                                     <label asp-for="Industrialpark">Industrial Park <i class="text-danger">*</i></label>
                                     <select asp-for="Industrialpark" class="form-control form-control-sm" id="Industrialpark" onchange="handleIndestrialparkChange(this)">
@@ -256,7 +245,6 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Wereda">Wereda</label>
                                         <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="Wereda" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
@@ -272,16 +260,12 @@
                                         <input asp-for="HouseNo" type="text" class="form-control form-control-sm" id="HouseNo" placeholder="Enter House Number" oninput="validateHouseNoInput(this)">
                                         <span id="HouseNo-error" asp-validation-for="HouseNo" class="text-danger"></span>
                                     </div>
-
-
                                 </div>
                             </div>
-
                         </div>
-                       
                         <div class="row">
                             <div class="form-group col-lg-12">
-                              <label asp-for="ProductDescription"> Manufacturing Production Capacity Description </label>
+                                <label asp-for="ProductDescription"> Manufacturing Production Capacity Description </label>
                                 <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="ProductDescription" placeholder="Write product description here ..."> </textarea>
                                 <span id="ProductDescription-error" asp-validation-for="ProductDescription" class="text-danger"></span>
                             </div>
@@ -330,6 +314,7 @@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }
+
 <script>
     
     var fetchUrl = '@Html.Raw(fetchUrl)';

@@ -11,6 +11,6 @@ namespace mechanical.Models.Dto.CaseTerminateDto
 
         public Guid CaseId { get; set; }
 
-        public virtual CreateUser? User { get; set; }
+        public virtual User? User { get; set; }
     }
 }

@@ -70,7 +70,6 @@ namespace mechanical.Controllers
                 var production = await _ProductionCapacityService.EditProduction(base.GetCurrentUserId(), id, ProductionDto);
                // return RedirectToAction("Detail", "ProductionCapacity", new { Id = production.Id });
                 return RedirectToAction("Detail", "PCECase", new { Id = production.PCECaseId });
-
             }
             var response = await _ProductionCapacityService.GetProduction(base.GetCurrentUserId(), id);
             var file = await _UploadFileService.GetUploadFileByCollateralId(id);

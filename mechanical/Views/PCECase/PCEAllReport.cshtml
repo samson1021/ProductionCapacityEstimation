@@ -230,11 +230,11 @@
                                             <u class="  "> @pce.ManufactureYear &nbsp; </u>
                                             <label class="col-form-label pl-2">Country of Origin:</label>
                                             <u class="  ">@pce.CountryOfOrigin</u>
-                                        </p>                                        
+                                        </p>
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
                                             <u class="  "> @pce.CountryOfOrigin</u>
-                                        </p>                                        
+                                        </p>
                                     </div>
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
@@ -276,7 +276,6 @@
                                             <u class="  "> @evaluation.TechnicalObsolescenceStatus</u>
                                         </p>
                                     </div>
-                                  
                                 </div>
                                 <div class="form-group mb-1">
                                     <label class=" col-form-label font-weight-bold">Survey remark:</label>
@@ -287,7 +286,6 @@
                                 <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
 
                                 <div class="pl-4">
-                                 
                                     <table class="table table-border-none table-responsive">
                                         <thead style="border-bottom: 3px solid #6f42c1;">
                                             <tr>
@@ -357,7 +355,7 @@
                                                 {
                                                     <tr>
                                                         <td>@productionFile.Name</td>
-                                                        <td>@productionFile.Catagory</td>
+                                                        <td>@productionFile.Category</td>
                                                         <td>@productionFile.ContentType</td>
                                                         <td>
                                                         <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
@@ -379,7 +377,6 @@
                 </div>
             }
         }
-
     }
     
 </section>
@@ -389,8 +386,6 @@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
     <script src="~/js/jsPDF/jspdf.umd.min.js"></script>
-
-
     <script>
         document.getElementById('print-btn').addEventListener('click', function () {
             document.querySelector('footer').style.display = 'none';

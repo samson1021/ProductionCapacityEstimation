@@ -12,7 +12,7 @@ namespace mechanical.Models.Entities
         public DateTime Date { get; set; }
         public string URL { get; set; } = string.Empty;
 
-        public virtual CreateUser? User { get; set; }
+        public virtual User? User { get; set; }
 
     }
 }

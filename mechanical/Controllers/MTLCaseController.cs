@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
+using mechanical.Data;
+using mechanical.Models.Entities;
 using mechanical.Services.CaseServices;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.CaseAssignmentService;
 using mechanical.Services.UploadFileService;
-using mechanical.Data;
-using mechanical.Models.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Controllers
 {
@@ -147,8 +147,8 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignMakerOfficer(string selectedCollateralIds, string employeeId)
         {
-
             await _caseAssignmentService.AssignMakerTeamleader(base.GetCurrentUserId(), selectedCollateralIds, employeeId);
+
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }
@@ -159,8 +159,6 @@ namespace mechanical.Controllers
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }
-
-
 
         //[HttpGet]
         //public IActionResult MyPendingCases()

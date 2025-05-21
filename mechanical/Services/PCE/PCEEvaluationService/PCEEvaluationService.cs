@@ -17,8 +17,13 @@ using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
+using mechanical.Models.PCE.Enum.PCEEvaluation;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
+using mechanical.Models.Dto.Correction;
+using mechanical.Models.PCE.Dto.ProductionCapacityDto;
+using mechanical.Models.PCE.Dto.PCECaseDto;
+using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
@@ -44,6 +49,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
+
+                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
                 EncodingHelper.EncodeObject(Dto);
 
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
@@ -79,6 +86,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 _cbeContext.ProductionCapacities.Update(pce);
 
                 await HandleFileUploads(UserId, new List<IFormFile> { Dto.WitnessForm }, "Witness Form", pce.PCECaseId, pceEvaluation.Id);
+
                 await HandleFileUploads(UserId, Dto.SupportingEvidences, "Supporting Evidence", pce.PCECaseId, pceEvaluation.Id);
                 await HandleFileUploads(UserId, Dto.ProductionProcessFlowDiagrams, "Production Process Flow Diagram", pce.PCECaseId, pceEvaluation.Id);
                 await UpdatePCEStatus(pce, "Pending", "Maker Officer");
@@ -264,6 +272,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     FileDto.CaseId = pce.PCECaseId;
                     await _UploadFileService.CreateUploadFile(UserId, FileDto);
                 }
+
                 await UpdatePCEStatus(pce, currentStatus, "Maker Officer");
                 await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.UtcNow);
                 await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
@@ -341,7 +350,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     var fileDto = new CreateFileDto
                     {
                         File = file ?? throw new ArgumentNullException(nameof(file)),
-                        Catagory = Category,
+                        Category = Category,
                         CaseId = PCECaseId,
                         CollateralId = PCEEId
                     };
@@ -386,6 +395,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
             return filePaths;
         }
+
         private async Task DeleteFiles(IEnumerable<string> filePaths)
         {
             foreach (var filePath in filePaths)
@@ -432,14 +442,14 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 await UpdateCaseAssignmentStatus(PCE.Id, PCE.CreatedById, Status);
             }
-            var MOUser = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
-            var MOSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOUser.SupervisorId);
+            var MOUser = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
+            var MOSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == MOUser.SupervisorId);
             
             await UpdateCaseAssignmentStatus(PCE.Id, MOSupervisor.Id, Status);
             
             if (MOSupervisor.Role.Name == "Maker TeamLeader")
             {
-                var MTLSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
+                var MTLSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
                 if (MTLSupervisor != null)
                 {
                     await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
@@ -454,6 +464,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .OrderByDescending(pca => pca.AssignmentDate)
                                                 .FirstOrDefaultAsync()
                                                 ?? throw new KeyNotFoundException("PCECase Assignment not found.");
+
             if (assignment != null)
             {
                 assignment.Status = Status;
@@ -592,9 +603,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
-                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Catagory == "Witness Form");
-                var supportingEvidences = uploadedFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
-                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
 
                 var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
                 pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
@@ -648,9 +659,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
                 }
                 var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
-                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Catagory == "Witness Form");
-                var supportingEvidences = uploadedFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
-                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
 
                 var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
                 pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
@@ -705,9 +716,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
                 var pceEvaluationIds = pceEntities.Select(e => e.Id).ToList();
                 var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => pceEvaluationIds.Contains(uf.CollateralId.Value)).ToListAsync();
-                var witnessForm = uploadedFiles.Where(uf => uf.Catagory == "Witness Form");
-                var supportingEvidences = uploadedFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
-                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+                var witnessForm = uploadedFiles.Where(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
 
                 var pceEntitiesDto = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(pceEntities).ToList();
 

@@ -10,6 +10,6 @@ namespace mechanical.Models.PCE.Dto.PCECaseTimeLineDto
         public required string Activity { get; set; }
         public required string CurrentStage { get; set; }
         
-        public virtual CreateUser? User { get; set; }
+        public virtual User? User { get; set; }
     }
 }

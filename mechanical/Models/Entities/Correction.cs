@@ -9,7 +9,7 @@
         public string Comment { get; set; }=string.Empty;
         public string CommentedAttribute { get; set; }=string.Empty;
         public Guid CommentedByUserId { get; set; }= Guid.Empty;
-        public virtual CreateUser? CommentedByUserIds { get; set; }
+        public virtual User? CommentedByUserIds { get; set; }
         public DateTime CreationDate { get; set; }
     }
 }

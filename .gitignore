@@ -362,10 +362,19 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+.vs/
+.vs/mechanical/
+.vscode/
+.github/
 FirstPublish/
 Signature management/
-mechanical/UploadFile/*
+mechanical/.vs
+mechanical/.config
+mechanical/bin
+mechanical/obj
+mechanical/publish
 mechanical/Migrations
 mechanical/Migrations/*
+mechanical/UploadFile
+mechanical/UploadFile/*
 mechanical/appsettings.Development.json
-.vscode/

@@ -53,7 +53,7 @@ namespace mechanical.Models.Entities
         public string? PlotOfLand { get; set; }
         public string? LHCNo { get; set; }
         
-        public virtual CreateUser? CreatedBy { get; set; }
+        public virtual User? CreatedBy { get; set; }
         public virtual Case? Case { get; set; }
     }
 }

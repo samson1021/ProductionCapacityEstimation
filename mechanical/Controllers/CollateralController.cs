@@ -176,9 +176,9 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadCollateralFile(IFormFile BussinessLicence, Guid caseId, string DocumentCatagory)
+        public async Task<ActionResult> UploadCollateralFile(IFormFile BussinessLicence, Guid caseId, string DocumentCategory)
         {
-            if (await _collateralService.UploadCollateralFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCatagory))
+            if (await _collateralService.UploadCollateralFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCategory))
             {
                 return Ok();
             }
@@ -204,7 +204,7 @@ namespace mechanical.Controllers
 
             if (rejectedCollateral!=null)
             {
-                var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedCollateral.RejectedBy);
+                var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedCollateral.RejectedBy);
                 ViewData["user"] = user;
 
             }
@@ -228,8 +228,8 @@ namespace mechanical.Controllers
             ViewData["rejectedCollateral"] = rejectedCollateral;
             ViewData["CurrentUserId"] = base.GetCurrentUserId();
             var userId = base.GetCurrentUserId();
-            var UserForRole = await _cbeContext.CreateUsers.Where(res => res.Id==userId).FirstOrDefaultAsync();
-            var role = await _cbeContext.CreateRoles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
+            var UserForRole = await _cbeContext.Users.Where(res => res.Id==userId).FirstOrDefaultAsync();
+            var role = await _cbeContext.Roles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeCollateral;
             return View(response);
@@ -264,7 +264,6 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetMMCompleteCollaterals(Guid CaseId)
         {
@@ -273,13 +272,14 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
         [HttpGet]
+
         public async Task<IActionResult> GetMyAssigmentCollateral(Guid CaseId)
         {
             var collaterals = await _collateralService.GetMyAssignmentCollateral(base.GetCurrentUserId(), CaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }
-       
+
         [HttpGet]
         public async Task<IActionResult> GetMMPendCollaterals(Guid CaseId)
         {

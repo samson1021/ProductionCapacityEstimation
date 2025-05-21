@@ -15,8 +15,6 @@ using mechanical.Models.Dto.UserDto;
 using mechanical.Models.Dto.CaseCommentDto;
 using mechanical.Models.Dto.CaseScheduleDto;
 using mechanical.Models.Dto.CaseTerminateDto;
-
-
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCEEvaluationDto;
@@ -29,6 +27,8 @@ using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.Login;
 using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 using mechanical.Models.Dto.InternalReport;
+using mechanical.Models.Dto.TaskManagmentDto;
+using mechanical.Models.Dto.NotificationDto;
 
 
 namespace mechanical.Mapper
@@ -56,7 +56,7 @@ namespace mechanical.Mapper
 
             CreateMap<CasePostDto, Case>()
                 .ForMember(dest => dest.BussinessLicence, opt => opt.Ignore());
-            CreateMap<Case, CaseReturntDto>()
+            CreateMap<Case, CaseReturnDto>()
                 .ForMember(dest => dest.District,opt=>opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.TotalNoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
 
@@ -65,16 +65,10 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
 
-            ///////////
-            ///
-
-
             CreateMap<Case, InternalCaseReportDto>()
                 .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src => src.CaseOriginator.Department))
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
-            ////////
-
 
             CreateMap<Case, CaseTerminateDto>()
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
@@ -147,29 +141,27 @@ namespace mechanical.Mapper
 
             CreateMap<IndBldgFacilityEquipment, IndBldgFacilityEquipmentPostDto>();
 
-            CreateMap<CreateUser, UserReturnDto>()
+            CreateMap<User, UserReturnDto>()
                     .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name));
             
-            CreateMap<CreateUser, ReturnUserDto>()
+            CreateMap<User, ReturnUserDto>()
                     .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src =>src.Role.Name))
                     .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
-            CreateMap<CreateUser, UserAdAttribute>().ReverseMap();
-            CreateMap<CreateUser, CreateUser>()
+
+            CreateMap<User, UserAdAttribute>().ReverseMap();
+            CreateMap<User, User>()
                 .ForMember(dest => dest.Status, opt => opt.Ignore());
 
             CreateMap<UploadFile, ReturnFileDto>().ReverseMap();
-
             CreateMap<UploadFile, ReturnPCEReportFileDto>().ReverseMap();
-
-
             CreateMap<CreateFileDto, ReturnFileDto>()
                 .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.File.ContentType));
                 // .ReverseMap();
             CreateMap<CreateFileDto, UploadFile>()
-                .ForMember(dest => dest.Catagory, opt => opt.MapFrom((src, dest, destMember, context) =>
+                .ForMember(dest => dest.Category, opt => opt.MapFrom((src, dest, destMember, context) =>
                 {
-                    return context.Items["Catagory"];
+                    return context.Items["Category"];
                 }));
             ///////
             
@@ -212,6 +204,7 @@ namespace mechanical.Mapper
             CreateMap<DateTimeRange, DateTimeRangeReturnDto>().ReverseMap();
             CreateMap<DateTimeRange, DateTimeRangeUpdateDto>().ReverseMap();
             CreateMap<DateTimeRangeReturnDto, DateTimeRangeUpdateDto>().ReverseMap();
+
             // CreateMap<DateRange, DateRangeDto>().ReverseMap();
             CreateMap<ReturnedProductionPostDto, ReturnedProduction>();
             CreateMap<ReturnedProduction, ReturnedProductionDto>();
@@ -275,6 +268,23 @@ namespace mechanical.Mapper
             CreateMap<Justification, JustificationPostDto>().ReverseMap();
             CreateMap<JustificationReturnDto, JustificationUpdateDto>().ReverseMap();
             ///////
+
+
+            //Task Managment
+            CreateMap<TaskManagment, TaskManagmentPostDto>().ReverseMap();
+            CreateMap<TaskManagment, TaskManagmentUpdateDto>().ReverseMap();
+            CreateMap<TaskManagment, TaskManagmentReturnDto>().ReverseMap();
+            CreateMap<TaskManagmentReturnDto, TaskManagmentUpdateDto>().ReverseMap();
+            CreateMap<TaskManagment, ShareTasksDto>().ReverseMap();
+            // CreateMap<TaskManagment, ShareTasksDto>()
+            //     .ForMember(dest => dest.SelectedRMs, opt => opt.Ignore());
+
+            CreateMap<Notification, NotificationPostDto>().ReverseMap();
+            CreateMap<Notification, NotificationReturnDto>().ReverseMap();
+        
+            CreateMap<TaskCommentPostDto, TaskComment>().ReverseMap();
+            CreateMap<TaskComment, TaskCommentReturnDto>().ReverseMap();
+
         }
 
         string EnumToDisplayName<TEnum>(TEnum enumValue)

@@ -244,7 +244,7 @@
                             </tr>
                             <tr>
                                 <th>Document Name</th>
-                                <th>Document Catagory</th>
+                                <th>Document Category</th>
                                 @* <th>Document Type</th> *@
                                 <th>Document Action</th>
                             </tr>
@@ -261,7 +261,7 @@
                                     {
                                         <tr>
                                             <td>@productionFile.Name</td>
-                                            <td>@productionFile.Catagory</td>
+                                            <td>@productionFile.Category</td>
                                             @* <td>@productionFile.ContentType</td> *@
                                             <td>
                                                 <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
@@ -322,9 +322,9 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label name-for="DocumentCategory">Document Catagory <i class="text-danger">*</i></label>
+                        <label name-for="DocumentCategory">Document Category <i class="text-danger">*</i></label>
                         <select name="DocumentCategory" class="form-control form-control-sm" id="DocumentCategory" required>
-                            <option value="" disabled selected>Select Document Catagory</option>
+                            <option value="" disabled selected>Select Document Category</option>
                             <option value="PCE Owner LHC Certificate">PCE Owner LHC Certificate</option>
                             <option value="PCE Shade Rent Agreement">PCE Shade Rent Agreement</option>
                             <option value="PCE Business License">PCE Business license</option>
@@ -412,7 +412,6 @@
                     $("#IndustrialParkRow").hide();
                     $("#PrivateownedLHCRow").hide();
                     $("#PrivateRentedLHC").show();
-
                 }
                 else {
                     $("#IndustrialPark").hide();

@@ -73,7 +73,6 @@
                         { data: 'Department', 'title': 'Department' },
                         { data: 'RoleName', 'title': 'Role' },
                         { data: 'Status', 'title': 'Status' },
-                        
                         {
                             data: null,
                             render: function (data, type, row) {
@@ -138,6 +137,7 @@
                         <p><strong>Role:</strong> ${data.RoleName}</p>
                         <p><strong>Status:</strong> ${data.Status}</p>
                     `;
+
                     $('#userDetails').html(detailsHtml);
 
                     // Show the modal

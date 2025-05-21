@@ -19,7 +19,6 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
 
-
         public CTLCaseController(/*ICTLCaseService cTLCaseService,*/ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService, ICaseAssignmentService caseAssignment, ICaseScheduleService caseScheduleService, ICaseService caseService, IMMCaseService mMCaseService)
         {
             //_cTLCaseService = cTLCaseService;

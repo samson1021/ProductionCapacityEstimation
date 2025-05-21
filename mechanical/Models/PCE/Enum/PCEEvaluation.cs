@@ -151,7 +151,6 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "Other")]
         Other
     }
-
     
     public enum JustificationReason
     {
@@ -194,5 +193,4 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
         [Display(Name = "Others, please specify the reason (comment box).")]
         Others
     }
-
 }

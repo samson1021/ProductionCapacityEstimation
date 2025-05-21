@@ -190,7 +190,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return true;                
+                return true;
             }
             catch (Exception ex)
             {
@@ -267,7 +267,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                     File = file,
                     CaseId = production.PCECaseId,
                     CollateralId = production.Id,
-                    Catagory = Category
+                    Category = Category
                 });
             }
         }
@@ -303,7 +303,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             {
                 File = File ?? throw new ArgumentNullException(nameof(File)),
                 CollateralId = production.Id,
-                Catagory = DocumentCategory,
+                Category = DocumentCategory,
                 CaseId =production.PCECaseId,
 
             };
@@ -349,6 +349,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 ReturnedProductions = _mapper.Map<IEnumerable<ReturnedProductionDto>>(returnedProductions)
             };
         }
+
 
         public async Task<IEnumerable<ProductionReturnDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null)
         {
@@ -434,7 +435,6 @@ namespace mechanical.Services.PCE.ProductionCapacityService
     
         // public async Task<IEnumerable<ProductionReturnDto>> GetReturnedProductions(Guid UserId)
         // {
-       
         //     var returnedCapacitiesQuery = from return in _cbeContext.ReturnedProductions
         //                                   join capacity in _cbeContext.ProductionCapacities
         //                                   on return.PCEId equals capacity.Id
@@ -462,7 +462,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         
         public async Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId)
         {
-            var supervisedUsers = await _cbeContext.CreateUsers.Where(user => user.SupervisorId == UserId).Select(user => user.Id).ToListAsync();
+            var supervisedUsers = await _cbeContext.Users.Where(user => user.SupervisorId == UserId).Select(user => user.Id).ToListAsync();
 
             var productionAssignments = await _cbeContext.PCECaseAssignments
                                                         .AsNoTracking()

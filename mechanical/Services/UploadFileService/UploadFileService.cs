@@ -35,7 +35,7 @@ namespace mechanical.Services.UploadFileService
             {
                 file.File.CopyTo(fileStream);
             }
-            uploadFile.Catagory = file.Catagory;
+            uploadFile.Category = file.Category;
             uploadFile.Path = filePath;
             uploadFile.CaseId = file.CaseId;
             uploadFile.CollateralId = file.CollateralId;
@@ -53,6 +53,7 @@ namespace mechanical.Services.UploadFileService
             return _mapper.Map<ReturnFileDto>(uploadFile);
 
         }
+
         public async Task<ActionResult> DownloadFile(Guid Id)
         {
             //var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
@@ -63,8 +64,8 @@ namespace mechanical.Services.UploadFileService
             var (fileBytes, fileName, mimeType) = await ViewFile(Id);
 
             return new FileContentResult(fileBytes, mimeType) { FileDownloadName = fileName };
-
         }
+
         public async Task<(byte[], string, string)> ViewFile(Guid Id)
         {
             var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
@@ -112,8 +113,6 @@ namespace mechanical.Services.UploadFileService
             }
             return (fileBytes, fileName, mimeType);
         }
-
-
 
         public async Task<IEnumerable<ReturnFileDto>> GetUploadFileByCollateralId(Guid? CollateralId)
         {
@@ -199,7 +198,7 @@ namespace mechanical.Services.UploadFileService
             {
                 file.File.CopyTo(fileStream);
             }
-            uploadFile.Catagory = file.Catagory;
+            uploadFile.Category = file.Category;
             uploadFile.Path = filePath;
             uploadFile.CaseId = file.CaseId;
             uploadFile.CollateralId = file.CollateralId;

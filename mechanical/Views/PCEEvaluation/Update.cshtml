@@ -2,6 +2,7 @@
 @using mechanical.Models.PCE.Dto.ProductionCapacityDto
 
 @model PCEEvaluationUpdateDto
+
 @{
     ViewData["Title"] = ViewBag.Title as string;
     var ReturnPost = new ReturnedProductionPostDto
@@ -61,6 +62,7 @@
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.Id)
                     <input asp-for="PCEId" value='@Model.PCEId' type="hidden" />
+
                     <div id="deleted-files-container"></div>
 
                     @await Html.PartialAsync("Partial/_EvaluationUpdateFormPartial")
@@ -68,7 +70,7 @@
                     <div class="form-group row">
                         <div class="col-xl-2">
                             <a href="@Url.Action("Detail", "ProductionCapacity", new { Id = @Model.PCEId })" class="btn btn-secondary btn-block">
-                                <i class="fas fa-times mr-2"></i> Cancel
+                               <i class="fas fa-times mr-2"></i> Cancel
                             </a>
                         </div>
                         @* <div class="col-xl-3"></div>

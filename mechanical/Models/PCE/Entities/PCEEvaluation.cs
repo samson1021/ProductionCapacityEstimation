@@ -73,7 +73,7 @@ namespace mechanical.Models.PCE.Entities
         [ForeignKey("PCEId")]
         public virtual ProductionCapacity PCE { get; set; }
         [ForeignKey("EvaluatorId")]
-        public virtual CreateUser Evaluator { get; set; }
+        public virtual User Evaluator { get; set; }
     }
 
     [Index(nameof(PCEEvaluationId))]
