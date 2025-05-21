@@ -12,6 +12,12 @@
     var cases = ViewData["cases"] as Case;
     var IndBldgFacilityEquipment = ViewData["IndBldgFacilityEquipment"] as List<IndBldgFacilityEquipment>;
     var caseSchedule = ViewData["caseSchedule"] as CaseSchedule;
+    var totalRC = ViewData["TotalRC"] ;
+    var totalNT = 0.0;
+    if (ViewData["TotalNt"] != null && double.TryParse(ViewData["TotalNt"].ToString(), out var parsedValue))
+    {
+        totalNT = parsedValue;
+    }
     var commaSeparatedRegions = "";
     var commaSeparatedPropertyof = "";
     var commaSeparatedequipmentName = "";
@@ -186,14 +192,14 @@
                             RC, Total Replacement Cost (new) &nbsp; = &nbsp;
                             <label class="col-form-label pr-2">
                                 <u id="ReplacementCost" class="">
-                                    @{
+                                 @*    @{
                                         var sum = 0.0;
                                         foreach (var item in IndBldgFacilityEquipment)
                                         {
                                             sum = item.ReplacementCost + sum;
                                         }
-                                    }
-                                    @sum
+                                    } *@
+                                    @totalRC
                                 </u>
                             </label>
                         </p>
@@ -269,10 +275,10 @@
                             Total Estimation/Market Value &nbsp; = &nbsp;
                             <label class="col-form-label pr-2">
                                 <u id="NetEstimationValue" class="">
-                                    @{
+                                   @*  @{
                                         var NAvrValue = IndBldgFacilityEquipment.Sum(obj => obj.NetEstimationValue);
-                                    }
-                                    @NAvrValue
+                                    } *@
+                                    @totalNT
                                 </u>
                             </label>
                         </p>
@@ -283,7 +289,7 @@
                         <p style="font-size: 18px;" class="py-0">
                             Based on above, we certify that, "Total present market value of <label class="col-form-label">@commaSeparatedPropertyof</label>
                             Industrial (Mfg.) Process Line Equipment as of <label class="col-form-label"> @caseScheduleDate.ToString("dd/MM/yyyy") </label> is
-                            <label style="font-size: 20px;" class="col-form-label"> @NumberToWordsConverter.ConvertDoubleToWords(NAvrValue)</label>
+                            <label style="font-size: 20px;" class="col-form-label"> @NumberToWordsConverter.ConvertDoubleToWords(totalNT)</label>
                         </p>
                     </div>
                 </div>

@@ -237,11 +237,18 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> SendCheking(Guid CollateralId)
         {
-            if (await _cOCaseService.SendCheking(base.GetCurrentUserId(), CollateralId))
+            try
             {
-                return Json(new { redirect = Url.Action("MypendingCase", "MOCase") });
+                if (await _cOCaseService.SendCheking(base.GetCurrentUserId(), CollateralId))
+                {
+                    return Json(new { redirect = Url.Action("MypendingCase", "MOCase") });
+                }
+                return Json(new { redirect = false });
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
-            return Json(new { redirect = false });
+        
         }
     }
 }

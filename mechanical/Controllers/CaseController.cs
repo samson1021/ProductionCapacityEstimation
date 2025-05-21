@@ -25,6 +25,8 @@ using mechanical.Models.Dto.CaseTerminateDto;
 using mechanical.Services.CaseTerminateService;
 using Microsoft.CodeAnalysis.Operations;
 using mechanical.Services.UploadFileService;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 
 namespace mechanical.Controllers
 {
@@ -40,8 +42,10 @@ namespace mechanical.Controllers
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
         private readonly IUploadFileService _uploadFileService;
-        public CaseController(IMapper mapper,IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService,ICaseService caseService,ICaseScheduleService caseScheduleService, CbeContext cbeContext, IHttpContextAccessor httpContextAccessor,ICaseAssignmentService caseAssignmentService, IMailService mailService)
+        private readonly IIndBldgFacilityEquipmentCostService _indBldgFacilityEquipmentCostService;
+        public CaseController(IIndBldgFacilityEquipmentCostService indBldgFacilityEquipmentCostService, IMapper mapper,IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService,ICaseService caseService,ICaseScheduleService caseScheduleService, CbeContext cbeContext, IHttpContextAccessor httpContextAccessor,ICaseAssignmentService caseAssignmentService, IMailService mailService)
         {
+            _indBldgFacilityEquipmentCostService = indBldgFacilityEquipmentCostService;
             _caseService = caseService;
             _cbeContext = cbeContext;
             _httpContextAccessor = httpContextAccessor;
@@ -460,7 +464,24 @@ namespace mechanical.Controllers
 
             var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.IBFEqupment && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
             var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
+            List<EquipmentGrouViewModel> equipmentGrouViewModels = new List<EquipmentGrouViewModel>();
+            var groupedByCostId = IndBldgFacilityEquipment.GroupBy(res => res.IndBldgFacilityEquipmentCostsId).ToList();
+            foreach (var group in groupedByCostId)
+            {
+                var costs = await _indBldgFacilityEquipmentCostService.GetByCostId(group.FirstOrDefault().IndBldgFacilityEquipmentCostsId);
+                equipmentGrouViewModels.Add(new EquipmentGrouViewModel
+                {
+                    EquipmentItems = group.ToList(),
+                    Cost = costs
+                });
+
+            }
+            ViewData["EquipmentGrouViewModel"] = equipmentGrouViewModels;
+
             ViewData["cases"] = cases;
+
+
+
             ViewData["collaterals"] = collaterals;
             ViewData["IndBldgFacilityEquipment"] = IndBldgFacilityEquipment;
             ViewData["caseSchedule"] = caseSchedule;
@@ -470,12 +491,22 @@ namespace mechanical.Controllers
         public async Task<IActionResult> IndBldgFacilityEquipmentReport(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
-           
+            double? totalReplacementCost = 0;
+            double? totalEstimationValue = 0;
+
             var IndBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment
                                .Include(res => res.EvaluatorUser)
                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
                                 .Include(res => res.CheckerUser)
                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            var groupedByCostId = IndBldgFacilityEquipment.GroupBy(res => res.IndBldgFacilityEquipmentCostsId).ToList();
+            foreach (var group in groupedByCostId)
+            {
+                var costs = await _indBldgFacilityEquipmentCostService.GetByCostId(group.FirstOrDefault().IndBldgFacilityEquipmentCostsId);
+                totalReplacementCost += costs.TotalReplacementCost;
+                totalEstimationValue += costs.TotalNetEstimationValue;
+            }
+
 
 
             var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.IBFEqupment && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
@@ -484,6 +515,8 @@ namespace mechanical.Controllers
             ViewData["collaterals"] = collaterals;
             ViewData["IndBldgFacilityEquipment"] = IndBldgFacilityEquipment;
             ViewData["caseSchedule"] = caseSchedule;
+            ViewData["TotalRC"] = totalReplacementCost;
+            ViewData["TotalNt"] = totalEstimationValue;
             return View();
         }
         [HttpGet]

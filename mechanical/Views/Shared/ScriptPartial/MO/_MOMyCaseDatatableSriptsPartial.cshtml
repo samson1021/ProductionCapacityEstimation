@@ -108,7 +108,7 @@
                                 <div class="row">
                                     <div class="form-group col-lg-4">
                                         <label asp-for="Region">Region</label>
-                                        <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)">
+                                        <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)" required>
                                             <option value="">Select Region</option>
                                             <option value="Addis Ababa">Addis Ababa</option>
                                             <option value="Afar">Afar</option>
@@ -232,6 +232,10 @@
     }
 
     $(document).ready(function () {
+        var hasErrors = '@(ViewData.ModelState.ErrorCount > 0)';
+            if (hasErrors === 'True') {
+                $('#addMechanicalCollateralForm').modal('show');
+            }
    
         var CaseId = $('#CaseId').val();
 
@@ -465,24 +469,13 @@
 
     document.getElementById("PropertyOwner").addEventListener("input", function () {
         var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[ A-Za-z0-9]+$/;
         if (!alphanumericRegex.test(input)) {
             this.setCustomValidity("Only alphanumeric characters are allowed.");
             document.getElementById("PropertyOwner-error").textContent = "Only alphanumeric characters are allowed.";
         } else {
             this.setCustomValidity("");
             document.getElementById("PropertyOwner-error").textContent = "";
-        }
-    });
-    document.getElementById("ChassisNo").addEventListener("input", function () {
-        var input = this.value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
-        if (!alphanumericRegex.test(input)) {
-            this.setCustomValidity("Only alphanumeric characters are allowed.");
-            document.getElementById("ChassisNo-error").textContent = "Only alphanumeric characters are allowed.";
-        } else {
-            this.setCustomValidity("");
-            document.getElementById("ChassisNo-error").textContent = "";
         }
     });
     document.getElementById("EngineMotorNo").addEventListener("input", function () {

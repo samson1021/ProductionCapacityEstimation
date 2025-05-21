@@ -166,12 +166,21 @@
                                     alert('An error occurred. Please try again.'); // Show error message
                                 }
                             },
-                            error: function (xhr, status, error) {
-                                console.error('AJAX Error: ', status, error); // For debugging
-                                var errorMessage = xhr.responseJSON && xhr.responseJSON.message
-                                    ? xhr.responseJSON.message
-                                    : 'An unexpected error occurred.';
-                                alert(errorMessage); // Show error message
+                             error: function (xhr) {
+                                // 1. First try to parse JSON (if server returns JSON)
+                                let errorMsg = xhr.responseJSON?.message || xhr.responseJSON?.title;
+
+                                // 2. If no JSON message, use raw response text
+                                if (!errorMsg) {
+                                    errorMsg = xhr.responseText || "Unknown error occurred";
+                                }
+
+                                // 3. Final fallback (should never happen)
+                                if (!errorMsg) {
+                                    errorMsg = "Operation failed. Please try again.";
+                                }
+
+                                toastr.error(errorMsg); // Now this WILL show your message
                             }
                         });
                     }
@@ -181,6 +190,7 @@
                     formatAndDisplayValue('ReplacementCost');
                     formatAndDisplayValue('InvoiceValue');
                     formatAndDisplayValue('NetEstimationValue');
+                    formatAndDisplayValue('NetEstimationValuee');
         </script>
     }
 

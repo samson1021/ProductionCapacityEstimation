@@ -2,6 +2,7 @@
 using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
+using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 using mechanical.Models.Entities;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UploadFileService;
@@ -67,9 +68,27 @@ namespace mechanical.Services.MOCaseService
             var httpContext = _httpContextAccessor.HttpContext;
             var collateral = await _cbeContext.Collaterals.FindAsync(CollateralId);
 
-           if(collateral == null)
+            if (collateral == null)
             {
                 return false;
+            }
+            if (collateral.Category == Models.Enum.MechanicalCollateralCategory.IBFEqupment)
+            {
+                var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == CollateralId).FirstOrDefaultAsync();
+                if (indBldgFacilityEquipment != null)
+                {
+                    var indBldgFacilityEquipmentCosts = await _cbeContext.IndBldgFacilityEquipmentCosts.Where(res => res.Id == indBldgFacilityEquipment.IndBldgFacilityEquipmentCostsId).FirstOrDefaultAsync();
+                    var indBldgFacilityEquipments = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.IndBldgFacilityEquipmentCostsId == indBldgFacilityEquipment.IndBldgFacilityEquipmentCostsId).ToListAsync();
+                    if (indBldgFacilityEquipmentCosts != null)
+                    {
+                        var remaining = indBldgFacilityEquipmentCosts.CollateralCount - indBldgFacilityEquipments.Count();
+                        if (remaining != 0)
+                        {
+                            throw new InvalidOperationException("The system cannot send to the checker unit until all collateral sharing the same INDBLDG Facility Equipment Costs has completed evaluation.");
+                        }
+                    }
+                }
+
             }
             collateral.CurrentStage = "Checker Manager";
             collateral.CurrentStatus = "New";
@@ -80,7 +99,7 @@ namespace mechanical.Services.MOCaseService
             var user = await _cbeContext.CreateUsers.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == userId);
             if(user == null)
             {
-                return false;
+                throw new InvalidOperationException("Checker unit in you department is not ready.");
             }
             if(user?.District?.Name == "Head Office")
             {

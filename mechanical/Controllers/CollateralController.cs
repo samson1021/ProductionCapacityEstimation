@@ -428,9 +428,9 @@ namespace mechanical.Controllers
                 await _cbeContext.SaveChangesAsync();
 
                 var response = new { message = "Collateral created successfully" };
-                return RedirectToAction("MyCase", "MOCase" ,new {Id=collaterals.CaseId});
+                return Redirect($"/MOCase/MyCase?Id={collaterals.CaseId}");
             }
-            return BadRequest();
+            return Redirect($"/MOCase/MyCase?Id={caseId}");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿@using System;
 @using System.Globalization;
 @using mechanical.Utils;
+@using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 @{
     static string CapitalizeEachWord(string str)
     {
@@ -11,6 +12,7 @@
     var collaterals = ViewData["collaterals"] as List<Collateral>;
     var cases = ViewData["cases"] as Case;
     var IndBldgFacilityEquipment = ViewData["IndBldgFacilityEquipment"] as List<IndBldgFacilityEquipment>;
+    var equipmentGrouViewModel = ViewData["EquipmentGrouViewModel"] as List<EquipmentGrouViewModel>;
     var caseSchedule = ViewData["caseSchedule"] as CaseSchedule;
     var commaSeparatedRegions = "";
     var commaSeparatedPropertyof = "";
@@ -40,15 +42,15 @@
 }
 <style>
     .table {
-        font-size: 10px; /* Smaller text size */
+    font-size: 10px; /* Smaller text size */
     }
 
     th, td {
-        padding: 4px; /* Slightly increased padding */
-        border: 1px solid #ccc;
-        overflow: hidden; /* Prevent overflow */
-        overflow-wrap: break-word; /* Allow words to break and wrap */
-        white-space: normal; /* Allow normal text wrapping */
+    padding: 4px; /* Slightly increased padding */
+    border: 1px solid #ccc;
+    overflow: hidden; /* Prevent overflow */
+    overflow-wrap: break-word; /* Allow words to break and wrap */
+    white-space: normal; /* Allow normal text wrapping */
     }
 </style>
 <div class="container-fluid">
@@ -153,31 +155,60 @@
                         </thead>
                         <tbody>
                             @{
-                                var x = 1;
-                                foreach (var item in IndBldgFacilityEquipment)
+                                foreach (var group in equipmentGrouViewModel)
                                 {
+                                    var x = 1;
+                                    foreach (var item in group.EquipmentItems)
+                                    {
+                                        <tr>
+                                            <td class="col-sno"> @x</td>
+                                            <td>@item.MechanicalEqpmntName</td>
+                                            <td>@EnumHelper.GetEnumDisplayName(item.Collateral.Type)</td>
+                                            <td>@item.YearOfManufacture</td>
+                                            <td>@item.CountryOfOrigin</td>
+                                            <td>@item.ModelNo</td>
+                                            <td>@item.EngineNo</td>
+                                            <td>@item.SerialNo</td>
+                                            <td>@item.PhysicalAndInstallationAssesment</td>
+                                            <td>@item.Collateral.PropertyOwner</td>
+                                            <td class="ReplacementCost">@item.ReplacementCost</td>
+                                            <td class="ReplacementCost">@item.DepreciationRate</td>
+                                            <td class="ReplacementCost">@item.NetEstimationValue</td>
+                                            <td>@item.Remark</td>
+                                        </tr>
+                                        x++;
+                                    }
                                     <tr>
-                                        <td class="col-sno"> @x</td>
-                                        <td>@item.MechanicalEqpmntName</td>
-                                        <td>@EnumHelper.GetEnumDisplayName(item.Collateral.Type)</td>
-                                        <td>@item.YearOfManufacture</td>
-                                        <td>@item.CountryOfOrigin</td>
-                                        <td>@item.ModelNo</td>
-                                        <td>@item.EngineNo</td>
-                                        <td>@item.SerialNo</td>
-                                        <td>@item.PhysicalAndInstallationAssesment</td>
-                                        <td>@item.Collateral.PropertyOwner</td>
-                                        <td class="ReplacementCost">@item.ReplacementCost</td>
-                                        <td class="ReplacementCost">@item.DepreciationRate</td>
-                                        <td class="ReplacementCost">@item.NetEstimationValue</td>
-                                        <td>@item.Remark</td>
+                                        <th colspan="10">
+                                            INSURANCE, FREIGHT & OTHER COSTS
+                                        </th>
+                                        <th class="ReplacementCost">@group.Cost.InsuranceFreightOthersCost</th>
+                                        <th class="ReplacementCost">@(@group.Cost.DepreciatedInsuranceFreightOthersCost / @group.Cost.InsuranceFreightOthersCost)</th>
+                                        <th class ="ReplacementCost">@group.Cost.DepreciatedInsuranceFreightOthersCost</th>
+                                        <th>0</th>
                                     </tr>
-                                    x++;
+                                    <tr>
+                                        <th colspan="10">
+                                            LAND TRANSPORTATION, LOADING UNLOADING AND INSTALLATION & COMMISSIONING COSTS
+                                        </th>
+                                        <th class="ReplacementCost">@group.Cost.LandTransportLoadingUnloadingInstallationCommissioningCost</th>
+                                        <th class="ReplacementCost">@(@group.Cost.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost / @group.Cost.LandTransportLoadingUnloadingInstallationCommissioningCost)</th>
+                                        <th class="ReplacementCost">@group.Cost.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost</th>
+                                        <th>0</th>
+                                    </tr>
+                                    <tr>
+                                        <th  colspan="10" style="text-align: center; background-color: yellow;">
+                                            Total Replacement Cost and Total Net Estimation Value
+                                        </th>
+                                        <th class="ReplacementCost" colspan="2" style="text-align: center; background-color: yellow;">@group.Cost.TotalReplacementCost</th>
+                                        <th class="ReplacementCost" colspan="2" style="text-align: center; background-color: yellow;">@group.Cost.TotalNetEstimationValue</th>
+                                    </tr>
                                 }
+                              
                             }
                         </tbody>
                     </table>
-                    <div class="form-group row my-0 pl-4">
+            @*         <div class="form-group row my-0 pl-4">
                         <p style="font-size: 18px;" class="my-0 py-0">
                             Total Replacement Cost &nbsp; = &nbsp;
                             <label class="col-form-label pr-2">
@@ -202,7 +233,7 @@
                                 </u>
                             </label>
                         </p>
-                    </div>
+                    </div> *@
                 </div>
 
                 <div class="approvedby" style="display:block">
