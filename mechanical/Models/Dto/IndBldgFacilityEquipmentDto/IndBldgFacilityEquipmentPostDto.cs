@@ -6,7 +6,7 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
     {
         public Guid Id { get; set; }
         public required Guid CollateralId { get; set; }
-        public Guid? IndBldgFacilityEquipmentCostsId { get; set; }
+        public required Guid IndBldgFacilityEquipmentCostsId { get; set; }
         public string? MechanicalEqpmntName { get; set; }
         public IndustrialBuildingMachineryType IndustrialBuildingMachineryType { get; set; }
         public EngineType EngineType { get; set; }

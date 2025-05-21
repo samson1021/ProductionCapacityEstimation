@@ -33,6 +33,14 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
             var indBldgFacilityEquipment = _mapper.Map<IndBldgFacilityEquipment>(indBldgFacilityEquipmentPostDto);
 
             var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacilityEquipment.CollateralId);
+            if (collateral != null)
+            {
+                collateral.CurrentStage = "Maker Officer";
+                _cbeContext.Collaterals.Update(collateral);
+            }
+
+
+
 
             indBldgFacilityEquipment.MarketShareFactor = await _motorVehicleAnnexService.GetCAMIBFMarketShareFactor(indBldgFacilityEquipment.TechnologyStandard);
             indBldgFacilityEquipment.DepreciationRate = await _motorVehicleAnnexService.GetIBMDepreciationRate(DateTime.Now.Year - indBldgFacilityEquipment.YearOfManufacture, indBldgFacilityEquipment.IndustrialBuildingMachineryType);
@@ -75,7 +83,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
         }
         public async Task<IndBldgFacilityEquipmentReturnDto> GetIndBldgFacilityEquipmentByCollateralId(Guid collateralId)
         {
-            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == collateralId);
+            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res=>res.IndBldgFacilityEquipmentCosts).Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == collateralId);
             return _mapper.Map<IndBldgFacilityEquipmentReturnDto>(indBldgFacilityEquipment);
 
         }

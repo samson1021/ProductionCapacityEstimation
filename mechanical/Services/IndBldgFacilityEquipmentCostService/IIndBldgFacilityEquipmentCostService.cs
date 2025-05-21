@@ -8,6 +8,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
     {
         Task<bool> Create(Guid caseId, IndBldgFacilityEquipmentCostsPostDto indBldgFacilityEquipmentCostsPostDto);
         Task<IndBldgFacilityEquipmentCostsDto> Get(Guid id);
+        Task<IndBldgFacilityEquipmentCostsReturnDto> GetByCostId(Guid? id);
         Task<IEnumerable<IndBldgFacilityEquipmentCostsReturnDto>> GetByCaseId(Guid caseId);
         Task <bool> Update(Guid id, IndBldgFacilityEquipmentCostsPostDto indBldgFacilityEquipmentCostsPostDto);
         Task<bool> Delete(Guid id);
