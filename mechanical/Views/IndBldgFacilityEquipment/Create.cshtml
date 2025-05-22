@@ -202,8 +202,8 @@
                     <div class="row">
                         <div class="form-group col-xl-6">
                             <label asp-for="IndBldgFacilityEquipmentCostsId">Insurance, Freight & Other Costs</label>
-                            <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control">
-                                <option value="">Select Insurance, Freight & Other Costs</option>
+                            <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control" required>
+                                <option disabled value="">Select Insurance, Freight & Other Costs</option>
                             </select>
                             <span asp-validation-for="IndBldgFacilityEquipmentCostsId" class="text-danger"></span>
                         </div>
@@ -228,7 +228,7 @@
         $(function () {
             document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.getElementById('insuranceCostDropdown');
-
+            console.log(dropdown);
             if (dropdown && dropdown.options.length <= 1) {
                 const dropdownContainer = dropdown.parentElement;
                 dropdown.remove();

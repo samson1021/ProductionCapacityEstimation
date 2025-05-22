@@ -49,5 +49,6 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
 
 
         public virtual Collateral? Collateral { get; set; }
+        public virtual IndBldgFacilityEquipmentCosts? IndBldgFacilityEquipmentCosts { get; set; }
     }
 }

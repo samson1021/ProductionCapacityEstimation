@@ -47,7 +47,47 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
             }
             return _mapper.Map<IndBldgFacilityEquipmentCostsDto>(indBldgFacilityEquipmentCosts);
         }
+        public async Task<IndBldgFacilityEquipmentCostsReturnDto> GetByCostId(Guid? id)
+        {
+            if (id != null)
+            {
+                var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.IndBldgFacilityEquipmentCostsId == id).ToListAsync();
+                var indbldgFacilityEquipmentCost = await _cbeContext.IndBldgFacilityEquipmentCosts.Where(res => res.Id == id).FirstOrDefaultAsync();
+                
+                var item = _mapper.Map<IndBldgFacilityEquipmentCostsReturnDto>(indbldgFacilityEquipmentCost);
 
+
+                double invoiceValue = 0;
+                double marketShare = 0;
+                double Depreciated = 0;
+                double equipmentcondition = 0;
+                double totalReplacmentCost = 0;
+                double totalNetEstimationValue = 0;
+                foreach (var indBldg in indBldgFacilityEquipment)
+                {
+                    invoiceValue += indBldg.InvoiceValue * indBldg.ExchangeRate;
+                    marketShare += indBldg.MarketShareFactor;
+                    Depreciated += indBldg.DepreciationRate;
+                    equipmentcondition += indBldg.EqpmntConditionFactor;
+                    totalReplacmentCost += indBldg.ReplacementCost;
+                    totalNetEstimationValue += indBldg.NetEstimationValue;
+                }
+                if (indBldgFacilityEquipment.Count() > 0)
+                {
+                    marketShare = marketShare / indBldgFacilityEquipment.Count();
+                    Depreciated = Depreciated / indBldgFacilityEquipment.Count();
+                    equipmentcondition = equipmentcondition / indBldgFacilityEquipment.Count();
+                }
+                item.LandTransportLoadingUnloadingInstallationCommissioningCost = invoiceValue * 0.075;
+                item.DepreciatedInsuranceFreightOthersCost = item.InsuranceFreightOthersCost * marketShare * Depreciated * equipmentcondition;
+                item.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost = item.LandTransportLoadingUnloadingInstallationCommissioningCost * marketShare * Depreciated * equipmentcondition;
+                item.TotalReplacementCost = totalReplacmentCost + item.LandTransportLoadingUnloadingInstallationCommissioningCost + item.InsuranceFreightOthersCost;
+                item.TotalNetEstimationValue = totalNetEstimationValue + item.DepreciatedInsuranceFreightOthersCost + item.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost;
+                item.RemainingCollateral = item.CollateralCount - indBldgFacilityEquipment.Count();
+                return item;
+            }
+            return null;
+        }
         public async Task<IEnumerable<IndBldgFacilityEquipmentCostsReturnDto>> GetByCaseId(Guid caseId)
         {
             var Case = await _cbeContext.Cases.FindAsync(caseId);
@@ -59,9 +99,9 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
             if(indBldgFacilityEquipmentCosts!= null)
             {
                 var indBldgFacilityEquipmentCostsReturnDto = _mapper.Map<IEnumerable<IndBldgFacilityEquipmentCostsReturnDto>>(indBldgFacilityEquipmentCosts);
-                foreach(var item in indBldgFacilityEquipmentCostsReturnDto)
+                foreach (var item in indBldgFacilityEquipmentCostsReturnDto)
                 {
-                   var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.IndBldgFacilityEquipmentCostsId == item.Id).ToListAsync();
+                    var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.IndBldgFacilityEquipmentCostsId == item.Id).ToListAsync();
                     double invoiceValue = 0;
                     double marketShare = 0;
                     double Depreciated = 0;
@@ -77,18 +117,20 @@ namespace mechanical.Services.IndBldgFacilityEquipmentCostService
                         totalReplacmentCost += indBldg.ReplacementCost;
                         totalNetEstimationValue += indBldg.NetEstimationValue;
                     }
-                    if(indBldgFacilityEquipment.Count() > 0)
+                    if (indBldgFacilityEquipment.Count() > 0)
                     {
                         marketShare = marketShare / indBldgFacilityEquipment.Count();
                         Depreciated = Depreciated / indBldgFacilityEquipment.Count();
                         equipmentcondition = equipmentcondition / indBldgFacilityEquipment.Count();
                     }
-                    item.LandTransportLoadingUnloadingInstallationCommissioningCost = invoiceValue *0.075;
+                    item.LandTransportLoadingUnloadingInstallationCommissioningCost = invoiceValue * 0.075;
                     item.DepreciatedInsuranceFreightOthersCost = item.InsuranceFreightOthersCost * marketShare * Depreciated * equipmentcondition;
                     item.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost = item.LandTransportLoadingUnloadingInstallationCommissioningCost * marketShare * Depreciated * equipmentcondition;
                     item.TotalReplacementCost = totalReplacmentCost + item.LandTransportLoadingUnloadingInstallationCommissioningCost + item.InsuranceFreightOthersCost;
                     item.TotalNetEstimationValue = totalNetEstimationValue + item.DepreciatedInsuranceFreightOthersCost + item.DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost;
+                    item.RemainingCollateral = item.CollateralCount - indBldgFacilityEquipment.Count();
                 }
+
 
                 return indBldgFacilityEquipmentCostsReturnDto;
             }
