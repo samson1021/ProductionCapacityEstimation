@@ -182,7 +182,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, "New");
                 await LogPCECaseTimeline(pceEvaluation.PCE, "The current production valuation is retracted.");
 
-                var filesToDelete = await GetFilesToDelete(PCEEId: pceEvaluation.Id);
+                var filesToDelete = await GetFilesToDelete(PCEEvaluationId: pceEvaluation.Id);
                 var filePathsToDelete = await GetFilePathsToDelete(filesToDelete);
 
                 await _cbeContext.SaveChangesAsync();
@@ -341,7 +341,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             return pceEvaluation;
         }
 
-        private async Task HandleFileUploads(Guid UserId, List<IFormFile> Files, string Category, Guid PCECaseId, Guid PCEEId)
+        private async Task HandleFileUploads(Guid UserId, List<IFormFile> Files, string Category, Guid PCECaseId, Guid PCEEvaluationId)
         {
             if (Files != null && Files.Any())
             {
@@ -352,7 +352,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         File = file ?? throw new ArgumentNullException(nameof(file)),
                         Category = Category,
                         CaseId = PCECaseId,
-                        CollateralId = PCEEId
+                        CollateralId = PCEEvaluationId
                     };
 
                     await _UploadFileService.CreateUploadFile(UserId, fileDto);
@@ -360,13 +360,13 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private async Task<List<UploadFile>> GetFilesToDelete(Guid? PCEEId = null, List<Guid>? FileIds = null)
+        private async Task<List<UploadFile>> GetFilesToDelete(Guid? PCEEvaluationId = null, List<Guid>? FileIds = null)
         {
             List<UploadFile> filesToDelete = null;
             
-            if (PCEEId != null)
+            if (PCEEvaluationId != null)
             {
-                filesToDelete = await _cbeContext.UploadFiles.Where(file => file.CollateralId == PCEEId).ToListAsync();
+                filesToDelete = await _cbeContext.UploadFiles.Where(file => file.CollateralId == PCEEvaluationId).ToListAsync();
             }
             else if (FileIds != null)
             {
