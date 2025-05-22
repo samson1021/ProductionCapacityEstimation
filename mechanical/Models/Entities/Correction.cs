@@ -1,7 +1,13 @@
-﻿namespace mechanical.Models.Entities
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace mechanical.Models.Entities
 {
+    [Index(nameof(CaseId))]
     public class Correction
     {
+        [Key]
         public Guid Id { get; set; } 
         public Guid CaseId { get; set; } = Guid.Empty;
         public Guid CollateralID { get; set; }= Guid.Empty;

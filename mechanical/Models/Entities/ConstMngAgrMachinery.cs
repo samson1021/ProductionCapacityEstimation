@@ -1,10 +1,15 @@
-﻿using mechanical.Models.Enum;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using mechanical.Models.Enum;
 
 namespace mechanical.Models.Entities
 {
-
+    [Index(nameof(CollateralId))]
     public class ConstMngAgrMachinery
     {
+        [Key]
         public Guid Id { get; set; }
         public string? MechanicalEqpmntName { get; set; }
         public required Guid CollateralId { get; set; }
@@ -46,10 +51,13 @@ namespace mechanical.Models.Entities
         public double InvoiceValue { get; set; }
         public string Currency { get; set; } = string.Empty;
         public double ExchangeRate { get; set; }
-        public virtual Collateral? Collateral { get; set; }
 
+        [ForeignKey("EvaluatorUserID")]
         public virtual User? EvaluatorUser { get; set; }
+        [ForeignKey("CheckerUserID")]
         public virtual User? CheckerUser { get; set; }
+        [ForeignKey("CollateralId")]
+        public virtual Collateral? Collateral { get; set; }
     }
 }
 

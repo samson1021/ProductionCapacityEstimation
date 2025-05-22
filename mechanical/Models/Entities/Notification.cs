@@ -1,12 +1,11 @@
-﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mechanical.Models.Entities
 {
-    // public class Notification
+    [Index(nameof(UserId))]
     public class Notification
     {
         [Key]
@@ -27,6 +26,7 @@ namespace mechanical.Models.Entities
         [JsonPropertyName("CreatedAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [ForeignKey("UserId")]
         public virtual User? User { get; set; }
     }
 }
