@@ -437,9 +437,9 @@ namespace mechanical.Controllers.PCE
         {
             var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
 
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
+            //var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
 
-            ViewData["pceEvaluations"] = pceEvaluations;
+            //ViewData["pceEvaluations"] = pceEvaluations;
             ViewData["PCECase"] = pceCase;
             return View();
         }
@@ -447,7 +447,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
         {
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsSummaryByPCECaseId(base.GetCurrentUserId(), PCECaseId);
             string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             return Content(jsonData, "application/json");
         } 
