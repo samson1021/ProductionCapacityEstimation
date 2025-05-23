@@ -47,8 +47,8 @@ namespace mechanical.Services.UserService
         {
             var user = await _cbeContext.Users
                                         .AsNoTracking()
-                                        //.Where(u => u.Id == userId)
-                                        //.Select(u => new { u.Id, u.SupervisorId, u.Department, u.BroadSegment, u.Unit })
+                                        .Where(u => u.Id == userId)
+                                        .Select(u => new { u.Id, u.SupervisorId, u.Department, u.BroadSegment, u.Unit })
                                         .FirstOrDefaultAsync();
 
             if (user == null)
