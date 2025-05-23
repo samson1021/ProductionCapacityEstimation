@@ -400,7 +400,7 @@ namespace mechanical.Controllers
         {
             var rms = await _userService.GetPeerRMs(base.GetCurrentUserId());
             var result = rms
-                .Where(crm => crm.Id != base.GetCurrentUserId())
+                //.Where(crm => crm.Id != base.GetCurrentUserId())
                 .Select(rm => new { Id = rm.Id, Name = rm.Name });
             return Ok(result);
         }
