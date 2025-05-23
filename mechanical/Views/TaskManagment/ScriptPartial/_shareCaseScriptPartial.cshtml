@@ -34,6 +34,9 @@
                         );
                     });
                 } else {
+                    $dropdown.append(
+                        $('<option disabled>No Peer RMs found</option>')
+                    );
                     console.warn("No valid data received.");
                 }
 
