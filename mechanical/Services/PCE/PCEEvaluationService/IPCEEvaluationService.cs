@@ -27,5 +27,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<PCEEvaluationReturnDto> GetValuationByPCEId(Guid UserId, Guid PCEId);
         Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId);
         Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsByPCECaseId(Guid UserId, Guid PCECaseId);
+        Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsSummaryByPCECaseId(Guid UserId, Guid PCECaseId);
+
     }
 }

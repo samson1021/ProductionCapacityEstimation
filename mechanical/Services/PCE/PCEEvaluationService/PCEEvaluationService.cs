@@ -731,6 +731,40 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
             }
         }
+        public async Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsSummaryByPCECaseId(Guid UserId, Guid PCECaseId)
+        {
+            try
+            {
+                var pceEntities = await _cbeContext.PCEEvaluations
+                                    .AsNoTracking()
+                                    .Include(e => e.TimeConsumedToCheck)
+                                    .Include(e => e.PCE)
+                                        .ThenInclude(e => e.PCECase)
+                                    .Include(e => e.ProductionLines)
+                                        .ThenInclude(e => e.ProductionLineInputs)
+                                    .Include(e => e.Justifications)
+                                    .Include(e => e.Evaluator)
+                                    .Where(e => e.PCE.PCECaseId == PCECaseId)
+                                    // .Where(e=>e.EvaluatorId== UserId)
+                                   // .OrderByDescending(e => e.UpdatedAt)
+                                    //.ThenByDescending(e => e.CreatedAt)
+                                    .ToListAsync();
+
+
+                if (pceEntities == null || !pceEntities.Any())
+                {
+                    return Enumerable.Empty<PCEEvaluationReturnDto>();
+                }
+                var pceEntitiesDto = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(pceEntities).ToList();
+
+                return pceEntitiesDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
+            }
+        }
 
         public async Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId)
         {
