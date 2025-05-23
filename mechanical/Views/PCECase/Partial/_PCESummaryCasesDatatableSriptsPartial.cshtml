@@ -1,207 +1,406 @@
-﻿<script>
-    $(document).ready(function () {
-        var PCECaseId = $('#PCECaseId').val();
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+<script>
 
-        function initializeDataTableProduction(data) {
-        $('#summaryProductions').DataTable({
-            language: {
-                emptyTable: "There is no production register for this PCE case."
-            },
-            responsive: true,
-            pageLength: 8,
-            lengthChange: false,
-            autoWidth: false,
-            scrollX: false,
-            data: data,
-            columns: [
-                {
-                    data: null,
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
-                    }
+     $(document).ready(function () {
+         var PCECaseId = $('#PCECaseId').val();
+
+            function initializeDataTableProduction(data) {
+         $('#summaryProductions').DataTable({
+             language: {
+                 emptyTable: "There is no production register for this PCE case."
+             },
+             responsive: true,
+             pageLength: 8,
+             lengthChange: false,
+             autoWidth: false,
+             scrollX: false,
+             data: data,
+             columns: [
+                 {
+                     data: null,
+                     render: function(data, type, row, meta) {
+                         return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
+                     }
+                 },
+                
+                 { data: "PCE.PropertyOwner" },
+                 { data: "MachineName" },                
+                 { data: "PCE.Type" },
+                 { data: "PCE.Purpose" },
+                 { data: "PCE.ManufactureYear" },
+                 { data: "PCE.CountryOfOrigin" },
+                 { data: "PCE.ModelNo" },
+                 { data: "PCE.InvoiceNo" },               
+                 { data: "PCE.SerialNo" },
+                 { data: "PCE.BusinessLicenseNumber" },
+                 { data: "PCE.MachineryInstalledPlace" },
+                 { data: "PCE.Region" },
+                 { data: "PCE.Wereda" },
+                 { data: "PCE.Kebele" },
+                 { data: "PCE.Remark" }
+             ]
+         });
+     }
+      
+         // Define the mapping for summary evalution
+         function initializeDataTableEvalauion(data) {
+         $('#summaryEvaluatons').DataTable({
+             language: {
+                 emptyTable: "There is no evaluation registered for the above PCE."
+             },
+             responsive: true,
+             pageLength: 8,
+             lengthChange: false,
+             autoWidth: false,
+             scrollX: false,
+             data: data,
+             columns: [
+                 {
+                     data: null,
+                     render: function(data, type, row, meta) {
+                         return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
+                     }
+                 },
+                 { data: "MachineName" },
+                 {
+                     data: "ProductionLineType",
+                     render: function(data) {
+                         return ProductionLineType[data] || "Unknown"; // Map enum value to name
+                     }
+                 },
+                 { data: "TotalCapacity" },
+                 { data: "TechnicalObsolescenceStatus" },
+                  {
+                         data: "MachineFunctionalityStatus",
+                      render: function(data) {
+                           return MachineFunctionalityStatus[data] || "Unknown"; // Map enum value to name
+                      }
+                  },
+                 { data: "InspectionPlace" },
+                 { data: "InspectionDate" },
+                 {
+                         data: "MachineNonFunctionalityReason",
+                      render: function(data) {
+                             return MachineNonFunctionalityReason[data] || "Unknown"; // Map enum value to name
+                      }
+                  },
+                 { data: "OtherMachineNonFunctionalityReason" },
+                 { data: "FactorsAffectingProductionCapacity" },
+                 { data: "SurveyRemark" },
+                 { data: "Remark" }
+             ]
+         });
+     }
+      
+          function loadProductions() {
+            $.ajax({
+                url: '/PCECase/GetPCESummary?PCECaseId=' + PCECaseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    clearExistingDataTables(); // Clear previous data
+                    initializeDataTableProduction(data);
+                    initializeDataTableEvalauion(data)
+                    const productionLinesData = [];
+                    const productionLineInputsData = [];
+
+                    // Process data
+                    data.forEach(function(evaluation) {
+                        if (evaluation.ProductionLines) {
+                            evaluation.ProductionLines.forEach(function(lineEvaluation) {
+                                productionLinesData.push({
+                                    LineName: lineEvaluation.LineName,
+                                    OutputType: lineEvaluation.OutputType,
+                                    OutputPhase: lineEvaluation.OutputPhase,
+                                    ActualCapacity: lineEvaluation.ActualCapacity,
+                                    DesignCapacity: lineEvaluation.DesignCapacity,
+                                    AttainableCapacity: lineEvaluation.AttainableCapacity,
+                                    ProductionMeasurement: lineEvaluation.ProductionMeasurement,
+                                    ProductionUnit: lineEvaluation.ProductionUnit,
+                                    TotalInput: lineEvaluation.TotalInput,
+                                    ConversionRatio: lineEvaluation.ConversionRatio,
+                                    PCEEvaluationId: evaluation.Id,
+                                    ProductionLineId: lineEvaluation.Id // Add ProductionLineId for filtering
+
+                                });
+
+                                if (lineEvaluation.ProductionLineInputs) {
+                                    lineEvaluation.ProductionLineInputs.forEach(function(lineInputEvaluation) {
+                                        productionLineInputsData.push({
+                                            Type: lineInputEvaluation.Type,
+                                            Quantity: lineInputEvaluation.Quantity,
+                                            Unit: lineInputEvaluation.Unit,
+                                            ProductionLineId: lineInputEvaluation.ProductionLineId,
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    // Group productionLinesData by PCEEvaluationId
+                    const groupedProductionLines = groupBy(productionLinesData, 'PCEEvaluationId');
+
+                    // Initialize tables for production lines
+                    Object.keys(groupedProductionLines).forEach(groupKey => {
+                        const groupData = groupedProductionLines[groupKey];
+                        initializeDataTableLinEvalatione(groupData, `tablesContainer-${groupKey}`, groupKey, productionLineInputsData);
+                    });
                 },
-                { data: "PCE.PropertyOwner" },
-                { data: "PCE.ManufactureYear" },
-                { data: "PCE.CountryOfOrigin" },
-                { data: "PCE.ModelNo" },
-                { data: "PCE.InvoiceNo" },
-                { data: "PCE.LHCNumber" },
-                { data: "PCE.Type" },
-                { data: "PCE.SerialNo" },
-                // { data: "DepreciationRateApplied" },
-                // { data: "ActualProductionCapacity" },
-                // { data: "EstimatedProductionCapacity" },
-                // { data: "SurveyRemark" }
-            ]
-        });
-    }
-
-    function initializeDataTableEvalauion(data) {
-        $('#summaryEvaluatons').DataTable({
-            language: {
-                emptyTable: "There is no evalauton register for the above PCE."
-            },
-            responsive: true,
-            pageLength: 8,
-            lengthChange: false,
-            autoWidth: false,
-            scrollX: false,
-            data: data,
-            columns: [
-                {
-                    data: null,
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
-                    }
-                },
-                { data: "PCE.PropertyOwner" },
-                // { data: "PCE.ManufactureYear" },
-                // { data: "PCE.CountryOfOrigin" },
-                // { data: "PCE.ModelNo" },
-                // { data: "PCE.InvoiceNo" },
-                // { data: "PCE.LHCNumber" },
-                // { data: "PCE.Type" },
-                // { data: "PCE.SerialNo" },
-                { data: "DepreciationRateApplied" },
-                { data: "ActualProductionCapacity" },
-                { data: "EstimatedProductionCapacity" },
-                { data: "SurveyRemark" }
-            ]
-        });
-    }
-
-    // Function to initialize the data table and populate it with evaluations
-    function initializeDataTableLinEvalatione(data, tableId) {
-        $(`#${tableId}`).DataTable({
-            language: {
-                emptyTable: "There is no line valuation registered for the above PCE valuation."
-            },
-            responsive: true,
-            pageLength: 8,
-            lengthChange: false,
-            autoWidth: false,
-            scrollX: false,
-            data: data,
-            columns: [
-                {
-                    data: null,
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1; // Increment SN
-                    }
-                },
-                { data: "PropertyOwner" },
-                { data: "LineName" },
-                { data: "InputType" },
-                { data: "OutputType" },
-                { data: "OutputQuantity" },
-                { data: "InputOutputConversion" },
-                { data: "OutputPhase" },
-                { data: "ProductionUnit" }
-            ]
-        });
-    }
-
-    function loadProductions() {
-        $.ajax({
-            url: '/PCECase/GetPCESummary?PCECaseId=' + PCECaseId,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                if ($.fn.DataTable.isDataTable('#summaryProductions')) {
-                    $('#summaryProductions').DataTable().destroy();
+                error: function(error) {
+                    console.error("Failed to load Productions", error);
                 }
-                if ($.fn.DataTable.isDataTable('#summaryEvaluatons')) {
-                    $('#summaryEvaluatons').DataTable().destroy();
-                }
+            });
+        }
 
-                if ($.fn.DataTable.isDataTable('#summaryProductionsoflineValuations')) {
-                    $('#summaryProductionsoflineValuations').DataTable().destroy();
-                }
-                initializeDataTableProduction(data);
-                initializeDataTableEvalauion(data);
+        function clearExistingDataTables() {
+            $('#tablesContainer').empty(); // Clear previous evaluations
+            if ($.fn.DataTable.isDataTable('#summaryProductions')) {
+                     $('#summaryProductions').DataTable().destroy();
+            }
+            if ($.fn.DataTable.isDataTable('#summaryEvaluatons')) {
+                     $('#summaryEvaluatons').DataTable().destroy();
+            }
+        }
 
-                // Create an object to hold arrays of evaluations grouped by PCEEvaluationId
-                const groupedEvaluations = {};
+        function groupBy(array, key) {
+            return array.reduce((result, currentValue) => {
+                (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
+                return result;
+            }, {});
+        }
+        var numberofvaluation =0;
+        function initializeDataTableLinEvalatione(data, tableId, groupKey, productionLineInputsData) {
+           numberofvaluation++;
+           $(`#tablesContainer`).append(`
+                <div id="${tableId}"></div>
+            `);
 
-                // Loop through each evaluation
-                data.forEach(function (evaluation) {
-                    console.log(`PCE Evaluation: ${evaluation.Id}`);
-
-                    if (evaluation.ProductionLines) {
-                        evaluation.ProductionLines.forEach(function (lineEvaluation) {
-                            console.log(`  Line Evaluation: ${lineEvaluation.Id}`);
-                            console.log(`  Output Type: ${lineEvaluation.OutputType}`);
-
-                            // Gather data for DataTable
-                            const entry = {
-                                PropertyOwner: evaluation.PCE.PropertyOwner,
-                                LineName: lineEvaluation.LineName,
-                                InputType: lineEvaluation.InputType,
-                                OutputType: lineEvaluation.OutputType,
-                                OutputQuantity: lineEvaluation.OutputQuantity,
-                                InputOutputConversion: lineEvaluation.InputOutputConversion,
-                                OutputPhase: lineEvaluation.OutputPhase,
-                                ProductionUnit: lineEvaluation.ProductionUnit,
-                                PCEEvaluationId: lineEvaluation.PCEEvaluationId,
-                            };
-
-                            // Group by PCEEvaluationId
-                            if (!groupedEvaluations[lineEvaluation.PCEEvaluationId]) {
-                                groupedEvaluations[lineEvaluation.PCEEvaluationId] = [];
-                            }
-                            groupedEvaluations[lineEvaluation.PCEEvaluationId].push(entry);
-                        });
-                    }
-                });
-
-        // Initialize a DataTable for each group of evaluations
-            // Initialize a counter for valuations
-        let Numberofvaluation = 0;
-
-        // Initialize a DataTable for each group of evaluations
-        for (const pceId in groupedEvaluations) {
-            const evaluationArray = groupedEvaluations[pceId];
-
-            // Increment the valuation number for each table
-            Numberofvaluation++;
-
-            // Create a unique table ID for each PCEEvaluationId
-            const tableId = `summaryEvaluatons_${pceId}`;
-
-            // Append a new table to the HTML (make sure you have a container for this)
-            $('#tablesContainer').append(`
-                <table id="${tableId}" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
+            $(`#${tableId}`).append(`
+                <table class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em;">
                     <thead>
-                        <tr>
-                            <th colspan="9" style="text-align: left;"> Production line valuation of number #${Numberofvaluation} valuation</th>
-                        </tr>
-                        <tr>
+                     <tr>
+            <th colspan="13" class="sub-table-title">Production Line of valuation SN #${numberofvaluation}</th>
+        </tr>
+                        <tr>                       
                             <th>SN</th>
-                            <th>Property Owner</th>
                             <th>Production Line</th>
-                            <th>Input Type</th>
                             <th>Output Type</th>
-                            <th>Output Quantity</th>
-                            <th>Input/Output Conversion</th>
                             <th>Output Phase</th>
-                            <th>Production Unit</th>
+                            <th>Actual Capacity</th>
+                            <th>Design Capacity</th>
+                            <th>Attainable Capacity</th>
+                            <th>Total Input</th>                            
+                            <th>Conversion Ratio</th>
+                            <th>Efficiency</th>                           
+                            <th>Production Measurement</th>
+                            <th>Production Unit</th>                        
+                            <th>Details</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
+                </br>
             `);
 
-            // Initialize the DataTable
-            initializeDataTableLinEvalatione(evaluationArray, tableId);
-        }
-        
-                },
-                error: function (error) {
-                    toastr.error("Failed to load Productions");
-                    console.log(error);
+               const table = $(`#${tableId} table`).DataTable({
+        language: {
+            emptyTable: "There is no registered Production Line."
+        },
+        responsive: true,
+        pageLength: 8,
+        lengthChange: false,
+        autoWidth: false,
+        scrollX: false,
+        data: data, // Ensure data contains ProductionLineId, LineName, etc.
+        columns: [
+            {
+                data: null,
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1; // SN
+                }
+            },
+            { data: "LineName" }, // Production Line
+            { data: "OutputType" }, // Output Type
+            {
+                data: "OutputPhase",
+                render: function(data) {
+                    return OutputPhase[data] || "Unknown"; // Output Phase
+                }
+            },
+            { data: "ActualCapacity" }, // Actual Capacity
+            { data: "DesignCapacity" }, // Design Capacity
+            { data: "AttainableCapacity" }, // Attainable Capacity
+            { data: "TotalInput" }, // Total Input
+            {
+                data: "ConversionRatio",
+                render: function(data) {
+                    return data !== null && !isNaN(data) ? data.toFixed(2) + "%" : "N/A"; // Conversion Ratio
+                }
+            },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    //console.log("Efficiency:", row.ActualCapacity, row.DesignCapacity); // Debug
+                    const percentage = (row.ActualCapacity / row.DesignCapacity) * 100;
+                    return row.DesignCapacity !== 0 ? percentage.toFixed(2) + "%" : "N/A"; // Efficiency
+                }
+            },
+            {
+                data: "ProductionMeasurement",
+                render: function(data) {
+                    return ProductionMeasurement[data] || "Unknown"; // Production Measurement
+                }
+            },
+            {
+                data: "ProductionUnit",
+                render: function(data) {
+                    return MeasurementUnit[data] || "Unknown"; // Production Unit
+                }
+            },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `<button class="details-button" data-line-id="${row.ProductionLineId}">
+                                <i class="fas fa-chevron-down"></i> Show Details
+                            </button>`; // Details
+                }
+            }
+        ]
+    });
+            // Event delegation for dynamically added buttons
+            $(`#${tableId}`).on('click', '.details-button', function() {
+                const lineId = $(this).data('line-id');
+                const detailsRow = $(this).closest('tr').next('.details-row');
+
+                if (detailsRow.length) {
+                    detailsRow.toggle(); // Toggle visibility of existing row
+                    const icon = detailsRow.is(':visible') ? 'fa-chevron-up' : 'fa-chevron-down';
+                    $(this).find('i').removeClass('fa-chevron-down fa-chevron-up').addClass(icon);
+                } else {
+                    const filteredInputs = productionLineInputsData.filter(input => input.ProductionLineId === lineId);
+                    const detailsHtml = `
+                        <tr class="details-row">
+                            <td colspan="12">
+                                <div class="sub-table-title">Production Line Inputs</div>
+                                <table class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em;">
+                                    <thead>
+                                        <tr>
+                                            <th>SN</th>
+                                            <th>Type</th>
+                                            <th>Quantity</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${filteredInputs.map((input, index) => `
+                                            <tr>
+                                                <td>${index + 1}</td>
+                                                <td>${input.Type}</td>
+                                                <td>${input.Quantity}</td>
+                                                <td>${MeasurementUnit[input.Unit]}</td>
+                                            </tr>`).join('')}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    `;
+                    $(this).closest('tr').after(detailsHtml);
+                    $(this).find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up'); // Change icon to up
                 }
             });
         }
         loadProductions();
-    });
+     });
+
+
+
+    // Mapping for ProductionLineType
+     const ProductionLineType = {
+         0: "Mutually Exclusive",
+         1: "Interdependent"
+     };
+
+     // Mapping for OutputPhase
+     const OutputPhase = {
+         0: "Finished Product",
+         1: "Raw Material For Next Line"
+     };
+
+     // Mapping for ObsolescenceStatus
+     const ObsolescenceStatus = {
+         0: "Current",
+         1: "Obsolete Soon",
+         2: "Obsolete",
+         3: "Under Review",
+         4: "Not Applicable",
+         5: "Upgradable",
+         6: "Requires Immediate Replacement"
+     };
+
+     // Mapping for MachineFunctionalityStatus
+     const MachineFunctionalityStatus = {
+         0: "Functional at Time of Visit",
+         1: "Not Functional at Time of Visit"
+     };
+
+     // Mapping for MachineNonFunctionalityReason
+     const MachineNonFunctionalityReason = {
+         0: "Power Shutdown",
+         1: "Raw Materials Shortage",
+         2: "Scheduled Maintenance",
+         3: "Other"
+     };
+
+     // Mapping for ProductionMeasurement
+     const ProductionMeasurement = {
+         0: "Per Hour",
+         1: "Per Shift",
+         2: "Per Day",
+         3: "Per Month",
+         4: "Per Year"
+     };
+
+     // Mapping for MeasurementUnit
+     const MeasurementUnit = {
+         0: "Number",
+         1: "Kilogram",
+         2: "Pound",
+         3: "Quintal",
+         4: "Ton",
+         5: "Pairs",
+         6: "Pieces",
+         7: "Liter",
+         8: "Gallon",
+         9: "Meter",
+         10: "Square Meter",
+         11: "Cubic Meter",
+         12: "Cubic Feet",
+         13: "Hectoliter",
+         14: "Thousand Cubic Feet",
+         15: "Carat",
+         16: "Ton Refrigeration",
+         17: "Thousand Units",
+         18: "Sets",
+         19: "Units",
+         20: "Other"
+     };
+
+     // // Mapping for JustificationReason
+     const JustificationReason = {
+         0: "The company refused to share input-output data as it considers confidential.",
+         1: "Legal or contractual obligations with partners prevent the disclosure of specific production details.",
+         2: "The company is not permitted for site visit team to access detailed production records.",
+         3: "The site visit is too short to gather primary data in real-time.",
+         4: "The plant is not operational during the visit.",
+         5: "Tracking input-output data is challenging due to highly complex or multi-stage processes.",
+         6: "Lack of cooperation by plant personnel to provide detailed information.",
+         7: "Measurement difficulties of some inputs or outputs that is hard to quantify accurately.",
+         8: "The company avoids scrutiny to hide inefficiencies, waste, or non-compliance with regulations by withholding data.",
+         9: "The company assumes sharing input-output details may reveal competitive advantages or disadvantages.",
+         10: "The company avoids sharing data believing that the information will reflect poorly on its operations.",
+         11: "The purpose of the site visit is not well-explained by CRM, hence, the company is not willing to provide the necessary information.",
+         12: "Others, please specify the reason (comment box)."
+     };
+
 </script>

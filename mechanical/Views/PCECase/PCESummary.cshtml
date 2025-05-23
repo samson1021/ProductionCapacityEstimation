@@ -1,12 +1,11 @@
-﻿@using mechanical.Models.PCE.Entities
+@using mechanical.Models.PCE.Entities
 @using mechanical.Models.PCE.Dto.PCECaseDto;
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 
 @{
     var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
-    var pceEvaluations = ViewData["pceEvaluations"] ;
-
-}
+    var pceEvaluations = ViewData["pceEvaluations"] ;    
+    }
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -38,26 +37,20 @@
                        
                         <tr>
                             <th colspan="3">Case No.</th>
-                            <th colspan="3">Applicant Name</th>
-                            <th colspan="3">Applicant Address</th>
-                            <th colspan="3">Segment</th>                                                    
-                            @* <th colspan="3">Equipment </th> *@
-                            <th colspan="3">No of Evaluated Productions</th>
+                            <th colspan="3">Applicant Name</th>                         
+                            <th colspan="3">Segment</th>                                                   
+                             @* <th colspan="3">No of Evaluated Productions</th> *@
                             <th colspan="3">Status</th>
                             <th colspan="3">Completed Date</th>
                         </tr>
 
-
                     </thead>
                     <tbody>
                         <tr>
-
                             <td colspan="3">@myPCECase.CaseNo</td>                           
-                            <td colspan="3" id="ApplicantName">@myPCECase.ApplicantName</td>
-                            <td colspan="3">Unable to load </td>
-                            <td colspan="3" id="Segment">@myPCECase.Segment</td>
-                            @* <td colspan="3">Mechanical</td> *@
-                            <td colspan="3">@myPCECase.NoOfProductions</td>
+                            <td colspan="3" id="ApplicantName">@myPCECase.ApplicantName</td>                          
+                            <td colspan="3" id="Segment">@myPCECase.Segment</td>                    
+                            @* <td colspan="3">@EvaluatedProductions</td> *@
                             <td colspan="3">@myPCECase.Status</td>
                             <td colspan="3">@myPCECase.CompletedAt</td>
                         </tr>
@@ -65,65 +58,81 @@
                 </table>
                   
                 <br/> 
-                <h4 style="font-size: 0.5em; text-align: left; font-weight: bold;margin-bottom: 10px;"> <h4>PART II: Summary of evaluated productions of case @myPCECase.CaseNo</h4> </h4>
+                <h4 style="font-size: 0.5em; text-align: left; font-weight: bold;margin-bottom: 10px;"> <h4>PART II: Summary of Production</h4> </h4>
 
                 <table id="summaryProductions" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
-                    <thead>
-                       @*  <tr>
-                            <th colspan="14" class="text-left" style="font-size: 0.5em;"><h3> PART II: Summary Of Valuations </h3></th>
-                        </tr> *@
+                    <thead>                      
                         <tr>
                             <th>#SN</th>
                             <th>Property Owner</th>
-                            @* <th>Mechanical Equipment Name</th> *@
+                            <th>Machine/Equipment</th>
+                            <th>Manufacturing Type</th>                           
+                            <th>Purpose</th>
                             <th>YoMfg</th>
                             <th>Origin</th>
                             <th>Model No</th>
-                            <th>Invoice No.</th>
-                            <th>LHC No</th>
-                            <th>Type Manufacturing</th>
+                            <th>Invoice No.</th>                         
                             <th>Serial No.</th>
-                          @*   <th>Depreciation Rate</th>
-                            <th>Actual PC</th>
-                            <th>Estimated PC</th>
-                            <th>Remark</th> *@
+                            <th>License Number</th>
+                            <th>Installed Place</th>
+                            <th>Region</th>
+                            <th>Wereda</th>
+                            <th>Kebele</th>                          
+                            <th>Remark</th>                      
+
                         </tr>
                     </thead>
                 </table>
                 <br/> 
-                <h4 style="font-size: 0.5em; text-align: left; font-weight: bold;margin-bottom: 10px;"> <h4>PART III: Summary of valuations</h4> </h4>
+                <h4 style="font-size: 0.5em; text-align: left; font-weight: bold;margin-bottom: 10px;"> <h4>PART III: Summary of Production valuation</h4> </h4>
 
                 <table id="summaryEvaluatons" class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em; margin-right:10px">
-                    <thead>
-                        @*  <tr>
-                            <th colspan="14" class="text-left" style="font-size: 0.5em;"><h3> PART II: Summary Of Valuations </h3></th>
-                        </tr> *@
+                    <thead>                       
                         <tr>
                             <th>#SN</th>
-                             <th>Property Owner</th>
-                            @* <th>YoMfg</th>
-                            <th>Origin</th>
-                            <th>Model No</th>
-                            <th>Invoice No.</th>
-                            <th>LHC No</th>
-                            <th>Type Manufacturing</th>
-                            <th>Serial No.</th> *@
-                            <th>Depreciation Rate</th>
-                            <th>Actual Production Capacity</th>
-                            <th>Estimated Production Capacity</th>
+                            <th>Machine/Equipment</th>                           
+                            <th>Production Line Type</th>
+                            <th>Total Capacity</th>
+                            <th>Technical Status</th>
+                            <th>Functionality Status</th>
+                            <th>Inspection Place</th>                          
+                            <th>Conversion Ratio </th>
+                            <th>Machine Non Functionality Reason</th>
+                            <th>Other Machine Non Functionality Reason</th>
+                            <th>Factors Affecting Production Capacity</th>
+                            <th>Survey Remark</th>
                             <th>Remark</th>
                         </tr>
                     </thead>
                 </table>
 
                 <br/> 
-               <h3 style="font-size: 0.5em; text-align: left; font-weight: bold; margin-bottom: 10px;"><h3> PART IV: Summary of line valuations </h3></h3>
+               <h3 style="font-size: 0.5em; text-align: left; font-weight: bold; margin-bottom: 10px;"><h3> PART IV: Summary of Production line </h3></h3>
                 @* Summary of line valuations *@
-               <div id="tablesContainer"></div>
+
+               <div id="tablesContainer"></div>                
+               <br />                
             </div>
         </div>
     </div>
+
 </section>
+
+<style>
+    .details-button {
+        color: purple;
+    }
+
+    .sub-table-title {
+        color: purple;
+        margin: 10px 0;
+    }
+
+    .sub-table thead th {
+        background-color: white; /* White background for sub-table header */
+    }
+
+</style>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("Partial/_PCESummaryCasesDatatableSriptsPartial");
