@@ -21,7 +21,7 @@ namespace mechanical.Models.Entities
         public DateTime? UpdatedDate { get; set; } = null;
         public DateTime? CompletionDate { get; set; } = null;
         public DateTime Deadline { get; set; }
-        public required string PriorityType { get; set; }
+        public required string TaskPriority { get; set; }
 
         [ForeignKey("CaseOrginatorId")]
         public virtual User? CaseOrginator { get; set; }

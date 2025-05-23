@@ -1,4 +1,6 @@
-﻿@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto
+﻿@using mechanical.Models.Enum
+
+@model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto
 
 <div class="modal fade" id="shareTaskModal" tabindex="-1" role="dialog" aria-labelledby="SendshareTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -16,16 +18,17 @@
                     <input type="hidden" id="selectedCaseIds" name="selectedCaseIds">
                     <div class="form-group">
                         <label asp-for="AssignedId"> Relation Manager <i class="text-danger">*</i></label>
-                        <select class="form-control" id="CenterDropdown" name="AssignedId">
-                        </select>
+                        <select class="form-control" id="CenterDropdown" name="AssignedId"></select>
                         <span id="AssignedIdError" asp-validation-for="AssignedId" class="text-danger"></span>
 
                     </div>
 
                     <div class="form-group">
+                        @* <label for="TaskName" class="form-label">@Html.DisplayNameFor(model => model.TaskName) Task List<span class="text-danger small">*</span></label> *@
                         <label asp-for="TaskName"> Task List <i class="text-danger">*</i></label>
-                        <select asp-for="TaskName" class="form-control" id="TaskName">
-                            <option value="" disabled selected>Select Task List</option>
+                        <select asp-for="TaskName" class="form-control" id="TaskName" required >
+                                @* asp-items="Html.GetEnumSelectList<TaskList>()" *@
+                            <option value="" disabled selected>-- Select Task List --</option>
                             <option value="All">All</option>
                             <option value="Collateral Addition">Collateral Addition</option>
                             <option value="Case Follow">Case Follow</option>
@@ -35,14 +38,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="PriorityType"> Priority Type <i class="text-danger">*</i></label>
-                        <select asp-for="PriorityType" class="form-control" id="PriorityType">
-                            <option value="" disabled selected>Select Priority</option>
-                            <option value="Urgent">High Priority</option>
-                            <option value="Medium Priority">Medium Priority</option>
-                            <option value="Normal Priority">Normal Priority</option>
+                        @* <label for="TaskName" class="form-label">@Html.DisplayNameFor(model => model.TaskName) Task List<span class="text-danger small">*</span></label> *@
+                        <label asp-for="TaskPriority"> Priority Type <i class="text-danger">*</i></label>
+                        <select asp-for="TaskPriority" class="form-control" id="TaskPriority" required >
+                                @* asp-items="Html.GetEnumSelectList<PriorityType>()" *@
+                            <option value="" disabled selected>-- Select Priority --</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
                         </select>
-                        <span id="PriorityTypeError" asp-validation-for="PriorityType" class="text-danger"></span>
+                        <span id="TaskPriorityError" asp-validation-for="TaskPriority" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">

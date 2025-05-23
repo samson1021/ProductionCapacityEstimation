@@ -1,5 +1,7 @@
 @using System
+@using mechanical.Models.Enum
 @using mechanical.Models.Dto.CaseScheduleDto
+
 @model mechanical.Models.Dto.TaskManagmentDto.ShareTasksDto
 @{
     var myCase = ViewData["case"] as CaseReturnDto;
@@ -10,8 +12,9 @@
 
     <div class="mb-3">
         <label for="TaskName" class="form-label">Task List</label>
-        <select class="form-control" id="TaskName" asp-for="TaskName" required>
-            <option value="">-- Select Task --</option>
+        <select class="form-control" id="TaskName" asp-for="TaskName" required >
+                @* asp-items="Html.GetEnumSelectList<TaskList>()" *@
+            <option value="" disabled selected>-- Select Task --</option>
             <option value="All">All</option>
             <option value="Collateral Addition">Collateral Addition</option>
             <option value="Case Follow">Case Follow</option>
@@ -24,7 +27,7 @@
     <div class="form-group mb-3">
         <label class="form-label">Relation Managers</label>
         <select class="form-control select2" asp-for="SelectedRMs" required multiple>
-            <option value="" disabled>Select Relation Managers</option>
+            <option value="" selected disabled>Select Relation Managers</option>
         </select>
         <span asp-validation-for="SelectedRMs" class="text-danger"></span>
         <div class="invalid-feedback">Please select at least one relations manager.</div>
@@ -38,15 +41,17 @@
     </div>
 
     <div class="mb-3">
-        <label for="PriorityType" class="form-label">Priority</label>
-        <select class="form-control" id="PriorityType" asp-for="PriorityType" required>
-            <option value="">-- Select Priority Type --</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+        @* <label for="TaskPriority" class="form-label">@Html.DisplayNameFor(model => model.TaskPriority)<span class="text-danger small">*</span></label> *@
+        <label for="TaskPriority" class="form-label">Priority</label>
+        <select class="form-control" id="TaskPriority" asp-for="TaskPriority" required >
+                @* asp-items="Html.GetEnumSelectList<PriorityType>()" *@
+            <option value="" disabled selected>-- Select Priority Type --</option>
             <option value="Urgent">Urgent</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
         </select>
-        <span asp-validation-for="PriorityType" class="text-danger"></span>
+        <span asp-validation-for="TaskPriority" class="text-danger"></span>
         <div class="invalid-feedback">Please select a priority type.</div>
     </div>
 

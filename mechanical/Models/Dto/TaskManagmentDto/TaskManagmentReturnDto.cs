@@ -17,7 +17,7 @@ namespace mechanical.Models.Dto.TaskManagmentDto
         public DateTime? UpdatedDate { get; set; }
         public DateTime CompletionDate { get; set; }
         public DateTime Deadline { get; set; }
-        public required string PriorityType { get; set; }
+        public required string TaskPriority { get; set; }
 
         public virtual User? CaseOrginator { get; set; }
         public virtual User? Assigned { get; set; }

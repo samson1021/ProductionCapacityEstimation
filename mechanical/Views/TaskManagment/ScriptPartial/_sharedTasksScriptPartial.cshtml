@@ -43,7 +43,7 @@
                 },
                 { data: 'TaskName', width: '10%' },
                 { data: 'TaskStatus', width: '10%' },
-                { data: 'PriorityType', width: '5%' },
+                { data: 'TaskPriority', width: '5%' },
                 { data: 'Assigned.Name', width: '15%' },
                 {
                     data: 'AssignedDate',
@@ -208,7 +208,7 @@
             $("#updateTaskId").val(data.Id);
             $("#updateTaskName").val(data.TaskName);
             $("#updateDeadline").val(new Date(data.Deadline).toISOString().split('T')[0]);
-            $("#updatePriorityType").val(data.PriorityType);
+            $("#updateTaskPriority").val(data.TaskPriority);
             $("#updateSharingReason").val(data.SharingReason);
             var updateTaskModalEl = document.getElementById('updateTaskModal');
             var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);

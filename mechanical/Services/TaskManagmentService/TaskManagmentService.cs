@@ -31,7 +31,7 @@ namespace mechanical.Services.TaskManagmentService
         private readonly INotificationService _notificationService;
         private readonly ICaseService _caseService;
         private readonly IUserService _userService;
-        
+
         public TaskManagmentService(CbeContext cbeContext, IHubContext<NotificationHub> hubContext, IMapper mapper, ILogger<TaskManagmentService> logger, IHttpContextAccessor httpContextAccessor, ICaseService caseService, IUserService userService, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
             _mapper = mapper;
@@ -89,7 +89,8 @@ namespace mechanical.Services.TaskManagmentService
                             && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName == "All"))
                             .ToList();
 
-                    if (checktask.Any()) {
+                    if (checktask.Any())
+                    {
 
                         messages.Add(new ResultDto
                         {
@@ -140,12 +141,13 @@ namespace mechanical.Services.TaskManagmentService
                         var notification = await _notificationService.AddNotification(asigneeUser.Id, notificationContent, "Task", $"/Taskmanagment/Detail/{task.Id}");
 
                         taskShares.Add(task);
-                        messages.Add(new ResultDto {
+                        messages.Add(new ResultDto
+                        {
                             StatusCode = 200,
                             Success = true,
-                            Message = $"The '{task.TaskName}' task of case {caseData.CaseNo} has been successfully shared for {user.Name}." 
+                            Message = $"The '{task.TaskName}' task of case {caseData.CaseNo} has been successfully shared for {user.Name}."
                         });
-                    
+
                         await _notificationService.SendNotification(notification);
                     }
 
@@ -155,10 +157,12 @@ namespace mechanical.Services.TaskManagmentService
                 await transaction.CommitAsync();
                 if (!messages.Any())
                 {
-                    messages.Add(new ResultDto{
+                    messages.Add(new ResultDto
+                    {
                         StatusCode = 200,
                         Success = false,
-                        Message = "No tasks were shared."});
+                        Message = "No tasks were shared."
+                    });
                 }
                 return messages; // Returns first task; ensure list is not empty
                 //return taskShares.First(); // Returns first task; ensure list is not empty
@@ -170,7 +174,7 @@ namespace mechanical.Services.TaskManagmentService
                 throw new ApplicationException("An error occurred while sharing the task.", ex);
             }
         }
-        
+
         public async Task LogTimelineEvent(Guid caseId, string activity, string currentStage)
         {
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
@@ -195,7 +199,7 @@ namespace mechanical.Services.TaskManagmentService
                                                                     t.IsActive &&
                                                                     t.Deadline.Date >= DateTime.UtcNow.Date
                                                     );
-                
+
                 if (existingTask)
                 {
                     assignmentResults.Add(new ResultDto
@@ -206,7 +210,7 @@ namespace mechanical.Services.TaskManagmentService
                     });
                     continue;
                 }
-                
+
                 if (dto.TaskName == "All")
                 {
                     await _cbeContext.TaskManagments
@@ -223,7 +227,7 @@ namespace mechanical.Services.TaskManagmentService
                     Id = Guid.NewGuid(),
                     CaseId = dto.CaseId,
                     TaskName = dto.TaskName,
-                    PriorityType = dto.PriorityType,
+                    TaskPriority = dto.TaskPriority,
                     SharingReason = dto.SharingReason,
                     Deadline = dto.Deadline,
                     CaseOrginatorId = sharedCase.CaseOriginatorId,
@@ -327,7 +331,7 @@ namespace mechanical.Services.TaskManagmentService
                                         .Include(t => t.CaseOrginator)
                                         .FirstOrDefaultAsync(t => t.Id == taskId)
                                         ?? throw new ArgumentException("Task not found.", nameof(taskId));
-            
+
             return _mapper.Map<TaskManagmentReturnDto>(task);
         }
 
@@ -398,7 +402,7 @@ namespace mechanical.Services.TaskManagmentService
                 // Update the task properties
                 // task.TaskName = dto.TaskName;
                 task.Deadline = dto.Deadline;
-                task.PriorityType = dto.PriorityType;
+                task.TaskPriority = dto.TaskPriority;
                 task.SharingReason = dto.SharingReason;
                 task.UpdatedDate = DateTime.UtcNow;
 
@@ -711,8 +715,8 @@ namespace mechanical.Services.TaskManagmentService
         public async Task<IEnumerable<TaskCommentReturnDto>> GetTaskComment(Guid taskId)
         {
             var comments = await _cbeContext.TaskComments
-                                            .Include(res=>res.User)
-                                            .Where(t=>t.TaskId == taskId)
+                                            .Include(res => res.User)
+                                            .Where(t => t.TaskId == taskId)
                                             .OrderBy(d => d.CommentDate)
                                             .ToListAsync();
             return _mapper.Map<IEnumerable<TaskCommentReturnDto>>(comments);
