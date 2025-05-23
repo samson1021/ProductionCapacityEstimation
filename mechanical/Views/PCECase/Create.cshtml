@@ -116,14 +116,13 @@
         if (segmentValue == "WholesaleConventional" || segmentValue == "WholesaleIFB") {
             console.log('inside....');
             $("#businessLicnese").show();
-        } else {
+        } else{
             $("#businessLicnese").hide();
         }
         if (segmentValue === 'AcquiredAssetAdministration') {
             $("#applicantName").val('CBE');
             $("#applicantName").prop('readonly', true);
         }
-
 
         var options = [];
         if (unitValue === 'LargeCorporate') {
@@ -208,7 +207,7 @@
         }
 
         // Populate the dropdown
-        var $segmentSelect = $('#Segement');
+        var $segmentSelect = $('#Segment');
         options.forEach(function (option) {
             $segmentSelect.append(new Option(option.text, option.value));
         });
@@ -338,13 +337,13 @@
                 document.getElementById("CustomerId-error").textContent = "";
             }
         });
-        var segementSelect = document.getElementById('Segement');
+        
+        var segmentSelect = document.getElementById('Segment');
         var applicantNameInput = document.getElementById('applicantName');
 
-
-        segementSelect.addEventListener('change', function () {
-            var selectedSegement = segementSelect.value;
-            console.log(selectedSegement);
+        segmentSelect.addEventListener('change', function () {
+            var selectedSegment = segmentSelect.value;
+            console.log(selectedSegment);
 
 
             if (selectedSegement === 'Workout' || selectedSegement === 'Legal') {

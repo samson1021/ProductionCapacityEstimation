@@ -1,10 +1,4 @@
-﻿@* @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
-
-@{
-    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
-} *@
-
-<script>
+﻿<script>
     $(document).ready(function () { 
 
         const currentDate = stripTime(new Date());
@@ -32,14 +26,14 @@
             
             $('#dateError').text('');
             
-            //if (stripTime(selectedDate) <= currentDate) {
-            //    $('#dateError').text("The selected date must be greater than the today's date.");
-            //    return; 
-            //}
-            //if (isSameDate(selectedDate, latestSchedule)) {
-            //    $('#dateError').text('The selected date must be different from the current date.');
-            //    return;
-            //}
+            if (stripTime(selectedDate) < currentDate) {
+                $('#dateError').text("Please select today or a future date for scheduling.");
+                return; 
+            }
+            if (isSameDate(selectedDate, latestSchedule)) {
+                $('#dateError').text('Please select a date that is different from the current scheduled date.');
+                return;
+            }
 
             showLoadingIndicator();
 
@@ -74,8 +68,8 @@
 
             $('#updateDateError').text('');
 
-            if (stripTime(selectedDate) <= currentDate) {
-                $('#updateDateError').text("The selected date must be greater than the today's date.");
+            if (stripTime(selectedDate) < currentDate) {
+                $('#updateDateError').text("Please select today or a future date for scheduling.");
                 return; 
             }
             if (isSameDate(selectedDate, latestSchedule)) {
@@ -117,8 +111,8 @@
 
             $('#proposeDateError').text('');
             
-            if (stripTime(selectedDate) <= currentDate) {
-                $('#proposeDateError').text("The selected date must be greater than the today's date.");
+            if (stripTime(selectedDate) < currentDate) {
+                $('#proposeDateError').text("Please select today or a future date for scheduling.");
                 return; 
             }
             if (isSameDate(selectedDate, latestSchedule)) {
@@ -160,8 +154,8 @@
             
             $('#rescheduleDateError').text('');
 
-            if (stripTime(selectedDate) <= currentDate) {
-                $('#rescheduleDateError').text("The selected date must be greater than the today's date.");
+            if (stripTime(selectedDate) < currentDate) {
+                $('#rescheduleDateError').text("Please select today or a future date for scheduling.");
                 return; 
             }
             if (isSameDate(selectedDate, latestSchedule)) {
@@ -203,8 +197,8 @@
             
             $('#dateError').text('');
 
-            if (stripTime(selectedDate) <= currentDate) {
-                $('#dateError').text("The selected date must be greater than the today's date.");
+            if (stripTime(selectedDate) < currentDate) {
+                $('#dateError').text("Please select today or a future date for scheduling.");
                 return; 
             }
             if (isSameDate(selectedDate, latestSchedule)) {

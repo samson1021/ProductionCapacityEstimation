@@ -1,19 +1,20 @@
-
+/*
 .notifications-page-container {
-    /* max-width: auto;
+    max-width: auto;
     margin: 0 auto;
-    padding: 0 15px;  */
+    padding: 0 15px;
 }
+*/
 
 .notifications-page-title {
     color: #2c3e50;
     font-weight: 600;
     border-bottom: 2px solid #3498db;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
 }
 
 .notifications-page-list {
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
 }
 
 .notifications-page-item {
@@ -21,14 +22,14 @@
     border-radius: 8px;
     margin-bottom: 1rem;
     transition: all 0.2s ease;
-    padding: 1.25rem;
+    padding: 0.25rem;
     border: 1px solid #ecf0f1;
 }
 
 .notifications-page-card {
     background: white;
     border-radius: 6px;
-    padding: 1rem;
+    padding: 0.5rem;
 }
 
 .notifications-page-unread-card {
