@@ -40,10 +40,10 @@
                         <input type="hidden" id="district" value="@district" />
                         <div class="form-group col-xl-10">
                             <label asp-for="Segment">Segement <i class="text-danger">*</i></label>
-                            <select asp-for="Segment" class="form-control form-control" id="Segement" required>
+                            <select asp-for="Segment" class="form-control form-control" id="Segment" required>
                                 <option value="" disabled selected>Select Segement</option>
-                                <option value="Whole">Whole</option>
-                                <option value="Retail">Retail</option>
+                               @*  <option value="Whole">Whole</option>
+                                <option value="Retail">Retail</option> *@
                             </select>
                             <span asp-validation-for="Segment" class="text-danger"></span>
                         </div>
@@ -108,6 +108,7 @@
     }
     <script>
         var unitValue = $('#unit').val();
+        // var unitValue = "CooperativeAndFinancialInstitution" // use this for testing 
         var segmentValue = $('#segment').val();
         var districtValue = $('#district').val();
 

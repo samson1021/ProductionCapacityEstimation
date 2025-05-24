@@ -42,8 +42,8 @@
                             <label asp-for="Segment">Segment <i class="text-danger">*</i></label>
                             <select asp-for="Segment" class="form-control form-control" id="Segment" required>
                                 <option value="" disabled selected>Select Segment</option>
-                                <option value="Retail">Retail</option>
-                                <option value="Wholesale">Wholesale</option>
+                            @*     <option value="Retail">Retail</option>
+                                <option value="Wholesale">Wholesale</option> *@
                             </select>
                             <span asp-validation-for="Segment" class="text-danger"></span>
                         </div>

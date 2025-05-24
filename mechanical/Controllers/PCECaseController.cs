@@ -341,7 +341,7 @@ namespace mechanical.Controllers.PCE
 
             }
 
-            if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            if ((pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Count() != 0) || pceReportData.PCEEvaluations.Any())
             {
                 var userIdss = _cbeContext.Users.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
                 var EvaluatorNames = _cbeContext.Users.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();

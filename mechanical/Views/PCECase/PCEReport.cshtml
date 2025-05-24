@@ -8,7 +8,8 @@
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluationDto> ?? new List<PCEEvaluationDto>();
     var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
     var Signiture = ViewData["Signiture"] as User;
-    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
+    // var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto> ?? new IEnumerable<ReturnFileDto>();
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto> ?? new List<ReturnFileDto>();
 }
 
 <style>
