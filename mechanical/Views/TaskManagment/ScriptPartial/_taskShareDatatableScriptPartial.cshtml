@@ -18,7 +18,7 @@
         fetch('/UserManagment/GetPeerRMs')
             .then(response => response.json())
             .then(data => {
-                var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select Relation Manager');
+                var selectOption = $('<option selected disabled></option>').attr('value', '').text('-- Select Relation Manager --');
                 $('#CenterDropdown').append(selectOption);
                 data.forEach(function (user) {
                     var option = $('<option></option>').attr('value', user.Id).text(user.Name);
@@ -129,7 +129,7 @@
                         },
                         // { data: 'AssignedId', width: '15%' },
                         { data: 'TaskName', width: '10%' },
-                        { data: 'PriorityType', width: '15%' },
+                        { data: 'TaskPriority', width: '15%' },
                         { data: 'TaskStatus', width: '10%' },
                         {
                             data: 'Id',
@@ -163,14 +163,14 @@
             var deadlineValue = $('#Deadline').val(); // Get the value
             var AssignedId = $('#CenterDropdown').val(); // Get the value
             var TaskName = $('#TaskName').val(); // Get the value
-            var PriorityType = $('#PriorityType').val(); // Get the value
+            var TaskPriority = $('#TaskPriority').val(); // Get the value
             var SharingReason = $('#SharingReason').val(); // Get the value
 
             // Clear previous errors
             $('#DeadlineError').text('');
             $('#AssignedIdError').text('');
             $('#TaskNameError').text('');
-            $('#PriorityTypeError').text('');
+            $('#TaskPriorityError').text('');
             $('#SharingReasonError').text('');
 
             // Validate AssignedId
@@ -183,9 +183,9 @@
                 $('#TaskNameError').text('The task list is required');
                 return false;
             }
-            // Validate PriorityType
-            if (!PriorityType) {
-                $('#PriorityTypeError').text('The priority Type is required');
+            // Validate TaskPriority
+            if (!TaskPriority) {
+                $('#TaskPriorityError').text('The priority Type is required');
                 return false;
             }
             // Validate Deadline
@@ -244,7 +244,7 @@
         // Attach error clearing to each relevant input field
         clearError('#CenterDropdown', '#AssignedIdError');
         clearError('#TaskName', '#TaskNameError');
-        clearError('#PriorityType', '#PriorityTypeError');
+        clearError('#TaskPriority', '#TaskPriorityError');
         clearError('#Deadline', '#DeadlineError', validateDeadline);
         clearError('#SharingReason', '#SharingReasonError');
     });

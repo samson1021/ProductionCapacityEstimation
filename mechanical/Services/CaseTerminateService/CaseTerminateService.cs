@@ -31,16 +31,16 @@ namespace mechanical.Services.CaseTerminateService
             return _mapper.Map<CaseTerminateReturnDto>(caseTerminate);
         }
 
-        public async  Task<CaseTerminateReturnDto> CreateCaseTerminate(Guid userId, CaseTerminatePostDto caseTerminatePostDto)
+        public async Task<CaseTerminateReturnDto> CreateCaseTerminate(Guid userId, CaseTerminatePostDto caseTerminatePostDto)
         {
             var caseTerminate = _mapper.Map<CaseTerminate>(caseTerminatePostDto);
             caseTerminate.UserId = userId;
-            caseTerminate.CreatedAt = DateTime.Now;
+            caseTerminate.CreatedAt = DateTime.UtcNow;
             caseTerminate.Status = "proposed";
             await _cbeContext.CaseTerminates.AddAsync(caseTerminate);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<CaseTerminateReturnDto>(caseTerminate);
-          
+
         }
 
         public async Task<IEnumerable<CaseTerminateReturnDto>> GetCaseTerminates(Guid caseId)
@@ -63,17 +63,17 @@ namespace mechanical.Services.CaseTerminateService
         public async Task<CaseTerminateReturnDto> UpdateCaseTerminate(Guid userId, Guid id, CaseTerminatePostDto caseTerminatePostDto)
         {
             var caseTerminate = await _cbeContext.CaseTerminates.FindAsync(id);
-            if(caseTerminate == null)
+            if (caseTerminate == null)
             {
                 throw new Exception("Case Terminate not Found");
             }
-            if(caseTerminate.UserId != userId)
+            if (caseTerminate.UserId != userId)
             {
                 throw new Exception("unauthorized user");
             }
             caseTerminatePostDto.CaseId = caseTerminate.CaseId;
             _mapper.Map(caseTerminatePostDto, caseTerminate);
-            caseTerminate.CreatedAt = DateTime.Now;
+            caseTerminate.CreatedAt = DateTime.UtcNow;
             _cbeContext.Update(caseTerminate);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<CaseTerminateReturnDto>(caseTerminate);

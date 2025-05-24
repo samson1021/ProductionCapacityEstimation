@@ -10,7 +10,7 @@
         <dt class="col-sm-4 text-muted">Case Number</dt>
         <dd class="col-sm-8">
             <a href='@Url.Action("Detail", "Case")?Id=@Model?.CaseId&CaseType=Shared' class="btn btn-outline-purple btn-sm">
-                <i class="fas fa-external-link-alt me-2"></i>@Model.Case?.CaseNo
+                <i class="fas fa-external-link-alt me-2"></i>@Model?.Case?.CaseNo
             </a>
         </dd>
 
@@ -28,8 +28,8 @@
 
         <dt class="col-sm-4 text-muted">Priority</dt>
         <dd class="col-sm-8">
-            <span class="badge bg-@(Model.PriorityType == "Urgent" ? "danger" : Model.PriorityType == "High" ? "warning" : Model.PriorityType == "Medium" ? "info" : "secondary")">
-                @Model.PriorityType
+            <span class="badge bg-@(Model.TaskPriority == "Urgent" ? "danger" : Model.TaskPriority == "High" ? "warning" : Model.TaskPriority == "Medium" ? "info" : "secondary")">
+                @Model.TaskPriority
             </span>
         </dd>
 
@@ -64,7 +64,7 @@
 
     <div class="d-flex justify-content-begin mt-3">
         <a href='@Url.Action("Detail", "Case")?Id=@Model?.CaseId&CaseType=Shared' class="btn btn-outline-purple btn-sm">
-            <i class="fas fa-external-link-alt me-2"></i>Go to Case / See Case Detail
+            <i class="fas fa-external-link-alt me-2"></i> Case Detail
         </a>
     </div>
 </div>

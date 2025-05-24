@@ -9,7 +9,7 @@ using mechanical.Models.PCE.Dto.PCECaseCommentDto;
 
 namespace mechanical.Services.PCE.PCECaseCommentService
 {
-    public class PCECaseCommentService:IPCECaseCommentService
+    public class PCECaseCommentService : IPCECaseCommentService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
@@ -25,16 +25,16 @@ namespace mechanical.Services.PCE.PCECaseCommentService
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {    
+            {
                 var caseComment = _mapper.Map<PCECaseComment>(caseCommentPostDto);
                 caseComment.AuthorId = userId;
-                caseComment.CreatedAt = DateTime.Now;
+                caseComment.CreatedAt = DateTime.UtcNow;
 
                 await _cbeContext.PCECaseComments.AddAsync(caseComment);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return _mapper.Map<PCECaseCommentReturnDto>(caseComment);               
+                return _mapper.Map<PCECaseCommentReturnDto>(caseComment);
             }
             catch (Exception ex)
             {
@@ -52,4 +52,4 @@ namespace mechanical.Services.PCE.PCECaseCommentService
     }
 }
 
-    
+

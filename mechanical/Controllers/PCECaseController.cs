@@ -341,7 +341,7 @@ namespace mechanical.Controllers.PCE
 
             }
 
-            if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            if ((pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Count() != 0) || pceReportData.PCEEvaluations.Any())
             {
                 var userIdss = _cbeContext.Users.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
                 var EvaluatorNames = _cbeContext.Users.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();
@@ -435,9 +435,9 @@ namespace mechanical.Controllers.PCE
         {
             var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
 
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
+            //var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
 
-            ViewData["pceEvaluations"] = pceEvaluations;
+            //ViewData["pceEvaluations"] = pceEvaluations;
             ViewData["PCECase"] = pceCase;
             return View();
         }
@@ -445,7 +445,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
         {
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsSummaryByPCECaseId(base.GetCurrentUserId(), PCECaseId);
             string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             return Content(jsonData, "application/json");
         } 

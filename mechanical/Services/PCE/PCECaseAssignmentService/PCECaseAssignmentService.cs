@@ -62,7 +62,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             {
                 if (string.IsNullOrEmpty(SelectedPCEIds))
                 {
-                    if (OperationType == "Assign"){
+                    if (OperationType == "Assign")
+                    {
                         throw new Exception("Please, select at least one production to assign.");
                     }
                     throw new Exception("Please, select at least one production to send for estimation.");
@@ -70,18 +71,20 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
                 if (string.IsNullOrEmpty(EmployeeOrCenterId))
                 {
-                    if (OperationType == "Assign"){
+                    if (OperationType == "Assign")
+                    {
                         throw new Exception("Please, select a user to assign.");
                     }
                     throw new Exception("Please, select an evaluation center.");
                 }
-                
+
                 var assignedUser = await GetAssignedUser(EmployeeOrCenterId, OperationType);
                 if (assignedUser == null)
                 {
-                    if (OperationType == "Assign"){
+                    if (OperationType == "Assign")
+                    {
                         throw new Exception("The assigned user is not found.");
-                    }                    
+                    }
                     throw new Exception("The evaluation center is not ready.");
                 }
 
@@ -93,10 +96,10 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 {
                     var production = await GetProductionById(PCEId);
                     if (production == null) continue;
-                    
+
                     await UpdateProduction(production, assignedUser, OperationType);
                     await AssignOrUpdateCase(UserId, PCEId, assignedUser, pceCaseAssignments, ReestimationReason, OperationType);
-                    
+
                     if (pceCaseTimeLineDto == null)
                     {
                         pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, OperationType);
@@ -137,7 +140,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
-                                                             res.Department == "Mechanical" && 
+                                                             res.Department == "Mechanical" &&
                                                             (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             }
         }
@@ -145,7 +148,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         private async Task<ProductionCapacity> GetProductionById(Guid PCEId)
         {
             return await _cbeContext.ProductionCapacities.Include(res => res.PCECase).FirstOrDefaultAsync(pc => pc.Id == PCEId);//.FindAsync(PCEId);
-                
+
         }
 
         private async Task AssignOrUpdateCase(Guid UserId, Guid PCEId, User assignedUser, List<PCECaseAssignmentDto> caseAssignments, string ReestimationReason, string OperationType)
@@ -164,7 +167,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     ProductionCapacityId = PCEId,
                     UserId = assignedUser.Id,
                     Status = "New",
-                    AssignmentDate = DateTime.Now
+                    AssignmentDate = DateTime.UtcNow
                 };
                 await _cbeContext.PCECaseAssignments.AddAsync(newAssignment);
                 caseAssignments.Add(_mapper.Map<PCECaseAssignmentDto>(newAssignment));
@@ -176,7 +179,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 {
                     ProductionCapacityId = PCEId,
                     Reason = ReestimationReason,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
                 await _cbeContext.ProductionReestimations.AddAsync(reestimation);
             }
@@ -200,7 +203,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             if (OperationType == "Reestimation" || OperationType == "Valuation")
             {
                 production.PCECase.Status = "Pending";
-             
+
                 if (OperationType == "Reestimation")
                 {
                     production.CurrentStatus = "Reestimate";
@@ -208,25 +211,25 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 else
                 {
                     var previousEvaluations = await _cbeContext.PCEEvaluations.AsNoTracking().Where(res => res.PCEId == production.Id).ToListAsync();
-              
+
                     if (previousEvaluations != null && previousEvaluations.Any())
                     {
                         production.CurrentStatus = "Reestimate";
                     }
                     else
-                    {                        
+                    {
                         production.CurrentStatus = "New";
                     }
                 }
             }
             else
-            {                
+            {
                 if (assignedUser.Role.Name == "Maker Officer")
                 {
                     production.AssignedEvaluatorId = assignedUser.Id;
                 }
             }
-            
+
             _cbeContext.ProductionCapacities.Update(production);
         }
 
@@ -252,6 +255,6 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                                     $"<i class='text-purple'>Role:</i> {production.Role}. " +
                                     $"<i class='text-purple'>Production Category:</i> {production.Category}. " +
                                     $"<i class='text-purple'>Production Type:</i> {production.Type}.<br>";
-        }        
+        }
     }
 }

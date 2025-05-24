@@ -34,11 +34,14 @@
                         );
                     });
                 } else {
+                    $dropdown.append(
+                        $('<option disabled>No Peer RMs found</option>')
+                    );
                     console.warn("No valid data received.");
                 }
 
                 $dropdown.select2({
-                    placeholder: "Select Relation Managers",
+                    placeholder: "-- Select Relation Managers --",
                     allowClear: true,
                     width: '100%',                   
                     dropdownParent: $('#shareCaseForm')

@@ -8,7 +8,7 @@ namespace mechanical.Models.Dto.TaskManagmentDto
         public required string TaskName { get; set; }
         public string SharingReason { get; set; } = string.Empty;
         public DateTime Deadline { get; set; }
-        public required string PriorityType { get; set; }
+        public required string TaskPriority { get; set; }
 
         public required Guid CaseId { get; set; }
         public required Guid AssignedId { get; set; }

@@ -8,7 +8,7 @@
     var PCEEvaluations = ViewData["PCEEvaluations"] as List<PCEEvaluationDto> ?? new List<PCEEvaluationDto>();
     var evaluatorReport = ViewData["EvaluatorReport"] as EvaluatorReportDto;
     var Signiture = ViewData["Signiture"] as User;
-    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto>;
+    var productionFiles = ViewData["ProductionFiles"] as IEnumerable<ReturnFileDto> ?? new List<ReturnFileDto>();
 }
 
 <style>
@@ -197,7 +197,7 @@
             <h5>Production Capacity Estimation</h5>
         </div>
         <div class="text-right">
-            <p>Date: <span class="underline">@DateTime.Now.ToString("dd/MM/yyyy")</span></p>
+            <p>Date: <span class="underline">@DateTime.UtcNow.ToString("dd/MM/yyyy")</span></p>
             <p>Reference No: <span class="underline">@PCECase.CaseNo</span></p>
         </div>
 
@@ -485,8 +485,8 @@
 </section>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="~/js/jspdf.umd.min.js"></script>
+    <script src="~/js/html2canvas.min.js"></script>
     <script>
         document.getElementById('print-btn').addEventListener('click', () => window.print());
 

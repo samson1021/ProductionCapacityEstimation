@@ -32,18 +32,18 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
         {
             // using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            { 
+            {
                 var httpContext = _httpContextAccessor.HttpContext;
                 var pceCaseTimeline = _mapper.Map<PCECaseTimeLine>(Dto);
                 if (pceCaseTimeline.UserId == Guid.Empty)
                     pceCaseTimeline.UserId = Guid.Parse(httpContext.Session.GetString("userId"));
-                pceCaseTimeline.CreatedAt = DateTime.Now;
+                pceCaseTimeline.CreatedAt = DateTime.UtcNow;
 
                 await _cbeContext.PCECaseTimeLines.AddAsync(pceCaseTimeline);
-                await _cbeContext.SaveChangesAsync(); 
+                await _cbeContext.SaveChangesAsync();
                 // await transaction.CommitAsync();
 
-                return _mapper.Map<PCECaseTimeLinePostDto>(pceCaseTimeline);  
+                return _mapper.Map<PCECaseTimeLinePostDto>(pceCaseTimeline);
             }
 
             catch (Exception ex)
@@ -56,9 +56,9 @@ namespace mechanical.Services.PCE.PCECaseTimeLineService
 
         public async Task<IEnumerable<PCECaseTimeLineReturnDto>> GetPCECaseTimeLines(Guid PCECaseId)
         {
-            var pceCaseTimelines = await _cbeContext.PCECaseTimeLines.Where(a=>a.PCECaseId == PCECaseId).Include(res => res.User).ThenInclude(res => res.Role).OrderBy(res => res.CreatedAt).ToListAsync(); 
+            var pceCaseTimelines = await _cbeContext.PCECaseTimeLines.Where(a => a.PCECaseId == PCECaseId).Include(res => res.User).ThenInclude(res => res.Role).OrderBy(res => res.CreatedAt).ToListAsync();
 
-            return _mapper.Map<IEnumerable<PCECaseTimeLineReturnDto>> (pceCaseTimelines); 
+            return _mapper.Map<IEnumerable<PCECaseTimeLineReturnDto>>(pceCaseTimelines);
         }
     }
 }

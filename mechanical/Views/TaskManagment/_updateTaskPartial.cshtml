@@ -1,3 +1,5 @@
+@using mechanical.Models.Enum
+
 @model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentUpdateDto
 
 <div class="card shadow-sm">
@@ -12,7 +14,7 @@
         </div>
         <div class="mb-4">
             <div>
-                <p><strong>Case Number:</strong> @Model.Case?.CaseNo</p>
+                <p><strong>Case Number:</strong> @Model?.Case?.CaseNo</p>
                 <p><strong>Task Name:</strong> @Model.TaskName</p>
                 <p><strong>Assigned To:</strong> @Model.Assigned?.Name</p>
                 @if (Model.UpdatedDate != null)
@@ -43,19 +45,24 @@
     <input type="hidden" id="CaseOrginatorId" asp-for="CaseOrginatorId" />
     <input type="hidden" id="AssignedDate" asp-for="AssignedDate" />
     <input type="hidden" id="CompletionDate" asp-for="CompletionDate" />
-    <input type="hidden" id="UpdatedDate" asp-for="UpdatedDate" value='@DateTime.Now.ToString("yyyy-MM-dd")' />
+    <input type="hidden" id="UpdatedDate" asp-for="UpdatedDate" value='@DateTime.UtcNow.ToString("yyyy-MM-dd")' />
 
     @* <div class="mb-3">
-        <label for="TaskName" class="form-label">Task List</label>
-        <select class="form-control" id="TaskName" asp-for="TaskName" required>
-            <option value="All">All</option>
-            <option value="Collateral Addition">Collateral Addition</option>
-            <option value="Case Follow">Case Follow</option>
-            <option value="Report Generation">Report Generation</option>
-            <option value="Revoked">Revoke</option>
-        </select>
-        <span asp-validation-for="TaskName" class="text-danger"></span>
-        <div class="invalid-feedback">Please select a task.</div>
+        <div class="form-group">
+            <label for="TaskName" class="form-label">@Html.DisplayNameFor(model => model.TaskName) Task List<span class="text-danger">*</span></label>
+            <select asp-for="TaskName" class="form-select task-name"
+                    asp-items="Html.GetEnumSelectList<TaskList>()"
+                    required >
+                <option value="" disabled selected>Select Task Name</option>
+                <option value="All">All</option>
+                <option value="Collateral Addition">Collateral Addition</option>
+                <option value="Case Follow">Case Follow</option>
+                <option value="Report Generation">Report Generation</option>
+                <option value="Revoked">Revoke</option>
+            </select>
+            <span asp-validation-for="TaskName" class="text-danger small"></span>
+            <div class="invalid-feedback">Please select a task.</div>
+        </div>
     </div> *@
 
     <div class="mb-3">
@@ -66,15 +73,16 @@
     </div>
 
     <div class="mb-3">
-        <label for="PriorityType" class="form-label">Priority</label>
-        @* <select class="form-control" id="PriorityType" asp-for="PriorityType" required> *@
-        <select class="form-select" id="PriorityType" asp-for="PriorityType" required>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+        @* <label for="TaskName" class="form-label">@Html.DisplayNameFor(model => model.TaskName) Task List<span class="text-danger small">*</span></label> *@
+        <label for="TaskPriority" class="form-label">Priority</label>
+        <select class="form-select" id="TaskPriority" asp-for="TaskPriority" required >
+                @* asp-items="Html.GetEnumSelectList<PriorityType>()" *@
             <option value="Urgent">Urgent</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
         </select>
-        <span asp-validation-for="PriorityType" class="text-danger"></span>
+        <span asp-validation-for="TaskPriority" class="text-danger"></span>
         <div class="invalid-feedback">Please select a priority type.</div>
     </div>
 

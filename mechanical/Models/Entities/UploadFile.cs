@@ -1,7 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace mechanical.Models.Entities
 {
+    [Index(nameof(userId))]
+    [Index(nameof(CaseId))]
     public class UploadFile
     {
         [Key]

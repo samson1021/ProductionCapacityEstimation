@@ -22,8 +22,8 @@ namespace mechanical.Services.CaseTimeLineService
             var httpContext = _httpContextAccessor.HttpContext;
 
             var caseTimeline = _mapper.Map<CaseTimeLine>(caseTimeLinePostDto);
-            if(caseTimeline.UserId == Guid.Empty) caseTimeline.UserId = Guid.Parse(httpContext.Session.GetString("userId"));
-            caseTimeline.CreatedAt = DateTime.Now;
+            if (caseTimeline.UserId == Guid.Empty) caseTimeline.UserId = Guid.Parse(httpContext.Session.GetString("userId"));
+            caseTimeline.CreatedAt = DateTime.UtcNow;
 
             await _cbeContext.CaseTimeLines.AddAsync(caseTimeline);
             await _cbeContext.SaveChangesAsync();

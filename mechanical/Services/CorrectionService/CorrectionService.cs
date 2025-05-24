@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Services.CorrectionServices
 {
-    public class CorrectionService:ICorrectionService
+    public class CorrectionService : ICorrectionService
     {
 
         private readonly CbeContext _cbeContext;
@@ -23,28 +23,28 @@ namespace mechanical.Services.CorrectionServices
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
         }
-        public async Task<Correction>CreateCorrection(CorrectionPostDto createCorrectionDto)
+        public async Task<Correction> CreateCorrection(CorrectionPostDto createCorrectionDto)
         {
-            var httpContext = _httpContextAccessor.HttpContext;  
+            var httpContext = _httpContextAccessor.HttpContext;
             var loanCase = _mapper.Map<Correction>(createCorrectionDto);
 
             var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == loanCase.CollateralID && res.CommentedAttribute == loanCase.CommentedAttribute);
-            if(correction != null)
+            if (correction != null)
             {
-                if(loanCase.Comment == "" || loanCase.Comment == null)
+                if (loanCase.Comment == "" || loanCase.Comment == null)
                 {
-                     _cbeContext.Corrections.Remove(correction);
+                    _cbeContext.Corrections.Remove(correction);
                     await _cbeContext.SaveChangesAsync();
                 }
                 else
                 {
                     correction.Comment = loanCase.Comment;
                     correction.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
-                    correction.CreationDate = DateTime.Now;
+                    correction.CreationDate = DateTime.UtcNow;
                     _cbeContext.Corrections.Update(correction);
                     await _cbeContext.SaveChangesAsync();
                 }
-            
+
 
                 return correction;
             }
@@ -53,7 +53,7 @@ namespace mechanical.Services.CorrectionServices
                 var getcaseId = _cbeContext.Collaterals.Where(c => c.Id == createCorrectionDto.CollateralID).Select(c => c.CaseId).FirstOrDefault();
                 loanCase.CaseId = getcaseId;
                 loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
-                loanCase.CreationDate = DateTime.Now;
+                loanCase.CreationDate = DateTime.UtcNow;
                 await _cbeContext.Corrections.AddAsync(loanCase);
                 await _cbeContext.SaveChangesAsync();
                 await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
@@ -65,11 +65,11 @@ namespace mechanical.Services.CorrectionServices
 
                 return loanCase;
             }
-          
 
-           
+
+
         }
-        public async Task<CorrectionPostDto>GetCorrection(Guid Id)
+        public async Task<CorrectionPostDto> GetCorrection(Guid Id)
         {
             var loanCase = await _cbeContext.Corrections.Include(res => res.CollateralID).FirstOrDefaultAsync(c => c.Id == Id);
             return _mapper.Map<CorrectionPostDto>(loanCase);

@@ -14,7 +14,7 @@ namespace mechanical.Models.Dto.TaskManagmentDto
 
         public string? SharingReason { get; set; }
         public DateTime Deadline { get; set; }
-        public required string PriorityType { get; set; }
+        public required string TaskPriority { get; set; }
         public IEnumerable<Guid> SelectedRMs { get; set; }
     }
 }
