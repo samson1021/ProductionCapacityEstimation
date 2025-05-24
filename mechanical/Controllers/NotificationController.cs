@@ -51,6 +51,8 @@ namespace mechanical.Controllers
             return View();
         }
 
+        // [HttpGet("api/Notification/{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetNotification(Guid id)
         {
             var notification = await _notificationService.GetNotification(base.GetCurrentUserId(), id);
@@ -109,7 +111,7 @@ namespace mechanical.Controllers
             int unreadCount = await _notificationService.GetUnseenCount(userId);
             return Ok(new { unreadCount });
         }
-
+        // [HttpPut("api/Notification/{id}/mark-read")]
         // [HttpPost("MarkAsRead")]
         [HttpPost]
         public async Task<IActionResult> MarkAsRead(Guid id)
@@ -123,8 +125,9 @@ namespace mechanical.Controllers
                 return BadRequest("No notification ID provided.");
             }
 
-            await _notificationService.MarkAsRead(userId, id);
-            return Ok(new { success = true });
+            var result = await _notificationService.MarkAsRead(userId, id);
+            return Ok(new { success = result });
+            // return result ? NoContent() : NotFound();
         }
 
         // [HttpPost("MarkAllAsRead")]
