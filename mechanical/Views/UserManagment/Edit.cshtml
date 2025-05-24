@@ -1,4 +1,4 @@
-﻿@model mechanical.Models.Entities.CreateUser
+﻿@model mechanical.Models.Entities.User
 @using mechanical.Models.Enum;
 @{
     ViewData["Title"] = "Edit User";
@@ -146,6 +146,7 @@
         </div>
     </section>
 </section>
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
 <script src="~/bootstrap/js/bootstrap.min.js"></script>
@@ -167,7 +168,6 @@
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/toastr/toastr.min.js"></script>
-
 
 <script>
     $(function(){
@@ -394,7 +394,7 @@
                         }
                         $('#Name').val(data.DisplayName);
                         $('#Email').val(data.Email);
-                        $('#title').val(data.jobTitle);
+                        $('#title').val(data.JobTitle);
                         $('#Branch').val(data.Department);
                         $('#company').val(data.company);
                     },

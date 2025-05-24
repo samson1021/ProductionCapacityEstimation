@@ -11,51 +11,51 @@ namespace mechanical.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<CbeContext>();
-                if (!context.CreateRoles.Any())
+                if (!context.Roles.Any())
                 {
-                    context.CreateRoles.AddRange(new List<CreateRole>()
+                    context.Roles.AddRange(new List<Role>()
                     {
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "Maker Manager"
                         },
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "Maker Officer"
                         },
-                        new CreateRole() {
+                        new Role() {
                              Name = "Relation Manager"
                         },
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "Checker Manager"
                         },
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "Checker Officer"
                         },
-                        new CreateRole() {
+                        new Role() {
                              Name = "Maker TeamLeader"
                         },
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "Checker TeamLeader"
                         }
                         ,
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "Higher Official"
                         },
-                        new CreateRole()
+                        new Role()
                         {
                             Name = "District Valuation Manager"
                         },
-                        new CreateRole()
+                        new Role()
                         {
                             Name="Admin"
                         }
                         ,
-                        new CreateRole()
+                        new Role()
                         {
                             Name="Super Admin"
                         }

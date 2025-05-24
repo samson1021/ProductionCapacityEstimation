@@ -1,0 +1,175 @@
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script>
+    
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+
+    $(document).ready(function () {
+
+        // Deadline validation for Share Task form before submission
+        
+        var today = new Date().toISOString().split("T")[0];
+        $("#shareDeadline").attr("min", today);
+        
+        $("#shareCaseForm input, #shareCaseForm select, #shareCaseForm textarea").on("input change", function () {
+            var isValid = $("#shareCaseForm")[0].checkValidity();
+            $("#shareCaseButton").prop("disabled", !isValid);
+        });
+
+        const $dropdown = $("#SelectedRMs");
+        $dropdown.empty();
+
+        $.get("/UserManagment/GetPeerRMs")
+            .done(function (data) {
+                if (Array.isArray(data) && data.length) {
+                    data.forEach(item => {
+                        $dropdown.append(
+                            $('<option></option>').val(item.Id.toString()).text(item.Name)
+                        );
+                    });
+                } else {
+                    $dropdown.append(
+                        $('<option disabled>No Peer RMs found</option>')
+                    );
+                    console.warn("No valid data received.");
+                }
+
+                $dropdown.select2({
+                    placeholder: "-- Select Relation Managers --",
+                    allowClear: true,
+                    width: '100%',                   
+                    dropdownParent: $('#shareCaseForm')
+                });
+            })
+            .fail(function (xhr, status, error) {
+                console.error("Error loading RMs:", error);
+            });
+
+
+
+        // Deadline validation for Share Task form before submission
+        $("#shareCaseButton").click(function (e) {
+            e.preventDefault();
+            var form = $("#shareCaseForm")[0];
+
+            // Validate form controls first
+            if (!form.checkValidity()) {
+                form.classList.add("was-validated");
+                form.reportValidity();
+                return;
+            }
+
+            // Validate deadline field (must be today or later)
+            var deadlineInput = $("#shareDeadline");
+            var deadline = stripTime(new Date(deadlineInput.val()));
+            var today = stripTime(new Date());
+            @* today.setHours(0, 0, 0, 0); *@
+
+            if (deadline < today)  {
+            var errorMessage = "Deadline cannot be earlier than today.";
+
+                // Show error message in Toastr
+                toastr.error(errorMessage, "Validation Error");
+
+                // Show inline validation message
+                deadlineInput.addClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").text(errorMessage).show();
+
+                return;
+            } else {
+                deadlineInput.removeClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").hide();
+            }
+
+            var formData = $("#shareCaseForm").serialize();
+
+            // Disable submit button and show spinner
+            $("#shareCaseButton").prop("disabled", true);
+            $("#shareSpinner").removeClass("d-none");
+            
+            $.ajax({
+                url: '/TaskManagment/ShareTasks',
+                type: 'POST',
+                data: formData,
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                success: function (responses) {
+                    responses.forEach(function (response) {
+                        switch (response.StatusCode) {
+                            case 200:
+                                if (response.Success){
+                                    toastr.success(response.Message, "Success");
+                                }else{
+                                    toastr.warning(response.Message, "Warning");
+                                }
+                                break;
+                            case 400:
+                                toastr.error(response.Message, "Bad Request");
+                                break;
+                            case 403:
+                                toastr.error(response.Message, "Access Denied");
+                                break;
+                            case 404:
+                                toastr.error(response.Message, "Task Not Found");
+                                break;
+                            case 500:
+                                toastr.error(response.Message, "Internal Server Error");
+                                break;
+                            default:
+                                toastr.error(response.Message, "Error");
+                                break;
+                        }
+                    });
+
+                    // Reset form and hide modal if all responses are successful
+                    @* if (responses.every(response => response.Success)) { *@
+                    if (responses.some(response => response.Success)) {
+                        form.reset();
+                        form.classList.remove("was-validated");
+                        $("#shareCaseModal").modal("hide");
+                        $('.select2').val(null).trigger('change');
+                        try{
+                            loadSharedTasks();
+                        }catch{
+
+                        }
+                    } else {
+                        toastr.error("Error occurred when sharing Task");
+                    }
+                },
+                error: function (xhr) {
+                    $("#shareCaseButton").prop("disabled", false);
+                    $("#shareSpinner").addClass("d-none");
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        let errors = xhr.responseJSON.errors;
+                        $(".invalid-feedback").hide();
+                        $(".is-invalid").removeClass("is-invalid");
+
+                        for (let field in errors) {
+                            let errorMessage = errors[field][0];
+                            let inputField = $(`[asp-for="${field}"], #${field}`);
+
+                            if (inputField.length) {
+                                inputField.addClass("is-invalid");
+                                inputField.siblings(".invalid-feedback").text(errorMessage).show();
+                            }
+                        }
+                    } else {
+                        toastr.error("An error occurred while submitting the form.", "Error");
+                    }
+                },
+                complete: function () {
+                    $("#shareCaseButton").prop("disabled", false);
+                    $("#shareSpinner").addClass("d-none");
+                }
+            });
+        });
+   
+    });
+</script>

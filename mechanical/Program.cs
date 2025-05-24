@@ -1,22 +1,30 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Collections.Concurrent;
 using System.Web.Services.Description;
 
 using mechanical;
 using mechanical.Data;
+using mechanical.Hubs;
 using mechanical.Controllers;
 using mechanical.Models.Entities;
 
@@ -41,21 +49,23 @@ using mechanical.Services.CaseScheduleService;
 using mechanical.Services.IndBldgF;
 using mechanical.Services.IndBldgFacilityEquipmentService;
 using mechanical.Services.CaseTerminateService;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Services.InternalReportService;
+using mechanical.Services.TaskManagmentService;
+using mechanical.Services.NotificationService;
 
 /////////////
 using mechanical.Mapper;
+using mechanical.Models.PCE.Entities;
 using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Services.PCE.PCECaseService;
 using mechanical.Services.PCE.ProductionCapacityService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
-using Microsoft.Extensions.FileProviders;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
-using Microsoft.AspNetCore.Authentication;
-using mechanical.Services.IndBldgFacilityEquipmentCostService;
-using mechanical.Services.InternalReportService;
+
 /////////////
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,22 +79,28 @@ builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache fo
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
-    options.Cookie.Name = ".YourApp.Session"; // Set a unique name for the session cookie
+    options.Cookie.Name = "mechanical.Session"; // Set a unique name for the session cookie
+
     options.IdleTimeout = TimeSpan.FromMinutes(20); // Set the session timeout
     options.Cookie.HttpOnly = true; // Ensure the session cookie is accessible only via HTTP
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddSession();
 
-builder.Services.AddControllers()
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.IgnoreNullValues = true;
+    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.PropertyNamingPolicy = null; // For Newtonsoft.Json
-            options.JsonSerializerOptions.WriteIndented = true; // Indent the JSON output
-            // Add any other serialization options you need
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-        });
 ////////////////////
 builder.Services.AddSwaggerGen();
 ////////////////////
@@ -102,6 +118,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //production capacity estimation
 builder.Services.AddScoped<IPCEEvaluationService, PCEEvaluationService>();
+
 builder.Services.AddScoped<IPCECaseService, PCECaseService>();
 builder.Services.AddScoped<IPCECaseTimeLineService, PCECaseTimeLineService>();
 // builder.Services.AddScoped<IPCEUploadFileService, PCEUploadFileService>();
@@ -111,10 +128,7 @@ builder.Services.AddScoped<IPCECaseScheduleService, PCECaseScheduleService>();
 builder.Services.AddScoped<IPCECaseAssignmentService, PCECaseAssignmentService>();
 builder.Services.AddScoped<IPCECaseTerminateService, PCECaseTerminateService>();
 builder.Services.AddScoped<IPCECaseCommentService, PCECaseCommentService>();
-// report
 builder.Services.AddScoped<IInternalReportService, InternalReportService>();
-
-//
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<ICaseAssignmentService, CaseAssignmentService>();
 builder.Services.AddScoped<ICaseTimeLineService, CaseTimeLineService>();
@@ -136,6 +150,8 @@ builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICaseScheduleService, CaseScheduleService>();
 builder.Services.AddScoped<ICaseTerminateService, CaseTerminateService>();
+builder.Services.AddScoped<ITaskManagmentService, TaskManagmentService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<mechanical.Services.AuthenticatioinService.IAuthenticationService, LdapAuthenticationService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
@@ -143,6 +159,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddRazorPages();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -159,31 +177,78 @@ builder.Services.AddAuthentication(options =>
     //options.SlidingExpiration = true;
 
     options.AccessDeniedPath = "/Home/Index";
-    options.Cookie.Name = "YourAppCookieName"; // Set a unique name for the authentication cookie
+    options.Cookie.Name = "MechanicalCookie"; // Set a unique name for the authentication cookie
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Set the expiration time for the cookie
     options.SlidingExpiration = true; // Extend the expiration time with each request
+})
+.AddJwtBearer("Bearer", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt")["Key"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
+            {
+                context.Token = accessToken;
+            }
+            
+            return Task.CompletedTask;
+        }
+    };
 });
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
+
 //builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+
+// Add SignalR
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+})
+.AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null; // Keep PascalCase
+});
+
+
+// Register the custom IUserIdProvider
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
 var app = builder.Build();
-//if (args.Length == 1 && args[0].ToLower() == "seeddata")
-//{
-//    Seed.SeedData(app);
-//    SeedDistrict.SeedData(app);
-//    SeedUsersRolesAndDistricts.SeedData(app);
-//}
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+{
+    // Seed.SeedData(app);
+    // SeedDistrict.SeedData(app);
+    // SeedUsersRolesAndDistricts.SeedData(app);
+}
 
 // Apply database migrations automatically (if any)
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-    context.Database.Migrate();
+    context.Database.Migrate(); // Apply migrations
+    // Seed.SeedData(app);
+    // SeedDistrict.SeedData(app);
     SeedUsersRolesAndDistricts.SeedData(app);
 }
 
@@ -230,9 +295,17 @@ app.UseAuthorization();
 
 app.UseMiddleware<SessionTimeoutMiddleware>();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+    endpoints.MapHub<NotificationHub>("/notificationHub");
+    // endpoints.MapControllers();
+});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

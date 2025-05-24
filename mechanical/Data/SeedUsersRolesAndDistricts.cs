@@ -12,24 +12,23 @@ namespace mechanical.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<CbeContext>();
-
                 context.Database.EnsureCreated(); // Ensure database is created
 
-                if (!context.CreateRoles.Any())
+                if (!context.Roles.Any())
                 {
-                    context.CreateRoles.AddRange(new List<CreateRole>()
+                    context.Roles.AddRange(new List<Role>()
                     {
-                        new CreateRole() { Name="Super Admin" },
-                        new CreateRole() { Name="Admin"},
-                        new CreateRole() { Name = "Relation Manager" },
-                        new CreateRole() { Name = "District Valuation Manager" },
-                        new CreateRole() { Name = "Maker Manager" },
-                        new CreateRole() { Name = "Maker TeamLeader" },
-                        new CreateRole() { Name = "Maker Officer" },
-                        new CreateRole() { Name = "Checker Manager" },
-                        new CreateRole() { Name = "Checker TeamLeader" },
-                        new CreateRole() { Name = "Checker Officer" },
-                        new CreateRole() { Name = "Higher Official" }
+                        new Role() { Name="Super Admin" },
+                        new Role() { Name="Admin"},
+                        new Role() { Name = "Relation Manager" },
+                        new Role() { Name = "District Valuation Manager" },
+                        new Role() { Name = "Maker Manager" },
+                        new Role() { Name = "Maker TeamLeader" },
+                        new Role() { Name = "Maker Officer" },
+                        new Role() { Name = "Checker Manager" },
+                        new Role() { Name = "Checker TeamLeader" },
+                        new Role() { Name = "Checker Officer" },
+                        new Role() { Name = "Higher Official" }
                     });
                     context.SaveChanges();
                 }
@@ -76,145 +75,145 @@ namespace mechanical.Data
                     context.SaveChanges();
                 }
 
-                if (!context.CreateUsers.Any())
+                if (!context.Users.Any())
                 {
-                    context.CreateUsers.AddRange(new List<CreateUser>()
+                    context.Users.AddRange(new List<User>()
                     {
-                        new CreateUser()
+                        new User()
                         {
                             Name = "Admin",
                             emp_ID = "050203",
                             Email = "ADMIN@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Admin").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Admin").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "RM",
                             emp_ID = "050202",
                             Email = "RM@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Relation Manager").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Relation Manager").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "MM",
                             emp_ID = "050121",
                             Email = "MM@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Maker Manager").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Maker Manager").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "RM").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "MTL",
                             emp_ID = "050203",
                             Email = "MTL@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Maker TeamLeader").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Maker TeamLeader").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "MM").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "MM").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "MO",
                             emp_ID = "050121",
                             Email = "MO@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Maker Officer").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Maker Officer").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "MTL").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "MTL").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "CM",
                             emp_ID = "050203",
                             Email = "CM@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Checker Manager").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Checker Manager").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "RM").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "CTL",
                             emp_ID = "050202",
                             Email = "CTL@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Checker TeamLeader").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Checker TeamLeader").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "CM").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "CM").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "CO",
                             emp_ID = "050203",
                             Email = "CO@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Head Office",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Checker Officer").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Checker Officer").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "CTL").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "CTL").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "DVM",
                             emp_ID = "050122",
                             Email = "DVM@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Adama",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "District Valuation Manager").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "District Valuation Manager").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Adama").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "RM").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         },
-                        new CreateUser()
+                        new User()
                         {
                             Name = "DMO",
                             emp_ID = "050123",
                             Email = "DMO@GMAIL.COM",
                             PhoneNO = "0925473240",
                             Branch = "Adama",
-                            RoleId = context.CreateRoles.Single(r => r.Name == "Maker Officer").Id,
+                            RoleId = context.Roles.Single(r => r.Name == "Maker Officer").Id,
                             DistrictId = context.Districts.Single(d => d.Name == "Adama").Id,
                             Status = "Activated",
-                            // SupervisorId = context.CreateUsers.Single(r => r.Name == "MTL").Id,
+                            // SupervisorId = context.Users.Single(r => r.Name == "MTL").Id,
                             SupervisorId = null,
                             Department = "Mechanical"
                         }
@@ -223,50 +222,49 @@ namespace mechanical.Data
                     context.SaveChanges();
                 }
 
-                var rmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "RM");
-                var mmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "MM");
-                var dvmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "DVM");
-                var mtlUser = context.CreateUsers.SingleOrDefault(u => u.Name == "MTL");
-                var cmUser = context.CreateUsers.SingleOrDefault(u => u.Name == "CM");
-                var ctlUser = context.CreateUsers.SingleOrDefault(u => u.Name == "CTL");
+                var rmUser = context.Users.SingleOrDefault(u => u.Name == "RM");
+                var mmUser = context.Users.SingleOrDefault(u => u.Name == "MM");
+                var dvmUser = context.Users.SingleOrDefault(u => u.Name == "DVM");
+                var mtlUser = context.Users.SingleOrDefault(u => u.Name == "MTL");
+                var cmUser = context.Users.SingleOrDefault(u => u.Name == "CM");
+                var ctlUser = context.Users.SingleOrDefault(u => u.Name == "CTL");
 
                 if (rmUser != null)
                 {
-                    var userToUpdate1 = context.CreateUsers.SingleOrDefault(u => u.Name == "MM");
+                    var userToUpdate1 = context.Users.SingleOrDefault(u => u.Name == "MM");
                     if (userToUpdate1 != null) userToUpdate1.SupervisorId = rmUser.Id;
 
-                    var userToUpdate2 = context.CreateUsers.SingleOrDefault(u => u.Name == "CM");
+                    var userToUpdate2 = context.Users.SingleOrDefault(u => u.Name == "CM");
                     if (userToUpdate2 != null) userToUpdate2.SupervisorId = rmUser.Id;
                 }
 
                 if (mmUser != null)
                 {
-                    var userToUpdate3 = context.CreateUsers.SingleOrDefault(u => u.Name == "MTL");
+                    var userToUpdate3 = context.Users.SingleOrDefault(u => u.Name == "MTL");
                     if (userToUpdate3 != null) userToUpdate3.SupervisorId = mmUser.Id;
-
                 }
 
                 if (cmUser != null)
                 {
-                    var userToUpdate4 = context.CreateUsers.SingleOrDefault(u => u.Name == "CTL");
+                    var userToUpdate4 = context.Users.SingleOrDefault(u => u.Name == "CTL");
                     if (userToUpdate4 != null) userToUpdate4.SupervisorId = cmUser.Id;
                 }
 
                 if (dvmUser != null)
                 {
-                    var userToUpdate5 = context.CreateUsers.SingleOrDefault(u => u.Name == "DMO");
+                    var userToUpdate5 = context.Users.SingleOrDefault(u => u.Name == "DMO");
                     if (userToUpdate5 != null) userToUpdate5.SupervisorId = dvmUser.Id;
                 }
 
                 if (mtlUser != null)
                 {
-                    var userToUpdate6 = context.CreateUsers.SingleOrDefault(u => u.Name == "MO");
+                    var userToUpdate6 = context.Users.SingleOrDefault(u => u.Name == "MO");
                     if (userToUpdate6 != null) userToUpdate6.SupervisorId = mtlUser.Id;
                 }
 
                 if (ctlUser != null)
                 {
-                    var userToUpdate7 = context.CreateUsers.SingleOrDefault(u => u.Name == "CO");
+                    var userToUpdate7 = context.Users.SingleOrDefault(u => u.Name == "CO");
                     if (userToUpdate7 != null) userToUpdate7.SupervisorId = ctlUser.Id;
                 }
 

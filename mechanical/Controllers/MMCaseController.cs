@@ -23,10 +23,10 @@ namespace mechanical.Controllers
         public MMCaseController(ICaseService caseService,IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService,ICaseScheduleService caseScheduleService,IMMCaseService mMCaseService , ICaseAssignmentService caseAssignment)
         {
             _caseService = caseService;
-            _mMCaseService = mMCaseService; 
+            _mMCaseService = mMCaseService;
             _caseAssignmentService = caseAssignment;
             _caseScheduleService = caseScheduleService;
-            _caseTermnateService = caseTerminateService;     
+            _caseTermnateService = caseTerminateService;
             _uploadFileService = uploadFileService;
         }
 

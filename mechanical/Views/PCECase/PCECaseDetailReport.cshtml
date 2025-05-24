@@ -1,5 +1,6 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @model PCEReportDataDto
+
 <style>
     /* Style for disabled button */
     a.disabled {
@@ -10,6 +11,7 @@
         cursor: not-allowed;
     }
 </style>
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -87,8 +89,12 @@
                                         }
                                         else
                                         {
-                                          <td> Not Evaluated yet  </td>
+                                            <td> Not Evaluated yet  </td>
                                         }
+                                    }
+                                    else
+                                    {
+                                        <td> Not Evaluated yet  </td>
                                     }
 
                                     <td>
@@ -97,12 +103,13 @@
                                             <a class="btn btn-primary pce-report-btn" style="background-color:purple; color: white" href="@Url.Action("PCEReport", "PCECase")?Id= @item.Id">
                                                 <i class="fas fa-file-alt mr-2"></i>PCE Report
                                             </a>
-                                        }else{
+                                        }
+                                        else{
                                             <a class="btn btn-primary" style="background-color:purple; color: white" href="" disabled>
                                                 <i class="fas fa-file-alt mr-2"></i>In Progress
                                             </a>
                                         }
-
+                                        
                                     </td>
                                 </tr>
                             }

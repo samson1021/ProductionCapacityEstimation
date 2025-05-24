@@ -1,30 +1,76 @@
-﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@using mechanical.Models.Dto.TaskManagmentDto
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
+    var shareTaskData = ViewData["ShareTaskDatas"] as ShareTasksDto;
+    var x = 6;
 }
+
 <div class="card">
     <div class="Card-header">
         <div class="col-12">
-            <div class="row">
-                <div class="col-12 col-sm-6" style="margin-top:1rem;">
-                    <div class="btn-group">
-                        <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Add Mechanical Collateral
-                        </button>
-                        <button id="addCivilCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addCivilCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Add Civil Collateral
-                        </button>
-                        <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
-                            <i class="fas fa-plus-circle"></i> Add Agricultural Collateral
-                        </button>
-                        <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = "88" })">
-                            <i class="nav-icon fas fa-sitemap"></i>
-                        </a>
+
+
+            @if (shareTaskData == null)
+            {
+                <div class="row">
+                    <div class="col-12 col-sm-6" style="margin-top:1rem;">
+                        <div class="btn-group">
+                            <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
+                                <i class="fas fa-plus-circle"></i> Add Mechanical Collateral
+                            </button>
+                            <button id="addCivilCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addCivilCollateralModal">
+                                <i class="fas fa-plus-circle"></i> Add Civil Collateral
+                            </button>
+                            <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
+                                <i class="fas fa-plus-circle"></i> Add Agricultural Collateral
+                            </button>
+                            <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = myCase.Id })">
+                                <i class="nav-icon fas fa-sitemap"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
                     </div>
                 </div>
-                <div class="col-12 col-sm-4">
-                </div>
-            </div>
+            }
+            else
+            {
+                foreach (var taskName in shareTaskData.TaskNames)
+                {
+                    if (string.IsNullOrEmpty(taskName) ||
+                    taskName == "All" ||
+                    taskName == "Collateral Addition")
+                    {
+                        <div class="row">
+                            <div class="col-12 col-sm-6" style="margin-top:1rem;">
+                                <div class="btn-group">
+                                    <button id="addMechanicalCollateralButton" type="button" class="btn btn-sm  btn-outline-primary" data-toggle="modal" data-target="#addMechanicalCollateralModal">
+                                        <i class="fas fa-plus-circle"></i> Add Mechanical Collateral
+                                    </button>
+                                    <button id="addCivilCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addCivilCollateralModal">
+                                        <i class="fas fa-plus-circle"></i> Add Civil Collateral
+                                    </button>
+                                    <button id="addAgricultureCollateralButton" type="button" class="btn btn-sm btn-outline-primary ms-1" data-toggle="modal" data-target="#addAgricultureCollateralModal">
+                                        <i class="fas fa-plus-circle"></i> Add Agricultural Collateral
+                                    </button>
+                                    <a class="btn btn-sm btn-outline-primary  ms-1" href="@Url.Action("Index", "CaseTimeLine", new { CaseId = myCase.Id })">
+                                        <i class="nav-icon fas fa-sitemap"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                            </div>
+                        </div>
+
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
         </div>
     </div>
     <div class="card-body">
@@ -34,17 +80,41 @@
                     <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
                     <th>Property Owner</th>
                     <th>Role</th>
-                    <th>Equipment Catagory</th>
+                    <th>Equipment Category</th>
                     <th>Action</th>
                 </tr>
             </thead>
         </table>
-        <div class="row">
-            @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />*@
+
+        @if (shareTaskData == null)
+        {
             <div class="row">
-                <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
+                <div class="row">
+                    <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            foreach (var taskName in shareTaskData.TaskNames)
+            {
+                if (string.IsNullOrEmpty(taskName) ||
+                taskName == "All" )
+                {
+                    <div class="row">
+                        <div class="row">
+                            <button type="submit" id="assignButton" class="col-xl-2  btn btn-sm  bg-purple">send for evaluation  <i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+
+            }
+        }
     </div>
 </div>
 
@@ -71,8 +141,7 @@
 
 @await Html.PartialAsync("CreateAgricultureCollateral")
 @await Html.PartialAsync("CreateCivilCollateral")
-
-<script>
+ <script>
     const addAgricultureCollateralButton = document.getElementById("addAgricultureCollateralButton");
     const addCivilCollateralButton = document.getElementById("addCivilCollateralButton");
 
@@ -100,7 +169,7 @@
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
                         <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
-                        <div class="row">
+                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
                                 <input asp-for="PropertyOwner" type="text" class="form-control form-control-sm" id="PropertyOwnerMac" placeholder="Property Owner *" required>
@@ -108,11 +177,11 @@
                             </div>
                             <div class="form-group col-lg-6">
                                 <label asp-for="Role">Role <i class="text-danger">*</i></label>
-                                @if (myCase.Segement == "Acquired Asset Administration")
+                                @if (myCase.Segment == "Acquired Asset Administration")
                                 {
                                     <input asp-for="Role" type="text" readonly value="CBE" class="form-control form-control-sm" />
                                 }
-                                else if (myCase.Segement == "Workout" || myCase.Segement == "Legal")
+                                else if (myCase.Segment == "Workout" || myCase.Segment == "Legal")
                                 {
                                     <select asp-for="Role" class="form-control form-control-sm" id="Role" required>
                                         <option value="" disabled selected>Select Role *</option>
@@ -182,7 +251,6 @@
                                 <span id="EngineMotorNoMac-error" asp-validation-for="EngineMotorNo" class="text-danger"></span>
                             </div>
                         </div>
-                        @*                        industerial collateral attributes *@
 
                         <div class="row IndusteryProp">
                             <div class="form-group col-lg-4">
@@ -201,7 +269,6 @@
                                 <span id="ModelNoMac-error" asp-validation-for="ModelNo" class="text-danger"></span>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="form-group col-lg-4">
                                 <label asp-for="ManufactureYear">Manufactuing Year</label>
@@ -263,7 +330,6 @@
                                     </div>
                                 </div>
                                 <div class="row">
-
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Wereda">Wereda</label>
                                         <input asp-for="Wereda" type="text" class="form-control form-control-sm" id="WeredaMac" placeholder="Enter Wereda" oninput="validateWeredaInput(this)">
@@ -396,6 +462,7 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("ScriptPartial/_DetailDatatableSriptsPartial");
@@ -405,8 +472,10 @@
 <script>
     function validateInputMac(inputId, errorId, isRequired) {
         var input = document.getElementById(inputId).value;
-        var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
+        var alphanumericRegex = /^[A-Za-z0-9]+$/;
         var errorMessage = "";
+
+        // Check if the field is required and empty
         if (isRequired && input.trim() === "") {
             errorMessage = "This field is required.";
         } else if (!alphanumericRegex.test(input)) {

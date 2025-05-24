@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -51,7 +51,7 @@ namespace mechanical.Models.PCE.Entities
         public string? CurrentStage { get; set; }
         public string? CurrentStatus { get; set; }
         public string? Remark { get; set; } = string.Empty;
-        
+
         public string? ProductionType { get; set; }
         public Guid? AssignedEvaluatorId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -60,7 +60,7 @@ namespace mechanical.Models.PCE.Entities
         public DateTime? UpdatedAt { get; set; } = null;
 
         [ForeignKey("CreatedById")]
-        public virtual CreateUser? CreatedBy { get; set; }
+        public virtual User? CreatedBy { get; set; }
         [ForeignKey("PCECaseId")]
         public virtual PCECase? PCECase { get; set; }
     }

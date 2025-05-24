@@ -33,7 +33,7 @@
 
     var checker = MotorVehicle.Select(m => m.CheckerUser).Distinct();
 
-    var caseScheduleDate = DateTime.Now;
+    var caseScheduleDate = DateTime.UtcNow;
     if (caseSchedule != null)
     {
         caseScheduleDate = caseSchedule.ScheduleDate;
@@ -320,9 +320,7 @@
                             </p>
                         }
                     }
-
                 </div>
-            </div>
         </div>
         <div class="text-center my-4">
             <img src="~/img/stamp.png" alt="Stamp" style="max-width: 200px; height: auto;" />

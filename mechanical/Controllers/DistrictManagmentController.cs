@@ -56,7 +56,7 @@ namespace CreditBackOffice.Controllers
         // POST: DistrictManagmentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CreateUser model)
+        public ActionResult Edit(User model)
         {       
                var district= _context.Districts.FirstOrDefault(c => c.Id == model.Id);
                 district.Name= model.Name;

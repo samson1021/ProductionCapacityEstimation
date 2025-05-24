@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Dto.CaseTimeLineDto;
@@ -32,7 +32,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachinery.CollateralId);
 
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
-            constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
+            constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.UtcNow.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
             constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
@@ -42,20 +42,20 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong class='text-sucess'>collateral maker Evaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong class='text-sucess'>collateral maker Evaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Maker Manager"
             });
 
             return constMngAgrMachinery;
         }
-        public async Task<ConstMngAgMachineryReturnDto> CheckConstMngAgrMachinery(Guid userId,Guid Id, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto)
+        public async Task<ConstMngAgMachineryReturnDto> CheckConstMngAgrMachinery(Guid userId, Guid Id, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto)
         {
             var constMngAgrMachinery = _mapper.Map<ConstMngAgrMachinery>(constMngAgrMachineryPostDto);
 
             var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachinery.CollateralId);
 
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
-            constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
+            constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.UtcNow.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
             constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
@@ -113,7 +113,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachinery.CollateralId);
 
             constMngAgrMachinery.MarketShareFactor = await _constMngAgrAnnexService.GetCAMIBFMarketShareFactor(constMngAgrMachineryPostDto.TechnologyStandard);
-            constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.Now.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
+            constMngAgrMachinery.DepreciationRate = await _constMngAgrAnnexService.GetCAMDepreciationRate(DateTime.UtcNow.Year - constMngAgrMachineryPostDto.YearOfManufacture, constMngAgrMachineryPostDto.constructionMiningAgriculturalMachineryType);
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
             constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
@@ -123,7 +123,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong class=\"text-sucess\">collateral maker valuation Correction has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong class=\"text-sucess\">collateral maker valuation Correction has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Maker Manager"
             });
 

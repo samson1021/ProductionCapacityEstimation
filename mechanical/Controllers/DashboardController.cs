@@ -77,7 +77,7 @@ namespace mechanical.Controllers
             var userId = base.GetCurrentUserId();
             if (Role == null)  
             {
-                    Role = (await _cbeContext.CreateUsers.Include(res=>res.Role).Where(res=>res.Id == userId).FirstOrDefaultAsync()).Role.Name;
+                    Role = (await _cbeContext.Users.Include(res=>res.Role).Where(res=>res.Id == userId).FirstOrDefaultAsync()).Role.Name;
             }       
             
             if (Role == "Relation Manager")

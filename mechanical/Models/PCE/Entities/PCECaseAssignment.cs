@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,6 +21,6 @@ namespace mechanical.Models.PCE.Entities
         public virtual ProductionCapacity? ProductionCapacity { get; set; }
 
         [ForeignKey("UserId")]
-        public virtual CreateUser? User { get; set; }
+        public virtual User? User { get; set; }
     }
 }

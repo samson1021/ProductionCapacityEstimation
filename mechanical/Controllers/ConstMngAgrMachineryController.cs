@@ -26,7 +26,7 @@ namespace mechanical.Controllers
         private readonly IMailService _mailService;
         private readonly ICaseScheduleService _caseScheduleService;
 
-        public ConstMngAgrMachineryController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IMailService mailService, IConstMngAgrMachineryService constMngAgrMachineryService,CbeContext cbeContext, IUploadFileService uploadFileService)
+        public ConstMngAgrMachineryController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IMailService mailService, IConstMngAgrMachineryService constMngAgrMachineryService, CbeContext cbeContext, IUploadFileService uploadFileService)
         {
             _collateralService = collateralService;
             _constMngAgriMachineryService = constMngAgrMachineryService;
@@ -38,14 +38,14 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(Guid Id)
         {
-            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
             var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
 
             if (scheduledDate == null)
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
@@ -58,7 +58,7 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemarkRelease(Guid Id, Guid CollateralId, String Remark, Guid EvaluatorUserID,String CurrentStatus)
+        public async Task<IActionResult> RemarkRelease(Guid Id, Guid CollateralId, String Remark, Guid EvaluatorUserID, String CurrentStatus)
         {
             var Mov = await _cbeContext.ConstMngAgrMachineries.FindAsync(Id);
             Mov.Remark = Remark;
@@ -67,7 +67,7 @@ namespace mechanical.Controllers
 
             if (CurrentStatus == "Remark")
             {
-               
+
                 collateral.CurrentStage = "Checker Officer";
                 collateral.CurrentStatus = "Complete";
                 _cbeContext.Update(collateral);
@@ -97,7 +97,7 @@ namespace mechanical.Controllers
             var userid = base.GetCurrentUserId();
             if (ModelState.IsValid)
             {
-                var constMngAgrMachinery = await _constMngAgriMachineryService.CreateConstMngAgrMachinery(base.GetCurrentUserId(),constMngAgrMachineryPostDto);
+                var constMngAgrMachinery = await _constMngAgriMachineryService.CreateConstMngAgrMachinery(base.GetCurrentUserId(), constMngAgrMachineryPostDto);
 
 
 
@@ -107,10 +107,10 @@ namespace mechanical.Controllers
 
                 _cbeContext.Update(collateral);
 
-                var caseAssignment =  _cbeContext.CaseAssignments.Where(a=> a.UserId == userid).FirstOrDefault(a => a.CollateralId == collateral.Id );
-                caseAssignment.Status = "Pending"; 
+                var caseAssignment = _cbeContext.CaseAssignments.Where(a => a.UserId == userid).FirstOrDefault(a => a.CollateralId == collateral.Id);
+                caseAssignment.Status = "Pending";
                 _cbeContext.Update(caseAssignment);
-                 await _cbeContext.SaveChangesAsync();
+                await _cbeContext.SaveChangesAsync();
                 return RedirectToAction("GetConstMngAgrMachinery", "ConstMngAgrMachinery", new { Id = constMngAgrMachinery.Id });
             }
             return View(constMngAgrMachineryPostDto);
@@ -145,11 +145,11 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> GetEvaluatedconstMngAgriMachinery(Guid Id)
         {
-           
+
             var constMngAgMachinery = await _constMngAgriMachineryService.GetEvaluatedConstMngAgrMachinery(Id);
             var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
             ViewData["comments"] = comments;
-            var chechConstruction =  await _cbeContext.ConstMngAgrMachineries.FirstOrDefaultAsync(x => x.CollateralId == Id);
+            var chechConstruction = await _cbeContext.ConstMngAgrMachineries.FirstOrDefaultAsync(x => x.CollateralId == Id);
             ViewData["constMngAgMachinery"] = chechConstruction;
             return View(constMngAgMachinery);
         }
@@ -190,50 +190,50 @@ namespace mechanical.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditConstMngAgrMachinery(Guid Id, ConstMngAgrMachineryPostDto constMngAgrMachineryPostDto)
         {
-           var motrvechel = await _constMngAgriMachineryService.EditConstMngAgrMachinery(Id, constMngAgrMachineryPostDto);
+            var motrvechel = await _constMngAgriMachineryService.EditConstMngAgrMachinery(Id, constMngAgrMachineryPostDto);
 
-                var motorVechelAssesment = await _cbeContext.ConstMngAgrMachineries.FirstOrDefaultAsync(res => res.Id == Id);
-                var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachineryPostDto.CollateralId);
-                Guid? checkerID = Guid.Empty;
-                if (motorVechelAssesment.CheckerUserID == null)
-                {
-                    var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
+            var motorVechelAssesment = await _cbeContext.ConstMngAgrMachineries.FirstOrDefaultAsync(res => res.Id == Id);
+            var collateral = await _cbeContext.Collaterals.FindAsync(constMngAgrMachineryPostDto.CollateralId);
+            Guid? checkerID = Guid.Empty;
+            if (motorVechelAssesment.CheckerUserID == null)
+            {
+                var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
 
-                    //var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
-                    checkerID = correction.CommentedByUserId;
-                }
-                else
-                {
-                    checkerID = motorVechelAssesment.CheckerUserID;
-                }
+                //var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
+                checkerID = correction.CommentedByUserId;
+            }
+            else
+            {
+                checkerID = motorVechelAssesment.CheckerUserID;
+            }
             //var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == indBldgFacilityEquipment.CollateralId && res.UserId == correction.CommentedByUserId).FirstOrDefaultAsync();
             var userid = base.GetCurrentUserId();
             var caseAssignmentChange = await _cbeContext.CaseAssignments.Where(res => res.UserId == userid && res.CollateralId == constMngAgrMachineryPostDto.CollateralId).FirstOrDefaultAsync();
-                caseAssignmentChange.Status = "Pending";
+            caseAssignmentChange.Status = "Pending";
             var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == constMngAgrMachineryPostDto.CollateralId && res.UserId == checkerID).FirstOrDefaultAsync();
-                if (collateral.CurrentStatus.Contains("Remark"))
-                {
-                    collateral.CurrentStatus = "Remark Verfication";
-                    caseAssignment.Status = "Remark Verfication";
-                }
-                else
-                {
-                    collateral.CurrentStatus = "New";
-                    caseAssignment.Status = "New";
-                }
+            if (collateral.CurrentStatus.Contains("Remark"))
+            {
+                collateral.CurrentStatus = "Remark Verfication";
+                caseAssignment.Status = "Remark Verfication";
+            }
+            else
+            {
+                collateral.CurrentStatus = "New";
+                caseAssignment.Status = "New";
+            }
 
-                caseAssignment.AssignmentDate = DateTime.Now;
-                _cbeContext.Update(caseAssignment);
+            caseAssignment.AssignmentDate = DateTime.UtcNow;
+            _cbeContext.Update(caseAssignment);
 
-                _cbeContext.Update(caseAssignmentChange);
+            _cbeContext.Update(caseAssignmentChange);
 
-                collateral.CurrentStage = "Checker Officer";
+            collateral.CurrentStage = "Checker Officer";
 
-                _cbeContext.Update(collateral);
-                await _cbeContext.SaveChangesAsync();
+            _cbeContext.Update(collateral);
+            await _cbeContext.SaveChangesAsync();
 
-                return RedirectToAction("MyReturnedCollaterals", "MoCase");
-            
+            return RedirectToAction("MyReturnedCollaterals", "MoCase");
+
         }
 
     }

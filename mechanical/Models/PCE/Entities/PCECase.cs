@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,6 +16,7 @@ namespace mechanical.Models.PCE.Entities
         public required string ApplicantName { get; set; }
         public string CustomerId { get; set; } = string.Empty;
         public string? CustomerEmail { get; set; } = string.Empty;
+
         public required string Segment { get; set; }
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
@@ -25,12 +26,11 @@ namespace mechanical.Models.PCE.Entities
         public Guid? BusinessLicenseId { get; set; }
         public required Guid PCECaseOriginatorId { get; set; }
 
-
         [ForeignKey("DistrictId")]
         public virtual District? District { get; set; }
 
         [ForeignKey("PCECaseOriginatorId")]
-        public virtual CreateUser? PCECaseOriginator { get; set; }
+        public virtual User? PCECaseOriginator { get; set; }
 
         [ForeignKey("BusinessLicenseId")]
         public virtual UploadFile? BusinessLicense { get; set; }

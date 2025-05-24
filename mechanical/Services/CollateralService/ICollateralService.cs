@@ -47,7 +47,7 @@ namespace mechanical.Services.CollateralService
 
         Task<IEnumerable<CorrectionRetunDto>> GetComments(Guid CollateralId);
         Task<bool> DeleteCollateralFile(Guid userId, Guid Id);
-        Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory);
+        Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCategory);
 
     }
 }

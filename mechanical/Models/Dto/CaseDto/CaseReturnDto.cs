@@ -2,12 +2,12 @@
 
 namespace mechanical.Models.Dto.CaseDto
 {
-    public class CaseReturntDto
+    public class CaseReturnDto
     {
         public Guid Id { get; set; }
         public required string CaseNo { get; set; }
         public required string ApplicantName { get; set; }
-        public required string Segement { get; set; }
+        public required string Segment { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerEmail { get; set; } = string.Empty;
         public required string District { get; set; }

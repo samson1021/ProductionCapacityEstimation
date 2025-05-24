@@ -27,12 +27,12 @@ namespace mechanical.Controllers
         private readonly IUploadFileService _uploadFileService;
         private readonly IMailService _mailService;
         private readonly ICaseScheduleService _caseScheduleService;
-        public MotorVehicleController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IConstMngAgrMachineryService constMngAgriMachineryService, IMailService mailService ,IMotorVehicleService motorVehicleService,CbeContext cbeContext,IUploadFileService uploadFileService)
+        public MotorVehicleController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IConstMngAgrMachineryService constMngAgriMachineryService, IMailService mailService, IMotorVehicleService motorVehicleService, CbeContext cbeContext, IUploadFileService uploadFileService)
         {
             _collateralService = collateralService;
             _motorVehicleService = motorVehicleService;
             _cbeContext = cbeContext;
-            _uploadFileService= uploadFileService;
+            _uploadFileService = uploadFileService;
             _mailService = mailService;
             _constMngAgriMachineryService = constMngAgriMachineryService;
             _caseScheduleService = caseScheduleService;
@@ -47,7 +47,7 @@ namespace mechanical.Controllers
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
@@ -62,7 +62,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> Currency([FromForm] string currency)
         {
-            var currencyDate = DateTime.Now;
+            var currencyDate = DateTime.UtcNow;
             var exchangeRate = await _motorVehicleService.Currency(currency, currencyDate);
             return Json(new { exchangeRate });
         }
@@ -80,7 +80,7 @@ namespace mechanical.Controllers
 
                 _cbeContext.Update(collateral);
 
-                var caseAssignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(a => a.CollateralId == collateral.Id && a.UserId == userid); 
+                var caseAssignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(a => a.CollateralId == collateral.Id && a.UserId == userid);
                 caseAssignment.Status = "Pending";
                 _cbeContext.Update(caseAssignment);
 
@@ -109,7 +109,7 @@ namespace mechanical.Controllers
             var motorVehicleDto = await _motorVehicleService.GetMotorVehicle(Id);
             return View(motorVehicleDto);
         }
-        
+
 
         [HttpGet]
         public async Task<IActionResult> GetMOVSummary(Guid CaseId)
@@ -123,15 +123,15 @@ namespace mechanical.Controllers
             var motorVehicleDto = await _motorVehicleService.GetEvaluatedMotorVehicle(Id);
             var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
             ViewData["comments"] = comments;
-            ViewData["motorVehicleDto"]  = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.CollateralId == Id);
+            ViewData["motorVehicleDto"] = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.CollateralId == Id);
             return View(motorVehicleDto);
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditMoterVehicle(Guid id)  
+        public async Task<IActionResult> EditMoterVehicle(Guid id)
         {
 
-            var motorVehicleDto = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res=>res.CollateralId == id);
+            var motorVehicleDto = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.CollateralId == id);
             //ViewData["EvaluatedMOV"] = motorVehicleDto;
 
             return View(motorVehicleDto);
@@ -172,7 +172,7 @@ namespace mechanical.Controllers
                 SenderEmail = " getnetadane1@cbe.com.et",
                 SenderPassword = "Gechlove@1234",
                 RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Remark Release Update " ,
+                Subject = "Remark Release Update ",
                 Body = "Dear! </br> Remark release Update  For Applicant:-" + collateral.PropertyOwner + "</br></br> For further Detail please check Collateral Valuation System",
             });
             return RedirectToAction("RemarkCases", "MoCase");
@@ -182,7 +182,7 @@ namespace mechanical.Controllers
         public async Task<IActionResult> EditMotorVehicle(Guid Id, CreateMotorVehicleDto createMotorVehicleDto)
         {
             var motrvechel = await _motorVehicleService.EditMotorVehicle(Id, createMotorVehicleDto);
-            var motorVechelAssesment = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.Id == Id); 
+            var motorVechelAssesment = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.Id == Id);
             var collateral = await _cbeContext.Collaterals.FindAsync(createMotorVehicleDto.CollateralId);
             Guid? checkerID = Guid.Empty;
             if (motorVechelAssesment.CheckerUserID == null)
@@ -196,7 +196,7 @@ namespace mechanical.Controllers
             }
             var userid = base.GetCurrentUserId();
             var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == createMotorVehicleDto.CollateralId && res.UserId == checkerID).FirstOrDefaultAsync();
-            var collateralid = await _cbeContext.MotorVehicles.Where(res => res.Id==Id).FirstOrDefaultAsync();
+            var collateralid = await _cbeContext.MotorVehicles.Where(res => res.Id == Id).FirstOrDefaultAsync();
             var caseAssignmentChange = await _cbeContext.CaseAssignments.Where(res => res.UserId == userid && res.CollateralId == collateralid.CollateralId).FirstOrDefaultAsync();
             caseAssignmentChange.Status = "Pending";
             if (collateral.CurrentStatus.Contains("Remark"))
@@ -210,7 +210,7 @@ namespace mechanical.Controllers
                 caseAssignment.Status = "New";
             }
 
-            caseAssignment.AssignmentDate = DateTime.Now;
+            caseAssignment.AssignmentDate = DateTime.UtcNow;
             _cbeContext.Update(caseAssignment);
             _cbeContext.Update(caseAssignmentChange);
 
@@ -220,6 +220,6 @@ namespace mechanical.Controllers
             await _cbeContext.SaveChangesAsync();
             return RedirectToAction("MyReturnedCollaterals", "MoCase");
         }
-        
+
     }
 }

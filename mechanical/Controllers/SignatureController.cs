@@ -52,7 +52,7 @@ namespace mechanical.Controllers
         public ActionResult Create()
         {
             var userID = base.GetCurrentUserId();
-            var UserIds=_cbeContext.CreateUsers.Where(i=>i.Id == userID).Select(i=>i.emp_ID).FirstOrDefault();
+            var UserIds=_cbeContext.Users.Where(i=>i.Id == userID).Select(i=>i.emp_ID).FirstOrDefault();
             ViewData["UserId"] = UserIds;
             return View();
         }

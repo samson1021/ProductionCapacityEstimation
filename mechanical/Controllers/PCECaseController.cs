@@ -341,12 +341,10 @@ namespace mechanical.Controllers.PCE
 
             }
 
-
-
-            if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            if ((pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Count() != 0) || pceReportData.PCEEvaluations.Any())
             {
-                var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
-                var EvaluatorNames = _cbeContext.CreateUsers.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();
+                var userIdss = _cbeContext.Users.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                var EvaluatorNames = _cbeContext.Users.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();
                 var EvaluatorName = EvaluatorNames.Name;
                 var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
                 ViewData["signiture"] = EvaluatorNames;
@@ -404,8 +402,8 @@ namespace mechanical.Controllers.PCE
 
                 foreach (var evaluation in pceReportData.PCEEvaluations)
                 {
-                    var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
-                    var evaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                    var userIdss = _cbeContext.Users.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                    var evaluatorName = _cbeContext.Users.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.Name).FirstOrDefault();
                     var signatureFilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
 
                     var evaluatorReportDto = new EvaluatorReportDto

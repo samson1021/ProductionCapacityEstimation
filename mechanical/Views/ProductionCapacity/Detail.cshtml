@@ -1,6 +1,6 @@
 ﻿@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionReturnDto
 
-@{    
+@{
     ViewData["Title"] = ViewBag.Title as string;
 }
 
@@ -42,8 +42,8 @@
                     </li>
                 </ul>
             </div>
-            <div class="card-body">     
-                <div class="ribbon-wrapper ribbon-lg">                    
+            <div class="card-body">
+                <div class="ribbon-wrapper ribbon-lg">
                     @{
                         var status = Model.AssignmentStatus?.ToString().Trim();
                         @* if (string.Equals(status, "New", StringComparison.OrdinalIgnoreCase)) { *@
@@ -59,7 +59,7 @@
                             <div class="ribbon bg-dark">@status</div>
                         }
                     }
-                </div>                
+                </div>
                 <div class="tab-content" id="custom-tabs-four-tabContent">
                     <div class="tab-pane fade" id="custom-tabs-four-general" role="tabpanel" aria-labelledby="custom-tabs-four-general-tab">
                         @await Html.PartialAsync("_PCEGeneralInfo")

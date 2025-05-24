@@ -606,11 +606,11 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <i class="fas @(file.Catagory == "Image" ? "fa-image" : file.Catagory == "Document" ? "fa-file-alt" : "fa-file") me-2 text-primary"></i>
+                                                <i class="fas @(file.Category == "Image" ? "fa-image" : file.Category == "Document" ? "fa-file-alt" : "fa-file") me-2 text-primary"></i>
                                                 <span class="text-truncate" title="@file.Name">@file.Name</span>
                                             </div>
                                         </td>
-                                        <td>@file.Catagory</td>
+                                        <td>@file.Category</td>
                                         <td class="text-end">
                                             <a href="@Url.Action("ViewFile", "UploadFile", new { id = file.Id })" 
                                                 class="btn btn-sm btn-outline-primary me-2">
@@ -627,7 +627,7 @@
                         </table>
                     </div>
                 }
-            </>
+            </div>
         </div>
     </div>
 </div>

@@ -1,0 +1,228 @@
+<script src="~/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Initialize DataTable with additional functionalities
+    
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+
+    function initializeDataTable(data, emptyMessage) {
+        const $receivedTasksTable = $('#receivedTasksTable');
+        $receivedTasksTable.DataTable({
+            language: { emptyTable: emptyMessage },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            order: [[6, 'desc']],
+            buttons: [
+                { extend: 'copy', title: 'Received Case' },
+                { extend: 'csv', title: 'Received Case' },
+                { extend: 'excel', title: 'Received Case' },
+                { extend: 'pdf', title: 'Received Case - pdf' },
+                { extend: 'print', title: 'Received Case - Print' },
+                'colvis'
+            ],
+            data: data,
+            columns: [
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
+                //                 ((data.TaskStatus !== "New") ? ' disabled' : '') + '>';
+                //     }
+                // },
+                {
+                    data: 'Case.CaseNo',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        // return `<a href='Url.Action("Detail", "Case")?Id=${row.CaseId}' + '&CaseType=' + "Shared" class="text-purple">${data}</a>`;
+                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}&CaseType=Shared' class="text-purple">${data}</a>`;
+                    }
+                },
+
+                { data: 'TaskName', width: '10%' },
+                { data: 'TaskStatus', width: '10%' },
+                { data: 'TaskPriority', width: '5%' },
+                { data: 'CaseOrginator.Name', width: '15%' },
+                {
+                    data: 'AssignedDate',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Deadline',
+                    width: '15%',
+                    render: function (data) {
+                        
+                        var date = stripTime(new Date(data));
+                        var formatted = date.toISOString().split('T')[0];
+                        var today = stripTime(new Date());
+                        var diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+                        
+                        var countdown = "";
+                        if (diffDays < 0) {
+                            countdown = `<br/><small class="text-danger">Overdue by ${Math.abs(diffDays)} day(s)</small>`;
+                        } else if (diffDays === 0) {
+                            countdown = `<br/><small class="text-danger">Due today</small>`;
+                        } else if (diffDays <= 3) {
+                            countdown = `<br/><small class="text-warning">Due in ${diffDays} day(s)</small>`;
+                        }
+                        return formatted + countdown;
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        var completeReturnLink = "";
+                        if (row.IsActive) {
+                            if (row.TaskStatus !== 'Completed' && row.TaskStatus !== 'Returned'){
+                                completeReturnLink = ` | <a class="text-success" href="javascript:void(0);" onclick="openCompleteModal('${data}')">Complete</a>
+                                | <a class="text-danger" href="javascript:void(0);" onclick="openReturnModal('${data}')">Return</a>`;
+                            }
+                        }
+                        return `
+                            <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" id="detailBtn" class='details-link'>Details</a>
+                            ${completeReturnLink}
+                        `;
+                    }
+                }
+            ],
+            drawCallback: function () {
+                // post-draw manipulation
+            }
+        }).buttons().container().appendTo('#receivedTasksTable_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadReceivedTasks(mode = "active") {
+        $.ajax({
+            url: `/TaskManagment/GetReceivedTasks?mode=${mode}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#receivedTasksTable')) {
+                    $('#receivedTasksTable').DataTable().destroy();
+                }
+                const emptyMessage = "No received tasks found.";
+                initializeDataTable(data, emptyMessage);
+            },
+            error: function (error) {
+                toastr.error(`Failed to load received tasks (Status: ${error.status})`);
+                console.log(error);
+            }
+        });
+    }
+
+    let currentTaskId = null;
+
+    // Show task details in modal 
+    function showTaskDetails(taskId) {
+        $('#TaskId').val(`${taskId}`);
+        $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
+            $('#details .modal-body').html(data);
+            var detailsModalEl = document.getElementById('detailsModal');
+            var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
+            detailsModal.show();
+            loadComments(taskId);
+        });
+    }
+
+    // Open complete modal 
+    function openCompleteModal(taskId) {
+        currentTaskId = taskId;
+        var completeModalEl = document.getElementById('completeModal');
+        var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
+        completeModal.show();
+    }
+
+    // Submit complete via AJAX
+    function submitComplete(mode = "active") {
+        $.post(`/TaskManagment/CompleteTask?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var completeModalEl = document.getElementById('completeModal');
+                var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
+                completeModal.hide();
+                loadReceivedTasks(mode);
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+   @* // Mark task as completed via AJAX
+    function markTaskCompleted(taskId) {
+        $.post(`/TaskManagment/CompleteTask?id=${taskId}`, function(response) {
+            if(response.success) {
+                toastr.success(response.message, "Success");
+                loadReceivedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+     *@
+    // Open return modal 
+    function openReturnModal(taskId) {
+        currentTaskId = taskId;
+        var returnModalEl = document.getElementById('returnModal');
+        var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+        returnModal.show();
+    }
+
+    // Submit return via AJAX
+    function submitReturn() {
+        $.post(`/TaskManagment/ReturnTask?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var returnModalEl = document.getElementById('returnModal');
+                var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+                returnModal.hide();
+                loadReceivedTasks();
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+    let currentMode = "active";
+
+    function switchMode(mode) {
+        currentMode = mode;
+        $(".btn-group .btn").removeClass("active");
+        $(`#btn${mode.charAt(0).toUpperCase() + mode.slice(1)}`).addClass("active");
+        loadReceivedTasks(mode);
+    }
+
+    $(document).ready(function () {
+        
+        loadReceivedTasks(currentMode);
+
+        // Status filter for DataTable
+        $('#statusFilter').on('change', function() {
+            var status = $(this).val();
+            var table = $('#receivedTasksTable').DataTable();
+            table.column(2).search(status).draw();
+        });
+
+        @* // Select all / individual checkboxes
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+        $('#receivedTasksTable tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        }); *@
+
+        $('#detailsModal').on('show.bs.modal', function () {
+            $('#taskTabs a[href="#details"]').tab('show');
+        });
+        
+    });
+</script>

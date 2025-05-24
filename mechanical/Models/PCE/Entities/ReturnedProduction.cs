@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,6 +20,6 @@ namespace mechanical.Models.Entities
         public virtual ProductionCapacity? ProductionCapacity { get; set; }
 
         [ForeignKey("ReturnedById")]
-        public CreateUser? ReturnedBy { get; set; }
+        public User? ReturnedBy { get; set; }
     }
 }

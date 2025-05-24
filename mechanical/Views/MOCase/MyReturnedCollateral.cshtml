@@ -91,7 +91,7 @@
                         <tr>
                             <th>Property Owner</th>
                             <th>Role</th>
-                            <th>Equipment Catagory</th>
+                            <th>Equipment Category</th>
                             <th>Equipment Type</th>
                             <th>Action</th>
                         </tr>
@@ -128,7 +128,7 @@
             data.forEach(function (collateralFile) {
                 tableBody += '<tr>';
                 tableBody += '<td>' + collateralFile.Name + '</td>';
-                tableBody += '<td>' + collateralFile.Catagory + '</td>';
+                tableBody += '<td>' + collateralFile.Category + '</td>';
                 tableBody += '<td>' + collateralFile.ContentType + '</td>';
                 tableBody += '<td><a href="/Collateral/DownloadFile/' + collateralFile.Id + '">Download</a></td>';
                 tableBody += '</tr>';

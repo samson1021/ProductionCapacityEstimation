@@ -89,7 +89,6 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         [Display(Name = "LHC Document")]
         public IFormFile? LHCDocument { get; set; }
 
-
         [Display(Name = "Shade Rent Agreement")]
         public IFormFile? ShadeRentAgreement { get; set; } 
         [Display(Name = "Business License")]       

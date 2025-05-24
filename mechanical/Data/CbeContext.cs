@@ -42,21 +42,21 @@ namespace mechanical.Data
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
 
-        public virtual DbSet<CreateRole> CreateRoles { get; set; }
-        public virtual DbSet<CreateUser> CreateUsers { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<District> Districts { get; set; }
         public virtual DbSet<Signatures> Signatures { get; set; }
         public virtual DbSet<EmployeeInfoes> Employees { get; set; }
         public virtual DbSet<Correction> Corrections { get; set; }
         public virtual DbSet<Reject> Rejects { get; set; }
-        public virtual DbSet<Reject> TaskComment { get; set; }
-        public virtual DbSet<Reject> TaskManagment { get; set; }
-        public virtual DbSet<Reject> TaskNotification { get; set; }
+        public virtual DbSet<TaskComment> TaskComments { get; set; }
+	    public virtual DbSet<TaskManagment> TaskManagments { get; set; }
+	    public virtual DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure CreateUsers self-referencing relationship
-            // modelBuilder.Entity<CreateUser>()
+            // Configure Users self-referencing relationship
+            // modelBuilder.Entity<User>()
             //     .HasOne(u => u.Supervisor)
             //     .WithMany()
             //     .HasForeignKey(u => u.SupervisorId)
@@ -69,9 +69,9 @@ namespace mechanical.Data
             //     .OnDelete(DeleteBehavior.Restrict);
 
             // modelBuilder.Entity<Signatures>()
-            //     .HasOne(s => s.CreateUser)
+            //     .HasOne(s => s.User)
             //     .WithOne()
-            //     .HasForeignKey<Signatures>(s => s.CreateUserId)
+            //     .HasForeignKey<Signatures>(s => s.UserId)
             //     .OnDelete(DeleteBehavior.Restrict);
 
             // modelBuilder.Entity<PCECase>()
@@ -122,6 +122,28 @@ namespace mechanical.Data
                 .WithOne()
                 .HasForeignKey<Signatures>(s => s.SignatureFileId);
 
+            // Add indexes using Fluent API
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.UserId)
+                .HasDatabaseName("IX_Notifications_UserId");
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.IsRead)
+                .HasDatabaseName("IX_Notifications_IsRead");
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.CreatedAt)
+                .HasDatabaseName("IX_Notifications_CreatedAt");
+
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+                v => v.ToDateTime(TimeOnly.MinValue),
+                v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<PCEEvaluation>(entity =>
+            {
+                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
+            });
+
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 var entity = modelBuilder.Entity(entityType.ClrType);
@@ -132,15 +154,6 @@ namespace mechanical.Data
                     idProperty.ValueGeneratedOnAdd();
                 }
             }
-
-            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
-                v => v.ToDateTime(TimeOnly.MinValue),
-                v => DateOnly.FromDateTime(v));
-
-            modelBuilder.Entity<PCEEvaluation>(entity =>
-            {
-                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
-            });
 
             base.OnModelCreating(modelBuilder);
         }

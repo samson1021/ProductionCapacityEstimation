@@ -1,7 +1,7 @@
 ﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
 }

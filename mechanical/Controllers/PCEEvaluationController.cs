@@ -305,6 +305,7 @@ namespace mechanical.Controllers
                     SenderPassword = "Gechlove@1234",
                     RecipantEmail = "yohannessintayhu@cbe.com.et",
                     Subject = "Remark Release Update",
+
                     Body = "Dear! </br> Remark release Update for Applicant:-" + pceEvaluation.PCE.PropertyOwner + "</br></br> For further Detail please check Production Valuation System",
                 });
 

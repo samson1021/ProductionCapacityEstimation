@@ -35,18 +35,18 @@ namespace mechanical.Services.CaseScheduleService
         {
             var caseSchedule = _mapper.Map<CaseSchedule>(caseCommentPostDto);
             caseSchedule.UserId = userId;
-            caseSchedule.CreatedAt = DateTime.Now;
+            caseSchedule.CreatedAt = DateTime.UtcNow;
             caseSchedule.Status = "proposed";
 
             await _cbeContext.CaseSchedules.AddAsync(caseSchedule);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<CaseScheduleReturnDto>(caseSchedule);
-          
+
         }
 
         public async Task<IEnumerable<CaseScheduleReturnDto>> GetCaseSchedules(Guid caseId)
         {
-            var caseSchedules = await _cbeContext.CaseSchedules.Include(res=>res.User).Where(res => res.CaseId == caseId).OrderBy(res=>res.CreatedAt).ToListAsync();
+            var caseSchedules = await _cbeContext.CaseSchedules.Include(res => res.User).Where(res => res.CaseId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
             return _mapper.Map<IEnumerable<CaseScheduleReturnDto>>(caseSchedules);
         }
         public async Task<CaseScheduleReturnDto> GetApprovedCaseSchedule(Guid caseId)
@@ -57,16 +57,16 @@ namespace mechanical.Services.CaseScheduleService
         public async Task<CaseScheduleReturnDto> UpdateCaseSchedule(Guid userId, Guid Id, CaseSchedulePostDto caseCommentPostDto)
         {
             var caseSchedule = await _cbeContext.CaseSchedules.FindAsync(Id);
-            if(caseSchedule == null)
+            if (caseSchedule == null)
             {
                 throw new Exception("case Schedule not Found");
             }
-            if(caseSchedule.UserId != userId)
+            if (caseSchedule.UserId != userId)
             {
                 throw new Exception("unauthorized user");
             }
             _mapper.Map(caseCommentPostDto, caseSchedule);
-            caseSchedule.CreatedAt = DateTime.Now;
+            caseSchedule.CreatedAt = DateTime.UtcNow;
             _cbeContext.Update(caseSchedule);
             await _cbeContext.SaveChangesAsync();
             return _mapper.Map<CaseScheduleReturnDto>(caseSchedule);

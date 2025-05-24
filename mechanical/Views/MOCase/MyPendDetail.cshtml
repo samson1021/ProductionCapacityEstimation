@@ -1,7 +1,7 @@
 ﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
@@ -152,7 +152,7 @@
                         <tr>
                             <th>Property Owner</th>
                             <th>Role</th>
-                            <th>Equipment Catagory</th>
+                            <th>Equipment Category</th>
                             <th>Equipment Type</th>
                             <th>Action</th>
                         </tr>
@@ -300,7 +300,7 @@
             data.forEach(function (collateralFile) {
                 tableBody += '<tr>';
                 tableBody += '<td>' + collateralFile.Name + '</td>';
-                tableBody += '<td>' + collateralFile.Catagory + '</td>';
+                tableBody += '<td>' + collateralFile.Category + '</td>';
                 tableBody += '<td>' + collateralFile.ContentType + '</td>';
                 tableBody += '<td><a href="/UploadFile/ViewFile/' + collateralFile.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + collateralFile.Id + '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>';
                 tableBody += '</tr>';

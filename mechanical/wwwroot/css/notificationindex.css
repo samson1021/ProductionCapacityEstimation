@@ -1,0 +1,92 @@
+/*
+.notifications-page-container {
+    max-width: auto;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+*/
+
+.notifications-page-title {
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.25rem;
+}
+
+.notifications-page-list {
+    margin-top: 0.5rem;
+}
+
+.notifications-page-item {
+    position: relative;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    padding: 0.25rem;
+    border: 1px solid #ecf0f1;
+}
+
+.notifications-page-card {
+    background: white;
+    border-radius: 6px;
+    padding: 0.5rem;
+}
+
+.notifications-page-unread-card {
+    border-left: 4px solid #3498db;
+    background-color: #f8f9fa;
+}
+
+.notifications-page-content {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.notifications-page-unread-title {
+    font-weight: 600;
+    color: #2980b9;
+}
+
+.notifications-page-time {
+    font-size: 0.875rem;
+    color: #7f8c8d;
+}
+
+.notifications-page-archive-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.notifications-page-item:hover .notifications-page-archive-btn {
+    opacity: 1;
+}
+
+/* State Modifiers */
+.notifications-page-unseen {
+    background-color: #e8f4fc;
+    border-color: #3498db;
+}
+
+.notifications-page-unread {
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+}
+
+.notifications-page-empty {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+/* Pagination Specific */
+.notifications-page-pagination .page-link {
+    color: #3498db;
+}
+
+.notifications-page-pagination .page-item.active .page-link {
+    background-color: #3498db;
+    border-color: #3498db;
+}

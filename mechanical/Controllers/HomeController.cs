@@ -1,12 +1,24 @@
-﻿using mechanical.Data;
-using mechanical.Models.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Text;
+using System.Net.Http;
+using System.Diagnostics;
+using System.Security.Claims;
+using NuGet.Protocol.Plugins;
+using System.DirectoryServices.AccountManagement;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+
+using mechanical.Data;
+using mechanical.Models.Entities;
 using mechanical.Models.Dto.UserDto;
+using mechanical.Models.Login;
+using mechanical.Services.AuthenticatioinService;
 
 namespace mechanical.Controllers
 {
@@ -31,7 +43,7 @@ namespace mechanical.Controllers
             {
                 if (HttpContext.Session.GetString("userId") != null)
                 {
-                    var loggedUser = _context.CreateUsers.Include(c => c.Role).Include(c=>c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
+                    var loggedUser = _context.Users.Include(c => c.Role).Include(c=>c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
 
                     if (loggedUser != null)
                     {
@@ -42,7 +54,7 @@ namespace mechanical.Controllers
             }
             return View();
         }
-        
+
         public IActionResult Privacy()
         {
             return View();
@@ -55,7 +67,7 @@ namespace mechanical.Controllers
             {
                 if (HttpContext.Session.GetString("userId") != null)
                 {
-                    var loggedUser = await _context.CreateUsers.Include(c => c.Role).Include(c => c.District).FirstOrDefaultAsync(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
+                    var loggedUser = await _context.Users.Include(c => c.Role).Include(c => c.District).FirstOrDefaultAsync(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
 
                     if (loggedUser != null)
                     {
@@ -65,6 +77,7 @@ namespace mechanical.Controllers
                     return RedirectToAction("Logout");
                 }
             }
+
             if (logins.Email == null || logins.Password == null)
             {
                 if (logins.Password == null)
@@ -74,7 +87,7 @@ namespace mechanical.Controllers
                 return View("Index", logins);
             }
 
-            var user = await _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefaultAsync();
+            var user = await _context.Users.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -87,7 +100,9 @@ namespace mechanical.Controllers
 
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Role, userRole)
+                    new Claim(ClaimTypes.Role, userRole),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -97,6 +112,7 @@ namespace mechanical.Controllers
                 };
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
                 byte[] userId = Encoding.UTF8.GetBytes(user.Id.ToString());
                 _httpContextAccessor.HttpContext.Session.Set("UserId", userId);
                 HttpContext.Session.SetString("userRole", userRole);
@@ -141,9 +157,8 @@ namespace mechanical.Controllers
             // return Ok();
         }
 
-       
-        public IActionResult RedirectToDashboard(CreateUser user)
-        {   
+        public IActionResult RedirectToDashboard(User user)
+        {
             if (user != null)
             {
                 switch (user.Role.Name)

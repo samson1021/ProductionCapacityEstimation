@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.PCE.Enum.PCEEvaluation
+@using mechanical.Models.PCE.Enum.PCEEvaluation
 <script>
 
      $(document).ready(function () {
@@ -281,7 +281,7 @@
                     const filteredInputs = productionLineInputsData.filter(input => input.ProductionLineId === lineId);
                     const detailsHtml = `
                         <tr class="details-row">
-                            <td colspan="12">
+                            <td colspan="13">
                                 <div class="sub-table-title">Production Line Inputs</div>
                                 <table class="table table-bordered table-striped" style="width: 100%; font-size: 0.8em;">
                                     <thead>
@@ -310,10 +310,7 @@
                 }
             });
         }
-        
         loadProductions();
-
-
      });
 
 

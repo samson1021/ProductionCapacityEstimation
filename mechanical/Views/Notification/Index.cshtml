@@ -1,0 +1,146 @@
+<link href="~/css/notificationindex.css" rel="stylesheet" />
+
+<section class="content-header">
+    <div class="container-fluid notifications-page-container">
+        <div class="notifications-page-title d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold text-center">Notifications</h2>
+            <div class="ml-auto">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyCase", "Case")">My Cases</a></li>
+                    <li class="breadcrumb-item active">Notifications</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="col-xl-10 offset-xl-1 connectedSortable">
+        <div class="card">
+            <div class="card-header">
+                <!-- Toggle Buttons -->
+                <div class="row d-flex align-items-center">
+                    <div class="col d-flex justify-content-end">
+                        <div class="btn-group" role="group" aria-label="Notification Toggle">
+                            <button id="btnActive" value="active" class="btn btn-sm btn-primary" onclick="switchMode('active')">Active</button>
+                            <button id="btnArchived" value="archived" class="btn btn-sm btn-secondary" onclick="switchMode('archived')">Archived</button>
+                            <button id="btnAll" value="all" class="btn btn-sm btn-info" onclick="switchMode('all')">All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Loading Spinner -->
+                <div id="notificationsLoadingSpinner" class="notifications-page-spinner text-center my-3" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <div id="notificationsContainer" class="notifications-page-list list-group"></div>
+
+                <!-- Pagination -->
+                <div id="notificationsPagination" class="notifications-page-pagination d-flex justify-content-end mt-4"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        let currentMode = "active";
+
+        $(document).ready(function () {
+            fetchNotifications();
+
+            $(document).on("click", ".page-link", function (e) {
+                e.preventDefault();
+                var page = $(this).data("page");
+                fetchNotifications(page, currentMode);
+            });
+        });
+
+        function switchMode(mode) {
+            currentMode = mode;
+            $(".btn-group .btn").removeClass("active");
+            $(`#btn${mode.charAt(0).toUpperCase() + mode.slice(1)}`).addClass("active");
+            fetchNotifications(1, mode);
+        }
+
+        function fetchNotifications(page = 1, mode = "active") {
+            $("#notificationsLoadingSpinner").show();
+            $.get("/Notification/GetNotifications", { page: page, mode: mode }, function (data) {
+                $("#notificationsLoadingSpinner").hide();
+                $("#notificationsContainer").empty();
+
+                if (data.Notifications.length === 0) {
+                    $("#notificationsContainer").append('<div class="notifications-page-empty alert alert-info">No notifications found.</div>');
+                } else {
+                    data.Notifications.forEach(notification => {
+                        let cardClass = notification.IsRead ? "notifications-page-card" : "notifications-page-card notifications-page-unread-card";
+                        let titleClass = notification.IsRead ? "notifications-page-content" : "notifications-page-content notifications-page-unread-title";
+                        let stateClasses = `${notification.IsRead ? "" : "notifications-page-unread"} ${notification.IsSeen ? "" : "notifications-page-unseen"}`;
+                        let relativeTime = getRelativeTime(notification.CreatedAt);
+
+                        let notificationItem = `
+                            <div class="list-group-item notifications-page-item ${stateClasses}">
+                                <a href="${notification.Link}" class="notifications-page-link text-dark" data-id="${notification.Id}" onclick="markNotificationAsRead('${notification.Id}', this)">
+                                    <div class="${cardClass}">
+                                        <h6 class="${titleClass}">${notification.Content}</h6>
+                                        <p class="notifications-page-time card-text text-end mt-1">
+                                            <small class="text-muted">${relativeTime}</small>
+                                        </p>
+                                    </div>
+                                </a>
+                                ${!notification.IsArchived ? `<button class="btn btn-sm btn-outline-danger notifications-page-archive-btn" 
+                                        data-id="${notification.Id}"
+                                        onclick="archiveNotification('${notification.Id}', this)">
+                                    Archive
+                                </button>` : ''}
+                            </div>`;
+                        $("#notificationsContainer").append(notificationItem);
+                    });
+                }
+
+                updatePagination(data.TotalPages, data.CurrentPage);
+            });
+        }
+
+        function updatePagination(totalPages, currentPage) {
+            let paginationContainer = $("#notificationsPagination");
+            paginationContainer.empty();
+            if (totalPages > 1) {
+                let paginationHtml = `<nav aria-label="Page navigation"><ul class="pagination">`;
+                paginationHtml += `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                                        <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+                                    </li>`;
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<li class="page-item ${i === currentPage ? "active" : ""}">
+                                            <a class="page-link" href="#" data-page="${i}">${i}</a>
+                                        </li>`;
+                }
+                paginationHtml += `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                                        <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                                    </li>`;
+                paginationHtml += `</ul></nav>`;
+                paginationContainer.html(paginationHtml);
+            }
+        }
+
+        function getRelativeTime(dateString) {
+            var date = new Date(dateString);
+            var now = new Date();
+            var diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return "Just now";
+            if (diff < 3600) return Math.floor(diff / 60) + " minute" + (Math.floor(diff / 60) > 1 ? "s" : "") + " ago";
+            if (diff < 86400) return Math.floor(diff / 3600) + " hour" + (Math.floor(diff / 3600) > 1 ? "s" : "") + " ago";
+            if (diff < 604800) return Math.floor(diff / 86400) + " day" + (Math.floor(diff / 86400) > 1 ? "s" : "") + " ago";
+            if (diff < 2592000) return Math.floor(diff / 604800) + " week" + (Math.floor(diff / 604800) > 1 ? "s" : "") + " ago";
+            if (diff < 31536000) return Math.floor(diff / 2592000) + " month" + (Math.floor(diff / 2592000) > 1 ? "s" : "") + " ago";
+            return Math.floor(diff / 31536000) + " year" + (Math.floor(diff / 31536000) > 1 ? "s" : "") + " ago";
+        }
+    </script>
+}

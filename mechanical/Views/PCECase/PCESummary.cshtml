@@ -1,4 +1,4 @@
-﻿@using mechanical.Models.PCE.Entities
+@using mechanical.Models.PCE.Entities
 @using mechanical.Models.PCE.Dto.PCECaseDto;
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 
@@ -27,6 +27,7 @@
         <div class="card" style="overflow: hidden; padding: 20px;">
             <div class="card-body">
                 <input value="@myPCECase.Id" type="hidden" id="PCECaseId" />
+
                 <h2 style="font-size: 1.5em; text-align: center; font-weight: bold; margin-bottom: 10px;">
                     Commercial Bank Of Ethiopia
                 </h2>
@@ -42,7 +43,6 @@
                             <th colspan="3">Status</th>
                             <th colspan="3">Completed Date</th>
                         </tr>
-
 
                     </thead>
                     <tbody>
@@ -106,12 +106,12 @@
                     </thead>
                 </table>
 
-
                 <br/> 
                <h3 style="font-size: 0.5em; text-align: left; font-weight: bold; margin-bottom: 10px;"><h3> PART IV: Summary of Production line </h3></h3>
                 @* Summary of line valuations *@
+
                <div id="tablesContainer"></div>                
-                <br />                
+               <br />                
             </div>
         </div>
     </div>

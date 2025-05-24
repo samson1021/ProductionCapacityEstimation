@@ -147,8 +147,6 @@ namespace mechanical.Data
                     });
                     context.SaveChanges();
                 }
-
-
             }
         }
     }

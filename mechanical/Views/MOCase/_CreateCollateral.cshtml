@@ -1,6 +1,6 @@
-﻿@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
 }
 
 <section class="content">
@@ -27,7 +27,7 @@
                         <tr>
                             <th>Property Owner</th>
                             <th>Role</th>
-                            <th>Equipment Catagory</th>
+                            <th>Equipment Category</th>
                             <th>Equipment Type</th>
                             <th>Action</th>
                         </tr>
@@ -37,6 +37,7 @@
         </div>
     </div>
 </section>
+
 <div class="modal fade" id="industrialCollateralModal" tabindex="-1" role="dialog" aria-labelledby="industrialCollateralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen" role="document">
         <div class="modal-content">
@@ -74,4 +75,3 @@
 <script>
    
 </script>
-

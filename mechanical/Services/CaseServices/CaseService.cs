@@ -1,35 +1,38 @@
 ﻿using AutoMapper;
-using mechanical.Data;
-using mechanical.Models.Dto.CaseDto;
-using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.Entities;
-using mechanical.Services.CaseTimeLineService;
-using mechanical.Services.UploadFileService;
+using System.Xml;
+using System.Net;
+using System.Linq;
+using System.Net.Http;
+using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Http;
-
-using mechanical.Models.Dto.CaseTimeLineDto;
 using Microsoft.CodeAnalysis.Operations;
-using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http.HttpResults;
+
+
+using mechanical.Data;
+using mechanical.Models.Entities;
+using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.DashboardDto;
+using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Models.Dto.CollateralDto;
 using mechanical.Models.Dto.CaseScheduleDto;
-using System.Net;
-using System.Xml;
+using mechanical.Models.Dto.CaseTimeLineDto;
+using mechanical.Services.CaseTimeLineService;
+using mechanical.Services.UploadFileService;
+using mechanical.Models.Dto.TaskManagmentDto;
 
 namespace mechanical.Services.CaseServices
 {
-    public class CaseService:ICaseService
+    public class CaseService : ICaseService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICaseTimeLineService _caseTimeLineService;
         private readonly IUploadFileService _uploadFileService;
-        
-        
+
+
         public CaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
         {
             _cbeContext = cbeContext;
@@ -40,8 +43,13 @@ namespace mechanical.Services.CaseServices
         }
         public async Task<IEnumerable<CaseDto>> GetRmRemarkedCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
-           .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))).ToListAsync();
+            var cases = await _cbeContext.Cases
+            .Include(x => x.Collaterals
+                .Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
+            .Where(res => res.CaseOriginatorId == userId && (res.Collaterals
+                    .Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")))
+            .ToListAsync();
+
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             foreach (var caseDto in caseDtos)
             {
@@ -51,25 +59,25 @@ namespace mechanical.Services.CaseServices
         }
         public async Task<Case> CreateCase(Guid userId, CasePostDto createCaseDto)
         {
-            var user = _cbeContext.CreateUsers.Include(res => res.District).Include(res=>res.Role).FirstOrDefault(res => res.Id == userId);
-            if(user == null)
+            var user = _cbeContext.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefault(res => res.Id == userId);
+            if (user == null)
             {
                 throw new Exception("user not found");
             }
             var loanCase = _mapper.Map<Case>(createCaseDto);
             loanCase.Id = Guid.NewGuid();
-            if(createCaseDto.BussinessLicence != null)
+            if (createCaseDto.BussinessLicence != null)
             {
                 var BussinessLicence = new CreateFileDto()
                 {
                     File = createCaseDto.BussinessLicence ?? throw new ArgumentNullException(nameof(createCaseDto.BussinessLicence)),
                     CaseId = loanCase.Id,
-                    Catagory = "Bussiness Licence"
+                    Category = "Bussiness Licence"
                 };
-                loanCase.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId,BussinessLicence);
+                loanCase.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId, BussinessLicence);
             }
             loanCase.CaseOriginatorId = userId;
-            loanCase.CreationAt = DateTime.Now;
+            loanCase.CreationAt = DateTime.UtcNow;
             loanCase.DistrictId = user.DistrictId;
             loanCase.Status = "New";
             await _cbeContext.Cases.AddAsync(loanCase);
@@ -81,35 +89,143 @@ namespace mechanical.Services.CaseServices
                 Activity = $"<strong>A new case with ID {loanCase.CaseNo} has been created</strong>",
                 CurrentStage = user.Role.Name
             });
-          
             return loanCase;
         }
-        public async Task<CaseReturntDto> GetCase(Guid userId, Guid id)
+
+        public async Task<ShareTasksDto> SharedCaseInfo(Guid id)
+        {
+            var sharedcaseInfos = await _cbeContext.TaskManagments
+                                    .Where(info => info.CaseId == id)
+                                    .ToListAsync();
+            if (sharedcaseInfos == null || !sharedcaseInfos.Any())
+            {
+                return null; // Or handle the case where no data is found
+            }
+            var sharedcaseinfo = _mapper.Map<ShareTasksDto>(sharedcaseInfos.First());
+            sharedcaseinfo.TaskNames = sharedcaseInfos.Select(info => info.TaskName).ToList();
+            return sharedcaseinfo;
+        }
+
+        public async Task<CaseReturnDto> GetCase(Guid userId, Guid id)
         {
             var loanCase = await _cbeContext.Cases
-                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res=>res.Collaterals)
+                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
                            .FirstOrDefaultAsync(c => c.Id == id && c.CaseOriginatorId == userId);
-            return _mapper.Map<CaseReturntDto>(loanCase);
+            return _mapper.Map<CaseReturnDto>(loanCase);
         }
-        public async Task<CaseReturntDto> GetCaseDetail(Guid id)
+
+        public async Task<CaseReturnDto> GetShareTaskCase(Guid userId, Guid id)
         {
             var loanCase = await _cbeContext.Cases
                            .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
                            .FirstOrDefaultAsync(c => c.Id == id);
-            return _mapper.Map<CaseReturntDto>(loanCase);
+            return _mapper.Map<CaseReturnDto>(loanCase);
         }
+
+        public async Task<CaseReturnDto> GetCaseDetail(Guid id)
+        {
+            var loanCase = await _cbeContext.Cases
+                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+                           .FirstOrDefaultAsync(c => c.Id == id);
+            return _mapper.Map<CaseReturnDto>(loanCase);
+        }
+
         public async Task<IEnumerable<CaseDto>> GetNewCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res=>res.CurrentStatus=="New" && res.CurrentStage == "Relation Manager"))
-                       .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
-                       .ToListAsync();
-            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-            foreach(var caseDto in caseDtos)
+            var caseDtos = new List<CaseDto>();
+
+            var originatorCases = await _cbeContext.Cases
+                .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+                .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+                .ToListAsync();
+
+            var originatorCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(originatorCases);
+            foreach (var caseDto in originatorCaseDtos)
             {
                 caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Owner";
+                caseDto.TaskName = "All"; // Set the TaskName
+                caseDtos.Add(caseDto); // Add to the combined list
             }
-            return caseDtos ;
+
+            // Get cases where the user is assigned a task
+            var assignedCases = await _cbeContext.Cases
+                .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+                .Join(
+                    _cbeContext.TaskManagments.Where(task => task.AssignedId == userId && task.IsActive == true),
+                    case1 => case1.Id,
+                    task => task.CaseId,
+                    (case1, task) => new { Case = case1, Task = task } // Include both Case and Task
+                )
+                .Where(x => x.Case.Status == "New")
+                .ToListAsync();
+
+            // Group by Case to handle multiple tasks per case
+            var groupedAssignedCases = assignedCases
+                .GroupBy(x => x.Case)
+                .Select(g => new
+                {
+                    Case = g.Key,
+                    TaskNames = g.Select(x => x.Task.TaskName).ToList() // Collect all TaskNames for the case
+                });
+
+            foreach (var group in groupedAssignedCases)
+            {
+                var caseDto = _mapper.Map<CaseDto>(group.Case);
+
+                // Set TaskName by concatenating all task names
+                caseDto.TaskName = string.Join(", ", group.TaskNames);
+
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Shared";
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+
+            // Sort the combined list by CreationAt
+            var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+            return sortedCaseDtos;
         }
+
+
+        public async Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId)
+        {
+            var caseDtos = new List<CaseDto>();
+
+            var originatorCases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
+           .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))).ToListAsync();
+
+
+            var originatorCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(originatorCases);
+            foreach (var caseDto in originatorCaseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Owner";
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+
+            var assignedCases = await _cbeContext.Cases
+                .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete"))
+                .Where(res => res.Status == "Complete" &&
+                                _cbeContext.TaskManagments.Any(task => task.CaseId == res.Id && task.AssignedId == userId))
+                .ToListAsync();
+
+            var assignedCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(assignedCases);
+            foreach (var caseDto in assignedCaseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Shared";
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+            var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+            return sortedCaseDtos;
+            //var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+            //foreach (var caseDto in caseDtos)
+            //{
+            //    caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+            //}
+            //return caseDtos;
+        }
+
         public async Task<IEnumerable<CaseTerminateDto>> GetTerminatedCases(Guid userId)
         {
             var cases = await _cbeContext.Cases.Include(x => x.Collaterals)
@@ -126,7 +242,7 @@ namespace mechanical.Services.CaseServices
         {
             var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Reject" && res.CurrentStage == "Relation Manager"))
                        .Where(res => res.CaseOriginatorId == userId && res.Status == "New").ToListAsync();
-                  var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             foreach (var caseDto in caseDtos)
             {
                 caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
@@ -135,8 +251,8 @@ namespace mechanical.Services.CaseServices
         }
         public async Task<IEnumerable<CaseDto>> GetRmPendingCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => ( res.CurrentStage != "Relation Manager")&&((res.CurrentStatus != "Complete" && res.CurrentStage != "Checker Officer"))))
-                       .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(collateral => ( collateral.CurrentStage != "Relation Manager") && ((collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Checker Officer")))))
+            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => (res.CurrentStage != "Relation Manager") && ((res.CurrentStatus != "Complete" && res.CurrentStage != "Checker Officer"))))
+                       .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(collateral => (collateral.CurrentStage != "Relation Manager") && ((collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Checker Officer")))))
 
                        .ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
@@ -146,7 +262,7 @@ namespace mechanical.Services.CaseServices
             }
             return caseDtos;
         }
-        public async Task<Case> EditCase(Guid userId,Guid id, CasePostDto createCaseDto)
+        public async Task<Case> EditCase(Guid userId, Guid id, CasePostDto createCaseDto)
         {
             var loanCase = await _cbeContext.Cases
                 .Include(res => res.BussinessLicence)
@@ -163,14 +279,14 @@ namespace mechanical.Services.CaseServices
         public async Task<IEnumerable<CaseDto>> GetMmLatestCases(Guid userId)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res=>res.Case).ThenInclude(res=>res.CaseOriginator).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
+            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).ThenInclude(res => res.CaseOriginator).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
             var cases = NewCollateral.Select(res => res.Collateral.Case).Distinct().OrderByDescending(res => res.CreationAt).Take(7);
             return _mapper.Map<IEnumerable<CaseDto>>(cases);
         }
         public async Task<IEnumerable<CaseDto>> GetMoLatestCases(Guid userId)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res=>res.Case).ThenInclude(res=>res.CaseOriginator).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
+            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).ThenInclude(res => res.CaseOriginator).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
             var cases = NewCollateral.Select(res => res.Collateral.Case).Distinct().OrderByDescending(res => res.CreationAt).Take(7);
             return _mapper.Map<IEnumerable<CaseDto>>(cases);
         }
@@ -190,24 +306,24 @@ namespace mechanical.Services.CaseServices
             {
                 NewCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New")).CountAsync(),
                 NewCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
-                PendingCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => (collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete") && collateral.CurrentStage != "Relation Manager" )).CountAsync(),
-                PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId &&  collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
+                PendingCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => (collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete") && collateral.CurrentStage != "Relation Manager")).CountAsync(),
+                PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
                 CompletedCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete")).CountAsync(),
-                CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId &&  collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
+                CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
                 TotalCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId).CountAsync(),
-                TotalCollateralCount = await _cbeContext.Collaterals.Where(res=>res.CreatedById == userId).CountAsync(),
+                TotalCollateralCount = await _cbeContext.Collaterals.Where(res => res.CreatedById == userId).CountAsync(),
             };
         }
         public async Task<CaseCountDto> GetMyDashboardCaseCount(Guid userId)
         {
-            var  NewCollateral = await _cbeContext.CaseAssignments.Include(res=>res.Collateral).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
-            var  PendCollateral = await _cbeContext.CaseAssignments.Include(res=>res.Collateral).Where(res => res.UserId == userId && res.Status == "Pending").ToListAsync();
-            var  CompCollateral = await _cbeContext.CaseAssignments.Include(res=>res.Collateral).Where(res => res.UserId == userId && res.Status == "Complete").ToListAsync();
-            var totalcollatera = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId ).ToListAsync();
+            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Status == "New").ToListAsync();
+            var PendCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Status == "Pending").ToListAsync();
+            var CompCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Status == "Complete").ToListAsync();
+            var totalcollatera = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId).ToListAsync();
 
             return new CaseCountDto()
             {
-                NewCaseCount = NewCollateral.Select(res => res.Collateral.CaseId) .Distinct().Count(),
+                NewCaseCount = NewCollateral.Select(res => res.Collateral.CaseId).Distinct().Count(),
                 NewCollateralCount = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.Status == "New").CountAsync(),
 
                 PendingCaseCount = PendCollateral.Select(res => res.Collateral.CaseId).Distinct().Count(),
@@ -231,14 +347,14 @@ namespace mechanical.Services.CaseServices
                 return false;
             }
             var reject = _mapper.Map<Reject>(moRejectCaseDto);
-            reject.CreationDate = DateTime.Now;
+            reject.CreationDate = DateTime.UtcNow;
             reject.RejectedBy = Guid.Parse(httpContext.Session.GetString("userId"));
 
             var prevReject = await _cbeContext.Rejects.Where(res => res.CollateralId == moRejectCaseDto.CollateralId && res.RejectedBy == reject.RejectedBy).FirstOrDefaultAsync();
-            if(prevReject != null)
+            if (prevReject != null)
             {
                 _mapper.Map(reject, prevReject);
-                 _cbeContext.Rejects.Update(prevReject);
+                _cbeContext.Rejects.Update(prevReject);
             }
             else
             {
@@ -258,8 +374,8 @@ namespace mechanical.Services.CaseServices
             caseAssignment.Status = "Reject";
             _cbeContext.Update(caseAssignment);
             await _cbeContext.SaveChangesAsync();
-            
-            //var maker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
+
+            //var maker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
             //await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             //{
             //    CaseId = CaseId,
@@ -284,11 +400,11 @@ namespace mechanical.Services.CaseServices
                 return false;
             }
             var reject = await _cbeContext.Rejects.FirstOrDefaultAsync(res => res.CollateralId == Id);
-            if(reject == null)
+            if (reject == null)
             {
                 return false;
             }
-            //reject.CreationDate = DateTime.Now;
+            //reject.CreationDate = DateTime.UtcNow;
             //reject.RejectedBy = Guid.Parse(httpContext.Session.GetString("userId"));
             //await _cbeContext.Rejects.AddAsync(reject);
 
@@ -304,7 +420,7 @@ namespace mechanical.Services.CaseServices
             });
 
             var caseAssignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(res => res.CollateralId == Id && res.UserId == reject.RejectedBy);
-            if(caseAssignment == null)
+            if (caseAssignment == null)
             {
                 return false;
             }
@@ -312,7 +428,7 @@ namespace mechanical.Services.CaseServices
             _cbeContext.Update(caseAssignment);
             await _cbeContext.SaveChangesAsync();
 
-            //var maker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
+            //var maker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
             //await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             //{
             //    CaseId = CaseId,
@@ -340,21 +456,10 @@ namespace mechanical.Services.CaseServices
         //    return _mapper.Map<RmNewCaseDto>(loanCase);
         //}
 
-        public async Task<IEnumerable<CaseDto>> GetRmCompleteCases(Guid userId)
-        {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res =>res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
-           .Where(res => res.CaseOriginatorId == userId && (res.Collaterals.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))).ToListAsync();
-            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-            foreach (var caseDto in caseDtos)
-            {
-                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-            }
-            return caseDtos;
-        }
         public async Task<IEnumerable<CaseDto>> GetRmTotalCases(Guid userId)
         {
             var cases = await _cbeContext.Cases.Include(x => x.Collaterals)
-           .Where(res => res.CaseOriginatorId == userId ).ToListAsync();
+           .Where(res => res.CaseOriginatorId == userId).ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             foreach (var caseDto in caseDtos)
             {
@@ -362,7 +467,7 @@ namespace mechanical.Services.CaseServices
             }
             return caseDtos;
         }
-        
+
         public async Task<IEnumerable<CaseDto>> GetTotalCases(Guid userId)
         {
             var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).Where(Ca => Ca.UserId == userId).ToListAsync();
@@ -482,7 +587,7 @@ namespace mechanical.Services.CaseServices
             }
             return false;
         }
-        public async Task<bool> UploadBussinessLicence(Guid userId,IFormFile file, Guid caseId)
+        public async Task<bool> UploadBussinessLicence(Guid userId, IFormFile file, Guid caseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(caseId);
             if (cases == null)
@@ -493,9 +598,9 @@ namespace mechanical.Services.CaseServices
             {
                 File = file ?? throw new ArgumentNullException(nameof(file)),
                 CaseId = caseId,
-                Catagory = "Bussiness Licence"
+                Category = "Bussiness Licence"
             };
-            cases.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId,BussinessLicence);
+            cases.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId, BussinessLicence);
             _cbeContext.Update(cases);
             await _cbeContext.SaveChangesAsync();
             return true;
@@ -541,7 +646,7 @@ namespace mechanical.Services.CaseServices
         //public async Task<IEnumerable<MMNewCaseDto>> GetCheckerNewCases()
         //{
         //    var httpContext = _httpContextAccessor.HttpContext;
-        //    var user = await _cbeContext.CreateUsers.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Checker Manager");
+        //    var user = await _cbeContext.Users.FirstOrDefaultAsync(ca => ca.Id == Guid.Parse(httpContext.Session.GetString("userId")) && ca.Role.Name == "Checker Manager");
         //    if (user == null)
         //    {
         //        return null;
@@ -629,10 +734,10 @@ namespace mechanical.Services.CaseServices
         //    }
         //    assignedCases.CurrentStage = "Maker";
         //    assignedCases.CurrentStatus = "New";
-        //    assignedCases.MakerAssignmentDate = DateTime.Now;
+        //    assignedCases.MakerAssignmentDate = DateTime.UtcNow;
         //    _cbeContext.Cases.Update(assignedCases);
         //    await _cbeContext.SaveChangesAsync();
-        //    var maker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
+        //    var maker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
         //    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
         //    {
         //        CaseId = CaseId,
@@ -657,10 +762,10 @@ namespace mechanical.Services.CaseServices
         //    }
         //    assignedCases.CurrentStage = "Maker";
         //    assignedCases.CurrentStatus = "New";
-        //    assignedCases.MakerAssignmentDate = DateTime.Now;
+        //    assignedCases.MakerAssignmentDate = DateTime.UtcNow;
         //    _cbeContext.Cases.Update(assignedCases);
         //    await _cbeContext.SaveChangesAsync();
-        //    var maker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
+        //    var maker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
         //    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
         //    {
         //        CaseId = CaseId,
@@ -685,10 +790,10 @@ namespace mechanical.Services.CaseServices
         //    }
         //    assignedCases.CurrentStage = "Maker";
         //    assignedCases.CurrentStatus = "New";
-        //    assignedCases.MakerAssignmentDate = DateTime.Now;
+        //    assignedCases.MakerAssignmentDate = DateTime.UtcNow;
         //    _cbeContext.Cases.Update(assignedCases);
         //    await _cbeContext.SaveChangesAsync();
-        //    var maker = await _cbeContext.CreateUsers.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
+        //    var maker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == assignedCases.DistrictId && res.Role.Name == "Maker Manager");
         //    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
         //    {
         //        CaseId = CaseId,
@@ -762,6 +867,82 @@ namespace mechanical.Services.CaseServices
 
             await _cbeContext.SaveChangesAsync();
             return caseTerminate;
+        }
+
+        public async Task<Case> GetCaseById(Guid caseId)
+        {
+            return await _cbeContext.Cases
+                                    .Include(c => c.CaseOriginator)
+                                        .ThenInclude(u => u.Role)
+                                    .FirstOrDefaultAsync(u => u.Id == caseId);
+        }
+
+        public async Task<IEnumerable<CaseDto>> GetMyCases(Guid userId, string status = null, int? Limit = null)
+        {
+            var query = _cbeContext.Cases.AsNoTracking().Where(c => c.CaseOriginatorId == userId);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(c => c.Status == status);
+            }
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                query = query.Take(Limit.Value);
+            }
+
+            var cases = await query.ToListAsync();
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
+
+        public async Task<IEnumerable<CaseDto>> GetSharedCases(Guid userId, string status = null, int? Limit = null)
+        {
+            var query = _cbeContext.TaskManagments
+                                .AsNoTracking()
+                                .Include(t => t.Case)
+                                .Where(t => t.CaseOrginatorId == userId);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(t => t.TaskStatus == status);
+            }
+
+            var cases = await query.GroupBy(t => t.Case)
+                                .Select(c => c.Key)
+                                .OrderByDescending(c => c.CreationAt)
+                                .ToListAsync();
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                cases = cases.Take(Limit.Value).ToList();
+            }
+
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
+
+        public async Task<IEnumerable<CaseDto>> GetReceivedCases(Guid userId, string status = null, int? Limit = null)
+        {
+            var query = _cbeContext.TaskManagments
+                                .AsNoTracking()
+                                .Include(t => t.Case)
+                                .Where(t => t.AssignedId == userId);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(t => t.TaskStatus == status);
+            }
+
+            var cases = await query.GroupBy(t => t.Case)
+                                .Select(c => c.Key)
+                                .OrderByDescending(c => c.CreationAt)
+                                .ToListAsync();
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                cases = cases.Take(Limit.Value).ToList();
+            }
+
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
         }
     }
 }

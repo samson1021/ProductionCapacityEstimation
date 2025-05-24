@@ -1,0 +1,110 @@
+@using System
+@using mechanical.Models.Enum
+@using mechanical.Models.Dto.CaseScheduleDto
+
+@model mechanical.Models.Dto.TaskManagmentDto.ShareTasksDto
+@{
+    var myCase = ViewData["case"] as CaseReturnDto;
+}
+<form id="shareCaseForm">
+    @Html.AntiForgeryToken()
+    <input asp-for="CaseId" value="@myCase.Id" hidden />
+
+    <div class="mb-3">
+        <label for="TaskName" class="form-label">Task List</label>
+        <select class="form-control" id="TaskName" asp-for="TaskName" required >
+                @* asp-items="Html.GetEnumSelectList<TaskList>()" *@
+            <option value="" disabled selected>-- Select Task --</option>
+            <option value="All">All</option>
+            <option value="Collateral Addition">Collateral Addition</option>
+            <option value="Case Follow">Case Follow</option>
+            <option value="Report Generation">Report Generation</option>
+        </select>
+        <span asp-validation-for="TaskName" class="text-danger"></span>
+        <div class="invalid-feedback">Please select a task.</div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label">Relation Managers</label>
+        <select class="form-control select2" asp-for="SelectedRMs" required multiple>
+            <option value="" selected disabled>Select Relation Managers</option>
+        </select>
+        <span asp-validation-for="SelectedRMs" class="text-danger"></span>
+        <div class="invalid-feedback">Please select at least one relations manager.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="Deadline" class="form-label">Deadline</label>
+        <input type="date" value='@DateTime.UtcNow.ToString("yyyy-MM-dd")' class="form-control" id="shareDeadline" asp-for="Deadline" required>
+        <span asp-validation-for="Deadline" class="text-danger"></span>
+        <div class="invalid-feedback">Please select a deadline. Deadline cannot be earlier than today.</div>
+    </div>
+
+    <div class="mb-3">
+        @* <label for="TaskPriority" class="form-label">@Html.DisplayNameFor(model => model.TaskPriority)<span class="text-danger small">*</span></label> *@
+        <label for="TaskPriority" class="form-label">Priority</label>
+        <select class="form-control" id="TaskPriority" asp-for="TaskPriority" required >
+                @* asp-items="Html.GetEnumSelectList<PriorityType>()" *@
+            <option value="" disabled selected>-- Select Priority Type --</option>
+            <option value="Urgent">Urgent</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+        <span asp-validation-for="TaskPriority" class="text-danger"></span>
+        <div class="invalid-feedback">Please select a priority type.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="Reason" class="form-label">Reason for Task Sharing</label>
+        <textarea class="form-control" id="Reason" asp-for="SharingReason" required></textarea>
+        <span asp-validation-for="SharingReason" class="text-danger"></span>
+        <div class="invalid-feedback">Please provide a reason for task sharing.</div>
+    </div>
+</form>
+<!-- Optional: Custom CSS -->
+<style>
+    .select2-container {
+        width: 100% !important; /* Force full width */
+    }
+
+    .select2-container--default .select2-selection--multiple {
+        min-height: 38px;
+        padding: 0.4rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background-color: #fff;
+    }
+
+    .select2-selection__choice {
+        background-color: #f8f9fa; /* Light background */
+        color: #000 !important; /* Force black text */
+        border: 1px solid #ccc;
+        padding: 2px 5px 2px 8px;
+        margin: 2px;
+        font-size: 1rem;
+        position: relative;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: red !important; /* Force red color for the remove button */
+    }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: darkred !important; /* Force dark red on hover */
+        }
+
+    /* Additional styles for the selected items */
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        color: #000 !important; /* Black text for selected items */
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        color: #000 !important; /* Black text for choices */
+    }
+        
+
+</style>
+
+
+

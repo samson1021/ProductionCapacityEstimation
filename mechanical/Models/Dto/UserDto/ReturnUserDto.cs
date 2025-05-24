@@ -21,9 +21,9 @@ namespace mechanical.Models.Dto.UserDto
         public Guid DistrictId { get; set; }
         public Guid? SupervisorId { get; set; }
 
-        public virtual CreateUser? Supervisor { get; set; }
+        public virtual User? Supervisor { get; set; }
         public virtual District? District { get; set; }
-        public virtual CreateRole? Role { get; set; }
+        public virtual Role? Role { get; set; }
         
     }
 }

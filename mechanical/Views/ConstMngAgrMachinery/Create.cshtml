@@ -69,7 +69,6 @@
                         </div>
                     </div>
                     <div class="row">
-                     
                         <div class="form-group col-xl-4">
                             <label asp-for="TransmissionType">Transmission Type</label>
                             <select asp-for="TransmissionType" class="form-control"
@@ -96,7 +95,6 @@
                         </div>
                     </div>
                     <div class="row">
-                      
                         <div class="form-group col-xl-4">
                             <label asp-for="EnginePower">Engine Power(Cc/Kw/Hp)</label>
                             <input asp-for="EnginePower" type="text" class="form-control" id="enginePower" placeholder="Engine Power(Cc/Kw/Hp)" required>
@@ -117,7 +115,6 @@
                         </div>
                     </div>
                     <div class="row">
-                       
                         <div class="form-group col-xl-4">
                             <label asp-for="MakerPreferenceType">Type of Maker Preference</label>
                             <select asp-for="MakerPreferenceType" class="form-control" id="enginePower" required>
@@ -145,7 +142,6 @@
                         </div>
                     </div>
                     <div class="row">
-                      
                         <div class="form-group col-xl-4">
                             <label asp-for="Color">Color</label>
                             <input asp-for="Color" list="carColors" type="text" class="form-control" placeholder="Select Car Color" required>
@@ -166,7 +162,6 @@
                         </div>
                     </div>
                     <div class="row">
-                       
                         <div class="form-group col-xl-4">
                             <label asp-for="AllocatedPointsRange">Allocated Points Range</label>
                             <select asp-for="AllocatedPointsRange" class="form-control"
@@ -187,7 +182,6 @@
                         </div>
                     </div>
                     <div class="row">
-                       
                         <div class="form-group col-xl-4">
                             <label asp-for="ChassisNo">Chassis Number</label>
                             <input asp-for="ChassisNo" type="text" value="@collateral.ChassisNo" class="form-control" placeholder="Chassis Number" required>
@@ -205,7 +199,6 @@
                         </div>
                     </div>
                     <div class="row">
-                       
                         <div class="form-group col-xl-4">
                             <label asp-for="TDNo">TD Number</label>
                             <input asp-for="TDNo" type="text" class="form-control" placeholder="TD Number" required>
@@ -221,10 +214,8 @@
                             <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
                             <span asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                         </div>
-                       
                     </div>
                     <div class="row">
-                     
                         <div class="form-group col-xl-4">
                             <label asp-for="PhysicalAndInstallationAssesment">Physical and Installation Assessment</label>
                             <textarea asp-for="PhysicalAndInstallationAssesment" class="form-control" rows="3" placeholder="Physical and Installation Assessment" required></textarea>
@@ -240,10 +231,8 @@
                             <textarea asp-for="Remark" class="form-control" placeholder="Remark" rows="3" required></textarea>
                             <span asp-validation-for="Remark" class="text-danger"></span>
                         </div>
-                      
                     </div>
                     <div class="row">
-                      
                         <div class="form-group col-xl-4">
                             <label asp-for="InvoiceValue">Invoice Value</label>
                             <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
@@ -281,11 +270,11 @@
 </section>
 @section Scripts {
     <script>
-         document.getElementById('GetExchangeRate').addEventListener('click', function () {
+        document.getElementById('GetExchangeRate').addEventListener('click', function () {
             var currency = document.getElementById("Currency").value;
             if(currency == "" || currency == null){
-                  toastr.error("please select currency ...");
-                  return;
+                toastr.error("please select currency ...");
+                return;
             }
             showLoadingIndicator();
 
@@ -385,7 +374,7 @@
                 <thead>
                     <tr>
                         <th>File Name</th>
-                        <th>File Catagory</th>
+                        <th>File Category</th>
                         <th>File Type</th>
                         <th>Action</th>
                     </tr>
@@ -396,7 +385,7 @@
                         {
                             <tr>
                                 <td>@collateralFile.Name</td>
-                                <td>@collateralFile.Catagory</td>
+                                <td>@collateralFile.Category</td>
                                 <td>@collateralFile.ContentType</td>
                                 <td>
                                     <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id =collateralFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
@@ -652,7 +641,7 @@
     <option value="Slovakia" />
     <option value="Slovenia" />
     <option value="Solomon Islands" />
-    <option value="Somali" />
+    <option value="Somalia" />
     <option value="South Africa" />
     <option value="South Georgia and The South Sandwich Islands" />
     <option value="Spain" />

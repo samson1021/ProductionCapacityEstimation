@@ -1,4 +1,4 @@
-﻿@model mechanical.Models.Entities.CreateUser
+﻿@model mechanical.Models.Entities.User
 @using mechanical.Models.Enum;
 @{
     ViewData["Title"] = "Create";
@@ -90,6 +90,7 @@
                             <select name="Department" id="Department" hidden class="form-control" required>
                                 <option value="CRM" selected > </option>
                             </select>
+
                         <div class="form-group col-lg-6">
                             <label asp-for="BroadSegment">Broad Segment <i class="text-danger">*</i></label>
                             <select id="BroadSegmentDropdown" asp-for="BroadSegment" required class="form-control form-control-sm"
@@ -106,6 +107,7 @@
                             <span asp-validation-for="Unit" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group">
                             <input type="submit" value="Submit" class="btn btn-primary" />

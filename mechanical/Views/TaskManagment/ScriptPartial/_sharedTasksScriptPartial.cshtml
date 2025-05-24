@@ -1,0 +1,329 @@
+
+<script>
+    // Initialize DataTable with additional functionalities
+    
+    function stripTime(date) {
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+
+    function initializeDataTable(data, emptyMessage) {
+        const $sharedTasksTable = $('#sharedTasksTable');
+        $sharedTasksTable.DataTable({ 
+            language: { emptyTable: emptyMessage },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            order: [[6, 'desc']],
+            buttons: [
+                { extend: 'copy', title: 'Shared Case' },
+                { extend: 'csv', title: 'Shared Case' },
+                { extend: 'excel', title: 'Shared Case' },
+                { extend: 'pdf', title: 'Shared Case - pdf' },
+                { extend: 'print', title: 'Shared Case - Print' },
+                'colvis'
+            ],
+            data: data,
+            columns: [
+                // {
+                //     data: null,
+                //     render: function (data) {
+                //         return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' +
+                //                 ((data.TaskStatus !== "New") ? ' disabled' : '') + '>';
+                //     }
+                // },
+                {
+                    data: 'Case.CaseNo',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        // return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}' class="text-purple">${data}</a>`;
+                        return `<a href='@Url.Action("Detail", "Case")?Id=${row.CaseId}&CaseType=Owner' class="text-purple">${data}</a>`;
+
+                    }
+                },
+                { data: 'TaskName', width: '10%' },
+                { data: 'TaskStatus', width: '10%' },
+                { data: 'TaskPriority', width: '5%' },
+                { data: 'Assigned.Name', width: '15%' },
+                {
+                    data: 'AssignedDate',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Deadline',
+                    width: '15%',
+                    render: function (data) {
+                        
+                        var date = stripTime(new Date(data));
+                        var formatted = date.toISOString().split('T')[0];
+                        var today = stripTime(new Date());
+                        var diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+                        // var countdown = diffDays <= 3 && diffDays >= 0 ? `<br/><small class="text-danger">Due in ${diffDays} day(s)</small>` : "";
+                        
+                        var countdown = "";
+                        if (diffDays < 0) {
+                            countdown = `<br/><small class="text-danger">Overdue by ${Math.abs(diffDays)} day(s)</small>`;
+                        } else if (diffDays === 0) {
+                            countdown = `<br/><small class="text-danger">Due today</small>`;
+                        } else if (diffDays <= 3) {
+                            countdown = `<br/><small class="text-warning">Due in ${diffDays} day(s)</small>`;
+                        }
+                        return formatted + countdown;
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        var updateRevokeLink = "";
+                        if (row.IsActive) {
+                            if(row.TaskStatus !== 'Completed' && row.TaskStatus !== 'Returned'){
+                                updateRevokeLink = ` | <a class="text-info" href="javascript:void(0);" onclick="showUpdateTask('${data}')">Update</a>
+                                | <a class="text-danger" href="javascript:void(0);" onclick="openRevokeModal('${data}')">Revoke</a>`;
+                            }
+                        }
+                        @* | <a class="text-warning" href="javascript:void(0);" onclick="openReassignModal('${data}', '${row.Assigned.Name}', '${row.Assigned.Id}')">Reassign</a>  *@
+                        return `
+                                <a href="javascript:void(0);" onclick="showTaskDetails('${data}')" id="detailBtn" class='details-link'>Details</a>
+                                ${updateRevokeLink}
+                        `;
+                    }
+                }
+            ],
+            drawCallback: function () {
+                // post-draw manipulation
+            }
+        }).buttons().container().appendTo('#sharedTasksTable_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadSharedTasks(mode = "active") {
+        $.ajax({
+            url: `/TaskManagment/GetSharedTasks?mode=${mode}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#sharedTasksTable')) {
+                    $('#sharedTasksTable').DataTable().destroy();
+                }
+                const emptyMessage = "No shared tasks found.";
+                initializeDataTable(data, emptyMessage);
+            },
+            error: function (error) {
+                toastr.error(`Failed to load shared tasks (Status: ${error.status})`);
+                console.log(error);
+            }
+        });
+    }
+
+    let currentTaskId = null;
+
+    // Show task details in modal
+    function showTaskDetails(taskId) {
+        $('#TaskId').val(`${taskId}`);
+        $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
+            $('#details .modal-body').html(data);
+            var detailsModalEl = document.getElementById('detailsModal');
+            var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
+            detailsModal.show();
+            loadComments(taskId);
+        });
+    }
+    
+    // Update task in modal 
+    function showUpdateTask(taskId) {
+        $.get(`/TaskManagment/UpdateTask?id=${taskId}`, function (data) {
+            $('#updateContent').html(data);
+            var updateModalEl = document.getElementById('updateTaskModal');
+            var updateModal = bootstrap.Modal.getOrCreateInstance(updateModalEl);
+            updateModal.show();
+        });
+    }
+@* 
+    // Open reassign modal 
+    function openReassignModal(taskId, username, userId) {
+        currentTaskId = taskId;
+        $.get('/UserManagment/GetPeerRMs', function (users) {
+            const dropdown = $('#reassignUserDropdown');
+            dropdown.empty();
+            dropdown.append($('<option diable></option>').val(userId).text(username));
+            users.forEach(user => {
+                if(user.Id !== userId){
+                    dropdown.append($('<option></option>').val(user.Id).text(user.Name));
+                }
+            });
+            var reassignModalEl = document.getElementById('reassignModal');
+            var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
+            reassignModal.show();
+        });
+    }
+
+    // Submit reassignment via AJAX
+    function submitReassignment(mode = 'active') {
+        const newUserId = $('#reassignUserDropdown').val();
+        $.post(`/TaskManagment/ReassignTask?id=${currentTaskId}&newAssignedId=${newUserId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var reassignModalEl = document.getElementById('reassignModal');
+                var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
+                reassignModal.hide();
+                loadSharedTasks(mode);
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    } *@
+
+    // Open revoke modal 
+    function openRevokeModal(taskId) {
+        currentTaskId = taskId;
+        var revokeModalEl = document.getElementById('revokeModal');
+        var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+        revokeModal.show();
+    }
+
+    // Submit revoke via AJAX
+    function submitRevoke(mode = 'active') {
+        $.post(`/TaskManagment/RevokeTask?id=${currentTaskId}`, function (response) {
+            if (response.success) {
+                toastr.success(response.message, "Success");
+                var revokeModalEl = document.getElementById('revokeModal');
+                var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+                revokeModal.hide();
+                loadSharedTasks(mode);
+            } else {
+                toastr.error(response.message, "Error");
+            }
+        });
+    }
+
+    @*
+    // Open Update Task modal and pre-populate the form
+    function openUpdateModal(taskId) {
+        $.get(`/TaskManagment/GetTask?id=${taskId}`, function(data) {
+            // Assuming data returns a JSON object with task properties
+            $("#updateTaskId").val(data.Id);
+            $("#updateTaskName").val(data.TaskName);
+            $("#updateDeadline").val(new Date(data.Deadline).toISOString().split('T')[0]);
+            $("#updateTaskPriority").val(data.TaskPriority);
+            $("#updateSharingReason").val(data.SharingReason);
+            var updateTaskModalEl = document.getElementById('updateTaskModal');
+            var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+            updateTaskModal.show();
+        });
+    } *@
+
+    let currentMode = "active";
+
+    function switchMode(mode) {
+        currentMode = mode;
+        $(".btn-group .btn").removeClass("active");
+        $(`#btn${mode.charAt(0).toUpperCase() + mode.slice(1)}`).addClass("active");
+        loadSharedTasks(mode);
+    }
+
+    $(document).ready(function () {
+
+        loadSharedTasks(currentMode);
+
+        // Status filter for DataTable
+        $('#statusFilter').on('change', function() {
+            var status = $(this).val();
+            var table = $('#sharedTasksTable').DataTable();
+            table.column(2).search(status).draw();
+        });
+
+        // Select all / individual checkboxes
+        $('#selectAllCheckbox').on('click', function () {
+            var isChecked = $(this).prop('checked');
+            $('.purple-checkbox').prop('checked', isChecked);
+        });
+
+        $('#sharedTasksTable tbody').on('change', '.purple-checkbox', function () {
+            var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+        
+        $('#detailsModal').on('show.bs.modal', function () {
+            $('#taskTabs a[href="#details"]').tab('show');
+        });
+
+        // Populate Cases dropdown
+        $.get("/Case/GetMyCases", function (data) {
+            var caseDropdown = $("#CaseId");
+            caseDropdown.empty().append('<option value="">-- Select Case --</option>');
+            $.each(data, function (index, item) {
+                caseDropdown.append($('<option></option>').val(item.Id).text(item.CaseNo));
+            });
+        });
+
+        // Submit updateed task via AJAX after re-validating the deadline
+        @* function submitTaskUpdate() { *@
+        $("#updateTaskButton").click(function (e) {
+            e.preventDefault();
+            var form = $("#updateTaskForm");
+            @* 'use strict';
+            var form = document.getElementById('updateTaskForm'); *@
+
+            // Validate form controls first
+            if (form[0].checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+                form.addClass("was-validated");
+                return;
+            }
+            
+            // Validate deadline field (must be today or later)
+            var deadlineInput = $("#updateDeadline");
+            var deadline = stripTime(new Date(deadlineInput.val()));
+            var today = stripTime(new Date());
+
+            if (deadline < today)  {
+                var errorMessage = "Deadline cannot be earlier than today.";
+
+                // Show error message in Toastr
+                toastr.error(errorMessage, "Validation Error");
+
+                // Show inline validation message
+                deadlineInput.addClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").text(errorMessage).show();
+
+                return;
+            } else {
+                deadlineInput.removeClass("is-invalid");
+                deadlineInput.siblings(".invalid-feedback").hide();
+            }
+
+            // Disable submit button and show spinner
+            $("#updateTaskButton").prop("disabled", true);
+            $("#updateSpinner").removeClass("d-none");
+
+            $.ajax({
+                url: '/TaskManagment/UpdateTask',
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message, "Success");
+                        var updateTaskModalEl = document.getElementById('updateTaskModal');
+                        var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+                        updateTaskModal.hide();
+                        loadSharedTasks(currentMode);
+                    } else {
+                        toastr.error(response.message, "Error");
+                    }
+                },
+                error: function() {
+                    toastr.error("An error occurred while updating the task.", "Error");
+                },
+                complete: function () {
+                    $("#updateTaskButton").prop("disabled", false);
+                    $("#updateSpinner").addClass("d-none");
+                }
+            });
+        });
+    });
+</script>

@@ -33,6 +33,7 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
         public MOCaseController(ICaseService caseService, IUploadFileService uploadFileService, ICaseTerminateService caseTermnateService, ICollateralService collateralService, ICaseScheduleService caseScheduleService, IMMCaseService mOCaseService, ICOCaseService coCaseService, IMailService mailService)
+
         {
             _caseService = caseService;
             _collateralService = collateralService;
@@ -76,7 +77,6 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMyCases()
         {
-
             var myCase = await _mOCaseService.GetMMNewCases(GetCurrentUserId());
             if (myCase == null) { return BadRequest("Unable to load case"); }
             string jsonData = JsonConvert.SerializeObject(myCase);
@@ -106,7 +106,7 @@ namespace mechanical.Controllers
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
@@ -118,7 +118,6 @@ namespace mechanical.Controllers
             }
             else if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
             {
-
                 var redirectUrl = Url.Action("Create", "ConstMngAgrMachinery", new { Id = Id });
                 return Json(new { success = true, redirectUrl });
             }
@@ -192,6 +191,7 @@ namespace mechanical.Controllers
                 RecipantEmail = "yohannessintayhu@cbe.com.et",
                 Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
                 Body = "Dear! Valuation Schedule  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + " For further Detail please check Collateral Valuation System",
+
             });
             string jsonData = JsonConvert.SerializeObject(caseSchedule);
             return Ok(caseSchedule);
@@ -244,11 +244,12 @@ namespace mechanical.Controllers
                     return Json(new { redirect = Url.Action("MypendingCase", "MOCase") });
                 }
                 return Json(new { redirect = false });
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-        
+
         }
     }
 }

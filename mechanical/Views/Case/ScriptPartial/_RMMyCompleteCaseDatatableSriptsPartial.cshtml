@@ -49,7 +49,7 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                   if (typeof $.fn.DataTable !== 'undefined' && $.fn.DataTable.isDataTable('#caseCollaterals')) {
+                if (typeof $.fn.DataTable !== 'undefined' && $.fn.DataTable.isDataTable('#caseCollaterals')) {
                         var caseCollateralsTable = $('#caseCollaterals').DataTable();
                         caseCollateralsTable.destroy();
                     }

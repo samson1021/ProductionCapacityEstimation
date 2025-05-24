@@ -7,6 +7,7 @@
     var district = HttpContextAccessor.HttpContext.Session.GetString("district");
 
 }
+
 <link href="~/css/spinner.css" rel="stylesheet" />
 <div class="content-header">
     <div class="container-fluid">
@@ -16,8 +17,9 @@
             </div>
             <div class="col-sm-6 col-xl-4">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="@Url.Action("RM", "Dashboard")">Home</a></li>
-                    <li class="breadcrumb-item active">Create new case</li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
+                    <li class="breadcrumb-item active">Create New PCE Case</li>
                 </ol>
             </div>
         </div>
@@ -39,11 +41,11 @@
                         <input type="hidden" id="segment" value="@segment" />
                         <input type="hidden" id="district" value="@district" />
                         <div class="form-group col-xl-10">
-                            <label asp-for="Segment">Segement <i class="text-danger">*</i></label>
-                            <select asp-for="Segment" class="form-control form-control" id="Segement" required>
-                                <option value="" disabled selected>Select Segement</option>
-                                <option value="Whole" >Whole</option>
-                                <option value="Retail">Retail</option>
+                            <label asp-for="Segment">Segment <i class="text-danger">*</i></label>
+                            <select asp-for="Segment" class="form-control form-control" id="Segment" required>
+                                <option value="" disabled selected>Select Segment</option>
+                                @* <option value="Retail">Retail</option>
+                                <option value="Wholesale">Wholesale</option> *@
                             </select>
                             <span asp-validation-for="Segment" class="text-danger"></span>
                         </div>
@@ -103,8 +105,8 @@
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial"); 
-        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");    
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
     <script>
         var unitValue = $('#unit').val();
@@ -115,15 +117,14 @@
 
         if(segmentValue == "WholesaleConventional" || segmentValue =="WholesaleIFB"){
             console.log('inside....');
-             $("#businessLicnese").show();
+            $("#businessLicnese").show();
         } else{
-             $("#businessLicnese").hide();
+            $("#businessLicnese").hide();
         }
         if (segmentValue === 'AcquiredAssetAdministration') {
             $("#applicantName").val('CBE');
             $("#applicantName").prop('readonly', true);
         }
-
 
         var options = [];
         if (unitValue === 'LargeCorporate') {
@@ -132,84 +133,84 @@
             ];
         } else if (unitValue === 'MediumCorporate') {
             options = [
-                 { value: districtValue + '-Medium Corporate', text: 'Medium Corporate' }
+                { value: districtValue + '-Medium Corporate', text: 'Medium Corporate' }
             ];
         } else if (unitValue === 'SmallCorporate') {
             options = [
-                 { value: districtValue + '-Small Corporate', text: 'Small Corporate' }
+                { value: districtValue + '-Small Corporate', text: 'Small Corporate' }
             ];
         } else if (unitValue === 'WholesaleDistrict') {
             options = [
-                 { value: districtValue + '-SME', text: 'SME' },
-                 { value: districtValue + '-Micro', text: 'Micro' },
-                 { value: districtValue + '-Cooperative-primary', text: 'Cooperative-primary' }
+                { value: districtValue + '-SME', text: 'SME' },
+                { value: districtValue + '-Micro', text: 'Micro' },
+                { value: districtValue + '-Cooperative-primary', text: 'Cooperative-primary' }
             ];
-        }else if (unitValue === 'CooperativeAndFinancialInstitution') {
+        } else if (unitValue === 'CooperativeAndFinancialInstitution') {
             options = [
-                 { value: districtValue + '-Cooperative-Union', text: 'Cooperative-Union' },
-                 { value: districtValue + '-Cooperative-league', text: 'Cooperative-league' },
-                 { value: districtValue + '-Cooperative-Federation', text: 'Cooperative-Federation' },
-                 { value: districtValue + '-Financial institution', text: 'Financial institution' }
+                { value: districtValue + '-Cooperative-Union', text: 'Cooperative-Union' },
+                { value: districtValue + '-Cooperative-league', text: 'Cooperative-league' },
+                { value: districtValue + '-Cooperative-Federation', text: 'Cooperative-Federation' },
+                { value: districtValue + '-Financial institution', text: 'Financial institution' }
             ];
-        }else if (unitValue === 'StateOwnedEnterpriseAndOtherPublic') {
+        } else if (unitValue === 'StateOwnedEnterpriseAndOtherPublic') {
             options = [
-                 { value: districtValue + '-State Owned Enterprise & OtherPublic', text: 'State Owned Enterprise & OtherPublic' }
+                { value: districtValue + '-State Owned Enterprise & OtherPublic', text: 'State Owned Enterprise & OtherPublic' }
             ];
-        }else if (unitValue === 'RegionalGovernment') {
+        } else if (unitValue === 'RegionalGovernment') {
             options = [
-                 { value: districtValue + '-Regional Government', text: 'Regional Government' }
+                { value: districtValue + '-Regional Government', text: 'Regional Government' }
             ];
-        }else if (unitValue === 'CentralGovernment') {
+        } else if (unitValue === 'CentralGovernment') {
             options = [
-                 { value: districtValue + '-Central Government', text: 'Central Government' }
+                { value: districtValue + '-Central Government', text: 'Central Government' }
             ];
-        }else if (unitValue === 'IFBCorporate') {
+        } else if (unitValue === 'IFBCorporate') {
             options = [
-                 { value: districtValue + '-IFB Large Corporate', text: 'Large Corporate' },
-                 { value: districtValue + '-IFB Medium Corporate', text: 'Medium Corporate' },
-                 { value: districtValue + '-IFB Small Corporate', text: 'Small Corporate' }
+                { value: districtValue + '-IFB Large Corporate', text: 'Large Corporate' },
+                { value: districtValue + '-IFB Medium Corporate', text: 'Medium Corporate' },
+                { value: districtValue + '-IFB Small Corporate', text: 'Small Corporate' }
             ];
-        }else if (unitValue === 'IFBSMEBanking') {
+        } else if (unitValue === 'IFBSMEBanking') {
             options = [
-                 { value: districtValue + '-IFB SME Banking', text: 'IFB SME Banking' }
+                { value: districtValue + '-IFB SME Banking', text: 'IFB SME Banking' }
             ];
-        }else if (unitValue === 'IFBDistrict') {
+        } else if (unitValue === 'IFBDistrict') {
             options = [
-                 { value: districtValue + '-IFB SME', text: 'SME' },
-                 { value: districtValue + '-IFB Micro', text: 'Micro' },
-                 { value: districtValue + '-IFB Cooperative-primary', text: 'Cooperative-primary' }
+                { value: districtValue + '-IFB SME', text: 'SME' },
+                { value: districtValue + '-IFB Micro', text: 'Micro' },
+                { value: districtValue + '-IFB Cooperative-primary', text: 'Cooperative-primary' }
             ];
-        }else if (unitValue === 'Retail') {
+        } else if (unitValue === 'Retail') {
             options = [
-                 { value: districtValue + '-CBE Staff', text: 'CBE Staff' },
-                 { value: districtValue + '-Diaspora', text: 'Diaspora' },
-                 { value: districtValue + '-Employees of NGO & Int. organization', text: 'Employees of NGO & Int. organization' },
-                 { value: districtValue + '-Employees of high valued corporate customers', text: 'Employees of high valued corporate customers' },
-                 { value: districtValue + '-Exporter & General manager of exporter', text: 'Exporter & General manager of exporter' },
-                 { value: districtValue + '-Middle Customers', text: 'Middle Customers' },
-                 { value: districtValue + '-Other FCY generating entity', text: 'Other FCY generating entity' }
+                { value: districtValue + '-CBE Staff', text: 'CBE Staff' },
+                { value: districtValue + '-Diaspora', text: 'Diaspora' },
+                { value: districtValue + '-Employees of NGO & Int. organization', text: 'Employees of NGO & Int. organization' },
+                { value: districtValue + '-Employees of high valued corporate customers', text: 'Employees of high valued corporate customers' },
+                { value: districtValue + '-Exporter & General manager of exporter', text: 'Exporter & General manager of exporter' },
+                { value: districtValue + '-Middle Customers', text: 'Middle Customers' },
+                { value: districtValue + '-Other FCY generating entity', text: 'Other FCY generating entity' }
             ];
-        }else if (unitValue === 'Foreclosure') {
+        } else if (unitValue === 'Foreclosure') {
             options = [
-                 { value: districtValue + '-Foreclosure', text: 'Foreclosure' }
+                { value: districtValue + '-Foreclosure', text: 'Foreclosure' }
             ];
-        }else if (unitValue === 'Litigation') {
+        } else if (unitValue === 'Litigation') {
             options = [
-                 { value: districtValue + '-Litigation', text: 'Litigation' }
+                { value: districtValue + '-Litigation', text: 'Litigation' }
             ];
-        }else if (unitValue === 'AcquiredAssetAdministration') {
+        } else if (unitValue === 'AcquiredAssetAdministration') {
             options = [
-                 { value: districtValue + '-Acquired Asset Administration', text: 'Acquired Asset Administration' }
+                { value: districtValue + '-Acquired Asset Administration', text: 'Acquired Asset Administration' }
             ];
-        }else if (unitValue === 'FacilityManagement') {
+        } else if (unitValue === 'FacilityManagement') {
             options = [
-                 { value: districtValue + '-Facility Management', text: 'Facility Management' }
+                { value: districtValue + '-Facility Management', text: 'Facility Management' }
             ];
         }
 
         // Populate the dropdown
-        var $segmentSelect = $('#Segement');
-        options.forEach(function(option) {
+        var $segmentSelect = $('#Segment');
+        options.forEach(function (option) {
             $segmentSelect.append(new Option(option.text, option.value));
         });
 
@@ -261,7 +262,6 @@
             loadingIndicator.style.zIndex = '9999'; // Ensure it's on top
             loadingIndicator.style.opacity = '1'; // Fully visible
             loadingIndicator.style.textAlign = 'center';
-
             var spinner = document.createElement('div');
             spinner.classList.add('spinner');
             loadingIndicator.appendChild(spinner);
@@ -287,8 +287,6 @@
 
 
         $(document).ready(function () {
-
-
             $("#GenerateCaseNo").on('click', function () {
                 var employeeId = @empId;
                 console.log(employeeId);
@@ -317,7 +315,7 @@
 
         document.getElementById("applicantName").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9 ]+$/;
+            var alphanumericRegex = /^[A-Za-z0-9\s]+$/;
 
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
@@ -338,16 +336,16 @@
                 document.getElementById("CustomerId-error").textContent = "";
             }
         });
-        var segementSelect = document.getElementById('Segement');
+        
+        var segmentSelect = document.getElementById('Segment');
         var applicantNameInput = document.getElementById('applicantName');
 
+        segmentSelect.addEventListener('change', function () {
+            var selectedSegment = segmentSelect.value;
+            console.log(selectedSegment);
 
-        segementSelect.addEventListener('change', function () {
-            var selectedSegement = segementSelect.value;
-            console.log(selectedSegement);
 
-
-            if (selectedSegement === 'Workout' || selectedSegement === 'Legal') {
+            if (selectedSegment === 'Workout' || selectedSegment === 'Legal') {
                 applicantNameLabel.textContent = 'Defaulter Name';
             } else {
                 applicantNameLabel.textContent = 'Applicant Name';
@@ -357,4 +355,3 @@
         });
     </script>
 }
-

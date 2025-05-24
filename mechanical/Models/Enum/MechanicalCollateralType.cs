@@ -93,7 +93,7 @@ namespace mechanical.Models.Enum
         CUV,
 
         [Display(Name = "Others, please specify")]
-        Others, 
+        Others,
         
         [Display(Name = "Chain Excavator")]
         ChainExcavator,
