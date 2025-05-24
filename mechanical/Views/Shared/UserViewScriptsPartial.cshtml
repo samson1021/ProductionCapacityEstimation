@@ -78,7 +78,7 @@
                             render: function (data, type, row) {
                                 var editButton = '<a href="/usermanagment/edit/' + data.Id + '" class="edit-btn" data-id="' + data.Id + '">Edit</a>';
                                 var deleteButton = '<a href="/usermanagment/delete/' + data.Id + '" class="delete-btn" data-id="' + data.Id + '">Delete</a>';
-                                var detailButton = '<a href="#" class="detail-btn" data-id="' + data.Id + '">Detail</a>';
+                                var detailButton = '<a href="/usermanagment/Profile/' + data.Id + '" class="detail-btn" data-id="' + data.Id + '">Detail</a>';
                                 return editButton + ' | ' + deleteButton + ' | ' + detailButton;
                             }
                         }
@@ -113,42 +113,42 @@
             // ...
         });
         $('#example1').on('click', '.detail-btn', function (e) {
-            e.preventDefault(); // Prevent the default link behavior
+           // /*  e.preventDefault(); // Prev */ent the default link behavior
             var userId = $(this).data('id');
 
             // Show loading indicator
-            $('#loading').show();
+            // $('#loading').show();
 
-            // Fetch detailed information
-            $.ajax({
-                url: '/usermanagment/GetUserDetails/' + userId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // Hide loading indicator
-                    $('#loading').hide();
+            // // Fetch detailed information
+            // $.ajax({
+            //     url: '/usermanagment/GetUserDetails/' + userId,
+            //     type: 'GET',
+            //     dataType: 'json',
+            //     success: function (data) {
+            //         // Hide loading indicator
+            //         $('#loading').hide();
 
-                    // Populate the modal with the fetched data
-                    var detailsHtml = `
-                        <p><strong>ID:</strong> ${data.emp_ID}</p>
-                        <p><strong>Name:</strong> ${data.Name}</p>
-                        <p><strong>Center:</strong> ${data.DistrictName}</p>
-                        <p><strong>Department:</strong> ${data.Department}</p>
-                        <p><strong>Role:</strong> ${data.RoleName}</p>
-                        <p><strong>Status:</strong> ${data.Status}</p>
-                    `;
+            //         // Populate the modal with the fetched data
+            //         var detailsHtml = `
+            //             <p><strong>ID:</strong> ${data.emp_ID}</p>
+            //             <p><strong>Name:</strong> ${data.Name}</p>
+            //             <p><strong>Center:</strong> ${data.DistrictName}</p>
+            //             <p><strong>Department:</strong> ${data.Department}</p>
+            //             <p><strong>Role:</strong> ${data.RoleName}</p>
+            //             <p><strong>Status:</strong> ${data.Status}</p>
+            //         `;
 
-                    $('#userDetails').html(detailsHtml);
+            //         $('#userDetails').html(detailsHtml);
 
-                    // Show the modal
-                    $('#detailModal').modal('show');
-                },
-                error: function () {
-                    // Hide loading indicator
-                    $('#loading').hide();
-                    alert('Error loading user details.');
-                }
-            });
+            //         // Show the modal
+            //         $('#detailModal').modal('show');
+            //     },
+            //     error: function () {
+            //         // Hide loading indicator
+            //         $('#loading').hide();
+            //         alert('Error loading user details.');
+            //     }
+            // });
         });
     });
 </script>
