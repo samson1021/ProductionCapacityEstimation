@@ -28,7 +28,7 @@ namespace mechanical.Controllers
         private readonly IMailService _mailService;
         private readonly ICaseScheduleService _caseScheduleService;
         private readonly IIndBldgFacilityEquipmentCostService _indBldgFacilityEquipmentCostService;
-        public IndBldgFacilityEquipmentController(IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, IMailService mailService, ICollateralService collateralService,IIndBldgFacilityEquipmentService indBldgFacilityEquipment , IMotorVehicleService motorVehicleService,CbeContext cbeContext, IIndBldgFacilityEquipmentCostService indBldgFacilityEquipmentCostService)
+        public IndBldgFacilityEquipmentController(IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, IMailService mailService, ICollateralService collateralService, IIndBldgFacilityEquipmentService indBldgFacilityEquipment, IMotorVehicleService motorVehicleService, CbeContext cbeContext, IIndBldgFacilityEquipmentCostService indBldgFacilityEquipmentCostService)
         {
             _collateralService = collateralService;
             _indBldgFacilityEquipment = indBldgFacilityEquipment;
@@ -43,14 +43,14 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(Guid Id)
         {
-            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
             var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
 
             if (scheduledDate == null)
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
@@ -63,7 +63,7 @@ namespace mechanical.Controllers
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
-                    Text = $"{x.InsuranceFreightOthersCost:N2}" 
+                    Text = $"{x.InsuranceFreightOthersCost:N2}"
                 })
                 .ToList();
             ViewData["collateral"] = collateral;
@@ -117,7 +117,7 @@ namespace mechanical.Controllers
             var userid = base.GetCurrentUserId();
             if (ModelState.IsValid)
             {
-                var indBldgFacility = await _indBldgFacilityEquipment.CreateIndBldgFacilityEquipment(base.GetCurrentUserId(),indBldgFacilityEquipment);
+                var indBldgFacility = await _indBldgFacilityEquipment.CreateIndBldgFacilityEquipment(base.GetCurrentUserId(), indBldgFacilityEquipment);
 
                 var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacility.CollateralId);
                 collateral.CurrentStatus = "Pending";
@@ -150,7 +150,7 @@ namespace mechanical.Controllers
             var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetEvaluatedIndBldgFacilityEquipment(Id);
             var comments = await _indBldgFacilityEquipment.GetCollateralComment(Id);
             ViewData["comments"] = comments;
-            ViewData["indBldgFacilityEquipmentReturnDto"]  = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.CollateralId == Id);
+            ViewData["indBldgFacilityEquipmentReturnDto"] = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.CollateralId == Id);
             return View(indBldgFacilityEquipment);
         }
 
@@ -182,52 +182,52 @@ namespace mechanical.Controllers
         //edit the collateral based on the corrction comment 
         public async Task<IActionResult> EditIndBldgFacilityEquipment(Guid Id, IndBldgFacilityEquipmentPostDto indBldgFacilityEquipment)
         {
-            
-                //var motrvechel = await _motorVehicleService.EditMotorVehicle(Id, createMotorVehicleDto);
-                var motrvechel = await _indBldgFacilityEquipment.EditIndBldgFacilityEquipment(Id, indBldgFacilityEquipment);
 
-                var motorVechelAssesment = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.Id == Id);
-                var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacilityEquipment.CollateralId);
-                Guid? checkerID = Guid.Empty;
-                if (motorVechelAssesment.CheckerUserID == null)
-                {
-                    var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
+            //var motrvechel = await _motorVehicleService.EditMotorVehicle(Id, createMotorVehicleDto);
+            var motrvechel = await _indBldgFacilityEquipment.EditIndBldgFacilityEquipment(Id, indBldgFacilityEquipment);
 
-                    //var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
-                    checkerID = correction.CommentedByUserId;
-                }
-                else
-                {
-                    checkerID = motorVechelAssesment.CheckerUserID;
-                }
+            var motorVechelAssesment = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.Id == Id);
+            var collateral = await _cbeContext.Collaterals.FindAsync(indBldgFacilityEquipment.CollateralId);
+            Guid? checkerID = Guid.Empty;
+            if (motorVechelAssesment.CheckerUserID == null)
+            {
+                var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
+
+                //var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == motrvechel.CollateralId);
+                checkerID = correction.CommentedByUserId;
+            }
+            else
+            {
+                checkerID = motorVechelAssesment.CheckerUserID;
+            }
             //var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == indBldgFacilityEquipment.CollateralId && res.UserId == correction.CommentedByUserId).FirstOrDefaultAsync();
             var userid = base.GetCurrentUserId();
             var caseAssignmentChange = await _cbeContext.CaseAssignments.Where(res => res.UserId == userid && res.CollateralId == indBldgFacilityEquipment.CollateralId).FirstOrDefaultAsync();
-                    caseAssignmentChange.Status = "Pending";
+            caseAssignmentChange.Status = "Pending";
             var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == indBldgFacilityEquipment.CollateralId && res.UserId == checkerID).FirstOrDefaultAsync();
-                if (collateral.CurrentStatus.Contains("Remark"))
-                {
-                    collateral.CurrentStatus = "Remark Verfication";
-                    caseAssignment.Status = "Remark Verfication";
-                }
-                else
-                {
-                    collateral.CurrentStatus = "New";
-                    caseAssignment.Status = "New";
-                }
+            if (collateral.CurrentStatus.Contains("Remark"))
+            {
+                collateral.CurrentStatus = "Remark Verfication";
+                caseAssignment.Status = "Remark Verfication";
+            }
+            else
+            {
+                collateral.CurrentStatus = "New";
+                caseAssignment.Status = "New";
+            }
 
-                caseAssignment.AssignmentDate = DateTime.Now;
-                _cbeContext.Update(caseAssignment);
-                _cbeContext.Update(caseAssignmentChange);
+            caseAssignment.AssignmentDate = DateTime.UtcNow;
+            _cbeContext.Update(caseAssignment);
+            _cbeContext.Update(caseAssignmentChange);
 
             collateral.CurrentStage = "Checker Officer";
 
-                _cbeContext.Update(collateral);
-                await _cbeContext.SaveChangesAsync();
-               
-                return RedirectToAction("MyReturnedCollaterals", "MoCase");
-            
+            _cbeContext.Update(collateral);
+            await _cbeContext.SaveChangesAsync();
+
+            return RedirectToAction("MyReturnedCollaterals", "MoCase");
+
         }
-        
+
     }
 }

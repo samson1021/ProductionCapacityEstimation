@@ -39,7 +39,7 @@ namespace mechanical.Services.UploadFileService
             uploadFile.Path = filePath;
             uploadFile.CaseId = file.CaseId;
             uploadFile.CollateralId = file.CollateralId;
-            uploadFile.UploadDateTime = DateTime.Now;
+            uploadFile.UploadDateTime = DateTime.UtcNow;
             uploadFile.userId = userId;
             await _cbeContext.UploadFiles.AddAsync(uploadFile);
             await _cbeContext.SaveChangesAsync();
@@ -47,7 +47,7 @@ namespace mechanical.Services.UploadFileService
         }
         public async Task<ReturnFileDto> GetUploadFile(Guid? Id)
         {
-            if(Id == null) return null;
+            if (Id == null) return null;
 
             var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
             return _mapper.Map<ReturnFileDto>(uploadFile);
@@ -126,7 +126,7 @@ namespace mechanical.Services.UploadFileService
 
             if (evaluationId != Guid.Empty)
             {
-           
+
                 var uploadFiles = await _cbeContext.UploadFiles
                     .Where(res => res.CollateralId == CollateralId || res.CollateralId == evaluationId)
                     .ToListAsync();
@@ -135,7 +135,7 @@ namespace mechanical.Services.UploadFileService
             }
             else
             {
-               
+
                 var uploadFiles = await _cbeContext.UploadFiles
                     .Where(res => res.CollateralId == CollateralId)
                     .ToListAsync();
@@ -148,12 +148,12 @@ namespace mechanical.Services.UploadFileService
         {
             if (CaseId == null) return null;
 
-                var uploadFiles = await _cbeContext.UploadFiles
-                    .Where(res => res.CaseId == CaseId && res.CollateralId == null)
-                    .ToListAsync();
-                return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
+            var uploadFiles = await _cbeContext.UploadFiles
+                .Where(res => res.CaseId == CaseId && res.CollateralId == null)
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<ReturnFileDto>>(uploadFiles);
 
-            
+
         }
 
         public async Task<IEnumerable<ReturnPCEReportFileDto>> GetAllUploadFileByCaseId(Guid? CollateralId)
@@ -202,7 +202,7 @@ namespace mechanical.Services.UploadFileService
             uploadFile.Path = filePath;
             uploadFile.CaseId = file.CaseId;
             uploadFile.CollateralId = file.CollateralId;
-            uploadFile.UploadDateTime = DateTime.Now;
+            uploadFile.UploadDateTime = DateTime.UtcNow;
             uploadFile.userId = Guid.Parse(httpContext.Session.GetString("userId"));
 
             _cbeContext.Update(uploadFile);
@@ -215,14 +215,14 @@ namespace mechanical.Services.UploadFileService
             var uploadFile = await _cbeContext.UploadFiles.FindAsync(Id);
             if (uploadFile == null)
             {
-               return false;
+                return false;
             }
             DeleteFile(Path.Combine("UploadFile", uploadFile.Id.ToString() + uploadFile.Extension));
             _cbeContext.UploadFiles.Remove(uploadFile);
             await _cbeContext.SaveChangesAsync();
             return true;
         }
-        
+
         public void DeleteFile(string filePath)
         {
             if (File.Exists(filePath))

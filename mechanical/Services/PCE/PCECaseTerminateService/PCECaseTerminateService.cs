@@ -9,35 +9,35 @@ using mechanical.Models.PCE.Dto.PCECaseTerminateDto;
 
 namespace mechanical.Services.PCE.PCECaseTerminateService
 {
-    public class PCECaseTerminateService:IPCECaseTerminateService
+    public class PCECaseTerminateService : IPCECaseTerminateService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
         private readonly ILogger<PCECaseTerminateService> _logger;
-        
+
         public PCECaseTerminateService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseTerminateService> logger)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _logger = logger;
-        }      
-       
+        }
+
         public async Task<PCECaseTerminateReturnDto> CreateCaseTerminate(Guid UserId, PCECaseTerminatePostDto pceCaseTerminatePostDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {  
+            {
                 var pceCaseTerminate = _mapper.Map<PCECaseTerminate>(pceCaseTerminatePostDto);
                 pceCaseTerminate.PCECaseOriginatorId = UserId;
-                pceCaseTerminate.TerminatedAt = DateTime.Now;
+                pceCaseTerminate.TerminatedAt = DateTime.UtcNow;
                 pceCaseTerminate.Status = "Proposed";
                 // pceCaseTerminate.CurrentStatus = "Proposed";
 
                 await _cbeContext.PCECaseTerminates.AddAsync(pceCaseTerminate);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                
-                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);  
+
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
             }
 
             catch (Exception ex)
@@ -47,13 +47,13 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
                 throw new ApplicationException("An error occurred while creating case termination.");
             }
 
-        } 
-       
+        }
+
         public async Task<PCECaseTerminateReturnDto> UpdateCaseTerminate(Guid UserId, Guid Id, PCECaseTerminatePostDto pceCaseTerminatePostDto)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            { 
+            {
 
                 var pceCaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(Id);
                 if (pceCaseTerminate == null)
@@ -67,13 +67,13 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
                 }
                 pceCaseTerminatePostDto.PCECaseId = pceCaseTerminate.PCECaseId;
                 _mapper.Map(pceCaseTerminatePostDto, pceCaseTerminate);
-                pceCaseTerminate.TerminatedAt = DateTime.Now;
+                pceCaseTerminate.TerminatedAt = DateTime.UtcNow;
                 _cbeContext.Update(pceCaseTerminate);
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate); 
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
             }
 
             catch (Exception ex)
@@ -88,21 +88,21 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            { 
+            {
                 var pceCaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(Id);
                 if (pceCaseTerminate == null)
                 {
                     return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
                 }
-                
+
                 pceCaseTerminate.Status = "Approved";
                 // pceCaseTerminate.CurrentStatus = "Approved";
                 _cbeContext.Update(pceCaseTerminate);
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                
-                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);   
+
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
             }
 
             catch (Exception ex)
@@ -111,13 +111,13 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
                 await transaction.RollbackAsync();
                 throw new ApplicationException("An error occurred while approving the case termination.");
             }
-        }       
+        }
 
         public async Task<PCECaseTerminateReturnDto> ApproveCaseTermination(Guid Id)
         {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
-            {  
+            {
                 var pceCaseTerminate = await _cbeContext.PCECaseTerminates.FindAsync(Id);
                 if (pceCaseTerminate == null)
                 {
@@ -144,34 +144,34 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
                 }
 
                 _cbeContext.ProductionCapacities.UpdateRange(productions);
-          
+
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                
-                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);    
+
+                return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error approving case termination");
                 await transaction.RollbackAsync();
-                throw new ApplicationException($"An error occurred while approving case termination. { ex.Message }");
+                throw new ApplicationException($"An error occurred while approving case termination. {ex.Message}");
             }
         }
-        
+
         public async Task<PCECaseTerminateReturnDto> GetCaseTerminate(Guid Id)
         {
             var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Include(res => res.PCECaseOriginator).FirstOrDefaultAsync(res => res.Id == Id);
-               
-            return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);            
-        }  
+
+            return _mapper.Map<PCECaseTerminateReturnDto>(pceCaseTerminate);
+        }
 
         public async Task<IEnumerable<PCECaseTerminateReturnDto>> GetCaseTerminates(Guid PCECaseId)
         {
             var pceCaseTerminates = await _cbeContext.PCECaseTerminates.Include(res => res.PCECaseOriginator).Where(res => res.PCECaseId == PCECaseId).OrderBy(res => res.TerminatedAt).ToListAsync();
-            
-            return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(pceCaseTerminates);            
-        }      
+
+            return _mapper.Map<IEnumerable<PCECaseTerminateReturnDto>>(pceCaseTerminates);
+        }
 
         public async Task<IEnumerable<PCECaseTerminateDto>> GetPCECaseTerminates(Guid UserId)
         {

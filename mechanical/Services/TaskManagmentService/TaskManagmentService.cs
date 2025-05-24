@@ -76,7 +76,8 @@ namespace mechanical.Services.TaskManagmentService
                         .Where(c => c.AssignedId == createTaskManagmentDto.AssignedId
                                 && c.CaseOrginatorId == AssignorId
                                 && c.IsActive == true
-                                && c.Deadline < currentDate)
+                                && c.Deadline < currentDate
+                        )
                         .ToListAsync();
 
                 foreach (var caseId in caseList)
@@ -86,7 +87,8 @@ namespace mechanical.Services.TaskManagmentService
                         ?? throw new ArgumentException($"Case not found: {caseId}");
 
                     var checktask = taskData.Where(c => c.CaseId == caseId
-                            && (c.TaskName == createTaskManagmentDto.TaskName || c.TaskName == "All"))
+                            && (c.TaskName == createTaskManagmentDto.TaskName
+                            || c.TaskName == "All"))
                             .ToList();
 
                     if (checktask.Any())
@@ -214,9 +216,10 @@ namespace mechanical.Services.TaskManagmentService
                 if (dto.TaskName == "All")
                 {
                     await _cbeContext.TaskManagments
-                                        .Where(t => t.CaseId == dto.CaseId &&
-                                                        t.AssignedId == userId &&
-                                                        t.IsActive)
+                                        .Where(t => t.CaseId == dto.CaseId
+                                                    && t.AssignedId == userId
+                                                    && t.IsActive
+                                        )
                                         .ExecuteUpdateAsync(setters => setters
                                             .SetProperty(n => n.IsActive, false)
                                             .SetProperty(n => n.UpdatedDate, DateTime.UtcNow));
@@ -340,10 +343,11 @@ namespace mechanical.Services.TaskManagmentService
             var tasks = await _cbeContext.TaskManagments
                                         .Include(t => t.Case)
                                         .Include(t => t.Assigned)
-                                        .Where(res => res.CaseOrginatorId == userId &&
-                                                    (string.IsNullOrEmpty(mode) || mode.Equals("all", StringComparison.OrdinalIgnoreCase) ||
-                                                    mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive ||
-                                                    mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive))
+                                        .Where(res => res.CaseOrginatorId == userId
+                                                    && (string.IsNullOrEmpty(mode) || mode.Equals("all", StringComparison.OrdinalIgnoreCase)
+                                                    || mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive
+                                                    || mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive)
+                                        )
                                         .ToListAsync();
 
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
@@ -354,10 +358,11 @@ namespace mechanical.Services.TaskManagmentService
             var tasks = await _cbeContext.TaskManagments
                                         .Include(t => t.Case)
                                         .Include(t => t.CaseOrginator)
-                                        .Where(res => res.AssignedId == userId &&
-                                                    (string.IsNullOrEmpty(mode) || mode.Equals("all", StringComparison.OrdinalIgnoreCase) ||
-                                                    mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive ||
-                                                    mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive))
+                                        .Where(res => res.AssignedId == userId
+                                                    && (string.IsNullOrEmpty(mode) || mode.Equals("all", StringComparison.OrdinalIgnoreCase)
+                                                    || mode.Equals("active", StringComparison.OrdinalIgnoreCase) && res.IsActive
+                                                    || mode.Equals("inactive", StringComparison.OrdinalIgnoreCase) && !res.IsActive)
+                                        )
                                         .ToListAsync();
 
             return _mapper.Map<IEnumerable<TaskManagmentReturnDto>>(tasks);
@@ -390,10 +395,11 @@ namespace mechanical.Services.TaskManagmentService
                 // if (dto.TaskName == "All")
                 // {
                 //     await _cbeContext.TaskManagments
-                //                     .Where(t => t.CaseId == task.CaseId &&
-                //                                 t.AssignedId == task.AssignedId &&
-                //                                 t.IsActive &&
-                //                                 t.Id != task.Id)
+                //                     .Where(t => t.CaseId == task.CaseId
+                //                              && t.AssignedId == task.AssignedId
+                //                              && t.IsActive
+                //                              && t.Id != task.Id
+                //                     )
                 //                     .ExecuteUpdateAsync(setters => setters
                 //                         .SetProperty(t => t.IsActive, false)
                 //                         .SetProperty(t => t.UpdatedDate, DateTime.UtcNow));

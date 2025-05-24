@@ -106,7 +106,7 @@ namespace mechanical.Controllers
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
@@ -244,11 +244,12 @@ namespace mechanical.Controllers
                     return Json(new { redirect = Url.Action("MypendingCase", "MOCase") });
                 }
                 return Json(new { redirect = false });
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-        
+
         }
     }
 }

@@ -30,7 +30,7 @@
 
     var checker = MotorVehicle.Select(m => m.CheckerUser).Distinct();
 
-    var caseScheduleDate = DateTime.Now;
+    var caseScheduleDate = DateTime.UtcNow;
     if (caseSchedule != null)
     {
         caseScheduleDate = caseSchedule.ScheduleDate;

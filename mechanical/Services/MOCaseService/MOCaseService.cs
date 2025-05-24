@@ -12,7 +12,7 @@ using OpenCvSharp.CPlusPlus;
 
 namespace mechanical.Services.MOCaseService
 {
-    public class MOCaseService: ICOCaseService
+    public class MOCaseService : ICOCaseService
     {
         private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
@@ -63,7 +63,7 @@ namespace mechanical.Services.MOCaseService
         //    return mTlNewCaseDtos;
         //}
 
-        public async Task<bool> SendCheking(Guid userId,Guid CollateralId)
+        public async Task<bool> SendCheking(Guid userId, Guid CollateralId)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var collateral = await _cbeContext.Collaterals.FindAsync(CollateralId);
@@ -97,20 +97,20 @@ namespace mechanical.Services.MOCaseService
 
             var cases = await _cbeContext.Cases.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == collateral.CaseId);
             var user = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == userId);
-            if(user == null)
+            if (user == null)
             {
                 throw new InvalidOperationException("Checker unit in you department is not ready.");
             }
-            if(user?.District?.Name == "Head Office")
+            if (user?.District?.Name == "Head Office")
             {
                 var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
-                if(checker == null) return false;
+                if (checker == null) return false;
                 var caseAssignment = new CaseAssignment()
                 {
                     CollateralId = CollateralId,
                     UserId = checker.Id,
                     Status = "New",
-                    AssignmentDate = DateTime.Now
+                    AssignmentDate = DateTime.UtcNow
                 };
                 await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
                 await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
@@ -131,9 +131,9 @@ namespace mechanical.Services.MOCaseService
             {
                 var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.DistrictId == user.DistrictId && res.Role.Name == "District Valuation Manager");
                 var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == CollateralId && res.UserId == checker.Id).FirstOrDefaultAsync();
-                if(caseAssignment == null) return false;
+                if (caseAssignment == null) return false;
                 caseAssignment.Status = "Checker New";
-                 _cbeContext.CaseAssignments.Update(caseAssignment);
+                _cbeContext.CaseAssignments.Update(caseAssignment);
                 await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
                 {
                     CaseId = collateral.CaseId,
@@ -148,10 +148,10 @@ namespace mechanical.Services.MOCaseService
                     UserId = checker.Id
                 });
             }
-           
+
             _cbeContext.Collaterals.Update(collateral);
             await _cbeContext.SaveChangesAsync();
-           
+
             return true;
         }
     }

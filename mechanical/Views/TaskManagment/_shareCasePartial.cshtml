@@ -35,7 +35,7 @@
 
     <div class="mb-3">
         <label for="Deadline" class="form-label">Deadline</label>
-        <input type="date" value='@DateTime.Now.ToString("yyyy-MM-dd")' class="form-control" id="shareDeadline" asp-for="Deadline" required>
+        <input type="date" value='@DateTime.UtcNow.ToString("yyyy-MM-dd")' class="form-control" id="shareDeadline" asp-for="Deadline" required>
         <span asp-validation-for="Deadline" class="text-danger"></span>
         <div class="invalid-feedback">Please select a deadline. Deadline cannot be earlier than today.</div>
     </div>

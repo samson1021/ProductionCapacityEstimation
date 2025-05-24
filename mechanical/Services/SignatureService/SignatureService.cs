@@ -30,7 +30,7 @@ namespace mechanical.Services.SignatureService
             var userIdss = _cbeContext.Users.Where(c => c.Id == userId).Select(c => c.emp_ID).FirstOrDefault();
 
             var isSignatureExist = await _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.Emp_Id).FirstOrDefaultAsync();
-             if (isSignatureExist == null)
+            if (isSignatureExist == null)
             {
 
 
@@ -56,7 +56,7 @@ namespace mechanical.Services.SignatureService
                 addSignature.SignatureFileId = await _uploadFileService.CreateUploadFile(userId, signatureFee);
                 addSignature.UserId = userId;
                 addSignature.CreatedBy = userIdss;
-                addSignature.CreatedDate = DateTime.Now;
+                addSignature.CreatedDate = DateTime.UtcNow;
 
                 await _cbeContext.Signatures.AddAsync(addSignature);
                 await _cbeContext.SaveChangesAsync();
