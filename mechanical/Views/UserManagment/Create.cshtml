@@ -324,11 +324,11 @@
                             toastr.warning('No employee information found for the provided ID.');
                             return;
                         }
-                        $('#Name').val(data.Name);
+                        $('#Name').val(data.DisplayName);
                         $('#Email').val(data.Email);
-                        $('#title').val(data.title);
-                        $('#Branch').val(data.Branch);
-                        $('#company').val(data.company);
+                        $('#title').val(data.JobTitle);
+                        $('#Branch').val(data.Department);
+                        $('#company').val(data.Company);
                     },
                     error: function () {
                         // Hide loading indicator

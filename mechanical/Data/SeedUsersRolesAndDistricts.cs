@@ -75,152 +75,152 @@ namespace mechanical.Data
                     context.SaveChanges();
                 }
 
-                if (!context.Users.Any())
-                {
-                    context.Users.AddRange(new List<User>()
-                    {
-                        new User()
-                        {
-                            Name = "Admin",
-                            emp_ID = "050203",
-                            Email = "ADMIN@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Admin").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "RM",
-                            emp_ID = "050202",
-                            Email = "RM@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Relation Manager").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "MM",
-                            emp_ID = "050121",
-                            Email = "MM@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Maker Manager").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "MTL",
-                            emp_ID = "050203",
-                            Email = "MTL@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Maker TeamLeader").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "MM").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "MO",
-                            emp_ID = "050121",
-                            Email = "MO@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Maker Officer").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "MTL").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "CM",
-                            emp_ID = "050203",
-                            Email = "CM@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Checker Manager").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "CTL",
-                            emp_ID = "050202",
-                            Email = "CTL@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Checker TeamLeader").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "CM").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "CO",
-                            emp_ID = "050203",
-                            Email = "CO@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Head Office",
-                            RoleId = context.Roles.Single(r => r.Name == "Checker Officer").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "CTL").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "DVM",
-                            emp_ID = "050122",
-                            Email = "DVM@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Adama",
-                            RoleId = context.Roles.Single(r => r.Name == "District Valuation Manager").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Adama").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        },
-                        new User()
-                        {
-                            Name = "DMO",
-                            emp_ID = "050123",
-                            Email = "DMO@GMAIL.COM",
-                            PhoneNO = "0925473240",
-                            Branch = "Adama",
-                            RoleId = context.Roles.Single(r => r.Name == "Maker Officer").Id,
-                            DistrictId = context.Districts.Single(d => d.Name == "Adama").Id,
-                            Status = "Activated",
-                            // SupervisorId = context.Users.Single(r => r.Name == "MTL").Id,
-                            SupervisorId = null,
-                            Department = "Mechanical"
-                        }
-                    });
+                //if (!context.Users.Any())
+                //{
+                //    context.Users.AddRange(new List<User>()
+                //    {
+                //        new User()
+                //        {
+                //            Name = "Admin",
+                //            emp_ID = "050203",
+                //            Email = "ADMIN@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Admin").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "RM",
+                //            emp_ID = "050202",
+                //            Email = "RM@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Relation Manager").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "MM",
+                //            emp_ID = "050121",
+                //            Email = "MM@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Maker Manager").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "MTL",
+                //            emp_ID = "050203",
+                //            Email = "MTL@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Maker TeamLeader").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "MM").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "MO",
+                //            emp_ID = "050121",
+                //            Email = "MO@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Maker Officer").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "MTL").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "CM",
+                //            emp_ID = "050203",
+                //            Email = "CM@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Checker Manager").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "CTL",
+                //            emp_ID = "050202",
+                //            Email = "CTL@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Checker TeamLeader").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "CM").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "CO",
+                //            emp_ID = "050203",
+                //            Email = "CO@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Head Office",
+                //            RoleId = context.Roles.Single(r => r.Name == "Checker Officer").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Head Office").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "CTL").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "DVM",
+                //            emp_ID = "050122",
+                //            Email = "DVM@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Adama",
+                //            RoleId = context.Roles.Single(r => r.Name == "District Valuation Manager").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Adama").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "RM").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        },
+                //        new User()
+                //        {
+                //            Name = "DMO",
+                //            emp_ID = "050123",
+                //            Email = "DMO@GMAIL.COM",
+                //            PhoneNO = "0925473240",
+                //            Branch = "Adama",
+                //            RoleId = context.Roles.Single(r => r.Name == "Maker Officer").Id,
+                //            DistrictId = context.Districts.Single(d => d.Name == "Adama").Id,
+                //            Status = "Activated",
+                //            // SupervisorId = context.Users.Single(r => r.Name == "MTL").Id,
+                //            SupervisorId = null,
+                //            Department = "Mechanical"
+                //        }
+                //    });
 
-                    context.SaveChanges();
-                }
+                //    context.SaveChanges();
+                //}
 
                 var rmUser = context.Users.SingleOrDefault(u => u.Name == "RM");
                 var mmUser = context.Users.SingleOrDefault(u => u.Name == "MM");

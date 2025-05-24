@@ -347,6 +347,7 @@ namespace mechanical.Controllers
 
             user.Branch = model.Branch;
             user.Status = model.Status;
+            user.PhoneNO = model.PhoneNO;
             user.Department = model.Department;
             if (model.RoleId != Guid.Empty && model.RoleId != new Guid())
             {
