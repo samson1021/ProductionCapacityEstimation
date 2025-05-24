@@ -1,5 +1,3 @@
-<link href="~/css/notificationindex.css" rel="stylesheet" />
-
 <section class="content-header">
     <div class="container-fluid notifications-page-container">
         <div class="notifications-page-title d-flex justify-content-between align-items-center">
@@ -99,7 +97,14 @@
                                         onclick="archiveNotification('${notification.Id}', this)">
                                     Archive
                                 </button>` : ''}
-                            </div>`;
+                            </div>
+                        `;
+                        @*
+                                <a href="#" data-link="${notification.Link}" data-id="${notification.Id}" class="notifications-page-link text-dark" onclick="markNotificationAsRead('${notification.Id}', this)">
+                                    <div class="${cardClass} notification-link">
+                                        <span class="notification-type">${notification.Type}</span>
+                                        <h6 class="${titleClass}" notification-preview>${notification.Content}</h6>
+                        `; *@
                         $("#notificationsContainer").append(notificationItem);
                     });
                 }
