@@ -83,7 +83,7 @@
                     </ul>
                     @if (caseType != "Shared")
                     {
-                        <button type="button" class="btn btn-primary mr-2" data-bs-toggle="modal" data-bs-target="#shareCaseModal">
+                        <button type="button" class="btn bg-purple mr-2" data-bs-toggle="modal" data-bs-target="#shareCaseModal">
                             Share
                         </button>
                     }
@@ -113,8 +113,8 @@
 <div class="modal fade" id="shareCaseModal" tabindex="-1" aria-labelledby="shareCaseModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-3 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="shareCaseModalLabel">Share Case</h5>
+            <div class="modal-header bg-purple text-white">
+                <h5 class="modal-title" id="shareCaseModalLabel">Task Share Request</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -122,7 +122,7 @@
             </div>
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" id="shareCaseButton">
+                <button type="submit" class="btn bg-purple" id="shareCaseButton">
                     <span id="shareSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                     Share Case
                 </button>

@@ -10,10 +10,9 @@
 }
 <div class="row">
     <div class="card border-0 shadow-lg mb-4">
-        <div class="card-body p-2">
-
+        <div class="card-body p-4">
             <!-- Capacity Information Section -->
-            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Capacity Information</h5>
                 </div>
@@ -74,7 +73,7 @@
             </div>
 
             <!-- No Input/Output Data Justification Section -->
-            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form" id="justificationSection"  @(Model.HasInputOutputData ? "style=\"display: none;\"" : "")>
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form" id="justificationSection"  @(Model.HasInputOutputData ? "style=\"display: none;\"" : "")>
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Justifications</h5>
                 </div>
@@ -111,12 +110,12 @@
             </div>
 
             <!-- Production Line Evaluation Section -->
-            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form" id="input-outputs-container">
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form" id="input-outputs-container">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                         <h5 class="mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Production Line Evaluation</h5>
                     </div>
-                    <button type="button" id="addProductionLineBtn" class="btn btn-primary ms-auto mt-3">
+                    <button type="button" id="addProductionLineBtn" class="btn bg-purple ms-auto mt-3">
                         <i class="fas fa-plus me-1"></i> Add Production Line
                     </button>
                 </div>
@@ -129,7 +128,7 @@
                                             .GetField(Model.ProductionLines[i].ProductionUnit.ToString())
                                             ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                             .OfType<DisplayAttribute>()
-                                            .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionUnit.ToString().ToLower()) + "s";
+                                            .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionUnit.ToString().ToLower());
                             object totlaInputUnit = "units";
 
                             <div class="production-line-container" data-line-index="@i">
@@ -167,7 +166,7 @@
                                                                 class="form-control capacity-input"
                                                                 type="number" step="0.01" min="0"
                                                                 placeholder="0.00" required />
-                                                            <span class="input-group-text production-unit-label">@lineUnit</span>
+                                                            <span class="input-group-text production-unit-label bg-purple">@lineUnit</span>
                                                         </div>
                                                         <span asp-validation-for="ProductionLines[i].ActualCapacity" class="text-danger small"></span>
                                                     </div>
@@ -178,7 +177,7 @@
                                                                 class="form-control capacity-input"
                                                                 type="number" step="0.01" min="0"
                                                                 placeholder="0.00" />
-                                                            <span class="input-group-text production-unit-label">@lineUnit</span>
+                                                            <span class="input-group-text production-unit-label bg-purple">@lineUnit</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
@@ -188,7 +187,7 @@
                                                                 class="form-control capacity-input"
                                                                 type="number" step="0.01" min="0"
                                                                 placeholder="0.00" />
-                                                            <span class="input-group-text production-unit-label">@lineUnit</span>
+                                                            <span class="input-group-text production-unit-label bg-purple">@lineUnit</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -240,10 +239,10 @@
                                         </div>
 
                                         <!-- Inputs Section -->
-                                        <div class="inputs-section mt-4 p-3 bg-light rounded">
+                                        <div class="inputs-section mt-4 p-2 bg-light rounded">
                                             <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <h6 class="mb-0"><i class="fas fa-boxes me-2 text-primary"></i>Input Materials</h6>
-                                                <button type="button" class="btn btn-sm btn-primary add-input-btn">
+                                                <button type="button" class="btn btn-sm bg-purple add-input-btn">
                                                     <i class="fas fa-plus me-1"></i> Add Input
                                                 </button>
                                             </div>
@@ -256,7 +255,7 @@
                                                                         .GetField(Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString())
                                                                         ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                                         .OfType<DisplayAttribute>()
-                                                                        .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString().ToLower()) + "s";
+                                                                        .FirstOrDefault()?.Name.ToLower() ?? Model.ProductionLines[i].ProductionLineInputs[j].Unit.ToString().ToLower());
                                                         totlaInputUnit = lineInputUnit;
                                                         <div class="input-item card mb-2">
                                                             <div class="card-body py-2">
@@ -272,7 +271,7 @@
                                                                                 class="form-control input-quantity"
                                                                                 type="number" step="0.01" min="0"
                                                                                 placeholder="0.00" required />
-                                                                            <span class="input-group-text total-input-unit-label">@lineInputUnit</span>
+                                                                            <span class="input-group-text total-input-unit-label bg-purple">@lineInputUnit</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-3">
@@ -323,7 +322,7 @@
                                                             <input asp-for="ProductionLines[i].TotalInput"
                                                                 class="form-control total-input"
                                                                 type="number" step="0.01" readonly />
-                                                            <span class="input-group-text input-unit-label">@totlaInputUnit</span>
+                                                            <span class="input-group-text input-unit-label bg-purple">@totlaInputUnit</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
@@ -332,7 +331,7 @@
                                                             <input asp-for="ProductionLines[i].ConversionRatio"
                                                                 class="form-control conversion-ratio"
                                                                 type="number" step="0.01" readonly />
-                                                            <span class="input-group-text">%</span>
+                                                            <span class="input-group-text bg-purple">%</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -348,7 +347,7 @@
             </div>
 
             <!-- Update Documents -->
-            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Update Documents</h5>
                 </div>
@@ -386,7 +385,7 @@
                     </div>
                     <div class="input-group" id="new-witness-form-upload" style="@(Model.WitnessForm == null ? "" : "display: none;")">
                         <input asp-for="NewWitnessForm" type="file" class="form-control" />
-                        <span class="input-group-text"><i class="fas fa-upload"></i></span>
+                        <span class="input-group-text bg-purple"><i class="fas fa-upload"></i></span>
                     </div>
                     <span asp-validation-for="NewWitnessForm" class="text-danger small"></span>
                 </div>
@@ -427,7 +426,7 @@
                     </div>
                     <div class="input-group">
                         <input asp-for="NewProductionProcessFlowDiagrams" type="file" class="form-control" multiple />
-                        <span class="input-group-text"><i class="fas fa-project-diagram"></i></span>
+                        <span class="input-group-text bg-purple"><i class="fas fa-project-diagram"></i></span>
                     </div>
                     <small class="form-text text-muted">Multiple files allowed</small>
                     <span asp-validation-for="NewProductionProcessFlowDiagrams" class="text-danger small"></span>
@@ -469,7 +468,7 @@
                     </div>
                     <div class="input-group">
                         <input asp-for="NewSupportingEvidences" type="file" class="form-control" multiple />
-                        <span class="input-group-text"><i class="fas fa-file"></i></span>
+                        <span class="input-group-text bg-purple"><i class="fas fa-file"></i></span>
                     </div>
                     <small class="form-text text-muted">Multiple files allowed</small>
                     <span asp-validation-for="NewSupportingEvidences" class="text-danger small"></span>
@@ -477,7 +476,7 @@
             </div>
 
             <!-- Inspection Information Section -->
-            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-clipboard-check me-2 text-primary"></i>Inspection Information</h5>
                 </div>
