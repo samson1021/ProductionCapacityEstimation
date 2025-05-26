@@ -3,7 +3,7 @@
 <!-- Production Line Template -->
 <template id="productionLineTemplate">
     <div class="production-line-container" data-line-index="__INDEX__"> 
-        <div class="card shadow-sm production-line-form border mb-4 position-relative production-line-evaluation-item">
+        <div class="card shadow-sm production-line-form border my-2 p-2 mb-2 position-relative production-line-evaluation-item">
             <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
                 <h6 class="line-number mb-0">
                     <i class="fas fa-industry me-2 text-primary"></i>Production Line<span class="line-counter ms-1 d-inline">@Html.Raw("__INDEX_1__")</span>
@@ -39,7 +39,7 @@
                                             class="form-control capacity-input" 
                                             required type="number" step="0.01" min="0"
                                             placeholder="0.00" />
-                                    <span class="input-group-text production-unit-label">units</span>
+                                    <span class="input-group-text production-unit-label bg-purple">units</span>
                                 </div>
                             </div>
                             
@@ -50,7 +50,7 @@
                                             class="form-control capacity-input" 
                                             type="number" step="0.01" min="0"
                                             placeholder="0.00" />
-                                    <span class="input-group-text production-unit-label">units</span>
+                                    <span class="input-group-text production-unit-label bg-purple">units</span>
                                 </div>
                             </div>
                             
@@ -61,7 +61,7 @@
                                             class="form-control capacity-input" 
                                             type="number" step="0.01" min="0"
                                             placeholder="0.00" />
-                                    <span class="input-group-text production-unit-label">units</span>
+                                    <span class="input-group-text production-unit-label bg-purple">units</span>
                                 </div>
                             </div>
                         </div>
@@ -117,12 +117,12 @@
                 </div>
 
                 <!-- Inputs Section -->
-                <div class="inputs-section mt-4 p-3 bg-light rounded">
+                <div class="inputs-section mt-4 p-2 bg-light rounded">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="mb-0">
                             <i class="fas fa-boxes me-2 text-primary"></i>Input Materials
                         </h6>
-                        <button type="button" class="btn btn-sm btn-primary add-input-btn">
+                        <button type="button" class="btn btn-sm bg-purple add-input-btn">
                             <i class="fas fa-plus me-1"></i> Add Input
                         </button>
                     </div>
@@ -159,7 +159,7 @@
                                     <input name="ProductionLines[__INDEX__].TotalInput"
                                             type="number" step="0.01"
                                             class="form-control total-input" readonly />
-                                    <span class="input-group-text total-input-unit-label">units</span>
+                                    <span class="input-group-text total-input-unit-label bg-purple">units</span>
                                 </div>
                             </div>
                             
@@ -169,7 +169,7 @@
                                     <input name="ProductionLines[__INDEX__].ConversionRatio"
                                             type="number" step="0.01" 
                                             class="form-control conversion-ratio" readonly />
-                                    <span class="input-group-text">%</span>
+                                    <span class="input-group-text bg-purple">%</span>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +196,7 @@
                                 type="number" step="0.01" min="0"
                                 class="form-control input-quantity"
                                 placeholder="0.00" required />
-                        <span class="input-group-text input-unit-label">units</span>
+                        <span class="input-group-text input-unit-label bg-purple">units</span>
                     </div>
                 </div>
                 <div class="col-md-3">

@@ -228,17 +228,17 @@
                 $line.find('.input-item').each(function () {
                     const $inputItem = $(this);
                     const selectedInputUnit = $inputItem.find('.input-unit-dropdown').val();
-                    const displayInputUnitName = selectedInputUnit && measurementUnits[selectedInputUnit] && measurementUnits[selectedInputUnit] != "Other" ? measurementUnits[selectedInputUnit].toLowerCase() + "s" : 'units';
+                    const displayInputUnitName = selectedInputUnit && measurementUnits[selectedInputUnit] && measurementUnits[selectedInputUnit] != "Other" ? measurementUnits[selectedInputUnit].toLowerCase() : 'units';
                     $inputItem.find('.input-unit-label').text(displayInputUnitName);
                 });
 
                 // Update production unit label
                 const selectedTotalUnit = $line.find('.input-unit-dropdown').val();
-                const displayUnitName = selectedTotalUnit && measurementUnits[selectedTotalUnit] && measurementUnits[selectedTotalUnit] != "Other" ? measurementUnits[selectedTotalUnit].toLowerCase() + "s" : 'units';
+                const displayUnitName = selectedTotalUnit && measurementUnits[selectedTotalUnit] && measurementUnits[selectedTotalUnit] != "Other" ? measurementUnits[selectedTotalUnit].toLowerCase() : 'units';
                 $line.find('.total-input-unit-label').text(displayUnitName);
 
                 const selectedProductionUnit = $line.find('.production-unit-dropdown').val();
-                const displayName = selectedProductionUnit && measurementUnits[selectedProductionUnit] && measurementUnits[selectedProductionUnit] != "Other" ? measurementUnits[selectedProductionUnit].toLowerCase() + "s" : 'units';
+                const displayName = selectedProductionUnit && measurementUnits[selectedProductionUnit] && measurementUnits[selectedProductionUnit] != "Other" ? measurementUnits[selectedProductionUnit].toLowerCase() : 'units';
                 $line.find('.production-unit-label').text(displayName);
             });
         }
