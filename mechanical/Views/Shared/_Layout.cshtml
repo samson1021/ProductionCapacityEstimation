@@ -9,7 +9,6 @@
         @* <link rel="stylesheet" href="~/css/all.min.css" /> *@
         <link rel="stylesheet" href="~/css/adminlte.min.css" />
         <link rel="stylesheet" href="~/css/icheck-bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/layout.css" />
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/mechanical.styles.css" asp-append-version="true" />
         
@@ -17,10 +16,14 @@
         <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
         <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/lib/datatable/css/buttons.bootstrap4.min.css" />
         <link rel="stylesheet" href="~/lib/datatable/css/datatables.bootstrap4.min.css" />
         <link rel="stylesheet" href="~/lib/datatable/css/responsive.bootstrap4.min.css" />
         <link rel="stylesheet" href="~/lib/overlayscrollbars/css/overlayscrollbars.min.css" />
+        <link rel="stylesheet" href="~/css/layout.css" />
+        <link rel="stylesheet" href="~/css/notification.css" />
+        <link rel="stylesheet" href="~/css/taskmanagement.css" />
 
         <style>
             header {
@@ -63,15 +66,16 @@
         <script src="~/lib/chart.js/chart.min.js"></script>
 
         <script src="~/bootstrap/js/bootstrap.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/popper/popper.min.js"></script>
         <script src="~/lib/toastr/toastr.min.js"></script>
         <script src="~/js/notification.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <!---->
 
-        @* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> *@
+        @*<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> *@
 
         @await RenderSectionAsync("Scripts", required: false)
     </body>
 </html>
+
+@await Html.PartialAsync("_NotificationDetailModal")

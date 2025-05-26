@@ -6,11 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
-using iText.Forms.Xfdf;
 
 // [ApiController]
 // [Route("api/tasks")]
-
 namespace mechanical.Controllers
 {
     public class TaskManagmentController : BaseController
@@ -24,12 +22,6 @@ namespace mechanical.Controllers
             _taskManagmentService = taskManagmentService;
             _logger = logger;
             _mapper = mapper;
-        }
-
-        [HttpGet]
-        public IActionResult SharedCases()
-        {
-            return View();
         }
 
         [HttpGet]

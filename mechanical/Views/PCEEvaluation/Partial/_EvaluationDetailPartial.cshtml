@@ -61,7 +61,7 @@
                                                 .GetField(Model.BottleneckProductionLine.Unit.ToString())
                                                 ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                 .Cast<DisplayAttribute>()
-                                                .FirstOrDefault()?.Name ?? Model.BottleneckProductionLine.Unit.ToString()) + "s")
+                                                .FirstOrDefault()?.Name ?? Model.BottleneckProductionLine.Unit.ToString()))
                                     </dd>
                                 }
 
@@ -192,7 +192,7 @@
                     <h3 class="card-title mb-0"><i class="fas fa-database me-2"></i> Input-Output Data Collection Status</h3>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-warning d-flex align-items-center p-4">
+                    <div class="alert alert-warning d-flex align-items-center p-2">
                         <i class="fas fa-exclamation-circle fa-2x me-3"></i>
                         <div>
                             <h5 class="alert-heading fw-bold"> No input-output data was collected during site visit</h5>
@@ -205,7 +205,7 @@
                                             var justifications = Model.Justifications.OrderBy(j => (int)j.Reason).ToList();
                                             foreach (var justification in justifications)
                                             {
-                                                <li class="justification-item mb-1 p-1 bg-alert rounded">
+                                                <li class="justification-item mb-1 p-2 bg-alert rounded">
                                                     <strong class="text-capitalize text-dark">
                                                         @(justification?.Reason == JustificationReason.Others
                                                             ? "Others: " + justification?.JustificationText?.ToString()
@@ -303,7 +303,7 @@
                                                             .GetField(line.ProductionUnit.ToString())
                                                             ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                             .OfType<DisplayAttribute>()
-                                                            .FirstOrDefault()?.Name ?? line.ProductionUnit.ToString()) + "s")
+                                                            .FirstOrDefault()?.Name ?? line.ProductionUnit.ToString()))
                                         </td>
                                         
                                         <td>
@@ -353,7 +353,7 @@
                                     <!-- Details Row -->
                                     <tr class="collapse" id="details-@line.Id">
                                         <td colspan="@(Model.ProductionLineType == ProductionLineType.Interdependent ? 11 : 10)" class="p-0 border-top-0">
-                                            <div class="p-3 bg-light">
+                                            <div class="p-2 bg-light">
                                                 <div class="row">
                                                     <div class="col-md-7">
                                                         <div class="card shadow-sm">
@@ -388,7 +388,7 @@
                                                                                                             .GetField(input.Unit.ToString())
                                                                                                             ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                                                                             .OfType<DisplayAttribute>()
-                                                                                                            .FirstOrDefault()?.Name ?? input.Unit.ToString()) + "s")
+                                                                                                            .FirstOrDefault()?.Name ?? input.Unit.ToString()))
                                                                                     </td>
                                                                                 </tr>
                                                                             }
@@ -413,7 +413,7 @@
                                                                                                         .GetField(inputUnit.ToString())
                                                                                                         ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                                                                                         .OfType<DisplayAttribute>()
-                                                                                                        .FirstOrDefault()?.Name ?? inputUnit.ToString()) + "s"))
+                                                                                                        .FirstOrDefault()?.Name ?? inputUnit.ToString())))
                                                                     </dd>
                                                                     
                                                                     <dt class="col-sm-5">Conversion Rate</dt>
@@ -490,7 +490,7 @@
                     <div class="col-md-8">
                         <div class="inspection-section">
                             <h5 class="section-title"><i class="fas fa-exclamation-triangle text-purple me-2"></i>Capacity Affecting Factors</h5>
-                            <div class="factors-content bg-light p-3 rounded">
+                            <div class="factors-content bg-light p-2 rounded">
                                 @if (!string.IsNullOrEmpty(Model.FactorsAffectingProductionCapacity))
                                 {
                                     @Model.FactorsAffectingProductionCapacity
@@ -504,7 +504,7 @@
                         
                         <div class="inspection-section mb-4">
                             <h5 class="section-title"><i class="fas fa-comment-alt text-purple me-2"></i>Survey Remarks</h5>
-                            <div class="remarks-content bg-light p-3 rounded">
+                            <div class="remarks-content bg-light p-2 rounded">
                                 @if (!string.IsNullOrEmpty(Model.SurveyRemark))
                                 {
                                     @Model.SurveyRemark

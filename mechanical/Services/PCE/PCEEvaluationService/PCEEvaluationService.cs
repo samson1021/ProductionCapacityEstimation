@@ -206,6 +206,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = await FindValuation(Id);
+                pceEvaluation.CompletedAt = DateTime.UtcNow;
 
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.UtcNow);
@@ -412,11 +413,12 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             PCE.CurrentStage = Stage;
             PCE.CurrentStatus = Status;
             _cbeContext.ProductionCapacities.Update(PCE);
+            await _cbeContext.SaveChangesAsync();
         }
 
         private async Task UpdatePCECaseStatusIfAllCompleted(Guid PCECaseId)
         {
-            // Check if all capacities are completed (loads only the status)
+            // Check if all capacities are completed
             var caseInfo = await _cbeContext.PCECases
                     .Where(p => p.Id == PCECaseId)
                     .Select(p => new {

@@ -14,14 +14,12 @@
 }
 <div class="row mt-3">
     <div class="card border-0 shadow-lg mb-4">
-        <div class="card-body p-2">
-
+        <div class="card-body my-2 p-4 mb-2">
             <!-- Capacity Information Section -->
-            <div class="border rounded-3 my-2 p-4 mb-2 position-relative shadow bg-light custom-form">
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Capacity Information</h5>
                 </div>
-
                 <!-- Machine Details -->
                 <div class="row mt-3">
                     <div class="form-group col-md-3">
@@ -82,16 +80,15 @@
             </div>
 
             <!-- Input-Output Data Toggle -->
-            <div class="form-check form-switch my-4">
-                <input class="form-check-input" type="checkbox" role="switch"
-                       asp-for="HasInputOutputData" id="hasInputOutputData" checked>
+            <div class="form-check form-switch my-4 mb-2 p-4">
+                <input class="form-check-input" type="checkbox" role="switch" asp-for="HasInputOutputData" id="hasInputOutputData" checked>
                 <label class="form-check-label" for="hasInputOutputData">
                     <h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5>
                 </label>
             </div>
 
             <!-- No Input/Output Data Justification Section -->
-            <div class="border rounded-3 p-2 position-relative shadow-sm mb-4 bg-light" id="justificationSection" style="display: none;">
+            <div class="border rounded-3 my-2 p-2 position-relative shadow-sm mb-4 bg-light" id="justificationSection" style="display: none;">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Justifications</h5>
                 </div>
@@ -116,7 +113,6 @@
                                 @(reason != JustificationReason.Others && justification == null ? "hidden" : null)
                                 @(reason != JustificationReason.Others && justification == null ? "disabled" : null)
                                           data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea>
-                                @* data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea> *@
                             </div>
                         }
                     }
@@ -128,12 +124,12 @@
             </div>
 
             <!-- Production Line Evaluation Section -->
-            <div class="border rounded-3 p-2 position-relative shadow-sm mb-4 bg-light" id="input-outputs-container">
+            <div class="border rounded-3 my-2 p-2 position-relative shadow-sm mb-4 bg-light" id="input-outputs-container">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                         <h5 class="mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Production Line Evaluation</h5>
                     </div>
-                    <button type="button" id="addProductionLineBtn" class="btn btn-primary ms-auto mt-3">
+                    <button type="button" id="addProductionLineBtn" class="btn bg-purple ms-auto mt-3">
                         <i class="fas fa-plus me-1"></i> Add Production Line
                     </button>
                 </div>
@@ -141,7 +137,7 @@
             </div>
 
             <!-- Inspection Information Section -->
-            <div class="border rounded-3 p-2 position-relative shadow-sm bg-light">
+            <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow-sm bg-light">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-clipboard-check me-2 text-primary"></i>Inspection Information</h5>
                 </div>

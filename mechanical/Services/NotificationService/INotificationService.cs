@@ -8,7 +8,7 @@ namespace mechanical.Services.NotificationService
     {
         Task<NotificationReturnDto> GetNotification(Guid userId, Guid notificationId);
         Task<NotificationResultDto> GetNotifications(Guid userId, bool includeRead = false, string mode = "active", int page = 1, int pageSize = 10);
-        Task MarkAsRead(Guid userId, Guid notificationId);
+        Task<bool> MarkAsRead(Guid userId, Guid notificationId);
         Task MarkAllAsRead(Guid userId);
         Task MarkAsSeen(Guid userId, List<Guid> notificationIds);
         Task MarkAllAsSeen(Guid userId);

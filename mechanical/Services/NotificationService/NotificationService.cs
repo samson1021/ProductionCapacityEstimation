@@ -116,28 +116,28 @@ namespace mechanical.Services.NotificationService
         }
 
 
-        public async Task MarkAsRead(Guid userId, Guid notificationId)
+        public async Task<bool> MarkAsRead(Guid userId, Guid notificationId)
         {
             if (notificationId == Guid.Empty)
             {
-                return;
+                return false;
             }
-
+            
             await _cbeContext.Notifications
                             .Where(n => n.UserId == userId && notificationId == n.Id)
                             .ExecuteUpdateAsync(setters => setters
                                 .SetProperty(n => n.IsRead, true)
                                 .SetProperty(n => n.IsSeen, true));
 
-            //     var notification = await _cbeContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
-            //     if (notification != null)
-            //     {
-            //         notification.IsRead = true;
-            //         notification.IsSeen = true;
-            //     }
-            //     await _cbeContext.SaveChangesAsync();
+            // var notification = await _cbeContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
+
+            // if (notification == null) return false;
+
+            // notification.IsRead = true;
+            // notification.IsSeen = true;
 
             await _cbeContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task MarkAllAsRead(Guid userId)
