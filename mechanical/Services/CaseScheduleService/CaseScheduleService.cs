@@ -34,6 +34,7 @@ namespace mechanical.Services.CaseScheduleService
         public async Task<CaseScheduleReturnDto> CreateCaseSchedule(Guid userId, CaseSchedulePostDto caseCommentPostDto)
         {
             var caseSchedule = _mapper.Map<CaseSchedule>(caseCommentPostDto);
+            caseSchedule.Id = Guid.NewGuid();
             caseSchedule.UserId = userId;
             caseSchedule.CreatedAt = DateTime.UtcNow;
             caseSchedule.Status = "proposed";
