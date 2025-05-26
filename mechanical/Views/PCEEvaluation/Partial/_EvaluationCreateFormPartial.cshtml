@@ -116,7 +116,6 @@
                                 @(reason != JustificationReason.Others && justification == null ? "hidden" : null)
                                 @(reason != JustificationReason.Others && justification == null ? "disabled" : null)
                                           data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea>
-                                @* data-reason="@reason">@((reason == JustificationReason.Others ? justification?.JustificationText ?? "" : displayAttribute?.Name ?? reason.ToString()))</textarea> *@
                             </div>
                         }
                     }
