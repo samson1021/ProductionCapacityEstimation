@@ -16,7 +16,7 @@
         var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");
         if (selectElement.value === "Private Owned LHC") {
             PrivateownedLHC.style.display = "block";
-            IndustrialPark.style.display = "none";
+            IndustrialParkrow.style.display = "none";
             PrivateRentedLHC.style.display = "none";
 
 
@@ -26,13 +26,14 @@
             PrivateRentedLHC.style.display = "none";
 
         }else if (selectElement.value === "Private Rented LHC") {
-            IndustrialPark.style.display = "none";
+            IndustrialParkrow.style.display = "none";
             PrivateRentedLHC.style.display = "block";
             PrivateownedLHC.style.display = "none";
 
         } else {
             PrivateownedLHC.style.display = "none";
             IndustrialParkrow.style.display = "none";
+            PrivateRentedLHC.style.display = "none";
         }
     }
    

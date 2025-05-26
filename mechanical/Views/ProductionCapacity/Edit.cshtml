@@ -151,6 +151,32 @@
                                             <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    <div id="PrivateRentedLHC" style="display: none;">
+                                        <div class="row">
+                                            <div class="form-group col-lg-3">
+                                                <label asp-for="LHCNumber">LHC Number: </label>
+                                                <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber">
+                                                <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group col-lg-3">
+                                                <label asp-for="OwnerName">Owner Name in the LHC </label>
+                                                <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX">
+                                                <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                            </div>
+                                           @*  <div class="form-group col-lg-3">
+                                                <label asp-for="LHCDocument">Upload LHC Document </label>
+                                                <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument">
+                                                <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group col-lg-3">
+                                                <label asp-for="ShadeRentAgreement">Upload Rent Agreement Document </label>
+                                                <input asp-for="ShadeRentAgreement" type="file" class="form-control  form-control-sm" id="RentAgreement">
+                                                <span id="RentAgreement-error" asp-validation-for="ShadeRentAgreement" class="text-danger"></span>
+                                            </div> *@
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </div>
                         </div>
