@@ -206,7 +206,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             try
             {
                 var pceEvaluation = await FindValuation(Id);
-                pceEvaluation.UpdatedAt = DateTime.UtcNow;
+                pceEvaluation.CompletedAt = DateTime.UtcNow;
 
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.UtcNow);
