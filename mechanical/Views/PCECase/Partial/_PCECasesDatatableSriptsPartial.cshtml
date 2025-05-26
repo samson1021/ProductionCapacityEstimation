@@ -45,7 +45,7 @@
                     const deleteUrl = '@Url.Action("Delete", "PCECase")?Id=' + data;
                     const summaryUrl = '@Url.Action("PCESummary", "PCECase")?Id=' + data;
                     const timeLineUrl = '@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data;
-
+                    console.log("row value", row);
                     const editLink = '@currentUserRole' === "Relation Manager" ? ` | <a href="${editUrl}">Edit</a>` : '';
                     @* const deleteLink = '@currentUserRole' === "Relation Manager" ? ` | <a href="${deleteUrl}" onclick="openDeletionModal('${data}')">Delete</a>` : ''; *@
                     const summaryLink = ` | <a href="${summaryUrl}">Summary</i></a>`;
