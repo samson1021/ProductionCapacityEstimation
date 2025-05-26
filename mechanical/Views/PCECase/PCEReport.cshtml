@@ -1,5 +1,6 @@
 @using mechanical.Models.PCE.Dto.PCECaseDto
 @using mechanical.Models.PCE.Entities
+@using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.Dto.UploadFileDto
 
 @{
@@ -16,7 +17,7 @@
         font-family: 'Times New Roman', Times, serif;
         font-size: 12pt;
         line-height: 1.5;
-        width: 210mm;
+        max-width: 270mm;
         margin: 0 auto;
         padding: 0mm;
         box-sizing: border-box;
@@ -130,21 +131,8 @@
         /* Page margins and numbering */
         @@page {
             size: A4;
-            margin: 15mm 15mm 25mm 15mm; /* Top, Right, Bottom, Left */
-            /* Stamp positioning */
-        // @@bottom-center {
-        //     content: "";
-        //     background-image: url('@@Url.Content("~/img/stamp.png")');
-        //     background-size: 100px auto;
-        //     background-repeat: no-repeat;
-        //     background-position: center;
-        //     width: 100px;
-        //     height: 50px; /* Adjust based on your stamp's aspect ratio */
-        //     opacity: 0.5;
-        //     margin-bottom: 5mm;
-        // }
-
-            /* Page number at bottom right */
+            margin: 10mm 15mm 20mm 15mm; /* Top, Right, Bottom, Left */
+     
            @@bottom-right {
                 content: "Page " counter(page);
                 font-size: 10pt;
@@ -316,9 +304,19 @@
                                 <p><strong>Production Line:</strong> @evaluation.ProductionLineType</p>
                                 <p><strong>Country of Origin:</strong> @evaluation.CountryOfOrigin</p>
                                 <p><strong>Technical Status:</strong> @evaluation.TechnicalObsolescenceStatus</p>
-                            </div>
+                                <p><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
+                                @if (evaluation.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other)
+                                {
+                                    <p>@evaluation.OtherMachineNonFunctionalityReason  </p>
+                                }
+                                <p><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
+                                </div>
                             <div class="col-md-6 print-column">
-                                <p><strong>Functionality:</strong> @evaluation.MachineFunctionalityStatus</p>
+                                @{
+                                    var bottleneckLine = evaluation.ProductionLines?.FirstOrDefault(l => l.IsBottleneck);
+                                }
+                                <p><strong>Bottleneck Line:</strong> @(bottleneckLine != null ? bottleneckLine.LineName : "N/A")</p>
+
                                 <p><strong>Inspection Place:</strong> @evaluation.InspectionPlace</p>
                                 <p><strong>Inspection Date:</strong> @evaluation.InspectionDate.ToString("dd/MM/yyyy")</p>
                                 <p>
@@ -331,11 +329,24 @@
                                     {
                                         <span>N/A</span>
                                     }
-                                </p>
+                                </p> 
+                                <p><strong>Bottleneck Capacity:</strong> @(bottleneckLine != null ? bottleneckLine.ActualCapacity : "N/A")</p>
+
                             </div>
                         </div>
-
-                        @if (evaluation.HasInputOutputData && evaluation.ProductionLines?.Any() == true)
+                        @if (evaluation.HasInputOutputData==false && evaluation.Justifications?.Any() == true)
+                        {
+                            <h6 class="mt-3"><b>Justifications:</b></h6>
+                            <ul class="list-group">
+                                @foreach (var justification in evaluation.Justifications)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@justification.Reason:</strong> @justification.JustificationText
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        @if (evaluation.ProductionLines?.Any() == true)
                         {
                             <h6 class="mt-3">Production Lines:</h6>
                             <table class="table table-bordered">
@@ -349,7 +360,13 @@
                                         <th style="width: 13%;">Attainable Capacity</th>
                                         <th style="width: 13%;">Unit/Measure</th>
                                         <th style="width: 8%;">Total Input</th>
-                                        <th style="width: 8%;">Conversion Ratio</th>
+                                        @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
+                                        {
+                                            <th style="width: 8%;">Input </th>
+                                        }
+                                       else {
+                                            <th style="width: 8%;">Conversion Ratio</th>
+                                        }
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -357,16 +374,30 @@
                                     {
                                         <tr>
                                             <td>@lineIndex</td>
-                                            <td>@line.LineName</td>
+                                             <td>
+                                                @line.LineName
+                                                @if (line.IsBottleneck)
+                                                {
+                                                    <span style="background-color: yellow; padding: 2px 4px;"> (Bottleneck)</span>
+                                                }
+                                            </td>
+
                                             <td>@line.OutputType</td>
                                             <td>@line.ActualCapacity</td>
                                             <td>@(line.DesignCapacity?.ToString() ?? "N/A")</td>
                                             <td>@line.AttainableCapacity</td>
                                             <td>@line.ProductionUnit/@line.ProductionMeasurement</td>
                                             <td>@line.TotalInput</td>
-                                            <td>@line.ConversionRatio</td>
+                                            @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
+                                            {
+                                                    <td colspan="9">
+                                                        <p>No Input</p>
+                                                    </td>
+                                            }else{
+                                                <td>@line.ConversionRatio</td>
+                                            }
                                         </tr>
-                                        @if (line.ProductionLineInputs?.Any() == true)
+                                              @if (line.ProductionLineInputs?.Any() == true)
                                         {
                                             <tr class="bg-light">
                                                 <td colspan="9">
@@ -398,18 +429,7 @@
                                 </tbody>
                             </table>
                         }
-                        else if (evaluation.Justifications?.Any() == true)
-                        {
-                            <h6 class="mt-3">Justifications:</h6>
-                            <ul class="list-group">
-                                @foreach (var justification in evaluation.Justifications)
-                                {
-                                    <li class="list-group-item">
-                                        <strong>@justification.Reason:</strong> @justification.JustificationText
-                                    </li>
-                                }
-                            </ul>
-                        }
+                       
 
                         <h6 class="mt-3">Factors Affecting Capacity:</h6>
                         <div class="card card-body bg-light">@(evaluation.FactorsAffectingProductionCapacity ?? "N/A")
