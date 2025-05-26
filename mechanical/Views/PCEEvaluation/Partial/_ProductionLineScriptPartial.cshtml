@@ -195,29 +195,6 @@
                 }
             });
         }
-        
-        function reindexJustifications() {
-            const $hiddenContainer = $('#justificationHiddenFields');
-            $hiddenContainer.empty();
-            let index = 0;
-
-            $('#justificationContainer .form-check').each(function () {
-                const $checkbox = $(this).find('.justification-checkbox');
-                if ($checkbox.is(':checked')) {
-                    const reason = $checkbox.data('reason');
-                    const displayName = $checkbox.data('display');
-                    const $textarea = $(this).find('.justification-text');
-                    const justificationText = $textarea.length ? $textarea.val() : "";
-
-                    // Add hidden fields for selected justification
-                    $hiddenContainer.append(`
-                        <input type="hidden" name="Justifications[${index}].Reason" value="${reason}" />
-                        <input type="hidden" name="Justifications[${index}].JustificationText" value="${justificationText}" />
-                    `);
-                    index++;
-                }
-            });
-        }
 
         // Update unit labels based on selected dropdown values
         function updateUnitLabels() {
@@ -288,6 +265,43 @@
             });
         }
 
+        function reindexJustifications() {
+            const $hiddenContainer = $('#justificationHiddenFields');
+            $hiddenContainer.empty();
+            let index = 0;
+
+            $('#justificationContainer .form-check').each(function () {
+                const $checkbox = $(this).find('.justification-checkbox');
+                if ($checkbox.is(':checked')) {
+                    const reason = $checkbox.data('reason');
+                    const displayName = $checkbox.data('display');
+                    const $textarea = $(this).find('.justification-text');
+                    const justificationText = $textarea.length ? $textarea.val() : "";
+
+                    // Add hidden fields for selected justification
+                    $hiddenContainer.append(`
+                        <input type="hidden" name="Justifications[${index}].Reason" value="${reason}" />
+                        <input type="hidden" name="Justifications[${index}].JustificationText" value="${justificationText}" />
+                    `);
+                    index++;
+                }
+            });
+        }
+
+       // Show/hide justification error message
+        function showJustificationError(show) {
+            let $error = $('#justificationError');
+            if (show) {
+                if ($error.length === 0) {
+                    $error = $('<div id="justificationError" class="text-danger mb-2">Please select at least one justification.</div>');
+                    $('#justificationSection').prepend($error);
+                }
+                $error.show();
+            } else {
+                $error.hide();
+            }
+        }
+
         const toggleInputsSection = function() {
             const justificationSection = document.getElementById('justificationSection');
             const inputsSection = document.querySelector('.inputs-section');
@@ -318,6 +332,21 @@
         $('form').on('submit', function(e) {
             reindexJustifications();
 
+            // Custom validation: require at least one justification if hasInputOutputData is unchecked
+            const hasInputOutputDataCheckbox = document.getElementById('hasInputOutputData');
+            let justificationValid = true;
+            if (hasInputOutputDataCheckbox && !hasInputOutputDataCheckbox.checked) {
+                const checkedCount = $('.justification-checkbox:checked').length;
+                if (checkedCount === 0) {
+                    showJustificationError(true);
+                    justificationValid = false;
+                } else {
+                    showJustificationError(false);
+                }
+            } else {
+                showJustificationError(false);
+            }
+            
             $('.is-bottleneck').each(function() {
                 const $hidden = $(this).prev('input[type="hidden"]');
                 if ($(this).is(':checked')) {
@@ -331,15 +360,18 @@
             $(this).removeData('validator');
             $(this).removeData('unobtrusiveValidation');
             $.validator.unobtrusive.parse($(this));
-            
-            if (!$(this).valid()) {
+
+            if (!$(this).valid() || !justificationValid) {
                 e.preventDefault();
                 // Scroll to first error
+                let $firstError = $('.field-validation-error').first();
+                if (!justificationValid) {
+                    $firstError = $('#justificationError');
+                }
                 $('html, body').animate({
-                    scrollTop: $('.field-validation-error').first().offset().top - 100
+                    scrollTop: $firstError.offset().top - 100
                 }, 200);
             }
-            // e.preventDefault();
         });
 
         // Toggle input-output data sections
@@ -356,6 +388,7 @@
                 if (!showJustification) {
                     $('.justification-checkbox').prop('checked', false).trigger('change');
                 }
+                showJustificationError(false);
             });
 
             // Trigger on load
@@ -376,6 +409,11 @@
             const $textarea = $container.find('.justification-text');
             
             reindexJustifications();
+
+            // Hide justification error if at least one is checked
+            if ($('.justification-checkbox:checked').length > 0) {
+                showJustificationError(false);
+            }
             
             if ($container.data('reason') === '@JustificationReason.Others') {
                 if (this.checked) {
@@ -384,7 +422,7 @@
                     $textarea.hide().prop('disabled', true).val('');
                 }
             }
-            
+
             // Re-parse validation
             const $form = $('form');
             $form.removeData('validator');
