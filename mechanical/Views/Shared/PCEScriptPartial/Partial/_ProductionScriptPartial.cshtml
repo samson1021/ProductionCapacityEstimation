@@ -13,7 +13,7 @@
         var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace");
         var PrivateownedLHC = document.getElementById("PrivateownedLHC");
         var IndustrialPark = document.getElementById("IndustrialPark");
-        var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");
+        var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");       
         if (selectElement.value === "Private Owned LHC") {
             PrivateownedLHC.style.display = "block";
             IndustrialParkrow.style.display = "none";
@@ -25,10 +25,10 @@
             PrivateownedLHC.style.display = "none";
             PrivateRentedLHC.style.display = "none";
 
-        }else if (selectElement.value === "Private Rented LHC") {
+        }else if (selectElement.value === "Private Rented LHC") {                 
             IndustrialParkrow.style.display = "none";
             PrivateRentedLHC.style.display = "block";
-            PrivateownedLHC.style.display = "none";
+            PrivateownedLHC.style.display = "block";
 
         } else {
             PrivateownedLHC.style.display = "none";
