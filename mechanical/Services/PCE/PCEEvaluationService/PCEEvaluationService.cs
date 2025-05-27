@@ -211,7 +211,7 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
                 await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.UtcNow);
                 await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE.PCECaseId);
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE);
                 await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
 
                 await _cbeContext.SaveChangesAsync();
@@ -408,53 +408,55 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private async Task UpdatePCEStatus(ProductionCapacity PCE, string Status, string Stage)
+        private async Task UpdatePCEStatus(ProductionCapacity Production, string Status, string Stage)
         {
-            PCE.CurrentStage = Stage;
-            PCE.CurrentStatus = Status;
-            _cbeContext.ProductionCapacities.Update(PCE);
-            await _cbeContext.SaveChangesAsync();
+            Production.CurrentStage = Stage;
+            Production.CurrentStatus = Status;
+            _cbeContext.ProductionCapacities.Update(Production);
         }
 
-        private async Task UpdatePCECaseStatusIfAllCompleted(Guid PCECaseId)
+        private async Task UpdatePCECaseStatusIfAllCompleted(ProductionCapacity Production)
         {
-            // Check if all capacities are completed
+            // Check if all other capacities except this one are completed
             var caseInfo = await _cbeContext.PCECases
-                    .Where(p => p.Id == PCECaseId)
-                    .Select(p => new {
-                        HasCapacities = p.ProductionCapacities.Any(),
-                        AllCompleted = p.ProductionCapacities.All(pc => pc.CurrentStatus == "Completed")
-                    })
-                    .FirstOrDefaultAsync();
+                                            .Where(p => p.Id == Production.PCECaseId)
+                                            .Select(p => new
+                                            {
+                                                HasCapacities = p.ProductionCapacities.Any(),
+                                                AllOthersCompleted = p.ProductionCapacities
+                                                .Where(pc => pc.Id != Production.Id)
+                                                .All(pc => pc.CurrentStatus == "Completed")
+                                            })
+                                            .FirstOrDefaultAsync();
 
-            if (caseInfo?.HasCapacities == true && caseInfo.AllCompleted)
+            if (caseInfo?.HasCapacities == true && caseInfo.AllOthersCompleted)
             {
-                // Update status
-                await _cbeContext.PCECases
-                    .Where(p => p.Id == PCECaseId)
-                    .ExecuteUpdateAsync(s => s
-                        .SetProperty(p => p.Status, "Completed")
-                        .SetProperty(p => p.CompletedAt, DateTime.UtcNow));
+            // Update status
+            await _cbeContext.PCECases
+                .Where(p => p.Id == Production.PCECaseId)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(p => p.Status, "Completed")
+                .SetProperty(p => p.CompletedAt, DateTime.UtcNow));
             }
         }
         
-        private async Task UpdatePCECaseAssignemntStatusForAll(ProductionCapacity PCE, Guid UserId, string Status = "Completed")
+        private async Task UpdatePCECaseAssignemntStatusForAll(ProductionCapacity Production, Guid UserId, string Status = "Completed")
         {
-            if (PCE.CreatedById != null)
+            if (Production.CreatedById != null)
             {
-                await UpdateCaseAssignmentStatus(PCE.Id, PCE.CreatedById, Status);
+                await UpdateCaseAssignmentStatus(Production.Id, Production.CreatedById, Status);
             }
             var MOUser = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
             var MOSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == MOUser.SupervisorId);
             
-            await UpdateCaseAssignmentStatus(PCE.Id, MOSupervisor.Id, Status);
+            await UpdateCaseAssignmentStatus(Production.Id, MOSupervisor.Id, Status);
             
             if (MOSupervisor.Role.Name == "Maker TeamLeader")
             {
                 var MTLSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
                 if (MTLSupervisor != null)
                 {
-                    await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+                    await UpdateCaseAssignmentStatus(Production.Id, MTLSupervisor.Id, Status);
                 }
             }
         }
@@ -487,36 +489,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 });
             }
         }
-
-        // private void UpdateJustifications(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
-        // {
-        //     var newJustifications = dto.Justifications ?? new List<JustificationUpdateDto>();
-        //     var existingJustifications = evaluation.Justifications ??= new List<Justification>();
-
-        //     // Map by ID for efficient lookup
-        //     var newJustificationsById = newJustifications.Where(j => j.Id != Guid.Empty).ToDictionary(j => j.Id);
-        //     var existingJustificationsById = existingJustifications.ToDictionary(j => j.Id);
-
-        //     foreach (var existingJustification in existingJustifications.ToList())
-        //     {
-        //         if (!newJustificationsById.ContainsKey(existingJustification.Id))
-        //             existingJustifications.Remove(existingJustification);
-        //     }
-
-        //     foreach (var newJustification in newJustifications)
-        //     {
-        //         if (newJustification.Id != Guid.Empty && existingJustificationsById.TryGetValue(newJustification.Id, out var existingJustification))
-        //         {
-        //             _mapper.Map(newJustification, existingJustification);
-        //         }
-        //         else
-        //         {
-        //             var justification = _mapper.Map<Justification>(newJustification);
-        //             justification.Id = Guid.NewGuid();
-        //             existingJustifications.Add(justification);
-        //         }
-        //     }
-        // }
 
         private void UpdateProductionLines(PCEEvaluation evaluation, PCEEvaluationUpdateDto dto)
         {
