@@ -12,7 +12,7 @@ namespace mechanical.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<CbeContext>();
-                context.Database.EnsureCreated(); // Ensure database is created
+                context.Database.EnsureCreated(); 
 
                 if (!context.Roles.Any())
                 {
