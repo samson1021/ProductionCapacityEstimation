@@ -108,10 +108,26 @@ namespace mechanical.Services.CaseServices
 
         public async Task<CaseReturnDto> GetCase(Guid userId, Guid id)
         {
-            var loanCase = await _cbeContext.Cases
+            var userState = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == userId);
+            if (userState.Role.Name == "Higher Official")
+            {
+                var loanCase = await _cbeContext.Cases
+                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+                           .FirstOrDefaultAsync(c => c.Id == id);
+                return _mapper.Map<CaseReturnDto>(loanCase);
+            }
+            else
+            {
+                var loanCase = await _cbeContext.Cases
                            .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
                            .FirstOrDefaultAsync(c => c.Id == id && c.CaseOriginatorId == userId);
-            return _mapper.Map<CaseReturnDto>(loanCase);
+                return _mapper.Map<CaseReturnDto>(loanCase);
+            }
+
+            //var loanCase = await _cbeContext.Cases
+            //               .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+            //               .FirstOrDefaultAsync(c => c.Id == id && c.CaseOriginatorId == userId);
+            //return _mapper.Map<CaseReturnDto>(loanCase);
         }
 
         public async Task<CaseReturnDto> GetShareTaskCase(Guid userId, Guid id)
@@ -943,6 +959,140 @@ namespace mechanical.Services.CaseServices
             }
 
             return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
+
+        public async Task<IEnumerable<CaseDto>> GetHoTotalCases(Guid userId)
+        {
+            var cases = await _cbeContext.Cases.Include(x => x.Collaterals)
+           .Where(res => res.CaseOriginatorId == userId).ToListAsync();
+            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+            foreach (var caseDto in caseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+            }
+            return caseDtos;
+        }
+        public async Task<IEnumerable<CaseDto>> GetTotalHONewCases(Guid userId)
+        {
+            var caseDtos = new List<CaseDto>();
+
+            //var originatorCases = await _cbeContext.Cases
+            //   .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+            //   .Where(res => res.CaseOriginatorId == userId && res.Status == "New")
+            //   .ToListAsync();
+
+            var originatorCases = await _cbeContext.Cases
+                .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+                .Where(res => res.Status == "New")
+                .ToListAsync();
+
+            var originatorCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(originatorCases);
+            foreach (var caseDto in originatorCaseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Owner";
+                caseDto.TaskName = "All"; // Set the TaskName
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+
+            // Get cases where the user is assigned a task
+            var assignedCases = await _cbeContext.Cases
+                .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager"))
+                .Join(
+                    _cbeContext.TaskManagments.Where(task => task.AssignedId == userId && task.IsActive == true),
+                    case1 => case1.Id,
+                    task => task.CaseId,
+                    (case1, task) => new { Case = case1, Task = task } // Include both Case and Task
+                )
+                .Where(x => x.Case.Status == "New")
+                .ToListAsync();
+
+            // Group by Case to handle multiple tasks per case
+            var groupedAssignedCases = assignedCases
+                .GroupBy(x => x.Case)
+                .Select(g => new
+                {
+                    Case = g.Key,
+                    TaskNames = g.Select(x => x.Task.TaskName).ToList() // Collect all TaskNames for the case
+                });
+
+            foreach (var group in groupedAssignedCases)
+            {
+                var caseDto = _mapper.Map<CaseDto>(group.Case);
+
+                // Set TaskName by concatenating all task names
+                caseDto.TaskName = string.Join(", ", group.TaskNames);
+
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Shared";
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+
+            // Sort the combined list by CreationAt
+            var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+            return sortedCaseDtos;
+        }
+
+
+
+        public async Task<CaseReturnDto> GetHOCase(Guid id)
+        {
+            var loanCase = await _cbeContext.Cases
+                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+                           .FirstOrDefaultAsync(c => c.Id == id);
+            return _mapper.Map<CaseReturnDto>(loanCase);
+        }
+        public async Task<IEnumerable<CaseDto>> GetTotalHOPendingCases(Guid userId)
+        {
+            var cases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => (res.CurrentStage != "Relation Manager") && ((res.CurrentStatus != "Complete" && res.CurrentStage != "Checker Officer"))))
+                       .Where((res => res.Collaterals.Any(collateral => (collateral.CurrentStage != "Relation Manager") && ((collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Checker Officer")))))
+                       .ToListAsync();
+            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+            foreach (var caseDto in caseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+            }
+            return caseDtos;
+        }
+        public async Task<CaseReturnDto> GetHOPendingCase(Guid userId, Guid id)
+        {
+            var loanCase = await _cbeContext.Cases
+                           .Include(res => res.BussinessLicence).Include(res => res.District).Include(res => res.Collaterals)
+                           .FirstOrDefaultAsync(c => c.Id == id);
+            return _mapper.Map<CaseReturnDto>(loanCase);
+        }
+        public async Task<IEnumerable<CaseDto>> GetHOCompleteCases(Guid userId)
+        {
+            var caseDtos = new List<CaseDto>();
+
+            var originatorCases = await _cbeContext.Cases.Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))
+           .Where(/*res => res.CaseOriginatorId == userId && */(res => res.Collaterals.Any(res => res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer"))).ToListAsync();
+
+
+            var originatorCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(originatorCases);
+            foreach (var caseDto in originatorCaseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Owner";
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+
+            var assignedCases = await _cbeContext.Cases
+                .Include(x => x.Collaterals.Where(res => res.CurrentStatus == "Complete"))
+                .Where(res => res.Status == "Complete" &&
+                                _cbeContext.TaskManagments.Any(task => task.CaseId == res.Id /*&& task.AssignedId == userId*/))
+                .ToListAsync();
+
+            var assignedCaseDtos = _mapper.Map<IEnumerable<CaseDto>>(assignedCases);
+            foreach (var caseDto in assignedCaseDtos)
+            {
+                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                caseDto.CaseType = "Shared";
+                caseDtos.Add(caseDto); // Add to the combined list
+            }
+            var sortedCaseDtos = caseDtos.OrderBy(dto => dto.CreationAt).ToList();
+            return sortedCaseDtos;
+
         }
     }
 }
