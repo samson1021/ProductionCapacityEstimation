@@ -1,5 +1,4 @@
-﻿
-<section class="content-header">
+﻿<section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
@@ -21,46 +20,120 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>From Date</label>
-                            <input type="date" id="fromDate" class="form-control" />
+                            <label for="fromDate">From Date</label>
+                            <input type="date" id="fromDate" class="form-control custom-date" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>To Date</label>
-                            <input type="date" id="toDate" class="form-control" />
+                            <label for="toDate">To Date</label>
+                            <input type="date" id="toDate" class="form-control custom-date" />
                         </div>
                     </div>
-                    <div class="col-md-2 align-self-end">
-                        <button id="filterBtn" class="btn btn-primary">Filter</button>
-                        <button id="resetBtn" class="btn btn-default">Reset</button>
+                    <div class="col-md-6 align-self-end">
+                        <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
+                        <button id="resetBtn" class="btn custom-btn" style="border:none;">Reset</button>
+                        <button id="detailReportBtn" class="btn custom-btn" style="border:none;">Detail Report</button>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <table id="MyNewCase" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Created At</th>
-                            <th>Case No</th>
-                            <th>Requesting Unit</th>
-                            <th>Segment</th>
-                            <th>Customer Name</th>
-                            <th>Team Leader</th>
-                            <th>Total Collateral</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                     </table>
+                <h4 id="reportTitle" class="text-center mb-3">Case Level Report</h4>
+
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table id="MyNewCase" class="table table-bordered table-striped" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="no-export">Action</th> <!-- New column -->
+                                <th>Created At</th>
+                                <th>Case No</th>
+                                <th>Status</th>
+                                <th>Applicant Name</th>
+                                <th>Requested Organ</th>
+                                <th>Customer Relationship</th>
+                                <th>Collateral Count</th>
+                                <th>Assigned No</th>
+                                <th>Delivered No</th>
+                                <th>Returned No</th>
+                                <th>On Hand No</th>
+                                <th>Delivered </th>
+
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+    .custom-btn {
+        background-color: #6f42c1; /* Pink */
+        color: #ffffff; /* Black text */
+        margin-right: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s;
+    }
+
+        .custom-btn:hover {
+            background-color: #ffd700; /* Golden on hover */
+            color: #000000;
+        }
+
+        .custom-btn:active {
+            background-color: #e6c200; /* Darker golden on click */
+        }
+
+    #reportTitle {
+        color: #6f42c1; /* Matching your theme */
+        font-weight: bold;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 7px;
+        border-left: 5px solid #6f42c1;
+    }
+    .custom-date {
+        border: 1px solid #000000; /* Black border */
+        background-color: #fff; /* White background */
+        color: #000000; /* Black text */
+        padding: 8px;
+    }
+
+        .custom-date:focus {
+            border-color: #ffd700; /* Golden border on focus */
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+    /* Action column styling */
+    .nav-link-btn {
+        color: #6f42c1 !important;
+        background: none !important;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+    }
+
+        .nav-link-btn:hover {
+            color: white !important;
+            background-color: #6f42c1 !important;
+            text-decoration: none;
+        }
+
+  
+
+    /* Make sure action column stays visible */
+    th.no-export {
+        display: table-cell !important;
+    }
+    label {
+        color: #000000; /* Black text for labels */
+    }
+</style>
+
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("Partial/_PCECasesReportDatatableSriptsPartial"); 
+        await Html.RenderPartialAsync("Partial/_PCECasesReportDatatableSriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }
-
-

@@ -31,14 +31,28 @@ namespace mechanical.Controllers
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
             return View();
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetInternalPCECaseReport()
+        {
+            var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
+            //if (myCase == null) { return BadRequest("Unable to load case"); }
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
         [HttpGet]
         public async Task<IActionResult> GetCaseReport()
         {
-            var myCase = await _internalReportService.GetCaseReport(GetCurrentUserId());
-            if (myCase == null) { return BadRequest("Unable to load case"); }
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
+            var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
+            if (myCase.DistinctCases == null && myCase.AllProductionCapacities == null)
+            {
+                return BadRequest("Unable to load case");
+            }
+            var result = new
+            {
+                DistinctCases = myCase.DistinctCases,
+                AllProductionCapacities = myCase.AllProductionCapacities
+            };
+            return Ok(result);
         }
     }
 }
