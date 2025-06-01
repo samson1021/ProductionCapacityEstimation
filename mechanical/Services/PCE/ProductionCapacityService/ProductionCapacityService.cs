@@ -499,6 +499,83 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 .GetCustomAttributes(typeof(DisplayAttribute), false)
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
+        // HO
+        public async Task<IEnumerable<ProductionReturnDto>> GetHOProductions(
+     
+     Guid? PCECaseId = null,
+     string Stage = null,
+     string Status = null)
+        {
+            var productions = await _cbeContext.PCECaseAssignments
+                .AsNoTracking()
+                .Where(a => string.IsNullOrEmpty(Status) || Status == "All" || a.Status == Status)
+                .Join(
+                    _cbeContext.ProductionCapacities,
+                    pca => pca.ProductionCapacityId,
+                    pc => pc.Id,
+                    (pca, pc) => new
+                    {
+                        ProductionCapacity = pc,
+                        AssignmentStatus = pca.Status,
+                        AssignmentDate = pca.AssignmentDate,
+                        PCECase = pc.PCECase
+                    })
+                .Where(x =>
+                    (x.AssignmentStatus != null /*|| x.ProductionCapacity.AssignedEvaluatorId == UserId*/) &&
+                    (PCECaseId == null || x.ProductionCapacity.PCECaseId == PCECaseId) &&
+                    (Stage == null || x.ProductionCapacity.CurrentStage == Stage)
+                )
+                .ToListAsync();
+
+            // Group by AssignmentStatus and select the latest production per status
+            var groupedByStatus = productions
+                .GroupBy(x => x.AssignmentStatus)
+                .Select(g => g.OrderByDescending(x => x.AssignmentDate).First()) // Take latest per status
+                .ToList();
+
+            return groupedByStatus.Select(x =>
+            {
+                var dto = _mapper.Map<ProductionReturnDto>(x.ProductionCapacity);
+                dto.AssignmentStatus = x.AssignmentStatus;
+                dto.PCECase = x.PCECase;
+                return dto;
+            }).ToList();
+        }
+        public async Task<ProductionReturnDto> GetHOProduction( Guid Id)
+        {
+            var production = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(pc => pc.Id == Id);
+            var pceAssignment = await _cbeContext.PCECaseAssignments.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id /*&& res.UserId == UserId*/);
+            var productionDto = _mapper.Map<ProductionReturnDto>(production);
+            productionDto.AssignmentStatus = pceAssignment?.Status;
+            return productionDto;
+        }
+
+        public async Task<ProductionDetailDto> GetHOProductionDetails(Guid Id)
+        {
+
+            var pce = await GetHOProduction(Id);
+            var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id);
+            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);
+            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory( Id);
+            var returnedProductions = await _cbeContext.ReturnedProductions
+                                                        .AsNoTracking()
+                                                        .Include(pr => pr.ReturnedBy)
+                                                        .Where(pr => pr.PCEId == Id)
+                                                        .OrderByDescending(pr => pr.ReturnedAt)
+                                                        .ToListAsync();
+
+            return new ProductionDetailDto
+            {
+                PCECase = pce.PCECase,
+                ProductionCapacity = _mapper.Map<ProductionReturnDto>(pce),
+                PCEValuationHistory = valuationHistory,
+                Reestimation = reestimation,
+                RelatedFiles = relatedFiles,
+                ReturnedProductions = _mapper.Map<IEnumerable<ReturnedProductionDto>>(returnedProductions)
+            };
+        }
+
+
     }
 }
 
