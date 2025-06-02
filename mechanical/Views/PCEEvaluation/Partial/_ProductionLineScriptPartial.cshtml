@@ -41,7 +41,6 @@
         function addInputMaterial($line) {
             const inputTemplate = $('#productionLineInputTemplate').html();
             const $inputsContainer = $line.find('.inputs-container');
-            // const lineIndex = $('.production-line-form').index($line);
             const lineIndex = $line.closest('.production-line-container').data('line-index');
             const inputIndex = $line.find('.input-item').length;
             
@@ -53,17 +52,108 @@
             $inputsContainer.append($newInput);
             $newInput.slideDown(200);
 
-            // Hide alert container if present
             $inputsContainer.find('.alert').hide();
 
-            // Initialize validation
             $.validator.unobtrusive.parse($newInput);
 
-            // Calculate totals when input changes
-            $newInput.find('.input-quantity').on('input', calculateTotals);
-            $newInput.find('.input-unit-dropdown').on('change', calculateTotals);
+            HandleSourceTypeChange($newInput, lineIndex);
 
+            $newInput.find('.input-quantity, .input-unit-dropdown').on('input change', calculateTotals);
             calculateTotals();
+        }
+
+        function HandleSourceTypeChange($input, lineIndex = null) {
+            const productionLineType = parseInt($('#ProductionLineType').val());
+            const $typeContainer = $input.find('.input-type-container');
+            const $quantityContainer = $input.find('.input-quantity-container');
+            const $unitContainer = $input.find('.input-unit-container');
+            const $sourceType = $input.find('.source-type');
+
+            // Disable source type for first production line (only allow new material)
+            if (lineIndex === 0) {
+                $sourceType.val(0).trigger('change').prop('disabled', true);
+                $sourceType.closest('.source-type-container').show();
+                // Hide previous line container if visible
+                $input.find('.previous-line-container').hide();
+                // Show input type container and enable input fields
+                $input.find('.input-type-container, .input-unit-container').show();
+                $input.find('.input-type, .input-quantity, .input-unit-dropdown').prop('readonly', false).prop('disabled', false);
+                $input.find('.input-type-hidden').remove();
+                return;
+            }
+
+            if (productionLineType === @((int)ProductionLineType.Interdependent)) {
+                $typeContainer.removeClass('col-md-4').addClass('col-md-3');
+                $quantityContainer.removeClass('col-md-4').addClass('col-md-3');
+                $unitContainer.removeClass('col-md-3').addClass('col-md-2');
+
+                $sourceType.closest('.source-type-container').show();
+                $sourceType.prop('disabled', false);
+
+                $sourceType.off('change').on('change', function() {
+                    const $inputItem = $(this).closest('.input-item');
+                    const sourceType = $(this).val();
+
+                    if (parseInt(sourceType) === @((int)SourceType.PreviousOutput)) {
+                        $inputItem.find('.input-type-container').hide();
+                        $inputItem.find('.previous-line-container').show();
+
+                        const currentLineIndex = lineIndex;
+                        const $previousLineDropdown = $inputItem.find('.previous-line-dropdown');
+                        $previousLineDropdown.empty().append('<option value="" disabled selected>Select Line</option>');
+
+                        // Populate eligible previous lines
+                        $('.production-line-container').each(function() {
+                            const prevLineIndex = $(this).data('line-index');
+                            if (prevLineIndex < currentLineIndex) {
+                                const outputPhase = $(this).find('[name$=".OutputPhase"]').val();
+                                if (outputPhase !== '@OutputPhase.FinishedProduct') {
+                                    const outputType = $(this).find('[name$=".OutputType"]').val();
+                                    $previousLineDropdown.append(
+                                        `<option value="${prevLineIndex}">Line ${prevLineIndex + 1}: ${outputType}</option>`
+                                    );
+                                }
+                            }
+                        });
+
+                        $previousLineDropdown.off('change').on('change', function() {
+                            const selectedLineIndex = $(this).val();
+                            if (selectedLineIndex) {
+                                const $selectedLine = $(`.production-line-container[data-line-index="${selectedLineIndex}"]`);
+                                const outputType = $selectedLine.find('[name$=".OutputType"]').val();
+                                const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
+                                const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
+                                
+                                // Instead of .prop('disabled', true), use .prop('readonly', true)
+                                $inputItem.find('.input-type').val(outputType).prop('readonly', true).prop('disabled', false);
+                                $inputItem.find('.input-quantity').val(actualCapacity).prop('readonly', true).prop('disabled', false);
+                                $inputItem.find('.input-unit-dropdown').val(productionUnit).trigger('change').prop('disabled', true);
+
+                                // Add a hidden input for .input-type to ensure value is always submitted
+                                if ($inputItem.find('.input-type-hidden').length === 0) {
+                                    $inputItem.append('<input type="hidden" class="input-type-hidden" name="' + $inputItem.find('.input-type').attr('name') + '" value="' + outputType + '"/>');
+                                } else {
+                                    $inputItem.find('.input-type-hidden').val(outputType);
+                                }
+                            } else {
+                                $inputItem.find('.input-type, .input-quantity, .input-unit-dropdown').val('').prop('disabled', false);
+                            }
+                        });
+                    } else {
+                        $inputItem.find('.input-type-container, .input-unit-container').show();
+                        $inputItem.find('.previous-line-container').hide();
+                        $inputItem.find('.input-type, .input-quantity, .input-unit-dropdown').val('').prop('readonly', false).prop('disabled', false);
+                        $inputItem.find('.input-type-hidden').remove();
+                    }
+                }).trigger('change');
+            } else {
+                $typeContainer.removeClass('col-md-3').addClass('col-md-4');
+                $quantityContainer.removeClass('col-md-3').addClass('col-md-4');
+                $unitContainer.removeClass('col-md-2').addClass('col-md-3');
+
+                $sourceType.val(0).trigger('change').prop('disabled', true);
+                $sourceType.closest('.source-type-container').hide();
+            }
         }
 
         // Remove production line
@@ -196,6 +286,17 @@
             });
         }
 
+        // Toggle all input materials according to production line type
+        function toggleInputMaterials() {
+            $('.production-line-container').each(function () {
+                const $line = $(this);
+                const lineIndex = $line.data('line-index');
+                $line.find('.input-item').each(function () {
+                    HandleSourceTypeChange($(this), lineIndex);
+                });
+            });
+        }
+
         // Update unit labels based on selected dropdown values
         function updateUnitLabels() {
             $('.production-line-form').each(function () {
@@ -229,18 +330,24 @@
                 let units = new Set();
                 let hasError = false;
 
-                $line.find('.input-quantity').each(function() {
-                    const $input = $(this);
-                    const val = parseFloat($input.val());
-                    const unit = $input.closest('.input-item').find('.input-unit-dropdown').val();
+                $line.find('.input-item').each(function() {
+                    const $inputItem = $(this);
+                    const sourceType = $inputItem.find('.source-type').val();
+                    const quantity = parseFloat($inputItem.find('.input-quantity').val()) || 0;
+                    let unit;
 
-                    if (unit) {
-                        units.add(unit);
+                    if (parseInt(sourceType) === @((int)SourceType.PreviousOutput)) {
+                        const referencedLineIndex = $inputItem.find('.previous-line-dropdown').val();
+                        if (referencedLineIndex) {
+                            const $referencedLine = $(`.production-line-container[data-line-index="${referencedLineIndex}"]`);
+                            unit = $referencedLine.find('.production-unit-dropdown').val();
+                        }
+                    } else {
+                        unit = $inputItem.find('.input-unit-dropdown').val();
                     }
 
-                    if (!isNaN(val)) {
-                        totalInput += val;
-                    }
+                    if (unit) units.add(unit);
+                    if (!isNaN(quantity)) totalInput += quantity;
                 });
 
                 if (units.size > 1) {
@@ -254,15 +361,14 @@
                     $line.find('.unit-error-message').remove();
                 }
 
-                // Disable submit button if invalid
-                $('button[type="submit"]').prop('disabled', !formIsValid);
-                
                 const actualCapacity = parseFloat($line.find('.capacity-input').first().val()) || 0;
                 const conversionRatio = actualCapacity > 0 && !hasError ? (actualCapacity / totalInput * 100) : 0;
 
                 $line.find('.total-input').val(totalInput.toFixed(2));
                 $line.find('.conversion-ratio').val(conversionRatio.toFixed(2));
             });
+
+            $('button[type="submit"]').prop('disabled', !formIsValid);
         }
 
         function reindexJustifications() {
@@ -374,6 +480,11 @@
             }
         });
 
+        // Remove error class on change
+        $(document).on('change', '.previous-line-dropdown, .input-type', function() {
+            $(this).removeClass('is-invalid');
+        });
+
         // Toggle input-output data sections
         const hasInputOutputDataCheckbox = document.getElementById('hasInputOutputData');
         if (hasInputOutputDataCheckbox) {
@@ -403,6 +514,9 @@
             }
         });
 
+        // Initialize any pre-checked boxes
+        $('.justification-checkbox:checked').trigger('change');
+
         // Update justification checkbox handling
         $(document).on('change', '.justification-checkbox', function() {
             const $container = $(this).closest('.form-check');
@@ -429,18 +543,30 @@
             $form.removeData('unobtrusiveValidation');
             $.validator.unobtrusive.parse($form);
         });
-
-        // Initialize any pre-checked boxes
-        $('.justification-checkbox:checked').trigger('change');
         
         // Consolidated event listener for ProductionLineType changes
-        $(document).on('change', '#ProductionLineType', toggleOutputPhaseVisibility);
+        $(document).on('change', '#ProductionLineType', function() {
+            toggleOutputPhaseVisibility();
+            toggleInputMaterials();
+        });
         
         // Attach event listener to bottleneck checkboxes
         $(document).on('change', '.is-bottleneck', function () {
             handleBottleneckToggle();
         });
-        
+
+        $(document).on('change', '.output-phase', function() {
+            $('.production-line-container').each(function() {
+                const $line = $(this);
+                const lineIndex = $line.data('line-index');
+                $line.find('.input-item').each(function() {
+                    const $inputItem = $(this);
+                    if (parseInt($inputItem.find('.source-type').val()) === @((int)SourceType.PreviousOutput)) {
+                        $inputItem.find('.source-type').trigger('change');
+                    }
+                });
+            });
+        });
         // Initialize the first line's inputs
         try {
             if ($('#productionLineContainer .production-line-evaluation-item').length === 0) {

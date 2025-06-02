@@ -185,21 +185,45 @@
     <div class="input-item card mb-2">
         <div class="card-body py-2">
             <div class="row">
-                <div class="col-md-4">
-                    <input name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Type"
-                            class="form-control form-control-sm input-type"
-                            placeholder="Material Type" required />
+                <!-- Source Type -->
+                <div class="col-md-3 source-type-container">
+                    <select name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].SourceType" 
+                            class="form-select form-select-sm source-type">
+                        @foreach (var source in Html.GetEnumSelectList<SourceType>())
+                        {
+                            <option value="@source.Value">@source.Text</option>
+                        }
+                    </select>
                 </div>
-                <div class="col-md-3">
+                
+                <!-- Previous Line Dropdown -->
+                <div class="col-md-3 previous-line-container" style="display: none;">
+                    <select class="form-select form-select-sm previous-line-dropdown"
+                            name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].ReferencedLineIndex">
+                        <option value="" disabled selected>Select Line</option>
+                    </select>
+                </div>
+                
+                <!-- Material Type -->
+                <div class="col-md-3 input-type-container">
+                    <input name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Type"
+                           class="form-control form-control-sm input-type"
+                           placeholder="Material Type" required />
+                </div>
+                
+                <!-- Quantity -->
+                <div class="col-md-3 input-quantity-container">
                     <div class="input-group input-group-sm">
                         <input name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Quantity"
-                                type="number" step="0.01" min="0"
-                                class="form-control input-quantity"
-                                placeholder="0.00" required />
+                               type="number" step="0.01" min="0"
+                               class="form-control input-quantity"
+                               placeholder="0.00" required />
                         <span class="input-group-text input-unit-label bg-purple">units</span>
                     </div>
                 </div>
-                <div class="col-md-3">
+                
+                <!-- Unit Dropdown -->
+                <div class="col-md-2 input-unit-container">
                     <select name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Unit" 
                             class="form-select form-select-sm input-unit-dropdown" required>
                         <option value="" disabled selected>Select Unit</option>
@@ -210,7 +234,8 @@
                     </select>
                 </div>
                 
-                <div class="col-md-2 text-end">
+                <!-- Remove Button -->
+                <div class="col-md-1 text-end">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-input-btn">
                         <i class="fas fa-times"></i>
                     </button>
