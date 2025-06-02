@@ -56,5 +56,10 @@ namespace mechanical.Models.Entities
         public virtual User? CheckerUser { get; set; }
         [ForeignKey("CollateralId")]
         public virtual Collateral? Collateral { get; set; }
+
+
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     }
 }

@@ -61,5 +61,7 @@ namespace mechanical.Models.Entities
         public virtual User? CreatedBy { get; set; }
         [ForeignKey("CaseId")]
         public virtual Case? Case { get; set; }
+
+        public int NumberOfRetuns { get; set; } = 0;
     }
 }

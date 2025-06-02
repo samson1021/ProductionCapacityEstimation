@@ -31,5 +31,7 @@ namespace mechanical.Models.Dto.CollateralDto
         public string? Purpose { get; set; }
         public string? ModelNo { get; set; }
         public string? CollateralType { get; set; }
+
+        public int NumberOfRetuns { get; set; } = 0;
     }
 }
