@@ -728,10 +728,7 @@ namespace mechanical.Controllers.PCE
         public async Task<IActionResult> HOPCESummary(Guid Id)
         {
             var pceCase = await _PCECaseService.GetHOPCECase(Id);
-
-            //var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
-
-            //ViewData["pceEvaluations"] = pceEvaluations;
+            
             ViewData["PCECase"] = pceCase;
             return View();
         }

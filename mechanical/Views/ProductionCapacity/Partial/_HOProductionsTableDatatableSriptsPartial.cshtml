@@ -38,11 +38,11 @@
             @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate") ? ' disabled' : '') + '>'; } },
         }
     }
-                { data: 'PropertyOwner', width: '35%' },
+                { data: 'PropertyOwner', width: '25%' },
                 { data: 'Role', width: '25%' },
-                { data: 'MachineName', width: '25%' },
-    @* { data: 'CurrentStatus', width: '35%' }, *@
-                { data: 'AssignmentStatus', width: '35%' },
+                { data: 'MachineName', width: '25%' },   
+               { data: 'CurrentStatus', width: '25%' },
+                 { data: 'CurrentStage', width: '25%' },
                 {
                     data: 'Id',
                     width: '10%',
