@@ -358,7 +358,7 @@
         var motorerror = document.getElementById("motor-error");
         var motorValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        var alphanumericRegex = /^[a-zA-Z0-9]*$/;
         if (motorValue.length > 0 && !alphanumericRegex.test(motorValue)) {
             motorerror.textContent = "Motor No must contain only alphanumeric characters.";
         } else {
@@ -369,7 +369,7 @@
         var serialerror = document.getElementById("serial-error");
         var SerialValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        var alphanumericRegex = /^[a-zA-Z0-9]*$/;
         if (SerialValue.length > 0 && !alphanumericRegex.test(SerialValue)) {
             serialerror.textContent = "Wereda must contain only alphanumeric characters.";
         } else {

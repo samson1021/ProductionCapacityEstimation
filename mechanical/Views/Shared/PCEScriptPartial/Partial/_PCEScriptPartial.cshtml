@@ -88,7 +88,7 @@
         if (element) {
             element.addEventListener("input", function () {
                 var input = this.value;
-                var alphanumericRegex = /^[A-Za-z0-9]+$/;
+                var alphanumericRegex = /^[a-zA-Z0-9\s]+$/;
                 if (!alphanumericRegex.test(input)) {
                     this.setCustomValidity("Only alphanumeric characters are allowed.");
                     document.getElementById(errorElementId).textContent = "Only alphanumeric characters are allowed.";
