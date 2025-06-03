@@ -2,7 +2,7 @@
 
 <script>
     $(document).ready(function () {
-        const measurementUnits = @Html.Raw(Json.Serialize(((MeasurementUnit[])Enum.GetValues(typeof(MeasurementUnit))).ToDictionary(e => (int)e, e => Enum.GetName(typeof(MeasurementUnit), e))));
+        const measurementUnits = @Json.Serialize(((MeasurementUnit[])Enum.GetValues(typeof(MeasurementUnit))).ToDictionary(e => (int)e, e => Enum.GetName(typeof(MeasurementUnit), e)));
         const $productionLineContainer = $('#productionLineContainer');
 
         // Add production line

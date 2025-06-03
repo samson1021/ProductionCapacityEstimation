@@ -299,9 +299,9 @@
 
 <script>
     
-    var fetchUrl = '@Html.Raw(fetchUrl)';
-    @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))'; *@
-    var emptyMessage = '@Html.Raw(emptyMessage)';
+    var fetchUrl = '@fetchUrl';
+    @* var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)'; *@
+    var emptyMessage = '@emptyMessage';
 
     var typeDropdown = $("#typeDropdown");
     typeDropdown.prop("disabled", true);

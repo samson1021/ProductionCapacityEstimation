@@ -73,8 +73,8 @@
     } 
     <script>$(document).ready(function () {
         
-            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
-            var emptyMessage = '@Html.Raw(emptyMessage)';
+            var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
+            var emptyMessage = '@emptyMessage';
 
             loadProductions(fetchUrl, emptyMessage);
         });
