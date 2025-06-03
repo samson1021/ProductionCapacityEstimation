@@ -336,5 +336,46 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(valuationHistory.PreviousEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             return Content(jsonData, "application/json");
         }
+        //HO
+        [HttpGet]
+        public async Task<IActionResult> GetHOLatestValuation(Guid PCEId)
+        {
+            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory(PCEId);
+            string jsonData = JsonConvert.SerializeObject(valuationHistory.LatestEvaluation, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHOPreviousValuations(Guid PCEId)
+        {
+            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory(PCEId);
+            string jsonData = JsonConvert.SerializeObject(valuationHistory.PreviousEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> HODetail(Guid Id)
+        {
+            try
+            {
+                var pceValuation = await _PCEEvaluationService.GetHOValuation(Id);
+
+                if (pceValuation == null)
+                {
+                    return RedirectToAction("HOPCECases", "PCECase");
+                }
+
+                return View(pceValuation);
+                string jsonData = JsonConvert.SerializeObject(pceValuation,
+                                    new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                return Content(jsonData, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Production capacity valuation for ID: {Id}", Id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+
     }
 }

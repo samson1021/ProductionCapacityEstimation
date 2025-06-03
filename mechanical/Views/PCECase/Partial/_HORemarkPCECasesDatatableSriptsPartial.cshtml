@@ -1,0 +1,43 @@
+﻿<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/PCECase/GetHORemarkedPCECases',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#MyPCECasesDatatable').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: 'CreatedAt',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                // return date.toLocaleString();
+                                return date.toISOString().split('T')[0];
+                            }
+                        },
+                        { data: 'CaseNo', width: '10%' },
+                        { data: 'ApplicantName', width: '20%' },
+                        { data: 'CustomerId', width: '15%' },
+                        { data: 'NoOfProductions', width: '15%' },
+                        { data: 'TotalNoOfProductions', width: '15%' },
+                        {
+                            data: 'Id',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                return '<a href="@Url.Action("HORemarkPCECase", "PCECase")?Id=' + data + '">HODetails | </a><a href="@Url.Action("Index", "PCECaseTimeLine")?PCECaseId=' + data + '">  <i class="nav-icon fas fa-sitemap ">  </i></a>';
+                            }
+                        }
+
+                    ],
+                    order: [[1, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCE Case - pdf' }, { extend: 'print', title: 'My PCE Case - Print' }, "colvis"]
+                }).buttons().container().appendTo('#MyPCECasesDatatable_wrapper .col-md-6:eq(0)');
+            }
+        });
+    });
+</script>

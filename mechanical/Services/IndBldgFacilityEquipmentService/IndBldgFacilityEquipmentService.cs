@@ -126,6 +126,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
             indBldgFacilityEquipment.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(indBldgFacilityEquipment.CurrentEqpmntCondition, indBldgFacilityEquipment.AllocatedPointsRange);
             indBldgFacilityEquipment.ReplacementCost = (indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate);
             indBldgFacilityEquipment.NetEstimationValue = indBldgFacilityEquipment.MarketShareFactor * indBldgFacilityEquipment.DepreciationRate * indBldgFacilityEquipment.EqpmntConditionFactor * indBldgFacilityEquipment.ReplacementCost;
+            indBldgFacilityEquipment.LastUpdatedAt = DateTime.UtcNow;
             _cbeContext.Update(indBldgFacilityEquipment);
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto

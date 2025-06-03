@@ -138,8 +138,7 @@
 
                                     </div>
                                     @* <div id="PrivateownedLHC" @(Model.LHCNumber != null ? "" : "style=\"display: none;\"")> *@
-                                    <div id="PrivateownedLHCRow" class="form-group col-lg-8 row" style="@(Model.MachineryInstalledPlace == "Private Owned LHC" ? "" : "display: none;")">
-
+                                    <div id="PrivateownedLHCRow" class="form-group col-lg-8 row" style="@(Model.MachineryInstalledPlace == "Private Owned LHC" || Model.MachineryInstalledPlace == "Private Rented LHC" ? "" : "display: none;")">
                                         <div class="form-group col-lg-6">
                                             <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
                                             <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNo" required>
@@ -147,35 +146,11 @@
                                         </div>
                                         <div class="form-group col-lg-6">
                                             <label asp-for="OwnerName">Owner Name in the LHC <i class="text-danger">*</i></label>
-                                            <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="EngineMotorNo" placeholder="XXXXXXXXXXX">
-                                            <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                            <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX">
+                                            <span asp-validation-for="OwnerName" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div id="PrivateRentedLHC" style="display: none;">
-                                        <div class="row">
-                                            <div class="form-group col-lg-3">
-                                                <label asp-for="LHCNumber">LHC Number: </label>
-                                                <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber">
-                                                <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
-                                            </div>
-                                            <div class="form-group col-lg-3">
-                                                <label asp-for="OwnerName">Owner Name in the LHC </label>
-                                                <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX">
-                                                <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
-                                            </div>
-                                           @*  <div class="form-group col-lg-3">
-                                                <label asp-for="LHCDocument">Upload LHC Document </label>
-                                                <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument">
-                                                <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
-                                            </div>
-                                            <div class="form-group col-lg-3">
-                                                <label asp-for="ShadeRentAgreement">Upload Rent Agreement Document </label>
-                                                <input asp-for="ShadeRentAgreement" type="file" class="form-control  form-control-sm" id="RentAgreement">
-                                                <span id="RentAgreement-error" asp-validation-for="ShadeRentAgreement" class="text-danger"></span>
-                                            </div> *@
-                                        </div>
-                                    </div>
-
+                                        
 
                                 </div>
                             </div>
@@ -249,18 +224,7 @@
                             </button>
                             </di *@
                         </div>
-                        @*   <script>
-                        // Get the button element
-                        const sendEvaluationButton = document.getElementById('sendEvaluationButton');
-
-                        // Add an onClick event handler
-                        sendEvaluationButton.addEventListener('click', function () {
-                        // Perform the desired action, such as sending the evaluation to a specific path
-
-                        // Redirect to a specific path
-                        window.location.href = '/specific-path';
-                        });
-                        </script>  *@
+                       
                     </form>
                 </div>
                 <div class="row" style="margin-top:1.2rem;margin-bottom:0.2rem;">
@@ -423,9 +387,7 @@
                 var IndustrialPark = document.getElementById("IndustrialPark");
                 var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");
 
-                console.log(MachineryInstalledPlace);
                 console.log('@Model.MachineryInstalledPlace');
-
                 if ($(this).val() === 'Private Owned LHC') {
                     $("#IndustrialParkRow").hide();
                     $("#PrivateownedLHCRow").show();
@@ -434,17 +396,13 @@
                     $("#IndustrialParkRow").show();
                     $("#PrivateownedLHCRow").hide();
                     $("#PrivateRentedLHC").hide();
-
                 }else if ($(this).val() === 'Private Rented LHC') {
                     $("#IndustrialParkRow").hide();
-                    $("#PrivateownedLHCRow").hide();
-                    $("#PrivateRentedLHC").show();
+                    $("#PrivateownedLHCRow").show();
                 }
                 else {
                     $("#IndustrialPark").hide();
-                    $("#PrivateownedLHC").hide();
-                    $("#PrivateRentedLHC").hide();
-
+                    $("#PrivateownedLHC").hide();                  
                 }
             });
 

@@ -243,14 +243,14 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 
 // Apply database migrations automatically (if any)
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-    context.Database.Migrate(); // Apply migrations
-    // Seed.SeedData(app);
-    // SeedDistrict.SeedData(app);
-    SeedUsersRolesAndDistricts.SeedData(app);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
+//    context.Database.Migrate(); // Apply migrations
+//    // Seed.SeedData(app);
+//    // SeedDistrict.SeedData(app);
+//    SeedUsersRolesAndDistricts.SeedData(app);
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

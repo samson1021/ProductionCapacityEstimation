@@ -521,5 +521,278 @@ namespace mechanical.Services.PCE.PCECaseService
             }
             return pceCaseDtos;
         }
+        // Higher Official PCECaseService
+        public async Task<PCECaseCountDto> GetHODashboardPCECaseCount()
+        {
+            var statuses = new[] { "New", "Pending", "Completed", "Reestimate", "Reestimated", "Returned", "All" };
+            // var tasks = statuses.Select(status => GetPCECaseCountAsync(UserId, status)).ToList();
+            // var counts = await Task.WhenAll(tasks);
+
+            var counts = new List<(int DistinctPCECaseCount, int ProductionCount)>();
+
+            foreach (var status in statuses)
+            {
+                var count = await GetHOPCECaseCountAsync(status);
+                counts.Add(count);
+            }
+
+            return new PCECaseCountDto()
+            {
+                NewPCECaseCount = counts[0].DistinctPCECaseCount,
+                NewProductionCount = counts[0].ProductionCount,
+
+                PendingPCECaseCount = counts[1].DistinctPCECaseCount,
+                PendingProductionCount = counts[1].ProductionCount,
+
+                CompletedPCECaseCount = counts[2].DistinctPCECaseCount,
+                CompletedProductionCount = counts[2].ProductionCount,
+
+                ResubmittedPCECaseCount = counts[3].DistinctPCECaseCount, // Reestimate
+                ResubmittedProductionCount = counts[3].ProductionCount,
+
+                ReestimatedPCECaseCount = counts[4].DistinctPCECaseCount,
+                ReestimatedProductionCount = counts[4].ProductionCount,
+
+                ReturnedPCECaseCount = counts[5].DistinctPCECaseCount,
+                ReturnedProductionCount = counts[5].ProductionCount,
+
+                TotalPCECaseCount = counts[6].DistinctPCECaseCount,
+                TotalProductionCount = counts[6].ProductionCount,
+            };
+        }
+        private async Task<(int DistinctPCECaseCount, int ProductionCount)> GetHOPCECaseCountAsync(string status)
+        {
+            // Query PCECaseAssignments with optional status filtering
+            var assignmentsQuery = _cbeContext.PCECaseAssignments
+                .AsNoTracking()
+                .Where(a => a.ProductionCapacityId != null);
+
+            if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                assignmentsQuery = assignmentsQuery.Where(a => a.Status == status);
+            }
+
+            // Get unique ProductionCapacityId per Status
+            var uniqueProductionIds = await assignmentsQuery
+                .Select(a => new { a.Status, a.ProductionCapacityId })
+                .Distinct() // ensures same production is not counted twice for the same status
+                .Select(x => x.ProductionCapacityId)
+                .Distinct()
+                .ToListAsync();
+
+            // Find distinct PCECase IDs from those production IDs
+            var distinctPCECaseIds = await _cbeContext.ProductionCapacities
+                .AsNoTracking()
+                .Where(pc => uniqueProductionIds.Contains(pc.Id))
+                .Select(pc => pc.PCECaseId)
+                .Distinct()
+                .ToListAsync();
+
+            // Add PCECases that have no productions (e.g., "New" cases)
+            var additionalPCECaseCount = await _cbeContext.PCECases
+                .AsNoTracking()
+                .Where(pc =>
+                    !pc.ProductionCapacities.Any() &&
+                    (string.IsNullOrEmpty(status) ||
+                     status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
+                     status.Equals("New", StringComparison.OrdinalIgnoreCase)))
+                .CountAsync();
+
+            // Final counts
+            var distinctPCECaseCount = distinctPCECaseIds.Count + additionalPCECaseCount;
+            var productionCount = uniqueProductionIds.Count;
+
+            return (distinctPCECaseCount, productionCount);
+        }
+
+        //public async Task<PCECaseCountDto> GetHODashboardPCECaseCount()
+        //{
+        //    var statuses = new[] { "New", "Pending", "Completed", "Reestimate", "Reestimated", "Returned", "All" };
+        //    // var tasks = statuses.Select(status => GetPCECaseCountAsync(UserId, status)).ToList();
+        //    // var counts = await Task.WhenAll(tasks);
+
+        //    var counts = new List<(int DistinctPCECaseCount, int ProductionCount)>();
+
+        //    foreach (var status in statuses)
+        //    {
+        //        var count = await GetHOPCECaseCountAsync(status);
+        //        counts.Add(count);
+        //    }
+
+        //    return new PCECaseCountDto()
+        //    {
+        //        NewPCECaseCount = counts[0].DistinctPCECaseCount,
+        //        NewProductionCount = counts[0].ProductionCount,
+
+        //        PendingPCECaseCount = counts[1].DistinctPCECaseCount,
+        //        PendingProductionCount = counts[1].ProductionCount,
+
+        //        CompletedPCECaseCount = counts[2].DistinctPCECaseCount,
+        //        CompletedProductionCount = counts[2].ProductionCount,
+
+        //        ResubmittedPCECaseCount = counts[3].DistinctPCECaseCount, // Reestimate
+        //        ResubmittedProductionCount = counts[3].ProductionCount,
+
+        //        ReestimatedPCECaseCount = counts[4].DistinctPCECaseCount,
+        //        ReestimatedProductionCount = counts[4].ProductionCount,
+
+        //        ReturnedPCECaseCount = counts[5].DistinctPCECaseCount,
+        //        ReturnedProductionCount = counts[5].ProductionCount,
+
+        //        TotalPCECaseCount = counts[6].DistinctPCECaseCount,
+        //        TotalProductionCount = counts[6].ProductionCount,
+        //    };
+        //}
+
+        //private async Task<(int DistinctPCECaseCount, int TotalProductionCount)> GetHOPCECaseCountAsync(string status)
+        //{
+        //    var query = _cbeContext.PCECases
+        //        .AsNoTracking()
+        //        .Include(pc => pc.ProductionCapacities)
+        //        .Where(pc => status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
+        //                     pc.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+
+        //    // Get distinct PCECase IDs
+        //    var distinctPCECaseIds = await query
+        //        .Select(pc => pc.Id)
+        //        .Distinct()
+        //        .ToListAsync();
+
+        //    // Count the number of distinct PCECase IDs
+        //    var distinctPCECaseCount = distinctPCECaseIds.Count;
+
+        //    // Calculate total production count for the distinct PCECases
+        //    var totalProductionCount = await _cbeContext.ProductionCapacities
+        //        .Where(pc => distinctPCECaseIds.Contains(pc.PCECaseId))
+        //        .CountAsync();
+
+        //    return (distinctPCECaseCount, totalProductionCount);
+        //}
+
+        public async Task<IEnumerable<PCECaseReturnDto>> GetHOPCECases(string Status = null, int? Limit = null)
+        {
+            var unfilteredQuery = _cbeContext.PCECaseAssignments
+                                            .AsNoTracking()
+                                            .Include(pca => pca.ProductionCapacity)
+                                                .ThenInclude(pc => pc.PCECase)
+                                           ;
+
+            IQueryable<PCECaseAssignment> filteredQuery = unfilteredQuery;
+
+            if (!string.IsNullOrEmpty(Status) && !Status.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                filteredQuery = filteredQuery.Where(pca => pca.Status == Status || pca.Status.Contains(Status));
+            }
+
+            var distinctPCECases = await filteredQuery
+                                                .GroupBy(pca => pca.ProductionCapacity.PCECase)
+                                                .Select(p => new
+                                                {
+                                                    PCECase = p.Key,
+                                                    LatestAssignmentDate = p.Max(x => x.AssignmentDate),
+                                                    NoOfProductions = p.Count(),
+                                                    TotalNoOfProductions = unfilteredQuery
+                                                                            .Where(unfPca => unfPca.ProductionCapacity.PCECaseId == p.Key.Id)
+                                                                            .Select(ca => ca.ProductionCapacity.Id)
+                                                                            .Distinct()
+                                                                            .Count()
+                                                })
+                                                .OrderByDescending(x => x.LatestAssignmentDate)
+                                                .ToListAsync();
+
+            var additionalPCECases = await _cbeContext.PCECases
+                                                    .AsNoTracking()
+                                                    .Where(pc => !pc.ProductionCapacities.Any() &&
+                                                                (string.IsNullOrEmpty(Status) ||
+                                                                    Status.Equals("All", StringComparison.OrdinalIgnoreCase) ||
+                                                                    Status.Equals("New", StringComparison.OrdinalIgnoreCase)))
+                                                    .ToListAsync();
+
+            var allPCECases = distinctPCECases
+                                        .Select(x => x.PCECase)
+                                        .Concat(additionalPCECases)
+                                        .DistinctBy(pc => pc.Id)
+                                        .OrderByDescending(pc => pc.CreatedAt)
+                                        .ToList();
+
+            var returnDtos = allPCECases.Select(pceCase =>
+            {
+                var dto = _mapper.Map<PCECaseReturnDto>(pceCase);
+
+                var pceCaseCounts = distinctPCECases.FirstOrDefault(x => x.PCECase.Id == pceCase.Id);
+
+                if (pceCaseCounts != null)
+                {
+                    dto.NoOfProductions = pceCaseCounts.NoOfProductions;
+                    dto.TotalNoOfProductions = pceCaseCounts.TotalNoOfProductions;
+                }
+                else
+                {
+                    dto.NoOfProductions = 0;
+                    dto.TotalNoOfProductions = 0;
+                }
+
+                return dto;
+            });
+
+            if (Limit.HasValue && Limit.Value > 0)
+            {
+                returnDtos = returnDtos.Take(Limit.Value).ToList();
+            }
+
+            return returnDtos.ToList();
+        }
+        public async Task<PCECaseReturnDto> GetHOPCECase(Guid Id)
+        {
+            var assignedProductionCapacities = await _cbeContext.PCECaseAssignments
+                                                                .AsNoTracking()
+                                                                .Where(pca => pca.ProductionCapacity.PCECaseId == Id)
+                                                                .Select(pca => pca.ProductionCapacityId)
+                                                                .ToListAsync();
+
+
+            var pceCase = await _cbeContext.PCECases
+                                            .AsNoTracking()
+                                            .Include(res => res.District)
+                                            .Include(res => res.BusinessLicense)
+                                            .Include(res => res.ProductionCapacities
+                                                .Where(pc => assignedProductionCapacities.Contains(pc.Id)))
+                                            .FirstOrDefaultAsync(c => c.Id == Id &&
+                                                (assignedProductionCapacities.Any()));
+
+            return _mapper.Map<PCECaseReturnDto>(pceCase);
+        }
+        public async Task<IEnumerable<PCECaseReturnDto>> GetLatestHOPCECases()
+        {
+            var pceCases = await _cbeContext.PCECases
+                                            .Include(x => x.District)
+                                            .Include(res => res.BusinessLicense)
+                                            .Include(x => x.ProductionCapacities)
+                                            //.Where(res => res.PCECaseOriginatorId == UserId)
+                                            .OrderByDescending(res => res.CreatedAt)
+                                            .Take(5)
+                                            .ToListAsync();
+
+            return _mapper.Map<IEnumerable<PCECaseReturnDto>>(pceCases);
+        }
+        public async Task<IEnumerable<PCECaseReturnDto>> GetHORemarkedPCECases()
+        {
+            var pceCaseAssignments = await _cbeContext.PCECaseAssignments
+                                                        .Include(res => res.ProductionCapacity)
+                                                        .ThenInclude(res => res.PCECase)
+                                                        // .ThenInclude(res => res.PCECaseOriginator)
+                                                        .Where(pca => /*pca.UserId == UserId &&*/ pca.Status.Contains("Remark"))
+                                                        .ToListAsync();
+            var uniquePCECases = pceCaseAssignments.Select(pca => pca.ProductionCapacity.PCECase).DistinctBy(c => c.Id).ToList();
+            var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(uniquePCECases);
+
+            foreach (var pceCaseDto in pceCaseDtos)
+            {
+                pceCaseDto.NoOfProductions = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id && pca.Status.Contains("Remark"));
+                pceCaseDto.TotalNoOfProductions = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id);
+            }
+            return pceCaseDtos;
+        }
+
     }
 }
