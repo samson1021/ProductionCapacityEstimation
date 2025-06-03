@@ -36,7 +36,7 @@
                         <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger">*</span></label>
                         <select asp-for="ProductionLineType" class="form-select production-line-type"
                                 asp-items="Html.GetEnumSelectList<ProductionLineType>()" required>
-                            <option value="" disabled selected>Select Production Line Type</option>
+                            <option value="" disabled selected>-- Select Line Type --</option>
                         </select>
                         <span asp-validation-for="ProductionLineType" class="text-danger small"></span>
                     </div>
@@ -44,7 +44,7 @@
                         <label class="form-label">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <span class="text-danger">*</span></label>
                         @*  <select asp-for="TechnicalObsolescenceStatus" class="form-select" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()" required></select> *@
                         <select asp-for="TechnicalObsolescenceStatus" class="form-select" required>
-                            <option value="" disabled selected>Select Status</option>
+                            <option value="" disabled selected>-- Select Status --</option>
                             <option value="Current">Current</option>
                             <option value="ObsoleteSoon">Obsolete Soon</option>
                             <option value="Obsolete">Obsolete</option>
@@ -59,7 +59,7 @@
                         <label class="form-label">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <span class="text-danger">*</span></label>
                         <select asp-for="MachineFunctionalityStatus" class="form-select"
                                 asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()" required>
-                            <option value="" disabled selected>Select Functionality</option>
+                            <option value="" disabled selected>-- Select Functionality --</option>
                         </select>
                         <span asp-validation-for="MachineFunctionalityStatus" class="text-danger small"></span>
                     </div>
@@ -67,7 +67,7 @@
                         <label class="form-label">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <span class="text-danger">*</span></label>
                         <select asp-for="MachineNonFunctionalityReason" class="form-select"
                                 asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()">
-                            <option value="" disabled selected>Select Reason</option>
+                            <option value="" disabled selected>-- Select Reason --</option>
                         </select>
                         <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger small"></span>
                     </div>
