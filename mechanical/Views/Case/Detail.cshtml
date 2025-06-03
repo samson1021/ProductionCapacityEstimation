@@ -83,7 +83,7 @@
                     </ul>
                     @if (caseType != "Shared")
                     {
-                        <button type="button" class="btn bg-purple mr-2" data-bs-toggle="modal" data-bs-target="#shareCaseModal">
+                        <button type="button" class="btn bg-purple mr-2" data-toggle="modal" data-target="#shareCaseModal">
                             Share
                         </button>
                     }
@@ -115,13 +115,13 @@
         <div class="modal-content rounded-3 shadow">
             <div class="modal-header bg-purple text-white">
                 <h5 class="modal-title" id="shareCaseModalLabel">Task Share Request</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 @await Html.PartialAsync("~/Views/TaskManagment/_shareCasePartial.cshtml")
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn bg-purple" id="shareCaseButton">
                     <span id="shareSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                     Share Case
