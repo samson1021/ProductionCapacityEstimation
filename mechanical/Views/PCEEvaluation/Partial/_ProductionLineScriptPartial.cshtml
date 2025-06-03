@@ -177,26 +177,58 @@
             const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
             const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
 
-            console.log("asdfdsf", outputType, actualCapacity, productionUnit);
+            console.log("Selected values:", outputType, actualCapacity, productionUnit);
 
-            $inputItem.find('.input-type').val(outputType).prop('readonly', true).prop('disabled', false);
-            $inputItem.find('.input-quantity').val(actualCapacity).prop('readonly', true).prop('disabled', false);
-            $inputItem.find('.input-unit-dropdown').val(productionUnit).trigger('change').prop('disabled', true);
-
-            // Ensure value is submitted via hidden input
+            // Set and lock input-type
             const $typeInput = $inputItem.find('.input-type');
-            const $hiddenInput = $inputItem.find('.input-type-hidden');
-            
-            if ($hiddenInput.length === 0) {
-                $inputItem.append(`<input type="hidden" class="input-type-hidden" name="${$typeInput.attr('name')}" value="${outputType}"/>`);
+            $typeInput
+                .val(outputType)
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                })
+                .attr('readonly', true); // This works for input fields
+
+            // Create or update hidden input for type
+            let $hiddenTypeInput = $inputItem.find('.input-type-hidden');
+            if ($hiddenTypeInput.length === 0) {
+                $hiddenTypeInput = $(`<input type="hidden" class="input-type-hidden" name="${$typeInput.attr('name')}" value="${outputType}"/>`);
+                $inputItem.append($hiddenTypeInput);
             } else {
-                $hiddenInput.val(outputType);
+                $hiddenTypeInput.val(outputType);
+            }
+
+            // Set and lock input-quantity
+            const $quantityInput = $inputItem.find('.input-quantity');
+            $quantityInput
+                .val(actualCapacity)
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                })
+                .attr('readonly', true);
+
+            const $unitDropdown = $inputItem.find('.input-unit-dropdown');
+            $unitDropdown
+                .val(productionUnit)
+                .trigger('change')
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                });
+
+            // Create or update hidden input for unit
+            let $hiddenUnitInput = $inputItem.find('.input-unit-hidden');
+            if ($hiddenUnitInput.length === 0) {
+                $hiddenUnitInput = $(`<input type="hidden" class="input-unit-hidden" name="${$unitDropdown.attr('name')}" value="${productionUnit}"/>`);
+                $inputItem.append($hiddenUnitInput);
+            } else {
+                $hiddenUnitInput.val(productionUnit);
             }
         }
 
         // Remove production line
         function removeProductionLine($line) {
-
             const $container = $line.closest('.production-line-container');
             const lineIndex = $container.data('line-index');
             const id = $container.find('input[type="hidden"][id$="_Id"]').val();
