@@ -55,6 +55,7 @@
   
   <ItemGroup>
     <Folder Include="UploadFile\" />
+    <Folder Include="Views\HORemarkPCECases\" />
   </ItemGroup>
   
   <ItemGroup>
