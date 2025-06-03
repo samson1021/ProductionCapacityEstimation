@@ -12,7 +12,6 @@ namespace mechanical.Controllers
     public class InternalReportController : BaseController
     {
 
-
         private readonly CbeContext _cbeContext;
         private readonly IUserService _UserService;
         private readonly IMailService _mailService;
@@ -31,6 +30,13 @@ namespace mechanical.Controllers
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CaseDetail()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
         [HttpGet]
         public async Task<IActionResult> GetInternalPCECaseReport()
         {
@@ -41,6 +47,21 @@ namespace mechanical.Controllers
         }
         [HttpGet]
         public async Task<IActionResult> GetCaseReport()
+        {
+            var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
+            if (myCase.DistinctCases == null && myCase.AllProductionCapacities == null)
+            {
+                return BadRequest("Unable to load case");
+            }
+            var result = new
+            {
+                DistinctCases = myCase.DistinctCases,
+                AllProductionCapacities = myCase.AllProductionCapacities
+            };
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPCECaseReport()
         {
             var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
             if (myCase.DistinctCases == null && myCase.AllProductionCapacities == null)

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using mechanical.Data;
 using mechanical.Models.Dto.InternalReport;
+using mechanical.Models.Entities;
+using mechanical.Models.Enum;
 using mechanical.Models.PCE.Entities;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UploadFileService;
@@ -24,6 +26,426 @@ namespace mechanical.Services.InternalReportService
             _caseTimeLineService = caseTimeLineService;
             _uploadFileService = uploadFileService;
         }
+        public async Task<(IEnumerable<ValuationReportDto> DistinctCases, IEnumerable<ValuationReportDto> AllProductionCapacities)> GetInternalCaseReport(Guid userId)
+        {
+
+            // evaluation table [ConstMngAgrMachineries] [IndBldgFacilityEquipment] [MotorVehicles]
+            // Step 1: Fetch all relevant CaseAssignments for the user, eager loading all primary related entities.
+            var caseAssignments = await _cbeContext.CaseAssignments
+                .Include(ca => ca.Collateral)
+                    .ThenInclude(pc => pc.Case)
+                        .ThenInclude(c => c.CaseOriginator)
+                .Include(ca => ca.Collateral)
+                    .ThenInclude(pc => pc.Case)
+                        .ThenInclude(pce => pce.District)
+                .Include(ca => ca.User)
+                .Where(ca => ca.UserId == userId)
+                .ToListAsync();
+
+            // If no assignments, return empty results early
+            if (!caseAssignments.Any())
+            {
+                return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
+            }
+
+            // Collect all unique Collateral IDs and Case IDs from the fetched assignments
+            var CollateralIds = caseAssignments.Select(ca => ca.CollateralId).ToHashSet(); // Use HashSet for O(1) lookups
+            var CaseIds = caseAssignments.Select(ca => ca.Collateral.CaseId).Distinct().ToHashSet();
+
+
+
+            // Step 2: Fetch evaluations from all collateral evaluation tables
+            var evaluationTasks = new List<Task>
+                                    {
+                                        _cbeContext.ConstMngAgrMachineries
+                                            .Include(e => e.CheckerUser)
+                                            .Include(e => e.EvaluatorUser)
+                                            .Where(e => CollateralIds.Contains(e.CollateralId))
+                                            .ToListAsync(),
+
+                                        _cbeContext.IndBldgFacilityEquipment
+                                            .Include(e => e.CheckerUser)
+                                            .Include(e => e.EvaluatorUser)
+                                            .Where(e => CollateralIds.Contains(e.CollateralId))
+                                            .ToListAsync(),
+
+                                        _cbeContext.MotorVehicles
+                                            .Include(e => e.CheckerUser)
+                                            .Include(e => e.EvaluatorUser)
+                                            .Where(e => CollateralIds.Contains(e.CollateralId))
+                                            .ToListAsync()
+                                    };
+
+            await Task.WhenAll(evaluationTasks);
+            var constructionEvaluations = (IEnumerable<dynamic>)evaluationTasks[0];
+            var industrialEvaluations = (IEnumerable<dynamic>)evaluationTasks[1];
+            var vehicleEvaluations = (IEnumerable<dynamic>)evaluationTasks[2];
+        
+
+
+            var caseSchedules = await _cbeContext.CaseSchedules
+                .Where(s => CollateralIds.Contains(s.CaseId) && s.Status == "Approved") // Filter approved schedules here
+                .ToListAsync();
+
+        
+            // Consolidate all role-based PCECaseAssignments into a single query
+            var allRoleAssignments = await _cbeContext.CaseAssignments
+                .Include(ca => ca.User)
+                    .ThenInclude(u => u.Role)
+                .Where(ca => CollateralIds.Contains(ca.CollateralId) &&
+                             (ca.User.Role.Name == "Maker Manager" ||
+                              ca.User.Role.Name == "Maker TeamLeader" ||
+                              ca.User.Role.Name == "Maker Officer" ||
+                              ca.User.Role.Name == "Checker Manager" ||
+                              ca.User.Role.Name == "Checker TeamLeader" ||
+                              ca.User.Role.Name == "Checker Officer" ||
+                              ca.User.Role.Name == "District Valuation Manager"))
+                .ToListAsync();
+
+
+            var caseSchedulesByCaseId = caseSchedules
+                .GroupBy(s => s.CaseId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var assignmentsLookup = allRoleAssignments
+                  .GroupBy(ca => ca.CollateralId)
+                  .ToDictionary(
+                      g => g.Key,
+                      g => g.ToDictionary(
+                          ca => ca.User.Role.Name,
+                          ca => ca
+                      )
+                  );
+            CaseAssignment GetAssignment(Guid collateralId, string roleName)
+            {
+                return assignmentsLookup.TryGetValue(collateralId, out var assignments) &&
+                       assignments.TryGetValue(roleName, out var assignment)
+                    ? assignment
+                    : null;
+            }
+
+            // Step 4: Populate AllProductionCapacityDtos (one DTO per ProductionCapacity)
+            var allCollateralDtos = new List<ValuationReportDto>();
+
+            //caseFRQ
+            foreach (var caseAssignment in caseAssignments)
+            {
+                var c = caseAssignment.Collateral;
+                var Case = c.Case;
+                var CollateralStatus = caseAssignment.Status;
+                var CollateralCompletionDate = caseAssignment.CompletionDate;
+
+                IEnumerable<dynamic> currentCollateralCategoryEvaluations;
+                switch (c.Category) 
+                {
+                    case MechanicalCollateralCategory.CMAMachinery:
+                        currentCollateralCategoryEvaluations = constructionEvaluations;
+                        break;
+                    case MechanicalCollateralCategory.IBFEqupment:
+                        currentCollateralCategoryEvaluations = industrialEvaluations;
+                        break;
+                    case MechanicalCollateralCategory.MOV:
+                        currentCollateralCategoryEvaluations = vehicleEvaluations;
+                        break;
+                    default:
+                        currentCollateralCategoryEvaluations = Enumerable.Empty<dynamic>();
+                        break;
+                }
+                var collateralEvaluations = currentCollateralCategoryEvaluations
+                    .Where(e => e.CollateralId == c.Id)
+                    .OrderByDescending(e => e.CreatedDate) 
+                    .ToList();
+                var firstEvaluation = collateralEvaluations.FirstOrDefault();
+                var reevaluationCount = collateralEvaluations.Count > 0 ? collateralEvaluations.Count - 1 : 0;
+
+
+                caseSchedulesByCaseId.TryGetValue(Case.Id, out var caseSpecificSchedules);
+                var scheduleDate = caseSpecificSchedules?.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+
+                var justifications = firstEvaluation?.Justifications?.ToList() ?? new List<Justification>();
+                var timeConsumed = firstEvaluation?.TimeConsumedToCheck;
+
+                var makerManagerAssignment = GetAssignment(c.Id, "Maker Manager");
+                var makerTeamLeaderAssignment = GetAssignment(c.Id, "Maker TeamLeader");
+                var makerOfficerAssignment = GetAssignment(c.Id, "Maker Officer");
+                var checkerManagerAssignment = GetAssignment(c.Id, "Checker Manager");
+                var checkerTeamLeaderAssignment = GetAssignment(c.Id, "Checker TeamLeader");
+                var checkerOfficerAssignment = GetAssignment(c.Id, "Checker Officer");
+                var districtEvaluationManagerAssignment = GetAssignment(c.Id, "District Valuation Manager");
+                var dto = new ValuationReportDto
+                {
+                    Id = c.Id,
+                    CaseNo = Case.CaseNo,
+                    CurrentStatus = CollateralStatus,
+                    CreatedAt = c.CreationDate,
+                    ApplicantName = Case.ApplicantName,
+                    CasePriority = "N/A", 
+                    CaseFRQ = "",
+                    RequestedOrgan = Case.Segment ?? "N/A",
+                    CustomerApplicantRelationship = Case.CaseOriginator?.Name ?? "",
+                    PurposeOfValuationRequest = c.Purpose,
+                    DistrictName = Case.District?.Name ?? "Head Office",
+                    RequestedEngineer = c.CollateralType ?? "Mechanical",
+                    ProcessingWCDays = null,
+                    QuantityForSimilarMechanicalItem = -1,
+                    AssignedNo = -1,
+                    DeliveredNo = -1,
+                    ReturnedWithAdvice = -1,
+                    OnHandNo = -1,
+                    DeliveredPercentage = -1,
+                    SDTAccomplishment = null,
+                    FulfillmentOfDocumentation = "Complete",
+                    ScheduledVisitDate = scheduleDate?.ScheduleDate,
+                    Location = firstEvaluation?.InspectionPlace ?? $"{c.Region}, {c.City}, {c.SubCity}, {c.Wereda}, {c.Kebele}",
+                    QuantityComplexityOfProperty = "N/A",
+
+                    LHCTitleDeedSerialNo = c.SerialNo ?? c.InvoiceNo ?? c.EngineMotorNo ?? c.PlateNo ?? c.ChassisNo ?? null,
+                    TypeOfProperty = c.Type.ToString(),
+                    PropertyCategory = c.Category.ToString(),
+
+                    SiteInspectionDate = null, // it need some modification
+                    DateReturnedWithAdviceToRO = null, // this is the date filled when the case return mo to rm
+                    ReasonOfReturn = null, // the reason the case is returned from the mo to rm
+
+
+                    //maker section
+                    NameOfValuator = firstEvaluation?.EvaluatorUser?.Name ?? "",
+                    DateCaseDeliveredToValuationOffice = makerManagerAssignment?.AssignmentDate,
+                    DateCaseAssignedToTeamLeader = makerTeamLeaderAssignment?.AssignmentDate,
+                    DateCaseAssignedToValuators = makerOfficerAssignment?.AssignmentDate,
+
+                    LastRecentValuationDate = null, // need modification after jon update the evauation date.
+                    /// needs modification 
+
+                    NetDaysConsumed = scheduleDate != null && firstEvaluation != null && CollateralStatus == "Complete"
+                                       ? (int?)Math.Round(GetDateDifference(CollateralCompletionDate, scheduleDate.ScheduleDate).TotalDays)
+                                       : firstEvaluation != null && CollateralStatus != "Complete"
+                                           ? (int?)Math.Round(GetDateDifference(DateTime.Now, scheduleDate.ScheduleDate).TotalDays)
+                                           : null,
+                    DurationReceiptGrossDays = CollateralStatus == "Complete" ? (int?)GetDateDifference(CollateralCompletionDate, makerManagerAssignment.AssignmentDate).TotalDays
+                                                    :  (int?)GetDateDifference(DateTime.Now, makerManagerAssignment.AssignmentDate).TotalDays,
+
+                    DurationAssignedToTMGrossDays = Case.District?.Name == "Head Office" &&
+                                                        makerManagerAssignment?.AssignmentDate != null &&
+                                                        makerTeamLeaderAssignment?.AssignmentDate != null
+                                                            ? (int?)Math.Round(GetDateDifference(
+                                                                makerTeamLeaderAssignment.AssignmentDate,
+                                                                makerManagerAssignment.AssignmentDate).TotalDays)
+                                                            : null,
+                    DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && Case.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
+                                                        ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
+                                                            ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
+                                                            : null,
+                    // start checking
+                    NameOfChecker= firstEvaluation?.CheckerUser?.Name??"",
+                    DateSentForChecking = checkerManagerAssignment.AssignmentDate,
+                    DateCaseAssignedToCheckerTeamLeader = Case.District?.Name== "Head Office"?  checkerTeamLeaderAssignment?.AssignmentDate: null,
+                    DateCaseAssignedToCheckerValuators = checkerOfficerAssignment?.AssignmentDate,
+                    DateReportSentToRequestingOrgan = CollateralStatus =="Complete" ? CollateralCompletionDate: null, //this is the date co sent to
+
+                    // it needs some modification when the collateral evaluation is retured to correct by checker, and this is the time checker officer uses to check the collateral, .. timeConsumed != null ? (int?)timeConsumed.Duration.TotalDays : null,
+                    GrossDaysConsumedChecker = CollateralStatus=="Complete" 
+                                                ?(int?)Math.Round(GetDateDifference(CollateralCompletionDate, checkerOfficerAssignment.AssignmentDate).TotalDays)
+                                                : (int?)Math.Round(GetDateDifference(DateTime.Now, checkerOfficerAssignment.AssignmentDate).TotalDays),
+                    DurationCheckerReceiptGrossDays = CollateralStatus == "Complete" ? (int?)GetDateDifference(CollateralCompletionDate, checkerManagerAssignment.AssignmentDate).TotalDays
+                                                    : (int?)GetDateDifference(DateTime.Now, checkerManagerAssignment.AssignmentDate).TotalDays,
+                    DurationCheckerAssignedToTMGrossDays = Case.District?.Name == "Head Office" &&
+                                                        checkerManagerAssignment?.AssignmentDate != null &&
+                                                        checkerTeamLeaderAssignment?.AssignmentDate != null
+                                                            ? (int?)Math.Round(GetDateDifference(
+                                                                checkerTeamLeaderAssignment.AssignmentDate,
+                                                                checkerManagerAssignment.AssignmentDate).TotalDays)
+                                                            : null,
+                    DurationCheckerAssignedGrossDays = checkerOfficerAssignment?.AssignmentDate != null && Case.District?.Name == "Head Office" && checkerTeamLeaderAssignment?.AssignmentDate != null
+                                                        ? (int?)Math.Round(GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        : checkerOfficerAssignment?.AssignmentDate != null && checkerManagerAssignment?.AssignmentDate != null
+                                                            ? (int?)Math.Round(GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerManagerAssignment.AssignmentDate).TotalDays)
+                                                            : null,
+                    TotalNumberOfComments = null,
+                    DateCommentReceivedFromChecking = null,
+                };
+
+                allCollateralDtos.Add(dto);
+            }
+
+            // Step 5: Populate DistinctCaseDtos (one DTO per unique PCECase)
+            //var uniqueCases = caseAssignments
+            //        .Select(ca => ca.ProductionCapacity.PCECase)
+            //        .DistinctBy(pce => pce.Id)
+            //        .ToList(); // Keep this as it derives unique cases from the initial fetch
+
+            //foreach (var pceCase in uniqueCases)
+            //{
+            //    // Get all ProductionCapacities for this PCECase from the initially fetched data
+            //    var productionCapacitiesForCase = caseAssignments
+            //        .Where(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id)
+            //        .Select(ca => ca.ProductionCapacity)
+            //        .ToList();
+
+            //    var pcIdsForCase = productionCapacitiesForCase.Select(pc => pc.Id).ToHashSet();
+
+
+
+                var distinctCaseDtos = new List<ValuationReportDto>();
+            var uniqueCases = caseAssignments
+                                .Select(ca => ca.Collateral.Case)
+                                .DistinctBy(pce => pce.Id)
+                                .ToList(); // Keep this as it derives unique cases from the initial fetch
+
+
+            //foreach (var caseAssignment in uniqueCases)
+            //{
+
+
+            //    var c = caseAssignment.Collateral;
+            //    var Case = c.Case;
+            //    var CollateralStatus = caseAssignment.Status;
+            //    var CollateralCompletionDate = caseAssignment.CompletionDate;
+
+            //    IEnumerable<dynamic> currentCollateralCategoryEvaluations;
+            //    switch (c.Category)
+            //    {
+            //        case MechanicalCollateralCategory.CMAMachinery:
+            //            currentCollateralCategoryEvaluations = constructionEvaluations;
+            //            break;
+            //        case MechanicalCollateralCategory.IBFEqupment:
+            //            currentCollateralCategoryEvaluations = industrialEvaluations;
+            //            break;
+            //        case MechanicalCollateralCategory.MOV:
+            //            currentCollateralCategoryEvaluations = vehicleEvaluations;
+            //            break;
+            //        default:
+            //            currentCollateralCategoryEvaluations = Enumerable.Empty<dynamic>();
+            //            break;
+            //    }
+            //    var collateralEvaluations = currentCollateralCategoryEvaluations
+            //        .Where(e => e.CollateralId == c.Id)
+            //        .OrderByDescending(e => e.CreatedDate)
+            //        .ToList();
+            //    var firstEvaluation = collateralEvaluations.FirstOrDefault();
+            //    var reevaluationCount = collateralEvaluations.Count > 0 ? collateralEvaluations.Count - 1 : 0;
+
+
+            //    caseSchedulesByCaseId.TryGetValue(Case.Id, out var caseSpecificSchedules);
+            //    var scheduleDate = caseSpecificSchedules?.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+
+            //    var justifications = firstEvaluation?.Justifications?.ToList() ?? new List<Justification>();
+            //    var timeConsumed = firstEvaluation?.TimeConsumedToCheck;
+
+            //    var makerManagerAssignment = GetAssignment(c.Id, "Maker Manager");
+            //    var makerTeamLeaderAssignment = GetAssignment(c.Id, "Maker TeamLeader");
+            //    var makerOfficerAssignment = GetAssignment(c.Id, "Maker Officer");
+            //    var checkerManagerAssignment = GetAssignment(c.Id, "Checker Manager");
+            //    var checkerTeamLeaderAssignment = GetAssignment(c.Id, "Checker TeamLeader");
+            //    var checkerOfficerAssignment = GetAssignment(c.Id, "Checker Officer");
+            //    var districtEvaluationManagerAssignment = GetAssignment(c.Id, "District Valuation Manager");
+            //    var dto = new ValuationReportDto
+            //    {
+            //        Id = c.Id,
+            //        CaseNo = Case.CaseNo,
+            //        CurrentStatus = CollateralStatus,
+            //        CreatedAt = c.CreationDate,
+            //        ApplicantName = Case.ApplicantName,
+            //        CasePriority = "N/A",
+            //        CaseFRQ = "",
+            //        RequestedOrgan = Case.Segment ?? "N/A",
+            //        CustomerApplicantRelationship = Case.CaseOriginator?.Name ?? "",
+            //        PurposeOfValuationRequest = c.Purpose,
+            //        DistrictName = Case.District?.Name ?? "Head Office",
+            //        RequestedEngineer = c.CollateralType ?? "Mechanical",
+            //        ProcessingWCDays = null,
+            //        QuantityForSimilarMechanicalItem = -1,
+            //        AssignedNo = -1,
+            //        DeliveredNo = -1,
+            //        ReturnedWithAdvice = -1,
+            //        OnHandNo = -1,
+            //        DeliveredPercentage = -1,
+            //        SDTAccomplishment = null,
+            //        FulfillmentOfDocumentation = "Complete",
+            //        ScheduledVisitDate = scheduleDate?.ScheduleDate,
+            //        Location = firstEvaluation?.InspectionPlace ?? $"{c.Region}, {c.City}, {c.SubCity}, {c.Wereda}, {c.Kebele}",
+            //        QuantityComplexityOfProperty = "N/A",
+
+            //        LHCTitleDeedSerialNo = c.SerialNo ?? c.InvoiceNo ?? c.EngineMotorNo ?? c.PlateNo ?? c.ChassisNo ?? null,
+            //        TypeOfProperty = c.Type.ToString(),
+            //        PropertyCategory = c.Category.ToString(),
+
+            //        SiteInspectionDate = null, // it need some modification
+            //        DateReturnedWithAdviceToRO = null, // this is the date filled when the case return mo to rm
+            //        ReasonOfReturn = null, // the reason the case is returned from the mo to rm
+
+
+            //        //maker section
+            //        NameOfValuator = firstEvaluation?.EvaluatorUser?.Name ?? "",
+            //        DateCaseDeliveredToValuationOffice = makerManagerAssignment?.AssignmentDate,
+            //        DateCaseAssignedToTeamLeader = makerTeamLeaderAssignment?.AssignmentDate,
+            //        DateCaseAssignedToValuators = makerOfficerAssignment?.AssignmentDate,
+
+            //        LastRecentValuationDate = null, // need modification after jon update the evauation date.
+            //        /// needs modification 
+
+            //        NetDaysConsumed = scheduleDate != null && firstEvaluation != null && CollateralStatus == "Complete"
+            //                           ? (int?)Math.Round(GetDateDifference(CollateralCompletionDate, scheduleDate.ScheduleDate).TotalDays)
+            //                           : firstEvaluation != null && CollateralStatus != "Complete"
+            //                               ? (int?)Math.Round(GetDateDifference(DateTime.Now, scheduleDate.ScheduleDate).TotalDays)
+            //                               : null,
+            //        DurationReceiptGrossDays = CollateralStatus == "Complete" ? (int?)GetDateDifference(CollateralCompletionDate, makerManagerAssignment.AssignmentDate).TotalDays
+            //                                        : (int?)GetDateDifference(DateTime.Now, makerManagerAssignment.AssignmentDate).TotalDays,
+
+            //        DurationAssignedToTMGrossDays = Case.District?.Name == "Head Office" &&
+            //                                            makerManagerAssignment?.AssignmentDate != null &&
+            //                                            makerTeamLeaderAssignment?.AssignmentDate != null
+            //                                                ? (int?)Math.Round(GetDateDifference(
+            //                                                    makerTeamLeaderAssignment.AssignmentDate,
+            //                                                    makerManagerAssignment.AssignmentDate).TotalDays)
+            //                                                : null,
+            //        DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && Case.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
+            //                                            ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+            //                                            : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
+            //                                                ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
+            //                                                : null,
+            //        // start checking
+            //        NameOfChecker = firstEvaluation?.CheckerUser?.Name ?? "",
+            //        DateSentForChecking = checkerManagerAssignment.AssignmentDate,
+            //        DateCaseAssignedToCheckerTeamLeader = Case.District?.Name == "Head Office" ? checkerTeamLeaderAssignment?.AssignmentDate : null,
+            //        DateCaseAssignedToCheckerValuators = checkerOfficerAssignment?.AssignmentDate,
+            //        DateReportSentToRequestingOrgan = CollateralStatus == "Complete" ? CollateralCompletionDate : null, //this is the date co sent to
+
+            //        // it needs some modification when the collateral evaluation is retured to correct by checker, and this is the time checker officer uses to check the collateral, .. timeConsumed != null ? (int?)timeConsumed.Duration.TotalDays : null,
+            //        GrossDaysConsumedChecker = CollateralStatus == "Complete"
+            //                                    ? (int?)Math.Round(GetDateDifference(CollateralCompletionDate, checkerOfficerAssignment.AssignmentDate).TotalDays)
+            //                                    : (int?)Math.Round(GetDateDifference(DateTime.Now, checkerOfficerAssignment.AssignmentDate).TotalDays),
+            //        DurationCheckerReceiptGrossDays = CollateralStatus == "Complete" ? (int?)GetDateDifference(CollateralCompletionDate, checkerManagerAssignment.AssignmentDate).TotalDays
+            //                                        : (int?)GetDateDifference(DateTime.Now, checkerManagerAssignment.AssignmentDate).TotalDays,
+            //        DurationCheckerAssignedToTMGrossDays = Case.District?.Name == "Head Office" &&
+            //                                            checkerManagerAssignment?.AssignmentDate != null &&
+            //                                            checkerTeamLeaderAssignment?.AssignmentDate != null
+            //                                                ? (int?)Math.Round(GetDateDifference(
+            //                                                    checkerTeamLeaderAssignment.AssignmentDate,
+            //                                                    checkerManagerAssignment.AssignmentDate).TotalDays)
+            //                                                : null,
+            //        DurationCheckerAssignedGrossDays = checkerOfficerAssignment?.AssignmentDate != null && Case.District?.Name == "Head Office" && checkerTeamLeaderAssignment?.AssignmentDate != null
+            //                                            ? (int?)Math.Round(GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerTeamLeaderAssignment.AssignmentDate).TotalDays)
+            //                                            : checkerOfficerAssignment?.AssignmentDate != null && checkerManagerAssignment?.AssignmentDate != null
+            //                                                ? (int?)Math.Round(GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerManagerAssignment.AssignmentDate).TotalDays)
+            //                                                : null,
+            //        TotalNumberOfComments = null,
+            //        DateCommentReceivedFromChecking = null,
+            //    };
+
+            //    allCollateralDtos.Add(dto);
+            //}
+
+
+            return (DistinctCases: distinctCaseDtos, AllProductionCapacities: distinctCaseDtos);
+        }
+
+
+
+
+        /// ..   start pce internal report
+
         public async Task<(IEnumerable<ValuationReportDto> DistinctCases, IEnumerable<ValuationReportDto> AllProductionCapacities)> GetInternalPCECaseReport(Guid userId)
         {
             // Step 1: Fetch all relevant PCECaseAssignments for the user, eager loading all primary related entities.
@@ -83,7 +505,6 @@ namespace mechanical.Services.InternalReportService
                 .ToListAsync();
 
             // Step 3: Organize fetched data into efficient lookup dictionaries
-            // This replaces repeated .Where().FirstOrDefault() or .Where().ToList() calls in loops.
 
             var evaluationsByPCEId = evaluations.GroupBy(e => e.PCEId).ToDictionary(g => g.Key, g => g.ToList());
             var reestimationsByPCId = reestimations.GroupBy(r => r.ProductionCapacityId).ToDictionary(g => g.Key, g => g.ToList());
@@ -111,6 +532,8 @@ namespace mechanical.Services.InternalReportService
             // Step 4: Populate AllProductionCapacityDtos (one DTO per ProductionCapacity)
             var allProductionCapacityDtos = new List<ValuationReportDto>();
 
+
+            //caseFRQ
             foreach (var caseAssignment in caseAssignments)
             {
                 var pc = caseAssignment.ProductionCapacity;
@@ -138,39 +561,39 @@ namespace mechanical.Services.InternalReportService
                 var checkerTeamLeaderAssignment = GetAssignment(pc.Id, "Checker TeamLeader");
                 var checkerOfficerAssignment = GetAssignment(pc.Id, "Checker Officer");
                 var districtEvaluationManagerAssignment = GetAssignment(pc.Id, "District Valuation Manager");
-
-
-                // DTO Population Logic (remains largely similar, but data access is faster)
                 var dto = new ValuationReportDto
                 {
 
-                    Id= pc.Id,
+                    Id = pc.Id,
                     CaseNo = pceCase.CaseNo,
-                    CurrentStatus = pceCase.Status,
+                    CurrentStatus = pc.CurrentStatus,
                     CreatedAt = pc.CreatedAt, // Set to PCECase CreatedAt
                     ApplicantName = pceCase.ApplicantName,
                     CasePriority = "N/A", // This seems constant, consider if it should be dynamic
-                    CaseFRQ = pcEvaluations.Count.ToString(),
+                    CaseFRQ = (pcReestimations?.Count ?? 0).ToString(),
                     RequestedOrgan = pceCase.Segment ?? "N/A",
-                    CustomerApplicantRelationship = pceCase.PCECaseOriginator?.Name ?? "RM Name",
-
+                    CustomerApplicantRelationship = pceCase.PCECaseOriginator?.Name ?? "",
                     DateCaseDeliveredToValuationOffice = makerManagerAssignment?.AssignmentDate,
                     DateCaseAssignedToTeamLeader = makerTeamLeaderAssignment?.AssignmentDate,
                     DateCaseAssignedToValuators = makerOfficerAssignment?.AssignmentDate,
                     PurposeOfValuationRequest = pc.Purpose,
-                    LastRecentValuationDate = pcEvaluations.Any() ? pcEvaluations.Max(e => e.CreatedAt) : null,
-                    DurationReceiptGrossDays = pceCase.Status == "Completed" && pcEvaluations.Any() && pcEvaluations.First().CompletedAt != null
-                                                ? (int?)GetDateDifference(pceCase.CreatedAt, pcEvaluations.First().CompletedAt.Value).TotalDays
-                                                : pceCase.CreatedAt != default ? (int?)GetDateDifference(pceCase.CreatedAt, DateTime.Now).TotalDays : null,
                     DistrictName = pceCase.District?.Name ?? "Head Office",
+                    LastRecentValuationDate = pcEvaluations.Any() ? pcEvaluations.Max(e => e.CreatedAt) : null,
+                    DurationReceiptGrossDays = pc.CurrentStatus == "Completed" && pcEvaluations.Any() && pcEvaluations.First().CompletedAt != null
+                                                    ? (int?)GetDateDifference(pcEvaluations.First().CompletedAt.Value, pc.CreatedAt).TotalDays
+                                                    : pceCase.CreatedAt != default ? (int?)GetDateDifference(DateTime.Now, pc.CreatedAt).TotalDays : null,
                     DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && pceCase.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                    ? (int?)Math.Round(GetDateDifference(makerTeamLeaderAssignment.AssignmentDate, makerOfficerAssignment.AssignmentDate).TotalDays)
-                                                    : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(makerManagerAssignment.AssignmentDate, makerOfficerAssignment.AssignmentDate).TotalDays)
-                                                        : null,
-                    DurationAssignedToTMGrossDays = makerManagerAssignment?.AssignmentDate != null && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                    ? (int?)Math.Round(GetDateDifference(makerManagerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
-                                                    : null,
+                                                        ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
+                                                            ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
+                                                            : null,
+                    DurationAssignedToTMGrossDays = pceCase.District?.Name == "Head Office" &&
+                                                        makerManagerAssignment?.AssignmentDate != null &&
+                                                        makerTeamLeaderAssignment?.AssignmentDate != null
+                                                            ? (int?)Math.Round(GetDateDifference(
+                                                                makerTeamLeaderAssignment.AssignmentDate,
+                                                                makerManagerAssignment.AssignmentDate).TotalDays)
+                                                            : null,
                     RequestedEngineer = "Mechanical", // Constant
                     ProcessingWCDays = null, // Constant
                     QuantityForSimilarMechanicalItem = -1, // Constant or placeholder, review this logic
@@ -181,16 +604,18 @@ namespace mechanical.Services.InternalReportService
                     OnHandNo = -1, // Review this logic, seems constant or placeholder
                     DeliveredPercentage = -1, // Review this logic, seems constant or placeholder
                     NetDaysConsumed = scheduleDate != null && firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
-                                        ? (int?)Math.Round(GetDateDifference(scheduleDate.ScheduleDate, firstEvaluation.CompletedAt.Value).TotalDays)
-                                        : firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
-                                            ? (int?)Math.Round(GetDateDifference(firstEvaluation.CompletedAt.Value, DateTime.Now).TotalDays)
-                                            : null,
+                                       ? (int?)Math.Round(GetDateDifference(firstEvaluation.CompletedAt.Value, scheduleDate.ScheduleDate).TotalDays)
+                                       : firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
+                                           ? (int?)Math.Round(GetDateDifference(DateTime.Now, firstEvaluation.CompletedAt.Value).TotalDays)
+                                           : null,
+          
                     SDTAccomplishment = "N/A", // Constant
                     FulfillmentOfDocumentation = "Complete", // Constant
                     ScheduledVisitDate = scheduleDate?.ScheduleDate,
                     Location = firstEvaluation?.InspectionPlace ?? $"{pc.Region}, {pc.City}, {pc.SubCity}, {pc.Wereda}, {pc.Kebele}",
-                    QuantityComplexityOfProperty = "N/A", // Constant
-                    LHCTitleDeedSerialNo = pc.LHCNumber,
+                    QuantityComplexityOfProperty = "N/A", // Constant                    LHCTitleDeedSerialNo = pc.LHCNumber ?? pc.SerialNo,
+
+                    LHCTitleDeedSerialNo = pc.LHCNumber ?? pc.SerialNo,
                     TypeOfProperty = pc.Type,
                     PropertyCategory = pc.Category.ToString(),
                     SiteInspectionDate = firstEvaluation != null ? firstEvaluation.InspectionDate.ToDateTime(TimeOnly.MinValue) : null,
@@ -203,7 +628,7 @@ namespace mechanical.Services.InternalReportService
                     GrossDaysConsumedChecker = null,   // this is the time checker officer uses to check the pce, .. timeConsumed != null ? (int?)timeConsumed.Duration.TotalDays : null,
                     GrossDaysConsumed = pceCase.CompletedAt != null ? (int?)GetDateDifference(pceCase.CreatedAt, pceCase.CompletedAt.Value).TotalDays : (int?)GetDateDifference(pceCase.CreatedAt, DateTime.Now).TotalDays,
                     ReasonOfReturn = null // the reason the case is returned from the mo to rm
-                    };
+                };
                 allProductionCapacityDtos.Add(dto);
             }
 
@@ -275,17 +700,21 @@ namespace mechanical.Services.InternalReportService
                     PurposeOfValuationRequest = firstProductionCapacity?.Purpose ?? "N/A",
                     LastRecentValuationDate = caseEvaluations.Any() ? caseEvaluations.Max(e => e.CreatedAt) : null,
                     DurationReceiptGrossDays = pceCase.Status == "Completed" && caseEvaluations.Any() && caseEvaluations.FirstOrDefault()?.CompletedAt != null
-                                                ? (int?)GetDateDifference(pceCase.CreatedAt, caseEvaluations.First().CompletedAt.Value).TotalDays
-                                                : pceCase.CreatedAt != default ? (int?)GetDateDifference(pceCase.CreatedAt, DateTime.Now).TotalDays : null,
+                                                ? (int?)GetDateDifference( caseEvaluations.First().CompletedAt.Value, pceCase.CreatedAt).TotalDays
+                                                : caseEvaluations.FirstOrDefault()?.CompletedAt == null ? (int?)GetDateDifference(pceCase.CreatedAt, DateTime.Now).TotalDays : null,
                     DistrictName = pceCase.District?.Name ?? "Head Office",
                     DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && pceCase.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                    ? (int?)Math.Round(GetDateDifference(makerTeamLeaderAssignment.AssignmentDate, makerOfficerAssignment.AssignmentDate).TotalDays)
+                                                    ? (int?)Math.Round(GetDateDifference( makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
                                                     : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(makerManagerAssignment.AssignmentDate, makerOfficerAssignment.AssignmentDate).TotalDays)
+                                                        ? (int?)Math.Round(GetDateDifference( makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
                                                         : null,
-                    DurationAssignedToTMGrossDays = makerManagerAssignment?.AssignmentDate != null && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                    ? (int?)Math.Round(GetDateDifference(makerManagerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
-                                                    : null,
+                    DurationAssignedToTMGrossDays = pceCase.District?.Name != "Head Office" &&
+                                                    makerManagerAssignment?.AssignmentDate != null &&
+                                                    makerTeamLeaderAssignment?.AssignmentDate != null
+                                                        ? (int?)Math.Round(GetDateDifference(
+                                                            makerManagerAssignment.AssignmentDate,
+                                                            makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        : null,
                     RequestedEngineer = "Mechanical",
                     ProcessingWCDays = null,
                     QuantityForSimilarMechanicalItem = productionCapacitiesForCase.Count,
@@ -335,24 +764,6 @@ namespace mechanical.Services.InternalReportService
             return date1 - date2;
         }
 
-        public async Task<IEnumerable<InternalCaseReportDto>> GetInternalCaseReport(Guid userId)
-        {
 
-            var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral)
-                                    .ThenInclude(res => res.Case)
-                                    .ThenInclude(res => res.CaseOriginator)
-                                    .Where(Ca => Ca.UserId == userId)
-                                    .ToListAsync();
-
-            var uniqueCases = caseAssignments.Select(ca => ca.Collateral.Case) 
-                                    .DistinctBy(c => c.Id).ToList();
-
-            var caseDtos = _mapper.Map<IEnumerable<InternalCaseReportDto>>(uniqueCases);
-            foreach (var caseDto in caseDtos)
-            {
-                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
-            }
-            return caseDtos;
-        }    
     }
 }

@@ -7,25 +7,7 @@ using PdfSharp.Diagnostics;
 
 namespace mechanical.Models.Dto.InternalReport
 {
-    public class InternalCaseReportDto
-    {
-        public Guid Id { get; set; }
-        public DateTime CreationAt { get; set; }
-        public required string CaseNo { get; set; }
-        public required string RequestingUnit { get; set; }
-        public required string Segment { get; set; }
-        public required string ApplicantName { get; set; }
-        public required string CustomerId { get; set; }
-        public string? CustomerEmail { get; set; } = string.Empty;
-        public string District {  get; set; } = string.Empty;
-        public required string Status { get; set; }
-        public int NoOfCollateral { get; set; } = 0;
-        public int TotalNoOfCollateral { get; set; } = 0;
-
-
-        public string? TeamLeader { get; set; } = string.Empty;
-
-    }
+   
     public class ValuationReportDto
     {
         public Guid Id { get; set; }
@@ -42,14 +24,27 @@ namespace mechanical.Models.Dto.InternalReport
         public DateTime? DateCaseAssignedToTeamLeader { get; set; }
         public DateTime? DateCaseAssignedToValuators { get; set; }
         public string PurposeOfValuationRequest { get; set; }
+        public string RequestedEngineer { get; set; }
+        public int? ProcessingWCDays { get; set; }
+        public int? QuantityForSimilarMechanicalItem { get; set; }
+
+        public string? NameOfValuator { get; set; }
+        public string? NameOfMakerManager { get; set; }
+        public string? NameOfMakerTeamLeader { get; set; }
         public DateTime? LastRecentValuationDate { get; set; }
         public int? DurationReceiptGrossDays { get; set; }
         public int? DurationAssignedToTMGrossDays { get; set; }
         public int? DurationAssignedGrossDays { get; set; }
-        public string RequestedEngineer { get; set; }
-        public int? ProcessingWCDays { get; set; }
-        public int? QuantityForSimilarMechanicalItem { get; set; }
-        public string NameOfValuator { get; set; }
+
+        public string? NameOfCheckerManager { get; set; }
+        public string? NameOfCheckerTeamLeader { get; set; }
+        public string? NameOfChecker { get; set; }
+        public int? DurationCheckerReceiptGrossDays { get; set; }
+        public int? DurationCheckerAssignedToTMGrossDays { get; set; }
+        public int? DurationCheckerAssignedGrossDays { get; set; }
+
+
+
         public int? AssignedNo { get; set; }
         public int? DeliveredNo { get; set; }
         public int? ReturnedWithAdvice { get; set; }
@@ -66,6 +61,9 @@ namespace mechanical.Models.Dto.InternalReport
         public string PropertyCategory { get; set; }
         public DateTime? SiteInspectionDate { get; set; }
         public DateTime? DateSentForChecking { get; set; }
+        public DateTime? DateCaseAssignedToCheckerTeamLeader { get; set; }
+        public DateTime? DateCaseAssignedToCheckerValuators { get; set; }
+
         public int? TotalNumberOfComments { get; set; }
         public DateTime? DateCommentReceivedFromChecking { get; set; }
         public DateTime? DateReportSentToRequestingOrgan { get; set; }
@@ -74,6 +72,8 @@ namespace mechanical.Models.Dto.InternalReport
         public int? GrossDaysConsumed { get; set; }
         public string ReasonOfReturn { get; set; }
     }
+
+
 }
 
 
