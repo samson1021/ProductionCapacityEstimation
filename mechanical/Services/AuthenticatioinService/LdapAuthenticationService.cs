@@ -104,6 +104,9 @@ namespace mechanical.Services.AuthenticatioinService
         {
             try
             {
+                if (!IsValidIpOrHostname(_ip)) throw new ArgumentException("Invalid LDAP IP/hostname configuration.");
+                if (!IsValidPort(_port)) throw new ArgumentException("Invalid LDAP port configuration.");
+                
                 string domainPath = $"LDAP://{_ip}:{_port}";
                 DirectoryEntry searchRoot = new DirectoryEntry(domainPath, _email, _password);
                 DirectorySearcher searcher = new DirectorySearcher(searchRoot);
@@ -165,6 +168,15 @@ namespace mechanical.Services.AuthenticatioinService
                         .Replace("(", "\\28")
                         .Replace(")", "\\29")
                         .Replace("\0", "\\00");
+        }
+        private static bool IsValidIpOrHostname(string value)
+        {
+            return System.Net.IPAddress.TryParse(value, out _) || Uri.CheckHostName(value) != UriHostNameType.Unknown;
+        }
+
+        private static bool IsValidPort(string value)
+        {
+            return int.TryParse(value, out int port) && port > 0 && port <= 65535;
         }
     }
 }
