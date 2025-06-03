@@ -30,16 +30,16 @@ namespace mechanical.Controllers
     public class PCEEvaluationController : BaseController
     {
         private readonly IMapper _mapper;
-        private readonly IMailService _MailService;
+        private readonly IMailService _mailService;
         private readonly ILogger<PCEEvaluationController> _logger;
         private readonly IPCEEvaluationService _PCEEvaluationService;
         private readonly IProductionCapacityService _ProductionCapacityService;
 
-        public PCEEvaluationController(IMapper mapper, IMailService MailService, IPCEEvaluationService PCEEvaluationService, ILogger<PCEEvaluationController> logger, IProductionCapacityService ProductionCapacityService)
+        public PCEEvaluationController(IMapper mapper, IMailService mailService, IPCEEvaluationService PCEEvaluationService, ILogger<PCEEvaluationController> logger, IProductionCapacityService ProductionCapacityService)
         {
             _mapper = mapper;
             _logger = logger;
-            _MailService = MailService;
+            _mailService = mailService;
             _PCEEvaluationService = PCEEvaluationService;
             _ProductionCapacityService = ProductionCapacityService;
         }
@@ -299,15 +299,13 @@ namespace mechanical.Controllers
             {
                 var pceEvaluation = await _PCEEvaluationService.ReleaseRemark(userId, Id, Remark, EvaluatorId);
 
-                await _MailService.SendEmail(new MailPostDto
-                {
-                    SenderEmail = " getnetadane1@cbe.com.et",
-                    SenderPassword = "Gechlove@1234",
-                    RecipantEmail = "yohannessintayhu@cbe.com.et",
-                    Subject = "Remark Release Update",
-
-                    Body = "Dear! </br> Remark release Update for Applicant:-" + pceEvaluation.PCE.PropertyOwner + "</br></br> For further Detail please check Production Valuation System",
-                });
+                // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+                var recipientEmail = "yohannessintayhu@cbe.com.et";
+                await _mailService.SendEmail(
+                    recipientEmail: recipientEmail,
+                    subject: "Remark Release Update",
+                    body: "Dear! </br> Remark release Update for Applicant:-" + pceEvaluation.PCE.PropertyOwner + "</br></br> For further Detail please check Production Valuation System"
+                );
 
                 return RedirectToAction("RemarkPCECases", "PCECase");
                 // return RedirectToAction("PCECases", "PCECase", new { Status = "Remark" });
