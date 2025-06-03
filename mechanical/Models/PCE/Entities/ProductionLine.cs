@@ -63,7 +63,6 @@ namespace mechanical.Models.PCE.Entities
 
         [Required]
         public Guid ProductionLineId { get; set; }
-        public Guid? ReferencedLineId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -76,12 +75,7 @@ namespace mechanical.Models.PCE.Entities
         [Required]
         public MeasurementUnit Unit { get; set; }
 
-        public SourceType? SourceType { get; set; }
-
         [ForeignKey("ProductionLineId")]
         public virtual ProductionLine ProductionLine { get; set; }
-
-        [ForeignKey("ReferencedLineId")]
-        public virtual ProductionLine? ReferencedLine { get; set; }
     }
 }

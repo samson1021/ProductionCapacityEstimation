@@ -368,10 +368,6 @@
                                                                     <table class="table table-sm mb-0">
                                                                         <thead>
                                                                             <tr class="bg-light">
-                                                                                @if(Model.ProductionLineType != null && Model.ProductionLineType == ProductionLineType.Interdependent)
-                                                                                {
-                                                                                    <th style="width: 40%;">Source</th>
-                                                                                }
                                                                                 <th style="width: 40%;">Type</th>
                                                                                 <th style="width: 30%;">Quantity</th>
                                                                                 <th style="width: 30%;">Unit</th>
@@ -385,16 +381,6 @@
                                                                                     inputUnit = input.Unit;
                                                                                 }
                                                                                 <tr>
-                                                                                    @if(Model.ProductionLineType != null && Model.ProductionLineType == ProductionLineType.Interdependent)
-                                                                                    {
-                                                                                        <td>
-                                                                                            @(input.SourceType == null ? "N/A" : (input.SourceType.GetType()
-                                                                                                                .GetField(input.SourceType.ToString())
-                                                                                                                ?.GetCustomAttributes(typeof(DisplayAttribute), false)
-                                                                                                                .OfType<DisplayAttribute>()
-                                                                                                                .FirstOrDefault()?.Name ?? input.SourceType.ToString()))
-                                                                                        </td>
-                                                                                    }
                                                                                     <td>@(string.IsNullOrEmpty(input.Type) ? "N/A" : input.Type)</td>
                                                                                     <td>@(input.Quantity != null ? input.Quantity.ToString() : "N/A")</td>
                                                                                     <td>

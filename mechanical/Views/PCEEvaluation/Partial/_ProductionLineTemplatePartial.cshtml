@@ -82,7 +82,7 @@
                                 <label class="form-label">Production Unit <span class="text-danger">*</span></label>
                                 <select name="ProductionLines[__INDEX__].ProductionUnit" 
                                         class="form-select production-unit-dropdown" required>
-                                    <option value="" disabled selected>Select Unit</option>
+                                    <option value="" disabled selected>-- Select Unit --</option>
                                     @foreach (var unit in Html.GetEnumSelectList<MeasurementUnit>())
                                     {
                                         <option value="@unit.Value">@unit.Text</option>
@@ -93,7 +93,7 @@
                                 <label class="form-label">Production Measurement <span class="text-danger">*</span></label>
                                 <select name="ProductionLines[__INDEX__].ProductionMeasurement" 
                                         class="form-select" required>
-                                    <option value="" disabled selected>Select Measurement</option>
+                                    <option value="" disabled selected>-- Select Measurement --</option>
                                     @foreach (var measurement in Html.GetEnumSelectList<ProductionMeasurement>())
                                     {
                                         <option value="@measurement.Value">@measurement.Text</option>
@@ -105,7 +105,7 @@
                                 <select name="ProductionLines[__INDEX__].OutputPhase" 
                                         class="form-select output-phase" 
                                         data-production-line-type="ProductionLines[__INDEX__].ProductionLineType">
-                                    <option value="" disabled selected>Select Phase</option>
+                                    <option value="" disabled selected>-- Select Phase --</option>
                                     @foreach (var phase in Html.GetEnumSelectList<OutputPhase>())
                                     {
                                         <option value="@phase.Value">@phase.Text</option>
@@ -187,8 +187,9 @@
             <div class="row">
                 <!-- Source Type -->
                 <div class="col-md-3 source-type-container">
-                    <select name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].SourceType" 
+                    <select name="SourceType" 
                             class="form-select form-select-sm source-type">
+                        <option value="" disabled selected>-- Select Source Type --</option>
                         @foreach (var source in Html.GetEnumSelectList<SourceType>())
                         {
                             <option value="@source.Value">@source.Text</option>
@@ -199,8 +200,8 @@
                 <!-- Previous Line Dropdown -->
                 <div class="col-md-3 previous-line-container" style="display: none;">
                     <select class="form-select form-select-sm previous-line-dropdown"
-                            name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].ReferencedLineIndex">
-                        <option value="" disabled selected>Select Line</option>
+                            name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].ReferencedLineIndex" required>
+                        <option value="" disabled selected>-- Select Line --</option>
                     </select>
                 </div>
                 
@@ -226,7 +227,7 @@
                 <div class="col-md-2 input-unit-container">
                     <select name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Unit" 
                             class="form-select form-select-sm input-unit-dropdown" required>
-                        <option value="" disabled selected>Select Unit</option>
+                        <option value="" disabled selected>-- Select Unit --</option>
                         @foreach (var unit in Html.GetEnumSelectList<MeasurementUnit>())
                         {
                             <option value="@unit.Value">@unit.Text</option>

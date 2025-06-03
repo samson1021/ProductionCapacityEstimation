@@ -62,97 +62,133 @@
             calculateTotals();
         }
 
+        // Handle SourceType change
         function HandleSourceTypeChange($input, lineIndex = null) {
             const productionLineType = parseInt($('#ProductionLineType').val());
+            const isInterdependent = productionLineType === @((int)ProductionLineType.Interdependent);
+            const $sourceType = $input.find('.source-type');
             const $typeContainer = $input.find('.input-type-container');
             const $quantityContainer = $input.find('.input-quantity-container');
             const $unitContainer = $input.find('.input-unit-container');
-            const $sourceType = $input.find('.source-type');
+            
+            // Adjust container widths based on production line type
+            adjustContainerWidths($typeContainer, $quantityContainer, $unitContainer, isInterdependent);
+            
+            // Handle source type visibility and behavior
+            handleSourceTypeBehavior($input, $sourceType, isInterdependent, lineIndex);
+        }
 
-            // Disable source type for first production line (only allow new material)
+        // Helper functions
+        function adjustContainerWidths($typeContainer, $quantityContainer, $unitContainer, isInterdependent) {
+            const typeWidth = isInterdependent ? '3' : '4';
+            const quantityWidth = isInterdependent ? '3' : '4';
+            const unitWidth = isInterdependent ? '2' : '3';
+            
+            $typeContainer.removeClass('col-md-4 col-md-3').addClass(`col-md-${typeWidth}`);
+            $quantityContainer.removeClass('col-md-4 col-md-3').addClass(`col-md-${quantityWidth}`);
+            $unitContainer.removeClass('col-md-3 col-md-2').addClass(`col-md-${unitWidth}`);
+        }
+
+        function handleSourceTypeBehavior($input, $sourceType, isInterdependent, lineIndex) {
+            const $sourceTypeContainer = $sourceType.closest('.source-type-container');
+            const $previousLineContainer = $input.find('.previous-line-container');
+            const $inputFields = $input.find('.input-type, .input-quantity, .input-unit-dropdown');
+            
+            // Set source type visibility and disabled state
+            $sourceTypeContainer.toggle(isInterdependent);
+            $sourceType.prop('disabled', !isInterdependent);
+            
+            // Special case for first line
             if (lineIndex === 0) {
                 $sourceType.val(0).trigger('change').prop('disabled', true);
-                $sourceType.closest('.source-type-container').show();
-                // Hide previous line container if visible
-                $input.find('.previous-line-container').hide();
-                // Show input type container and enable input fields
+                $previousLineContainer.hide();
                 $input.find('.input-type-container, .input-unit-container').show();
-                $input.find('.input-type, .input-quantity, .input-unit-dropdown').prop('readonly', false).prop('disabled', false);
+                $inputFields.prop('readonly', false).prop('disabled', false);
                 $input.find('.input-type-hidden').remove();
                 return;
             }
-
-            if (productionLineType === @((int)ProductionLineType.Interdependent)) {
-                $typeContainer.removeClass('col-md-4').addClass('col-md-3');
-                $quantityContainer.removeClass('col-md-4').addClass('col-md-3');
-                $unitContainer.removeClass('col-md-3').addClass('col-md-2');
-
-                $sourceType.closest('.source-type-container').show();
-                $sourceType.prop('disabled', false);
-
-                $sourceType.off('change').on('change', function() {
-                    const $inputItem = $(this).closest('.input-item');
-                    const sourceType = $(this).val();
-
-                    if (parseInt(sourceType) === @((int)SourceType.PreviousOutput)) {
-                        $inputItem.find('.input-type-container').hide();
-                        $inputItem.find('.previous-line-container').show();
-
-                        const currentLineIndex = lineIndex;
-                        const $previousLineDropdown = $inputItem.find('.previous-line-dropdown');
-                        $previousLineDropdown.empty().append('<option value="" disabled selected>Select Line</option>');
-
-                        // Populate eligible previous lines
-                        $('.production-line-container').each(function() {
-                            const prevLineIndex = $(this).data('line-index');
-                            if (prevLineIndex < currentLineIndex) {
-                                const outputPhase = $(this).find('[name$=".OutputPhase"]').val();
-                                if (outputPhase !== '@OutputPhase.FinishedProduct') {
-                                    const outputType = $(this).find('[name$=".OutputType"]').val();
-                                    $previousLineDropdown.append(
-                                        `<option value="${prevLineIndex}">Line ${prevLineIndex + 1}: ${outputType}</option>`
-                                    );
-                                }
-                            }
-                        });
-
-                        $previousLineDropdown.off('change').on('change', function() {
-                            const selectedLineIndex = $(this).val();
-                            if (selectedLineIndex) {
-                                const $selectedLine = $(`.production-line-container[data-line-index="${selectedLineIndex}"]`);
-                                const outputType = $selectedLine.find('[name$=".OutputType"]').val();
-                                const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
-                                const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
-                                
-                                // Instead of .prop('disabled', true), use .prop('readonly', true)
-                                $inputItem.find('.input-type').val(outputType).prop('readonly', true).prop('disabled', false);
-                                $inputItem.find('.input-quantity').val(actualCapacity).prop('readonly', true).prop('disabled', false);
-                                $inputItem.find('.input-unit-dropdown').val(productionUnit).trigger('change').prop('disabled', true);
-
-                                // Add a hidden input for .input-type to ensure value is always submitted
-                                if ($inputItem.find('.input-type-hidden').length === 0) {
-                                    $inputItem.append('<input type="hidden" class="input-type-hidden" name="' + $inputItem.find('.input-type').attr('name') + '" value="' + outputType + '"/>');
-                                } else {
-                                    $inputItem.find('.input-type-hidden').val(outputType);
-                                }
-                            } else {
-                                $inputItem.find('.input-type, .input-quantity, .input-unit-dropdown').val('').prop('disabled', false);
-                            }
-                        });
-                    } else {
-                        $inputItem.find('.input-type-container, .input-unit-container').show();
-                        $inputItem.find('.previous-line-container').hide();
-                        $inputItem.find('.input-type, .input-quantity, .input-unit-dropdown').val('').prop('readonly', false).prop('disabled', false);
-                        $inputItem.find('.input-type-hidden').remove();
-                    }
-                }).trigger('change');
-            } else {
-                $typeContainer.removeClass('col-md-3').addClass('col-md-4');
-                $quantityContainer.removeClass('col-md-3').addClass('col-md-4');
-                $unitContainer.removeClass('col-md-2').addClass('col-md-3');
-
+            
+            if (!isInterdependent) {
                 $sourceType.val(0).trigger('change').prop('disabled', true);
-                $sourceType.closest('.source-type-container').hide();
+                return;
+            }
+            
+            // Setup source type change handler for interdependent lines
+            $sourceType.off('change').on('change', function() {
+                handleSourceTypeSelection($(this).closest('.input-item'), lineIndex);
+                calculateTotals();
+            }).trigger('change');
+        }
+
+        function handleSourceTypeSelection($inputItem, lineIndex) {
+            const sourceType = parseInt($inputItem.find('.source-type').val());
+            const isPreviousOutput = sourceType === @((int)SourceType.PreviousOutput);
+            
+            $inputItem.find('.input-type-container').toggle(!isPreviousOutput);
+            $inputItem.find('.previous-line-container').toggle(isPreviousOutput);
+            
+            if (!isPreviousOutput) {
+                resetInputFields($inputItem);
+                return;
+            }
+            
+            setupPreviousLineSelection($inputItem, lineIndex);
+        }
+
+        function resetInputFields($inputItem) {
+            $inputItem.find('.input-type, .input-quantity, .input-unit-dropdown')
+                .val('')
+                .prop('readonly', false)
+                .prop('disabled', false);
+            $inputItem.find('.input-type-hidden').remove();
+        }
+
+        function setupPreviousLineSelection($inputItem, currentLineIndex) {
+            const $previousLineDropdown = $inputItem.find('.previous-line-dropdown');
+            $previousLineDropdown.empty().append('<option value="" disabled selected>-- Select Line --</option>');
+
+            // Populate eligible previous lines
+            $('.production-line-container').each(function() {
+                const prevLineIndex = $(this).data('line-index');
+                if (prevLineIndex < currentLineIndex) {
+                    const outputPhase = $(this).find('[name$=".OutputPhase"]').val();
+                    if (outputPhase !== '@OutputPhase.FinishedProduct') {
+                        const outputType = $(this).find('[name$=".OutputType"]').val();
+                        $previousLineDropdown.append(
+                            `<option value="${prevLineIndex}">Line ${prevLineIndex + 1}: ${outputType}</option>`
+                        );
+                    }
+                }
+            });
+
+            $previousLineDropdown.off('change').on('change', function() {
+                handlePreviousLineSelection($inputItem, $(this).val());
+            });
+        }
+
+        function handlePreviousLineSelection($inputItem, selectedLineIndex) {
+            if (!selectedLineIndex) {
+                resetInputFields($inputItem);
+                return;
+            }
+
+            const $selectedLine = $(`.production-line-container[data-line-index="${selectedLineIndex}"]`);
+            const outputType = $selectedLine.find('[name$=".OutputType"]').val();
+            const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
+            const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
+            
+            $inputItem.find('.input-type').val(outputType).prop('readonly', true).prop('disabled', false);
+            $inputItem.find('.input-quantity').val(actualCapacity).prop('readonly', true).prop('disabled', false);
+            $inputItem.find('.input-unit-dropdown').val(productionUnit).trigger('change').prop('disabled', true);
+
+            // Ensure value is submitted via hidden input
+            const $typeInput = $inputItem.find('.input-type');
+            const $hiddenInput = $inputItem.find('.input-type-hidden');
+            
+            if ($hiddenInput.length === 0) {
+                $inputItem.append(`<input type="hidden" class="input-type-hidden" name="${$typeInput.attr('name')}" value="${outputType}"/>`);
+            } else {
+                $hiddenInput.val(outputType);
             }
         }
 

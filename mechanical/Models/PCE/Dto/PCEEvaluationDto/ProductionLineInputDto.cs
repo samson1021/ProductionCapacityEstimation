@@ -21,12 +21,6 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
         [Required]
         [Display(Name = "Input Unit")]
         public MeasurementUnit Unit { get; set; }
-
-        [Display(Name = "Source Type")]
-        public SourceType? SourceType { get; set; }
-        
-        [Display(Name = "Referenced Line")]
-        public Guid? ReferencedLineId { get; set; }
     }
 
     public class ProductionLineInputPostDto : ProductionLineInputBaseDto
