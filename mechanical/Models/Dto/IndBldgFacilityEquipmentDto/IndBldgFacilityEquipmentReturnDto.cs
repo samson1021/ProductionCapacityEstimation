@@ -50,5 +50,8 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
 
         public virtual Collateral? Collateral { get; set; }
         public virtual IndBldgFacilityEquipmentCosts? IndBldgFacilityEquipmentCosts { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     }
 }

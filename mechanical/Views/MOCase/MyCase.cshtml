@@ -1,4 +1,4 @@
-@using mechanical.Models.Dto.CaseTerminateDto;
+?@using mechanical.Models.Dto.CaseTerminateDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto;
 
 @{
@@ -88,7 +88,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="post" action="/Case/SendRejection" id="rejectionForm">
-              <input id="CollateralId" type="hidden" />
+                <input id="CollateralId" type="hidden" />
                 <div class="modal-header">
                     <h4 class="modal-title" id="rejectionModalLabel">Reason for Return </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -108,7 +108,6 @@
         </div>
     </div>
 </div>
-
 <script src="~/lib/toastr/toastr.min.js"></script>
 @section Scripts {
 
@@ -242,7 +241,7 @@
             });
         }
 
-      
+
         $("#addCostOfInsuranceFreightButton").click(function(){
               loadCollaterals(currentCaseId);
         })
@@ -254,7 +253,7 @@
             $('#collateralFormModal').modal('show');
         });
          $('#collateralForm').on('submit', function(e) {
-            e.preventDefault(); 
+            e.preventDefault();
 
             var caseId = $('#CaseId').val();
             var insuranceCost = $('#insuranceCost').val();
@@ -282,7 +281,7 @@
                      loadCollaterals(currentCaseId)
                 },
                 error: function(xhr, status, error) {
-                    
+
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         toastr.error('Error: ' + xhr.responseJSON.message);
                     } else {
@@ -354,12 +353,12 @@
         });
 
           /// the old one
-    
+
             $('#addMechanicalCollateralFormm').on('submit', function (e) {
                 e.preventDefault();
                 console.log("from jquery");
                 var formData = new FormData(this);
-                var uploadButton = $('#assignButton'); 
+                var uploadButton = $('#assignButton');
                 uploadButton.prop('disabled', true).text('Uploading...');
 
                 $.ajax({
@@ -381,6 +380,7 @@
                     }
                 });
             });
+
 
             $('#evaluationForm').submit(function (event) {
                 event.preventDefault();
@@ -556,7 +556,7 @@
             data.forEach(function (collateralFile) {
                 tableBody += '<tr>';
                 tableBody += '<td>' + collateralFile.Name + '</td>';
-                tableBody += '<td>' + collateralFile.Category + '</td>';
+                tableBody += '<td>' + collateralFile.Catagory + '</td>';
                 tableBody += '<td>' + collateralFile.ContentType + '</td>';
                 tableBody += '<td><a href="/UploadFile/ViewFile/' + collateralFile.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + collateralFile.Id + '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>';
                 tableBody += '</tr>';

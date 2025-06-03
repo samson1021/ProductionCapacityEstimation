@@ -792,6 +792,155 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 LatestEvaluation = latestEvaluation,
                 PreviousEvaluations = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(previousEvaluations)
             };
+        
+        }
+
+        //Ho
+        public async Task<PCEEvaluationReturnDto> GetHOValuation(Guid Id)
+        {
+            try
+            {
+                var pceEvaluation = await _cbeContext.PCEEvaluations
+                                                .AsNoTracking()
+                                                .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.Justifications)
+                                                .Include(e => e.ProductionLines)
+                                                    .ThenInclude(pl => pl.ProductionLineInputs)
+                                                .Include(e => e.Evaluator)
+                                                .Include(e => e.PCE)
+                                                    .ThenInclude(pc => pc.PCECase)
+                                                // .ThenInclude(p => p.ProductionCapacities)
+                                                .FirstOrDefaultAsync(e => e.Id == Id);
+                // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
+
+                if (pceEvaluation == null)
+                {
+                    _logger.LogWarning("Production capacity valuation with Id {Id} not found", Id);
+                    throw new KeyNotFoundException("Production capacity valuation not found");
+                }
+
+                var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
+
+                var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
+                pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+
+                var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                pceEvaluationDto.TotalCapacity = totalCapacity;
+
+                var bottleneck = pceEvaluationDto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                if (bottleneck != null)
+                {
+                    pceEvaluationDto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                    pceEvaluationDto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                    pceEvaluationDto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                    pceEvaluationDto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                }
+
+                return pceEvaluationDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation");
+                throw new ApplicationException("An error occurred while fetching production capacity valuation.");
+            }
+        }
+
+        public async Task<PCEEvaluationReturnDto> GetHOValuationByPCEId(Guid PCEId)
+        {
+            try
+            {
+                var pceEvaluation = await _cbeContext.PCEEvaluations
+                                                    .AsNoTracking()
+                                                    .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(e => e.Justifications)
+                                                    .Include(e => e.ProductionLines)
+                                                        .ThenInclude(pl => pl.ProductionLineInputs)
+                                                    .Include(e => e.Evaluator)
+                                                    .Include(e => e.PCE)
+                                                        .ThenInclude(pc => pc.PCECase)
+                                                    // .ThenInclude(p => p.ProductionCapacities)
+                                                    // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
+                                                    .OrderByDescending(e => e.UpdatedAt)
+                                                    .ThenByDescending(e => e.CreatedAt)
+                                                    .FirstOrDefaultAsync(e => e.PCEId == PCEId);
+                // ?? throw new KeyNotFoundException("PCE Evaluation not found.");
+
+                if (pceEvaluation == null)
+                {
+                    return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
+                }
+                var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
+
+                var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
+                pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+
+                var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                pceEvaluationDto.TotalCapacity = totalCapacity;
+
+                var bottleneck = pceEvaluationDto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                if (bottleneck != null)
+                {
+                    pceEvaluationDto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                    pceEvaluationDto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                    pceEvaluationDto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                    pceEvaluationDto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                }
+
+                return pceEvaluationDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
+            }
+        }
+
+        public async Task<PCEValuationHistoryDto> GetHOValuationHistory(Guid PCEId)
+        {
+
+            var pce = await _cbeContext.ProductionCapacities
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(res => res.Id == PCEId)
+                                        ?? throw new KeyNotFoundException("Production Capacity not found.");
+
+            PCEEvaluationReturnDto latestEvaluation = null;
+
+            if (pce != null && pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Returned")
+            {
+                latestEvaluation = await GetHOValuationByPCEId(PCEId);
+            }
+
+            var previousEvaluations = await _cbeContext.PCEEvaluations
+                                                        .AsNoTracking()
+                                                        .Include(e => e.TimeConsumedToCheck)
+                                                        .Include(e => e.Justifications)
+                                                        .Include(e => e.ProductionLines)
+                                                            .ThenInclude(pl => pl.ProductionLineInputs)
+                                                        .Include(e => e.Evaluator)
+                                                        .Include(e => e.PCE)
+                                                            .ThenInclude(pc => pc.PCECase)
+                                                        // .ThenInclude(p => p.ProductionCapacities)
+                                                        .Where(e => e.PCEId == PCEId && (latestEvaluation == null || e.Id != latestEvaluation.Id))
+                                                        .ToListAsync();
+
+            return new PCEValuationHistoryDto
+            {
+                LatestEvaluation = latestEvaluation,
+                PreviousEvaluations = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(previousEvaluations)
+            };
+
         }
     }
 }

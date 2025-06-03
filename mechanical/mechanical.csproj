@@ -54,8 +54,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="UploadFile\" />
+    <Folder Include="Views\HORemarkPCECases\" />
   </ItemGroup>
   
   <ItemGroup>

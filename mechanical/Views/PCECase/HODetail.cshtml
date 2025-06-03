@@ -1,0 +1,226 @@
+﻿﻿@using mechanical.Models.Dto.UserDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Dto.PCECaseTerminateDto
+@using mechanical.Models.PCE.Enum.ProductionCapacity
+
+@{
+    ViewData["Title"] = ViewBag.Title as string;
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var PCEcaseTerminate = ViewData["PCECaseTerminate"] as IEnumerable<PCECaseTerminateReturnDto>;
+
+    var currentUserRole = currentUser?.Role?.Name as string;
+    var status = ViewBag.Status as string;
+
+    var assiName = "";
+    var subbName = "";
+    var selectName = "";
+
+    if (currentUserRole == "Relation Manager")
+    {
+        assiName = "SendForValuation";
+        subbName = "GetDistrict";
+        selectName = "Valuation Center";
+    }
+    else if (currentUserRole == "Maker Manager")
+    {
+        assiName = "PCEAssignMakerTeamleader";
+        subbName = "GetMakerTeamleader";
+        selectName = "Team Leader";
+    }
+    else if (currentUserRole == "Maker TeamLeader")
+    {
+        subbName = "GetMakerOfficer";
+        assiName = "PCEAssignMakerOfficer";
+        selectName = "Maker Officer";
+    }
+    else if (currentUserRole == "District Valuation Manager")
+    {
+        subbName = "GetMakerTeamleader";
+        assiName = "PCEAssignMakerOfficer";
+        selectName = "Maker Officer";
+    }
+
+    var getSubordinateUrl = "/UserManagment/" + subbName;
+    var assignUrl = "/PCECaseAssignment/" + assiName;
+    var emptyMessage = "There are no Productions found for this PCE Case.";
+    var fetchUrl = "/ProductionCapacity/GetHOProductions?Status=" + status + "&PCECaseId=" + myPCECase.Id;
+
+    if (!string.IsNullOrEmpty(status) && !status.Equals("All", StringComparison.OrdinalIgnoreCase))
+    {
+        emptyMessage = "There are no " + status + " Productions found for this PCE Case.";
+    }
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>@ViewData["Title"]</h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("HOPCECases", "PCECase")"> PCE Cases</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-general-tab" data-toggle="pill" href="#custom-tabs-four-general" role="tab" aria-controls="custom-tabs-four-general" aria-selected="false"><i class="nav-icon fas fa-home"></i>  General Inforamtion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" id="custom-tabs-four-information-tab" data-toggle="pill" href="#custom-tabs-four-information" role="tab" aria-controls="custom-tabs-four-information" aria-selected="true"><i class="nav-icon fas fa-file"></i>  PCE Informations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-schedule-tab" data-toggle="pill" href="#custom-tabs-four-schedule" role="tab" aria-controls="custom-tabs-four-schedule" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i>  Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-comments-tab" data-toggle="pill" href="#custom-tabs-four-comments" role="tab" aria-controls="custom-tabs-four-comments" aria-selected="false">
+                            <i class="fas fa-comments"> </i>  Comments <span class="badge badge-warning right CommentBage"> </span>
+                        </a>
+                    </li>
+                    @if (myPCECase.Status == "Pending")
+                    {
+                        @if (currentUserRole == "Relation Manager" && status == "Pending")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
+                                    <i class="fas fa-ban"> </i>
+                                    Terminate
+                                    @* @{
+                                        if (PCEcaseTerminate.Count() > 0)
+                                        {
+                                            <span class="right badge badge-danger">New</span>
+                                        }
+                                    } *@
+                                </a>
+                            </li>
+                        }
+                        @if ((currentUserRole == "Maker Manager" || currentUserRole == "Maker TeamLeader" || currentUserRole == "District Valuation Manager" || currentUserRole == "Maker Officer") && status == "New")
+                        {
+                            if (PCEcaseTerminate.Count() > 0)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
+                                        <i class="fas fa-ban"> </i>
+                                        Terminate
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" style="color:black;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
+                                        <i class="fas fa-ban"> </i>
+                                        Terminate
+                                    </a>
+                                </li>
+                            }
+
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade " id="custom-tabs-four-general" role="tabpanel" aria-labelledby="custom-tabs-four-general-tab">
+                        @await Html.PartialAsync("_PCECaseGeneralInfo")
+                    </div>
+                    <div class="tab-pane fade show active" id="custom-tabs-four-information" role="tabpanel" aria-labelledby="custom-tabs-four-information-tab">
+                        @await Html.PartialAsync("_ProductionsTable")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-schedule" role="tabpanel" aria-labelledby="custom-tabs-four-schedule-tab">
+                        @await Html.PartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseSchedule")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-comments" role="tabpanel" aria-labelledby="custom-tabs-four-comments-tab">
+                        @await Html.PartialAsync("PCEScriptPartial/PCEComment/_PCECaseComment")
+                    </div>
+                    @if (currentUserRole == "Relation Manager")
+                    {
+
+                        @if (myPCECase.Status == "Pending" && (status == "Pending" || status == "New"))
+                        {
+                            <div class="tab-pane fade" id="custom-tabs-four-Terminate" role="tabpanel" aria-labelledby="custom-tabs-four-Terminate-tab">
+                                @await Html.PartialAsync("PCEScriptPartial/PCETerminate/_PCECaseTerminate")
+                            </div>
+                        }
+                    }
+                    else
+                    {
+
+                        if (PCEcaseTerminate.Count() > 0)
+                        {
+                            <div class="tab-pane fade" id="custom-tabs-four-Terminate" role="tabpanel" aria-labelledby="custom-tabs-four-Terminate-tab">
+                                @await Html.PartialAsync("PCEScriptPartial/PCETerminate/_PCECaseTerminate")
+                            </div>
+                        }
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/Partial/_FetchSubordinatesScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseScheduleScriptsPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
+        await Html.RenderPartialAsync("PCEScriptPartial/PCETerminate/_PCECaseTerminatedDatatableScriptPartial");
+
+        await Html.RenderPartialAsync("~/Views/ProductionCapacity/Partial/_HOProductionsTableDatatableSriptsPartial.cshtml");
+
+        if (currentUserRole == "Relation Manager" && (status == "New" || status == "All"))
+        {
+            await Html.RenderPartialAsync("PCEScriptPartial/Partial/_ProductionScriptPartial");
+            await Html.RenderPartialAsync("Partial/_CreateProductionCapacityModal");
+        }
+        else if ((currentUserRole == "Maker Officer") ||
+                 (currentUserRole == "Maker Manager") ||
+                 (currentUserRole == "District Valuation Manager") ||
+                 (currentUserRole == "Maker TeamLeader"))
+        {
+            await Html.RenderPartialAsync("PCEScriptPartial/_ReturnModal");
+
+            if (currentUserRole == "Maker Officer")
+            {
+                await Html.RenderPartialAsync("PCEScriptPartial/Partial/_PCEScriptPartial");
+            }
+        }
+    }
+
+    <script>
+        $(document).ready(function () {
+
+            // var assignUrl = '@Html.Raw(assignUrl)';
+            var selectName = '@Html.Raw(selectName)';
+            var emptyMessage = '@Html.Raw(emptyMessage)';
+            var currentUserRole = '@Html.Raw(currentUserRole)';
+            // var getSubordinateUrl = '@Html.Raw(getSubordinateUrl)';
+            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
+            var assignUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(assignUrl))';
+            var getSubordinateUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(getSubordinateUrl))';
+
+            // loadProductions(fetchUrl, emptyMessage);
+            loadProductions('@Html.Raw(fetchUrl)', emptyMessage);
+
+        @if (currentUserRole != "Maker Officer")
+        {
+            <text>initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage); </text>
+        }
+                });
+
+    </script>
+}
