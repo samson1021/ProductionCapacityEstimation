@@ -9,9 +9,8 @@
                     <i class="fas fa-industry me-2 text-primary"></i>Production Line<span class="line-counter ms-1 d-inline">@Html.Raw("__INDEX_1__")</span>
                 </h6>
                 <div class="ms-auto">
-                    <button type="button"
-                        class="btn btn-sm btn-danger px-2 py-1 remove-line-btn"
-                        title="Remove this production line">
+                    <button type="button" title="Remove this production line"
+                        class="btn btn-sm btn-danger px-2 py-1 remove-line-btn">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -22,14 +21,13 @@
                     <div class="col-md-4">
                         <label class="form-label">Machine/Equipment Name <span class="text-danger">*</span></label>
                         <input name="ProductionLines[__INDEX__].LineName" 
-                                class="form-control" 
+                                class="form-control"
                                 required maxlength="100"
                                 placeholder="Enter machine name" />
                         <div class="invalid-feedback">
                             Please provide a machine/equipment name.
                         </div>
                     </div>
-                    
                     <div class="col-md-8">
                         <div class="row">
                             <div class="col-md-4">
@@ -37,12 +35,11 @@
                                 <div class="input-group">
                                     <input name="ProductionLines[__INDEX__].ActualCapacity" 
                                             class="form-control capacity-input" 
-                                            required type="number" step="0.01" min="0"
-                                            placeholder="0.00" />
+                                            type="number" step="0.01" min="0"
+                                            placeholder="0.00" required />
                                     <span class="input-group-text production-unit-label bg-purple">units</span>
                                 </div>
                             </div>
-                            
                             <div class="col-md-4">
                                 <label class="form-label">Design Capacity</label>
                                 <div class="input-group">
@@ -74,7 +71,7 @@
                         <label class="form-label">Output Type <span class="text-danger">*</span></label>
                         <input name="ProductionLines[__INDEX__].OutputType" 
                                 class="form-control" required 
-                                placeholder="Type of output produced" />
+                                placeholder="Output Type" />
                     </div>
                     <div class="col-md-8">
                         <div class="row">
@@ -138,8 +135,6 @@
                     <div class="col-md-3">
                         <div class="form-check form-switch my-2">
                             <input type="hidden" name="ProductionLines[__INDEX__].IsBottleneck" value="false" />
-                            
-                            <!-- Checkbox will override the hidden  field when checked -->
                             <input name="ProductionLines[__INDEX__].IsBottleneck"
                                 class="form-check-input is-bottleneck"
                                 type="checkbox"
@@ -157,8 +152,8 @@
                                 <label class="form-label">Total Input</label>
                                 <div class="input-group">
                                     <input name="ProductionLines[__INDEX__].TotalInput"
-                                            type="number" step="0.01"
-                                            class="form-control total-input" readonly />
+                                            class="form-control total-input"
+                                            type="number" step="0.01" readonly />
                                     <span class="input-group-text total-input-unit-label bg-purple">units</span>
                                 </div>
                             </div>
@@ -167,8 +162,8 @@
                                 <label class="form-label">Conversion Ratio</label>
                                 <div class="input-group">
                                     <input name="ProductionLines[__INDEX__].ConversionRatio"
-                                            type="number" step="0.01" 
-                                            class="form-control conversion-ratio" readonly />
+                                            class="form-control conversion-ratio"
+                                            type="number" step="0.01" readonly />
                                     <span class="input-group-text bg-purple">%</span>
                                 </div>
                             </div>
@@ -199,8 +194,7 @@
                 
                 <!-- Previous Line Dropdown -->
                 <div class="col-md-3 previous-line-container" style="display: none;">
-                    <select class="form-select form-select-sm previous-line-dropdown"
-                            name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].ReferencedLineIndex" required>
+                    <select class="form-select form-select-sm previous-line-dropdown" required>
                         <option value="" disabled selected>-- Select Line --</option>
                     </select>
                 </div>
@@ -216,8 +210,8 @@
                 <div class="col-md-3 input-quantity-container">
                     <div class="input-group input-group-sm">
                         <input name="ProductionLines[__LINE_INDEX__].ProductionLineInputs[__INPUT_INDEX__].Quantity"
-                               type="number" step="0.01" min="0"
                                class="form-control input-quantity"
+                               type="number" step="0.01" min="0"
                                placeholder="0.00" required />
                         <span class="input-group-text input-unit-label bg-purple">units</span>
                     </div>
@@ -296,5 +290,19 @@
         padding: 0.15rem 0.5rem;
         border-radius: 50rem;
         font-size: 0.75rem;
+    }
+    .sticky-add-btn {
+        position: sticky;
+        top: 36px;
+        background: #f8f9fa;
+        z-index: 900;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        max-width: 36rem;
     }
 </style>

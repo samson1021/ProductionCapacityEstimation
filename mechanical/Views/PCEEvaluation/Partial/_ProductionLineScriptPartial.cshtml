@@ -65,7 +65,7 @@
         // Handle SourceType change
         function HandleSourceTypeChange($input, lineIndex = null) {
             const productionLineType = parseInt($('#ProductionLineType').val());
-            const isInterdependent = productionLineType === @((int)ProductionLineType.Interdependent);
+            const isInterdependent = parseInt(productionLineType) === @((int)ProductionLineType.Interdependent);
             const $sourceType = $input.find('.source-type');
             const $typeContainer = $input.find('.input-type-container');
             const $quantityContainer = $input.find('.input-quantity-container');
@@ -122,7 +122,7 @@
 
         function handleSourceTypeSelection($inputItem, lineIndex) {
             const sourceType = parseInt($inputItem.find('.source-type').val());
-            const isPreviousOutput = sourceType === @((int)SourceType.PreviousOutput);
+            const isPreviousOutput = parseInt(sourceType) === @((int)SourceType.PreviousOutput);
             
             $inputItem.find('.input-type-container').toggle(!isPreviousOutput);
             $inputItem.find('.previous-line-container').toggle(isPreviousOutput);
@@ -152,7 +152,7 @@
                 const prevLineIndex = $(this).data('line-index');
                 if (prevLineIndex < currentLineIndex) {
                     const outputPhase = $(this).find('[name$=".OutputPhase"]').val();
-                    if (outputPhase !== '@OutputPhase.FinishedProduct') {
+                    if (parseInt(outputPhase) !== @((int)OutputPhase.FinishedProduct)) {
                         const outputType = $(this).find('[name$=".OutputType"]').val();
                         $previousLineDropdown.append(
                             `<option value="${prevLineIndex}">Line ${prevLineIndex + 1}: ${outputType}</option>`
@@ -176,7 +176,9 @@
             const outputType = $selectedLine.find('[name$=".OutputType"]').val();
             const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
             const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
-            
+
+            console.log("asdfdsf", outputType, actualCapacity, productionUnit);
+
             $inputItem.find('.input-type').val(outputType).prop('readonly', true).prop('disabled', false);
             $inputItem.find('.input-quantity').val(actualCapacity).prop('readonly', true).prop('disabled', false);
             $inputItem.find('.input-unit-dropdown').val(productionUnit).trigger('change').prop('disabled', true);
@@ -565,7 +567,7 @@
                 showJustificationError(false);
             }
             
-            if ($container.data('reason') === '@JustificationReason.Others') {
+            if (parseInt($container.data('reason')) === @((int)JustificationReason.Others)) {
                 if (this.checked) {
                     $textarea.show().prop('disabled', false);
                 } else {
