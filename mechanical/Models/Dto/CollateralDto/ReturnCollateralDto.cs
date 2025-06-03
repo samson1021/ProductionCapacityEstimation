@@ -32,6 +32,6 @@ namespace mechanical.Models.Dto.CollateralDto
         public string? ModelNo { get; set; }
         public string? CollateralType { get; set; }
 
-        public int NumberOfRetuns { get; set; } = 0;
+        public int NumberOfReturns { get; set; } = 0;
     }
 }

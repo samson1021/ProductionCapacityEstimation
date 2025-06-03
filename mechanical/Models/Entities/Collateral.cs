@@ -62,6 +62,6 @@ namespace mechanical.Models.Entities
         [ForeignKey("CaseId")]
         public virtual Case? Case { get; set; }
 
-        public int NumberOfRetuns { get; set; } = 0;
+        public int NumberOfReturns { get; set; } = 0;
     }
 }
