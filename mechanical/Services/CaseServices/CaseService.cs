@@ -43,19 +43,40 @@ namespace mechanical.Services.CaseServices
         }
         public async Task<IEnumerable<CaseDto>> GetRmRemarkedCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases
-            .Include(x => x.Collaterals
-                .Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
-            .Where(res => res.CaseOriginatorId == userId && (res.Collaterals
-                    .Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")))
-            .ToListAsync();
-
-            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-            foreach (var caseDto in caseDtos)
+            var userState = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == userId);
+            if (userState.Role.Name == "Higher Official")
             {
-                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                var cases = await _cbeContext.Cases
+                   .Include(x => x.Collaterals
+                       .Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
+                   .Where(res => res.Collaterals
+                           .Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
+                   .ToListAsync();
+
+                var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+                foreach (var caseDto in caseDtos)
+                {
+                    caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                }
+                return caseDtos;
             }
-            return caseDtos;
+            else
+            {
+                var cases = await _cbeContext.Cases
+                   .Include(x => x.Collaterals
+                       .Where(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer"))
+                   .Where(res => res.CaseOriginatorId == userId && (res.Collaterals
+                           .Any(res => res.CurrentStatus.Contains("Remark") && res.CurrentStage == "Maker Officer")))
+                   .ToListAsync();
+
+                var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+                foreach (var caseDto in caseDtos)
+                {
+                    caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                }
+                return caseDtos;
+            }
+               
         }
         public async Task<Case> CreateCase(Guid userId, CasePostDto createCaseDto)
         {
@@ -474,14 +495,32 @@ namespace mechanical.Services.CaseServices
 
         public async Task<IEnumerable<CaseDto>> GetRmTotalCases(Guid userId)
         {
-            var cases = await _cbeContext.Cases.Include(x => x.Collaterals)
-           .Where(res => res.CaseOriginatorId == userId).ToListAsync();
-            var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
-            foreach (var caseDto in caseDtos)
+            var userState = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == userId);
+            if (userState.Role.Name == "Higher Official")
             {
-                caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                var cases = await _cbeContext.Cases.Include(x => x.Collaterals).ToListAsync();
+                var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+                foreach (var caseDto in caseDtos)
+                {
+                    caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                }
+                return caseDtos;
+
             }
-            return caseDtos;
+            else
+            {
+                var cases = await _cbeContext.Cases.Include(x => x.Collaterals)
+                    .Where(res => res.CaseOriginatorId == userId).ToListAsync();
+                var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
+                    foreach (var caseDto in caseDtos)
+                    {
+                        caseDto.TotalNoOfCollateral = await _cbeContext.Collaterals.CountAsync(res => res.CaseId == caseDto.Id);
+                    }
+                    return caseDtos;
+
+            }
+
+                
         }
 
         public async Task<IEnumerable<CaseDto>> GetTotalCases(Guid userId)

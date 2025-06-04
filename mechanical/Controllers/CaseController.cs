@@ -655,7 +655,7 @@ namespace mechanical.Controllers
             var id = base.GetCurrentUserId();
             var myCase = new object();
             var userRole = await _cbeContext.Users.Where(res => res.Id == id).Include(res => res.Role).FirstOrDefaultAsync();
-            if (userRole.Role.Name == "Relation Manager")
+            if (userRole.Role.Name == "Relation Manager" || userRole.Role.Name == "Higher Official")
             {
                 myCase = await _caseService.GetRmTotalCases(id);
             }
