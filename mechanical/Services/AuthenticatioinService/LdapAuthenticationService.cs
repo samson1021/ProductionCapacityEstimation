@@ -27,6 +27,17 @@ namespace mechanical.Services.AuthenticatioinService
             _port = configuration["LDAP:Port"] ?? throw new ArgumentNullException("LDAP:Port configuration is missing.");
             _email = configuration["LDAP:Email"] ?? throw new ArgumentNullException("LDAP:Email configuration is missing.");
             _password = configuration["LDAP:Password"] ?? throw new ArgumentNullException("LDAP:Password configuration is missing.");
+        
+            // // Load LDAP settings from environment variables or use defaults
+            // _ip = Environment.GetEnvironmentVariable("LDAP_HOST") ?? "mail.cbe.com.et";
+            // _port = int.TryParse(Environment.GetEnvironmentVariable("LDAP_PORT"), out var port) ? port : 389;
+            // _email = Environment.GetEnvironmentVariable("LDAP_EMAIL") ?? throw new ArgumentNullException("LDAP_EMAIL");
+            // _password = Environment.GetEnvironmentVariable("LDAP_PASSWORD") ?? throw new ArgumentNullException("LDAP_PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(_systemEmail) || string.IsNullOrWhiteSpace(_systemPassword))
+            {
+                throw new ArgumentNullException("LDAP Email or Password is not configured properly.");
+            }
         }
 
         //authenticate user by CBE outlook email and password
@@ -63,8 +74,11 @@ namespace mechanical.Services.AuthenticatioinService
         {
             try
             {
-                // Construct a directory search using the username as the search criteria
+                // Security Note: _ip and _port are loaded from trusted configuration and validated for format.
+                // No user input is used here, so this is not subject to LDAP Injection (see CWE-90).
                 DirectoryEntry directoryEntry = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
+                
+                // Construct a directory search using the username as the search criteria
                 DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry);
 
                 var safeUsername = LdapFilterEncode(username);
@@ -106,9 +120,10 @@ namespace mechanical.Services.AuthenticatioinService
             {
                 if (!IsValidIpOrHostname(_ip)) throw new ArgumentException("Invalid LDAP IP/hostname configuration.");
                 if (!IsValidPort(_port)) throw new ArgumentException("Invalid LDAP port configuration.");
-                
-                string domainPath = $"LDAP://{_ip}:{_port}";
-                DirectoryEntry searchRoot = new DirectoryEntry(domainPath, _email, _password);
+
+                // Security Note: _ip and _port are loaded from trusted configuration and validated for format.
+                // No user input is used here, so this is not subject to LDAP Injection (see CWE-90).
+                DirectoryEntry searchRoot = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
                 DirectorySearcher searcher = new DirectorySearcher(searchRoot);
                 // {
                 //     SearchScope = SearchScope.Subtree,
