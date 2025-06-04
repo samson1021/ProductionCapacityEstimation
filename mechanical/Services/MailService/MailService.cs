@@ -18,7 +18,7 @@ namespace mechanical.Services.MailService
 
         public MailService(ILogger<MailService> logger, IConfiguration configuration)
         {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
             // Load SMTP settings from configuration or environment variables
@@ -34,6 +34,11 @@ namespace mechanical.Services.MailService
             // _enableSsl = bool.TryParse(Environment.GetEnvironmentVariable("SMTP_ENABLESSL"), out var ssl) ? ssl : true;
             // _systemEmail = Environment.GetEnvironmentVariable("SMTP_EMAIL") ?? throw new ArgumentNullException("SMTP_EMAIL");
             // _systemPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? throw new ArgumentNullException("SMTP_PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(_systemEmail) || string.IsNullOrWhiteSpace(_systemPassword))
+            {
+                throw new ArgumentNullException("SMTP Email or Password is not configured properly.");
+            }
         }
 
         public async Task<bool> SendEmail(string recipientEmail, string subject, string body)
