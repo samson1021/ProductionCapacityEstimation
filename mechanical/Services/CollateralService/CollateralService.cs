@@ -547,7 +547,7 @@ namespace mechanical.Services.CollateralService
                         caseassignment.Status = "Correction";
                         collateral.CurrentStage = "Maker Officer";
                         collateral.CurrentStatus = "Correction";
-                        collateral.NumberOfRetuns = collateral.NumberOfRetuns + 1;
+                        collateral.NumberOfReturns = collateral.NumberOfReturns + 1;
                     }
                     else if (Status == "Complete")
                     {

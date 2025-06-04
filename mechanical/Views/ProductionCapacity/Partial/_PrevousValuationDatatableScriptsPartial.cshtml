@@ -46,7 +46,7 @@
 
     function loadPreviousValuations() {
 
-        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
+        var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl)';
         $.ajax({
             url: fetchUrl,
             type: 'GET',

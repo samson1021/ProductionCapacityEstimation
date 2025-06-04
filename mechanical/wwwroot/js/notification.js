@@ -119,7 +119,7 @@ function setupSignalRConnection() {
 //         banner.className = "alert alert-warning alert-dismissible fade show";
 //         banner.innerHTML = `
 //             <strong>${message}</strong>
-//             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+//             <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
 //             <button class="btn btn-sm btn-primary ms-2" onclick="ensureSignalRConnection()">Retry Now</button>
 //         `;
 //         document.body.prepend(banner);

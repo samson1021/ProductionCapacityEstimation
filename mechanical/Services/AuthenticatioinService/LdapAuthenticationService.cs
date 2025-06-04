@@ -66,7 +66,9 @@ namespace mechanical.Services.AuthenticatioinService
                 // Construct a directory search using the username as the search criteria
                 DirectoryEntry directoryEntry = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
                 DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry);
-                directorySearcher.Filter = $"(|(sAMAccountName={username})(mail={username})(employeeID={username}))";
+
+                var safeUsername = LdapFilterEncode(username);
+                directorySearcher.Filter = $"(|(sAMAccountName={safeUsername})(mail={safeUsername})(employeeID={safeUsername}))";
 
                 // Execute the search and retrieve the first matching result
                 SearchResult? searchResult = directorySearcher.FindOne();
@@ -102,6 +104,9 @@ namespace mechanical.Services.AuthenticatioinService
         {
             try
             {
+                if (!IsValidIpOrHostname(_ip)) throw new ArgumentException("Invalid LDAP IP/hostname configuration.");
+                if (!IsValidPort(_port)) throw new ArgumentException("Invalid LDAP port configuration.");
+                
                 string domainPath = $"LDAP://{_ip}:{_port}";
                 DirectoryEntry searchRoot = new DirectoryEntry(domainPath, _email, _password);
                 DirectorySearcher searcher = new DirectorySearcher(searchRoot);
@@ -111,8 +116,9 @@ namespace mechanical.Services.AuthenticatioinService
                 // };
                 searcher.SearchScope = SearchScope.Subtree;
                 searcher.PageSize = 1000;
-
-                searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + SmAccountName + "))";
+                
+                var safeSamAccountName = LdapFilterEncode(SmAccountName);
+                searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + safeSamAccountName + "))";
                 searcher.PropertiesToLoad.Add("sAMAccountName");
                 searcher.PropertiesToLoad.Add("mail");
                 searcher.PropertiesToLoad.Add("employeeID");
@@ -147,6 +153,30 @@ namespace mechanical.Services.AuthenticatioinService
                 _logger.LogError(ex, "Error while retrieving user data from AD.");
                 throw new ApplicationException("An error occurred while retrieving user data.", ex);
             }
+        }
+
+        public static string LdapFilterEncode(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty;
+            }
+
+            // Escape special characters in the input string
+            return input.Replace("\\", "\\5c")
+                        .Replace("*", "\\2a")
+                        .Replace("(", "\\28")
+                        .Replace(")", "\\29")
+                        .Replace("\0", "\\00");
+        }
+        private static bool IsValidIpOrHostname(string value)
+        {
+            return System.Net.IPAddress.TryParse(value, out _) || Uri.CheckHostName(value) != UriHostNameType.Unknown;
+        }
+
+        private static bool IsValidPort(string value)
+        {
+            return int.TryParse(value, out int port) && port > 0 && port <= 65535;
         }
     }
 }

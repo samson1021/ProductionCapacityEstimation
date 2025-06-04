@@ -22,13 +22,15 @@ namespace mechanical.Services.UploadFileService
 
         public async Task<Guid> CreateUploadFile(Guid userId, CreateFileDto file)
         {
+            Directory.CreateDirectory("UploadFile");
+
             var uploadFile = new UploadFile();
             uploadFile.Id = Guid.NewGuid();
             uploadFile.Name = file.File.FileName;
             uploadFile.ContentType = file.File.ContentType;
             uploadFile.Size = file.File.Length;
             uploadFile.Extension = Path.GetExtension(file.File.FileName);
-
+            
             var uniqueFileName = uploadFile.Id.ToString() + uploadFile.Extension;
             var filePath = Path.Combine("UploadFile", uniqueFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -186,6 +188,8 @@ namespace mechanical.Services.UploadFileService
             {
                 return null;
             }
+            Directory.CreateDirectory("UploadFile");
+            
             DeleteFile(Path.Combine("UploadFile", uploadFile.Id.ToString() + uploadFile.Extension));
             uploadFile.Name = file.File.FileName;
             uploadFile.ContentType = file.File.ContentType;

@@ -2,7 +2,7 @@
 
 <script>
     $(document).ready(function () {
-        const measurementUnits = @Html.Raw(Json.Serialize(((MeasurementUnit[])Enum.GetValues(typeof(MeasurementUnit))).ToDictionary(e => (int)e, e => Enum.GetName(typeof(MeasurementUnit), e))));
+        const measurementUnits = @Json.Serialize(((MeasurementUnit[])Enum.GetValues(typeof(MeasurementUnit))).ToDictionary(e => (int)e, e => Enum.GetName(typeof(MeasurementUnit), e)));
         const $productionLineContainer = $('#productionLineContainer');
 
         // Add production line
@@ -65,7 +65,7 @@
         // Handle SourceType change
         function HandleSourceTypeChange($input, lineIndex = null) {
             const productionLineType = parseInt($('#ProductionLineType').val());
-            const isInterdependent = productionLineType === @((int)ProductionLineType.Interdependent);
+            const isInterdependent = parseInt(productionLineType) === @((int)ProductionLineType.Interdependent);
             const $sourceType = $input.find('.source-type');
             const $typeContainer = $input.find('.input-type-container');
             const $quantityContainer = $input.find('.input-quantity-container');
@@ -122,7 +122,7 @@
 
         function handleSourceTypeSelection($inputItem, lineIndex) {
             const sourceType = parseInt($inputItem.find('.source-type').val());
-            const isPreviousOutput = sourceType === @((int)SourceType.PreviousOutput);
+            const isPreviousOutput = parseInt(sourceType) === @((int)SourceType.PreviousOutput);
             
             $inputItem.find('.input-type-container').toggle(!isPreviousOutput);
             $inputItem.find('.previous-line-container').toggle(isPreviousOutput);
@@ -152,7 +152,7 @@
                 const prevLineIndex = $(this).data('line-index');
                 if (prevLineIndex < currentLineIndex) {
                     const outputPhase = $(this).find('[name$=".OutputPhase"]').val();
-                    if (outputPhase !== '@OutputPhase.FinishedProduct') {
+                    if (parseInt(outputPhase) !== @((int)OutputPhase.FinishedProduct)) {
                         const outputType = $(this).find('[name$=".OutputType"]').val();
                         $previousLineDropdown.append(
                             `<option value="${prevLineIndex}">Line ${prevLineIndex + 1}: ${outputType}</option>`
@@ -176,25 +176,59 @@
             const outputType = $selectedLine.find('[name$=".OutputType"]').val();
             const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
             const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
-            
-            $inputItem.find('.input-type').val(outputType).prop('readonly', true).prop('disabled', false);
-            $inputItem.find('.input-quantity').val(actualCapacity).prop('readonly', true).prop('disabled', false);
-            $inputItem.find('.input-unit-dropdown').val(productionUnit).trigger('change').prop('disabled', true);
 
-            // Ensure value is submitted via hidden input
+            console.log("Selected values:", outputType, actualCapacity, productionUnit);
+
+            // Set and lock input-type
             const $typeInput = $inputItem.find('.input-type');
-            const $hiddenInput = $inputItem.find('.input-type-hidden');
-            
-            if ($hiddenInput.length === 0) {
-                $inputItem.append(`<input type="hidden" class="input-type-hidden" name="${$typeInput.attr('name')}" value="${outputType}"/>`);
+            $typeInput
+                .val(outputType)
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                })
+                .attr('readonly', true); // This works for input fields
+
+            // Create or update hidden input for type
+            let $hiddenTypeInput = $inputItem.find('.input-type-hidden');
+            if ($hiddenTypeInput.length === 0) {
+                $hiddenTypeInput = $(`<input type="hidden" class="input-type-hidden" name="${$typeInput.attr('name')}" value="${outputType}"/>`);
+                $inputItem.append($hiddenTypeInput);
             } else {
-                $hiddenInput.val(outputType);
+                $hiddenTypeInput.val(outputType);
+            }
+
+            // Set and lock input-quantity
+            const $quantityInput = $inputItem.find('.input-quantity');
+            $quantityInput
+                .val(actualCapacity)
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                })
+                .attr('readonly', true);
+
+            const $unitDropdown = $inputItem.find('.input-unit-dropdown');
+            $unitDropdown
+                .val(productionUnit)
+                .trigger('change')
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                });
+
+            // Create or update hidden input for unit
+            let $hiddenUnitInput = $inputItem.find('.input-unit-hidden');
+            if ($hiddenUnitInput.length === 0) {
+                $hiddenUnitInput = $(`<input type="hidden" class="input-unit-hidden" name="${$unitDropdown.attr('name')}" value="${productionUnit}"/>`);
+                $inputItem.append($hiddenUnitInput);
+            } else {
+                $hiddenUnitInput.val(productionUnit);
             }
         }
 
         // Remove production line
         function removeProductionLine($line) {
-
             const $container = $line.closest('.production-line-container');
             const lineIndex = $container.data('line-index');
             const id = $container.find('input[type="hidden"][id$="_Id"]').val();
@@ -565,7 +599,7 @@
                 showJustificationError(false);
             }
             
-            if ($container.data('reason') === '@JustificationReason.Others') {
+            if (parseInt($container.data('reason')) === @((int)JustificationReason.Others)) {
                 if (this.checked) {
                     $textarea.show().prop('disabled', false);
                 } else {
