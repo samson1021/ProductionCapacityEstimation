@@ -99,14 +99,15 @@ namespace mechanical.Controllers
             caseAssignment.Status = "Complete";
             _cbeContext.Update(caseAssignment);
             _cbeContext.SaveChanges();
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = " getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Remark Release Update ",
-                Body = "Dear! </br> Remark release Update  For Applicant:-" + collateral.PropertyOwner + "</br></br> For further Detail please check Collateral Valuation System",
-            });
+
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "Remark Release Update ",
+                body: "Dear! </br> Remark release Update  For Applicant:-" + collateral.PropertyOwner + "</br></br> For further Detail please check Collateral Valuation System"
+            );
+
             return RedirectToAction("RemarkCases", "MoCase");
         }
 

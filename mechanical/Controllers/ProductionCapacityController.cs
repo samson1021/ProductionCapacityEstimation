@@ -244,8 +244,97 @@ namespace mechanical.Controllers
         // public async Task<IActionResult> GetMyDashboardPCECount()
         // {
         //     var productions = await _ProductionCapacityService.GetDashboardPCECount(base.GetCurrentUserId());
-            // string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+        // string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings{ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
         //     return Content(jsonData, "application/json");
-        // }               
+        // }
+
+
+        // HO
+        [HttpGet]
+        public async Task<IActionResult> HOProductions(string Status = "All")
+        {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
+            }
+
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            ViewData["Title"] = Status + " Productions";
+            ViewBag.Status = Status;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHOProductions(Guid? PCECaseId = null, string Status = "All")
+        {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
+            }
+
+            IEnumerable<ProductionReturnDto> productions = null;
+            if (PCECaseId == null)
+            {
+                productions = await _ProductionCapacityService.GetHOProductions(base.GetCurrentUserId(), Status: Status);
+
+                if (productions == null)
+                {
+                    return BadRequest("Unable to load {Status} Productions");
+                }
+            }
+            else
+            {
+                productions = await _ProductionCapacityService.GetHOProductions(PCECaseId, Status: Status);
+
+                if (productions == null)
+                {
+                    return BadRequest("Unable to load {Status} Productions with PCECase ID: {PCECaseId}");
+                }
+            }
+
+            string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> HODetail(Guid Id)
+        {
+            try
+            {
+
+                var userId = base.GetCurrentUserId();
+                var productionDetail = await _ProductionCapacityService.GetHOProductionDetails(Id);
+
+                if (productionDetail.ProductionCapacity == null)
+                {
+                    if (productionDetail.PCECase == null)
+                    {
+                        return RedirectToAction("HODetail", "PCECase", new { Id = productionDetail.PCECase.Id, Status = "New" });
+                    }
+                    return RedirectToAction("HOPCECases", "PCECase");
+                }
+
+                ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+                ViewData["LatestPCECaseSchedule"] = await _PCECaseScheduleService.GetLatestSchedule(productionDetail.PCECase.Id);
+                ViewData["Reestimation"] = productionDetail.Reestimation;
+                ViewData["Production"] = productionDetail.ProductionCapacity;
+                ViewData["LatestEvaluation"] = productionDetail.PCEValuationHistory.LatestEvaluation;
+                ViewData["PreviousEvaluations"] = productionDetail.PCEValuationHistory.PreviousEvaluations;
+                ViewData["PCECase"] = productionDetail.PCECase;
+                ViewData["ProductionFiles"] = productionDetail.RelatedFiles;
+                ViewData["ReturnedProductions"] = productionDetail.ReturnedProductions;
+                ViewData["Title"] = "Production Detail";
+
+                return View(productionDetail.ProductionCapacity);
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError(ex, "Error fetching Production capacity details for ID: {Id}", Id);
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+        }
+
     }
 }

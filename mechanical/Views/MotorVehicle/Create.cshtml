@@ -321,7 +321,7 @@
         });
         document.getElementById("EngineNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("EngineNo-error").textContent = "Only alphanumeric characters are allowed.";
@@ -332,7 +332,7 @@
         });
         document.getElementById("ModelNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
@@ -343,7 +343,7 @@
         });
         document.getElementById("SerialNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";

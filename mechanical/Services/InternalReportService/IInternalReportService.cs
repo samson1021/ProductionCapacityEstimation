@@ -7,7 +7,9 @@ namespace mechanical.Services.InternalReportService
 {
     public interface IInternalReportService
     {
-        Task<IEnumerable<InternalCaseReportDto>> GetCaseReport(Guid userId);
-    
+        //Task<IEnumerable<InternalCaseReportDto>> GetInternalCaseReport(Guid userId);
+        Task<(IEnumerable<ValuationReportDto> DistinctCases, IEnumerable<ValuationReportDto> AllProductionCapacities)> GetInternalPCECaseReport(Guid userId);
+        Task<(IEnumerable<ValuationReportDto> DistinctCases, IEnumerable<ValuationReportDto> AllProductionCapacities)> GetInternalCaseReport(Guid userId);
+
     }
 }

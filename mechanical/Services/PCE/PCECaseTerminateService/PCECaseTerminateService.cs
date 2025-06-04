@@ -184,5 +184,18 @@ namespace mechanical.Services.PCE.PCECaseTerminateService
             }
             return pceCaseDtos;
         }
+
+        //HO
+        public async Task<IEnumerable<PCECaseTerminateDto>> GetHOPCECaseTerminates()
+        {
+            var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities).Where(res => /*res.PCECaseOriginatorId == UserId &&*/ res.Status == "Terminated").ToListAsync();
+            var pceCaseDtos = _mapper.Map<IEnumerable<PCECaseTerminateDto>>(pceCases);
+            foreach (var pceCaseDto in pceCaseDtos)
+            {
+                var pceCaseTerminate = await _cbeContext.PCECaseTerminates.Where(res => res.PCECaseId == pceCaseDto.Id).FirstOrDefaultAsync();
+                pceCaseDto.TerminationReason = pceCaseTerminate?.Reason;
+            }
+            return pceCaseDtos;
+        }
     }
 }

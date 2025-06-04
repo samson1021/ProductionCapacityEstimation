@@ -329,14 +329,15 @@ namespace mechanical.Controllers
             var caseSchedule = await _caseScheduleService.CreateCaseSchedule(base.GetCurrentUserId(), CaseSchedulePostDto);
             if (caseSchedule == null) { return BadRequest("Unable to Create case Schdule"); }
             var CaseInfo = await _caseService.GetCaseDetail(caseSchedule.CaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = " getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "RM Proposed New Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! </br> Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + "</br></br> For further Detail please check Collateral Valuation System",
-            });
+            
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "RM Proposed New Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                body: "Dear! </br> Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + "</br></br> For further Detail please check Collateral Valuation System"
+            );
+
             string jsonData = JsonConvert.SerializeObject(caseSchedule);
             return Ok(caseSchedule);
         }
@@ -672,14 +673,15 @@ namespace mechanical.Controllers
             var caseTerminate = await _caseTermnateService.CreateCaseTerminate(base.GetCurrentUserId(), caseTerminatePostDto);
             if (caseTerminate == null) { return BadRequest("Unable to Create case Schdule"); }
             var CaseInfo = await _caseService.GetCaseDetail(caseTerminate.CaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = "getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseTerminate.Reason + " For further Detail please check Collateral Valuation System",
-            });
+
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                body: "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseTerminate.Reason + " For further Detail please check Collateral Valuation System"
+            );
+
             string jsonData = JsonConvert.SerializeObject(caseTerminate);
             return Ok(caseTerminate);
         }

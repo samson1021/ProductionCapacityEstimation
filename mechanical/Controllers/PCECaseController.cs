@@ -477,14 +477,15 @@ namespace mechanical.Controllers.PCE
             }
 
             var CaseInfo = await _PCECaseService.GetPCECase(userId, pceCaseTerminate.PCECaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = "getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + pceCaseTerminate.Reason + " For further Detail please check PCE Valuation System",
-            });
+
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                body: "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + pceCaseTerminate.Reason + " For further Detail please check PCE Valuation System"
+            );
+
             string jsonData = JsonConvert.SerializeObject(pceCaseTerminate);
             return Ok(pceCaseTerminate);
         }
@@ -533,6 +534,206 @@ namespace mechanical.Controllers.PCE
             ViewData["PCECaseSchedule"] = pceCaseSchedule;
             ViewData["CurrentUser"] =  await _UserService.GetUserById(base.GetCurrentUserId());
 
+            return View();
+        }
+        // HO
+        [HttpGet]
+        public async Task<IActionResult> HOPCECases(string Status = "All")
+        {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
+            }
+
+            if (Status == "Reestimate")
+            {
+                Status = "Completed";
+            }
+
+            ViewBag.Status = Status;
+            ViewData["Title"] = Status + " PCE Cases";
+            ViewBag.Url = "/PCECase/GetHOPCECases";
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+
+            return View("HOPCECases");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHOPCECases(string Status = "All", int? Limit = null)
+        {
+
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
+            }
+
+            IEnumerable<PCECaseReturnDto> pceCases = null;
+
+            // var userId = base.GetCurrentUserId();
+
+            if (Status == "Reestimate")
+            {
+                pceCases = await _PCECaseService.GetHOPCECases("Completed", Limit: Limit);
+            }
+            else
+            {
+                pceCases = await _PCECaseService.GetHOPCECases(Status, Limit: Limit);
+            }
+
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load {Status} PCE Cases");
+            }
+
+            string jsonData = JsonConvert.SerializeObject(pceCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHODashboardPCECaseCount()
+        {
+            var pceCaseCount = await _PCECaseService.GetHODashboardPCECaseCount();
+            string jsonData = JsonConvert.SerializeObject(pceCaseCount, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+      
+        //[HttpGet]
+        //public async Task<IActionResult> HODetail(Guid Id, string Status = "All")
+        //{
+        //    var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+        //    if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+        //    {
+        //        // Error page
+        //        return BadRequest("Invalid status.");
+        //        // return NotFound("Resource not found.");
+        //        // return Unauthorized("Authentication required.");
+        //        // return StatusCode(500, "An unexpected error occurred.");
+        //        // return Forbid("You do not have permission to access this resource.");
+        //    }
+
+        //    var userId = base.GetCurrentUserId();
+        //    var pceCase = await _PCECaseService.GetHOPCECase(Id);
+
+        //    if (pceCase == null)
+        //    {
+        //        return RedirectToAction("HOPCECases");
+        //    }
+
+        //    var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+        //    var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+        //    var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestSchedule(Id);
+
+        //    ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+        //    ViewData["PCECase"] = pceCase;
+        //    ViewData["PCECaseTerminate"] = PCECaseTerminate;
+        //    ViewData["PCECaseSchedule"] = pceCaseSchedule;
+        //    ViewData["LatestPCECaseSchedule"] = latestPCECaseSchedule;
+        //    ViewData["Title"] = "PCE Case Details";
+        //    ViewBag.Status = Status;
+
+        //    return View();
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> HODetail(Guid Id, string Status = "All")
+        {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                // Error page
+                return BadRequest("Invalid status.");
+                // return NotFound("Resource not found.");
+                // return Unauthorized("Authentication required.");
+                // return StatusCode(500, "An unexpected error occurred.");
+                // return Forbid("You do not have permission to access this resource.");
+            }
+
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+
+            if (pceCase == null)
+            {
+                return RedirectToAction("PCECases");
+            }
+
+            var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+            var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestSchedule(Id);
+
+            ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+            ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseTerminate"] = PCECaseTerminate;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["LatestPCECaseSchedule"] = latestPCECaseSchedule;
+            ViewData["Title"] = "PCE Case Details";
+            ViewBag.Status = Status;
+
+            return View();
+        }
+        public async Task<IActionResult> HORemarkPCECases()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+
+        public async Task<IActionResult> HOemarkPCECase(Guid Id)
+        {
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+
+            if (pceCase == null)
+            {
+                return RedirectToAction("PCECases");
+            }
+
+            ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+            ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["Id"] = userId;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHORemarkedPCECases()
+        {
+            var pceCases = await _PCECaseService.GetHORemarkedPCECases();
+
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load Remarked PCE Cases.");
+            }
+
+            string jsonData = JsonConvert.SerializeObject(pceCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+        // PCE Terminate Cases
+        [HttpGet]
+        public async Task<IActionResult> HOPCETerminatedCases()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHOPCETerminatedCases()
+        {
+            var newCases = await _PCECaseTerminateService.GetHOPCECaseTerminates();
+            return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> HOPCESummary(Guid Id)
+        {
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+
+            //var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
+
+            //ViewData["pceEvaluations"] = pceEvaluations;
+            ViewData["PCECase"] = pceCase;
             return View();
         }
     }
