@@ -34,7 +34,7 @@ namespace mechanical.Services.AuthenticatioinService
             // _email = Environment.GetEnvironmentVariable("LDAP_EMAIL") ?? throw new ArgumentNullException("LDAP_EMAIL");
             // _password = Environment.GetEnvironmentVariable("LDAP_PASSWORD") ?? throw new ArgumentNullException("LDAP_PASSWORD");
 
-            if (string.IsNullOrWhiteSpace(_systemEmail) || string.IsNullOrWhiteSpace(_systemPassword))
+            if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_password))
             {
                 throw new ArgumentNullException("LDAP Email or Password is not configured properly.");
             }
