@@ -71,8 +71,8 @@
         await Html.RenderPartialAsync("Partial/_ProductionsTableDatatableSriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     } 
-    <script>$(document).ready(function () {
-        
+    <script>
+        $(document).ready(function () {
             var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
             var emptyMessage = '@emptyMessage';
 

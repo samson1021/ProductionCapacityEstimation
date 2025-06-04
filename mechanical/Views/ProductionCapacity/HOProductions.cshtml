@@ -73,11 +73,10 @@
     }
     <script>
         $(document).ready(function () {
+            var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
+            var emptyMessage = '@emptyMessage';
 
-                    var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
-                    var emptyMessage = '@emptyMessage';
-
-                    loadProductions(fetchUrl, emptyMessage);
-                });
+            loadProductions(fetchUrl, emptyMessage);
+        });
     </script>
 }
