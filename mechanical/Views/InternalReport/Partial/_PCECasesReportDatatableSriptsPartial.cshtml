@@ -99,6 +99,36 @@
             const detailColumns = [
                 { data: 'RequestedEngineer', title: 'Requested Engineer', width: '8%', defaultContent: '' },
                 { data: 'CaseFRQ', title: 'Case FRQ ', width: '8%', defaultContent: '' },
+                { data: 'DistrictName', title: 'District', width: '8%', defaultContent: '' },
+                { data: 'PurposeOfValuationRequest', title: 'Purpose of Valuation', width: '8%', defaultContent: '' },
+                { data: 'FulfillmentOfDocumentation', title: 'Documentation', width: '8%', defaultContent: '' },
+
+                { data: 'Location', title: 'Location', width: '8%', defaultContent: '' },
+                // { data: 'QuantityComplexityOfProperty', title: 'Property Complexity', width: '8%', defaultContent: '' },
+                { data: 'LHCTitleDeedSerialNo', title: 'LHC Serial No', width: '8%', defaultContent: '' },
+                { data: 'TypeOfProperty', title: 'Property Type', width: '8%', defaultContent: '' },
+                { data: 'PropertyCategory', title: 'Property Category', width: '8%', defaultContent: '' },
+                {
+                    data: 'SiteInspectionDate',
+                    title: 'Inspection Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                }, {
+                    data: 'ScheduledVisitDate',
+                    title: 'Scheduled Visit',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                }
+                    { data: 'NameOfValuator', title: 'Valuator', width: '8%', defaultContent: '' },
+                {
+                    data: 'LastRecentValuationDate',
+                    title: 'Last Valuation Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
                 {
                     data: 'DateCaseDeliveredToValuationOffice',
                     title: 'Delivered to Valuation',
@@ -120,41 +150,10 @@
                     render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
                     defaultContent: ''
                 },
-                { data: 'PurposeOfValuationRequest', title: 'Purpose of Valuation', width: '8%', defaultContent: '' },
-                {
-                    data: 'LastRecentValuationDate',
-                    title: 'Last Valuation Date',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                },
                 { data: 'DurationReceiptGrossDays', title: 'Receipt Gross Days', width: '8%', defaultContent: '' },
-                { data: 'DistrictName', title: 'District', width: '8%', defaultContent: '' },
                 { data: 'DurationAssignedGrossDays', title: 'Assigned Gross Days', width: '8%', defaultContent: '' },
                 { data: 'DurationAssignedToTMGrossDays', title: 'Assigned to TM Days', width: '8%', defaultContent: '' },
-                { data: 'NameOfValuator', title: 'Valuator', width: '8%', defaultContent: '' },
                 { data: 'NetDaysConsumed', title: 'Net Days Consumed', width: '8%', defaultContent: '' },
-                // { data: 'SDTAccomplishment', title: 'SDT Accomplishment', width: '8%', defaultContent: '' },
-                { data: 'FulfillmentOfDocumentation', title: 'Documentation', width: '8%', defaultContent: '' },
-                {
-                    data: 'ScheduledVisitDate',
-                    title: 'Scheduled Visit',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                },
-                { data: 'Location', title: 'Location', width: '8%', defaultContent: '' },
-                // { data: 'QuantityComplexityOfProperty', title: 'Property Complexity', width: '8%', defaultContent: '' },
-                { data: 'LHCTitleDeedSerialNo', title: 'LHC Serial No', width: '8%', defaultContent: '' },
-                { data: 'TypeOfProperty', title: 'Property Type', width: '8%', defaultContent: '' },
-                { data: 'PropertyCategory', title: 'Property Category', width: '8%', defaultContent: '' },
-                {
-                    data: 'SiteInspectionDate',
-                    title: 'Inspection Date',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                }
             ];
 
             // Combine columns
@@ -297,7 +296,7 @@
 
         function fetchData() {
             $.ajax({
-                url: '/InternalReport/GetPCECaseReport',
+                url: '/InternalReport/GetPCECaseInternalReport',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

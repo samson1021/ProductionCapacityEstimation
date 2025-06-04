@@ -1,6 +1,4 @@
-﻿
-<script>
-
+﻿<script>
     function navigateToDetails(id) {
         const url = `/Description/ProductionDetails/${id}`;
         window.open(url, '_blank');
@@ -18,7 +16,6 @@
             let baseTitle = isDetail ? "Production Level Report" : "Case Level Report";
             let title = baseTitle;
 
-            // Include date range only if either fromDate or toDate is not null/empty
             if (fromDate || toDate) {
                 let dateRange = ` (${fromDate || 'Start'} to ${toDate || 'End'})`;
                 title = baseTitle + dateRange;
@@ -27,23 +24,19 @@
             $('#reportTitle').text(title);
 
             const text = isDetail ? 'Summary Report' : 'Detail Report';
-            $('#detailReportBtn').text(text).prop('title', text); // Update title for accessibility
+            $('#detailReportBtn').text(text).prop('title', text);
         }
 
         function loadDataTable(data, isDetail) {
             currentReportType = isDetail ? 'detail' : 'summary';
-
             updateButtonText(isDetail);
 
-            // Destroy existing DataTable
             if ($.fn.DataTable.isDataTable('#MyNewCase')) {
                 $('#MyNewCase').DataTable().clear().destroy();
                 $('#MyNewCase thead').empty();
             }
 
-            // Define columns with null checks
             const commonColumns = [
-
                 { data: 'CaseNo', title: 'Case No', width: '7%', defaultContent: '' },
                 { data: 'ApplicantName', title: 'Applicant Name', width: '8%', defaultContent: '' },
                 { data: 'RequestedOrgan', title: 'Requested Organ', width: '8%', defaultContent: '' },
@@ -58,7 +51,6 @@
                         return new Date(data).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
                     }
                 },
-
             ];
 
             const settingColumn = {
@@ -68,23 +60,23 @@
                 orderable: false,
                 className: 'no-export text-center',
                 render: function (data, type, row) {
-                    // Only render the button for display, not for export
                     if (type === 'display') {
                         const id = row.Id || '';
                         return id ? `
-                    <button onclick="navigateToDetails('${id}')"
-                            class="nav-link-btn"
-                            title="View detail report">
-                        <i class="fas fa-external-link-alt"></i>
-                    </button>
-                    ` : '';
+                            <button onclick="navigateToDetails('${id}')"
+                                    class="nav-link-btn"
+                                    title="View detail report">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        ` : '';
                     }
-                    return ''; // Return empty string for export types
+                    return '';
                 },
-                exportable: false // Explicitly mark as non-exportable
+                exportable: false
             };
+
             const summaryColumns = [
-                { data: 'QuantityForSimilarMechanicalItem', title: 'Collateral Count', width: '7%', defaultContent: '' },
+                { data: 'QuantityForSimilarMechanicalItem', title: 'Quantity For Similar Mechanical Item', width: '7%', defaultContent: '' },
                 { data: 'AssignedNo', title: 'Assigned', width: '6%', defaultContent: '' },
                 { data: 'DeliveredNo', title: 'Delivered', width: '6%', defaultContent: '' },
                 { data: 'ReturnedWithAdvice', title: 'Returned', width: '7%', defaultContent: '' },
@@ -96,46 +88,24 @@
                     render: (data) => data ? data.toFixed(2) + '%' : '0%'
                 },
             ];
+
             const detailColumns = [
                 { data: 'RequestedEngineer', title: 'Requested Engineer', width: '8%', defaultContent: '' },
                 { data: 'CaseFRQ', title: 'Case FRQ ', width: '8%', defaultContent: '' },
-                {
-                    data: 'DateCaseDeliveredToValuationOffice',
-                    title: 'Delivered to Valuation',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                },
-                {
-                    data: 'DateCaseAssignedToTeamLeader',
-                    title: 'Assigned to Team Leader',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                },
-                {
-                    data: 'DateCaseAssignedToValuators',
-                    title: 'Assigned to Valuators',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                },
-                { data: 'PurposeOfValuationRequest', title: 'Purpose of Valuation', width: '8%', defaultContent: '' },
-                {
-                    data: 'LastRecentValuationDate',
-                    title: 'Last Valuation Date',
-                    width: '8%',
-                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
-                    defaultContent: ''
-                },
-                { data: 'DurationReceiptGrossDays', title: 'Receipt Gross Days', width: '8%', defaultContent: '' },
                 { data: 'DistrictName', title: 'District', width: '8%', defaultContent: '' },
-                { data: 'DurationAssignedGrossDays', title: 'Assigned Gross Days', width: '8%', defaultContent: '' },
-                { data: 'DurationAssignedToTMGrossDays', title: 'Assigned to TM Days', width: '8%', defaultContent: '' },
-                { data: 'NameOfValuator', title: 'Valuator', width: '8%', defaultContent: '' },
-                { data: 'NetDaysConsumed', title: 'Net Days Consumed', width: '8%', defaultContent: '' },
-                // { data: 'SDTAccomplishment', title: 'SDT Accomplishment', width: '8%', defaultContent: '' },
+                { data: 'PurposeOfValuationRequest', title: 'Purpose of Valuation', width: '8%', defaultContent: '' },
                 { data: 'FulfillmentOfDocumentation', title: 'Documentation', width: '8%', defaultContent: '' },
+                { data: 'Location', title: 'Location', width: '8%', defaultContent: '' },
+                { data: 'LHCTitleDeedSerialNo', title: 'LHC Serial No', width: '8%', defaultContent: '' },
+                { data: 'TypeOfProperty', title: 'Pro Type', width: '8%', defaultContent: '' },
+                { data: 'PropertyCategory', title: 'Pro Category', width: '8%', defaultContent: '' },
+                // {
+                //     data: 'SiteInspectionDate',
+                //     title: 'Inspection Date',
+                //     width: '8%',
+                //     render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                //     defaultContent: ''
+                // },
                 {
                     data: 'ScheduledVisitDate',
                     title: 'Scheduled Visit',
@@ -143,24 +113,101 @@
                     render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
                     defaultContent: ''
                 },
-                { data: 'Location', title: 'Location', width: '8%', defaultContent: '' },
-                // { data: 'QuantityComplexityOfProperty', title: 'Property Complexity', width: '8%', defaultContent: '' },
-                { data: 'LHCTitleDeedSerialNo', title: 'LHC Serial No', width: '8%', defaultContent: '' },
-                { data: 'TypeOfProperty', title: 'Property Type', width: '8%', defaultContent: '' },
-                { data: 'PropertyCategory', title: 'Property Category', width: '8%', defaultContent: '' },
+                { data: 'NameOfValuator', title: 'Valuator Name', width: '8%', defaultContent: '' },
+               
+
+                //assign date to maker
                 {
-                    data: 'SiteInspectionDate',
-                    title: 'Inspection Date',
+                    data: 'DateCaseDeliveredToValuationOffice',
+                    title: 'Delivered to Valuation Date',
                     width: '8%',
                     render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
+                {
+                    data: 'DateCaseAssignedToTeamLeader',
+                    title: 'Assigned to MTL Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },   {
+                    data: 'DateCaseAssignedToValuators',
+                    title: 'Assigned to MO Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
+                //duration in maker
+             
+                { data: 'DurationReceiptGrossDays', title: 'Duration MM Receipt GrossDays', width: '8%', defaultContent: '' },
+                { data: 'DurationAssignedToTMGrossDays', title: 'Duration Assigned to TM Gross Days', width: '8%', defaultContent: '' },
+                { data: 'DurationAssignedGrossDays', title: 'Duration Assigned to MO Gross Days', width: '8%', defaultContent: '' },
+
+                //net day and completion day
+                { data: 'NetDaysConsumed', title: 'Maker Net Days Consumed', width: '8%', defaultContent: '' },
+                {
+                    data: 'LastRecentValuationDate',
+                    title: 'Last Valuation Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
+
+                //checker
+                { data: 'NameOfChecker', title: 'Checker Name', width: '8%', defaultContent: '' },
+                //checker assign date
+                {
+                    data: 'DateSentForChecking',
+                    title: 'Delivered to CM Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
+                {
+                    data: 'DateCaseAssignedToCheckerTeamLeader',
+                    title: 'Assigned to CTL Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
+                {
+                    data: 'DateCaseAssignedToCheckerValuators',
+                    title: 'Assigned to CO Date',
+                    width: '8%',
+                    render: (data) => data ? new Date(data).toLocaleDateString('en-US') : '',
+                    defaultContent: ''
+                },
+                
+                //duration in checking
+                {
+                    data: 'DurationCheckerReceiptGrossDays',
+                    title: 'CM Receipt Gross Days',
+                    width: '8%',
+                    defaultContent: ''
+                },
+                {
+                    data: 'DurationCheckerAssignedToTMGrossDays',
+                    title: 'Duration CTL Assigned Gross Days',
+                    width: '8%',
+                    defaultContent: ''
+                },
+                {
+                    data: 'DurationCheckerAssignedGrossDays',
+                    title: 'Duration CO Assigned Gross Days',
+                    width: '8%',
+                    defaultContent: ''
+                },
+                {
+                    data: 'GrossDaysConsumedChecker',
+                    title: 'Checker Gross Days Consumed',
+                    width: '8%',
                     defaultContent: ''
                 }
             ];
 
-            // Combine columns
+
             const columns = isDetail ? [...commonColumns, ...detailColumns, settingColumn] : [...commonColumns, ...summaryColumns, settingColumn];
 
-            // Update <thead>
             const $thead = $('#MyNewCase thead');
             $thead.empty();
             const $tr = $('<tr></tr>');
@@ -169,13 +216,12 @@
             });
             $thead.append($tr);
 
-            // Configure buttons
             const buttons = [
                 {
                     extend: 'copy',
                     title: 'RM PCE Report',
                     exportOptions: {
-                        columns: ':not(.no-export)' // Exclude columns with no-export class
+                        columns: ':not(.no-export)'
                     }
                 },
                 {
@@ -212,14 +258,13 @@
                     text: 'Column Visibility'
                 }
             ];
-            
+
             try {
                 dataTable = $('#MyNewCase').DataTable({
                     data: data,
                     columns: columns,
                     order: [[6, 'desc']],
                     responsive: false,
-                    // lengthChange: false,
                     autoWidth: true,
                     scrollX: true,
                     scrollCollapse: true,
@@ -227,7 +272,7 @@
                     buttons: buttons,
                     columnDefs: [
                         {
-                            targets: -1, // Last column (Setting)
+                            targets: -1,
                             className: 'no-export never-hide',
                             createdCell: function (td, cellData, rowData, row, col) {
                                 $(td).css({
@@ -241,8 +286,6 @@
                     ],
                     initComplete: function () {
                         this.api().columns.adjust();
-
-                        // Style the header
                         $('#MyNewCase th:last-child').css({
                             'position': 'sticky',
                             'right': '0',
@@ -250,7 +293,6 @@
                             'background-color': 'rgba(111, 66, 193, 0.32)'
                         });
                         $('#MyNewCase th:last-child').css('z-index', '3');
-
                     },
                     drawCallback: function () {
                         dataTable.columns().every(function (index) {
@@ -263,23 +305,20 @@
                 $(window).on('resize', function () {
                     dataTable.columns.adjust();
                 });
-                // Append buttons
                 dataTable.buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
             } catch (error) {
-                console.error('DataTable initialization error:', error)
+                console.error('DataTable initialization error:', error);
             }
 
-            // Update colvis styling
             dataTable.on('column-visibility.dt', function (e, settings, column, state) {
-                if (column === dataTable.columns().indexes().length - 1) { // If Setting column
-                    dataTable.column(column).visible(true); // Force visible
+                if (column === dataTable.columns().indexes().length - 1) {
+                    dataTable.column(column).visible(true);
                     return false;
                 }
                 const $button = $(`.dt-button-collection a[aria-controls="MyNewCase"][data-dt-idx="${column}"]`);
                 $button.css('color', state ? '#800080' : '');
             });
 
-            // Force button text update
             $('#detailReportBtn').text(isDetail ? 'Summary Report' : 'Detail Report');
             updateButtonText(isDetail);
         }
@@ -297,16 +336,14 @@
 
         function fetchData() {
             $.ajax({
-                url: '/InternalReport/GetCaseReport',
+                url: '/InternalReport/GetCaseInternalReport',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    console.log('Fetched data:', data); // Debug data
+                    console.log('Fetched data:', data);
                     cachedData.DistinctCases = data.DistinctCases || [];
                     cachedData.AllProductionCapacities = data.AllProductionCapacities || [];
                     loadDataTable(cachedData.DistinctCases, false);
-                    // $('#detailReportBtn').text(isDetail ? 'Summary Report' : 'Detail Report');
-                    // isDetailView = false;
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', status, error);
@@ -337,18 +374,13 @@
 
         $('#detailReportBtn').click(function () {
             isDetailView = !isDetailView;
-            console.log('Toggling to isDetailView:', isDetailView); // Debug toggle
+            console.log('Toggling to isDetailView:', isDetailView);
             let data = isDetailView ? cachedData.AllProductionCapacities : cachedData.DistinctCases;
             let fromDate = $('#fromDate').val();
             let toDate = $('#toDate').val();
             let filteredData = filterData(data, fromDate, toDate);
-
-            // Update button text immediately
             updateButtonText(isDetailView);
-
             loadDataTable(filteredData, isDetailView);
-
-            // Force button text update
             $('#detailReportBtn').text(isDetailView ? 'Summary Report' : 'Detail Report');
         });
     });
