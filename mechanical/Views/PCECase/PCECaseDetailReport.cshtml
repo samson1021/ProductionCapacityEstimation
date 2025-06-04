@@ -136,7 +136,11 @@
         document.querySelectorAll('.pce-report-btn').forEach(button => {
             button.addEventListener('click', function () {
                 this.classList.add('disabled');
-                this.innerHTML = '<i class="fas fa-file-alt mr-2"></i>PCE Report...';
+                this.textContent = '';
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-file-alt mr-2';
+                this.appendChild(icon);
+                this.appendChild(document.createTextNode('PCE Report...'));
             });
         });
     </script>

@@ -227,21 +227,23 @@
     <script>
         $(function () {
             document.addEventListener('DOMContentLoaded', function() {
-            const dropdown = document.getElementById('insuranceCostDropdown');
-            console.log(dropdown);
-            if (dropdown && dropdown.options.length <= 1) {
-                const dropdownContainer = dropdown.parentElement;
-                dropdown.remove();
+                const dropdown = document.getElementById('insuranceCostDropdown');
+                if (dropdown && dropdown.options.length <= 1) {
+                    const dropdownContainer = dropdown.parentElement;
+                    dropdown.remove();
 
-                const placeholderBtn = document.createElement('button');
-                placeholderBtn.className = 'btn btn-link p-0 text-danger';
-                placeholderBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Insurance, Freight & Others Cost';
-                placeholderBtn.setAttribute('data-toggle', 'modal');
-                placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
+                    const placeholderBtn = document.createElement('button');
+                    placeholderBtn.className = 'btn btn-link p-0 text-danger';
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-plus-circle';
+                    placeholderBtn.appendChild(icon);
+                    placeholderBtn.appendChild(document.createTextNode(' Create Insurance, Freight & Others Cost'));
+                    placeholderBtn.setAttribute('data-toggle', 'modal');
+                    placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
 
-                dropdownContainer.appendChild(placeholderBtn);
-            }
-        });
+                    dropdownContainer.appendChild(placeholderBtn);
+                }
+            });
             $('#rejectionModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
             });
