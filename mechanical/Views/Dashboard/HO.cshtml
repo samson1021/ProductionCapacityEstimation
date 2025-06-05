@@ -21,7 +21,7 @@
                             <div class="card-block">
                                 <div class="row align-items-end">
                                     <div class="col-8">
-                                        <h4 class="text-white" id="newCasesCount">-</h4>
+                                        <h1 class="text-white" id="newCasesCount">-</h1>
                                         <h6 class="text-white m-b-0">New Cases</h6>
                                     </div>
                                     <div class="col-4 text-right">
@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyPendingCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("TotalHOPendingCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("MyCompleteCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("TotalHOCompletedCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="@Url.Action("TotalCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("TotalHOCases","Case")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -371,10 +371,10 @@
             fetch("/Case/GetDashboardCaseCount")
                 .then(response => response.json())
                 .then(data => {
-                    animateCountWithCollateral("newCasesCount", 100, 750);
-                    animateCountWithCollateral("pendingCasesCount", 500, 1000);
-                    animateCountWithCollateral("completedCasesCount", 2000, 4500);
-                    animateCount("totalCasesCount", 2500, data.TotalCollateralCount);
+                    animateCountWithCollateral("newCasesCount", data.NewCaseCount, data.NewCollateralCount);
+                    animateCountWithCollateral("pendingCasesCount", data.PendingCaseCount, data.PendingCollateralCount);
+                    animateCountWithCollateral("completedCasesCount", data.CompletedCaseCount, data.CompletedCollateralCount);
+                    animateCount("totalCasesCount", data.TotalCaseCount,  data.TotalCollateralCount);
                 })
                 .catch(error => {
                     console.error("Error fetching card counts:", error);
