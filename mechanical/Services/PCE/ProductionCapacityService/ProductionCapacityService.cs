@@ -500,46 +500,70 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
         // HO
-        public async Task<IEnumerable<ProductionReturnDto>> GetHOProductions(
-     
-     Guid? PCECaseId = null,
-     string Stage = null,
-     string Status = null)
+        public async Task<IEnumerable<ProductionReturnDto>> GetHOProductions(Guid? PCECaseId = null, string Status = null)
         {
-            var productions = await _cbeContext.PCECaseAssignments
-                .AsNoTracking()
-                .Where(a => string.IsNullOrEmpty(Status) || Status == "All" || a.Status == Status)
-                .Join(
-                    _cbeContext.ProductionCapacities,
-                    pca => pca.ProductionCapacityId,
-                    pc => pc.Id,
-                    (pca, pc) => new
+            // If the status is "Pending", filter for CurrentStage "FIRETN"
+            if (string.Equals(Status, "Pending", StringComparison.OrdinalIgnoreCase) && PCECaseId.HasValue)
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage != "Relation Manager")
+                    .ToListAsync();
+                foreach (var item in productions)
+                {
+                    if (item.CurrentStage != "Relation Manager")
                     {
-                        ProductionCapacity = pc,
-                        AssignmentStatus = pca.Status,
-                        AssignmentDate = pca.AssignmentDate,
-                        PCECase = pc.PCECase
-                    })
-                .Where(x =>
-                    (x.AssignmentStatus != null /*|| x.ProductionCapacity.AssignedEvaluatorId == UserId*/) &&
-                    (PCECaseId == null || x.ProductionCapacity.PCECaseId == PCECaseId) &&
-                    (Stage == null || x.ProductionCapacity.CurrentStage == Stage)
-                )
+                        item.CurrentStatus = "Pending";
+                    }
+                }
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            if (Status== "Completed")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager"&& pca.CurrentStatus== "Completed")
+                    .ToListAsync();                
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            if (Status == "New")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager" && pca.CurrentStatus == "New")
+                    .ToListAsync();
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            if (Status == "Returned")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager" && pca.CurrentStatus == "Returned")
+                    .ToListAsync();
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            // Default case: get all productions based on the PCECaseId
+            var allProductions = await _cbeContext.ProductionCapacities
+                .AsNoTracking()
+                .Where(pca => PCECaseId == null || pca.PCECaseId == PCECaseId)
                 .ToListAsync();
 
-            // Group by AssignmentStatus and select the latest production per status
-            var groupedByStatus = productions
-                .GroupBy(x => x.AssignmentStatus)
-                .Select(g => g.OrderByDescending(x => x.AssignmentDate).First()) // Take latest per status
-                .ToList();
-
-            return groupedByStatus.Select(x =>
+            // Update CurrentStatus for items not in "Relation Manager"
+            foreach (var item in allProductions)
             {
-                var dto = _mapper.Map<ProductionReturnDto>(x.ProductionCapacity);
-                dto.AssignmentStatus = x.AssignmentStatus;
-                dto.PCECase = x.PCECase;
-                return dto;
-            }).ToList();
+                if (item.CurrentStage != "Relation Manager")
+                {
+                    item.CurrentStatus = "Pending";
+                }
+            }
+
+            // Map to ProductionReturnDto
+            var productionDto = _mapper.Map<IEnumerable<ProductionReturnDto>>(allProductions);
+            return productionDto;
         }
         public async Task<ProductionReturnDto> GetHOProduction( Guid Id)
         {
@@ -556,7 +580,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             var pce = await GetHOProduction(Id);
             var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id);
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);
-            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory( Id);
+            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory(Id);
             var returnedProductions = await _cbeContext.ReturnedProductions
                                                         .AsNoTracking()
                                                         .Include(pr => pr.ReturnedBy)

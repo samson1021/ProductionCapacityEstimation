@@ -1,0 +1,61 @@
+﻿@using mechanical.Models.Dto.UserDto
+@using mechanical.Models.PCE.Dto.PCECaseDto
+
+@{
+    var myPCECase = ViewData["PCECase"] as PCECaseReturnDto;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+
+    var currentUserRole = currentUser?.Role?.Name as string;
+    var status = ViewBag.Status as string;
+    var assiName = "";
+
+    if (currentUserRole == "Relation Manager")
+    {
+        if (status == "New" || status == "All" || status == "Returned")
+        {
+            assiName = "SendForValuation";
+        }
+        else if (status == "Reestimate")
+        {
+            assiName = "SendForReestimation";
+        }
+    }
+    else if (currentUserRole == "Maker Manager")
+    {
+        assiName = "PCEAssignMakerTeamleader";
+    }
+    else if (currentUserRole == "Maker TeamLeader")
+    {
+        assiName = "PCEAssignMakerOfficer";
+    }
+    else if (currentUserRole == "District Valuation Manager")
+    {
+        assiName = "PCEAssignMakerOfficer";
+    }
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="col-12">
+            <div class="row">               
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <table id="Productions" class="table table-bordered table-striped">
+                <thead>
+                    <tr>                       
+                        <th>Property Owner</th>
+                        <th>Role</th>
+                        <th>Machine Name</th>
+                        <th>Status</th>
+                        <th>Current Stage</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+       
+    </div>
+</div>

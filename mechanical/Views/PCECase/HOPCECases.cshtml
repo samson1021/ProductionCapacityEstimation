@@ -39,11 +39,10 @@
                     <thead>
                         <tr>
                             <th>Created At</th>
-                            <th>Case No</th>
-                            @if (currentUserRole == "Maker Manager" || currentUserRole == "Higher Official" || currentUserRole == "Maker TeamLeader" || currentUserRole == "District Valuation Manager")
-                            {
-                                <th>Requesting Unit</th>
-                            }
+                            <th>Case No</th>                           
+                            <th>Requesting Unit</th>                            
+                            <th>Distric</th>
+                            <th>Case Creator</th>
                             <th>Applicant Name</th>
                             <th>Customer Id</th>                          
                             @if (status != "All")

@@ -20,6 +20,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
 
         public string Status { get; set; } = string.Empty; 
         public string? District { get; set; }
+        public string? UserName { get; set; } // New property for Employee Name      
         public int NoOfProductions { get; set; } = 0;
         public int TotalNoOfProductions { get; set; } = 0;
 
