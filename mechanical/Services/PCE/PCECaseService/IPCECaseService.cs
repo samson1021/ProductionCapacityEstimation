@@ -23,7 +23,7 @@ namespace mechanical.Services.PCE.PCECaseService
         
         // Higher Official IPCECaseService
         Task<PCECaseCountDto> GetHODashboardPCECaseCount();
-        Task<IEnumerable<PCECaseReturnDto>> GetHOPCECases(string Status = null, int? Limit = null);
+        Task<IEnumerable<PCECaseReturnDto>> GetHOPCECases(string Status = null);
         Task<PCECaseReturnDto> GetHOPCECase(Guid Id);
         Task<IEnumerable<PCECaseReturnDto>> GetLatestHOPCECases();
         Task<IEnumerable<PCECaseReturnDto>> GetHORemarkedPCECases();

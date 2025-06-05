@@ -24,87 +24,21 @@
                 "colvis"
             ],
             data: data,
-            columns: [
-
-    @if ((status == "New" || status == "All" || status == "Reestimate" || status == "Returned") && currentUserRole != "Maker Officer")
-    {
-        if (currentUserRole == "Relation Manager")
+               columns: [
+        { data: 'PropertyOwner', width: '20%' },
+        { data: 'Role', width: '15%' },
+        { data: 'MachineName', width: '20%' },
+        { data: 'CurrentStatus', width: '15%' },
+        { data: 'CurrentStage', width: '20%' },
         {
-            @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate" && data.AssignmentStatus !== "Returned") ? ' disabled' : '') + '>'; } },
-
-        }
-        else
-        {
-            @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate") ? ' disabled' : '') + '>'; } },
-        }
-    }
-                { data: 'PropertyOwner', width: '25%' },
-                { data: 'Role', width: '25%' },
-                { data: 'MachineName', width: '25%' },   
-               { data: 'CurrentStatus', width: '25%' },
-                 { data: 'CurrentStage', width: '25%' },
-                {
-                    data: 'Id',
-                    width: '10%',
-                    render: function (data, type, row, meta) {
-                        const detailsUrl = '@Url.Action("HODetail", "ProductionCapacity")?Id=' + data;
-                        let link = `<a href="${detailsUrl}">Details</a>`;
-
-    @{
-        if (currentUserRole == "Relation Manager")
-        {
-            if (status == "New" || status == "All" || status == "Returned")
-            {
-                <text>
-                                                    if (row.AssignmentStatus === "New" || row.AssignmentStatus === "Returned"){
-                                                        const editUrl = '@Url.Action("Edit", "ProductionCapacity")?Id=' + data;
-                                                        const deleteUrl = '#';
-                                                        link += ` | <a class="text-info" href="${editUrl}">Edit</a>`;
-                                                        link += ` | <a class="delete-link text-danger" href="${deleteUrl}" data-id="${data}">Delete</a>`;
-                                                    }
-                </text>
+            data: 'Id',
+            width: '10%',
+            render: function (data, type, row, meta) {
+                const detailsUrl = '@Url.Action("HODetail", "ProductionCapacity")?Id=' + data;
+                return `<a href="${detailsUrl}">Details</a>`;
             }
         }
-        else if (currentUserRole == "Maker Manager" || currentUserRole == "District Valuation Manager" || currentUserRole == "Maker TeamLeader")
-        {
-            if (status == "New" || status == "All" || status == "Reestimate")
-            {
-                <text>
-                                                    if (row.AssignmentStatus == "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
-                                                        link += ` | <a class="text-warning" href="#" onclick="openReturnModal('${data}')">Return</a>`;
-                                                    }
-                </text>
-            }
-        }
-        else if (currentUserRole == "Maker Officer")
-        {
-            if (status == "New" || status == "All" || status == "Reestimate")
-            {
-                if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
-                {
-                    <text>
-                                                            if (row.AssignedEvaluatorId === '@currentUser?.Id' && row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
-
-                                                                const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=' + data;
-                                                                const evaluateLink = `<a class="text-success" href="${evaluateUrl}">${row.CurrentStatus == "Reestimate" ? "Reestimate" : "Evaluate"}</a> | `;
-                                                                link =  evaluateLink + link;
-                                                            }
-                    </text>
-                }
-                <text>
-                                                    if (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate") {
-                                                        const returnLink = ` | <a class="text-warning" href="#" onclick="openReturnModal('${data}')">Return</a>`;
-                                                        link += returnLink;
-                                                    }
-                </text>
-            }
-        }
-    }
-
-                        return link;
-                    }
-                }
-            ]
+    ]
         }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
     }
 
@@ -126,43 +60,4 @@
         });
     }
 
-    @{
-        if (currentUserRole != "Relation Manager")
-        {
-            <text>
-                        function openReturnModal(PCEId) {
-                            document.querySelector('#returnModal1 input[name="PCEId"]').value = PCEId;
-                            $('#returnModal1').modal('show');
-                        }
-            </text>
-        }
-
-        if (currentUserRole == "Relation Manager" && (status == "New" || status == "All"))
-        {
-            <text>
-                        $('#Productions').on('click', '.delete-link', function (e) {
-                            e.preventDefault();
-                            $('#deleteItem').data('id', $(this).data('id'));
-                            $('#deleteConfirmationModal').modal('show');
-                        });
-
-                        $('#deleteItem').on('click', function () {
-                            $.ajax({
-                                url: '@Url.Action("DeleteProduction", "ProductionCapacity")',
-                                type: 'POST',
-                                data: { id: $(this).data('id') },
-                                success: function (result) {
-                                    toastr.success('The production is deleted successfully.');
-                                    loadProductions(fetchUrl, emptyMessage);
-                                },
-                                error: function (xhr, status, error) {
-                                    toastr.error('Unable to delete production.');
-                                }
-                            });
-
-                            $('#deleteConfirmationModal').modal('hide');
-                        });
-            </text>
-        }
-    }
 </script>

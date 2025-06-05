@@ -576,11 +576,11 @@ namespace mechanical.Controllers.PCE
 
             if (Status == "Reestimate")
             {
-                pceCases = await _PCECaseService.GetHOPCECases("Completed", Limit: Limit);
+                pceCases = await _PCECaseService.GetHOPCECases("Completed");
             }
             else
             {
-                pceCases = await _PCECaseService.GetHOPCECases(Status, Limit: Limit);
+                pceCases = await _PCECaseService.GetHOPCECases(Status);
             }
 
             if (pceCases == null)
@@ -599,44 +599,7 @@ namespace mechanical.Controllers.PCE
             return Content(jsonData, "application/json");
         }
       
-        //[HttpGet]
-        //public async Task<IActionResult> HODetail(Guid Id, string Status = "All")
-        //{
-        //    var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
-
-        //    if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
-        //    {
-        //        // Error page
-        //        return BadRequest("Invalid status.");
-        //        // return NotFound("Resource not found.");
-        //        // return Unauthorized("Authentication required.");
-        //        // return StatusCode(500, "An unexpected error occurred.");
-        //        // return Forbid("You do not have permission to access this resource.");
-        //    }
-
-        //    var userId = base.GetCurrentUserId();
-        //    var pceCase = await _PCECaseService.GetHOPCECase(Id);
-
-        //    if (pceCase == null)
-        //    {
-        //        return RedirectToAction("HOPCECases");
-        //    }
-
-        //    var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
-        //    var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
-        //    var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestSchedule(Id);
-
-        //    ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
-        //    ViewData["PCECase"] = pceCase;
-        //    ViewData["PCECaseTerminate"] = PCECaseTerminate;
-        //    ViewData["PCECaseSchedule"] = pceCaseSchedule;
-        //    ViewData["LatestPCECaseSchedule"] = latestPCECaseSchedule;
-        //    ViewData["Title"] = "PCE Case Details";
-        //    ViewBag.Status = Status;
-
-        //    return View();
-        //}
-
+       
         [HttpGet]
         public async Task<IActionResult> HODetail(Guid Id, string Status = "All")
         {

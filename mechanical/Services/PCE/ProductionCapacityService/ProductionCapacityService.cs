@@ -537,6 +537,15 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 // Map to ProductionReturnDto
                 return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
             }
+            if (Status == "Returned")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager" && pca.CurrentStatus == "Returned")
+                    .ToListAsync();
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
             // Default case: get all productions based on the PCECaseId
             var allProductions = await _cbeContext.ProductionCapacities
                 .AsNoTracking()
@@ -571,7 +580,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
             var pce = await GetHOProduction(Id);
             var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id);
             var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);
-            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory( Id);
+            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory(Id);
             var returnedProductions = await _cbeContext.ReturnedProductions
                                                         .AsNoTracking()
                                                         .Include(pr => pr.ReturnedBy)
