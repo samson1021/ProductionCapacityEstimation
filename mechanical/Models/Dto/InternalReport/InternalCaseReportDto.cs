@@ -23,7 +23,7 @@ namespace mechanical.Models.Dto.InternalReport
         public string? PurposeOfValuationRequest { get; set; }
         public string? RequestedEngineer { get; set; }
         public int? ProcessingWCDays { get; set; }
-        public int? QuantityForSimilarMechanicalItem { get; set; }
+        public String? QuantityForSimilarMechanicalItem { get; set; }
         //maker manager stage
         public string? NameOfValuator { get; set; }
         public string? NameOfMakerManager { get; set; }
