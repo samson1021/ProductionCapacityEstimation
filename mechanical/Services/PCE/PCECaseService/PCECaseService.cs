@@ -565,28 +565,42 @@ namespace mechanical.Services.PCE.PCECaseService
             var PCECaseCount = 0;
             var productionCount = 0;
 
-            // Fetch initial PCE cases based on status
-            List<PCECase> PCECases; // Ensure this is a list of PCECase
+            List<PCECase> PCECases = new List<PCECase>(); // Initialize to an empty list
 
-            if (status != "Pending")
+            if (status != "Pending" && status != "Completed" && status != "Returned")
             {
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
                     .Where(pc => pc.Status == status || status == "All")
                     .ToListAsync();
             }
-            else
+            else if (status == "Pending")
             {
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
                     .Where(pc => (pc.Status == status || status == "All") &&
                                  pc.ProductionCapacities.Any(p => p.CurrentStage != "Relation Manager" && p.CurrentStatus == "New"))
+                    .Distinct()
+                    .ToListAsync();
+            }
+            else if (status == "Completed" || status == "Returned")
+            {
+                var relatedPCECaseIds = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(p => p.CurrentStage == "Relation Manager" && p.CurrentStatus == status)
+                    .Select(p => p.PCECaseId)
+                    .Distinct()
+                    .ToListAsync();
+
+                PCECases = await _cbeContext.PCECases
+                    .AsNoTracking()
+                    .Where(pc => pc.Status == status || relatedPCECaseIds.Contains(pc.Id))
+                    .Distinct()
                     .ToListAsync();
             }
 
-            var PCECaseIds = PCECases.Select(pc => pc.Id).ToList();
-           
-
+            // Get distinct PCECase IDs
+            var PCECaseIds = PCECases.Select(pc => pc.Id).Distinct().ToList();
             // Counting distinct PCE cases
             PCECaseCount = PCECases.Count;
 
@@ -610,15 +624,7 @@ namespace mechanical.Services.PCE.PCECaseService
             }
             else if (status == "Completed")
             {
-                var completedPCECaseCount = await _cbeContext.ProductionCapacities
-                 .AsNoTracking()
-                 .Where(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Completed")
-                 .Select(pc => pc.PCECaseId)
-                 .Distinct() // Ensure unique PCECaseIds
-                 .CountAsync();
-
-
-                PCECaseCount += completedPCECaseCount;
+                
                 productionCount = await _cbeContext.ProductionCapacities
                     .AsNoTracking()
                     .Where(pc => pc.CurrentStage == "Relation Manager"
@@ -645,170 +651,119 @@ namespace mechanical.Services.PCE.PCECaseService
         }
         public async Task<IEnumerable<PCECaseReturnDto>> GetHOPCECases(string status = null)
         {
-            // Fetch initial PCE cases based on status
-            List<PCECase> PCECases; // Ensure this is a list of PCECase
+            // Fetch initial PCECases based on the given status
+            List<PCECase> PCECases = new List<PCECase>(); // Initialize to an empty list
 
-            if (status != "Pending")
+            if (status != "Pending" && status != "Completed" && status != "Returned")
             {
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
                     .Where(pc => pc.Status == status || status == "All")
                     .ToListAsync();
             }
-            else
+            else if (status == "Pending")
             {
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
                     .Where(pc => (pc.Status == status || status == "All") &&
                                  pc.ProductionCapacities.Any(p => p.CurrentStage != "Relation Manager" && p.CurrentStatus == "New"))
+                    .Distinct()
                     .ToListAsync();
             }
-
-            // If status is "Completed", fetch related PCE cases
-            if (status == "Completed")
+            else if (status == "Completed" || status == "Returned")
             {
-                // Find related PCECaseIds that have completed productions
                 var relatedPCECaseIds = await _cbeContext.ProductionCapacities
                     .AsNoTracking()
-                    .Where(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Completed")
-                    .Select(pc => pc.PCECaseId)
+                    .Where(p => p.CurrentStage == "Relation Manager" && p.CurrentStatus == status)
+                    .Select(p => p.PCECaseId)
                     .Distinct()
                     .ToListAsync();
 
-                // Fetch related PCECases based on the related IDs
-                var relatedPCECases = await _cbeContext.PCECases
+                PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
-                    .Where(pc => relatedPCECaseIds.Contains(pc.Id))
+                    .Where(pc => pc.Status == status || relatedPCECaseIds.Contains(pc.Id))
+                    .Distinct()
                     .ToListAsync();
-
-                // Combine the two lists and ensure uniqueness
-                PCECases = PCECases.Concat(relatedPCECases).Distinct().ToList();
-            }
-            // If status is "Completed", fetch related PCE cases
-            if (status == "Returned")
-            {
-                // Find related PCECaseIds that have completed productions
-                var relatedPCECaseIds = await _cbeContext.ProductionCapacities
-                    .AsNoTracking()
-                    .Where(pc => pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Returned")
-                    .Select(pc => pc.PCECaseId)
-                   .Distinct()
-                    .ToListAsync();
-
-                // Fetch related PCECases based on the related IDs
-                var relatedPCECases = await _cbeContext.PCECases
-                    .AsNoTracking()
-                    .Where(pc => relatedPCECaseIds.Contains(pc.Id))
-                    .ToListAsync();
-
-                // Combine the two lists and ensure uniqueness
-                PCECases = PCECases.Concat(relatedPCECases).Distinct().ToList();
             }
            
-            var returnDtos = new List<PCECaseReturnDto>();
 
-            foreach (var pceCase in PCECases)
+            // Step 3: Fetch related District and User data
+            var districtIds = PCECases.Select(pc => pc.DistrictId).Distinct().ToList();
+            var userIds = PCECases.Select(pc => pc.PCECaseOriginatorId).Distinct().ToList();
+
+            var districts = await _cbeContext.Districts
+                .AsNoTracking()
+                .Where(d => districtIds.Contains(d.Id))
+                .Select(d => new { d.Id, d.Name })
+                .ToListAsync();
+
+            var users = await _cbeContext.Users
+                .AsNoTracking()
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.Name })
+                .ToListAsync();
+
+            // Step 4: Map to DTO and calculate production counts
+            var PCECaseReturnDtos = new List<PCECaseReturnDto>();
+
+            foreach (var pc in PCECases)
             {
-                var dto = _mapper.Map<PCECaseReturnDto>(pceCase);
-                int noOfProductions = 0;
-                int totalNoOfProductions = 0;
+                var dto = new PCECaseReturnDto
+                {
+                    Id = pc.Id,
+                    CaseNo = pc.CaseNo,
+                    Segment = pc.Segment,
+                    ApplicantName = pc.ApplicantName,
+                    CustomerId = pc.CustomerId,
+                    CustomerEmail = pc.CustomerEmail,
+                    DistrictId = pc.DistrictId,
+                    CreatedAt = pc.CreatedAt,
+                    CompletedAt = pc.CompletedAt,
+                    Status = pc.Status,
+                    District = districts.FirstOrDefault(d => d.Id == pc.DistrictId)?.Name,
+                    UserName = users.FirstOrDefault(u => u.Id == pc.PCECaseOriginatorId)?.Name
+                };
 
-                // Calculate counts based on the status of the individual PCE case
-                if (status == "New")
-                {
-                    noOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id
-                                          && pc.CurrentStage == "Relation Manager"
-                                          && pc.CurrentStatus == "New");
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-                else if (status == "Pending")
-                {
-                    noOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id
-                                          && pc.CurrentStage != "Relation Manager"
-                                          && pc.CurrentStatus == "New"
-                                          && pc.CurrentStatus != "Returned"
-                                           && pc.CurrentStatus != "Completed");
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-                else if (status == "Completed")
-                {
-                    // Count completed productions for this specific PCECase
-                    noOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id
-                                          && pc.CurrentStage == "Relation Manager"
-                                          && pc.CurrentStatus == "Completed");
+                // Calculate production counts
+                dto.NoOfProductions = await CountProductionsAsync(pc.Id, status);
+                dto.TotalNoOfProductions = await CountTotalProductionsAsync(pc.Id);
 
-                    // Total productions related to this PCECase
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-                else if (status == "Returned")
-                {
-                    // Count completed productions for this specific PCECase
-                    noOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id
-                                          && pc.CurrentStage == "Relation Manager"
-                                          && pc.CurrentStatus == "Returned");
-                    
-                    // Total productions related to this PCECase
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-                else if (status == "Terminated")
-                {
-                    // Count completed productions for this specific PCECase
-                    noOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id
-                                          && pc.CurrentStage == "Relation Manager"
-                                          && pc.CurrentStatus == "Terminated");
-
-                    // Total productions related to this PCECase
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-                else if (status == "Returned")
-                {
-                    // Count completed productions for this specific PCECase
-                    noOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id
-                                          && pc.CurrentStage == "Relation Manager"
-                                          && pc.CurrentStatus == "Returned");
-
-                    // Total productions related to this PCECase
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-                else if (status == "All")
-                {
-                    totalNoOfProductions = await _cbeContext.ProductionCapacities
-                        .AsNoTracking()
-                        .CountAsync(pc => pc.PCECaseId == pceCase.Id);
-                }
-
-                // Set the counts in the DTO
-                dto.NoOfProductions = noOfProductions;
-                dto.TotalNoOfProductions = totalNoOfProductions;
-
-                returnDtos.Add(dto);
+                PCECaseReturnDtos.Add(dto);
             }
 
-            return returnDtos;
+            return PCECaseReturnDtos;
+        }
+
+        // Helper method to count productions based on the status
+        private async Task<int> CountProductionsAsync(Guid pceCaseId, string status)
+        {
+            return status switch
+            {
+                "New" => await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "New"),
+                "Pending" => await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage != "Relation Manager" && pc.CurrentStatus == "New" && pc.CurrentStatus != "Returned" && pc.CurrentStatus != "Completed"),
+                "Completed" => await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Completed"),
+                "Returned" => await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Returned"),
+                "Terminated" => await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Terminated"),
+                _ => 0,
+            };
+        }
+
+        // Helper method to count total productions
+        private async Task<int> CountTotalProductionsAsync(Guid pceCaseId)
+        {
+            return await _cbeContext.ProductionCapacities
+                .AsNoTracking()
+                .CountAsync(pc => pc.PCECaseId == pceCaseId);
         }
         
         public async Task<PCECaseReturnDto> GetHOPCECase(Guid Id)
@@ -861,6 +816,74 @@ namespace mechanical.Services.PCE.PCECaseService
                 pceCaseDto.TotalNoOfProductions = pceCaseAssignments.Count(pca => pca.ProductionCapacity.PCECaseId == pceCaseDto.Id);
             }
             return pceCaseDtos;
+        }
+        public async Task<IEnumerable<PCECaseReturnDto>> GetHOPCECasesReport()
+        {
+            //var pceCases = await _cbeContext.PCECases.Include(x => x.ProductionCapacities.Where(res => res.CurrentStage == "Relation Manager"))
+            //    /*.Where(res => res.PCECaseOriginatorId == UserId)*/.ToListAsync();
+            var relatedPCECaseIds = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(p => p.CurrentStage == "Relation Manager" && p.CurrentStatus == "Completed")
+                    .Select(p => p.PCECaseId)
+                    .Distinct()
+                    .ToListAsync();
+
+            var pceCases = await _cbeContext.PCECases
+                .AsNoTracking()
+                .Include(x => x.ProductionCapacities.Where(res => res.CurrentStage == "Relation Manager"&& res.CurrentStatus == "Completed"))
+                .Where(pc => pc.Status == "Completed" || relatedPCECaseIds.Contains(pc.Id))
+                .Distinct()
+                .ToListAsync();
+            var pceCasesDtos = _mapper.Map<IEnumerable<PCECaseReturnDto>>(pceCases);
+            foreach (var pceCasesDto in pceCasesDtos)
+            {
+                pceCasesDto.NoOfProductions = _cbeContext.ProductionCapacities
+                    .Where(pc => pc.PCECaseId == pceCasesDto.Id && pc.CurrentStage == "Relation Manager")
+                    .Count();
+            }
+            foreach (var pceCasesDto in pceCasesDtos)
+            {
+                pceCasesDto.TotalNoOfProductions = _cbeContext.ProductionCapacities
+                    .Where(pc => pc.PCECaseId == pceCasesDto.Id)
+                    .Count();
+            }
+            return pceCasesDtos;
+        }
+        public async Task<PCEReportDataDto> GetHOPCECaseDetailReport(Guid id)
+        {
+            try
+            {
+                var pceCaseResult = await _cbeContext.PCECases
+                                                    .Include(res => res.District)
+                                                    .Include(res => res.BusinessLicense)
+                                                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                var productionCapacities = await _cbeContext.ProductionCapacities
+                    .Where(pc => pc.PCECaseId == id)
+                    .ToListAsync();
+
+                // Adjust this to fetch evaluations related to the current pce case
+                var evaluations = await (from pc in _cbeContext.ProductionCapacities
+                                         join pe in _cbeContext.PCEEvaluations.Include(e => e.Evaluator)
+                                         on pc.Id equals pe.PCEId // Correct property
+                                         where pc.PCECaseId == id
+                                         select pe).ToListAsync();
+
+                var pceCaseDto = new PCEReportDataDto
+                {
+                    PCECases = pceCaseResult,
+                    Productions = productionCapacities,
+                    PCEEvaluations = evaluations, // Use the evaluations retrieved from the join
+                    PCECaseSchedule = null // Set to null since not used
+                };
+
+                return pceCaseDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving PCE case detail report.");
+                throw;
+            }
         }
 
     }

@@ -771,6 +771,69 @@
                             </li>
                         </ul>
                     </li>
+                    @* Start Production Capacity Estimation *@
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p> PCE Valuation<i class="fas fa-angle-left right"></i> </p>
+                        </a>
+                        <ul class="nav nav-treeview pl-3">
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "New" })" class="nav-link">
+                                    <i class="fas fa-grip-lines nav-icon"></i>
+                                    <p> New PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Pending" })" class="nav-link">
+                                    <i class="fas fa-spinner nav-icon"></i>
+                                    <p> Pending PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Returned" })" class="nav-link">
+
+                                    <i class="fas fa-undo nav-icon"></i>
+                                    <p> Returned  PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Completed" })" class="nav-link">
+                                    <i class="fas fa-check nav-icon"></i>
+                                    <p> Completed PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HORemarkPCECases", "PCECase")" class="nav-link">
+                                    <i class="fas fa-file nav-icon"></i>
+                                    <p> Remark Release PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCETerminatedCases", "PCECase")" class="nav-link" style="color:red;">
+                                    <i class="fas fa-ban nav-icon "> </i>
+                                    <p> Terminated PCE Cases </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase")" class="nav-link">
+                                    <i class="fas fa-circle nav-icon"></i>
+                                    <p> All PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCECasesReport", "PCECase")" class="nav-link">
+                                    <i class="fas fa-download nav-icon"></i>
+                                    <p> Generate  Report </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 }
                 else if (@userRole == "Admin")
                 {

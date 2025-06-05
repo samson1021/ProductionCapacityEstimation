@@ -696,5 +696,22 @@ namespace mechanical.Controllers.PCE
             ViewData["PCECase"] = pceCase;
             return View();
         }
+        [HttpGet]
+        public async Task<IActionResult> HOPCECasesReport()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHOPCECasesReport()
+        {
+            var newCases = await _PCECaseService.GetHOPCECasesReport();
+            return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), "application/json");
+        }
+        public async Task<IActionResult> HOPCECaseDetailReport(Guid id)
+        {
+            var pceCaseDto = await _PCECaseService.GetHOPCECaseDetailReport(id);
+            return View(pceCaseDto);
+        }
     }
 }
