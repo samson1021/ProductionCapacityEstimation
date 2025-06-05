@@ -46,6 +46,9 @@ namespace mechanical.Models.Dto.MotorVehicleDto
         public string Currency { get; set; } = string.Empty;
         public double ExchangeRate { get; set; }
 
-        public  Collateral Collaterial { get; set; }
+        public Collateral Collaterial { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     }
 }

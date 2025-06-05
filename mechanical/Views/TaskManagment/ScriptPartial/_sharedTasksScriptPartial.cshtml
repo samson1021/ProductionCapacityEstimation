@@ -127,7 +127,7 @@
         $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
             $('#details .modal-body').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
-            var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
+            var detailsModal = new bootstrap.Modal(detailsModalEl);
             detailsModal.show();
             loadComments(taskId);
         });
@@ -138,7 +138,7 @@
         $.get(`/TaskManagment/UpdateTask?id=${taskId}`, function (data) {
             $('#updateContent').html(data);
             var updateModalEl = document.getElementById('updateTaskModal');
-            var updateModal = bootstrap.Modal.getOrCreateInstance(updateModalEl);
+            var updateModal = new bootstrap.Modal(updateModalEl);
             updateModal.show();
         });
     }
@@ -156,7 +156,7 @@
                 }
             });
             var reassignModalEl = document.getElementById('reassignModal');
-            var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
+            var reassignModal = new bootstrap.Modal(reassignModalEl);
             reassignModal.show();
         });
     }
@@ -168,7 +168,7 @@
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var reassignModalEl = document.getElementById('reassignModal');
-                var reassignModal = bootstrap.Modal.getOrCreateInstance(reassignModalEl);
+                var reassignModal = new bootstrap.Modal(reassignModalEl);
                 reassignModal.hide();
                 loadSharedTasks(mode);
             } else {
@@ -181,7 +181,7 @@
     function openRevokeModal(taskId) {
         currentTaskId = taskId;
         var revokeModalEl = document.getElementById('revokeModal');
-        var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+        var revokeModal = new bootstrap.Modal(revokeModalEl);
         revokeModal.show();
     }
 
@@ -191,7 +191,7 @@
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var revokeModalEl = document.getElementById('revokeModal');
-                var revokeModal = bootstrap.Modal.getOrCreateInstance(revokeModalEl);
+                var revokeModal = new bootstrap.Modal(revokeModalEl);
                 revokeModal.hide();
                 loadSharedTasks(mode);
             } else {
@@ -211,7 +211,7 @@
             $("#updateTaskPriority").val(data.TaskPriority);
             $("#updateSharingReason").val(data.SharingReason);
             var updateTaskModalEl = document.getElementById('updateTaskModal');
-            var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+            var updateTaskModal = new bootstrap.Modal(updateTaskModalEl);
             updateTaskModal.show();
         });
     } *@
@@ -309,7 +309,7 @@
                     if (response.success) {
                         toastr.success(response.message, "Success");
                         var updateTaskModalEl = document.getElementById('updateTaskModal');
-                        var updateTaskModal = bootstrap.Modal.getOrCreateInstance(updateTaskModalEl);
+                        var updateTaskModal = new bootstrap.Modal(updateTaskModalEl);
                         updateTaskModal.hide();
                         loadSharedTasks(currentMode);
                     } else {

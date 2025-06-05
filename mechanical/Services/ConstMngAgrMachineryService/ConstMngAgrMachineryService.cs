@@ -117,7 +117,7 @@ namespace mechanical.Services.ConstMngAgrMachineryService
             constMngAgrMachinery.EqpmntConditionFactor = await _constMngAgrAnnexService.GetEquipmentConditionFactor(constMngAgrMachineryPostDto.CurrentEqpmntCondition, constMngAgrMachineryPostDto.AllocatedPointsRange);
             constMngAgrMachinery.ReplacementCost = (constMngAgrMachinery.InvoiceValue * constMngAgrMachinery.ExchangeRate);
             constMngAgrMachinery.NetEstimationValue = constMngAgrMachinery.MarketShareFactor * constMngAgrMachinery.DepreciationRate * constMngAgrMachinery.EqpmntConditionFactor * constMngAgrMachinery.ReplacementCost;
-
+            constMngAgrMachinery.LastUpdatedAt = DateTime.UtcNow;
             _cbeContext.Update(constMngAgrMachinery);
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto

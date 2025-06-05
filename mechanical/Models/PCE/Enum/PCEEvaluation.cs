@@ -4,11 +4,20 @@ namespace mechanical.Models.PCE.Enum.PCEEvaluation
 {
     public enum OutputPhase
     {
-        [Display(Name = "Finished Product")]
-        FinishedProduct,
-        
         [Display(Name = "Raw Material For Next Line")]
-        RawMaterialForNextLine
+        RawMaterialForNextLine,
+
+        [Display(Name = "Finished Product")]
+        FinishedProduct
+    }
+
+    public enum SourceType
+    {
+        [Display(Name = "New Raw Material")]
+        NewMaterial,
+
+        [Display(Name = "Output From Previous Line")]
+        PreviousOutput
     }
 
     public enum ObsolescenceStatus

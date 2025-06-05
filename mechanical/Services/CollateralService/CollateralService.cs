@@ -547,6 +547,7 @@ namespace mechanical.Services.CollateralService
                         caseassignment.Status = "Correction";
                         collateral.CurrentStage = "Maker Officer";
                         collateral.CurrentStatus = "Correction";
+                        collateral.NumberOfReturns = collateral.NumberOfReturns + 1;
                     }
                     else if (Status == "Complete")
                     {
@@ -567,6 +568,7 @@ namespace mechanical.Services.CollateralService
                             foreach (var assignment in collAssginmet)
                             {
                                 assignment.Status = "Complete";
+                                assignment.CompletionDate = DateTime.UtcNow;
                                 _cbeContext.CaseAssignments.Update(assignment);
 
                             }
@@ -586,6 +588,7 @@ namespace mechanical.Services.CollateralService
                             foreach (var assignment in collAssginmet)
                             {
                                 assignment.Status = "Complete";
+                                assignment.CompletionDate = DateTime.UtcNow;
                                 _cbeContext.CaseAssignments.Update(assignment);
 
                             }
@@ -604,6 +607,7 @@ namespace mechanical.Services.CollateralService
                             foreach (var assignment in collAssginmet)
                             {
                                 assignment.Status = "Complete";
+                                assignment.CompletionDate = DateTime.UtcNow;
                                 _cbeContext.CaseAssignments.Update(assignment);
 
                             }

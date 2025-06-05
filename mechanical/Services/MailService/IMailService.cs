@@ -5,7 +5,6 @@ namespace mechanical.Services.MailService
 {
     public interface IMailService
     {
-        Task<bool> SendEmail(MailPostDto mailPostDto);
-
+        Task<bool> SendEmail(string recipientEmail, string subject, string body);
     }
 }

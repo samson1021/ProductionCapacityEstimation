@@ -8,6 +8,12 @@
 @model ProductionReturnDto
 
 @{
+    @*
+    @inject IHttpContextAccessor HttpContextAccessor
+    var userId = HttpContextAccessor.HttpContext.Session.GetString("userId");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("userRole");
+    *@
+
     ViewData["Title"] = ViewBag.Title as string; 
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var reestimation = ViewData["Reestimation"] as ProductionReestimation;

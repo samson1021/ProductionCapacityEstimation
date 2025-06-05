@@ -477,14 +477,15 @@ namespace mechanical.Controllers.PCE
             }
 
             var CaseInfo = await _PCECaseService.GetPCECase(userId, pceCaseTerminate.PCECaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = "getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + pceCaseTerminate.Reason + " For further Detail please check PCE Valuation System",
-            });
+
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                body: "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + pceCaseTerminate.Reason + " For further Detail please check PCE Valuation System"
+            );
+
             string jsonData = JsonConvert.SerializeObject(pceCaseTerminate);
             return Ok(pceCaseTerminate);
         }

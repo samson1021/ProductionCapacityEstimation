@@ -227,21 +227,23 @@
     <script>
         $(function () {
             document.addEventListener('DOMContentLoaded', function() {
-            const dropdown = document.getElementById('insuranceCostDropdown');
-            console.log(dropdown);
-            if (dropdown && dropdown.options.length <= 1) {
-                const dropdownContainer = dropdown.parentElement;
-                dropdown.remove();
+                const dropdown = document.getElementById('insuranceCostDropdown');
+                if (dropdown && dropdown.options.length <= 1) {
+                    const dropdownContainer = dropdown.parentElement;
+                    dropdown.remove();
 
-                const placeholderBtn = document.createElement('button');
-                placeholderBtn.className = 'btn btn-link p-0 text-danger';
-                placeholderBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Insurance, Freight & Others Cost';
-                placeholderBtn.setAttribute('data-toggle', 'modal');
-                placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
+                    const placeholderBtn = document.createElement('button');
+                    placeholderBtn.className = 'btn btn-link p-0 text-danger';
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-plus-circle';
+                    placeholderBtn.appendChild(icon);
+                    placeholderBtn.appendChild(document.createTextNode(' Create Insurance, Freight & Others Cost'));
+                    placeholderBtn.setAttribute('data-toggle', 'modal');
+                    placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
 
-                dropdownContainer.appendChild(placeholderBtn);
-            }
-        });
+                    dropdownContainer.appendChild(placeholderBtn);
+                }
+            });
             $('#rejectionModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
             });
@@ -358,7 +360,7 @@
         var motorerror = document.getElementById("motor-error");
         var motorValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        var alphanumericRegex = /^[a-zA-Z0-9]*$/;
         if (motorValue.length > 0 && !alphanumericRegex.test(motorValue)) {
             motorerror.textContent = "Motor No must contain only alphanumeric characters.";
         } else {
@@ -369,7 +371,7 @@
         var serialerror = document.getElementById("serial-error");
         var SerialValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        var alphanumericRegex = /^[a-zA-Z0-9]*$/;
         if (SerialValue.length > 0 && !alphanumericRegex.test(SerialValue)) {
             serialerror.textContent = "Wereda must contain only alphanumeric characters.";
         } else {

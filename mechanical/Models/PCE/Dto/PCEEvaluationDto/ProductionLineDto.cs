@@ -59,8 +59,8 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
     public class ProductionLineReturnDto : ProductionLineBaseDto<ProductionLineInputReturnDto>
     {
-        public override List<ProductionLineInputReturnDto> ProductionLineInputs { get; set; } = new List<ProductionLineInputReturnDto>();
         public Guid Id { get; set; }
+        public override List<ProductionLineInputReturnDto> ProductionLineInputs { get; set; } = new List<ProductionLineInputReturnDto>();
     }
 
     public class ProductionLinePostDto : ProductionLineBaseDto<ProductionLineInputPostDto>
@@ -70,7 +70,7 @@ namespace mechanical.Models.PCE.Dto.PCEEvaluationDto
 
     public class ProductionLineUpdateDto : ProductionLineBaseDto<ProductionLineInputUpdateDto>
     {
-        public override List<ProductionLineInputUpdateDto> ProductionLineInputs { get; set; } = new List<ProductionLineInputUpdateDto>();
         public Guid Id { get; set; }
+        public override List<ProductionLineInputUpdateDto> ProductionLineInputs { get; set; } = new List<ProductionLineInputUpdateDto>();
     }
 }

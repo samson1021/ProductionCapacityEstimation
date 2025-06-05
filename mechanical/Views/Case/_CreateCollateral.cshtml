@@ -472,7 +472,7 @@
 <script>
     function validateInputMac(inputId, errorId, isRequired) {
         var input = document.getElementById(inputId).value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[a-zA-Z0-9\s]+$/;
         var errorMessage = "";
 
         // Check if the field is required and empty

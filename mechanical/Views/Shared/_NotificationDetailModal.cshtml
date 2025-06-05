@@ -1,4 +1,5 @@
 ﻿<!-- Updated Modal in _Layout.cshtml -->
+
 <div class="modal fade" id="universalNotificationModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4" style="background: #f8f6fc;">
@@ -7,7 +8,7 @@
                     <h5 class="modal-title fw-semibold mb-0">
                         <i class="fas fa-bell me-2"></i>Notification Details
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
                 </div>
             </div>
             <div class="modal-body px-4 py-4" id="notificationModalContent">
@@ -16,7 +17,7 @@
                 </div>
             </div>
             <div class="modal-footer border-0 rounded-bottom-4 d-flex justify-content-between" style="background: #ede9fe;">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-dismiss="modal">
                     <i class="fas fa-times me-2"></i>Close
                 </button>
                 <a href="#" id="notificationFullDetailsLink" class="btn rounded-pill px-4" style="background: #7c3aed; color: #fff;">
@@ -53,43 +54,73 @@
 
         // Reset modal header fields
         try {
-            content.innerHTML = `<div class="loading-spinner text-center py-5">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                </div>`;
+            // Show loading spinner safely
+            content.textContent = '';
+            const spinnerDiv = document.createElement('div');
+            spinnerDiv.className = 'loading-spinner text-center py-5';
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner-border text-primary';
+            spinner.setAttribute('role', 'status');
+            spinnerDiv.appendChild(spinner);
+            content.appendChild(spinnerDiv);
 
             // Fetch notification data
             // const response = await fetch(`/api/Notification/${notificationId}`);
             const response = await fetch(`/Notification/GetNotification/${notificationId}`);
             if (!response.ok) throw new Error('Failed to fetch notification');
-            
             const data = await response.json();
             console.log("response", data);
 
-            // Update modal header
-            var dateSpan = new Date(data.CreatedAt).toLocaleDateString('en-US', {
+            // Clear content for new notification
+            content.textContent = '';
+
+            // Header
+            const headerDiv = document.createElement('div');
+            headerDiv.className = "notification-header mb-4 d-flex justify-content-between align-items-center";
+
+            const leftDiv = document.createElement('div');
+            leftDiv.className = "d-flex align-items-center gap-2";
+
+            const typeElem = document.createElement('h5');
+            typeElem.className = "fw-semibold mb-0";
+            typeElem.textContent = data.Type;
+
+            const statusSpan = document.createElement('span');
+            statusSpan.id = "notificationStatus";
+            statusSpan.className = "ms-2";
+            // Use textContent for status
+            const badge = document.createElement('span');
+            badge.className = `badge ${data.IsRead ? 'bg-success' : 'bg-warning'}`;
+            badge.textContent = data.IsRead ? 'Read' : 'Unread';
+            statusSpan.appendChild(badge);
+
+            leftDiv.appendChild(typeElem);
+            leftDiv.appendChild(statusSpan);
+
+            const dateSpan = document.createElement('span');
+            dateSpan.id = "notificationDate";
+            dateSpan.className = "small text-dark text-end";
+            dateSpan.textContent = new Date(data.CreatedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            var statusSpan = `<span class="badge ${data.IsRead ? 'bg-success' : 'bg-warning'}">
-                                        ${data.IsRead ? 'Read' : 'Unread'}
-                                    </span>`;
 
-            // Update modal content
-            content.innerHTML = `
-                <div class="notification-header mb-4 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-2">
-                        <h5 class="fw-semibold mb-0">${data.Type}</h5>
-                        <span id="notificationStatus" class="ms-2">${statusSpan}</span>
-                    </div>
-                    <span id="notificationDate" class="small text-dark text-end">${dateSpan}</span>
-                </div>
-                <div class="notification-body">
-                    <p class="lead mb-0">${data.Content}</p>
-                </div>
-            `;
+            headerDiv.appendChild(leftDiv);
+            headerDiv.appendChild(dateSpan);
+
+            // Body
+            const bodyDiv = document.createElement('div');
+            bodyDiv.className = "notification-body";
+            const contentElem = document.createElement('p');
+            contentElem.className = "lead mb-0";
+            contentElem.textContent = data.Content;
+            bodyDiv.appendChild(contentElem);
+
+            content.appendChild(headerDiv);
+            content.appendChild(bodyDiv);
 
             // Update full details link
             fullLink.href = data.Link || '#';
@@ -104,7 +135,15 @@
                     await fetch(`/Notification/MarkAsRead/${notificationId}`, {
                         method: 'POST'
                     });
-                    document.getElementById('notificationStatus').innerHTML = '<span class="badge bg-success">Read</span>';
+                    // Update status badge safely
+                    const statusElem = document.getElementById('notificationStatus');
+                    if (statusElem) {
+                        statusElem.textContent = '';
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-success';
+                        badge.textContent = 'Read';
+                        statusElem.appendChild(badge);
+                    }
                 } catch (error) {
                     console.error('Error marking notification as read:', error);
                 }
@@ -112,7 +151,11 @@
 
             modal.show();
         } catch (error) {
-            content.innerHTML = `<div class="alert alert-danger">Error loading notification: ${error.message}</div>`;
+            content.textContent = '';
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.textContent = `Error loading notification: ${error.message}`;
+            content.appendChild(alertDiv);
             fullLink.style.display = 'none';
             modal.show();
         }

@@ -38,7 +38,7 @@
                                     <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                     <div class="timeline-body">
-                                        @Html.Raw(item.Activity)
+                                        @item.Activity
                                     </div>
                                 </div>
                             </div>

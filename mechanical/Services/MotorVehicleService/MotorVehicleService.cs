@@ -190,7 +190,7 @@ namespace mechanical.Services.MotorVehicleService
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
             motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
-
+            motorVehicle.LastUpdatedAt = DateTime.UtcNow;
             _cbeContext.Update(motorVehicle);
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto

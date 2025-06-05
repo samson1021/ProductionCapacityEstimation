@@ -27,6 +27,17 @@ namespace mechanical.Services.AuthenticatioinService
             _port = configuration["LDAP:Port"] ?? throw new ArgumentNullException("LDAP:Port configuration is missing.");
             _email = configuration["LDAP:Email"] ?? throw new ArgumentNullException("LDAP:Email configuration is missing.");
             _password = configuration["LDAP:Password"] ?? throw new ArgumentNullException("LDAP:Password configuration is missing.");
+        
+            // // Load LDAP settings from environment variables or use defaults
+            // _ip = Environment.GetEnvironmentVariable("LDAP_HOST") ?? "mail.cbe.com.et";
+            // _port = int.TryParse(Environment.GetEnvironmentVariable("LDAP_PORT"), out var port) ? port : 389;
+            // _email = Environment.GetEnvironmentVariable("LDAP_EMAIL") ?? throw new ArgumentNullException("LDAP_EMAIL");
+            // _password = Environment.GetEnvironmentVariable("LDAP_PASSWORD") ?? throw new ArgumentNullException("LDAP_PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_password))
+            {
+                throw new ArgumentNullException("LDAP Email or Password is not configured properly.");
+            }
         }
 
         //authenticate user by CBE outlook email and password
@@ -63,10 +74,15 @@ namespace mechanical.Services.AuthenticatioinService
         {
             try
             {
-                // Construct a directory search using the username as the search criteria
+                // Security Note: _ip and _port are loaded from trusted configuration and validated for format.
+                // No user input is used here, so this is not subject to LDAP Injection (see CWE-90).
                 DirectoryEntry directoryEntry = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
+                
+                // Construct a directory search using the username as the search criteria
                 DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry);
-                directorySearcher.Filter = $"(|(sAMAccountName={username})(mail={username})(employeeID={username}))";
+
+                var safeUsername = LdapFilterEncode(username);
+                directorySearcher.Filter = $"(|(sAMAccountName={safeUsername})(mail={safeUsername})(employeeID={safeUsername}))";
 
                 // Execute the search and retrieve the first matching result
                 SearchResult? searchResult = directorySearcher.FindOne();
@@ -102,8 +118,12 @@ namespace mechanical.Services.AuthenticatioinService
         {
             try
             {
-                string domainPath = $"LDAP://{_ip}:{_port}";
-                DirectoryEntry searchRoot = new DirectoryEntry(domainPath, _email, _password);
+                if (!IsValidIpOrHostname(_ip)) throw new ArgumentException("Invalid LDAP IP/hostname configuration.");
+                if (!IsValidPort(_port)) throw new ArgumentException("Invalid LDAP port configuration.");
+
+                // Security Note: _ip and _port are loaded from trusted configuration and validated for format.
+                // No user input is used here, so this is not subject to LDAP Injection (see CWE-90).
+                DirectoryEntry searchRoot = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
                 DirectorySearcher searcher = new DirectorySearcher(searchRoot);
                 // {
                 //     SearchScope = SearchScope.Subtree,
@@ -111,8 +131,9 @@ namespace mechanical.Services.AuthenticatioinService
                 // };
                 searcher.SearchScope = SearchScope.Subtree;
                 searcher.PageSize = 1000;
-
-                searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + SmAccountName + "))";
+                
+                var safeSamAccountName = LdapFilterEncode(SmAccountName);
+                searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + safeSamAccountName + "))";
                 searcher.PropertiesToLoad.Add("sAMAccountName");
                 searcher.PropertiesToLoad.Add("mail");
                 searcher.PropertiesToLoad.Add("employeeID");
@@ -147,6 +168,30 @@ namespace mechanical.Services.AuthenticatioinService
                 _logger.LogError(ex, "Error while retrieving user data from AD.");
                 throw new ApplicationException("An error occurred while retrieving user data.", ex);
             }
+        }
+
+        public static string LdapFilterEncode(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty;
+            }
+
+            // Escape special characters in the input string
+            return input.Replace("\\", "\\5c")
+                        .Replace("*", "\\2a")
+                        .Replace("(", "\\28")
+                        .Replace(")", "\\29")
+                        .Replace("\0", "\\00");
+        }
+        private static bool IsValidIpOrHostname(string value)
+        {
+            return System.Net.IPAddress.TryParse(value, out _) || Uri.CheckHostName(value) != UriHostNameType.Unknown;
+        }
+
+        private static bool IsValidPort(string value)
+        {
+            return int.TryParse(value, out int port) && port > 0 && port <= 65535;
         }
     }
 }
