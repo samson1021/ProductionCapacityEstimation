@@ -73,7 +73,7 @@ namespace mechanical.Controllers
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return RedirectToAction("Index", "UserManagment");
         }
-
+        
         public async Task<IActionResult> Index(string Role)
         {
             var userId = base.GetCurrentUserId();
