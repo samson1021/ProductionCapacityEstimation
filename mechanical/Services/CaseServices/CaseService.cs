@@ -339,17 +339,36 @@ namespace mechanical.Services.CaseServices
         }
         public async Task<CaseCountDto> GetDashboardCaseCount(Guid userId)
         {
-            return new CaseCountDto()
+            var userState = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == userId);
+            if (userState.Role.Name == "Higher Official")
             {
-                NewCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New")).CountAsync(),
-                NewCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
-                PendingCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => (collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete") && collateral.CurrentStage != "Relation Manager")).CountAsync(),
-                PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
-                CompletedCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete")).CountAsync(),
-                CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
-                TotalCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId).CountAsync(),
-                TotalCollateralCount = await _cbeContext.Collaterals.Where(res => res.CreatedById == userId).CountAsync(),
-            };
+                return new CaseCountDto()
+                {
+                    NewCaseCount = await _cbeContext.Cases.Where(res => res.Collaterals.Any(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New")).CountAsync(),
+                    NewCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
+                    PendingCaseCount = await _cbeContext.Cases.Where(res =>  res.Collaterals.Any(collateral => (collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete") && collateral.CurrentStage != "Relation Manager")).CountAsync(),
+                    PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
+                    CompletedCaseCount = await _cbeContext.Cases.Where(res => res.Collaterals.Any(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete")).CountAsync(),
+                    CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
+                    TotalCaseCount = await _cbeContext.Cases.CountAsync(),
+                    TotalCollateralCount = await _cbeContext.Collaterals.CountAsync(),
+                };
+            }
+            else
+            {
+                return new CaseCountDto()
+                {
+                    NewCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New")).CountAsync(),
+                    NewCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Relation Manager" && collateral.CurrentStatus == "New").CountAsync(),
+                    PendingCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => (collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete") && collateral.CurrentStage != "Relation Manager")).CountAsync(),
+                    PendingCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage != "Checker Officer" && collateral.CurrentStatus != "Complete" && collateral.CurrentStage != "Relation Manager").CountAsync(),
+                    CompletedCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId && res.Collaterals.Any(collateral => collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete")).CountAsync(),
+                    CompletedCollateralCount = await _cbeContext.Collaterals.Where(collateral => collateral.CreatedById == userId && collateral.CurrentStage == "Checker Officer" && collateral.CurrentStatus == "Complete").CountAsync(),
+                    TotalCaseCount = await _cbeContext.Cases.Where(res => res.CaseOriginatorId == userId).CountAsync(),
+                    TotalCollateralCount = await _cbeContext.Collaterals.Where(res => res.CreatedById == userId).CountAsync(),
+                };
+            }
+               
         }
         public async Task<CaseCountDto> GetMyDashboardCaseCount(Guid userId)
         {
