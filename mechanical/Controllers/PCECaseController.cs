@@ -713,5 +713,30 @@ namespace mechanical.Controllers.PCE
             var pceCaseDto = await _PCECaseService.GetHOPCECaseDetailReport(id);
             return View(pceCaseDto);
         }
+        [HttpGet]
+        public async Task<IActionResult> HOPCEReestimationCases()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+
+        public async Task<IActionResult> HOPCEReestimationCase(Guid Id)
+        {
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+
+            if (pceCase == null)
+            {
+                return RedirectToAction("PCECases");
+            }
+
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+
+            ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+
+            return View();
+        }
+
     }
 }

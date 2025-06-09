@@ -567,7 +567,7 @@ namespace mechanical.Services.PCE.PCECaseService
 
             List<PCECase> PCECases = new List<PCECase>(); // Initialize to an empty list
 
-            if (status != "Pending" && status != "Completed" && status != "Returned")
+            if (status != "Pending" && status != "Completed" && status != "Returned" && status != "New")
             {
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
@@ -579,7 +579,22 @@ namespace mechanical.Services.PCE.PCECaseService
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
                     .Where(pc => (pc.Status == status || status == "All") &&
-                                 pc.ProductionCapacities.Any(p => p.CurrentStage != "Relation Manager" && p.CurrentStatus == "New"))
+                                 pc.ProductionCapacities.Any(p => p.CurrentStage != "Relation Manager" && (p.CurrentStatus == "New" || p.CurrentStatus == "Pending")))
+                    .Distinct()
+                    .ToListAsync();
+            }
+            else if (status == "New")
+            {
+                var relatedPCECaseIds = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(p => p.CurrentStage == "Relation Manager" &&  p.CurrentStatus == "New")
+                    .Select(p => p.PCECaseId)
+                    .Distinct()
+                    .ToListAsync();
+               
+                PCECases = await _cbeContext.PCECases
+                    .AsNoTracking()
+                    .Where(pc => pc.Status == status || relatedPCECaseIds.Contains(pc.Id))
                     .Distinct()
                     .ToListAsync();
             }
@@ -654,7 +669,7 @@ namespace mechanical.Services.PCE.PCECaseService
             // Fetch initial PCECases based on the given status
             List<PCECase> PCECases = new List<PCECase>(); // Initialize to an empty list
 
-            if (status != "Pending" && status != "Completed" && status != "Returned")
+            if (status != "Pending" && status != "Completed" && status != "Returned" && status != "New")
             {
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
@@ -666,7 +681,22 @@ namespace mechanical.Services.PCE.PCECaseService
                 PCECases = await _cbeContext.PCECases
                     .AsNoTracking()
                     .Where(pc => (pc.Status == status || status == "All") &&
-                                 pc.ProductionCapacities.Any(p => p.CurrentStage != "Relation Manager" && p.CurrentStatus == "New"))
+                                 pc.ProductionCapacities.Any(p => p.CurrentStage != "Relation Manager" && (p.CurrentStatus == "New" || p.CurrentStatus == "Pending")))
+                    .Distinct()
+                    .ToListAsync();
+            }
+            else if (status == "New")
+            {
+                var relatedPCECaseIds = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(p => p.CurrentStage == "Relation Manager" && p.CurrentStatus == "New")
+                    .Select(p => p.PCECaseId)
+                    .Distinct()
+                    .ToListAsync();
+
+                PCECases = await _cbeContext.PCECases
+                    .AsNoTracking()
+                    .Where(pc => pc.Status == status || relatedPCECaseIds.Contains(pc.Id))
                     .Distinct()
                     .ToListAsync();
             }
@@ -744,7 +774,7 @@ namespace mechanical.Services.PCE.PCECaseService
                     .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "New"),
                 "Pending" => await _cbeContext.ProductionCapacities
                     .AsNoTracking()
-                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage != "Relation Manager" && pc.CurrentStatus == "New" && pc.CurrentStatus != "Returned" && pc.CurrentStatus != "Completed"),
+                    .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage != "Relation Manager" && (pc.CurrentStatus == "New" || pc.CurrentStatus == "Pending") && pc.CurrentStatus != "Returned" && pc.CurrentStatus != "Completed"),
                 "Completed" => await _cbeContext.ProductionCapacities
                     .AsNoTracking()
                     .CountAsync(pc => pc.PCECaseId == pceCaseId && pc.CurrentStage == "Relation Manager" && pc.CurrentStatus == "Completed"),
