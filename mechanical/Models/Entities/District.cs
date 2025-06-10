@@ -7,10 +7,5 @@ namespace mechanical.Models.Entities
         [Key]
         public Guid Id { get; set; }
         public string Name { get; set; }
-
-        public static implicit operator District(string v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
