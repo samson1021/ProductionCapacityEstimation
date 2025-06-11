@@ -49,7 +49,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
-
                 // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
                 EncodingHelper.EncodeObject(Dto);
 
@@ -76,9 +75,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                 }
 
                 await _cbeContext.PCEEvaluations.AddAsync(pceEvaluation);
-                // await _cbeContext.ProductionLines.AddRangeAsync(pceEvaluation.ProductionLines);
-                // await _cbeContext.ProductionLineInputs.AddRangeAsync(allInputs);
-                // await _cbeContext.SaveChangesAsync();
 
                 var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
                 pce.MachineName = Dto.MachineName;
@@ -446,17 +442,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 await UpdateCaseAssignmentStatus(Production.Id, Production.CreatedById, Status);
             }
-            var MOUser = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
-            var MOSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == MOUser.SupervisorId);
+            var user = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
             
-            await UpdateCaseAssignmentStatus(Production.Id, MOSupervisor.Id, Status);
-            
-            if (MOSupervisor.Role.Name == "Maker TeamLeader")
+            if (user.Role.Name == "Maker TeamLeader" || user.Role.Name == "Maker Officer")
             {
-                var MTLSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
-                if (MTLSupervisor != null)
+                var supervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == user.SupervisorId);
+                
+                await UpdateCaseAssignmentStatus(Production.Id, supervisor.Id, Status);
+                
+                if (supervisor.Role.Name == "Maker TeamLeader")
                 {
-                    await UpdateCaseAssignmentStatus(Production.Id, MTLSupervisor.Id, Status);
+                    var superSupervisor = _cbeContext.Users.Include(res => res.Role).FirstOrDefault(res => res.Id == supervisor.SupervisorId);
+                    if (superSupervisor != null)
+                    {
+                        await UpdateCaseAssignmentStatus(Production.Id, superSupervisor.Id, Status);
+                    }
                 }
             }
         }
@@ -466,8 +466,8 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             var assignment = await _cbeContext.PCECaseAssignments
                                                 .Where(pca => pca.ProductionCapacityId == PCEId && pca.UserId == UserId)
                                                 .OrderByDescending(pca => pca.AssignmentDate)
-                                                .FirstOrDefaultAsync()
-                                                ?? throw new KeyNotFoundException("PCECase Assignment not found.");
+                                                .FirstOrDefaultAsync();
+                                                // ?? throw new KeyNotFoundException("PCECase Assignment not found.");
 
             if (assignment != null)
             {
