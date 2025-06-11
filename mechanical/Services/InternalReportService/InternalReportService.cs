@@ -33,19 +33,6 @@ namespace mechanical.Services.InternalReportService
             {
 
             }
-
-            // evaluation table [ConstMngAgrMachineries] [IndBldgFacilityEquipment] [MotorVehicles]
-            // Step 1: Fetch all relevant CaseAssignments for the user, eager loading all primary related entities.
-            //var caseAssignments = await _cbeContext.CaseAssignments
-            //.Include(ca => ca.Collateral)
-            //    .ThenInclude(pc => pc.Case)
-            //        .ThenInclude(c => c.CaseOriginator)
-            //.Include(ca => ca.Collateral)
-            //    .ThenInclude(pc => pc.Case)
-            //        .ThenInclude(pce => pce.District)
-            //.Include(ca => ca.User)
-            //.Where(ca => ca.UserId == userId)
-            //.ToListAsync();
             var caseAssignments = _cbeContext.CaseAssignments
                         .Include(ca => ca.Collateral)
                             .ThenInclude(pc => pc.Case)
@@ -59,19 +46,16 @@ namespace mechanical.Services.InternalReportService
             {
                 caseAssignments = caseAssignments.Where(ca => ca.UserId == userId);
             }
-
-
-            // If no assignments, return empty results early
             if (!caseAssignments.Any())
             {
                 return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
             }
-
-            // Collect all unique Collateral IDs and Case IDs from the fetched assignments
             var CollateralIds = caseAssignments.Select(ca => ca.CollateralId).ToHashSet(); // Use HashSet for O(1) lookups
-
             var CaseIds = caseAssignments.Select(ca => ca.Collateral.CaseId).Distinct().ToHashSet();
-
+            var CaseSchedules = await _cbeContext.CaseSchedules
+                .Where(s => CaseIds.Contains(s.CaseId) && s.Status == "Approved") // Filter approved schedules here
+                .ToListAsync();
+            var CaseSchedulesByCaseId = CaseSchedules.GroupBy(s => s.CaseId).ToDictionary(g => g.Key, g => g.ToList());
             var constructionEvaluations = await _cbeContext.ConstMngAgrMachineries
                                             .Include(e => e.CheckerUser)
                                             .Include(e => e.EvaluatorUser)
@@ -87,15 +71,9 @@ namespace mechanical.Services.InternalReportService
                                             .Include(e => e.EvaluatorUser)
                                             .Where(e => CollateralIds.Contains(e.CollateralId))
                                             .ToListAsync();
-
-
-
             var caseSchedules = await _cbeContext.CaseSchedules
                 .Where(s => CollateralIds.Contains(s.CaseId) && s.Status == "Approved") // Filter approved schedules here
                 .ToListAsync();
-
-
-            // Consolidate all role-based PCECaseAssignments into a single query
             var allRoleAssignments = await _cbeContext.CaseAssignments
                 .Include(ca => ca.User)
                     .ThenInclude(u => u.Role)
@@ -108,8 +86,6 @@ namespace mechanical.Services.InternalReportService
                               ca.User.Role.Name == "Checker Officer" ||
                               ca.User.Role.Name == "District Valuation Manager"))
                 .ToListAsync();
-
-
             var assignmentsLookup = allRoleAssignments
                   .GroupBy(ca => ca.CollateralId)
                   .ToDictionary(
@@ -126,46 +102,36 @@ namespace mechanical.Services.InternalReportService
                     ? assignment
                     : null;
             }
-
-            // Step 4: Populate AllProductionCapacityDtos (one DTO per ProductionCapacity)
             var allCollateralDtos = new List<ValuationReportDto>();
-
-            //caseFRQ
             foreach (var caseAssignment in caseAssignments)
             {
                 var c = caseAssignment.Collateral;
                 var Case = c.Case;
                 var CollateralStatus = caseAssignment.Status;
                 var CollateralCompletionDate = caseAssignment.CompletionDate;
-                var scheduleDate = await _cbeContext.CaseSchedules
-                        .Where(s => s.CaseId == Case.Id && s.Status == "Approved")
-                        .OrderByDescending(s => s.CreatedAt)
-                        .Select(s => s.ScheduleDate)
-                        .FirstOrDefaultAsync();
-
-                IEnumerable<dynamic> currentCollateralCategoryEvaluations;
+                CaseSchedulesByCaseId.TryGetValue(Case.Id, out var caseSpecificSchedules);
+                var scheduleDate = caseSpecificSchedules?
+                                        .OrderByDescending(s => s.CreatedAt)
+                                        .FirstOrDefault()?.ScheduleDate ?? DateTime.Now; // Or another default value
+                IEnumerable<dynamic> currentCollateralCategoryEvaluations = Enumerable.Empty<dynamic>();
                 switch (c.Category)
                 {
                     case MechanicalCollateralCategory.CMAMachinery:
-                        currentCollateralCategoryEvaluations = constructionEvaluations;
+                        currentCollateralCategoryEvaluations = constructionEvaluations?.Cast<dynamic>() ?? Enumerable.Empty<dynamic>();
                         break;
                     case MechanicalCollateralCategory.IBFEqupment:
-                        currentCollateralCategoryEvaluations = industrialEvaluations;
+                        currentCollateralCategoryEvaluations = industrialEvaluations?.Cast<dynamic>() ?? Enumerable.Empty<dynamic>();
                         break;
                     case MechanicalCollateralCategory.MOV:
-                        currentCollateralCategoryEvaluations = vehicleEvaluations;
-                        break;
-                    default:
-                        currentCollateralCategoryEvaluations = Enumerable.Empty<dynamic>();
+                        currentCollateralCategoryEvaluations = vehicleEvaluations?.Cast<dynamic>() ?? Enumerable.Empty<dynamic>();
                         break;
                 }
+
                 var collateralEvaluations = currentCollateralCategoryEvaluations
                     .Where(e => e.CollateralId == c.Id)
                     .OrderByDescending(e => e.CreatedAt)
                     .ToList();
                 var firstEvaluation = collateralEvaluations.FirstOrDefault();
-                //var lastEvaluationDate = firstEvaluation.LastUpdatedAt;
-                //var FirstEvaluationDate = firstEvaluation.CreatedAt;
                 DateTime? lastEvaluationDate = null;
                 DateTime? FirstEvaluationDate = null;
 
@@ -176,8 +142,6 @@ namespace mechanical.Services.InternalReportService
                 }
 
                 var reevaluationCount = collateralEvaluations.Count > 0 ? collateralEvaluations.Count - 1 : 0;
-
-
                 //var scheduleDate = caseSpecificSchedules?.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
 
                 var justifications = "";// firstEvaluation?.Justifications?.ToList() ?? new List<Justification>();
@@ -304,15 +268,22 @@ namespace mechanical.Services.InternalReportService
                 allCollateralDtos.Add(dto);
             }
 
-
-
-
             var distinctCaseDtos = new List<ValuationReportDto>();
-            var uniqueCases = caseAssignments
-                                .Select(ca => ca.Collateral.Case)
-                                .DistinctBy(pce => pce.Id)
-                                .ToList(); // Keep this as it derives unique cases from the initial fetch
-            var mostRecentCollateralAssignments = caseAssignments
+              //     var uniqueCases = caseAssignments
+                             //.Where(ca => ca.Collateral != null && ca.Collateral.Case != null)
+                             //.Select(ca => ca.Collateral!.Case)
+                             //.GroupBy(c => c.Id)                  // Group by ID
+                             //.Select(g => g.First())              // Take first from each group
+                             //.ToList();
+
+            var caseAssignmentsList = caseAssignments.ToList(); // Execute query first
+
+            var uniqueCases = caseAssignmentsList
+                .Where(ca => ca.Collateral?.Case != null) // Safe navigation
+                .Select(ca => ca.Collateral!.Case!)       // Now in-memory, safe to use !
+                .DistinctBy(pce => pce.Id)                // Works on IEnumerable
+                .ToList();
+            var mostRecentCollateralAssignments = caseAssignmentsList
              .GroupBy(ca => ca.CollateralId)
              .Select(g => g.OrderByDescending(ca => ca.AssignmentDate) // Order by AssignmentDate to get the latest
                             .FirstOrDefault())
@@ -350,23 +321,7 @@ namespace mechanical.Services.InternalReportService
                         similarCollateralGroups.Select(g =>
                             $"{g.Count()}({g.Key.Category}, {g.Key.Type}, {g.Key.ManufactureYear})"))
                     : "No similar items";
-                //// Fetch all collaterals for this case to count similar items
-                //var allCollateralsForCase = await _cbeContext.Collaterals
-                //    .Where(c => c.CaseId == uniqueCase.Id)
-                //    .Select(c => new { c.Category, c.Type, c.ManufactureYear })
-                //    .ToListAsync();
-
-                //// Group collaterals by Category, Type, and ManufactureYear
-                //var collateralGroups = allCollateralsForCase
-                //                      .GroupBy(c => new { c.Category, c.Type })
-                //                      .Where(g => g.Count() > 1)
-                //                      .OrderByDescending(g => g.Count())
-                //                      .ToList();
-
-                //var similarItemsDescription = string.Join(", ",
-                //                    collateralGroups.Select(g =>
-                //                        $"{g.Count()}({g.Key.Category}, {g.Key.Type})"));
-
+   
 
                 var totalCollaterals = totalcollateralForCase.Count;
                 var deliveredCollaterals = totalcollateralForCase.Count(ca => ca.Status == "Complete");

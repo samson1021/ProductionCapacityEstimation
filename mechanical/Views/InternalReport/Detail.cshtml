@@ -18,102 +18,34 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-             @*    <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="fromDate">From Date</label>
-                            <input type="date" id="fromDate" class="form-control custom-date" />
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="toDate">To Date</label>
-                            <input type="date" id="toDate" class="form-control custom-date" />
-                        </div>
-                    </div>
-
-                    <div class="col-md-8 px-0 my-2">
-                        <div class="row align-items-end">
-                            <!-- Filter and Clear buttons -->
-                            <div class="col-md-2 form-group">
-                                <label>&nbsp;</label> <!-- Empty label for alignment -->
-                                <div>
-                                    <button id="filterBtn" class="btn custom-btn w-100" style="border:none;">Filter</button>
-                                </div>
-                            </div>
-                            <div class="col-md-2 form-group">
-                                <label>&nbsp;</label> <!-- Empty label for alignment -->
-                                <div>
-                                    <button id="resetBtn" class="btn custom-btn w-100" style="border:none;">Clear</button>
-                                </div>
-                            </div>
-
-                            <!-- Time Period Dropdown -->
-                            <div class="col-md-4 form-group">
-                                <label for="timePeriodDropdown">Time Period</label>
-                                <div class="btn-group w-100">
-                                    <button type="button" class="btn custom-btn dropdown-toggle w-100"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                            id="timePeriodDropdown">
-                                        Select Period
-                                    </button>
-                                    <div class="dropdown-menu w-100">
-                                        <button id="dailyBtn" class="dropdown-item" type="button">Daily Report</button>
-                                        <button id="weeklyBtn" class="dropdown-item" type="button">Weekly Report</button>
-                                        <button id="monthlyBtn" class="dropdown-item" type="button">Monthly Report</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Report Type Dropdown -->
-                            <div class="col-md-4 form-group">
-                                <label for="reportTypeDropdown">Report Type</label>
-                                <div class="btn-group w-100">
-                                    <button type="button" class="btn custom-btn dropdown-toggle w-100"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                            id="reportTypeDropdown">
-                                        Select Report
-                                    </button>
-                                    <div class="dropdown-menu w-100">
-                                        <button id="detailReportBtn" class="dropdown-item" type="button">Case Report</button>
-                                        <button id="summaryReportBtn" class="dropdown-item" type="button">Production Report</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-             *@
+  
                 <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="fromDate">From Date</label>
-                            <input type="date" id="fromDate" class="form-control custom-date" />
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="toDate">To Date</label>
-                            <input type="date" id="toDate" class="form-control custom-date" />
-                        </div>
-                    </div>
-
-                    <div class="col-md-8 px-0 d-flex justify-content-md-end">
-                        <div class="row align-items-end w-100">
-                            <div class="col-md-3 form-group">
-                                <label>&nbsp;</label>
-                                <div>
-                                    <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
-                                </div>
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>&nbsp;</label>
-                                <div>
-                                    <button id="resetBtn" class="btn custom-btn" style="border:none;">Clear</button>
-                                </div>
+                    <div class="col-12 px-0 d-flex flex-wrap justify-content-end">
+                        <div class="d-flex flex-wrap align-items-end" style="gap: 2px;">
+                            <!-- Date Inputs -->
+                            <div class="form-group" style="min-width: 180px;">
+                                <label for="fromDate">From Date</label>
+                                <input type="date" id="fromDate" class="form-control custom-date" />
                             </div>
 
-                            <div class="col-md-3 form-group">
+                            <div class="form-group" style="min-width: 180px;">
+                                <label for="toDate">To Date</label>
+                                <input type="date" id="toDate" class="form-control custom-date" />
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button id="resetBtn" class="btn custom-btn" style="border:none;">Clear</button>
+                            </div>
+
+                            <!-- Dropdowns -->
+                            <div class="form-group">
                                 <label for="timePeriodDropdown">&nbsp;</label>
                                 <div class="btn-group">
                                     <button type="button" class="btn custom-btn dropdown-toggle"
@@ -129,23 +61,26 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3 form-group">
-                                <label for="reportTypeDropdown"> &nbsp;</label>
+                            <div class="form-group">
+                                <label for="reportTypeDropdown">&nbsp;</label>
                                 <div class="btn-group">
                                     <button type="button" class="btn custom-btn dropdown-toggle"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                             id="reportTypeDropdown">
                                         Select Report
                                     </button>
-                                    <div class="dropdown-menu ">
-                                        <button id="detailReportBtn" class="dropdown-item" type="button">Case Report</button>
-                                        <button id="summaryReportBtn" class="dropdown-item" type="button">Collateral Report</button>
+                                    <div class="dropdown-menu">
+                                        <button id="summaryReportBtn" class="dropdown-item" type="button">Case Report</button>
+                                        <button id="detailReportBtn" class="dropdown-item" type="button"> Collateral Report</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+
 
             </div>
             <div class="card-body">
@@ -166,6 +101,9 @@
 </section>
 
 <style>
+    .custom-spacing {
+        margin-right: 5px;
+    }
     .custom-btn {
         background-color: #6f42c1;
         color: #ffffff;

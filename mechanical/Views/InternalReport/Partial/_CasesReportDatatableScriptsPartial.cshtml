@@ -1,4 +1,4 @@
-﻿@* <script>
+﻿ <script>
     function navigateToDetails(id) {
         const url = `/Description/ProductionDetails/${id}`;
         window.open(url, '_blank');
@@ -381,6 +381,7 @@
 
         fetchData();
 
+
         $('#filterBtn').click(function () {
             let fromDate = $('#fromDate').val();
             let toDate = $('#toDate').val();
@@ -455,8 +456,10 @@
             $('#reportTitle').text(title);
         });
     });
-</script> *@
+</script> 
 
+
+@* 
 
 <script>
     function navigateToDetails(id) {
@@ -917,4 +920,4 @@
             loadDataTable(filteredData, isDetailView);
         }
     });
-</script>
+</script> *@
