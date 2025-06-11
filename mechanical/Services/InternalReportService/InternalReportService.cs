@@ -162,7 +162,7 @@ namespace mechanical.Services.InternalReportService
                     CreatedAt = c.CreationDate,
                     ApplicantName = Case.ApplicantName,
                     CasePriority = "N/A",
-                    CaseFRQ = c.NumberOfRetuns.ToString(),
+                    CaseFRQ = c.NumberOfReturns .ToString(),
                     RequestedOrgan = Case.Segment ?? "N/A",
                     CustomerApplicantRelationship = Case.CaseOriginator?.Name ?? "",
                     PurposeOfValuationRequest = c.Purpose,

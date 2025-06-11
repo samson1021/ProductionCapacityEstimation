@@ -24,7 +24,7 @@ namespace mechanical.Models.Entities
 
         [Range(1900, 2024)]
         public int? ManufactureYear { get; set; }
-        public int? NumberOfRetuns { get; set; }
+        public int? NumberOfReturns  { get; set; }
         public string? InvoiceNo { get; set; }
         public string? CollateralType { get; set; }
         public string? SerialNo { get; set; } 
