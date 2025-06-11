@@ -38,6 +38,10 @@ namespace mechanical.Services.AuthenticatioinService
             //{
             //    throw new ArgumentNullException("LDAP Email or Password is not configured properly.");
             //}
+            if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_password))
+            {
+                throw new ArgumentNullException("LDAP Email or Password is not configured properly.");
+            }
         }
 
         //authenticate user by CBE outlook email and password

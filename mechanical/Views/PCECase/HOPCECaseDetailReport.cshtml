@@ -42,7 +42,7 @@
                                     <h5 class="card-subtitle mb-2 text-muted">Applicant Name: @Model.PCECases.ApplicantName</h5>
                                 </div>
                             </div>
-@*                             <div class="col-md-4 text-end">
+                            @*                             <div class="col-md-4 text-end">
                                 <!-- <button class="btn btn-primary" style="background-color:purple; color: white">Case Report</button> -->
                                 <a class="btn btn-primary pce-report-btn" style="background-color:purple; color: white" href="@Url.Action("PCEAllReport", "PCECase")?Id= @Model.PCECases.Id">
                                     <i class="fas fa-file-alt mr-2"></i>PCE Report
@@ -73,11 +73,11 @@
                                     <td>@item.Role</td>
                                     @if (Model.PCEEvaluations.Count > 0)
                                     {
-                                        var counts =0;
+                                        var counts = 0;
                                         var names = "";
                                         @foreach (var f in Model.PCEEvaluations)
                                         {
-                                            if(f.PCEId == item.Id )
+                                            if (f.PCEId == item.Id)
                                             {
                                                 counts = counts + 1;
                                                 names = @f.Evaluator.Name;
@@ -85,7 +85,7 @@
                                         }
                                         if (counts >= 0)
                                         {
-                                          <td> @names </td>
+                                            <td> @names </td>
                                         }
                                         else
                                         {
@@ -104,12 +104,13 @@
                                                 <i class="fas fa-file-alt mr-2"></i>PCE Report
                                             </a>
                                         }
-                                        else{
+                                        else
+                                        {
                                             <a class="btn btn-primary" style="background-color:purple; color: white" href="" disabled>
                                                 <i class="fas fa-file-alt mr-2"></i>In Progress
                                             </a>
                                         }
-                                        
+
                                     </td>
                                 </tr>
                             }
@@ -126,7 +127,7 @@
         </div>
     </div>
 </section>
- 
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");

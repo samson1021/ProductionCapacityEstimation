@@ -656,7 +656,7 @@ namespace mechanical.Controllers
             var id = base.GetCurrentUserId();
             var myCase = new object();
             var userRole = await _cbeContext.Users.Where(res => res.Id == id).Include(res => res.Role).FirstOrDefaultAsync();
-            if (userRole.Role.Name == "Relation Manager")
+            if (userRole.Role.Name == "Relation Manager" || userRole.Role.Name == "Higher Official")
             {
                 myCase = await _caseService.GetRmTotalCases(id);
             }
@@ -719,7 +719,131 @@ namespace mechanical.Controllers
             var result = cases.Select(c => new { Id = c.Id, CaseNo = c.CaseNo });
             return Json(result);
         }
+        [HttpGet]
+        public IActionResult TotalHONewCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult TotalHOCompletedCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult TotalHORemarkCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult TotalHOCases()
+        {
+            return View();
+        }
 
+        [HttpGet]
+        public IActionResult TotalHOPendingCases()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTotalHONewCases()
+        {
+            var newCases = await _caseService.GetTotalHONewCases(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetTotalHOPendingCases()
+        {
+            var myCase = await _caseService.GetTotalHOPendingCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> TotalHOPendDetail(Guid id)
+        {
+            var loanCase = await _caseService.GetHOPendingCase(base.GetCurrentUserId(), id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            var caseTerminate = await _caseTermnateService.GetCaseTerminates(id);
+            if (loanCase == null) { return RedirectToAction("NewCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["caseTerminate"] = caseTerminate;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHOCompleteCases()
+        {
+            var myCase = await _caseService.GetHOCompleteCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> MyHOCompleteCase(Guid id, string CaseType)
+        {
+
+            object ShareTaskData;
+
+            if (CaseType != "Owner")
+            {
+                ShareTaskData = await _caseService.SharedCaseInfo(id);
+            }
+            else
+            {
+                ShareTaskData = null;
+            }
+
+
+            var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            //var motorvechiel = await _cbeContext.MotorVehicles.Where(res => res.Collaterial.CaseId == CaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            List<MotorVehicle> motorVehicle = null;
+            try
+            {
+                motorVehicle = await _cbeContext.MotorVehicles.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log the error, display a message, etc.)
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            List<ConstMngAgrMachinery> conMngAgr = null;
+            try
+            {
+                conMngAgr = await _cbeContext.ConstMngAgrMachineries.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log the error, display a message, etc.)
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            List<IndBldgFacilityEquipment> indBldgFacEq = null;
+            try
+            {
+                indBldgFacEq = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log the error, display a message, etc.)
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            ViewData["motorVehicle"] = motorVehicle;
+            ViewData["indBldgFacEq"] = indBldgFacEq;
+            ViewData["conMngAgr"] = conMngAgr;
+
+
+
+            ViewData["CaseType"] = CaseType;
+            ViewData["ShareTaskData"] = ShareTaskData;
+
+            return View();
+        }
         //[HttpGet]
         //public async Task<IActionResult> MyCase(Guid Id)
         //{

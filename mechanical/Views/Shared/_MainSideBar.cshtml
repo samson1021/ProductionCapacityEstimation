@@ -748,8 +748,8 @@
                             </li>
                         </ul>
                     </li>
-                } 
-                 else if (@userRole == "Higher Official")
+                }
+                else if (@userRole == "Higher Official")
                 {
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -802,7 +802,7 @@
                             <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
                             <p> PCE Valuation<i class="fas fa-angle-left right"></i> </p>
                         </a>
-                        <ul class="nav nav-treeview pl-3">                           
+                        <ul class="nav nav-treeview pl-3">
                             <li class="nav-item">
 
                                 <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "New" })" class="nav-link">
@@ -831,19 +831,13 @@
                                     <p> Completed PCE Cases </p>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="@Url.Action("HORemarkPCECases", "PCECase")" class="nav-link">
-                                    <i class="fas fa-file nav-icon"></i>
-                                    <p> Remark Release PCE Cases </p>
-                                </a>
-                            </li>
+                          
                             <li class="nav-item">
                                 <a href="@Url.Action("HOPCETerminatedCases", "PCECase")" class="nav-link" style="color:red;">
                                     <i class="fas fa-ban nav-icon "> </i>
                                     <p> Terminated PCE Cases </p>
                                 </a>
-                            </li>
-                           
+                            </li>                           
                             <li class="nav-item">
 
                                 <a href="@Url.Action("HOPCECases", "PCECase")" class="nav-link">
@@ -866,9 +860,8 @@
                             </li>
                         </ul>
                     </li>
-                
                 }
-              else if (@userRole == "Admin")
+                else if (@userRole == "Admin")
                 {
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
