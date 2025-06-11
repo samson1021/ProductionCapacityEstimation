@@ -57,7 +57,7 @@
                             <div class="form-group col-lg-6">
                                 <label asp-for="Type">Manufacturing Sub Sector <i class="text-danger">*</i></label>
                                 <select id="typeDropdown" asp-for="Type" required class="form-control form-control-sm">
-                                    <option value="" selected>Select Manufacturing Sub Sector</option>
+                                    <option value="" selected disabled>Select Manufacturing Sub Sector</option>
                                 </select>
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
@@ -117,7 +117,7 @@
                                     <div class="form-group col-lg-4">
                                         <label asp-for="MachineryInstalledPlace"> Machinery Installed Place <i class="text-danger">*</i></label>
                                         <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlace" required>
-                                            <option value="" disabled>Select Machinery Installed Place </option>
+                                            <option value="" selected disabled>Select Machinery Installed Place </option>
                                             <option value="Private Owned LHC">Private Owned LHC</option>
                                             <option value="Private Rented LHC">Private Rented LHC</option>
                                             <option value="Industrial Park">Industrial Park</option>

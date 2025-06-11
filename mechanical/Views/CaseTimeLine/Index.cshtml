@@ -43,7 +43,7 @@
                                         <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                     <div class="timeline-body">
-                                        @item.Activity
+                                        @Html.Raw(item.Activity)
                                     </div>
                                 </div>
                                 </div>
@@ -63,7 +63,7 @@
                                         <h3 class="timeline-header"> <a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                         <div class="timeline-body">
-                                            @item.Activity
+                                            @Html.Raw(item.Activity)
                                         </div>
                                     </div>
                                 </div>
@@ -84,7 +84,7 @@
                                         <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                         <div class="timeline-body">
-                                            @item.Activity
+                                            @Html.Raw(item.Activity)
                                         </div>
                                     </div>
                                 </div>
