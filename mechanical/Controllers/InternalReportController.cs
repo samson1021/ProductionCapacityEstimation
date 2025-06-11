@@ -37,22 +37,24 @@ namespace mechanical.Controllers
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
             return View();
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetInternalPCECaseReport()
+        //{
+        //    var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
+        //    //if (myCase == null) { return BadRequest("Unable to load case"); }
+        //    string jsonData = JsonConvert.SerializeObject(myCase);
+        //    return Content(jsonData, "application/json");
+        //}
         [HttpGet]
-        public async Task<IActionResult> GetInternalPCECaseReport()
+        public async Task<IActionResult> GetCaseInternalReport()
         {
-            var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
-            //if (myCase == null) { return BadRequest("Unable to load case"); }
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetCaseReport()
-        {
-            var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
+            var myCase = await _internalReportService.GetInternalCaseReport(GetCurrentUserId());
             if (myCase.DistinctCases == null && myCase.AllProductionCapacities == null)
             {
                 return BadRequest("Unable to load case");
             }
+            //return (DistinctCases: distinctCaseDtos, AllProductionCapacities: allCollateralDtos);
+
             var result = new
             {
                 DistinctCases = myCase.DistinctCases,
@@ -61,7 +63,7 @@ namespace mechanical.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> GetPCECaseReport()
+        public async Task<IActionResult> GetPCECaseInternalReport()
         {
             var myCase = await _internalReportService.GetInternalPCECaseReport(GetCurrentUserId());
             if (myCase.DistinctCases == null && myCase.AllProductionCapacities == null)

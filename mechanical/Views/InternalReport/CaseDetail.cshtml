@@ -1,4 +1,5 @@
-﻿<section class="content-header">
+﻿
+<section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
@@ -17,63 +18,109 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
+
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="fromDate">From Date</label>
-                            <input type="date" id="fromDate" class="form-control custom-date" />
+                    <div class="col-12 px-0 d-flex flex-wrap justify-content-end">
+                        <div class="d-flex flex-wrap align-items-end" style="gap: 2px;">
+                            <!-- Date Inputs -->
+                            <div class="form-group" style="min-width: 180px;">
+                                <label for="fromDate">From Date</label>
+                                <input type="date" id="fromDate" class="form-control custom-date" />
+                            </div>
+
+                            <div class="form-group" style="min-width: 180px;">
+                                <label for="toDate">To Date</label>
+                                <input type="date" id="toDate" class="form-control custom-date" />
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button id="resetBtn" class="btn custom-btn" style="border:none;">Clear</button>
+                            </div>
+
+                            <!-- Dropdowns -->
+                            <div class="form-group">
+                                <label for="timePeriodDropdown">&nbsp;</label>
+                                <div class="btn-group">
+                                    <button type="button" class="btn custom-btn dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            id="timePeriodDropdown">
+                                        Select Period
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <button id="dailyBtn" class="dropdown-item" type="button">Daily Report</button>
+                                        <button id="weeklyBtn" class="dropdown-item" type="button">Weekly Report</button>
+                                        <button id="monthlyBtn" class="dropdown-item" type="button">Monthly Report</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reportTypeDropdown">&nbsp;</label>
+                                <div class="btn-group">
+                                    <button type="button" class="btn custom-btn dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            id="reportTypeDropdown">
+                                        Select Report
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <button id="summaryReportBtn" class="dropdown-item" type="button">Case Report</button>
+                                        <button id="detailReportBtn" class="dropdown-item" type="button"> Collateral Report</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="toDate">To Date</label>
-                            <input type="date" id="toDate" class="form-control custom-date" />
-                        </div>
-                    </div>
-                    <div class="col-md-6 align-self-end">
-                        <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
-                        <button id="resetBtn" class="btn custom-btn" style="border:none;">Reset</button>
-                        <button id="detailReportBtn" class="btn custom-btn" style="border:none;">Detail Report</button>
                     </div>
                 </div>
+
             </div>
             <div class="card-body">
                 <h4 id="reportTitle" class="text-center mb-3">Case Level Report</h4>
 
-                <div class="table-responsive" style="overflow-x: auto;">
+
+                  <div class="table-responsive" style="overflow-x: auto;">
                     <table id="MyNewCase" class="table table-bordered table-striped" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th class="no-export">Action</th> <!-- New column -->
+                                <th class="no-export">Action</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
+
             </div>
         </div>
     </div>
 </section>
 
 <style>
-    .custom-btn {
-        background-color: #6f42c1; /* Pink */
-        color: #ffffff; /* Black text */
+
+  
+ .custom-btn {
+        background-color: #6f42c1;
+        color: #ffffff;
         margin-right: 5px;
         padding: 8px 16px;
         transition: background-color 0.3s;
     }
 
         .custom-btn:hover {
-            background-color: #ffd700; /* Golden on hover */
+            background-color: #ffd700;
             color: #000000;
         }
 
         .custom-btn:active {
-            background-color: #e6c200; /* Darker golden on click */
+            background-color: #e6c200;
         }
 
     #reportTitle {
-        color: #6f42c1; /* Matching your theme */
+        color: #6f42c1;
         font-weight: bold;
         padding: 10px;
         background-color: #f8f9fa;
@@ -82,18 +129,18 @@
     }
 
     .custom-date {
-        border: 1px solid #000000; /* Black border */
-        background-color: #fff; /* White background */
-        color: #000000; /* Black text */
+        border: 1px solid #000000;
+        background-color: #fff;
+        color: #000000;
         padding: 8px;
     }
 
         .custom-date:focus {
-            border-color: #ffd700; /* Golden border on focus */
+            border-color: #ffd700;
             outline: none;
             box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
-    /* Action column styling */
+
     .nav-link-btn {
         color: #6f42c1 !important;
         background: none !important;
@@ -108,17 +155,14 @@
             text-decoration: none;
         }
 
-
-
-    /* Make sure action column stays visible */
     th.no-export {
         display: table-cell !important;
     }
 
     label {
-        color: #000000; /* Black text for labels */
+        color: #000000;
     }
-    /* Ensure the last column (Setting) is always visible */
+
     #MyNewCase th:last-child,
     #MyNewCase td:last-child {
         background-color: rgba(111, 66, 193, 0.25);
@@ -126,15 +170,13 @@
         z-index: 1;
     }
 
-    /* Adjust DataTables scrolling behavior */
     .dataTables_scrollBody {
         overflow-x: auto !important;
     }
 
-    /* Make sure the Setting column doesn't get hidden */
     .DTFC_Cloned th:last-child,
     .DTFC_Cloned td:last-child {
-        display: none !important; /* Disable fixed column for Setting */
+        display: none !important;
     }
 
     #MyNewCase th:last-child,
@@ -146,22 +188,16 @@
         box-shadow: -2px 0 5px rgba(0,0,0,0.1);
     }
 
-
-
-    /* Main table container */
     .table-responsive {
         position: relative;
         overflow: auto;
         width: 100%;
     }
 
-    /* DataTables specific styling */
     #MyNewCase {
         width: 100% !important;
     }
 
-
-    /* Adjust DataTables scroll containers */
     .dataTables_scroll {
         position: relative;
     }
@@ -176,30 +212,39 @@
         position: relative;
     }
 
-    /* Remove any fixed column cloning */
     .DTFC_Cloned {
         display: none !important;
     }
 
-    /* Button styling */
-    .nav-link-btn {
-        color: #6f42c1 !important;
-        background: none !important;
-        border: none;
-        padding: 0.25rem 0.5rem;
-        cursor: pointer;
-        transition: all 0.3s;
+    /* Dropdown menu styling */
+    .btn-group {
+        margin-right: 5px;
+        display: inline-block;
     }
 
-        .nav-link-btn:hover {
-            color: white !important;
-            background-color: #6f42c1 !important;
+    .dropdown-menu {
+        min-width: 150px;
+    }
+
+    .dropdown-item {
+        padding: 0.25rem 1.5rem;
+        color: #6f42c1;
+        cursor: pointer;
+    }
+
+        .dropdown-item:hover {
+            background-color: #6f42c1;
+            color: white;
         }
+
+    .dropdown-toggle::after {
+        margin-left: 0.5em;
+    }
 </style>
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("Partial/_PCECasesReportDatatableSriptsPartial");
+        await Html.RenderPartialAsync("Partial/_CasesReportDatatableScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
 }
