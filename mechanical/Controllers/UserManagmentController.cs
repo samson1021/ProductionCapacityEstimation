@@ -302,44 +302,10 @@ namespace mechanical.Controllers
 
             return Json(roles);
         }
-// <<<<<<< HEAD
-       
-        // [HttpPost]
-        // public ActionResult Edit(User model)
-        // {
-
-        //     var user = _context.Users.FirstOrDefault(u => u.Id == model.Id);
-        //     if(user == null)
-        //     {
-        //         ModelState.AddModelError("", "User not found. Please try again.");
-        //         return View(model);
-        //     }
-        //     var employe = _authenticationService.GetEmployeeInfo(user.emp_ID);
-        //     _mapper.Map(model,user); 
-
-        //     _mapper.Map(employe, user);
-
-        //     _context.Users.Update(user);
-        //     _context.SaveChanges();
-
-        //     return RedirectToAction("Index");
-        // }
-
-        // [HttpGet]
-        // public async Task<ActionResult> Edit(Guid id)
-        // {
-        //     var user = _context.Users.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
-        //     ViewBag.Districts = await _context.Districts.ToListAsync();
-        //     ViewBag.Roles = await _context.Roles.ToListAsync();
-
-        //     //var supervisors = JsonConvert.DeserializeObject<IEnumerable<User>>(GetSupervisors(user.RoleId, user.DistrictId, user.Department).ToString());
-        //     //ViewBag.Supervisors =  GetSupervisors(user.RoleId, user.DistrictId, user.Department);
-// =======
 
         [HttpPost]
         public ActionResult SaveEdited(User model)
         {
-
             var user = _context.Users.FirstOrDefault(u => u.Id == model.Id);
 
             user.Name = model.Name;
@@ -373,7 +339,6 @@ namespace mechanical.Controllers
         public ActionResult Edit(Guid id)
         {
             var user = _context.Users.Include(u => u.Supervisor).FirstOrDefault(c => c.Id == id);
-// >>>>>>> upstream2/master
 
             return View(user);
         }

@@ -15,9 +15,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 using mechanical.Data;
+using mechanical.Models.Login;
 using mechanical.Models.Entities;
 using mechanical.Models.Dto.UserDto;
-using mechanical.Models.Login;
 using mechanical.Services.AuthenticatioinService;
 
 namespace mechanical.Controllers
@@ -37,26 +37,34 @@ namespace mechanical.Controllers
             _authetnicationService = authetnicationService;
         }
 
-        public IActionResult Index()
+        // Centralized session timeout config
+        public static class SessionTimeoutConfig
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                if (HttpContext.Session.GetString("userId") != null)
-                {
-                    var loggedUser = _context.Users.Include(c => c.Role).Include(c=>c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
-
-                    if (loggedUser != null)
-                    {
-                        return RedirectToDashboard(loggedUser);
-                    }
-                    return RedirectToAction("Logout");
-                }
-            }
-            return View();
+            public const double TimeoutMinutes = 20;
         }
 
-        public IActionResult Privacy()
+        // Helper to set session expiration
+        protected void SetSessionExpiration()
         {
+            HttpContext.Session.SetString("ExpirationTime", DateTime.UtcNow.AddMinutes(SessionTimeoutConfig.TimeoutMinutes).ToBinary().ToString());
+        }
+
+        public IActionResult Index()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                var userIdStr = HttpContext.Session.GetString("userId");
+                if (!string.IsNullOrWhiteSpace(userIdStr) && Guid.TryParse(userIdStr, out var userId))
+                {
+                    var loggedUser = _context.Users.Include(c => c.Role).Include(c => c.District).FirstOrDefault(u => u.Id == userId);
+                    if (loggedUser != null)
+                        return RedirectToDashboard(loggedUser);
+                }
+                // Auth cookie present but session missing or invalid: sign out
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+                HttpContext.Session.Clear();
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
@@ -65,82 +73,58 @@ namespace mechanical.Controllers
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                if (HttpContext.Session.GetString("userId") != null)
-                {
-                    var loggedUser = await _context.Users.Include(c => c.Role).Include(c => c.District).FirstOrDefaultAsync(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
-
-                    if (loggedUser != null)
-                    {
-                        return RedirectToDashboard(loggedUser);
-                    }
-
-                    return RedirectToAction("Logout");
-                }
+                var loggedUser = await GetUserBySessionAsync();
+                if (loggedUser != null)
+                    return RedirectToDashboard(loggedUser);
+                return RedirectToAction("Logout");
             }
+            return await Login(logins);
+        }
 
+        // [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Login(loginDto logins)
+        {
             if (logins.Email == null || logins.Password == null)
             {
-                if (logins.Password == null)
-                {
-                    ModelState.AddModelError(nameof(logins.Password), "The Password field is required.");
-                }
+                _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
 
-            var user = await _context.Users.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefaultAsync();
+            var user = await _context.Users.Include(c => c.Role).Include(c => c.District)
+                                            .Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email)
+                                            .FirstOrDefaultAsync();
 
             if (user == null)
             {
-                ViewData["Error"] = "You do not have the necessary permissions to use the system.";
+                ViewData["Error"] = "Incorrect username or password.";
+                _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
             if (logins.Password == "1234")
             {
                 string userRole = user.Role.Name;
-
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Role, userRole),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Name)
                 };
-
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var authProperties = new AuthenticationProperties
                 {
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(SessionTimeoutConfig.TimeoutMinutes)
                 };
-
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                byte[] userId = Encoding.UTF8.GetBytes(user.Id.ToString());
-                _httpContextAccessor.HttpContext.Session.Set("UserId", userId);
-                HttpContext.Session.SetString("userRole", userRole);
-                HttpContext.Session.SetString("userName", user.Name);
-                HttpContext.Session.SetString("userId", user.Id.ToString());
-                HttpContext.Session.SetString("EmployeeId", user.emp_ID.ToString());
-
-                if (userRole == "Relation Manager")
-                {
-                    HttpContext.Session.SetString("unit", user.Unit.ToString());
-                    HttpContext.Session.SetString("segment", user.BroadSegment.ToString());
-                    HttpContext.Session.SetString("district", user.District.Name.ToString());
-                }
-
-                var viewbagg = ViewBag.UserRole;
-                if (HttpContext.Session.TryGetValue("ExpirationTime", out var expirationTimeBytes))
-                {
-                    var expirationTime = DateTime.FromBinary(BitConverter.ToInt64(expirationTimeBytes, 0));
-                    if (expirationTime < DateTime.UtcNow)
-                    {
-                        throw new SessionTimeoutException("Session has expired.");
-                    }
-                }
+                SetUserSession(user);
+                SetSessionExpiration();
+                _logger.LogInformation("User {Email} logged in successfully as {Role}", user.Email, userRole);
                 return RedirectToDashboard(user);
             }
             else
             {
                 ViewData["Error"] = "Incorrect username or password.";
+                _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
         }
@@ -152,9 +136,6 @@ namespace mechanical.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
-
-            // await HttpContext.SignOutAsync();
-            // return Ok();
         }
 
         public IActionResult RedirectToDashboard(User user)
@@ -190,5 +171,56 @@ namespace mechanical.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+        
+        public IActionResult Privacy()
+        {
+            return View();
+        } 
+        
+        // Helper: Get user by session
+        private async Task<User?> GetUserBySessionAsync()
+        {
+            var userIdStr = HttpContext.Session.GetString("userId");
+            if (Guid.TryParse(userIdStr, out var userId))
+            {
+                return await _context.Users
+                    .Include(c => c.Role)
+                    .Include(c => c.District)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+            }
+            return null;
+        }
+
+        // Helper: Set user session
+        private void SetUserSession(User user)
+        {
+            HttpContext.Session.SetString(SessionKeys.UserId, user.Id.ToString());
+            HttpContext.Session.SetString(SessionKeys.UserRole, user.Role.Name);
+            HttpContext.Session.SetString(SessionKeys.UserName, user.Name);
+            HttpContext.Session.SetString(SessionKeys.EmployeeId, user.emp_ID.ToString());
+            if (user.Role.Name == "Relation Manager")
+            {
+                HttpContext.Session.SetString("unit", user.Unit?.ToString() ?? "");
+                HttpContext.Session.SetString("segment", user.BroadSegment?.ToString() ?? "");
+                HttpContext.Session.SetString("district", user.District?.Name ?? "");
+            }
+        }
+
+        // Session key constants
+        public static class SessionKeys
+        {
+            public const string UserId = "userId";
+            public const string UserRole = "userRole";
+            public const string UserName = "userName";
+            public const string EmployeeId = "EmployeeId";
+        }
+
+        [HttpGet]
+        public IActionResult Ping()
+        {
+            SetSessionExpiration();
+            return Ok();
+        }
+
     }
 }

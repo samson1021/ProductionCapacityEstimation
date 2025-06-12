@@ -1,6 +1,7 @@
-﻿using mechanical.Services.UserService;
+﻿using OpenCvSharp.CPlusPlus;
 using Microsoft.AspNetCore.Mvc;
-using OpenCvSharp.CPlusPlus;
+
+using mechanical.Services.UserService;
 
 namespace mechanical.Controllers
 {
@@ -11,13 +12,13 @@ namespace mechanical.Controllers
             var httpContext = HttpContext;
             if (httpContext != null)
             {
-                var userId = Guid.Parse(httpContext.Session.GetString("userId") ?? Guid.Empty.ToString());
-                if (userId != Guid.Empty)
+                var userIdString = httpContext.Session.GetString("userId");
+                if (!string.IsNullOrEmpty(userIdString) && Guid.TryParse(userIdString, out var userId) && userId != Guid.Empty)
                 {
                     return userId;
                 }
             }
-            RedirectToAction("Login", "Account");
+            // RedirectToAction("Index", "Home");
             return Guid.Empty;
         }
     }
