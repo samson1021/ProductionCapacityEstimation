@@ -8,10 +8,10 @@
     $(document).ready(function () {
         let cachedData = { DistinctCases: [], AllProductionCapacities: [] };
         let isDetailView = false;
-        let currentReportType = 'summary';
+        let currentReportType = 'Case';
 
         let dataTable;
-
+        updateReportButtons(false);
         // Date range calculation functions
         function getDailyDateRange() {
             const today = new Date();
@@ -70,11 +70,11 @@
             }
 
             $('#reportTitle').text(title);
-            $('#reportTypeDropdown').text(isDetail ? 'Detail Report' : 'Summary Report');
+            $('#reportTypeDropdown').text(isDetail ? 'Production Report' : 'Case Report');
         }
 
         function loadDataTable(data, isDetail) {
-            currentReportType = isDetail ? 'detail' : 'summary';
+            currentReportType = isDetail ? 'Production' : 'Case';
             updateButtonText(isDetail);
 
             if ($.fn.DataTable.isDataTable('#MyNewCase')) {
@@ -122,7 +122,7 @@
             };
 
             const summaryColumns = [
-                { data: 'QuantityForSimilarMechanicalItem', title: 'Collateral Count', width: '7%', defaultContent: '' },
+                { data: 'QuantityForSimilarMechanicalItem', title: 'Quantity For Similar Mechanical Item', width: '7%', defaultContent: '' },
                 { data: 'AssignedNo', title: 'Assigned', width: '6%', defaultContent: '' },
                 { data: 'DeliveredNo', title: 'Delivered', width: '6%', defaultContent: '' },
                 { data: 'ReturnedWithAdvice', title: 'Returned', width: '7%', defaultContent: '' },
@@ -193,7 +193,8 @@
                 { data: 'NetDaysConsumed', title: 'Net Days Consumed', width: '8%', defaultContent: '' },
             ];
 
-            const columns = isDetail ? [...commonColumns, ...detailColumns, settingColumn] : [...commonColumns, ...summaryColumns, settingColumn];
+            // const columns = isDetail ? [...commonColumns, ...detailColumns, settingColumn] : [...commonColumns, ...summaryColumns, settingColumn];
+            const columns = isDetail ? [...commonColumns, ...detailColumns] : [...commonColumns, ...summaryColumns];
 
             const $thead = $('#MyNewCase thead');
             $thead.empty();
@@ -257,29 +258,29 @@
                     scrollCollapse: true,
                     dom: 'Bfrtip',
                     buttons: buttons,
-                    columnDefs: [
-                        {
-                            targets: -1,
-                            className: 'no-export never-hide',
-                            createdCell: function (td, cellData, rowData, row, col) {
-                                $(td).css({
-                                    'background-color': 'rgba(111, 66, 193, 0.21)',
-                                    'position': 'sticky',
-                                    'right': '0',
-                                    'z-index': '3'
-                                });
-                            }
-                        }
-                    ],
+                    // columnDefs: [
+                    //     {
+                    //         targets: -1,
+                    //         className: 'no-export never-hide',
+                    //         createdCell: function (td, cellData, rowData, row, col) {
+                    //             $(td).css({
+                    //                 'background-color': 'rgba(111, 66, 193, 0.21)',
+                    //                 'position': 'sticky',
+                    //                 'right': '0',
+                    //                 'z-index': '3'
+                    //             });
+                    //         }
+                    //     }
+                    // ],
                     initComplete: function () {
                         this.api().columns.adjust();
-                        $('#MyNewCase th:last-child').css({
-                            'position': 'sticky',
-                            'right': '0',
-                            'z-index': '4',
-                            'background-color': 'rgba(111, 66, 193, 0.32)'
-                        });
-                        $('#MyNewCase th:last-child').css('z-index', '3');
+                        // $('#MyNewCase th:last-child').css({
+                        //     'position': 'sticky',
+                        //     'right': '0',
+                        //     'z-index': '4',
+                        //     'background-color': 'rgba(111, 66, 193, 0.32)'
+                        // });
+                        // $('#MyNewCase th:last-child').css('z-index', '3');
                     },
                     drawCallback: function () {
                         dataTable.columns().every(function (index) {
@@ -297,14 +298,14 @@
                 console.error('DataTable initialization error:', error);
             }
 
-            dataTable.on('column-visibility.dt', function (e, settings, column, state) {
-                if (column === dataTable.columns().indexes().length - 1) {
-                    dataTable.column(column).visible(true);
-                    return false;
-                }
-                const $button = $(`.dt-button-collection a[aria-controls="MyNewCase"][data-dt-idx="${column}"]`);
-                $button.css('color', state ? '#800080' : '');
-            });
+            // dataTable.on('column-visibility.dt', function (e, settings, column, state) {
+            //     if (column === dataTable.columns().indexes().length - 1) {
+            //         dataTable.column(column).visible(true);
+            //         return false;
+            //     }
+            //     const $button = $(`.dt-button-collection a[aria-controls="MyNewCase"][data-dt-idx="${column}"]`);
+            //     $button.css('color', state ? '#800080' : '');
+            // });
 
             updateButtonText(isDetail);
         }
@@ -389,15 +390,29 @@
             loadDataTable(filteredData, isDetailView);
         });
 
+        // Update the button text function to properly reflect current state
+        function updateReportButtons(isDetailView) {
+            if (isDetailView) {
+                $('#summaryReportBtn').text('Case Report');
+                $('#detailReportBtn').text('Production Report (Current)');
+                $('#reportTypeDropdown').text('Production Report');
+            } else {
+                $('#summaryReportBtn').text('Case Report (Current)');
+                $('#detailReportBtn').text('Production Report');
+                $('#reportTypeDropdown').text('Case Report');
+            }
+        }
         // Report type buttons
         $('#detailReportBtn').click(function () {
             isDetailView = true;
             toggleReportView();
+            updateReportButtons(isDetailView)
         });
 
         $('#summaryReportBtn').click(function () {
             isDetailView = false;
             toggleReportView();
+            updateReportButtons(isDetailView)
         });
 
         function toggleReportView() {
