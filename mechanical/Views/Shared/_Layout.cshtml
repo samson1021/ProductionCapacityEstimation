@@ -67,8 +67,16 @@
         <script src="~/lib/signalr/signalr.min.js"></script>
         <script src="~/js/notification.js"></script>
         <!---->
-
         @await RenderSectionAsync("Scripts", required: false)
+
+        @if (TempData["ToastMessage"] != null)
+        {
+            <script>
+                $(function() {
+                    toastr.success('@TempData["ToastMessage"]');
+                });
+            </script>
+        }
     </body>
 </html>
 

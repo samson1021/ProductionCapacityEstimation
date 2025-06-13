@@ -61,6 +61,7 @@ namespace mechanical
             await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             context.Session.Clear();
             context.Response.Redirect("/");
+            context.Items["ToastMessage"] = "Your session has expired. Please log in again.";
         }
     }
 }
