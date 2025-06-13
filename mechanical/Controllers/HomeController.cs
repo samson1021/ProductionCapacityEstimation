@@ -58,11 +58,22 @@ namespace mechanical.Controllers
                 {
                     var loggedUser = _context.Users.Include(c => c.Role).Include(c => c.District).FirstOrDefault(u => u.Id == userId);
                     if (loggedUser != null)
+                    {
+                        TempData["ToastMessage"] = "You are already logged in.";
                         return RedirectToDashboard(loggedUser);
+                    }
                 }
                 // Auth cookie present but session missing or invalid: sign out
                 HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
                 HttpContext.Session.Clear();
+                if (TempData["ToastMessage"] != null)
+                {
+                    ViewBag.ToastMessage = TempData["ToastMessage"];
+                }
+                else
+                {
+                    ViewBag.ToastMessage =  "Your have been logged out. Please log in again.";
+                }
                 return RedirectToAction("Index", "Home");
             }
             return View();
@@ -75,7 +86,10 @@ namespace mechanical.Controllers
             {
                 var loggedUser = await GetUserBySessionAsync();
                 if (loggedUser != null)
+                {
+                    TempData["ToastMessage"] = "You are already logged in.";
                     return RedirectToDashboard(loggedUser);
+                }
                 return RedirectToAction("Logout");
             }
             return await Login(logins);
@@ -119,6 +133,8 @@ namespace mechanical.Controllers
                 SetUserSession(user);
                 SetSessionExpiration();
                 _logger.LogInformation("User {Email} logged in successfully as {Role}", user.Email, userRole);
+                
+                TempData["ToastMessage"] = $"Welcome, {user.Name}!";
                 return RedirectToDashboard(user);
             }
             else
@@ -135,6 +151,7 @@ namespace mechanical.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
+            TempData["ToastMessage"] = "You have been logged out.";
             return RedirectToAction("Index", "Home");
         }
 
@@ -169,6 +186,7 @@ namespace mechanical.Controllers
                 }
             }
 
+            TempData["ToastMessage"] =  "You have not logged in yet. Please log in again.";
             return RedirectToAction("Index", "Home");
         }
         
