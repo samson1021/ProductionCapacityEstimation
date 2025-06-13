@@ -179,7 +179,6 @@
         await Html.RenderPartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseScheduleScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCETerminate/_PCECaseTerminatedDatatableScriptPartial");
-
         await Html.RenderPartialAsync("~/Views/ProductionCapacity/Partial/_ProductionsTableDatatableSriptsPartial.cshtml");
 
         if (currentUserRole == "Relation Manager" && (status == "New" || status == "All"))
