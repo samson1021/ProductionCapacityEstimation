@@ -39,6 +39,21 @@
             }
         });
 
+        $('#resendButton').on('click', function () {
+            var SelectedPCEIds = [];
+
+            $('.purple-checkbox:checked').each(function () {
+                SelectedPCEIds.push($(this).val());
+            });
+            if (SelectedPCEIds.length === 0) {
+                toastr.error('Please select at least one Production');
+            } else {
+                $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
+
+                $('#resendModal').modal('show');
+            }
+        });
+
         $('#selectAllCheckbox').on('click', function () {
             if ($(this).is(':disabled')) {
                 return;
@@ -91,6 +106,36 @@
                     toastr.success(response.message);
                     $('#assignModal').modal('hide');
                     $('#assignForm')[0].reset();
+                    loadProductions(fetchUrl, emptyMessage);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
+                }
+            });
+        });
+        
+        $('#resendForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var resendUrl = $(this).attr('action');
+            var selectedPCEIds = formData.get('SelectedPCEIds');
+
+            if (!selectedPCEIds) {
+                toastr.error("Please, select at least one production to resend.");
+                return;
+            }            
+
+            $.ajax({
+                url: resendUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('#resendModal').modal('hide');
+                    $('#resendForm')[0].reset();
                     loadProductions(fetchUrl, emptyMessage);
                 },
                 error: function (xhr, textStatus, errorThrown) {

@@ -280,26 +280,10 @@ function generatePageNotificationHTML(data) {
         data.IsSeen ? '' : NOTIFICATION_CLASSES.PAGE.UNSEEN
     ].join(' ');
 
-    return `
-        <div class="list-group-item ${NOTIFICATION_CLASSES.PAGE.ITEM} ${stateClasses}">
-            <a href="${data.Link}" class="notifications-page-link text-dark" data-id="${data.Id}" onclick="markNotificationAsRead('${data.Id}', this)">
-                <div class="${NOTIFICATION_CLASSES.PAGE.CARD}">
-                    <h6 class="${NOTIFICATION_CLASSES.PAGE.CONTENT}">${data.Content}</h6>
-                    <p class="notifications-page-time card-text text-end mt-1">
-                        <small class="text-muted">${getRelativeTime(data.CreatedAt)}</small>
-                    </p>
-                </div>
-            </a>
-            <button class="btn btn-sm btn-outline-danger notifications-page-archive-btn" data-id="${data.Id}" onclick="archiveNotification('${data.Id}', this)">
-                Archive
-            </button>
-        </div>
-    `;
     // return `
     //     <div class="list-group-item ${NOTIFICATION_CLASSES.PAGE.ITEM} ${stateClasses}">
-    //         <a href="#" data-link="${notification.Link}" data-id="${data.Id}" class="notifications-page-link text-dark" onclick="markNotificationAsRead('${data.Id}', this)">
-    //             <div class="${NOTIFICATION_CLASSES.PAGE.CARD} notification-link">
-    //                 <span class="notification-type">${data.Type}</span>
+    //         <a href="${data.Link}" class="notifications-page-link text-dark" data-id="${data.Id}" onclick="markNotificationAsRead('${data.Id}', this)">
+    //             <div class="${NOTIFICATION_CLASSES.PAGE.CARD}">
     //                 <h6 class="${NOTIFICATION_CLASSES.PAGE.CONTENT}">${data.Content}</h6>
     //                 <p class="notifications-page-time card-text text-end mt-1">
     //                     <small class="text-muted">${getRelativeTime(data.CreatedAt)}</small>
@@ -311,6 +295,22 @@ function generatePageNotificationHTML(data) {
     //         </button>
     //     </div>
     // `;
+    return `
+        <div class="list-group-item ${NOTIFICATION_CLASSES.PAGE.ITEM} ${stateClasses}">
+            <a href="#" data-link="${notification.Link}" data-id="${data.Id}" class="notifications-page-link text-dark" onclick="markNotificationAsRead('${data.Id}', this)">
+                <div class="${NOTIFICATION_CLASSES.PAGE.CARD} notification-link">
+                    <span class="notification-type">${data.Type}</span>
+                    <h6 class="${NOTIFICATION_CLASSES.PAGE.CONTENT}">${data.Content}</h6>
+                    <p class="notifications-page-time card-text text-end mt-1">
+                        <small class="text-muted">${getRelativeTime(data.CreatedAt)}</small>
+                    </p>
+                </div>
+            </a>
+            <button class="btn btn-sm btn-outline-danger notifications-page-archive-btn" data-id="${data.Id}" onclick="archiveNotification('${data.Id}', this)">
+                Archive
+            </button>
+        </div>
+    `;
 }
 
 function generateDropdownNotificationHTML(data) {
@@ -319,20 +319,6 @@ function generateDropdownNotificationHTML(data) {
         data.IsSeen ? '' : NOTIFICATION_CLASSES.DROPDOWN.UNSEEN
     ].join(' ');
 
-    return `
-            <a href="#" data-link="${data.Link}" data-id="${data.Id}"
-                class="notification-link text-decoration-none text-dark list-group-item list-group-item-action ${NOTIFICATION_CLASSES.DROPDOWN.ITEM} ${stateClasses}">
-                <div class="notification-content">
-                    <span class="notification-type">${data.Type}</span>
-                    <h6 class="notification-preview dropdown-notification-content mb-1">${data.Content}</h6>
-                    <p class="dropdown-notification-time text-end mt-1">
-                        <small class="text-muted">${getRelativeTime(data.CreatedAt)}</small>
-                    </p>
-                </div>
-            </a>
-        `;
-
-    // onclick="markNotificationAsRead('${data.Id}', this)">
     // return `
     //         <a href="#" data-link="${data.Link}" data-id="${data.Id}"
     //             class="notification-link text-decoration-none text-dark list-group-item list-group-item-action ${NOTIFICATION_CLASSES.DROPDOWN.ITEM} ${stateClasses}">
@@ -345,6 +331,20 @@ function generateDropdownNotificationHTML(data) {
     //             </div>
     //         </a>
     //     `;
+
+    // onclick="markNotificationAsRead('${data.Id}', this)">
+    return `
+            <a href="#" data-link="${data.Link}" data-id="${data.Id}"
+                class="notification-link text-decoration-none text-dark list-group-item list-group-item-action ${NOTIFICATION_CLASSES.DROPDOWN.ITEM} ${stateClasses}">
+                <div class="notification-content">
+                    <span class="notification-type">${data.Type}</span>
+                    <h6 class="notification-preview dropdown-notification-content mb-1">${data.Content}</h6>
+                    <p class="dropdown-notification-time text-end mt-1">
+                        <small class="text-muted">${getRelativeTime(data.CreatedAt)}</small>
+                    </p>
+                </div>
+            </a>
+        `;
 }
 
 function addNotificationToUI(data) {
