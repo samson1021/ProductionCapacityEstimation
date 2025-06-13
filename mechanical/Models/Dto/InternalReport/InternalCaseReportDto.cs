@@ -22,7 +22,7 @@ namespace mechanical.Models.Dto.InternalReport
         public string? CustomerApplicantRelationship { get; set; }
         public string? PurposeOfValuationRequest { get; set; }
         public string? RequestedEngineer { get; set; }
-        public int? ProcessingWCDays { get; set; }
+        public string? ProcessingWCDays { get; set; }
         public String? QuantityForSimilarMechanicalItem { get; set; }
         //maker manager stage
         public string? NameOfValuator { get; set; }
@@ -32,23 +32,23 @@ namespace mechanical.Models.Dto.InternalReport
         public DateTime? DateCaseAssignedToTeamLeader { get; set; }
         public DateTime? DateCaseAssignedToValuators { get; set; }
         public DateTime? LastRecentValuationDate { get; set; }
-        public int? DurationReceiptGrossDays { get; set; }
-        public int? DurationAssignedToTMGrossDays { get; set; }
-        public int? DurationAssignedGrossDays { get; set; }
-        public int? GrossDaysConsumed { get; set; }
-        public int? NetDaysConsumed { get; set; }
+        public string? DurationReceiptGrossDays { get; set; }
+        public string? DurationAssignedToTMGrossDays { get; set; }
+        public string? DurationAssignedGrossDays { get; set; }
+        public string? GrossDaysConsumed { get; set; }
+        public string? NetDaysConsumed { get; set; }
 
         //checker manager stage
         public string? NameOfCheckerManager { get; set; }
         public string? NameOfCheckerTeamLeader { get; set; }
         public string? NameOfChecker { get; set; }
-        public int? DurationCheckerReceiptGrossDays { get; set; }
-        public int? DurationCheckerAssignedToTMGrossDays { get; set; }
-        public int? DurationCheckerAssignedGrossDays { get; set; }
+        public string? DurationCheckerReceiptGrossDays { get; set; }
+        public string? DurationCheckerAssignedToTMGrossDays { get; set; }
+        public string? DurationCheckerAssignedGrossDays { get; set; }
         public DateTime? DateSentForChecking { get; set; }
         public DateTime? DateCaseAssignedToCheckerTeamLeader { get; set; }
         public DateTime? DateCaseAssignedToCheckerValuators { get; set; }
-        public int? GrossDaysConsumedChecker { get; set; }
+        public string? GrossDaysConsumedChecker { get; set; }
 
         //between
         public DateTime? DateCommentReceivedFromChecking { get; set; }
