@@ -1,4 +1,5 @@
 @using mechanical.Models.PCE.Entities
+@using mechanical.Models.PCE.Enum
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
 @using mechanical.Models.PCE.Dto.PCECaseScheduleDto
@@ -21,38 +22,39 @@
                     <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Capacity Information</h5>
                 </div>
                 <!-- Machine Details -->
-                <div class="my-2 p-4 mb-2">
-                    <div class="row mt-3">
-                        <div class="form-group col-md-3">
-                            <label class="form-label">Machine Name <span class="text-danger">*</span></label>
-                            <input asp-for="MachineName" id="MachineName" type="text"
-                                class="form-control" value="@(myProduction.MachineName)" required>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="form-label">Country of Origin <span class="text-danger">*</span></label>
-                            <input asp-for="CountryOfOrigin" id="CountryOfOrigin" type="text"
-                                class="form-control" value="@(myProduction.CountryOfOrigin ?? "Unknown")" required>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger">*</span></label>
-                            <select asp-for="ProductionLineType" class="form-select production-line-type"
-                                    asp-items="Html.GetEnumSelectList<ProductionLineType>()" required>
-                                <option value="" disabled selected>-- Select Line Type --</option>
-                            </select>
-                            <span asp-validation-for="ProductionLineType" class="text-danger small"></span>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="form-label">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <span class="text-danger">*</span></label>
-                            @*  <select asp-for="TechnicalObsolescenceStatus" class="form-select" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()" required></select> *@
-                            <select asp-for="TechnicalObsolescenceStatus" class="form-select" required>
-                                <option value="" disabled selected>-- Select Status --</option>
-                                <option value="Current">Current</option>
-                                <option value="ObsoleteSoon">Obsolete Soon</option>
-                                <option value="Obsolete">Obsolete</option>
-                            </select>
-                            <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger small"></span>
-                        </div>
+                <div class="row mt-3">
+                    <div class="form-group col-md-3">
+                        <label class="form-label">Machine Name <span class="text-danger">*</span></label>
+                        <input asp-for="MachineName" id="MachineName" type="text"
+                               class="form-control" value="@(myProduction.MachineName)" required>
                     </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">Country of Origin <span class="text-danger">*</span></label>                        
+                        <select id="CountryOfOrigin" asp-for="CountryOfOrigin" required class="form-control form-control-sm"
+                                asp-items="@(new SelectList(Enum.GetValues(typeof(Country)).Cast<Country>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                            <option value="">Select country of origin</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger">*</span></label>
+                        <select asp-for="ProductionLineType" class="form-select production-line-type"
+                                asp-items="Html.GetEnumSelectList<ProductionLineType>()" required>
+                            <option value="" disabled selected>-- Select Line Type --</option>
+                        </select>
+                        <span asp-validation-for="ProductionLineType" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="form-label">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <span class="text-danger">*</span></label>
+                        @*  <select asp-for="TechnicalObsolescenceStatus" class="form-select" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()" required></select> *@
+                        <select asp-for="TechnicalObsolescenceStatus" class="form-select" required>
+                            <option value="" disabled selected>-- Select Status --</option>
+                            <option value="Current">Current</option>
+                            <option value="ObsoleteSoon">Obsolete Soon</option>
+                            <option value="Obsolete">Obsolete</option>
+                        </select>
+                        <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger small"></span>
+                    </div>
+                </div>
 
                     <!-- Machine Status -->
                     <div class="row mt-3">

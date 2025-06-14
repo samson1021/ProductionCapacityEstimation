@@ -269,37 +269,27 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetHOProductions(Guid? PCECaseId = null, string Status = "All")
         {
-           
-                var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
 
-                if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
-                {
-                    return BadRequest("Invalid status.");
-                }
-
-                IEnumerable<ProductionReturnDto> productions = null;
-                if (PCECaseId == null)
-                {
-                    productions = await _ProductionCapacityService.GetHOProductions(PCECaseId, Status);
-
-                    if (productions == null)
-                    {
-                        return BadRequest("Unable to load {Status} Productions");
-                    }
-                }
-                else
-                {
-                    productions = await _ProductionCapacityService.GetHOProductions(PCECaseId, Status);
-
-                    if (productions == null)
-                    {
-                        return BadRequest("Unable to load {Status} Productions with PCECase ID: {PCECaseId}");
-                    }
-                }
-
-                string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-                return Content(jsonData, "application/json");
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
             }
+
+            var productions = await _ProductionCapacityService.GetHOProductions(PCECaseId, Status);
+
+            if (productions == null)
+            {
+                var caseIdMessage = PCECaseId.HasValue
+                    ? $" with PCECase ID: {PCECaseId}"
+                    : string.Empty;
+
+                return BadRequest($"Unable to load {Status} Productions{caseIdMessage}");
+            }
+
+            string jsonData = JsonConvert.SerializeObject(productions, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
         [HttpGet]
         public async Task<IActionResult> HODetail(Guid Id)
         {
