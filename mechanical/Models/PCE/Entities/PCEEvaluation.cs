@@ -68,6 +68,8 @@ namespace mechanical.Models.PCE.Entities
         public Guid? CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
+        // public Guid? CreatedById { get; set; }
+        // public Guid? UpdatedById { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
         [ForeignKey("PCEId")]

@@ -140,7 +140,7 @@
                                 type="checkbox"
                                 role="switch"
                                 value="true" />
-                            <label class="form-check-label">
+                            <label for="ProductionLines[__INDEX__].IsBottleneck" class="form-check-label">
                                 <h6><strong>Is Bottleneck?</strong></h6>
                             </label>
                         </div>
@@ -271,12 +271,24 @@
         font-size: 0.75rem;
     }
     
-    .capacity-input:invalid, .input-quantity:invalid {
+    @* .capacity-input:invalid, .input-quantity:invalid {
         border-color: #dc3545;
     }
     
     .capacity-input:valid, .input-quantity:valid {
         border-color: #28a745;
+    } *@
+    
+    input:required:invalid, textarea:required:invalid, select:required:invalid {
+        border: 1px solid #e55353;
+    }
+
+    input:required:valid, textarea:required:valid, select:required:valid {
+        border: 1px solid #969b99;
+    }
+
+    input:required, textarea:required, select:required
+        transition: border-color 0.2s;
     }
     
     .form-label {
