@@ -270,6 +270,10 @@
 </section>
 @section Scripts {
     <script>
+        const countryInput = document.getElementById('CountryOfOrigin');
+        countryInput.addEventListener('keydown', (e) => {
+            e.preventDefault();
+        });
         document.getElementById('GetExchangeRate').addEventListener('click', function () {
             var currency = document.getElementById("Currency").value;
             if(currency == "" || currency == null){

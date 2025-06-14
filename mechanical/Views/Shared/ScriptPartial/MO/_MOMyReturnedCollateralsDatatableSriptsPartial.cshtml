@@ -38,7 +38,7 @@
                         data: 'Id',
                         width: '15%',
                         render: function (data, type, row, meta) {
-                            return '<a href="@Url.Action("ReEvaluation", "MOCase")?Id=' + data + '">Evaluation | <a  onclick="fetchCollateralDetails(\'' + data + '\')"> Documents <i class="fa fa-file"></i> </a>';
+                            return '<a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Detail ';
                         }
                     }
 

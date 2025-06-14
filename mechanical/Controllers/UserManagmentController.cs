@@ -344,9 +344,9 @@ namespace mechanical.Controllers
 
             user.Name = model.Name;
             user.Email = model.Email;
-
+            user.Status = "Activated";
             user.Branch = model.Branch;
-            user.Status = model.Status;
+            //user.Status = model.Status;
             user.PhoneNO = model.PhoneNO;
             user.Department = model.Department;
             if (model.RoleId != Guid.Empty && model.RoleId != new Guid())
