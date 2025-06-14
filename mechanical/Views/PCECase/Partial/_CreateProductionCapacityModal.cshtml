@@ -1,4 +1,5 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Enum
 @using mechanical.Models.PCE.Enum.ProductionCapacity
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
@@ -79,16 +80,12 @@
                                 <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
                                 <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                             </div>
-
-                            @* <div class="form-group col-lg-3">
-                                <label asp-for="CountryOfOrigin">Country Of Orgin <i class="text-danger">*</i></label>
-                                <input asp-for="CountryOfOrigin" type="text" class="form-control form-control-sm" id="CountryOfOrigin" placeholder="Enter Country Of Orgin" required>
-
-                                <span id="CountryOfOrigin-error" asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                            </div> *@
                             <div class="form-group col-lg-3">
                                 <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>
-                                <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
+                                <select id="CountryOfOrigin" asp-for="CountryOfOrigin" required class="form-control form-control-sm"
+                                        asp-items="@(new SelectList(Enum.GetValues(typeof(Country)).Cast<Country>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                    <option value="">Select country of origin</option>
+                                </select>
                                 <span id="CountryOfOrigin-error" asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                             </div>
                         </div>
@@ -165,22 +162,7 @@
                                                             .FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))"
                                                             required onchange="handleIndestrialparkChange(this)">
                                         <option value="" selected disabled>Select Industrial Park</option>
-                                    </select>
-                                     @*
-                                    <select asp-for="Industrialpark" class="form-control form-control-sm" id="Industrialpark" onchange="handleIndestrialparkChange(this)">
-                                        <option value="" selected disabled>Select Industrial Park</option>
-                                        <option value="Adama">Adama</option>
-                                        <option value="BahirDar">BahirDar</option>
-                                        <option value="Bole lemi I">Bole lemi I</option>
-                                        <option value="Bole lemi II">Bole lemi II</option>
-                                        <option value="Kilinto">Kilinto</option>
-                                        <option value="Kombolcha">Kombolcha</option>
-                                        <option value="Dukem Eastern Industry zone">Dukem Eastern Industry zone</option>
-                                        <option value="Hawassa">Hawassa</option>
-                                        <option value="Jimma">Jimma</option>
-                                        <option value="Mekelle">Mekelle</option>
-                                        <option value="Others">Others, please specify</option>
-                                    </select>*@
+                                    </select>                                    
                                     <span id="Industrialpark-error" asp-validation-for="Industrialpark" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-lg-4" id="otherIndustrialParkDiv" style="display: none;">
@@ -198,7 +180,6 @@
                  
                         <div class="card">
                             <div class="card-body" style="padding-bottom:0px;">
-                               @*  <h5 class="text-center">Physical Address of Property </h5> *@
                                 <div class="row">
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Region">Region <i class="text-danger">*</i></label>
@@ -400,7 +381,14 @@
             
         if (isValid) {
             // Only submit the form if validation passes
-            var formData = new FormData(this); // Create a new FormData object
+            var formData = new FormData(this); // Create a new FormData object            
+            // Get the current value of 'Industrialpark'
+            var industrialParkValue = formData.get('Industrialpark');
+            var OtherIndustrialparkValue = formData.get('OtherIndustrialpark');
+            // Check if the value of 'Industrialpark' is 'Others'
+            if (industrialParkValue === 'Others') {
+                formData.set('Industrialpark', OtherIndustrialparkValue); // Change to the desired new value
+                }
             $.ajax({
                 url: '/ProductionCapacity/Create',
                 type: 'POST',
@@ -442,7 +430,7 @@
 
         if (selectElement.value === "Others") {
             OtherIndustrialpark.setAttribute("required", "required");
-            OtherIndustrialpark.setAttribute("name", "Industrialpark"); // Set the name attribute to "Industrialpark"
+            OtherIndustrialpark.setAttribute("name", "OtherIndustrialpark"); // Set the name attribute to "Industrialpark"
             otherIndustrialParkDiv.style.display = "block";
             otherIndustrialParkDiv.classList.remove("col-lg-1");
             otherIndustrialParkDiv.classList.add("col-lg-4");
@@ -496,14 +484,9 @@
         validateInputFields("BusinessLicense", "BusinessLicense-error", true);
         validateInputFields("MachineSpecificationDocument", "MachineSpecificationDocument-error", true);
 
-        
-
-
         console.log("from submit mech");
         if (!this.checkValidity()) {
             event.preventDefault();  // Prevent form submission
         }
     });
-
-    
 </script>

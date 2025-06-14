@@ -1,4 +1,5 @@
-﻿@using mechanical.Models.PCE.Enum.ProductionCapacity
+﻿@using mechanical.Models.PCE.Enum
+@using mechanical.Models.PCE.Enum.ProductionCapacity
 @using mechanical.Models.Dto.UploadFileDto
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionReturnDto;
 @{
@@ -24,7 +25,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <form method="post" enctype="multipart/form-data" asp-action="Edit">
+                    <form method="post" enctype="multipart/form-data" asp-action="Edit" id="editForm">
 
                         <div class="row">
                             <div class="form-group col-lg-6">
@@ -80,10 +81,12 @@
                                         <label asp-for="ModelNo">Model Number</label>
                                         <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
                                         <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
-                                    </div>
+                                    </div>                                  
                                     <div class="form-group col-lg-3">
-                                        <label asp-for="CountryOfOrigin">Country Of Origin <i class="text-danger">*</i></label>
-                                        <input asp-for="CountryOfOrigin" type="text" class="form-control form-control-sm" id="CountryOfOrigin" placeholder="Enter Model Number" required>
+                                        <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>                                       
+                                        <select id="CountryOfOrigin" asp-for="CountryOfOrigin" required class="form-control form-control-sm"
+                                             asp-items="@(new SelectList(Enum.GetValues(typeof(Country)).Cast<Country>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                        </select>
                                         <span id="CountryOfOrigin-error" asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -123,21 +126,20 @@
                                             <option value="Industrial Park">Industrial Park</option>
                                         </select>
                                         <span asp-validation-for="MachineryInstalledPlace" class="text-danger"></span>
-
-                                    </div>
-                                    @* <div id="IndustrialPark" style="display: none;"> *@
+                                    </div>                                  
                                     <div id="IndustrialParkRow" class="form-group col-lg-4" style="@(Model.MachineryInstalledPlace == "Industrial Park" ? "" : "display: none;")">
-                                        @* <div id="IndustrialPark" @(Model.Industrialpark != null ? "" : "style=\"display: none;\"")> *@
-
-                                        <label asp-for="Industrialpark"> Industrial Park <i class="text-danger">*</i></label>
-                                        <select id="IndustrialparkDropdown" asp-for="Industrialpark" required class="form-control form-control-sm"
+                                        <label asp-for="Industrialpark"> Industrial Park <i class="text-danger">*</i></label>                                        
+                                        <select id="Industrialpark" asp-for="Industrialpark" required class="form-control form-control-sm"
                                                 asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                             <option value="" selected disabled>Select Industrial Park</option>
                                         </select>
                                         <span asp-validation-for="Industrialpark" class="text-danger"></span>
-
                                     </div>
-                                    @* <div id="PrivateownedLHC" @(Model.LHCNumber != null ? "" : "style=\"display: none;\"")> *@
+                                    <div class="form-group col-lg-4" id="otherIndustrialparkDiv" style="display: none;">
+                                        <label for="otherIndustrialpark">Other Industrial Park <i class="text-danger">*</i></label>
+                                        <input type="text" class="form-control form-control-sm" id="otherIndustrialpark" name="otherIndustrialpark" required>
+                                        <span id="otherIndustrialpark-error" class="text-danger"></span>
+                                    </div>
                                     <div id="PrivateownedLHCRow" class="form-group col-lg-8 row" style="@(Model.MachineryInstalledPlace == "Private Owned LHC" || Model.MachineryInstalledPlace == "Private Rented LHC" ? "" : "display: none;")">
                                         <div class="form-group col-lg-6">
                                             <label asp-for="LHCNumber">LHC Number: <i class="text-danger">*</i></label>
@@ -156,10 +158,8 @@
                             </div>
                         </div>
 
-
                         <div class="card">
                             <div class="card-body" style="padding-bottom:0px;">
-                                @*  <h5 class="text-center">Property Address</h5> *@
                                 <div class="row">
                                     <div class="form-group col-lg-4">
                                         <label asp-for="Region">Region <i class="text-danger">*</i></label>
@@ -206,8 +206,8 @@
                             <div class="card-body" style="padding-bottom:0px;">
                                 <div class="row">
                                     <div class="form-group col-lg-12">
-                                        <label asp-for="ProductDescription">Production Capacity Description <i class="text-danger">*</i></label>
-                                        <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..." required> </textarea>
+                                        <label asp-for="ProductDescription">Production Capacity Description </label>
+                                        <textarea asp-for="ProductDescription" cols='10' rows='3' class="form-control  form-control-sm" id="landHoldingCertificate" placeholder="Write product description here ..."> </textarea>
                                         <span asp-validation-for="ProductDescription" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -216,13 +216,8 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-6">
-                                <button type="submit" id="assignButton" class="col-xl-4  btn btn-sm bg-purple">Edit</button>
-                            </div>
-                            @*  <div class="form-group col-lg-6">
-                            <button type="button" id="sendEvaluationButton" class="btn btn-lg bg-purple" data-toggle="modal" data-target="#sendEvaluationButtonModal1">
-                            Send Evaluation Again <i class="fas fa-eye"></i>
-                            </button>
-                            </di *@
+                                <button type="submit" id="editButton" class="col-xl-4  btn btn-sm bg-purple">Edit</button>
+                            </div>                           
                         </div>
                        
                     </form>
@@ -235,8 +230,7 @@
                             </tr>
                             <tr>
                                 <th>Document Name</th>
-                                <th>Document Category</th>
-                                @* <th>Document Type</th> *@
+                                <th>Document Category</th>                              
                                 <th>Document Action</th>
                             </tr>
                         </thead>
@@ -252,8 +246,7 @@
                                     {
                                         <tr>
                                             <td>@productionFile.Name</td>
-                                            <td>@productionFile.Category</td>
-                                            @* <td>@productionFile.ContentType</td> *@
+                                            <td>@productionFile.Category</td>                                          
                                             <td>
                                                 <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
                                                 <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>&nbsp;|&nbsp;
@@ -264,15 +257,7 @@
                                     }
                                     <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">Click to Add new Document</a></h6></td></tr>
                                 }
-
-                                // if (Model.BusinessLicense == null)
-                                // {
-                                //    <tr class="text-center"> <td colspan="4"><h6><a href="#" data-id="@Model.Id" id="uploadLink">There is no document related to this case (Click to Add new Document)</a></h6></td></tr>
-                                // }
-                                // else
-                                // {
-
-                                // }
+                               
                             }
                         </tbody>
                     </table>
@@ -343,7 +328,7 @@
 <div class="modal fade" id="sendEvaluationButtonModal1" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="/Case/SendReEvaluation" id="ReevaluationForm">
+            <r,rm method="post" action="/Case/SendReEvaluation" id="ReevaluationForm">
                 <input asp-for="Id" hidden />
                 <div class="modal-header bg-purple">
                     <h4 class="modal-title" id="returnModalLabel">Reevaluation Comment</h4>
@@ -364,7 +349,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </r,rm>
 
         </div>
     </div>
@@ -378,34 +363,73 @@
     }
     <script>       
         $(document).ready(function () {
-
             //handleMachineryInstalledPlaceChange();
             var MachineryInstalledPlace = document.getElementById("MachineryInstalledPlace").value;
-            $("#MachineryInstalledPlace").change(function () {
+            const industrialParkDropdown = document.getElementById('Industrialpark');
+            const otherIndustrialparkDiv = document.getElementById('otherIndustrialparkDiv');
 
+            // Function to show or hide the input field
+            const toggleOtherIndustrialParkInput = () => {
+                if (industrialParkDropdown.value === 'Others') {
+                    otherIndustrialparkDiv.style.display = 'block';
+                } else{
+                    otherIndustrialparkDiv.style.display = 'none'
+                }
+            };
+            // Check the dropdown value on page load
+            toggleOtherIndustrialParkInput();
+            // Event listener for dropdown changes
+            industrialParkDropdown.addEventListener('change', toggleOtherIndustrialParkInput);
+
+            $('#editButton').on('click', function() {
+                // Clear previous error message
+                $('#otherIndustrialpark-error').text('');
+
+                if (industrialParkDropdown.value === 'Others') {
+                    const newValue = $('#otherIndustrialpark').val().trim();
+
+                    if (newValue) {
+                        // Add the new value as an option if it doesn't exist
+                        if ($('#Industrialpark option[value="' + newValue + '"]').length === 0) {
+                            $('#Industrialpark').append(new Option(newValue, newValue));
+                        }
+
+                        // Set the dropdown to the new value
+                        $('#Industrialpark').val(newValue).change();
+                    } else {
+                        $('#otherIndustrialpark-error').text("Please specify another industry.");
+                    }
+                }
+            });
+
+             $("#MachineryInstalledPlace").change(function () {
                 var PrivateownedLHC = document.getElementById("PrivateownedLHC");
                 var IndustrialPark = document.getElementById("IndustrialPark");
-                var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");
-
-                console.log('@Model.MachineryInstalledPlace');
+                var PrivateRentedLHC = document.getElementById("PrivateRentedLHC");  
+                
                 if ($(this).val() === 'Private Owned LHC') {
                     $("#IndustrialParkRow").hide();
+                    $("#otherIndustrialparkDiv").hide();
                     $("#PrivateownedLHCRow").show();
-                    $("#PrivateRentedLHC").hide();
+                    $("#PrivateRentedLHC").hide();                    
                 } else if ($(this).val() === 'Industrial Park') {
                     $("#IndustrialParkRow").show();
+                     toggleOtherIndustrialParkInput();
                     $("#PrivateownedLHCRow").hide();
                     $("#PrivateRentedLHC").hide();
                 }else if ($(this).val() === 'Private Rented LHC') {
                     $("#IndustrialParkRow").hide();
+                     $("#otherIndustrialparkDiv").hide();
                     $("#PrivateownedLHCRow").show();
                 }
                 else {
                     $("#IndustrialPark").hide();
-                    $("#PrivateownedLHC").hide();                  
+                    $("#PrivateownedLHC").hide();
+                    $("#PrivateownedLHCRow").hide();
+                    $("#otherIndustrialparkDiv").hide();
                 }
             });
-
+            
             $('.delete-link').on('click', function (e) {
                 e.preventDefault();
                 var itemId = $(this).data('id');
@@ -438,18 +462,12 @@
                 $('#uploadModal').modal('show');
             });
 
-
             $('#uploadFile').on('click', function () {
                 var ProductionId = $('#uploadModal').data('ProductionId');
-
                 var fileInput = document.getElementById('ProductionDocument');
                 var file = fileInput.files[0];
-                var DocumentCategory = document.getElementById('DocumentCategory').value;
-                var formData = new FormData();
-                formData.append('File', file);
-                formData.append('ProductionId', ProductionId);
-                formData.append('DocumentCategory', DocumentCategory)
-
+                var DocumentCategory = document.getElementById('DocumentCategory').value;                 
+                var formData = new FormData();                
                 $.ajax({
                     url: '@Url.Action("UploadProductionFile", "ProductionCapacity")',
                     type: 'POST',
@@ -467,5 +485,6 @@
                 $('#uploadModal').modal('hide');
             });
         });
+
     </script>
 }
