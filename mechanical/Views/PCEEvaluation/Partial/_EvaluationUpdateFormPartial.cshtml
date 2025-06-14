@@ -1,4 +1,3 @@
-@* @using mechanical.Models.Dto.UploadFileDto *@
 @using mechanical.Models.PCE.Enum
 @using mechanical.Models.PCE.Enum.PCEEvaluation
 @using mechanical.Models.PCE.Dto.PCEEvaluationDto
@@ -12,69 +11,69 @@
 <div class="row">
     <div class="card border-0 shadow-lg mb-4">
         <div class="card-body p-4">
-            <!-- Capacity Information Section -->
             <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Capacity Information</h5>
                 </div>
-                <div class="row mt-3">
-                    <div class="form-group col-md-3">
-                        <label class="form-label">Machine Name</label>
-                        <input asp-for="MachineName" type="text" type="text" class="form-control form-control-sm" required>
+                <div class="my-2 p-4 mb-2">
+                    <div class="row mt-3">
+                        <div class="form-group col-md-3">
+                            <label class="form-label">Machine Name</label>
+                            <input asp-for="MachineName" type="text" type="text" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="form-label">Country of Origin <span class="text-danger">*</span></label>
+                            <select id="CountryOfOrigin" asp-for="CountryOfOrigin" required class="form-control form-control-sm"
+                                    asp-items="@(new SelectList(Enum.GetValues(typeof(Country)).Cast<Country>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                <option value="">Select country of origin</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger small">*</span></label>
+                            <select asp-for="ProductionLineType" class="form-select production-line-type" 
+                                asp-items="Html.GetEnumSelectList<ProductionLineType>()" required>
+                                <option value="" disabled selected>-- Select Line Type --</option>
+                            </select>
+                            <span asp-validation-for="ProductionLineType" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="form-label">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <span class="text-danger small">*</span></label>
+                            @*  <select asp-for="TechnicalObsolescenceStatus" class="form-select" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()" required></select> *@
+                            <select asp-for="TechnicalObsolescenceStatus" class="form-select" required>
+                                <option value="" disabled selected>-- Select Technical Status --</option>
+                                <option value="Current">Current</option>
+                                <option value="ObsoleteSoon">Obsolete Soon</option>
+                                <option value="Obsolete">Obsolete</option>
+                            </select>
+                            <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger small"></span>
+                        </div>
                     </div>
-                    <div class="form-group col-md-3">
-                        <label class="form-label">Country of Origin</label>
-                        <select id="CountryOfOrigin" asp-for="CountryOfOrigin" required class="form-control form-control-sm"
-                                asp-items="@(new SelectList(Enum.GetValues(typeof(Country)).Cast<Country>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
-                            <option value="">Select country of origin</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label class="form-label">@Html.DisplayNameFor(model => model.ProductionLineType) <span class="text-danger small">*</span></label>
-                        <select asp-for="ProductionLineType" class="form-select production-line-type" 
-                            asp-items="Html.GetEnumSelectList<ProductionLineType>()" required>
-                            <option value="" disabled selected>-- Select Line Type --</option>
-                        </select>
-                        <span asp-validation-for="ProductionLineType" class="text-danger small"></span>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label class="form-label">@Html.DisplayNameFor(model => model.TechnicalObsolescenceStatus) <span class="text-danger small">*</span></label>
-                        @*  <select asp-for="TechnicalObsolescenceStatus" class="form-select" asp-items="Html.GetEnumSelectList<TechnicalObsolescenceStatus>()" required></select> *@
-                        <select asp-for="TechnicalObsolescenceStatus" class="form-select" required>
-                            <option value="" disabled selected>-- Select Technical Status --</option>
-                            <option value="Current">Current</option>
-                            <option value="ObsoleteSoon">Obsolete Soon</option>
-                            <option value="Obsolete">Obsolete</option>
-                        </select>
-                        <span asp-validation-for="TechnicalObsolescenceStatus" class="text-danger small"></span>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="form-group col-md-4">
-                        <label class="form-label">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <span class="text-danger small">*</span></label>
-                        <select asp-for="MachineFunctionalityStatus" class="form-select" 
-                                asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()" required>
-                            <option value="" disabled selected>-- Select Functionality Status --</option>
-                        </select>
-                        <span asp-validation-for="MachineFunctionalityStatus" class="text-danger small"></span>
-                    </div>
-                    <div class="form-group col-md-4" id="functionalityReasonRow" @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? "" : "style=\"display: none;\"")>
-                        <label class="form-label">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <span class="text-danger small">*</span></label>
-                        <select asp-for="MachineNonFunctionalityReason" class="form-select" 
-                                asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()">
-                            <option value="" disabled selected>-- Select Non-Functionality Reason --</option>
-                        </select>
-                        <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger small"></span>
-                    </div>
-                    <div class="form-group col-md-4" id="otherReasonRow" @(Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other ? "" : "style=\"display: none;\"")>
-                        <label class="form-label">@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <span class="text-danger small">*</span></label>
-                        <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control" rows="1"></textarea>
-                        <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger small"></span>
+                    <div class="row mt-3">
+                        <div class="form-group col-md-4">
+                            <label class="form-label">@Html.DisplayNameFor(model => model.MachineFunctionalityStatus) <span class="text-danger small">*</span></label>
+                            <select asp-for="MachineFunctionalityStatus" class="form-select" 
+                                    asp-items="Html.GetEnumSelectList<MachineFunctionalityStatus>()" required>
+                                <option value="" disabled selected>-- Select Functionality Status --</option>
+                            </select>
+                            <span asp-validation-for="MachineFunctionalityStatus" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group col-md-4" id="functionalityReasonRow" @(Model.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? "" : "style=\"display: none;\"")>
+                            <label class="form-label">@Html.DisplayNameFor(model => model.MachineNonFunctionalityReason) <span class="text-danger small">*</span></label>
+                            <select asp-for="MachineNonFunctionalityReason" class="form-select" 
+                                    asp-items="Html.GetEnumSelectList<MachineNonFunctionalityReason>()">
+                                <option value="" disabled selected>-- Select Non-Functionality Reason --</option>
+                            </select>
+                            <span asp-validation-for="MachineNonFunctionalityReason" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group col-md-4" id="otherReasonRow" @(Model.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other ? "" : "style=\"display: none;\"")>
+                            <label class="form-label">@Html.DisplayNameFor(model => model.OtherMachineNonFunctionalityReason) <span class="text-danger small">*</span></label>
+                            <textarea asp-for="OtherMachineNonFunctionalityReason" class="form-control" rows="1"></textarea>
+                            <span asp-validation-for="OtherMachineNonFunctionalityReason" class="text-danger small"></span>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Input-Output Data Toggle -->
             <div class="">
                 <div class="form-check form-switch my-4 mb-2 p-4">
                     <input class="form-check-input" type="checkbox" role="switch"
@@ -85,7 +84,6 @@
                 </div>
             </div>
 
-            <!-- No Input/Output Data Justification Section -->
             <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form" id="justificationSection"  @(Model.HasInputOutputData ? "style=\"display: none;\"" : "")>
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Justifications</h5>
@@ -118,11 +116,9 @@
                 </div>
                 <span asp-validation-for="Justifications" class="text-danger small"></span>
                 
-                <!-- Inject serialized checked justifications here -->
                 <div id="justificationHiddenFields"></div>
             </div>
 
-            <!-- Production Line Evaluation Section -->
             <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form" id="input-outputs-container">
                 <div class="d-flex justify-content-between align-items-center mb-3 py-2 sticky-add-btn" style="z-index:2;">
                     <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
@@ -272,8 +268,7 @@
                                                         <div class="input-item card mb-2">
                                                             <div class="card-body py-2">
                                                                 <div class="row">
-
-                                                                    @* <!-- Source Type -->
+                                                                    @*
                                                                     <div class="col-md-3 source-type-container">
                                                                         <select name="SourceType" 
                                                                                 class="form-select form-select-sm source-type">
@@ -285,12 +280,12 @@
                                                                         </select>
                                                                     </div>
                                                                     
-                                                                    <!-- Previous Line Dropdown -->
                                                                     <div class="col-md-3 previous-line-container" style="display: none;">
                                                                         <select class="form-select form-select-sm previous-line-dropdown" required>
                                                                             <option value="" disabled selected>-- Select Line --</option>
                                                                         </select>
-                                                                    </div> *@
+                                                                    </div>
+                                                                    *@
 
                                                                     <div class="col-md-4 input-type-container">
                                                                         <input asp-for="ProductionLines[i].ProductionLineInputs[j].Type"
@@ -341,7 +336,7 @@
                                                         type="checkbox"
                                                         role="switch"
                                                         value="true" />
-                                                    <label class="form-check-label">
+                                                    <label for="ProductionLines[i].IsBottleneck" class="form-check-label">
                                                         <h6><strong>Is Bottleneck?</strong></h6>
                                                     </label>
                                                 </div>
@@ -379,7 +374,6 @@
                 <div id="deleted-production-line-ids-container"></div>
             </div>
 
-            <!-- Update Documents -->
             <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form">
                 <div class="bg-white px-3 position-absolute top-0 start-50 translate-middle">
                     <h5 class="mb-0"><i class="fas fa-comment-dots me-2 text-primary"></i>Update Documents</h5>

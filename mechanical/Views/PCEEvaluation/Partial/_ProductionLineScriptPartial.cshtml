@@ -544,9 +544,11 @@
                 if (!justificationValid) {
                     $firstError = $('#justificationError');
                 }
-                $('html, body').animate({
-                    scrollTop: $firstError.offset().top - 100
-                }, 200);
+                if ($firstError.length && $firstError.offset()) {
+                    $('html, body').animate({
+                        scrollTop: $firstError.offset().top - 100
+                    }, 200);
+                }
             }
         });
 
@@ -599,7 +601,8 @@
                 showJustificationError(false);
             }
             
-            if (parseInt($container.data('reason')) === @((int)JustificationReason.Others)) {
+            if ($container.data('reason') === "Others") {
+                console.log("$container.data('reason')", $container.data('reason'));
                 if (this.checked) {
                     $textarea.show().prop('disabled', false);
                 } else {
@@ -622,6 +625,9 @@
         
         // Attach event listener to bottleneck checkboxes
         $(document).on('change', '.is-bottleneck', function () {
+            if ($(this).is(':checked')) {
+                $('.is-bottleneck').not(this).prop('checked', false);
+            }
             handleBottleneckToggle();
         });
 

@@ -385,27 +385,30 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             {
                 foreach (var PCEId in PCEIds)
                 {
-                    var returnedPCE = await _cbeContext.ProductionCapacities.Include(p => p.AssignedEvaluator).FirstOrDefaultAsync(p => p.Id == PCEId).ConfigureAwait(false);
-
-                    if (returnedPCE == null)
+                    var pce = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(p => p.Id == PCEId).ConfigureAwait(false);
+                    var returnedPCE = await _cbeContext.ReturnedProductions
+                                                        .Include(p => p.ReturnedBy)
+                                                            .ThenInclude(u => u.Role)
+                                                        .Where(p => p.PCEId.Equals(PCEId))
+                                                        .OrderByDescending(p => p.ReturnedAt)
+                                                        .FirstOrDefaultAsync()
+                                                        .ConfigureAwait(false);
+                    if (pce == null)
                     {
                         _logger.LogError("ProductionCapacity not found for Id: {PCEId} in ResendValuations", PCEId);
                         throw new KeyNotFoundException($"ProductionCapacity not found for Id: {PCEId}.");
                     }
 
-                    returnedPCE.UpdatedById = UserId;
-                    returnedPCE.UpdatedAt = DateTime.UtcNow;
+                    pce.UpdatedById = UserId;
+                    pce.UpdatedAt = DateTime.UtcNow;
 
-                    await UpdatePCEStatus(returnedPCE, StatusNew, RoleMakerOfficer).ConfigureAwait(false);
-                    await UpdateCaseAssignmentStatus(returnedPCE.Id, returnedPCE.AssignedEvaluatorId, StatusNew).ConfigureAwait(false);
+                    await UpdatePCEStatus(pce, StatusNew, RoleMakerOfficer).ConfigureAwait(false);
+                    await UpdateCaseAssignmentStatus(pce.Id, returnedPCE.ReturnedById, StatusNew).ConfigureAwait(false);
 
-                    string logNotification = $"The production {returnedPCE.MachineName} is resent to Maker Officer {returnedPCE.AssignedEvaluator?.Name} for valuation.";
-                    if (returnedPCE.AssignedEvaluatorId.HasValue)
-                    {
-                        await SendNotificationAsync(returnedPCE.AssignedEvaluatorId.Value, logNotification, "Valuation", $"/ProductionCapacity/Detail/{returnedPCE.Id}").ConfigureAwait(false);
-                    }
-                    await UpdatePCECaseAssignmentStatusForAll(returnedPCE, returnedPCE?.AssignedEvaluatorId, StatusPending, logNotification).ConfigureAwait(false);
-                    await LogPCECaseTimeline(returnedPCE, logNotification).ConfigureAwait(false);
+                    string logNotification = $"The production {pce.MachineName} is resent to {returnedPCE.ReturnedBy?.Role?.Name} {returnedPCE.ReturnedBy?.Name} for valuation.";
+                    await SendNotificationAsync(returnedPCE.ReturnedById, logNotification, "Valuation", $"/ProductionCapacity/Detail/{pce.Id}").ConfigureAwait(false);
+                    await UpdatePCECaseAssignmentStatusForAll(pce, returnedPCE.ReturnedById, StatusPending, logNotification).ConfigureAwait(false);
+                    await LogPCECaseTimeline(pce, logNotification).ConfigureAwait(false);
                 }
 
                 await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
@@ -533,8 +536,6 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                                                 .Include(e => e.Evaluator)
                                                 .Include(e => e.PCE)
                                                     .ThenInclude(pc => pc.CreatedBy)
-                                                .Include(e => e.PCE)
-                                                    .ThenInclude(pc => pc.AssignedEvaluator)
                                                 .Include(e => e.PCE)
                                                     .ThenInclude(pc => pc.PCECase)
                                                 .FirstOrDefaultAsync(pce => pce.Id == Id)
