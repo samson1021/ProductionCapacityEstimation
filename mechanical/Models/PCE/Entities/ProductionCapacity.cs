@@ -61,6 +61,8 @@ namespace mechanical.Models.PCE.Entities
 
         [ForeignKey("CreatedById")]
         public virtual User? CreatedBy { get; set; }
+        [ForeignKey("AssignedEvaluatorId")]
+        public virtual User? AssignedEvaluator { get; set; }
         [ForeignKey("PCECaseId")]
         public virtual PCECase? PCECase { get; set; }
     }

@@ -74,6 +74,7 @@ namespace mechanical.Services.InternalReportService
             var caseSchedules = await _cbeContext.CaseSchedules
                 .Where(s => CollateralIds.Contains(s.CaseId) && s.Status == "Approved") // Filter approved schedules here
                 .ToListAsync();
+
             var allRoleAssignments = await _cbeContext.CaseAssignments
                 .Include(ca => ca.User)
                     .ThenInclude(u => u.Role)
@@ -86,6 +87,7 @@ namespace mechanical.Services.InternalReportService
                               ca.User.Role.Name == "Checker Officer" ||
                               ca.User.Role.Name == "District Valuation Manager"))
                 .ToListAsync();
+
             var assignmentsLookup = allRoleAssignments
                   .GroupBy(ca => ca.CollateralId)
                   .ToDictionary(
@@ -161,9 +163,9 @@ namespace mechanical.Services.InternalReportService
                     CurrentStatus = CollateralStatus,
                     CreatedAt = c.CreationDate,
                     ApplicantName = Case.ApplicantName,
-                    CasePriority = "N/A",
+                    CasePriority = " ",
                     CaseFRQ = c.NumberOfReturns .ToString(),
-                    RequestedOrgan = Case.Segment ?? "N/A",
+                    RequestedOrgan = Case.Segment ?? " ",
                     CustomerApplicantRelationship = Case.CaseOriginator?.Name ?? "",
                     PurposeOfValuationRequest = c.Purpose,
                     DistrictName = Case.District?.Name ?? "Head Office",
@@ -181,7 +183,7 @@ namespace mechanical.Services.InternalReportService
                     //Location =  $"{c.Region}, {c.City}, {c.SubCity}, {c.Wereda}, {c.Kebele}",
                     Location = string.Join(", ", new[] { c.Region, c.City, c.SubCity, c.Wereda, c.Kebele }
                                 .Where(s => !string.IsNullOrEmpty(s))),
-                    QuantityComplexityOfProperty = "N/A",
+                    QuantityComplexityOfProperty = " ",
 
                     LHCTitleDeedSerialNo = c.SerialNo ?? c.InvoiceNo ?? c.EngineMotorNo ?? c.PlateNo ?? c.ChassisNo ?? null,
                     TypeOfProperty = c.Type.ToString(),
@@ -191,9 +193,8 @@ namespace mechanical.Services.InternalReportService
                     DateReturnedWithAdviceToRO = null, // this is the date filled when the case return mo to rm
                     ReasonOfReturn = null, // the reason the case is returned from the mo to rm
 
-
                     //maker section
-                    NameOfValuator = firstEvaluation?.EvaluatorUser?.Name ?? "",
+                    NameOfValuator = firstEvaluation?.EvaluatorUser?.Name ?? makerOfficerAssignment?.User?.Name ?? "",
                     DateCaseDeliveredToValuationOffice = makerManagerAssignment?.AssignmentDate,
                     DateCaseAssignedToTeamLeader = makerTeamLeaderAssignment?.AssignmentDate,
                     DateCaseAssignedToValuators = makerOfficerAssignment?.AssignmentDate,
@@ -202,65 +203,55 @@ namespace mechanical.Services.InternalReportService
                     /// needs modification 
 
                     NetDaysConsumed = scheduleDate != null && firstEvaluation != null && CollateralStatus == "Complete"
-                                       ? (int?)Math.Round(GetDateDifference(CollateralCompletionDate, scheduleDate).TotalDays)
+                                       ? GetDateDifference(CollateralCompletionDate, scheduleDate)
                                        : firstEvaluation != null && CollateralStatus != "Complete"
-                                           ? scheduleDate != null ? (int?)Math.Round(GetDateDifference(DateTime.Now, scheduleDate).TotalDays)
-                                           : (int?)Math.Round(GetDateDifference(DateTime.Now, makerOfficerAssignment.AssignmentDate).TotalDays) : null,
-                    DurationReceiptGrossDays = CollateralStatus == "Complete" ? (int?)GetDateDifference(CollateralCompletionDate, makerManagerAssignment.AssignmentDate).TotalDays
-                                                    : (int?)GetDateDifference(DateTime.Now, makerManagerAssignment.AssignmentDate).TotalDays,
+                                           ? scheduleDate != null ? GetDateDifference(DateTime.Now, scheduleDate)
+                                           : GetDateDifference(DateTime.Now, makerOfficerAssignment.AssignmentDate) : null,
+                    DurationReceiptGrossDays = CollateralStatus == "Complete" ? GetDateDifference(CollateralCompletionDate, makerManagerAssignment.AssignmentDate)
+                                                    : GetDateDifference(DateTime.Now, makerManagerAssignment.AssignmentDate),
 
                     DurationAssignedToTMGrossDays = Case.District?.Name == "Head Office" &&
                                                         makerManagerAssignment?.AssignmentDate != null &&
                                                         makerTeamLeaderAssignment?.AssignmentDate != null
-                                                            ? (int?)Math.Round(GetDateDifference(
+                                                            ? GetDateDifference(
                                                                 makerTeamLeaderAssignment.AssignmentDate,
-                                                                makerManagerAssignment.AssignmentDate).TotalDays)
+                                                                makerManagerAssignment.AssignmentDate)
                                                             : null,
                     DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && Case.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate)
                                                         : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
-                                                            ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
+                                                            ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate)
                                                             : null,
                     // start checking
-                    NameOfChecker = firstEvaluation?.CheckerUser?.Name ?? "",
+                    NameOfChecker = firstEvaluation?.CheckerUser?.Name ?? checkerOfficerAssignment?.User?.Name??"",
                     DateSentForChecking = checkerManagerAssignment?.AssignmentDate,
                     DateCaseAssignedToCheckerTeamLeader = Case.District?.Name == "Head Office" ? checkerTeamLeaderAssignment?.AssignmentDate : null,
                     DateCaseAssignedToCheckerValuators = checkerOfficerAssignment?.AssignmentDate,
                     DateReportSentToRequestingOrgan = CollateralStatus == "Complete" ? CollateralCompletionDate : null, //this is the date co sent to
 
-                    // it needs some modification when the collateral evaluation is retured to correct by checker, and this is the time checker officer uses to check the collateral, .. timeConsumed != null ? (int?)timeConsumed.Duration.TotalDays : null,
-                    //GrossDaysConsumedChecker = CollateralStatus=="Complete" 
-                    //                            ?(int?)Math.Round(GetDateDifference(CollateralCompletionDate, checkerOfficerAssignment.AssignmentDate).TotalDays)
-                    //                            : (int?)Math.Round(GetDateDifference(DateTime.Now, checkerOfficerAssignment.AssignmentDate).TotalDays),
-                    //// Assuming GrossDaysConsumedChecker is of type int? (nullable integer)
+                    GrossDaysConsumedChecker = checkerOfficerAssignment?.AssignmentDate != null
+                                                ? (CollateralStatus == "Complete" && CollateralCompletionDate != null
+                                                    ? GetDateDifference(CollateralCompletionDate, checkerOfficerAssignment.AssignmentDate)
+                                                    : GetDateDifference(DateTime.Now, checkerOfficerAssignment.AssignmentDate))
+                                                : " ",
+                    DurationCheckerReceiptGrossDays = checkerManagerAssignment?.AssignmentDate != null
+                                                        ? (CollateralStatus == "Complete" && CollateralCompletionDate != null
+                                                            ? GetDateDifference(CollateralCompletionDate, checkerManagerAssignment.AssignmentDate)
+                                                            : GetDateDifference(DateTime.Now, checkerManagerAssignment.AssignmentDate))
+                                                        : " ",
 
-                    GrossDaysConsumedChecker = (checkerOfficerAssignment?.AssignmentDate != null)
-                                                ? (CollateralStatus == "Complete"
-                                                    ? (int?)Math.Round(GetDateDifference(CollateralCompletionDate, checkerOfficerAssignment.AssignmentDate).TotalDays)
-                                                    : (int?)Math.Round(GetDateDifference(DateTime.Now, checkerOfficerAssignment.AssignmentDate).TotalDays))
-                                                : null, // Assign null if checkerOfficerAssignment or its AssignmentDate is null
-
-
-                    //DurationCheckerReceiptGrossDays = CollateralStatus == "Complete" ? (int?)GetDateDifference(CollateralCompletionDate, checkerManagerAssignment.AssignmentDate).TotalDays
-                    //                                : (int?)GetDateDifference(DateTime.Now, checkerManagerAssignment.AssignmentDate).TotalDays,
-
-                    DurationCheckerReceiptGrossDays = (checkerManagerAssignment?.AssignmentDate != null)
-                                                        ? (CollateralStatus == "Complete"
-                                                            ? (int?)GetDateDifference(CollateralCompletionDate, checkerManagerAssignment.AssignmentDate).TotalDays
-                                                            : (int?)GetDateDifference(DateTime.Now, checkerManagerAssignment.AssignmentDate).TotalDays)
-                                                        : null,
                     DurationCheckerAssignedToTMGrossDays = Case.District?.Name == "Head Office" &&
-                                                        checkerManagerAssignment?.AssignmentDate != null &&
-                                                        checkerTeamLeaderAssignment?.AssignmentDate != null
-                                                            ? (int?)Math.Round(GetDateDifference(
-                                                                checkerTeamLeaderAssignment.AssignmentDate,
-                                                                checkerManagerAssignment.AssignmentDate).TotalDays)
-                                                            : null,
+                                                              checkerManagerAssignment?.AssignmentDate != null &&
+                                                              checkerTeamLeaderAssignment?.AssignmentDate != null
+                                                                ? GetDateDifference(checkerTeamLeaderAssignment.AssignmentDate, checkerManagerAssignment.AssignmentDate)
+                                                                : " ",
                     DurationCheckerAssignedGrossDays = checkerOfficerAssignment?.AssignmentDate != null && Case.District?.Name == "Head Office" && checkerTeamLeaderAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        ? GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerTeamLeaderAssignment.AssignmentDate)
                                                         : checkerOfficerAssignment?.AssignmentDate != null && checkerManagerAssignment?.AssignmentDate != null
-                                                            ? (int?)Math.Round(GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerManagerAssignment.AssignmentDate).TotalDays)
-                                                            : null,
+                                                            ? GetDateDifference(checkerOfficerAssignment.AssignmentDate, checkerManagerAssignment.AssignmentDate)
+                                                            : " ",
+
+
                     TotalNumberOfComments = null,
                     DateCommentReceivedFromChecking = null,
                 };
@@ -269,12 +260,7 @@ namespace mechanical.Services.InternalReportService
             }
 
             var distinctCaseDtos = new List<ValuationReportDto>();
-              //     var uniqueCases = caseAssignments
-                             //.Where(ca => ca.Collateral != null && ca.Collateral.Case != null)
-                             //.Select(ca => ca.Collateral!.Case)
-                             //.GroupBy(c => c.Id)                  // Group by ID
-                             //.Select(g => g.First())              // Take first from each group
-                             //.ToList();
+             
 
             var caseAssignmentsList = caseAssignments.ToList(); // Execute query first
 
@@ -335,7 +321,7 @@ namespace mechanical.Services.InternalReportService
                     CurrentStatus = uniqueCase.Status,
                     CreatedAt = uniqueCase.CreationAt,
                     ApplicantName = uniqueCase.ApplicantName,
-                    RequestedOrgan = uniqueCase.Segment ?? "N/A",
+                    RequestedOrgan = uniqueCase.Segment ?? " ",
                     CustomerApplicantRelationship = uniqueCase.CaseOriginator?.Name ?? "",
                     DistrictName = uniqueCase.District?.Name ?? "Head Office",
 
@@ -346,7 +332,7 @@ namespace mechanical.Services.InternalReportService
                     DeliveredPercentage = deliveredPercentage,
                     QuantityForSimilarMechanicalItem = similarItemsDescription,
 
-                    CasePriority = "N/A",
+                    CasePriority = " ",
                     CaseFRQ = "",
                     PurposeOfValuationRequest = "",
                     RequestedEngineer = "",
@@ -355,7 +341,7 @@ namespace mechanical.Services.InternalReportService
                     FulfillmentOfDocumentation = "Complete",
                     ScheduledVisitDate = null,
                     Location = "",
-                    QuantityComplexityOfProperty = "N/A",
+                    QuantityComplexityOfProperty = " ",
                     LHCTitleDeedSerialNo = null,
                     TypeOfProperty = "",
                     PropertyCategory = "",
@@ -519,9 +505,9 @@ namespace mechanical.Services.InternalReportService
                     CurrentStatus = pc.CurrentStatus,
                     CreatedAt = pc.CreatedAt, // Set to PCECase CreatedAt
                     ApplicantName = pceCase.ApplicantName,
-                    CasePriority = "N/A", // This seems constant, consider if it should be dynamic
+                    CasePriority = " ", // This seems constant, consider if it should be dynamic
                     CaseFRQ = (pcReestimations?.Count ?? 0).ToString(),
-                    RequestedOrgan = pceCase.Segment ?? "N/A",
+                    RequestedOrgan = pceCase.Segment ?? " ",
                     CustomerApplicantRelationship = pceCase.PCECaseOriginator?.Name ?? "",
                     DateCaseDeliveredToValuationOffice = makerManagerAssignment?.AssignmentDate,
                     DateCaseAssignedToTeamLeader = makerTeamLeaderAssignment?.AssignmentDate,
@@ -530,40 +516,40 @@ namespace mechanical.Services.InternalReportService
                     DistrictName = pceCase.District?.Name ?? "Head Office",
                     LastRecentValuationDate = pcEvaluations.Any() ? pcEvaluations.Max(e => e.CreatedAt) : null,
                     DurationReceiptGrossDays = pc.CurrentStatus == "Completed" && pcEvaluations.Any() && pcEvaluations.First().CompletedAt != null
-                                                    ? (int?)GetDateDifference(pcEvaluations.First().CompletedAt.Value, pc.CreatedAt).TotalDays
-                                                    : pceCase.CreatedAt != default ? (int?)GetDateDifference(DateTime.Now, pc.CreatedAt).TotalDays : null,
+                                                    ?GetDateDifference(pcEvaluations.First().CompletedAt.Value, pc.CreatedAt)
+                                                    : pceCase.CreatedAt != default ? GetDateDifference(DateTime.Now, pc.CreatedAt) : null,
                     DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && pceCase.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate)
                                                         : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
-                                                            ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
+                                                            ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate)
                                                             : null,
                     DurationAssignedToTMGrossDays = pceCase.District?.Name == "Head Office" &&
                                                         makerManagerAssignment?.AssignmentDate != null &&
                                                         makerTeamLeaderAssignment?.AssignmentDate != null
-                                                            ? (int?)Math.Round(GetDateDifference(
+                                                            ? GetDateDifference(
                                                                 makerTeamLeaderAssignment.AssignmentDate,
-                                                                makerManagerAssignment.AssignmentDate).TotalDays)
+                                                                makerManagerAssignment.AssignmentDate)
                                                             : null,
                     RequestedEngineer = "Mechanical", // Constant
                     ProcessingWCDays = null, // Constant
                     QuantityForSimilarMechanicalItem = "", // Constant or placeholder, review this logic
-                    NameOfValuator = firstEvaluation?.Evaluator?.Name ?? "N/A",
+                    NameOfValuator = firstEvaluation?.Evaluator?.Name ?? " ",
                     AssignedNo = -1, // Review this logic, seems constant or placeholder
                     DeliveredNo = -1, // Review this logic, seems constant or placeholder
                     ReturnedWithAdvice = -1, // Review this logic, seems constant or placeholder
                     OnHandNo = -1, // Review this logic, seems constant or placeholder
                     DeliveredPercentage = -1, // Review this logic, seems constant or placeholder
                     NetDaysConsumed = scheduleDate != null && firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
-                                       ? (int?)Math.Round(GetDateDifference(firstEvaluation.CompletedAt.Value, scheduleDate.ScheduleDate).TotalDays)
+                                       ? GetDateDifference(firstEvaluation.CompletedAt.Value, scheduleDate.ScheduleDate)
                                        : firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
-                                           ? (int?)Math.Round(GetDateDifference(DateTime.Now, firstEvaluation.CompletedAt.Value).TotalDays)
+                                           ?GetDateDifference(DateTime.Now, firstEvaluation.CompletedAt.Value)
                                            : null,
 
-                    SDTAccomplishment = "N/A", // Constant
+                    SDTAccomplishment = " ", // Constant
                     FulfillmentOfDocumentation = "Complete", // Constant
                     ScheduledVisitDate = scheduleDate?.ScheduleDate,
                     Location = firstEvaluation?.InspectionPlace ?? $"{pc.Region}, {pc.City}, {pc.SubCity}, {pc.Wereda}, {pc.Kebele}",
-                    QuantityComplexityOfProperty = "N/A", // Constant                    LHCTitleDeedSerialNo = pc.LHCNumber ?? pc.SerialNo,
+                    QuantityComplexityOfProperty = " ", // Constant                    LHCTitleDeedSerialNo = pc.LHCNumber ?? pc.SerialNo,
 
                     LHCTitleDeedSerialNo = pc.LHCNumber ?? pc.SerialNo,
                     TypeOfProperty = pc.Type,
@@ -576,7 +562,7 @@ namespace mechanical.Services.InternalReportService
                     DateReportSentToRequestingOrgan = null, //this is the date co sent to rm
                     DateReturnedWithAdviceToRO = null, // this is the date filled when the case return mo to rm
                     GrossDaysConsumedChecker = null,   // this is the time checker officer uses to check the pce, .. timeConsumed != null ? (int?)timeConsumed.Duration.TotalDays : null,
-                    GrossDaysConsumed = pceCase.CompletedAt != null ? (int?)GetDateDifference(pceCase.CreatedAt, pceCase.CompletedAt.Value).TotalDays : (int?)GetDateDifference(pceCase.CreatedAt, DateTime.Now).TotalDays,
+                    GrossDaysConsumed = pceCase.CompletedAt != null ? GetDateDifference(pceCase.CreatedAt, pceCase.CompletedAt.Value) : GetDateDifference(pceCase.CreatedAt, DateTime.Now),
                     ReasonOfReturn = null // the reason the case is returned from the mo to rm
                 };
                 allProductionCapacityDtos.Add(dto);
@@ -596,6 +582,37 @@ namespace mechanical.Services.InternalReportService
                     .Where(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id)
                     .Select(ca => ca.ProductionCapacity)
                     .ToList();
+
+
+
+
+                // 1. First select all collaterals for this case
+                var caseProductions = await _cbeContext.ProductionCapacities
+                    .Where(c => c.PCECaseId == pceCase.Id)
+                    .Select(c => new { c.Category, c.Type, c.ManufactureYear })
+                    .ToListAsync();
+
+                // 2. Then filter and group similar collaterals
+                var similarCollateralGroups = caseProductions
+                    .GroupBy(c => new
+                    {
+                        Category = c.Category.ToString(),
+                        Type = c.Type,
+                        ManufactureYear = c.ManufactureYear
+                    })
+                    .Where(g => g.Count() > 1) // Only show groups with duplicates
+                    .OrderByDescending(g => g.Count())
+                    .ToList();
+
+                // 3. Format the similar items description
+                var similarItemsDescription = similarCollateralGroups.Any()
+                    ? string.Join(", ",
+                        similarCollateralGroups.Select(g =>
+                            $"{g.Count()}({g.Key.Category}, {g.Key.Type}, {g.Key.ManufactureYear})"))
+                    : "No similar items";
+
+
+
 
 
                 var pcIdsForCase = productionCapacitiesForCase.Select(pc => pc.Id).ToHashSet();
@@ -641,55 +658,55 @@ namespace mechanical.Services.InternalReportService
                     CaseNo = pceCase.CaseNo,
                     CreatedAt = pceCase.CreatedAt,
                     ApplicantName = pceCase.ApplicantName,
-                    CasePriority = "N/A",
+                    CasePriority = " ",
                     CaseFRQ = caseEvaluations.Count.ToString(),
                     RequestedOrgan = pceCase.PCECaseOriginator.Department ?? "RM",
                     CustomerApplicantRelationship = pceCase.PCECaseOriginator?.Name ?? "RM Name",
                     DateCaseDeliveredToValuationOffice = makerManagerAssignment?.AssignmentDate,
                     DateCaseAssignedToTeamLeader = makerTeamLeaderAssignment?.AssignmentDate,
                     DateCaseAssignedToValuators = makerOfficerAssignment?.AssignmentDate,
-                    PurposeOfValuationRequest = firstProductionCapacity?.Purpose ?? "N/A",
+                    PurposeOfValuationRequest = firstProductionCapacity?.Purpose ?? " ",
                     LastRecentValuationDate = caseEvaluations.Any() ? caseEvaluations.Max(e => e.CreatedAt) : null,
                     DurationReceiptGrossDays = pceCase.Status == "Completed" && caseEvaluations.Any() && caseEvaluations.FirstOrDefault()?.CompletedAt != null
-                                                ? (int?)GetDateDifference(caseEvaluations.First().CompletedAt.Value, pceCase.CreatedAt).TotalDays
-                                                : caseEvaluations.FirstOrDefault()?.CompletedAt == null ? (int?)GetDateDifference(pceCase.CreatedAt, DateTime.Now).TotalDays : null,
+                                                ? GetDateDifference(caseEvaluations.First().CompletedAt.Value, pceCase.CreatedAt)
+                                                : caseEvaluations.FirstOrDefault()?.CompletedAt == null ? GetDateDifference(pceCase.CreatedAt, DateTime.Now) : null,
                     DistrictName = pceCase.District?.Name ?? "Head Office",
                     DurationAssignedGrossDays = makerOfficerAssignment?.AssignmentDate != null && pceCase.District?.Name == "Head Office" && makerTeamLeaderAssignment?.AssignmentDate != null
-                                                    ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                    ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerTeamLeaderAssignment.AssignmentDate)
                                                     : makerOfficerAssignment?.AssignmentDate != null && makerManagerAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate).TotalDays)
+                                                        ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate)
                                                         : null,
                     DurationAssignedToTMGrossDays = pceCase.District?.Name != "Head Office" &&
                                                     makerManagerAssignment?.AssignmentDate != null &&
                                                     makerTeamLeaderAssignment?.AssignmentDate != null
-                                                        ? (int?)Math.Round(GetDateDifference(
-                                                            makerManagerAssignment.AssignmentDate,
-                                                            makerTeamLeaderAssignment.AssignmentDate).TotalDays)
+                                                        ?GetDateDifference(
+                                                            makerTeamLeaderAssignment.AssignmentDate,
+                                                            makerManagerAssignment.AssignmentDate)
                                                         : null,
                     RequestedEngineer = "Mechanical",
                     ProcessingWCDays = null,
-                    QuantityForSimilarMechanicalItem = "",
-                    NameOfValuator = firstEvaluation?.Evaluator?.Name ?? "N/A",
+                    QuantityForSimilarMechanicalItem = similarItemsDescription ?? "",
+                    NameOfValuator = firstEvaluation?.Evaluator?.Name ?? makerOfficerAssignment?.User?.Name ?? "",
                     AssignedNo = caseAssignments.Count(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id),
-                    DeliveredNo = caseAssignments.Count(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id && ca.Status == "Completed"),
+                    DeliveredNo = caseAssignments.Count(ca => ca.ProductionCapacity?.PCECaseId == pceCase.Id && ca.Status == "Completed"),
                     ReturnedWithAdvice = caseReestimations.Count,
-                    OnHandNo = caseAssignments.Count(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id && ca.Status != "Completed"),
+                    OnHandNo = caseAssignments.Count(ca => ca.ProductionCapacity?.PCECaseId == pceCase.Id && ca.Status != "Completed"),
                     DeliveredPercentage = caseAssignments.Any(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id)
                                             ? (double)caseAssignments.Count(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id && ca.Status == "Completed") / caseAssignments.Count(ca => ca.ProductionCapacity.PCECaseId == pceCase.Id) * 100
                                             : 0,
                     NetDaysConsumed = scheduleDate != null && firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
-                                        ? (int?)Math.Round(GetDateDifference(scheduleDate.ScheduleDate, firstEvaluation.CompletedAt.Value).TotalDays)
-                                        : firstEvaluation != null && firstEvaluation.CompletedAt.HasValue
-                                            ? (int?)Math.Round(GetDateDifference(firstEvaluation.CompletedAt.Value, DateTime.Now).TotalDays)
+                                        ? GetDateDifference( firstEvaluation.CompletedAt.Value, scheduleDate.ScheduleDate)
+                                        : scheduleDate != null
+                                            ?GetDateDifference(DateTime.Now, scheduleDate.ScheduleDate)
                                             : null,
-                    SDTAccomplishment = "N/A",
+                    SDTAccomplishment = " ",
                     FulfillmentOfDocumentation = pceCase.BusinessLicenseId != null ? "Complete" : "Incomplete",
                     ScheduledVisitDate = scheduleDate?.ScheduleDate,
-                    Location = firstEvaluation?.InspectionPlace ?? (firstProductionCapacity != null ? $"{firstProductionCapacity.Region}, {firstProductionCapacity.City}, {firstProductionCapacity.SubCity}, {firstProductionCapacity.Wereda}, {firstProductionCapacity.Kebele}" : "N/A"),
-                    QuantityComplexityOfProperty = "N/A",
-                    LHCTitleDeedSerialNo = firstProductionCapacity?.LHCNumber ?? "N/A",
-                    TypeOfProperty = firstProductionCapacity?.Type ?? "N/A",
-                    PropertyCategory = firstProductionCapacity?.Category.ToString() ?? "N/A",
+                    Location = firstEvaluation?.InspectionPlace ?? (firstProductionCapacity != null ? $"{firstProductionCapacity.Region}, {firstProductionCapacity.City}, {firstProductionCapacity.SubCity}, {firstProductionCapacity.Wereda}, {firstProductionCapacity.Kebele}" : " "),
+                    QuantityComplexityOfProperty = " ",
+                    LHCTitleDeedSerialNo = firstProductionCapacity?.LHCNumber ?? " ",
+                    TypeOfProperty = firstProductionCapacity?.Type ?? " ",
+                    PropertyCategory = firstProductionCapacity?.Category.ToString() ?? " ",
                     SiteInspectionDate = firstEvaluation != null ? firstEvaluation.InspectionDate.ToDateTime(TimeOnly.MinValue) : null,
 
 
@@ -710,11 +727,18 @@ namespace mechanical.Services.InternalReportService
         }
 
 
-        public TimeSpan GetDateDifference(DateTime date1, DateTime date2)
+        //public TimeSpan GetDateDifference(DateTime date1, DateTime date2)
+        //{
+        //    return date1 - date2;
+        //}
+        public string GetDateDifference(DateTime date1, DateTime date2)
         {
-            return date1 - date2;
-        }
+                if (date1 == null || date2 == null)
+                    return " ";
 
+                TimeSpan difference = date1 > date2 ? date1 - date2 : date2 - date1; // Ensure positive difference
+            return $"{difference.Days} days, {difference.Hours} hours, {difference.Minutes} minutes";
+        }
 
     }
 }

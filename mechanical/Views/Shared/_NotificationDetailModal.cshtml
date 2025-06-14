@@ -1,6 +1,4 @@
-﻿<!-- Updated Modal in _Layout.cshtml -->
-
-<div class="modal fade" id="universalNotificationModal" tabindex="-1" aria-hidden="true">
+﻿<div class="modal fade" id="universalNotificationModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4" style="background: #f8f6fc;">
             <div class="modal-header border-0 rounded-top-4 d-flex flex-column align-items-start gap-1" style="background: linear-gradient(90deg, #7c3aed 0%, #a78bfa 100%); color: #fff;">
@@ -31,11 +29,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Handle notification links
-        document.querySelectorAll('[data-id]').forEach(link => {
-            link.addEventListener('click', async function(e) {
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('.notification-link');
+            if (link && link.getAttribute('data-id')) {
                 e.preventDefault();
-                await handleNotificationInteraction(this.dataset.notificationId);
-            });
+                handleNotificationInteraction(link.getAttribute('data-id'));
+            }
         });
 
         // Handle URL parameter
@@ -48,7 +47,7 @@
     });
 
     async function handleNotificationInteraction(notificationId) {
-        const modal = new bootstrap.Modal('#universalNotificationModal');
+        var $modal = $('#universalNotificationModal');
         const content = document.getElementById('notificationModalContent');
         const fullLink = document.getElementById('notificationFullDetailsLink');
 
@@ -149,7 +148,7 @@
                 }
             }
 
-            modal.show();
+            $modal.modal('show');
         } catch (error) {
             content.textContent = '';
             const alertDiv = document.createElement('div');
@@ -157,7 +156,7 @@
             alertDiv.textContent = `Error loading notification: ${error.message}`;
             content.appendChild(alertDiv);
             fullLink.style.display = 'none';
-            modal.show();
+            $modal.modal('show');
         }
     }
 </script>
