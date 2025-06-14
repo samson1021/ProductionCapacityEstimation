@@ -56,12 +56,12 @@ namespace mechanical.Models.Entities
         public string? PurposeOfTheLand { get; set; }
         public string? PlotOfLand { get; set; }
         public string? LHCNo { get; set; }
+
+        public int NumberOfReturns  { get; set; } = 0;
         
         [ForeignKey("CreatedById")]
         public virtual User? CreatedBy { get; set; }
         [ForeignKey("CaseId")]
         public virtual Case? Case { get; set; }
-
-        public int NumberOfReturns { get; set; } = 0;
     }
 }

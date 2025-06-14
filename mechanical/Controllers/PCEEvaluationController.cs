@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 
 using mechanical.Data;
 using mechanical.Models;
+using mechanical.Models.ViewModels;
 using mechanical.Models.Dto.MailDto;
 using mechanical.Models.Dto.UploadFileDto;
 using mechanical.Services.MailService;
@@ -194,13 +195,14 @@ namespace mechanical.Controllers
                 {
                     return NotFound();
                 }
-                return Json(new { success = true });
+                var response = new { success = true, message = "Production is deleted successfully" };
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting production valuation for ID {Id}; User: {userId}", Id, userId);
                 // var error = new { message = ex.Message };
-                return Json(new { success = false, error = ex.Message });
+                return Ok(new { success = false, error = ex.Message });
             }
         }
 
@@ -235,13 +237,14 @@ namespace mechanical.Controllers
             try
             {
                 await _PCEEvaluationService.CompleteValuation(userId, Id);
-                return Json(new { success = true });
+                var response = new { success = true, message = "Production is evaluated successfully" };
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Sending production valuation of ID: {Id} to RM for review; User: {userId}", Id, userId);
                 // var error = new { message = ex.Message };
-                return Json(new { success = false, error = ex.Message });
+                return Ok(new { success = false, error = ex.Message });
                 // return Json(new { success = false, message = ex.Message });
             }
         }
@@ -254,13 +257,33 @@ namespace mechanical.Controllers
             try
             {
                 await _PCEEvaluationService.ReturnValuation(userId, dto);
-                return Json(new { success = true });
+                var response = new { success = true, message = "Production is returned successfully" };
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error returning production valuation for user {userId}", userId);
                 // var error = new { message = ex.Message };
-                return Json(new { success = false, error = ex.Message });
+                return Ok(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Resend(List<Guid> SelectedPCEIds)
+        {
+            var userId = base.GetCurrentUserId();
+            try
+            {
+                await _PCEEvaluationService.ResendValuations(userId, SelectedPCEIds);
+                var response = new { success = true, message = "Production is assigned for estimation successfully" };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending production for valuation to user {userId}", userId);
+                // var error = new { message = ex.Message };
+                return Ok(new { success = false, error = ex.Message });
             }
         }
 
@@ -275,29 +298,30 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> HandleRemark(Guid PCEId, String RemarkType, CreateFileDto FileDto, Guid EvaluatorId)
+        public async Task<IActionResult> HandleRemark(Guid PCEId, String RemarkType, CreateFileDto FileDto)
         {
             var userId = base.GetCurrentUserId();
             try
             {
-                await _PCEEvaluationService.HandleRemark(userId, PCEId, RemarkType, FileDto, EvaluatorId);
-                return Json(new { success = true });
+                await _PCEEvaluationService.HandleRemark(userId, PCEId, RemarkType, FileDto);
+                var response = new { success = true, message = "Production remark is handled successfully" };
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error handling remark of production valuation for user {userId}", userId);
-                return Json(new { success = false, error = ex.Message });
+                return Ok(new { success = false, error = ex.Message });
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemarkRelease(Guid Id, String Remark, Guid EvaluatorId)
+        public async Task<IActionResult> RemarkRelease(Guid Id, String Remark)
         {
             var userId = base.GetCurrentUserId();
             try
             {
-                var pceEvaluation = await _PCEEvaluationService.ReleaseRemark(userId, Id, Remark, EvaluatorId);
+                var pceEvaluation = await _PCEEvaluationService.ReleaseRemark(userId, Id, Remark);
 
                 // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
                 var recipientEmail = "yohannessintayhu@cbe.com.et";
@@ -309,13 +333,12 @@ namespace mechanical.Controllers
 
                 return RedirectToAction("RemarkPCECases", "PCECase");
                 // return RedirectToAction("PCECases", "PCECase", new { Status = "Remark" });
-                // return Json(new { success = true });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error releasing remark of production valuation for user {userId}", userId);
                 // var error = new { message = ex.Message };
-                return Json(new { success = false, error = ex.Message });
+                return Ok(new { success = false, error = ex.Message });
             }
         }
 

@@ -58,7 +58,7 @@
         var commentField = document.getElementById('Reason');
 
         returnModal.addEventListener('shown.bs.modal', function () {
-            commentField.focus();
+            commentField?.focus();
         });
 
 
@@ -74,23 +74,29 @@
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-            })               
-                .then(response => response.json())
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         toastr.success('Return Comment saved successfully');
-                        $(returnModal).modal('hide');
-
+                        if (window.jQuery && $(returnModal).modal) {
+                            $(returnModal).modal('hide');
+                        } else {
+                            returnModal.style.display = 'none';
+                        }
                         setTimeout(function () {
                             window.location.href = '@RedirectUrl';
                         }, 1000);
                     } else {
-                        toastr.error('Error saving Return comment: ' + data.error);
+                        toastr.error('Error saving Return comment: ' + (data.error || 'Unknown error'));
                     }
                 })
                 .catch(error => {
                     toastr.error('Error saving Return comment: ' + error);
-                });                      
+                });
         });
     });
 </script>
