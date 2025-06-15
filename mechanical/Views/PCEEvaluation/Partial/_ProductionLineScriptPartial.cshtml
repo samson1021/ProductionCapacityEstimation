@@ -16,15 +16,6 @@
             
             const $newContainer  = $(html).hide();
             $('#productionLineContainer').append($newContainer);
-            
-            // Initialize bottleneck toggle
-            $newContainer.find('.is-bottleneck').on('change', function() {
-                if ($(this).is(':checked')) {
-                    // Uncheck all other bottlenecks
-                    $('.is-bottleneck').not(this).prop('checked', false);
-                }
-                handleBottleneckToggle();
-            });
 
             // Initialize validation
             $.validator.unobtrusive.parse($newContainer );
@@ -35,7 +26,6 @@
             
             updateRemoveButtons();
             updateLineNumbers();
-            handleBottleneckToggle();
         }
 
         function addInputMaterial($line) {
@@ -244,7 +234,6 @@
                 $(this).remove();
                 updateLineNumbers();
                 updateRemoveButtons();
-                handleBottleneckToggle();
             });
         }
 
@@ -323,20 +312,6 @@
         function updateRemoveButtons() {
             const $lines = $('.production-line-form');
             $('.remove-line-btn').toggle($lines.length > 1);
-        }
-
-        // Handle bottleneck toggle
-        function handleBottleneckToggle() {
-            const $bottleneckCheckboxes = $('.is-bottleneck');
-            const anyChecked = $bottleneckCheckboxes.is(':checked');
-            $bottleneckCheckboxes.each(function () {
-                const $checkbox = $(this);
-                if (anyChecked) {
-                    $checkbox.prop('disabled', !$checkbox.is(':checked'));
-                } else {
-                    $checkbox.prop('disabled', false);
-                }
-            });
         }
 
         function toggleOutputPhaseVisibility() {
@@ -522,12 +497,11 @@
             } else {
                 showJustificationError(false);
             }
-            
+
+            // Remove all hidden inputs for is-bottleneck before adding new ones
+            $('input[type="hidden"][name$=".IsBottleneck"]').remove();
             $('.is-bottleneck').each(function() {
-                const $hidden = $(this).prev('input[type="hidden"]');
-                if ($(this).is(':checked')) {
-                    $hidden.remove();
-                } else if (!$hidden.length) {
+                if (!$(this).is(':checked') && $(this).attr('name')) {
                     $(this).before('<input type="hidden" name="' + $(this).attr('name') + '" value="false" />');
                 }
             });
@@ -628,7 +602,6 @@
             if ($(this).is(':checked')) {
                 $('.is-bottleneck').not(this).prop('checked', false);
             }
-            handleBottleneckToggle();
         });
 
         $(document).on('change', '.output-phase', function() {
@@ -694,7 +667,6 @@
         $productionLineContainer.on('input', '.capacity-input', calculateTotals);
 
         updateUnitLabels();
-        handleBottleneckToggle();
 
         // Initialize validation
         $.validator.unobtrusive.parse(document);

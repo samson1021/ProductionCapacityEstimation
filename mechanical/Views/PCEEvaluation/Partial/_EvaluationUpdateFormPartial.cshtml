@@ -74,14 +74,12 @@
                 </div>
             </div>
             
-            <div class="">
-                <div class="form-check form-switch my-4 mb-2 p-4">
-                    <input class="form-check-input" type="checkbox" role="switch"
-                        asp-for="HasInputOutputData" id="hasInputOutputData">
-                    <label class="form-check-label" for="hasInputOutputData">
-                        <h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5>
-                    </label>
-                </div>
+            <div class="form-check form-switch pt-2 m-4">
+                <input class="form-check-input" type="checkbox" role="switch"
+                    asp-for="HasInputOutputData" id="hasInputOutputData">
+                <label class="form-check-label" for="hasInputOutputData">
+                    <h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5>
+                </label>
             </div>
 
             <div class="border rounded-3 my-2 p-2 mb-2 position-relative shadow bg-light custom-form" id="justificationSection"  @(Model.HasInputOutputData ? "style=\"display: none;\"" : "")>
@@ -330,12 +328,11 @@
                                         <div class="row mt-3">
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch my-2">
-                                                    <input type="hidden" asp-for="ProductionLines[i].IsBottleneck" value="false" />
+                                                    @* <input type="hidden" asp-for="ProductionLines[i].IsBottleneck" value="false" /> *@
                                                     <input asp-for="ProductionLines[i].IsBottleneck"
                                                         class="form-check-input is-bottleneck"
                                                         type="checkbox"
-                                                        role="switch"
-                                                        value="true" />
+                                                        role="switch" />
                                                     <label for="ProductionLines[i].IsBottleneck" class="form-check-label">
                                                         <h6><strong>Is Bottleneck?</strong></h6>
                                                     </label>
