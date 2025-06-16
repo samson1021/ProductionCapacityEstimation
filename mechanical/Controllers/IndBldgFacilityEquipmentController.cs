@@ -9,6 +9,7 @@ using mechanical.Services.CaseServices;
 using mechanical.Services.CollateralService;
 using mechanical.Services.IndBldgF;
 using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Services.IndBldgFacilityEquipmentService;
 using mechanical.Services.MailService;
 using mechanical.Services.MotorVehicleService;
 using mechanical.Services.UploadFileService;
@@ -136,7 +137,9 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetIndBldgFacilityEquipment(Guid Id)
         {
-            var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetIndBldgFacilityEquipment(Id);
+            var indBldgFacilityEquipmentt = await _indBldgFacilityEquipment.GetIndBldgFacilityEquipment(Id);
+            var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetIndBldgFacilityEquipmentByCollateralId(indBldgFacilityEquipmentt.CollateralId);
+           
             return View(indBldgFacilityEquipment);
         }
         [HttpGet]
@@ -161,6 +164,15 @@ namespace mechanical.Controllers
 
             var indBldgFacilityEquipmentReturnDto = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.CollateralId == id);
             //ViewData["EvaluatedMOV"] = motorVehicleDto;
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), indBldgFacilityEquipmentReturnDto.CollateralId);
+            var costs = await _indBldgFacilityEquipmentCostService.GetByCaseId(collateral.CaseId);
+            ViewBag.IndBldgFacilityEquipmentCostsList = costs
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = $"{x.InsuranceFreightOthersCost:N2}"
+                })
+                .ToList();
 
             return View(indBldgFacilityEquipmentReturnDto);
         }
