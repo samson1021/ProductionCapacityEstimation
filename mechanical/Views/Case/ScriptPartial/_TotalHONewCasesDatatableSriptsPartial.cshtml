@@ -71,7 +71,7 @@
                         data: 'Id',
                         width: '10%',
                         render: function (data, type, row, meta) {
-                            return '<a href="@Url.Action("HODetail", "Case")?Id=' + data + '&CaseType=' + encodeURIComponent(row.CaseType) + '">Details | </a>' +
+                            return '<a href="@Url.Action("TotalHOPendDetail", "Case")?Id=' + data + '&CaseType=' + encodeURIComponent(row.CaseType) + '">Details | </a>' +
                                 '<a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '"> <i class="nav-icon fas fa-sitemap"></i></a>';
                         }
                     }

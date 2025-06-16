@@ -52,5 +52,7 @@ namespace mechanical.Services.CaseServices
         Task<CaseReturnDto> GetHOCase(Guid id);
         Task<CaseReturnDto> GetHOPendingCase(Guid userId, Guid id);
         Task<IEnumerable<CaseDto>> GetHOCompleteCases(Guid userId);
+        Task<IEnumerable<CaseDto>> GetHOLatestCases(Guid userId);
+        
     }
 }

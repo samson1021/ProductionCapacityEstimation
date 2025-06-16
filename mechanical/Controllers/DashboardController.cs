@@ -63,7 +63,7 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> HO()
         {
-            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            var latestCase = await _caseService.GetHOLatestCases(base.GetCurrentUserId());
             var newCases = await _PCECaseService.GetLatestHOPCECases();
             ViewData["NewCases"] = newCases;
             return View(latestCase);

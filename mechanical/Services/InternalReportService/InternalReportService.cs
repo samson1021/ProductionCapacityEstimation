@@ -47,6 +47,9 @@ namespace mechanical.Services.InternalReportService
             {
                 caseAssignments = caseAssignments.Where(ca => ca.UserId == userId);
             }
+
+
+
             if (!caseAssignments.Any())
             {
                 return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
