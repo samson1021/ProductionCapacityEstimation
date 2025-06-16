@@ -313,6 +313,13 @@ namespace mechanical.Services.CaseServices
             }
             throw new Exception("case with this Id is not found");
         }
+        public async Task<IEnumerable<CaseDto>> GetHOLatestCases(Guid userId)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).ThenInclude(res => res.CaseOriginator).ToListAsync();
+            var cases = NewCollateral.Select(res => res.Collateral.Case).Distinct().OrderByDescending(res => res.CreationAt).Take(7);
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
         public async Task<IEnumerable<CaseDto>> GetMmLatestCases(Guid userId)
         {
             var httpContext = _httpContextAccessor.HttpContext;

@@ -105,7 +105,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                @* <div class="row">
                     <div class="card">
                         <div class="card-header border-transparent">
                             <h3 class="card-title">Latest Case</h3>
@@ -169,6 +169,63 @@
 
                         </div>
 
+                    </div>
+                </div> *@
+                <div class="row">
+                    <div class="card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Latest Collateral Case</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Case No</th>
+                                            <th>Creation Date</th>
+                                            <th>Applicant Name</th>
+                                            <th>Customer Id</th>
+                                            <th>Collateral</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td><a href="@Url.Action("TotalHOPendDetail", "Case")?Id=@item.Id">@item.CaseNo</a></td>
+                                                <td>@item.CreationAt</td>
+                                                <td>@item.ApplicantName</td>
+                                                <td>@item.CustomerId</td>
+                                                <td>@item.NoOfCollateral</td>
+                                                <td>
+                                                    @if (item.Status == "New")
+                                                    {
+                                                        <span class="badge badge-info">New</span>
+                                                    }
+                                                    else if (item.Status == "Pending")
+                                                    {
+                                                        <span class="badge badge-warning">Pending</span>
+                                                    }
+                                                    else if (item.Status == "Completed")
+                                                    {
+                                                        <span class="badge badge-success">Complete</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-dark">Unknown</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- <div class="card-footer clearfix">
+                            <a href="@Url.Action("Create", "Case")" class="btn btn-sm btn-info float-left">Place New Case</a>
+                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Cases</a>
+                        </div> -->
                     </div>
                 </div>
             </div>
