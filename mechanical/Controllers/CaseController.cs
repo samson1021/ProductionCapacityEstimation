@@ -772,7 +772,6 @@ namespace mechanical.Controllers
             ViewData["Id"] = base.GetCurrentUserId();
             return View();
         }
-
         [HttpGet]
         public async Task<IActionResult> GetHOCompleteCases()
         {
