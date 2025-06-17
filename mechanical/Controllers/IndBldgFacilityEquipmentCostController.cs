@@ -65,7 +65,8 @@ namespace mechanical.Controllers
             try
             {
                 var result = await _indBldgFacilityEquipmentCostService.Update(id, dto);
-                return result ? Ok() : BadRequest("Failed to update industrial collateral cost");
+                return result ? Ok(new { success = true, message = "Data updated successfully" })
+                              : BadRequest(new { success = false, message = "Failed to create industrial collateral cost" });
             }
             catch (Exception ex)
             {

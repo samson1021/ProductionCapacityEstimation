@@ -118,7 +118,82 @@
 
             // Show add form modal
             var currentCaseId = '@myCase.Id'; // You'll need to set this from your page
+                  $(document).on('click', '.iedit-btn', function() {
+                     var collateralId = $(this).data('id');
+                     handleEdit(collateralId);
+                  });
 
+      
+                $('#edcollateralForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var caseId = $('#edcollateralId').val();
+            var insuranceCost = $('#edInsuranceFreightOthersCost').val();
+            var machineCount = $('#edCollateralCount').val();
+
+            var postData = {
+                InsuranceFreightOthersCost: parseFloat(insuranceCost),
+                CollateralCount: parseInt(machineCount)
+            };
+
+            if (!insuranceCost || !machineCount) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            $.ajax({
+                url: `/api/IndustrialCollateralCosts/${caseId}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: function(response) {
+                    $('#edcollateralFormModal').modal('hide');
+                     toastr.success('Data saved successfully');
+                     loadCollaterals(currentCaseId)
+                },
+                error: function(xhr, status, error) {
+
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        toastr.error('Error: ' + xhr.responseJSON.message);
+                    } else {
+                        toastr.error('Failed to save data. Please try again.');
+                    }
+                }
+            });
+        });
+        function handleEdit(id) {
+           $.ajax({
+                url: `/api/IndustrialCollateralCosts/${id}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response) {
+                        console.log(response);
+                        $('#modalTitle').text('Edit Industrial Equipment');
+                        $('#edcollateralId').val(id);
+                        $('#edInsuranceFreightOthersCost').val(response.InsuranceFreightOthersCost);
+                        $('#edCollateralCount').val(response.CollateralCount);
+
+                        $('#edcollateralFormModal').modal('show');
+                    } else {
+                        toastr.error('No data returned from server');
+                    }
+                },
+                error: function(xhr) {
+                    handleAjaxError(xhr, 'Failed to load equipment data');
+                }
+            });
+        }
+                function handleAjaxError(xhr) {
+            let errorMessage = 'An error occurred';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.statusText) {
+                errorMessage = xhr.statusText;
+            }
+            toastr.error(errorMessage);
+            console.error('Error:', xhr);
+        }
             function initializeDataTable(data) {
                 $('#industrialCollateralTable').DataTable({
                     language: {
@@ -189,7 +264,7 @@
                             searchable: false,
                             render: function(data, type, row) {
                                 return `
-                                    <button class="btn btn-sm btn-warning edit-btn" title="Edit" data-id="${row.Id}">
+                                    <button class="btn btn-sm btn-warning iedit-btn" title="Edit" data-id="${row.Id}">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger delete-btn" title="Delete" data-id="${row.Id}">

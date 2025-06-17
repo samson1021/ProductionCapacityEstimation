@@ -190,6 +190,15 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="IndBldgFacilityEquipmentCostsId">Insurance, Freight & Other Costs</label>
+                            <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control" required>
+                                <option disabled value="">Select Insurance, Freight & Other Costs</option>
+                            </select>
+                            <span asp-validation-for="IndBldgFacilityEquipmentCostsId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
                         <button type="submit" class="btn bg-purple col-xl-3">Save</button>
                     </div>
                 </form>
