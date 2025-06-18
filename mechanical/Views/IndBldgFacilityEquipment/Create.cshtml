@@ -282,8 +282,17 @@
 }
 <script>
     const countryInput = document.getElementById('CountryOfOrigin');
+
         countryInput.addEventListener('keydown', (e) => {
-            e.preventDefault();
+            // Prevent typing but allow dropdown interaction
+            const allowedKeys = [
+                'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape', // navigation keys
+                'Backspace', 'Delete' // allow deletion
+            ];
+
+            if (!allowedKeys.includes(e.key)) {
+                e.preventDefault();
+            }
         });
     document.getElementById('GetExchangeRate').addEventListener('click', function () {
         var currency = document.getElementById("Currency").value;
