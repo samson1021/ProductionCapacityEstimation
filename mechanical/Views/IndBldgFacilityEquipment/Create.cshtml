@@ -225,25 +225,48 @@
 </section>
 @section Scripts {
     <script>
-        $(function () {
-            document.addEventListener('DOMContentLoaded', function() {
-                const dropdown = document.getElementById('insuranceCostDropdown');
-                if (dropdown && dropdown.options.length <= 1) {
-                    const dropdownContainer = dropdown.parentElement;
-                    dropdown.remove();
+        // $(function () {
+        //     document.addEventListener('DOMContentLoaded', function() {
+        //         const dropdown = document.getElementById('insuranceCostDropdown');
+        //         if (dropdown && dropdown.options.length <= 1) {
+        //             const dropdownContainer = dropdown.parentElement;
+        //             dropdown.remove();
 
-                    const placeholderBtn = document.createElement('button');
-                    placeholderBtn.className = 'btn btn-link p-0 text-danger';
-                    const icon = document.createElement('i');
-                    icon.className = 'fas fa-plus-circle';
-                    placeholderBtn.appendChild(icon);
-                    placeholderBtn.appendChild(document.createTextNode(' Create Insurance, Freight & Others Cost'));
-                    placeholderBtn.setAttribute('data-toggle', 'modal');
-                    placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
+        //             const placeholderBtn = document.createElement('button');
+        //             placeholderBtn.className = 'btn btn-link p-0 text-danger';
+        //             const icon = document.createElement('i');
+        //             icon.className = 'fas fa-plus-circle';
+        //             placeholderBtn.appendChild(icon);
+        //             placeholderBtn.appendChild(document.createTextNode(' Create Insurance, Freight & Others Cost'));
+        //             placeholderBtn.setAttribute('data-toggle', 'modal');
+        //             placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
 
-                    dropdownContainer.appendChild(placeholderBtn);
+        //             dropdownContainer.appendChild(placeholderBtn);
+        //         }
+        //     });
+                      
+
+            // Prevent entering custom text
+            countryInput.addEventListener('keydown', function(e) {
+                // Allow navigation keys
+                if ([8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46].includes(e.keyCode)) {
+                    return;
+                }
+
+                // If datalist is empty (no matches), prevent input
+                if (countryDatalist.options.length === 0) {
+                    e.preventDefault();
+                    return false;
                 }
             });
+
+            // Validate on blur to ensure a valid option is selected
+            countryInput.addEventListener('blur', function() {
+                if (this.value && !Array.from(countryDatalist.options).some(option => option.value === this.value)) {
+                    this.value = '';
+                }
+            });
+        });
             $('#rejectionModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
             });
@@ -281,19 +304,64 @@
     }
 }
 <script>
-    const countryInput = document.getElementById('CountryOfOrigin');
 
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const countryInput = document.getElementById('CountryOfOrigin');
+        const countryDatalist = document.getElementById('country');
+
+        // Store original options
+        const originalOptions = Array.from(countryDatalist.options).map(opt => opt.value);
+        let lastValidValue = '';
+
+        // Allow only letters and navigation keys
         countryInput.addEventListener('keydown', (e) => {
-            // Prevent typing but allow dropdown interaction
             const allowedKeys = [
-                'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape', // navigation keys
-                'Backspace', 'Delete' // allow deletion
+                'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape',
+                'Backspace', 'Delete', 'Home', 'End'
             ];
 
-            if (!allowedKeys.includes(e.key)) {
+            const isLetter = /^[a-zA-Z\s]$/.test(e.key); // Allow letters and space
+
+            if (!allowedKeys.includes(e.key) && !isLetter) {
                 e.preventDefault();
             }
         });
+
+        // Validate when selection is made or field loses focus
+        countryInput.addEventListener('change', validateInput);
+        countryInput.addEventListener('blur', validateInput);
+
+        function validateInput() {
+            if (!originalOptions.includes(countryInput.value)) {
+                countryInput.value = lastValidValue || '';
+            } else {
+                lastValidValue = countryInput.value;
+            }
+        }
+
+        // Form submission validation
+        const form = countryInput.closest('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!originalOptions.includes(countryInput.value)) {
+                    e.preventDefault();
+                    countryInput.value = '';
+                    countryInput.focus();
+                    alert('Please select a valid country from the list');
+                }
+            });
+        }
+
+        // Keep dropdown visible while typing
+        countryInput.addEventListener('input', function() {
+            this.setAttribute('list', 'country');
+        });
+    });
+
+
+
+
     document.getElementById('GetExchangeRate').addEventListener('click', function () {
         var currency = document.getElementById("Currency").value;
         if(currency == "" || currency == null){
