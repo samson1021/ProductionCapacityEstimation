@@ -117,16 +117,36 @@
    * --------------------------------------------------------------------------
    */
 
-
+  function secureRandomString() {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0].toString().replace(/\D/g, "");
+}
   var Util = {
     TRANSITION_END: 'bsTransitionEnd',
     getUID: function getUID(prefix) {
       do {
-        prefix += ~~(Math.random() * MAX_UID); // "~~" acts like a faster Math.floor() here
+        prefix += ~~(secureRandomString() * MAX_UID); // "~~" acts like a faster Math.floor() here
       } while (document.getElementById(prefix));
 
       return prefix;
-    },
+      },
+      //var Util = {
+      //    TRANSITION_END: 'bsTransitionEnd',
+      //    getUID: function getUID(prefix) {
+      //        const crypto = window.crypto || window.msCrypto; // For browser compatibility
+
+      //        do {
+      //            // Generate a secure random number
+      //            const randomBuffer = new Uint32Array(1);
+      //            crypto.getRandomValues(randomBuffer);
+
+      //            // Convert to integer in the same range as original (0 - MAX_UID)
+      //            prefix += Math.floor(randomBuffer[0] / 0xFFFFFFFF * MAX_UID);
+      //        } while (document.getElementById(prefix));
+
+      //        return prefix;
+      //    },
     getSelectorFromElement: function getSelectorFromElement(element) {
       var selector = element.getAttribute('data-target');
 

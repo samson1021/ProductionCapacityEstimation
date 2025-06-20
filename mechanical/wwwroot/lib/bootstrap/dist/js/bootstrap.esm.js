@@ -27,11 +27,15 @@ const toType = obj => {
  * Public Util Api
  * --------------------------------------------------------------------------
  */
-
+function secureRandomString() {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0].toString().replace(/\D/g, "");
+}
 
 const getUID = prefix => {
   do {
-    prefix += Math.floor(Math.random() * MAX_UID);
+    prefix += Math.floor(secureRandomString() * MAX_UID);
   } while (document.getElementById(prefix));
 
   return prefix;
