@@ -433,5 +433,25 @@ namespace mechanical.Controllers
             }
             return Redirect($"/MOCase/MyCase?Id={caseId}");
         }
+
+               [HttpGet]
+        public async Task<IActionResult> GetCollateralCorrectionHistory(Guid CollateralId)
+        {
+            try
+            {
+                var response = new
+                {
+                    userId = base.GetCurrentUserId(),
+                    caseComments = await _collateralService.GetGetCollateralCorrectionHistorys(CollateralId)
+                };
+                return Content(JsonConvert.SerializeObject(response), "application/json");
+            }
+            catch (Exception ex)
+            {
+
+                return Content("Error"+ex.Message);
+            }
+
+        }
     }
 }

@@ -51,6 +51,19 @@ namespace mechanical.Controllers
 
         //    return RedirectToAction(Action, new { Id = collateralId });
         //}
+        [HttpPost]
+        public async Task<IActionResult> ReplayForCheckerCorrections(CorrectionPostDto correctionDto, string Controller, string Action)
+        {
+            var collateralId = correctionDto.CollateralID;
+
+            if (ModelState.IsValid)
+            {
+                var correction = await _CorrectionService.CreateCorrection(correctionDto);
+                return Ok();
+            }
+
+            return RedirectToAction(Action, new { Id = collateralId });
+        }
 
     }
 }

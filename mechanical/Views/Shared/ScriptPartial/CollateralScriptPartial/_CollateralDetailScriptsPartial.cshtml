@@ -13,94 +13,17 @@
 <script src="~/lib/toastr/toastr.min.js"></script>
 <script>
     $(document).ready(function () {
-        var CaseId = $('#CaseId').val();
-        function returnToMaker(data) {
-            const userConfirmed = confirm("Are you sure you want to return to the maker?");
-            if (userConfirmed) {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("RetrunToMaker", "Case")',
-                    data: { Id: data },
-                    success: function (response) {
-                        // Assuming the response indicates success
-                        if (response.success) {
-                            toastr.success("Successfully returned to maker!", "success");
-                            var caseCollateralsTable = $('#RejectCollaterals').DataTable();
-                                caseCollateralsTable.destroy();
-                            loadCollaterals();
-                        } else {
-                            toastr.error("Failed to return to maker.", "error");
-                        }
-                    },
-                    error: function () {
-                        toastr.error("An error occurred. Please try again.", "error");
-                    }
-                });
-            }
+        
+        var CaseId = $('#CollateralId').val();
+        function formatDate(date) {
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            return date.toLocaleString('en-US', options);
         }
-        function initializeDataTable(data) {
-            caseCollateralsTable = $('#RejectCollaterals').DataTable({
-                language: {
-                    emptyTable: "There is no collateral register for this case please click the above add button to add collaterals"
-                },
-                responsive: true,
-                pageLength: 8,
-                lengthChange: false,
-                autoWidth: false,
-                buttons: [
-                    "copy",
-                    "csv",
-                    "excel",
-                    { extend: 'pdf', title: 'My Case - pdf' },
-                    { extend: 'print', title: 'My Case - Print' },
-                    "colvis"
-                ],
-                data: data,
-                columns: [
-                    { data: 'PropertyOwner', width: '20%' },
-                    { data: 'Role', width: '20%' },
-                    { data: 'Category', width: '25%' },
-                    { data: 'Type', width: '25%' },
-                    {
-                        data: 'Id',
-                        width: '10%',
-                        render: function (data, type, row, meta) {
-                            return `<a href="@Url.Action("Detail", "Collateral")?Id=${data}">Details |
-                                    </a> <a href="@Url.Action("Edit", "Collateral")?Id=${data}">Edit</a>|
-                                    <a href="#" class="return-to-maker" data-id="${data}">Return to Maker</a>`;
-                        }
-                    }
-                ]
-            }).buttons().container().appendTo('#RejectCollaterals_wrapper .col-md-6:eq(0)');
-        }
-        $(document).on('click', '.return-to-maker', function (event) {
-            event.preventDefault(); // Prevent the default anchor click behavior
-            const id = $(this).data('id');
-            returnToMaker(id);
-        });
-       
-        function loadCollaterals() {
-            $.ajax({
-                url: '/Collateral/GetRejectCollaterals?CaseId=' + CaseId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#RejectCollaterals')) {
-                        var caseCollateralsTable = $('#RejectCollaterals').DataTable();
-                        caseCollateralsTable.destroy();
-                    }
-                    initializeDataTable(data);
-                },
-                error: function (error) {
-                    toastr.error("Failed to load collaterals");
-                    console.log(error);
-                }
-            });
-        }
-           loadCollaterals();
-         function LoadCorrectionHistory() {
+
+    function LoadCorrectionHistory() {
+        console.log("this Collateral Id Is =========="+CaseId);
         $.ajax({
-            url: '/CaseComment/GetCaseCorrectionHistory?caseId=' + CaseId,
+           url: '/Collateral/GetCollateralCorrectionHistory?CollateralId=' + CaseId,
             method: 'GET',
             success: function (data) {
                 var currentUserID = data.userId;
@@ -146,7 +69,8 @@
             }
         });
     }
-         function GetUserInfo(Id, callback){
+
+    function GetUserInfo(Id, callback){
         return new Promise(function(resolve , reject){
 
               $.ajax({
@@ -167,14 +91,32 @@
         });
 
         })
-
+         
 
     }
     // Call the function to load correction history
-         LoadCorrectionHistory();
-         function formatDate(date) {
-            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-            return date.toLocaleString('en-US', options);
-        }
-     });
+    LoadCorrectionHistory();
+    });
 </script>
+<style>
+    .direct-chat-card {
+        border: 1px solid #ddd; /* Card border */
+        border-radius: 5px; /* Rounded corners */
+        padding: 15px; /* Padding inside the card */
+        background-color: #f9f9f9; /* Background color */
+    }
+
+    .card-body {
+        padding: 10px; /* Adjust padding for card body */
+    }
+
+    .direct-chat-name {
+        font-weight: bold; /* Bold text for the name */
+        font-size: 1.2em; /* Slightly larger font size for the name */
+    }
+
+    .direct-chat-timestamp {
+        font-size: 0.9em; /* Smaller font size for the timestamp */
+        color: #999; /* Lighter color for the timestamp */
+    }
+</style>

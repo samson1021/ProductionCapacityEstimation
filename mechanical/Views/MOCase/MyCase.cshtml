@@ -44,6 +44,15 @@
                             Comments <span class="badge badge-warning right CommentBage"> </span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-correction-tab" data-toggle="pill" href="#custom-tabs-four-correction" role="tab" aria-controls="custom-tabs-four-correction" aria-selected="false">
+                            <i class="fas fa-history"></i> Correction History <span class="badge badge-warning right CorrectionBage"></span>
+                        </a>
+                    </li>
+
+
+
                     <li class="nav-item">
                         <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
                             <i class="fas fa-ban"> </i>
@@ -70,6 +79,9 @@
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @await Html.PartialAsync("_CaseComment")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-correction" role="tabpanel" aria-labelledby="custom-tabs-four-correction-tab">
+                        @await Html.PartialAsync("_CaseCorrectionHistory")
                     </div>
                     @{
                         if (caseTerminate.Count() > 0)
@@ -313,8 +325,7 @@
                 toastr.error("Failed to load collateral");
             }
         });
-
-         $(document).on('click', '.delete-btn', function() {
+        $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
             if (!confirm('Are you sure you want to delete this industrial collateral record?')) return;
 
@@ -332,12 +343,10 @@
                 }
             });
         });
-
         $('#saveAllChanges').click(function() {
             toastr.success("All changes are automatically saved");
             $('#industrialCollateralModal').modal('hide');
         });
-
         // Calculate depreciated values when rates change
         $('#insuranceDepreciationRate, #insuranceFreightCost').on('input', function() {
             const amount = parseFloat($('#insuranceFreightCost').val()) || 0;
@@ -345,7 +354,6 @@
             const depAmount = amount * (1 - rate/100);
             $('#depreciatedInsuranceCost').val(depAmount.toFixed(2));
         });
-
         $('#transportDepreciationRate, #transportCost').on('input', function() {
             const amount = parseFloat($('#transportCost').val()) || 0;
             const rate = parseFloat($('#transportDepreciationRate').val()) || 0;
@@ -354,187 +362,180 @@
         });
 
           /// the old one
-    
-            $('#addMechanicalCollateralFormm').on('submit', function (e) {
-                e.preventDefault();
-                console.log("from jquery");
-                var formData = new FormData(this);
-                var uploadButton = $('#assignButton'); 
-                uploadButton.prop('disabled', true).text('Uploading...');
+        $('#addMechanicalCollateralFormm').on('submit', function (e) {
+            e.preventDefault();
+            console.log("from jquery");
+            var formData = new FormData(this);
+            var uploadButton = $('#assignButton'); 
+            uploadButton.prop('disabled', true).text('Uploading...');
 
-                $.ajax({
-                    url: '@Url.Action("CreateMoDocument", "Collateral")',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response.message) {
-                            toastr.success(response.message);
-                            setTimeout(function () {
-                                location.reload();
-                            }, 1500);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        toastr.error('An error occurred while uploading the document.');
+            $.ajax({
+                url: '@Url.Action("CreateMoDocument", "Collateral")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.message) {
+                        toastr.success(response.message);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
                     }
-                });
+                },
+                error: function (xhr, status, error) {
+                    toastr.error('An error occurred while uploading the document.');
+                }
             });
+        });
+        $('#evaluationForm').submit(function (event) {
+            event.preventDefault();
 
-            $('#evaluationForm').submit(function (event) {
-                event.preventDefault();
+            var submitButton = $(this).find('button[type="submit"]');
+            submitButton.prop('disabled', true);
+            submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+            var formData = $(this).serialize();
 
-                var submitButton = $(this).find('button[type="submit"]');
-                submitButton.prop('disabled', true);
-                submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-                var formData = $(this).serialize();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                success: function (response) {
+                    if (response.Status === 'accepted') {
+                        var scheduledDateDiv = $('<div>').text('Scheduled Date: ' + new Date(response.ScheduleDate).toLocaleString());
+                        var statusDiv = $('<div>').text('Status: Accepted');
 
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: $(this).attr('method'),
-                    data: formData,
-                    success: function (response) {
-                        if (response.Status === 'accepted') {
-                            var scheduledDateDiv = $('<div>').text('Scheduled Date: ' + new Date(response.ScheduleDate).toLocaleString());
-                            var statusDiv = $('<div>').text('Status: Accepted');
+                        $('#CaseSchedule').append(scheduledDateDiv);
+                        $('#CaseSchedule').append(statusDiv);
+                    } else if (response.Status === 'proposed') {
+                        var postDiv = $('<div>').addClass('post clearfix').css({
+                            'border-bottom': '1px solid #adb5bd',
+                            'color': '#666',
+                            'margin-bottom': '15px',
+                            'padding-bottom': '15px'
+                        });
+                        $("#scheduleId").val(response.Id);
+                        var userBlockDiv = $('<div>').addClass('user-block');
+                        var userImage = $('<img>').addClass('img-circle img-bordered-sm').attr('src', '/img/avatar5.png').attr('alt', 'User Image');
+                        var usernameSpan = $('<span>').addClass('username').append($('<a>').attr('href', '#').text('Maker Officer'));
+                        var descriptionSpan = $('<span>').addClass('description').text(new Date(response.CreatedAt).toLocaleString());
+                        userBlockDiv.append(userImage, usernameSpan, descriptionSpan);
 
-                            $('#CaseSchedule').append(scheduledDateDiv);
-                            $('#CaseSchedule').append(statusDiv);
-                        } else if (response.Status === 'proposed') {
-                            var postDiv = $('<div>').addClass('post clearfix').css({
-                                'border-bottom': '1px solid #adb5bd',
-                                'color': '#666',
-                                'margin-bottom': '15px',
-                                'padding-bottom': '15px'
-                            });
-                            $("#scheduleId").val(response.Id);
-                            var userBlockDiv = $('<div>').addClass('user-block');
-                            var userImage = $('<img>').addClass('img-circle img-bordered-sm').attr('src', '/img/avatar5.png').attr('alt', 'User Image');
-                            var usernameSpan = $('<span>').addClass('username').append($('<a>').attr('href', '#').text('Maker Officer'));
-                            var descriptionSpan = $('<span>').addClass('description').text(new Date(response.CreatedAt).toLocaleString());
-                            userBlockDiv.append(userImage, usernameSpan, descriptionSpan);
+                        var date = $('<p id="ScheduleDate">').text('Schedule Date: ' + new Date(response.ScheduleDate).toLocaleString());
+                        var status = $('<p>').text('Status: proposed');
+                        var demoFile2P = $('<Button>').addClass('update-link btn btn-sm btn-outline-primary').attr('Id', 'UpdateSchedule').text('Update');
 
-                            var date = $('<p id="ScheduleDate">').text('Schedule Date: ' + new Date(response.ScheduleDate).toLocaleString());
-                            var status = $('<p>').text('Status: proposed');
-                            var demoFile2P = $('<Button>').addClass('update-link btn btn-sm btn-outline-primary').attr('Id', 'UpdateSchedule').text('Update');
-
-                            postDiv.append(userBlockDiv, date, status, demoFile2P);
-                            $('#CaseSchedule').append(postDiv);
-                            $('#UpdateSchedule').on('click', function (event) {
-                                event.preventDefault();
-                                $('#datetimepicker-modal').modal('show');
-                            });
-                        }
-
-                        $('#evaluationForm').remove();
-                    },
-                    error: function () {
-                        $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
-                    },
-                    complete: function () {
-                        submitButton.prop('disabled', false);
-                        submitButton.val('Submit');
+                        postDiv.append(userBlockDiv, date, status, demoFile2P);
+                        $('#CaseSchedule').append(postDiv);
+                        $('#UpdateSchedule').on('click', function (event) {
+                            event.preventDefault();
+                            $('#datetimepicker-modal').modal('show');
+                        });
                     }
-                });
+
+                    $('#evaluationForm').remove();
+                },
+                error: function () {
+                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                },
+                complete: function () {
+                    submitButton.prop('disabled', false);
+                    submitButton.val('Submit');
+                }
             });
+        });
+        $('#AcceptcaseTerminationButton').click(function (event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var Id = $('#CaseTerminationId').val();
+            formData.append('Id', Id);
 
-            $('#AcceptcaseTerminationButton').click(function (event) {
-                event.preventDefault();
-                var formData = new FormData();
-                var Id = $('#CaseTerminationId').val();
-                formData.append('Id', Id);
+            var submitButton = $('#AcceptcaseTerminationButton');
+            submitButton.prop('disabled', true);
+            submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
 
-                var submitButton = $('#AcceptcaseTerminationButton');
-                submitButton.prop('disabled', true);
-                submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-
-                $.ajax({
-                    url: '/Case/ApproveCaseTermination',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('Error occurred while updating the date.');
-                    }
-                });
+            $.ajax({
+                url: '/Case/ApproveCaseTermination',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
             });
-
-            $('#UpdateSchedule').on('click', function (event) {
-                event.preventDefault();
-                $('#datetimepicker-modal').modal('show');
+        });
+        $('#UpdateSchedule').on('click', function (event) {
+            event.preventDefault();
+            $('#datetimepicker-modal').modal('show');
+        });
+        $('#datetimepicker-form').submit(function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var Id = $('#CaseSchedulleId').val();
+            formData.append('Id', Id);
+            console.log(formData)
+            $.ajax({
+                url: '/MOCase/UpdateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
             });
-            $('#datetimepicker-form').submit(function (event) {
-                event.preventDefault();
-                var formData = new FormData(this);
-                var Id = $('#CaseSchedulleId').val();
-                formData.append('Id', Id);
-                console.log(formData)
-                $.ajax({
-                    url: '/MOCase/UpdateSchedule',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('Error occurred while updating the date.');
-                    }
-                });
+        });
+        $('#AcceptButton').click(function (event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var Id = $('#CaseScheduleId').val();
+            formData.append('Id', Id);
+
+            $.ajax({
+                url: '/MOCase/ApproveSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error occurred while updating the date.');
+                }
             });
-            $('#AcceptButton').click(function (event) {
-                event.preventDefault();
-                var formData = new FormData();
-                var Id = $('#CaseScheduleId').val();
-                formData.append('Id', Id);
+        });
+        $('#proposeNewScheduleButton').click(function () {
+            $('#proposeNewSchedule-modal').modal('show');
+        });
+        $('#proposeNewSchedule-form').submit(function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var Id = $('#CaseScheduleId').val();
+            formData.append('id', Id);
 
-                $.ajax({
-                    url: '/MOCase/ApproveSchedule',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('Error occurred while updating the date.');
-                    }
-                });
+            $.ajax({
+                url: '/Case/CreateSchedule',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                    // Handle success response
+                },
+                error: function () {
+                    $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
+                }
             });
-            $('#proposeNewScheduleButton').click(function () {
-                $('#proposeNewSchedule-modal').modal('show');
-            });
-            $('#proposeNewSchedule-form').submit(function (event) {
-                event.preventDefault();
-                var formData = new FormData(this);
-                var Id = $('#CaseScheduleId').val();
-                formData.append('id', Id);
-
-                $.ajax({
-                    url: '/Case/CreateSchedule',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        location.reload();
-                        // Handle success response
-                    },
-                    error: function () {
-                        $('#evaluationForm').append('<p class="text-danger">Error occurred while creating the schedule.</p>');
-                    }
-                });
-            });
-
-
-
+        });
         });
         function fetchCollateralDetails(collateralId) {
             $('#CollateralFileModal').modal('show');
