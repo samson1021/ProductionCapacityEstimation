@@ -234,8 +234,9 @@
                                     <p> My Assignments </p>
                                 </a>
                             </li>
+
                             <li class="nav-item">
-                                <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
                                     <i class="fas fa-file-alt nav-icon"></i>
                                     <p> Interanl Report  </p>
                                 </a>
@@ -272,6 +273,12 @@
                                 <a href="@Url.Action("MyAssignments", "PCECaseAssignment")" class="nav-link">
                                     <i class="fas fa-tasks nav-icon"></i>
                                     <p> My PCE Assignments </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
                                 </a>
                             </li>
                         </ul>
@@ -316,6 +323,13 @@
                                     <p> My Assignments </p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
                         </ul>
                     </li> 
 
@@ -349,6 +363,12 @@
                                 <a href="@Url.Action("MyAssignments", "PCECaseAssignment")" class="nav-link">
                                     <i class="fas fa-circle nav-icon"></i>
                                     <p> My PCE Assignments </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
                                 </a>
                             </li>
                         </ul>
@@ -433,6 +453,13 @@
                                     <p> My Assignments </p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
                         </ul>
                     </li> 
             
@@ -467,6 +494,13 @@
                                 <a href="@Url.Action("MyAssignments", "PCECaseAssignment")" class="nav-link">
                                     <i class="fas fa-tasks nav-icon"></i>
                                     <p> My PCE Assignments </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
                                 </a>
                             </li>
                         </ul>
@@ -518,6 +552,13 @@
                                     <p> All cases </p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
                         </ul>
                     </li> 
 
@@ -553,6 +594,13 @@
                                 <a href="@Url.Action("RemarkPCECases", "PCECase")" class="nav-link">
                                     <i class="fas fa-file nav-icon"></i>
                                     <p> Remark Release PCE cases </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
                                 </a>
                             </li>
                         </ul>
@@ -597,6 +645,12 @@
                                     <p> My Assignments </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>            
 
@@ -637,6 +691,12 @@
                                 <a href="@Url.Action("MyAssignments", "CTLCase")" class="nav-link">
                                     <i class="fas fa-tasks nav-icon"></i>
                                     <p> My Assignments </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
                                 </a>
                             </li>
                         </ul>
@@ -680,9 +740,126 @@
                                     <p> All cases </p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
-                } 
+                }
+                else if (@userRole == "Higher Official")
+                {
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p> Collateral Valuation<i class="fas fa-angle-left right"></i> </p>
+                        </a>
+                        <ul class="nav nav-treeview pl-3">
+                            <li class="nav-item">
+                                <a href="@Url.Action("TotalHONewCases", "Case")" class="nav-link">
+                                    <i class="fas fa-grip-lines nav-icon"></i>
+                                    <p> New cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("TotalHOPendingCases", "Case")" class="nav-link">
+                                    <i class="fas fa-spinner nav-icon"></i>
+                                    <p> Pending cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("TotalHOCompletedCases", "Case")" class="nav-link">
+                                    <i class="fas fa-check nav-icon"></i>
+                                    <p> Completed cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("TotalHORemarkCases", "Case")" class="nav-link">
+                                    <i class="fas fa-file nav-icon"></i>
+                                    <p> Remark Release cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("TotalHOCases", "Case")" class="nav-link">
+                                    <i class="fas fa-circle nav-icon"></i>
+                                    <p> All cases </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("CaseDetail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @* Start Production Capacity Estimation *@
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <img src="~/img/assignment_FILL0_wght300_GRAD200_opsz20.svg" class="nav-icon" alt="Custom Icon">
+                            <p> PCE Valuation<i class="fas fa-angle-left right"></i> </p>
+                        </a>
+                        <ul class="nav nav-treeview pl-3">
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "New" })" class="nav-link">
+                                    <i class="fas fa-grip-lines nav-icon"></i>
+                                    <p> New PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Pending" })" class="nav-link">
+                                    <i class="fas fa-spinner nav-icon"></i>
+                                    <p> Pending PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Returned" })" class="nav-link">
+
+                                    <i class="fas fa-undo nav-icon"></i>
+                                    <p> Returned  PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Completed" })" class="nav-link">
+                                    <i class="fas fa-check nav-icon"></i>
+                                    <p> Completed PCE Cases </p>
+                                </a>
+                            </li>
+                          
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCETerminatedCases", "PCECase")" class="nav-link" style="color:red;">
+                                    <i class="fas fa-ban nav-icon "> </i>
+                                    <p> Terminated PCE Cases </p>
+                                </a>
+                            </li>                           
+                            <li class="nav-item">
+
+                                <a href="@Url.Action("HOPCECases", "PCECase")" class="nav-link">
+                                    <i class="fas fa-circle nav-icon"></i>
+                                    <p> All PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCECasesReport", "PCECase")" class="nav-link">
+                                    <i class="fas fa-download nav-icon"></i>
+                                    <p> Generate  Report </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
+                                    <i class="fas fa-file-alt nav-icon"></i>
+                                    <p> Interanl Report  </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
                 else if (@userRole == "Admin")
                 {
                     <li class="nav-item has-treeview">

@@ -65,10 +65,7 @@ namespace mechanical.Mapper
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
                 .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
 
-            CreateMap<Case, InternalCaseReportDto>()
-                .ForMember(dest => dest.RequestingUnit, opt => opt.MapFrom(src => src.CaseOriginator.Department))
-                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))
-                .ForMember(dest => dest.NoOfCollateral, opt => opt.MapFrom(src => src.Collaterals.Count()));
+
 
             CreateMap<Case, CaseTerminateDto>()
                 .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Name))

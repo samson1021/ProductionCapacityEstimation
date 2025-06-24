@@ -23,13 +23,11 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string MachineName { get; set; }
 
         [Display(Name = "Country of Origin")]
-        public string CountryOfOrigin { get; set; }
+        public required string CountryOfOrigin { get; set; }
 
         [Display(Name = "Business License Number")]
         public string BusinessLicenseNumber { get; set; }
-        // [Display(Name = "Trade License Number")]
-        // public string TradeLicenseNumber { get; set; }
-
+       
         [Display(Name = "Purpose")]
         public string? Purpose { get; set; }
 
@@ -47,7 +45,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? SerialNo { get; set; }
 
         [Display(Name = "Machinery Installed Place")]
-        public string MachineryInstalledPlace { get; set; }
+        public required string MachineryInstalledPlace { get; set; }
 
         [Display(Name = "LHC Number")]
         public string? LHCNumber { get; set; }
@@ -59,7 +57,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? Industrialpark { get; set; }
 
         [Display(Name = "Region")]
-        public string Region { get; set; }
+        public required string Region { get; set; }
 
         [Display(Name = "Zone")]
         public string? Zone { get; set; }
@@ -80,7 +78,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? HouseNo { get; set; }
 
         [Display(Name = "Product Description")]
-        public string ProductDescription { get; set; }
+        public string? ProductDescription { get; set; }
 
         [Display(Name = "Remark")]
         public string? Remark { get; set; } = string.Empty;

@@ -1,0 +1,63 @@
+﻿﻿@using mechanical.Models.Dto.UserDto
+@using mechanical.Models.PCE.Dto.PCECaseScheduleDto
+
+@{
+    var status = ViewBag.Status as string;
+    var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
+    var latestPCECaseSchedule = ViewData["LatestPCECaseSchedule"] as PCECaseScheduleReturnDto;
+
+    var currentUserRole = currentUser?.Role?.Name as string;
+}
+
+<script>
+    function initializeDataTable(data, emptyMessage) {
+        const $productionsTable = $('#Productions');
+        $productionsTable.DataTable({
+            language: { emptyTable: emptyMessage },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            buttons: ["copy", "csv", "excel",
+                { extend: 'pdf', title: 'My PCE Case - pdf' },
+                { extend: 'print', title: 'My PCE Case - Print' },
+                "colvis"
+            ],
+            data: data,
+               columns: [
+        { data: 'PropertyOwner', width: '20%' },
+        { data: 'Role', width: '15%' },
+        { data: 'MachineName', width: '20%' },
+        { data: 'CurrentStatus', width: '15%' },
+        { data: 'CurrentStage', width: '20%' },
+        {
+            data: 'Id',
+            width: '10%',
+            render: function (data, type, row, meta) {
+                const detailsUrl = '@Url.Action("HODetail", "ProductionCapacity")?Id=' + data;
+                return `<a href="${detailsUrl}">Details</a>`;
+            }
+        }
+    ]
+        }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadProductions(fetchUrl, emptyMessage) {
+        $.ajax({
+            url: fetchUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#Productions')) {
+                    $('#Productions').DataTable().destroy();
+                }
+                initializeDataTable(data, emptyMessage);
+            },
+            error: function (error) {
+                toastr.error(`Failed to load Productions (Status: ${error.status})`);
+                console.log(error);
+            }
+        });
+    }
+
+</script>

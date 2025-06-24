@@ -1,4 +1,5 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
+@using mechanical.Models.PCE.Enum
 @using mechanical.Models.PCE.Enum.ProductionCapacity
 
 @model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionPostDto
@@ -14,7 +15,7 @@
         emptyMessage = "There are no " + status + " Productions found for this PCE Case.";
     }
 }
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <div class="modal fade" id="addProductionModal" tabindex="-1" role="dialog" aria-labelledby="addProductionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
@@ -79,39 +80,35 @@
                                 <input asp-for="ModelNo" type="text" class="form-control form-control-sm" id="ModelNo" placeholder="Enter Model Number">
                                 <span id="ModelNo-error" asp-validation-for="ModelNo" class="text-danger"></span>
                             </div>
-
-                            @* <div class="form-group col-lg-3">
-                                <label asp-for="CountryOfOrigin">Country Of Orgin <i class="text-danger">*</i></label>
-                                <input asp-for="CountryOfOrigin" type="text" class="form-control form-control-sm" id="CountryOfOrigin" placeholder="Enter Country Of Orgin" required>
-
-                                <span id="CountryOfOrigin-error" asp-validation-for="CountryOfOrigin" class="text-danger"></span>
-                            </div> *@
                             <div class="form-group col-lg-3">
                                 <label asp-for="CountryOfOrigin">Country of Origin <i class="text-danger">*</i></label>
-                                <input asp-for="CountryOfOrigin" type="text" class="form-control" placeholder="Select Country of Origin" list="country" required>
+                                <select id="CountryOfOrigin" asp-for="CountryOfOrigin" required class="form-control form-control-sm"
+                                        asp-items="@(new SelectList(Enum.GetValues(typeof(Country)).Cast<Country>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                    <option value="">Select country of origin</option>
+                                </select>
                                 <span id="CountryOfOrigin-error" asp-validation-for="CountryOfOrigin" class="text-danger"></span>
                             </div>
-                            <div class="row">
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="BusinessLicenseNumber">Business License Number <i class="text-danger">*</i></label>
-                                    <input asp-for="BusinessLicenseNumber" type="text" class="form-control form-control-sm" id="BusinessLicenseNumber" placeholder="Business License Number" >
-                                    <span id="BusinessLicenseNumber-error" asp-validation-for="BusinessLicenseNumber" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="ManufactureYear">Manufactuing Year <i class="text-danger">*</i> </label>
-                                    <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
-                                    <span id="ManufactureYear-error" asp-validation-for="ManufactureYear" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="InvoiceNo">Invoice Number <i class="text-danger">*</i></label>
-                                    <input asp-for="InvoiceNo" type="text" class="form-control form-control-sm" id="InvoiceNo" placeholder="Enter Invoice Number">
-                                    <span id="InvoiceNo-error" asp-validation-for="InvoiceNo" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="SerialNo">Serial Number <i class="text-danger">*</i></label>
-                                    <input asp-for="SerialNo" type="text" class="form-control form-control-sm" id="SerialNo" placeholder="XXXXXXXXXXXX">
-                                    <span id="SerialNo-error" asp-validation-for="SerialNo" class="text-danger"></span>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-3">
+                                <label asp-for="BusinessLicenseNumber">Business License Number <i class="text-danger">*</i></label>
+                                <input asp-for="BusinessLicenseNumber" type="text" class="form-control form-control-sm" id="BusinessLicenseNumber" placeholder="Business License Number" >
+                                <span id="BusinessLicenseNumber-error" asp-validation-for="BusinessLicenseNumber" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label asp-for="ManufactureYear">Manufactuing Year <i class="text-danger">*</i> </label>
+                                <input asp-for="ManufactureYear" type="number" min="1900" max="2024" class="form-control form-control-sm" id="ManufactureYear" placeholder="1900">
+                                <span id="ManufactureYear-error" asp-validation-for="ManufactureYear" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label asp-for="InvoiceNo">Invoice Number <i class="text-danger">*</i></label>
+                                <input asp-for="InvoiceNo" type="text" class="form-control form-control-sm" id="InvoiceNo" placeholder="Enter Invoice Number">
+                                <span id="InvoiceNo-error" asp-validation-for="InvoiceNo" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label asp-for="SerialNo">Serial Number <i class="text-danger">*</i></label>
+                                <input asp-for="SerialNo" type="text" class="form-control form-control-sm" id="SerialNo" placeholder="XXXXXXXXXXXX">
+                                <span id="SerialNo-error" asp-validation-for="SerialNo" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -119,7 +116,7 @@
                             <div class="form-group col-lg-4">
                                 <label asp-for="MachineryInstalledPlace"> Machinery Installed Place <i class="text-danger">*</i></label>
                                 <select asp-for="MachineryInstalledPlace" class="form-control form-control-sm" id="MachineryInstalledPlacelist" onchange="handleMachineryInstalledPlaceChange(this)" >
-                                    <option value="">Select Machinery Installed Place</option>
+                                    <option value="" selected disabled>Select Machinery Installed Place</option>
                                     <option value="Private Owned LHC">Private Owned LHC</option>
                                     <option value="Private Rented LHC">Private Rented LHC</option>
                                     <option value="Industrial Park">Industrial Park</option>
@@ -128,86 +125,66 @@
                             </div>
                         </div>
                         <div id="PrivateownedLHC" style="display: none;">
-                            <div class="row">
-                                <div class="form-group col-lg-4">
-                                    <label asp-for="LHCNumber">LHC Number: </label>
-                                        <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber" >
-                                        <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label asp-for="OwnerName">Owner Name in the LHC </label>
-                                        <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX" >
-                                    <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label asp-for="LHCDocument">Upload LHC Document </label>
-                                        <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument" >
+                            <div class="row">                                
+                                    <div id="owned" class="form-group col-lg-3" >
+                                        <label asp-for="LHCNumber">LHC Number: </label>
+                                            <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber" >
+                                            <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="OwnerName">Owner Name in the LHC </label>
+                                            <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX" >
+                                        <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label asp-for="LHCDocument">Upload LHC Document </label>
+                                            <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument" >
                                         <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="PrivateRentedLHC" style="display: none;">
-                            <div class="row">
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="LHCNumber">LHC Number: </label>
-                                    <input asp-for="LHCNumber" type="number" class="form-control form-control-sm" placeholder="LHC Number" id="LHCNumber">
-                                    <span id="LHCNumber-error" asp-validation-for="LHCNumber" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="OwnerName">Owner Name in the LHC </label>
-                                    <input asp-for="OwnerName" type="text" class="form-control form-control-sm" id="OwnerName" placeholder="XXXXXXXXXXX">
-                                    <span id="OwnerName-error" asp-validation-for="OwnerName" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-3">
-                                    <label asp-for="LHCDocument">Upload LHC Document </label>
-                                    <input asp-for="LHCDocument" type="file" class="form-control  form-control-sm" id="LHCDocument">
-                                    <span id="LHCDocument-error" asp-validation-for="LHCDocument" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-lg-3">
+                                    </div>
+                               
+                                <div class="form-group col-lg-3" id="PrivateRentedLHC" style="display: none;">
                                     <label asp-for="ShadeRentAgreement">Upload Rent Agreement Document </label>
                                     <input asp-for="ShadeRentAgreement" type="file" class="form-control  form-control-sm" id="RentAgreement" >
                                     <span id="RentAgreement-error" asp-validation-for="ShadeRentAgreement" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
+                        
                         <div id="IndustrialParkrow" style="display: none;">
                             <div class="row">
                                 <div class="form-group col-lg-4">
                                     <label asp-for="Industrialpark">Industrial Park <i class="text-danger">*</i></label>
-                                    <select asp-for="Industrialpark" class="form-control form-control-sm" id="Industrialpark" onchange="handleIndestrialparkChange(this)">
-                                        <option value="">Select Industrial Park</option>
-                                        <option value="Adama">Adama</option>
-                                        <option value="BahirDar">BahirDar</option>
-                                        <option value="Bole lemi I">Bole lemi I</option>
-                                        <option value="Bole lemi II">Bole lemi II</option>
-                                        <option value="Kilinto">Kilinto</option>
-                                        <option value="Combolcha">Combolcha</option>
-                                        <option value="Dukem Eastern Industry zone">Dukem Eastern Industry zone</option>
-                                        <option value="Hawassa">Hawassa</option>
-                                        <option value="Jimma">Jimma</option>
-                                        <option value="Mekelle">Mekelle</option>
-                                        <option value="Somalia">Somalia</option>
-                                        <option value="Others">Others, please specify</option>
-                                    </select>
-                                    <input type="text" class="form-control form-control-sm mt-2" id="OtherIndustrialpark" name="OtherIndustrialpark" style="display: none;">
+                                    
+                                    <select asp-for="Industrialpark" class="form-control form-control-sm" id="Industrialpark"
+                                            asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialPark)).Cast<IndustrialPark>()
+                                                            .Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0]
+                                                            .GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>()
+                                                            .FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))"
+                                                            required onchange="handleIndestrialparkChange(this)">
+                                        <option value="" selected disabled>Select Industrial Park</option>
+                                    </select>                                    
                                     <span id="Industrialpark-error" asp-validation-for="Industrialpark" class="text-danger"></span>
                                 </div>
-                            <div class="form-group col-lg-4">
-                                <label asp-for="ShadeRentAgreement">Upload Shade Rent Agreement Document <i class="text-danger">*</i></label>
-                                    <input asp-for="ShadeRentAgreement" type="file" class="form-control  form-control-sm" id="ShadeRentAgreement" >
-                                    <span id="ShadeRentAgreement-error" asp-validation-for="ShadeRentAgreement" class="text-danger"></span>
-                            </div>
+                                <div class="form-group col-lg-4" id="otherIndustrialParkDiv" style="display: none;">
+                                    <label for="OtherIndustrialpark">Other Industrial Park <i class="text-danger">*</i></label>
+                                    <input type="text" class="form-control form-control-sm" id="OtherIndustrialpark" name="OtherIndustrialpark">
+                                    <span id="OtherIndustrialpark-error" class="text-danger"></span>
                                 </div>
+                                <div class="form-group col-lg-4">
+                                    <label asp-for="ShadeRentAgreement">Upload Shade Rent Agreement Document <i class="text-danger">*</i></label>
+                                    <input asp-for="ShadeRentAgreement" type="file" class="form-control form-control-sm" id="ShadeRentAgreement" >
+                                    <span id="ShadeRentAgreement-error" asp-validation-for="ShadeRentAgreement" class="text-danger"></span>
+                                </div>
+                            </div>
                         </div>
                  
                         <div class="card">
                             <div class="card-body" style="padding-bottom:0px;">
-                               @*  <h5 class="text-center">Physical Address of Property </h5> *@
                                 <div class="row">
                                     <div class="form-group col-lg-3">
                                         <label asp-for="Region">Region <i class="text-danger">*</i></label>
                                         <select asp-for="Region" class="form-control form-control-sm" id="Region" onchange="handleRegionChange(this)" >
-                                            <option value="">Select Region</option>
+                                            <option value="" selected disabled>Select Region</option>
                                             <option value="Addis Ababa">Addis Ababa</option>
                                             <option value="Afar">Afar</option>
                                             <option value="Amhara">Amhara</option>
@@ -315,10 +292,9 @@
 }
 
 <script>
-    
-    var fetchUrl = '@Html.Raw(fetchUrl)';
-    @* var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))'; *@
-    var emptyMessage = '@Html.Raw(emptyMessage)';
+    var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
+    console.log("Fetch URL: " + fetchUrl);
+    var emptyMessage = '@emptyMessage';
 
     var typeDropdown = $("#typeDropdown");
     typeDropdown.prop("disabled", true);
@@ -339,15 +315,17 @@
         $("#OwnerName-error").text("");
         $("#LHCDocument-error").text("");
         $("#Industrialpark-error").text("");
+        $("#OtherIndustrialpark-error").text("");
         $("#shaderentagreement-error").text("");
                
         // Get selected machinery installation place
-        var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace').trim();
+        var MachineryInstalledPlace = getAttributeByName(formDataArray, 'MachineryInstalledPlace')?.trim();
+
         
         // Validate based on selected installation place
            if (MachineryInstalledPlace === "Private Owned LHC") { // Private Owned LHC Validation
-            var LHCNumber = getAttributeByName(formDataArray, 'LHCNumber').trim();
-            var OwnerName = getAttributeByName(formDataArray, 'OwnerName').trim();
+            var LHCNumber = getAttributeByName(formDataArray, 'LHCNumber')?.trim();
+            var OwnerName = getAttributeByName(formDataArray, 'OwnerName')?.trim();
             var LHCDocument = $("#LHCDocument");
             // Validate LHC Number
             if (LHCNumber === "") {
@@ -373,14 +351,19 @@
                 return; // Exit if any validation fails
             }
         } else if (MachineryInstalledPlace === "Industrial Park") {
-            var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
             var ShadeRentAgreement = $("#ShadeRentAgreement");
-            var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark').trim();
-
+            var Industrialpark = getAttributeByName(formDataArray, 'Industrialpark')?.trim();
+            var OtherIndustrialpark = getAttributeByName(formDataArray, 'OtherIndustrialpark')?.trim();
 
             // Validate Industrial Park selection
             if (Industrialpark === "") {
                 $("#Industrialpark-error").text("The field is required.");
+                isValid = false;
+            }
+            
+            // Validate Other Industrial Park selection
+            if (OtherIndustrialpark === "") {
+                $("#OtherIndustrialpark-error").text("The field is required.");
                 isValid = false;
             }
 
@@ -398,7 +381,14 @@
             
         if (isValid) {
             // Only submit the form if validation passes
-            var formData = new FormData(this); // Create a new FormData object
+            var formData = new FormData(this); // Create a new FormData object            
+            // Get the current value of 'Industrialpark'
+            var industrialParkValue = formData.get('Industrialpark');
+            var OtherIndustrialparkValue = formData.get('OtherIndustrialpark');
+            // Check if the value of 'Industrialpark' is 'Others'
+            if (industrialParkValue === 'Others') {
+                formData.set('Industrialpark', OtherIndustrialparkValue); // Change to the desired new value
+                }
             $.ajax({
                 url: '/ProductionCapacity/Create',
                 type: 'POST',
@@ -436,26 +426,32 @@
     
     function handleIndestrialparkChange(selectElement) {
         var OtherIndustrialpark = document.getElementById("OtherIndustrialpark");
+        var otherIndustrialParkDiv = document.getElementById('otherIndustrialParkDiv');
 
         if (selectElement.value === "Others") {
-            OtherIndustrialpark.style.display = "block";
             OtherIndustrialpark.setAttribute("required", "required");
-            OtherIndustrialpark.setAttribute("name", "Industrialpark"); // Set the name attribute to "Industrialpark"
+            OtherIndustrialpark.setAttribute("name", "OtherIndustrialpark"); // Set the name attribute to "Industrialpark"
+            otherIndustrialParkDiv.style.display = "block";
+            otherIndustrialParkDiv.classList.remove("col-lg-1");
+            otherIndustrialParkDiv.classList.add("col-lg-4");
+            
         } else {
-            OtherIndustrialpark.style.display = "none";
             OtherIndustrialpark.removeAttribute("required");
             OtherIndustrialpark.removeAttribute("name"); // Remove the name attribute
+            otherIndustrialParkDiv.style.display = "none";
+            otherIndustrialParkDiv.classList.remove("col-lg-4");
+            otherIndustrialParkDiv.classList.add("col-lg-1");
         }
     }
 
 
     function validateInputFields(inputId, errorId, isRequired) {
         var input = document.getElementById(inputId).value;
-        //var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        //var alphanumericRegex = /^[a-zA-Z0-9\s]+$/;
         var errorMessage = "";
         console.log("from vaidate mech");
         // Check if the field is required and empty
-        if (isRequired && input.trim() === "") {
+        if (isRequired && input?.trim() === "") {
             errorMessage = "This field is required.";
         } 
         // else if (!alphanumericRegex.test(input)) {
@@ -488,14 +484,9 @@
         validateInputFields("BusinessLicense", "BusinessLicense-error", true);
         validateInputFields("MachineSpecificationDocument", "MachineSpecificationDocument-error", true);
 
-        
-
-
         console.log("from submit mech");
         if (!this.checkValidity()) {
             event.preventDefault();  // Prevent form submission
         }
     });
-
-    
 </script>

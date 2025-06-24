@@ -126,7 +126,7 @@
         $.get(`/TaskManagment/Detail?id=${taskId}`, function (data) {
             $('#details .modal-body').html(data);
             var detailsModalEl = document.getElementById('detailsModal');
-            var detailsModal = bootstrap.Modal.getOrCreateInstance(detailsModalEl);
+            var detailsModal = new bootstrap.Modal(detailsModalEl);
             detailsModal.show();
             loadComments(taskId);
         });
@@ -136,7 +136,7 @@
     function openCompleteModal(taskId) {
         currentTaskId = taskId;
         var completeModalEl = document.getElementById('completeModal');
-        var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
+        var completeModal = new bootstrap.Modal(completeModalEl);
         completeModal.show();
     }
 
@@ -146,7 +146,7 @@
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var completeModalEl = document.getElementById('completeModal');
-                var completeModal = bootstrap.Modal.getOrCreateInstance(completeModalEl);
+                var completeModal = new bootstrap.Modal(completeModalEl);
                 completeModal.hide();
                 loadReceivedTasks(mode);
             } else {
@@ -171,7 +171,7 @@
     function openReturnModal(taskId) {
         currentTaskId = taskId;
         var returnModalEl = document.getElementById('returnModal');
-        var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+        var returnModal = new bootstrap.Modal(returnModalEl);
         returnModal.show();
     }
 
@@ -181,7 +181,7 @@
             if (response.success) {
                 toastr.success(response.message, "Success");
                 var returnModalEl = document.getElementById('returnModal');
-                var returnModal = bootstrap.Modal.getOrCreateInstance(returnModalEl);
+                var returnModal = new bootstrap.Modal(returnModalEl);
                 returnModal.hide();
                 loadReceivedTasks();
             } else {

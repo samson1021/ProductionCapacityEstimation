@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text;
 
 namespace mechanical
@@ -20,7 +22,7 @@ namespace mechanical
             var method = context.Request.Method.ToLower();
 
             // Exclude the login page and login POST requests from session check
-            if ((path == "/" && method == "get") || (path == "/" && method == "post"))
+            if ((path == "/" && method == "get") || (path == "/" && method == "post") || path.Contains("/home/index") || path.Contains("/home/login"))
             {
                 await _next(context);
                 return;
@@ -34,8 +36,32 @@ namespace mechanical
                 return;
             }
 
-            // Continue to the next middleware if session is available or if on login page
+            // Check for session expiration
+            var expirationTimeStr = context.Session.GetString("ExpirationTime");
+            
+            if (string.IsNullOrEmpty(expirationTimeStr) || !long.TryParse(expirationTimeStr, out var expirationTimeLong))
+            {
+                // ExpirationTime missing or invalid
+                await SignOutAndRedirectAsync(context);
+                return;
+            }
+            var expirationTime = DateTime.FromBinary(expirationTimeLong);
+            if (expirationTime < DateTime.UtcNow)
+            {
+                // Session expired
+                await SignOutAndRedirectAsync(context);
+                return;
+            }
+
+            // Continue to the next middleware if session is valid
             await _next(context);
+        }
+        async Task SignOutAndRedirectAsync(HttpContext context)
+        {
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            context.Session.Clear();
+            context.Response.Redirect("/");
+            context.Items["ToastMessage"] = "Your session has expired. Please log in again.";
         }
     }
 }

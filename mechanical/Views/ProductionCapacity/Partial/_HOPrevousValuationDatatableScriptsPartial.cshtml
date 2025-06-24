@@ -1,0 +1,71 @@
+﻿@using mechanical.Models.PCE.Dto.ProductionCapacityDto
+
+@{
+    var myProduction = ViewData["Production"] as ProductionReturnDto;
+    var EmptyMessage = "No Previous Evaluation / Valuation History.";
+    var FetchUrl = "/PCEEvaluation/GetHOPreviousValuations?PCEId=" + myProduction.Id;
+}
+
+<script>
+    $(document).ready(function () {
+        loadPreviousValuations();
+    });
+    function initializeDataTable(data) {
+
+        $('#PreviousValuations').DataTable({
+            language: {
+                emptyTable: '@EmptyMessage'
+            },
+            responsive: true,
+            pageLength: 8,
+            lengthChange: false,
+            autoWidth: false,
+            data: data,
+            columns: [
+                { data: 'PCE.PropertyOwner', width: '30%' },
+                { data: 'MachineName', width: '30%' },
+                { data: 'PCE.ProductionType', width: '15%' },
+                {
+                    data: 'CreatedAt',
+                    width: '15%',
+                    render: function (data) {
+                        var date = new Date(data);
+                        return date.toISOString().split('T')[0];
+                    }
+                },
+                {
+                    data: 'Id',
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        return `<a href="@Url.Action("HODetail", "PCEEvaluation")?Id=${data}">Details</a>`;
+                    }
+                }
+            ]
+        });
+    }
+
+    function loadPreviousValuations() {
+
+        var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl)';
+        $.ajax({
+            url: fetchUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#PreviousValuations')) {
+                    $('#PreviousValuations').DataTable().destroy();
+                }
+                initializeDataTable(data);
+            },
+            error: function (error) {
+                toastr.error("Failed to load Previous Valuations");
+                console.log(error);
+            }
+        });
+    }
+
+    function openReturnModal(PCEId) {
+        document.querySelector('#returnModal1 input[name="PCEId"]').value = PCEId;
+        $('#returnModal1').modal('show');
+    }
+</script>

@@ -77,7 +77,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
         }
         public async Task<IndBldgFacilityEquipmentReturnDto> GetIndBldgFacilityEquipment(Guid Id)
         {
-            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.Id == Id);
+            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res => res.IndBldgFacilityEquipmentCosts).Include(res => res.Collateral).FirstOrDefaultAsync(res => res.Id == Id);
             return _mapper.Map<IndBldgFacilityEquipmentReturnDto>(indBldgFacilityEquipment);
 
         }
@@ -104,7 +104,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
         {
             CaseCommenAttributeDto caseCommenAttributeDto = new CaseCommenAttributeDto();
             ReturnEvaluatedCaseDto returnEvaluatedCaseDto = new ReturnEvaluatedCaseDto();
-            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);
+            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.Include(res => res.IndBldgFacilityEquipmentCosts).Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);
             return _mapper.Map<IndBldgFacilityEquipmentReturnDto>(indBldgFacilityEquipment);
         }
         public async Task<IndBldgFacilityEquipmentPostDto> GetReturnedEvaluatedIndBldgFacilityEquipment(Guid Id)
@@ -126,6 +126,7 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
             indBldgFacilityEquipment.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(indBldgFacilityEquipment.CurrentEqpmntCondition, indBldgFacilityEquipment.AllocatedPointsRange);
             indBldgFacilityEquipment.ReplacementCost = (indBldgFacilityEquipment.InvoiceValue * indBldgFacilityEquipment.ExchangeRate);
             indBldgFacilityEquipment.NetEstimationValue = indBldgFacilityEquipment.MarketShareFactor * indBldgFacilityEquipment.DepreciationRate * indBldgFacilityEquipment.EqpmntConditionFactor * indBldgFacilityEquipment.ReplacementCost;
+            indBldgFacilityEquipment.LastUpdatedAt = DateTime.UtcNow;
             _cbeContext.Update(indBldgFacilityEquipment);
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto

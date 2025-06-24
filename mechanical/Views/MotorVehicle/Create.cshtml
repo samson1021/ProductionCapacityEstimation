@@ -239,6 +239,60 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     <script>
+             document.addEventListener('DOMContentLoaded', function() {
+            const countryInput = document.getElementById('CountryOfOrigin');
+            const countryDatalist = document.getElementById('country');
+
+            // Store original options
+            const originalOptions = Array.from(countryDatalist.options).map(opt => opt.value);
+            let lastValidValue = '';
+
+            // Allow only letters and navigation keys
+            countryInput.addEventListener('keydown', (e) => {
+                const allowedKeys = [
+                    'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape',
+                    'Backspace', 'Delete', 'Home', 'End'
+                ];
+
+                const isLetter = /^[a-zA-Z\s]$/.test(e.key); // Allow letters and space
+
+                if (!allowedKeys.includes(e.key) && !isLetter) {
+                    e.preventDefault();
+                }
+            });
+
+            // Validate when selection is made or field loses focus
+            countryInput.addEventListener('change', validateInput);
+            countryInput.addEventListener('blur', validateInput);
+
+            function validateInput() {
+                if (!originalOptions.includes(countryInput.value)) {
+                    countryInput.value = lastValidValue || '';
+                } else {
+                    lastValidValue = countryInput.value;
+                }
+            }
+
+            // Form submission validation
+            const form = countryInput.closest('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!originalOptions.includes(countryInput.value)) {
+                        e.preventDefault();
+                        countryInput.value = '';
+                        countryInput.focus();
+                        alert('Please select a valid country from the list');
+                    }
+                });
+            }
+
+            // Keep dropdown visible while typing
+            countryInput.addEventListener('input', function() {
+                this.setAttribute('list', 'country');
+            });
+        });
+
+
         document.getElementById('GetExchangeRate').addEventListener('click', function () {
             var currency = document.getElementById("Currency").value;
             if(currency == "" || currency == null){
@@ -321,7 +375,7 @@
         });
         document.getElementById("EngineNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("EngineNo-error").textContent = "Only alphanumeric characters are allowed.";
@@ -332,7 +386,7 @@
         });
         document.getElementById("ModelNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
@@ -343,7 +397,7 @@
         });
         document.getElementById("SerialNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";

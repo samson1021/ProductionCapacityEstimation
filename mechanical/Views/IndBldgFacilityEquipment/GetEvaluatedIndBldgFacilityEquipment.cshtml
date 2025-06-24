@@ -853,12 +853,40 @@
                                     </div>
                             </div>
                             <div class="col-sm-6">
+                                <label>Ind Bldg Facility Equipment Costs</label>
+                                <div class="input-group">
+                                    <input id="IndBldgFacilityEquipmentCosts" type="text" class="form-control" value="@Model.IndBldgFacilityEquipmentCosts.InsuranceFreightOthersCost" readonly />
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["IndBldgFacilityEquipmentCosts"] != null && comment["IndBldgFacilityEquipmentCosts"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts" data-comment="@comment["IndBldgFacilityEquipmentCosts"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Please Enter Your Additional Comments </label>
                                     <div class="input-group">
                                         <div class="input-group-append">
                                             <label class="btn btn-outline-info show-comment-box" data-toggle="modal"
-                                                    data-target="#CommentBoxModal" data-field-id="AdditionalComment"> Additional Comment
+                                                   data-target="#CommentBoxModal" data-field-id="AdditionalComment">
+                                                Additional Comment
                                                 <i class="fas fa-plus"></i>
                                             </label>
                                             @{
@@ -910,6 +938,9 @@
             formatAndDisplayValue('ReplacementCost');
             formatAndDisplayValue('txtInvoiceValue');
             formatAndDisplayValue('NetEstimationValue');
+            formatAndDisplayValue('IndBldgFacilityEquipmentCosts');
+
+            
       
     const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
 

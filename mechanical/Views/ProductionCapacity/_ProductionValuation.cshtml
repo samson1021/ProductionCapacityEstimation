@@ -8,6 +8,12 @@
 @model ProductionReturnDto
 
 @{
+    @*
+    @inject IHttpContextAccessor HttpContextAccessor
+    var userId = HttpContextAccessor.HttpContext.Session.GetString("userId");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("userRole");
+    *@
+
     ViewData["Title"] = ViewBag.Title as string; 
     var currentUser = ViewData["CurrentUser"] as ReturnUserDto;
     var reestimation = ViewData["Reestimation"] as ProductionReestimation;
@@ -33,46 +39,9 @@
 }
 
 <div class="card card-purple card-outline card-outline-tabs">
-    @* <div class="card-header bg-purple text-white">
-        <h3 class="card-title text-white text-center mb-0"><i class="fas fa-industry me-2"></i>Valuation Result</h3>
-    </div> *@
     <div class="card-body">
         @{
-            if (latestEvaluation != null)
-            {
-                <div class="row">
-                    @await Html.PartialAsync("~/Views/PCEEvaluation/Partial/_EvaluationDetailPartial.cshtml", latestEvaluation)
-                </div>
-                @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.AssignedEvaluatorId == currentUser.Id)
-                {
-                    if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
-                    {
-                        <div class="form-group row">
-                            <div id="update-btn-container" class="col-xl-2 offset-xl-1" >
-                                <a href="@Url.Action("Update", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="update-btn" class="btn btn-block btn-info">
-                                    <i class="fas fa-pen mr-2"></i> Update
-                                </a>
-                            </div>
-                            <div id="delete-btn-container" class="col-xl-2 offset-xl-2">
-                                <a href="@Url.Action("Delete", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="delete-btn" class="btn btn-block btn-dark">
-                                    <i class="fas fa-trash-alt mr-2"></i> Delete
-                                </a>
-                            </div>
-                            @* <div id="return-btn-container" class="col-xl-2 offset-xl-1">
-                                <button id="return-btn" type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#returnModal1">
-                                    <i class="fas fa-undo mr-2"></i> Return
-                                </button>
-                            </div> *@
-                            <div id="evaluate-btn-container" class="col-xl-2 offset-xl-2">
-                                <a href="@Url.Action("Evaluate", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="evaluate-btn" class="btn btn-block btn-success">
-                                    <i class="fas fa-paper-plane mr-2"></i> Send To RM
-                                </a>
-                            </div>
-                        </div>
-                    }
-                }
-            }
-            else
+            if (latestEvaluation == null)
             {
                 <div>
                     <h6 class="text-center">
@@ -104,6 +73,54 @@
                         }
                     </h6>
                 </div>
+            }
+            else
+            {
+                if (currentUserRole != "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.CurrentStatus == "Pending")
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="alert alert-warning text-center" role="alert">
+                                <strong>Valuation Pending:</strong> The valuation result is not yet available.<br />
+                                Please note: The evaluation process must be completed before the valuation result can be displayed. 
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        @await Html.PartialAsync("~/Views/PCEEvaluation/Partial/_EvaluationDetailPartial.cshtml", latestEvaluation)
+                    </div>
+                    @if (currentUserRole == "Maker Officer" && Model.CurrentStage == "Maker Officer" && Model.AssignedEvaluatorId == currentUser.Id)
+                    {
+                        if (Model.CurrentStatus == "New" || Model.CurrentStatus == "Pending" || Model.CurrentStatus == "Reestimate")
+                        {
+                            <div class="form-group row">
+                                <div id="update-btn-container" class="col-xl-2 offset-xl-1" >
+                                    <a href="@Url.Action("Update", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="update-btn" class="btn btn-block btn-info">
+                                        <i class="fas fa-pen mr-2"></i> Update
+                                    </a>
+                                </div>
+                                <div id="delete-btn-container" class="col-xl-2 offset-xl-2">
+                                    <a href="@Url.Action("Delete", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="delete-btn" class="btn btn-block btn-dark">
+                                        <i class="fas fa-trash-alt mr-2"></i> Delete
+                                    </a>
+                                </div>
+                                @* <div id="return-btn-container" class="col-xl-2 offset-xl-1">
+                                    <button id="return-btn" type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#returnModal1">
+                                        <i class="fas fa-undo mr-2"></i> Return
+                                    </button>
+                                </div> *@
+                                <div id="evaluate-btn-container" class="col-xl-2 offset-xl-2">
+                                    <a href="@Url.Action("Evaluate", "PCEEvaluation", new { Id = @latestEvaluation.Id })" id="evaluate-btn" class="btn btn-block btn-success">
+                                        <i class="fas fa-paper-plane mr-2"></i> Send To RM
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
             }
         }
     </div>

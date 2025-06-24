@@ -13,18 +13,19 @@
 }
 
 <style>
+    /* Screen styles */
     .content {
         font-family: 'Times New Roman', Times, serif;
         font-size: 12pt;
-        line-height: 1.5;
-        max-width: 270mm;
+        max-width: 270mm; /* Wide display for screen */
         margin: 0 auto;
-        padding: 0mm;
+        padding: 0;
         box-sizing: border-box;
     }
 
     .table {
         width: 100%;
+        border-collapse: collapse;
     }
 
     .table-borderless td,
@@ -38,13 +39,13 @@
         overflow-wrap: break-word;
         white-space: normal;
         hyphens: auto;
+        padding: 4px 8px;
     }
 
     .evaluation-card {
         border: none;
         margin-bottom: 1rem;
     }
-
 
     .btn-purple {
         background-color: #6f42c1;
@@ -60,138 +61,165 @@
     }
 
     .pdf-stamp {
-        position: absolute;
+        position: fixed;
         bottom: 20mm;
         left: 0;
         right: 0;
         text-align: center;
-        opacity: 0.5; /* Make it slightly transparent */
+        opacity: 0.8;
         z-index: 1000;
-        display: none !important; /* Hidden by default */
-    }
-
-    .page1-stamp{
-        display:none !important;
+        display: none;
     }
 
     /* Print-specific styles */
     @@media print {
+        /* Reset width for printing */
+        .content {
+            max-width: 100%;
+            width: 100%;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
         /* Hide unnecessary elements */
         .printbtn, .downloadbtn, #requieddoc,
-        .footer, footer{
+        .footer, footer {
             display: none !important;
         }
 
-        .page1-stamp{
-            display:block !important;
-        }
-
         .pdf-stamp {
-            display: block !important; /* Show only when printing */
+            display: block !important;
             position: fixed;
             bottom: 20mm;
-            page-break-inside: avoid;
-            break-inside: avoid;
         }
-
-        .pdf-page {
-            position: relative;
-            page-break-after: auto;
-            page-break-inside: avoid;
-        }
-      
-        
-        /* Two-column layout */
-        .two-column-print {
-            display: flex;
-            width: 100%;
-            margin-bottom: 5mm;
-        }
-        
-        .print-column {
-            width: 48%;
-            padding: 0 1%;
-        }
-        
-        .print-column:first-child {
-            padding-left: 0;
-        }
-        
-        .print-column:last-child {
-            padding-right: 0;
-        }
-        
-        .print-column p {
-            margin-bottom: 2mm;
-            page-break-inside: avoid;
-        }
-
-   
-        
-        /* Page margins and numbering */
+        /* Standard A4 page settings */
         @@page {
             size: A4;
-            margin: 10mm 15mm 20mm 15mm; /* Top, Right, Bottom, Left */
-     
-           @@bottom-right {
+            margin: 15mm 15mm 20mm 15mm; /* Top, Right, Bottom, Left - standard A4 margins */
+
+            @@bottom-right {
                 content: "Page " counter(page);
                 font-size: 10pt;
                 font-family: 'Times New Roman', Times, serif;
             }
         }
 
-        .stamp-fallback {
-            display: none;
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        /* Table breaking rules */
+        table {
+            page-break-inside: auto;
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
-        .stamp-fallback {
-            display: none;
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
 
-        #requieddoc{
-            display:none !important;
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+        /* Section breaking rules */
+        .section {
+            page-break-inside: avoid;
+        }
+        /* When a section must start on new page */
+        .new-page {
+            page-break-before: always;
         }
     }
 
-  
+    /* Two-column layout */
+    .two-column-print {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-bottom: 5mm;
+    }
 
+    .print-column {
+        width: 48%;
+        padding: 0 1%;
+    }
+
+        .print-column:first-child {
+            padding-left: 0;
+        }
+
+        .print-column:last-child {
+            padding-right: 0;
+        }
+
+        .print-column p {
+            margin-bottom: 2mm;
+        }
+
+    /* Signature section styling */
+    .signature-section {
+        margin-top: 10mm;
+        padding-top: 5mm;
+        border-top: 1px solid #000;
+    }
+
+    /* Section styling */
+    .document-section {
+        margin-bottom: 5mm;
+    }
+
+    /* Compact header styling */
+    .compact-header {
+        margin-bottom: 3mm;
+    }
+
+    /* Tight layout for data sections */
+    .tight-section {
+        margin-top: 2mm;
+        margin-bottom: 2mm;
+    }
 </style>
-<section class="content">
-  
 
+<section class="content">
     <div class="d-flex justify-content-end mb-3">
         <button id="print-btn" class="btn btn-purple printbtn mr-2 mt-2">
             <i class="fas fa-print"></i> Print
         </button>
-        <!-- <button id="download-btn" class="btn btn-purple downloadbtn">
-             <i class="fas fa-file-pdf"></i> Download PDF
-         </button>-->
     </div>
 
-    <!-- First Page -->
-    <div class="pdf-page">
+    <!-- Header Section - Made more compact -->
+    <div class="compact-header">
         <div class="d-flex justify-content-between align-items-center">
             <div></div>
             <div class="d-flex align-items-center">
-                <img src="@Url.Content("~/img/cbelogo.png")" alt="Logo" style="max-height: 50px;">
-                <h4 class="mb-0 ml-3">Commercial Bank of Ethiopia</h4>
+                <img src="@Url.Content("~/img/cbelogo.png")" alt="Logo" style="max-height: 40px; height: 40px;">
+                <h4 class="mb-0 ml-2" style="font-size: 14pt;">Commercial Bank of Ethiopia</h4>
             </div>
             <div></div>
         </div>
 
-        <hr class="my-2 border-dark">
-        
-        <div class="text-center">
-            <h5>Production Capacity Estimation</h5>
-        </div>
-        <div class="text-right">
-            <p>Date: <span class="underline">@DateTime.UtcNow.ToString("dd/MM/yyyy")</span></p>
-            <p>Reference No: <span class="underline">@PCECase.CaseNo</span></p>
-        </div>
+        <hr class="my-1 border-dark" style="margin-top: 2mm; margin-bottom: 2mm;">
 
-        <h5 class="mt-4">A. General Data Collection</h5>
+        <div class="text-center" style="margin-bottom: 2mm;">
+            <h5 style="font-size: 13pt; margin-bottom: 1mm;">Production Capacity Estimation</h5>
+        </div>
+        <div class="text-right" style="margin-bottom: 2mm;">
+            <p style="margin-bottom: 1mm;">Date: <span class="underline">@DateTime.UtcNow.ToString("dd/MM/yyyy")</span></p>
+            <p style="margin-bottom: 1mm;">Reference No: <span class="underline">@PCECase.CaseNo</span></p>
+        </div>
+    </div>
 
-        <table class="table table-borderless">
+    <!-- A. General Data Collection - Made more compact -->
+    <div class="tight-section">
+        <h5 style="margin-bottom: 2mm;">A. General Data Collection</h5>
+
+        <table class="table table-borderless" style="margin-bottom: 2mm;">
             <colgroup>
                 <col style="width: 8%;">
                 <col style="width: 32%;">
@@ -199,19 +227,19 @@
             </colgroup>
             <tbody>
                 <tr>
-                    <td>1.</td>
-                    <td>Segment:</td>
-                    <td><span class="underline">@PCECase.Segment</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">1.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Segment:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@PCECase.Segment</span></td>
                 </tr>
                 <tr>
-                    <td>2.</td>
-                    <td>Applicant name:</td>
-                    <td><span class="underline">@PCECase.ApplicantName</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">2.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Applicant name:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@PCECase.ApplicantName</span></td>
                 </tr>
                 <tr>
-                    <td>3.</td>
-                    <td>Production Machine Location:</td>
-                    <td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">3.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Production Machine Location:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">
                         <span>Town:</span>
                         <span class="underline">@productions[0].Region</span>
                         <span class="ml-2">Sub-City:</span>
@@ -220,260 +248,245 @@
                         <span class="underline">@productions[0].Wereda</span>
                     </td>
                 </tr>
+
+                
                 <tr>
-                    <td>4.</td>
-                    <td>Business License no:</td>
-                    <td><span class="underline">@productions[0].BusinessLicenseNumber</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">4.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Business License no:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@productions[0].BusinessLicenseNumber</span></td>
                 </tr>
                 <tr>
-                    <td>5.</td>
-                    <td>LHC number:</td>
-                    <td><span class="underline">@productions[0].MachineryInstalledPlace</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">5.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">LHC number:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@productions[0].MachineryInstalledPlace</span></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td class="pl-4">Owner Name in LHC:</td>
-                    <td><span class="underline">@productions[0].OwnerName</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;" class="pl-4">Owner Name in LHC:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@productions[0].OwnerName</span></td>
                 </tr>
                 <tr>
-                    <td>6.</td>
-                    <td>Equipment Type:</td>
-                    <td><span class="underline">@productions[0].Type</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">6.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Equipment Type:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@productions[0].Type</span></td>
                 </tr>
                 <tr>
-                    <td>7.</td>
-                    <td>Year of manufacturing:</td>
-                    <td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">7.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Year of manufacturing:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">
                         <span class="underline">@productions[0].ManufactureYear</span>
                         <span class="ml-2">Country of Origin:</span>
                         <span class="underline">@productions[0].CountryOfOrigin</span>
                     </td>
                 </tr>
                 <tr>
-                    <td>8.</td>
-                    <td>Place of inspection:</td>
-                    <td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">8.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Place of inspection:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">
                         <span class="underline">@PCEEvaluations[0].InspectionPlace</span>
                         <span class="ml-2">Date:</span>
                         <span class="underline">@PCEEvaluations[0].InspectionDate</span>
                     </td>
                 </tr>
                 <tr>
-                    <td>9.</td>
-                    <td>Purpose of estimation:</td>
-                    <td><span class="underline">@productions[0].Purpose</span></td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">9.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Purpose of estimation:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@productions[0].Purpose</span></td>
                 </tr>
                 <tr>
-                    <td>10.</td>
-                    <td>Technical obsolescence:</td>
-                    <td><span class="underline">@PCEEvaluations[0].TechnicalObsolescenceStatus</span></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                <td>
-                        <div class="page1-stamp">
-                            <img src="@Url.Content("~/img/stamp.png")" alt="Official Stamp" style="max-width: 150px; height: auto;" />
-                        </div>
-                </td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">10.</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;">Technical obsolescence:</td>
+                    <td style="padding-top: 1mm; padding-bottom: 1mm;"><span class="underline">@PCEEvaluations[0].TechnicalObsolescenceStatus</span></td>
                 </tr>
             </tbody>
         </table>
-        </table>
-        </table>
-    
     </div>
 
-    <!-- Second Page -->
-    <div class="pdf-page page-break">
-
-        @if (PCEEvaluations.Any())
+    <!-- B. Production Capacity Estimation Summary -->
+    @if (PCEEvaluations.Any())
+    {
+        foreach (var (evaluation, index) in PCEEvaluations.Select((e, i) => (e, i + 1)))
         {
-            foreach (var (evaluation, index) in PCEEvaluations.Select((e, i) => (e, i + 1)))
-            {
-                <div class="evaluation-card ">
-                    <div class="">
-                        <h5>B. Production Capacity Estimation Summary</h5>
-                        <br/>
+            <div class="tight-section">
+                <h5 style="margin-bottom: 2mm;">B. Production Capacity Estimation Summary</h5>
+
+                <div class="two-column-print" style="margin-bottom: 2mm;">
+                    <div class="print-column">
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Machine Name:</strong> @evaluation.MachineName</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Production Line:</strong> @evaluation.ProductionLineType</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Country of Origin:</strong> @evaluation.CountryOfOrigin</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Technical Status:</strong> @evaluation.TechnicalObsolescenceStatus</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
+                        @if (evaluation.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other)
+                        {
+                            <p style="margin-bottom: 1mm;line-height: 1.8;">@evaluation.OtherMachineNonFunctionalityReason</p>
+                        }
                     </div>
-                    <div class="">
+                    <div class="print-column">
+                        @{
+                            var bottleneckLine = evaluation.ProductionLines?.FirstOrDefault(l => l.IsBottleneck);
+                        }
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Bottleneck Line:</strong> @(bottleneckLine != null ? bottleneckLine.LineName : "N/A")</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Inspection Place:</strong> @evaluation.InspectionPlace</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Inspection Date:</strong> @evaluation.InspectionDate.ToString("dd/MM/yyyy")</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;">
+                            <strong>Inspection Duration:</strong>
+                            @if (evaluation.TimeConsumedToCheck != null)
+                            {
+                                <span>From @evaluation.TimeConsumedToCheck.Start.ToString("g") To @evaluation.TimeConsumedToCheck.End.ToString("g")</span>
+                            }
+                            else
+                            {
+                                <span>N/A</span>
+                            }
+                        </p>
+                        <p style="margin-bottom: 1mm; line-height: 1.8;"><strong>Bottleneck Capacity:</strong> @(bottleneckLine != null ? bottleneckLine.ActualCapacity : "N/A")</p>
+                    </div>
+                </div>
 
-                        <div class="row two-column-print">
-                            <div class="col-md-6 print-column">
-                                <p><strong>Machine Name:</strong> @evaluation.MachineName</p>
-                                <p><strong>Production Line:</strong> @evaluation.ProductionLineType</p>
-                                <p><strong>Country of Origin:</strong> @evaluation.CountryOfOrigin</p>
-                                <p><strong>Technical Status:</strong> @evaluation.TechnicalObsolescenceStatus</p>
-                                <p><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
-                                @if (evaluation.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other)
-                                {
-                                    <p>@evaluation.OtherMachineNonFunctionalityReason  </p>
-                                }
-                                <p><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
-                                </div>
-                            <div class="col-md-6 print-column">
-                                @{
-                                    var bottleneckLine = evaluation.ProductionLines?.FirstOrDefault(l => l.IsBottleneck);
-                                }
-                                <p><strong>Bottleneck Line:</strong> @(bottleneckLine != null ? bottleneckLine.LineName : "N/A")</p>
+                @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
+                {
+                    <div style="margin-bottom: 2mm;">
+                        <h6 style="margin-bottom: 1mm;"><b>Justifications:</b></h6>
+                        <ul style="margin-top: 0; padding-left: 5mm;">
+                            @foreach (var justification in evaluation.Justifications)
+                            {
+                                <li style="margin-bottom: 1mm;">
+                                    <strong>@justification.Reason:</strong> @justification.JustificationText
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
 
-                                <p><strong>Inspection Place:</strong> @evaluation.InspectionPlace</p>
-                                <p><strong>Inspection Date:</strong> @evaluation.InspectionDate.ToString("dd/MM/yyyy")</p>
-                                <p>
-                                    <strong>Inspection Duration:</strong>
-                                    @if (evaluation.TimeConsumedToCheck != null)
+                @if (evaluation.ProductionLines?.Any() == true)
+                {
+                    <div style="margin-bottom: 2mm;">
+                        <h6 style="margin-bottom: 1mm;">Production Lines:</h6>
+                        <table class="table table-bordered" style="margin-bottom: 1mm;">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 2%; padding: 1mm;">#</th>
+                                    <th style="width: 16%; padding: 1mm;">Line Name</th>
+                                    <th style="width: 13%; padding: 1mm;">Output Type</th>
+                                    <th style="width: 13%; padding: 1mm;">Actual Capacity</th>
+                                    <th style="width: 13%; padding: 1mm;">Design Capacity</th>
+                                    <th style="width: 13%; padding: 1mm;">Attainable Capacity</th>
+                                    <th style="width: 13%; padding: 1mm;">Unit/Measure</th>
+                                    <th style="width: 8%; padding: 1mm;">Total Input</th>
+                                    @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
                                     {
-                                        <span>From @evaluation.TimeConsumedToCheck.Start.ToString("g") To @evaluation.TimeConsumedToCheck.End.ToString("g")</span>
+                                        <th style="width: 8%; padding: 1mm;">Input </th>
                                     }
                                     else
                                     {
-                                        <span>N/A</span>
+                                        <th style="width: 8%; padding: 1mm;">Conversion Ratio</th>
                                     }
-                                </p> 
-                                <p><strong>Bottleneck Capacity:</strong> @(bottleneckLine != null ? bottleneckLine.ActualCapacity : "N/A")</p>
-
-                            </div>
-                        </div>
-                        @if (evaluation.HasInputOutputData==false && evaluation.Justifications?.Any() == true)
-                        {
-                            <h6 class="mt-3"><b>Justifications:</b></h6>
-                            <ul class="list-group">
-                                @foreach (var justification in evaluation.Justifications)
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var (line, lineIndex) in evaluation.ProductionLines.Select((l, i) => (l, i + 1)))
                                 {
-                                    <li class="list-group-item">
-                                        <strong>@justification.Reason:</strong> @justification.JustificationText
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        @if (evaluation.ProductionLines?.Any() == true)
-                        {
-                            <h6 class="mt-3">Production Lines:</h6>
-                            <table class="table table-bordered">
-                                <thead class="bg-light">
                                     <tr>
-                                        <th style="width: 2%;">#</th>
-                                        <th style="width: 16%;">Line Name</th>
-                                        <th style="width: 13%;">Output Type</th>
-                                        <th style="width: 13%;">Actual Capacity</th>
-                                        <th style="width: 13%;">Design Capacity</th>
-                                        <th style="width: 13%;">Attainable Capacity</th>
-                                        <th style="width: 13%;">Unit/Measure</th>
-                                        <th style="width: 8%;">Total Input</th>
+                                        <td style="padding: 1mm;">@lineIndex</td>
+                                        <td style="padding: 1mm;">
+                                            @line.LineName
+                                            @if (line.IsBottleneck)
+                                            {
+                                                <span style="background-color: yellow; padding: 0 1mm;"> (Bottleneck)</span>
+                                            }
+                                        </td>
+                                        <td style="padding: 1mm;">@line.OutputType</td>
+                                        <td style="padding: 1mm;">@line.ActualCapacity</td>
+                                        <td style="padding: 1mm;">@(line.DesignCapacity?.ToString() ?? "N/A")</td>
+                                        <td style="padding: 1mm;">@line.AttainableCapacity</td>
+                                        <td style="padding: 1mm;">@line.ProductionUnit/@line.ProductionMeasurement</td>
+                                        <td style="padding: 1mm;">@line.TotalInput</td>
                                         @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
                                         {
-                                            <th style="width: 8%;">Input </th>
+                                            <td colspan="9" style="padding: 1mm;">
+                                                <p style="margin: 0;">No Input</p>
+                                            </td>
                                         }
-                                       else {
-                                            <th style="width: 8%;">Conversion Ratio</th>
+                                        else
+                                        {
+                                            <td style="padding: 1mm;">@line.ConversionRatio</td>
                                         }
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var (line, lineIndex) in evaluation.ProductionLines.Select((l, i) => (l, i + 1)))
+                                    @if (line.ProductionLineInputs?.Any() == true)
                                     {
-                                        <tr>
-                                            <td>@lineIndex</td>
-                                             <td>
-                                                @line.LineName
-                                                @if (line.IsBottleneck)
-                                                {
-                                                    <span style="background-color: yellow; padding: 2px 4px;"> (Bottleneck)</span>
-                                                }
-                                            </td>
-
-                                            <td>@line.OutputType</td>
-                                            <td>@line.ActualCapacity</td>
-                                            <td>@(line.DesignCapacity?.ToString() ?? "N/A")</td>
-                                            <td>@line.AttainableCapacity</td>
-                                            <td>@line.ProductionUnit/@line.ProductionMeasurement</td>
-                                            <td>@line.TotalInput</td>
-                                            @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
-                                            {
-                                                    <td colspan="9">
-                                                        <p>No Input</p>
-                                                    </td>
-                                            }else{
-                                                <td>@line.ConversionRatio</td>
-                                            }
-                                        </tr>
-                                              @if (line.ProductionLineInputs?.Any() == true)
-                                        {
-                                            <tr class="bg-light">
-                                                <td colspan="9">
-                                                    <strong>Inputs for @line.LineName:</strong>
-                                                    <table class="table table-sm mb-0 m-10 p-10">
-                                                        <thead>
+                                        <tr class="bg-light">
+                                            <td colspan="9" style="padding: 1mm;">
+                                                <strong>Inputs for @line.LineName:</strong>
+                                                <table class="table table-sm mb-0" style="margin: 1mm 0;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 30%; padding: 1mm;">Type</th>
+                                                            <th style="width: 25%; padding: 1mm;">Quantity</th>
+                                                            <th style="width: 25%; padding: 1mm;">Unit</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var input in line.ProductionLineInputs)
+                                                        {
                                                             <tr>
-                                                                <th style="width: 30%;">Type</th>
-                                                                <th style="width: 25%;">Quantity</th>
-                                                                <th style="width: 25%;">Unit</th>
+                                                                <td style="padding: 1mm;">@input.Type</td>
+                                                                <td style="padding: 1mm;">@input.Quantity</td>
+                                                                <td style="padding: 1mm;">@input.Unit</td>
                                                             </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach (var input in line.ProductionLineInputs)
-                                                            {
-                                                                <tr>
-                                                                    <td>@input.Type</td>
-                                                                    <td>@input.Quantity</td>
-                                                                    <td>@input.Unit</td>
-                                                                </tr>
-                                                            }
-                                                        </tbody>
-                                                    </table>
-                                                    <span>&nbsp;</span>
-                                                </td>
-                                            </tr>
-                                        }
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
                                     }
-                                </tbody>
-                            </table>
-                        }
-                       
-
-                        <h6 class="mt-3">Factors Affecting Capacity:</h6>
-                        <div class="card card-body bg-light">@(evaluation.FactorsAffectingProductionCapacity ?? "N/A")
-                        </div>
-
-                        <h6 class="mt-3">Remarks: </h6>
-                        <div class="card card-body bg-light">@(evaluation.SurveyRemark ?? "N/A")
-                        </div>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="card-footer">
-                        <b>Evaluated by: &nbsp; &nbsp;</b> <u>@(evaluatorReport?.EvaluatorName ?? "N/A")</u>
-                        <b>&nbsp; &nbsp; Signature: </b>
-                        @if (Signiture?.Signatures != null)
-                        {
-                            <img src="@Url.Content("~/" + Signiture.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 70px; max-height: 60px;">
-                        }
-                        else
-                        {
-                            <span><img src="" alt="signature" /></span>
-                        }
-                        &nbsp; &nbsp; <b>On</b> &nbsp; <u>@(evaluation.CreatedAt.ToString("dd/MM/yyyy")) </u>
-                    </div>
+                }
+
+                <div style="margin-bottom: 2mm;">
+                    <h6 style="margin-bottom: 1mm;">Factors Affecting Capacity:</h6>
+                    <div class="card card-body bg-light" style="padding: 2mm; margin-bottom: 1mm;">@(evaluation.FactorsAffectingProductionCapacity ?? "N/A")</div>
                 </div>
-            }
-        }
-        else
-        {
-            <div class="alert alert-warning">No production evaluations available</div>
-        }
-        <div class="pdf-stamp">
-            <img src="@Url.Content("~/img/stamp.png")" alt="Official Stamp" style="max-width: 150px; height: auto;" />
-        </div>
-    </div>
 
-    <!-- Documents Section -->
-    <div id="requieddoc" class="pdf-page page-break">
+                <div style="margin-bottom: 2mm;">
+                    <h6 style="margin-bottom: 1mm;">Remarks: </h6>
+                    <div class="card card-body bg-light" style="padding: 2mm; margin-bottom: 1mm;">@(evaluation.SurveyRemark ?? "N/A")</div>
+                </div>
+
+                <div class="signature-section" style="margin-top: 5mm; padding-top: 2mm;">
+                    <b>Evaluated by: &nbsp; &nbsp;</b> <u>@(evaluatorReport?.EvaluatorName ?? "N/A")</u>
+                    <b>&nbsp; &nbsp; Signature: </b>
+                    @if (Signiture?.Signatures != null)
+                    {
+                        <img src="@Url.Content("~/" + Signiture.Signatures.SignatureFile.Path)" alt="Signature" style="max-width: 60px; max-height: 50px;">
+                    }
+                    else
+                    {
+                        <span><img src="" alt="signature" /></span>
+                    }
+                    &nbsp; &nbsp; <b>On</b> &nbsp; <u>@(evaluation.CreatedAt.ToString("dd/MM/yyyy")) </u>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning" style="padding: 2mm; margin-bottom: 2mm;">No production evaluations available</div>
+    }
+
+    <!-- Documents Section - Force new page -->
+    <div id="requieddoc" class="new-page" style="margin-top: 5mm;">
         <h5>D. Documents used for PCE</h5>
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 30%;">File Name</th>
-                    <th style="width: 25%;">Category</th>
-                    <th style="width: 25%;">Content Type</th>
-                    <th style="width: 20%;">Action</th>
+                    <th style="width: 30%; padding: 1mm;">File Name</th>
+                    <th style="width: 25%; padding: 1mm;">Category</th>
+                    <th style="width: 25%; padding: 1mm;">Content Type</th>
+                    <th style="width: 20%; padding: 1mm;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -482,10 +495,10 @@
                     foreach (var file in productionFiles)
                     {
                         <tr>
-                            <td>@file.Name</td>
-                            <td>@file.Category</td>
-                            <td>@file.ContentType</td>
-                            <td>
+                            <td style="padding: 1mm;">@file.Name</td>
+                            <td style="padding: 1mm;">@file.Category</td>
+                            <td style="padding: 1mm;">@file.ContentType</td>
+                            <td style="padding: 1mm;">
                                 <a class="text-purple" href="@Url.Action("ViewFile","UploadFile", new { Id = file.Id })" target="_blank">View <i class="fas fa-eye"></i></a> |
                                 <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile", new { Id = file.Id })" target="_blank">Download <i class="fas fa-download"></i></a>
                             </td>
@@ -495,41 +508,21 @@
                 else
                 {
                     <tr>
-                        <td colspan="4" class="text-center">No documents available</td>
+                        <td colspan="4" class="text-center" style="padding: 1mm;">No documents available</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
-    <div class="stamp-fallback"></div>
+
+    <!-- Single stamp at the end -->
+    <div class="pdf-stamp">
+        <img src="@Url.Content("~/img/stamp.png")" alt="Official Stamp" style="max-width: 150px; height: auto;" />
+    </div>
 </section>
 
 @section Scripts {
-    <script src="~/js/jspdf.umd.min.js"></script>
-    <script src="~/js/html2canvas.min.js"></script>
     <script>
         document.getElementById('print-btn').addEventListener('click', () => window.print());
-
-        document.getElementById('download-btn').addEventListener('click', async () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const pages = document.querySelectorAll('.pdf-page');
-
-            for (let i = 0; i < pages.length; i++) {
-                const canvas = await html2canvas(pages[i], {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false
-                });
-                const imgData = canvas.toDataURL('image/png');
-                const imgWidth = doc.internal.pageSize.getWidth() - 30;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                if (i > 0) doc.addPage();
-                doc.addImage(imgData, 'PNG', 15, 15, imgWidth, imgHeight);
-            }
-
-            doc.save('PCE_Case_Report.pdf');
-        });
     </script>
 }

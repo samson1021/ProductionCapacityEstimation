@@ -63,7 +63,9 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> HO()
         {
-            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            var latestCase = await _caseService.GetHOLatestCases(base.GetCurrentUserId());
+            var newCases = await _PCECaseService.GetLatestHOPCECases();
+            ViewData["NewCases"] = newCases;
             return View(latestCase);
         }
         public async Task<IActionResult> Admin()
@@ -71,7 +73,7 @@ namespace mechanical.Controllers
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return RedirectToAction("Index", "UserManagment");
         }
-
+        
         public async Task<IActionResult> Index(string Role)
         {
             var userId = base.GetCurrentUserId();
@@ -94,6 +96,8 @@ namespace mechanical.Controllers
                 return RedirectToAction("CTL");
             else if (Role == "Checker Officer")
                 return RedirectToAction("CO");
+            else if (Role == "Higher Official")
+                return RedirectToAction("HO");
             else return RedirectToAction("Admin");
 
             // if (role.Role.Name == "Relation Manager")

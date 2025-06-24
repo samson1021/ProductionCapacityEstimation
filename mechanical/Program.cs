@@ -66,8 +66,11 @@ using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
 
+///////////// 
+DotNetEnv.Env.Load();
 /////////////
 
+/////////////
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache for session storage
 
@@ -243,14 +246,14 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 
 // Apply database migrations automatically (if any)
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
-    context.Database.Migrate(); // Apply migrations
-    // Seed.SeedData(app);
-    // SeedDistrict.SeedData(app);
-    SeedUsersRolesAndDistricts.SeedData(app);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<CbeContext>();
+//    context.Database.Migrate(); // Apply migrations
+//    // Seed.SeedData(app);
+//    // SeedDistrict.SeedData(app);
+//    SeedUsersRolesAndDistricts.SeedData(app);
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

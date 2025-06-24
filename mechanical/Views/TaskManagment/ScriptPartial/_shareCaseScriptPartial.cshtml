@@ -17,10 +17,10 @@
         var today = new Date().toISOString().split("T")[0];
         $("#shareDeadline").attr("min", today);
         
-        $("#shareCaseForm input, #shareCaseForm select, #shareCaseForm textarea").on("input change", function () {
+        @* $("#shareCaseForm input, #shareCaseForm select, #shareCaseForm textarea").on("input change", function () {
             var isValid = $("#shareCaseForm")[0].checkValidity();
             $("#shareCaseButton").prop("disabled", !isValid);
-        });
+        }); *@
 
         const $dropdown = $("#SelectedRMs");
         $dropdown.empty();

@@ -20,5 +20,15 @@ namespace mechanical.Services.PCE.PCECaseService
         Task<PCEReportDataDto> GetPCEAllReportData(Guid Id);
         Task<PCEReportDataDto> GetPCECaseDetailReport(Guid UserId, Guid Id);
         Task<IEnumerable<PCECaseReturnDto>> GetPCECasesReport(Guid UserId);
+        
+        // Higher Official IPCECaseService
+        Task<PCECaseCountDto> GetHODashboardPCECaseCount();
+        Task<IEnumerable<PCECaseReturnDto>> GetHOPCECases(string Status = null);
+        Task<PCECaseReturnDto> GetHOPCECase(Guid Id);
+        Task<IEnumerable<PCECaseReturnDto>> GetLatestHOPCECases();
+        Task<IEnumerable<PCECaseReturnDto>> GetHORemarkedPCECases();
+        Task<IEnumerable<PCECaseReturnDto>> GetHOPCECasesReport();
+        Task<PCEReportDataDto> GetHOPCECaseDetailReport(Guid Id);
+
     }
 }

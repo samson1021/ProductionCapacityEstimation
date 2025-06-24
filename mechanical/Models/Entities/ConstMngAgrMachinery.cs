@@ -20,13 +20,13 @@ namespace mechanical.Models.Entities
         public PowerSupply PowerSupply { get; set; }
         public NoOfCylinder NoOfCylinder { get; set; }
         public TransmissionType TransmissionType { get; set; }
-        public IgnitionSystem IgnitionSystem { get; set; } 
-        public CoolingSystem CoolingType { get; set; } 
+        public IgnitionSystem IgnitionSystem { get; set; }
+        public CoolingSystem CoolingType { get; set; }
         public string EnginePower { get; set; } = string.Empty;
         public string WorkingProductionCapacity { get; set; } = string.Empty;
         public MachineryTechnologyStandard TechnologyStandard { get; set; }
         public string MakerPreferenceType { get; set; } = string.Empty;
-        public CabinType CabinType { get; set; } 
+        public CabinType CabinType { get; set; }
         public NoOfAxles NumberOfAxle { get; set; }
         public string Color { get; set; } = string.Empty;
         public string MakerCompany { get; set; } = string.Empty;
@@ -58,6 +58,9 @@ namespace mechanical.Models.Entities
         public virtual User? CheckerUser { get; set; }
         [ForeignKey("CollateralId")]
         public virtual Collateral? Collateral { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     }
 }
 

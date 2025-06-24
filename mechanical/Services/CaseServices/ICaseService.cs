@@ -46,5 +46,13 @@ namespace mechanical.Services.CaseServices
 
         // shared case info
         Task<ShareTasksDto> SharedCaseInfo(Guid id);
+
+        Task<IEnumerable<CaseDto>> GetTotalHOPendingCases(Guid userId);
+        Task<IEnumerable<CaseDto>> GetTotalHONewCases(Guid userId);
+        Task<CaseReturnDto> GetHOCase(Guid id);
+        Task<CaseReturnDto> GetHOPendingCase(Guid userId, Guid id);
+        Task<IEnumerable<CaseDto>> GetHOCompleteCases(Guid userId);
+        Task<IEnumerable<CaseDto>> GetHOLatestCases(Guid userId);
+        
     }
 }

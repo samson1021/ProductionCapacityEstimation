@@ -28,14 +28,12 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
 
         [Display(Name = "Business License Number")]
         public string BusinessLicenseNumber { get; set; }  
-        // [Display(Name = "Trade License Number")]
-        // public string TradeLicenseNumber { get; set; }
-        
+         
         [Display(Name = "Purpose")]
         public required string Purpose { get; set; }
         
         [Display(Name = "Model Number")]
-        public required string ModelNo { get; set; }  
+        public string? ModelNo { get; set; }  
         
         [Display(Name = "Manufacture Year")]
         [Range(1900, 2024)]

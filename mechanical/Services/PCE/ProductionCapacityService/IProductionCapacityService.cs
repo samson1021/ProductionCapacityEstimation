@@ -21,5 +21,9 @@ namespace mechanical.Services.PCE.ProductionCapacityService
 
         Task<IEnumerable<ProductionReturnDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId);
         Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId);
+        // Ho
+        Task<ProductionReturnDto> GetHOProduction(Guid Id);
+        Task<IEnumerable<ProductionReturnDto>> GetHOProductions(Guid? PCECaseId = null, string Status = null);
+        Task<ProductionDetailDto> GetHOProductionDetails(Guid Id);
     }
 }

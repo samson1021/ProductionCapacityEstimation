@@ -499,6 +499,107 @@ namespace mechanical.Services.PCE.ProductionCapacityService
                 .GetCustomAttributes(typeof(DisplayAttribute), false)
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
+        // HO
+        public async Task<IEnumerable<ProductionReturnDto>> GetHOProductions(Guid? PCECaseId = null, string Status = null)
+        {
+            // If the status is "Pending", filter for CurrentStage "FIRETN"
+            if (string.Equals(Status, "Pending", StringComparison.OrdinalIgnoreCase) && PCECaseId.HasValue)
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage != "Relation Manager")
+                    .ToListAsync();
+                foreach (var item in productions)
+                {
+                    if (item.CurrentStage != "Relation Manager")
+                    {
+                        item.CurrentStatus = "Pending";
+                    }
+                }
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            if (Status== "Completed")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager"&& pca.CurrentStatus== "Completed")
+                    .ToListAsync();                
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            if (Status == "New")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager" && pca.CurrentStatus == "New")
+                    .ToListAsync();
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            if (Status == "Returned")
+            {
+                var productions = await _cbeContext.ProductionCapacities
+                    .AsNoTracking()
+                    .Where(pca => pca.PCECaseId == PCECaseId && pca.CurrentStage == "Relation Manager" && pca.CurrentStatus == "Returned")
+                    .ToListAsync();
+                // Map to ProductionReturnDto
+                return _mapper.Map<IEnumerable<ProductionReturnDto>>(productions);
+            }
+            // Default case: get all productions based on the PCECaseId
+            var allProductions = await _cbeContext.ProductionCapacities
+                .AsNoTracking()
+                .Where(pca => PCECaseId == null || pca.PCECaseId == PCECaseId)
+                .ToListAsync();
+
+            // Update CurrentStatus for items not in "Relation Manager"
+            foreach (var item in allProductions)
+            {
+                if (item.CurrentStage != "Relation Manager")
+                {
+                    item.CurrentStatus = "Pending";
+                }
+            }
+
+            // Map to ProductionReturnDto
+            var productionDto = _mapper.Map<IEnumerable<ProductionReturnDto>>(allProductions);
+            return productionDto;
+        }
+        public async Task<ProductionReturnDto> GetHOProduction( Guid Id)
+        {
+            var production = await _cbeContext.ProductionCapacities.AsNoTracking().Include(pc => pc.PCECase).FirstOrDefaultAsync(pc => pc.Id == Id);
+            var pceAssignment = await _cbeContext.PCECaseAssignments.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id /*&& res.UserId == UserId*/);
+            var productionDto = _mapper.Map<ProductionReturnDto>(production);
+            productionDto.AssignmentStatus = pceAssignment?.Status;
+            return productionDto;
+        }
+
+        public async Task<ProductionDetailDto> GetHOProductionDetails(Guid Id)
+        {
+
+            var pce = await GetHOProduction(Id);
+            var reestimation = await _cbeContext.ProductionReestimations.AsNoTracking().FirstOrDefaultAsync(res => res.ProductionCapacityId == Id);
+            var relatedFiles = await _UploadFileService.GetUploadFileByCollateralId(Id);
+            var valuationHistory = await _PCEEvaluationService.GetHOValuationHistory(Id);
+            var returnedProductions = await _cbeContext.ReturnedProductions
+                                                        .AsNoTracking()
+                                                        .Include(pr => pr.ReturnedBy)
+                                                        .Where(pr => pr.PCEId == Id)
+                                                        .OrderByDescending(pr => pr.ReturnedAt)
+                                                        .ToListAsync();
+
+            return new ProductionDetailDto
+            {
+                PCECase = pce.PCECase,
+                ProductionCapacity = _mapper.Map<ProductionReturnDto>(pce),
+                PCEValuationHistory = valuationHistory,
+                Reestimation = reestimation,
+                RelatedFiles = relatedFiles,
+                ReturnedProductions = _mapper.Map<IEnumerable<ReturnedProductionDto>>(returnedProductions)
+            };
+        }
+
+
     }
 }
 
