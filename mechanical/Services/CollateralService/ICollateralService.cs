@@ -41,6 +41,9 @@ namespace mechanical.Services.CollateralService
 
 
         Task<IEnumerable<ReturnCollateralDto>> MyReturnedCollaterals(Guid userId);
+        Task<IEnumerable<CaseCorrectionHistoryRetunDto>> GetGetCollateralCorrectionHistorys(Guid caseId);
+
+
         Task<IEnumerable<ReturnCollateralDto>> MyResubmitedCollaterals(Guid userId);
         Task<ReturnCollateralDto> MyResubmitedCollateral(Guid userId, Guid id);
         Task<ReturnCollateralDto> MyReturnedCollateral(Guid userId, Guid id);

@@ -243,8 +243,6 @@ namespace mechanical.Services.CollateralService
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
 
-
-
         public async Task<Collateral> EditCollateral(Guid userId, Guid CollaterlId, CollateralPostDto createCollateralDto)
         {
             var collateral = await _cbeContext.Collaterals.FindAsync(CollaterlId);
@@ -782,5 +780,12 @@ namespace mechanical.Services.CollateralService
             }
             return false;
         }
+        public async Task<IEnumerable<CaseCorrectionHistoryRetunDto>> GetGetCollateralCorrectionHistorys(Guid caseId)
+        {
+            var caseComment = await _cbeContext.CommentHistorys.Include(res => res.CommentBy).Where(res => res.CollateralId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            return _mapper.Map<IEnumerable<CaseCorrectionHistoryRetunDto>>(caseComment);
+        }
+   
+   
     }
 }

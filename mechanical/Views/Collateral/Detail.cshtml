@@ -21,14 +21,14 @@
 }
 <script>
     function formatNumber(number) {
-        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function formatAndDisplayValue(elementId) {
-        var element = document.getElementById(elementId);
-        var value = parseFloat(element.textContent);
-        var formattedValue = formatNumber(value);
-        element.textContent = formattedValue;
+    var element = document.getElementById(elementId);
+    var value = parseFloat(element.textContent);
+    var formattedValue = formatNumber(value);
+    element.textContent = formattedValue;
     }
 </script>
 <section class="content-header">
@@ -48,9 +48,10 @@
     </div>
 </section>
 <section class="content">
-    
+
     <div class="container-fluid">
         <div class="card card-purple card-outline card-outline-tabs">
+            <input id="CollateralId" type="hidden" value="@movaluation.CollateralId" />
             @{
                 if (restimation != null)
                 {
@@ -78,8 +79,14 @@
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-remark-tab" data-toggle="pill" href="#custom-tabs-four-remark" role="tab" aria-controls="custom-tabs-four-remark" aria-selected="false"><i class="nav-icon fas fa-calendar-alt"></i> Remark</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-correction-tab" data-toggle="pill" href="#custom-tabs-four-correction" role="tab" aria-controls="custom-tabs-four-correction" aria-selected="false">
+                            <i class="fas fa-history"></i> Correction History <span class="badge badge-warning right CorrectionBage"></span>
+                        </a>
+                    </li>
 
-                   
+
+
                 </ul>
             </div>
             <div class="card-body">
@@ -104,9 +111,9 @@
                                     @await Html.PartialAsync("_cAMValuation")
                                 }
                             }
-                          
+
                         }
-                       
+
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
                         <h6>there is no checker unit comment</h6>
@@ -128,14 +135,16 @@
                                     @await Html.PartialAsync("_cAMValuation")
                                 }
                             }
-                          
+
                         }
                     </div>
 
                     <div class="tab-pane fade" id="custom-tabs-four-remark" role="tabpanel" aria-labelledby="custom-tabs-four-remark-tab">
                         @await Html.PartialAsync("_CollateralRemark")
                     </div>
-                    
+                    <div class="tab-pane fade" id="custom-tabs-four-correction" role="tabpanel" aria-labelledby="custom-tabs-four-correction-tab">
+                        @await Html.PartialAsync("_CaseCorrectionHistory")
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,6 +154,7 @@
     @{
         //await Html.RenderPartialAsync("ScriptPartial/_DetailCaseSriptsPartial");
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/CollateralScriptPartial/_CollateralDetailScriptsPartial.cshtml");
         <script>
 
             $(function () {
@@ -191,6 +201,7 @@
                     formatAndDisplayValue('InvoiceValue');
                     formatAndDisplayValue('NetEstimationValue');
                     formatAndDisplayValue('NetEstimationValuee');
+
         </script>
     }
 

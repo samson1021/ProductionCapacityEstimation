@@ -370,5 +370,14 @@ namespace mechanical.Controllers
                 .Select(rm => new { Id = rm.Id, Name = rm.Name });
             return Ok(result);
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetuserInfos(Guid id)
+        {
+            //var districts = _context.Districts.ToList();
+            var user = await _userService.GetUser(id);
+            Console.WriteLine("thissssssssssssssssssssss is the snnnnnnnnnnnn:="+user.Name);
+            return Json(user);
+        }
     }
 }

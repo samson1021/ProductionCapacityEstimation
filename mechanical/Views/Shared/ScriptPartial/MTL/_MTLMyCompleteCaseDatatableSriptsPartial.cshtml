@@ -181,8 +181,81 @@
             return date.toLocaleString('en-US', options);
         }
 
-        loadComments();
+         loadComments();
+         function LoadCorrectionHistory() {
+            $.ajax({
+                url: '/CaseComment/GetCaseCorrectionHistory?caseId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                    var countComments = caseCorrections.length;
+                    $(".CorrectionBage").text(countComments);
 
+                    // Clear previous messages
+                    $('.correctionHistories').empty();
+
+                    if (caseCorrections && caseCorrections.length > 0) {
+                        caseCorrections.forEach(function (comments) {
+                            // Create a card for each comment
+                            var card = $('<div>').addClass('card mb-3 direct-chat-card'); // Card for each comment
+                            var cardBody = $('<div>').addClass('card-body');
+
+                            // Create elements for user information and comment details
+                            var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                            chatName.append(GetUserInfo(comments.CommentByUserId).then(username => {
+                                $('<span>').text(username).appendTo(chatName);
+                            }));
+
+                            var createdAt = new Date(comments.CreatedAt);
+                            var formattedDate = formatDate(createdAt);
+
+                            var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                            var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                            var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                            var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                            // Append elements to the card body
+                            cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                            card.append(cardBody);
+                            $('.correctionHistories').append(card); // Add the card to the list
+                        });
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('.correctionHistories').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+        function GetUserInfo(Id, callback){
+            return new Promise(function(resolve , reject){
+
+                  $.ajax({
+                url: '/UserManagment/GetuserInfos?id=' + Id,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data
+                    // var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                    // var countComment = data.caseComments.length;
+                    ResponseData= currentUserID.Name;
+                                    console.log('An error occurred while retrieving case comments.'+ResponseData);
+                  resolve(currentUserID.Name);
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                    reject(null);
+                }
+            });
+
+            })
+
+
+        }
+        // Call the function to load correction history
+        LoadCorrectionHistory();
         function sendMessage(message, CaseId) {
             var requestData = {
                 Content: message,

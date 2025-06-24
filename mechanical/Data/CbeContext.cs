@@ -52,6 +52,7 @@ namespace mechanical.Data
         public virtual DbSet<TaskComment> TaskComments { get; set; }
 	    public virtual DbSet<TaskManagment> TaskManagments { get; set; }
 	    public virtual DbSet<Notification> Notifications { get; set; }
+	    public virtual DbSet<CommentHistory> CommentHistorys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

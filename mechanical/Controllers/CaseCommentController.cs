@@ -21,11 +21,34 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCaseComments(Guid caseId)
         {
-            var response = new { 
+            var response = new
+            {
                 userId = base.GetCurrentUserId(),
-                caseComments =await _caseCommentService.GetCaseComments(caseId) 
+                caseComments = await _caseCommentService.GetCaseComments(caseId)
             };
             return Content(JsonConvert.SerializeObject(response), "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCaseCorrectionHistory(Guid caseId)
+        {
+            Console.WriteLine("Starting to fetch case correction history...");
+
+            try
+            {
+                var caseComments = await _caseCommentService.GetCaseCorrectionHistory(caseId);
+                var response = new
+                {
+                    userId = base.GetCurrentUserId(),
+                    caseComments = caseComments
+                };
+
+                return Content(JsonConvert.SerializeObject(response), "application/json");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
