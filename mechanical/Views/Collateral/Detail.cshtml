@@ -5,9 +5,10 @@
 @model mechanical.Models.Dto.CollateralDto.ReturnCollateralDto;
 @{  
     var collateralFiles = ViewData["collateralFiles"] as IEnumerable<ReturnFileDto>;
-    var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
     var Cavaluation = ViewData["Cavaluation"] as ConstMngAgMachineryReturnDto;
     var Ibvaluation = ViewData["Ibvaluation"] as IndBldgFacilityEquipmentReturnDto;
+    var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
+    
     var rejectedCollateral = ViewData["RejectedCollateral"] as Reject;
     var user = ViewData["user"] as User;
     var loggedRole = ViewData["loggedRole"] as Role;
@@ -51,7 +52,7 @@
 
     <div class="container-fluid">
         <div class="card card-purple card-outline card-outline-tabs">
-            <input id="CollateralId" type="hidden" value="@movaluation.CollateralId" />
+            <input id="CollateralId" type="hidden" value="@Model.Id" />
             @{
                 if (restimation != null)
                 {
