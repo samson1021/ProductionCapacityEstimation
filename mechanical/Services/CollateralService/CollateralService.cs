@@ -245,6 +245,11 @@ namespace mechanical.Services.CollateralService
 
         public async Task<Collateral> EditCollateral(Guid userId, Guid CollaterlId, CollateralPostDto createCollateralDto)
         {
+            if (createCollateralDto.Category == MechanicalCollateralCategory.CMAMachinery)
+            {
+                createCollateralDto.PlateNo = createCollateralDto.CPlateNo;
+            }
+
             var collateral = await _cbeContext.Collaterals.FindAsync(CollaterlId);
             if (collateral == null)
             {
