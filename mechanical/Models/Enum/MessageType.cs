@@ -5,7 +5,7 @@ namespace mechanical.Models.Enum
 {
     public enum MessageType
     {
-        [Display(Name = "New Message")]
+        [Display(Name = "New Comment")]
         NewMessage,
 
         [Display(Name = "Replay")]
