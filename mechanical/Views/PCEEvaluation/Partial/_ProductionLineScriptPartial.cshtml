@@ -455,7 +455,7 @@
             const justificationSection = document.getElementById('justificationSection');
             const inputsSection = document.querySelector('.inputs-section');
             const totalconversionContainer = document.querySelector('.total-input-conversion-ratio-container');
-            const showInputs = hasInputOutputDataCheckbox.checked;
+            const showInputs = getHasInputOutputDataValue();
 
             if (justificationSection) justificationSection.style.display = showInputs ? 'none' : 'block';
             if (inputsSection) {
@@ -463,7 +463,7 @@
                 $('.inputs-container').each(function () {
                     $(this).closest('.inputs-section').toggle(showInputs);
                 });
-                totalconversionContainer.style.display = showInputs ? 'block' : 'none';
+                if (totalconversionContainer) totalconversionContainer.style.display = showInputs ? 'block' : 'none';
                 $('.total-input-conversion-ratio-container').each(function () {
                     $(this).closest('.inputs-section').toggle(showInputs);
                 });
@@ -480,11 +480,9 @@
 
         $('form').on('submit', function(e) {
             reindexJustifications();
-
-            // Custom validation: require at least one justification if hasInputOutputData is unchecked
-            const hasInputOutputDataCheckbox = document.getElementById('hasInputOutputData');
+            // Validation to require at least one justification if hasInputOutputData is unchecked
             let justificationValid = true;
-            if (hasInputOutputDataCheckbox && !hasInputOutputDataCheckbox.checked) {
+            if (!getHasInputOutputDataValue()) {
                 const checkedCount = $('.justification-checkbox:checked').length;
                 if (checkedCount === 0) {
                     showJustificationError(true);
@@ -530,25 +528,30 @@
         });
 
         // Toggle input-output data sections
-        const hasInputOutputDataCheckbox = document.getElementById('hasInputOutputData');
-        if (hasInputOutputDataCheckbox) {
-            // Attach event listener
-            hasInputOutputDataCheckbox.addEventListener('change', function() {
-                toggleInputsSection();
-
-                const showJustification = !hasInputOutputDataCheckbox.checked;
-                $('#justificationSection').toggle(showJustification);
-
-                // If hiding, uncheck all justification boxes
-                if (!showJustification) {
-                    $('.justification-checkbox').prop('checked', false).trigger('change');
-                }
-                showJustificationError(false);
-            });
-
-            // Trigger on load
-            toggleInputsSection();
+        function getHasInputOutputDataValue() {
+            // Returns true if the Yes radio is selected
+            return $('input[name="HasInputOutputData"]:checked').val() === "true";
         }
+
+        // Attach event listener to both Yes/No radios
+        $('input[name="HasInputOutputData"]').on('change', function() {
+            toggleInputsSection();
+            const showJustification = !getHasInputOutputDataValue();
+            $('#justificationSection').toggle(showJustification);
+
+            // If hiding, uncheck all justification boxes
+            if (!showJustification) {
+                $('.justification-checkbox').prop('checked', false).trigger('change');
+            }
+            showJustificationError(false);
+        });
+
+        // On page load, trigger the correct section visibility
+        $(function() {
+            toggleInputsSection();
+            const showJustification = !getHasInputOutputDataValue();
+            $('#justificationSection').toggle(showJustification);
+        });
 
         // On page load
         $('.justification-checkbox').each(function() {
