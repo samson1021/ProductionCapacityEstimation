@@ -167,8 +167,6 @@
             const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
             const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
 
-            console.log("Selected values:", outputType, actualCapacity, productionUnit);
-
             // Set and lock input-type
             const $typeInput = $inputItem.find('.input-type');
             $typeInput
@@ -576,7 +574,6 @@
             }
             
             if ($container.data('reason') === "Others") {
-                console.log("$container.data('reason')", $container.data('reason'));
                 if (this.checked) {
                     $textarea.show().prop('disabled', false);
                 } else {
