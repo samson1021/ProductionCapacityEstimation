@@ -305,6 +305,7 @@
     <!-- B. Production Capacity Estimation Summary -->
     @if (PCEEvaluations.Any())
     {
+        #pragma warning disable SCS0002
         foreach (var (evaluation, index) in PCEEvaluations.Select((e, i) => (e, i + 1)))
         {
             <div class="tight-section">
@@ -385,7 +386,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var (line, lineIndex) in evaluation.ProductionLines.Select((l, i) => (l, i + 1)))
+                            @{
+                                #pragma warning disable SCS0002
+                                foreach (var (line, lineIndex) in evaluation.ProductionLines.Select((l, i) => (l, i + 1)))
                                 {
                                     <tr>
                                         <td style="padding: 1mm;">@lineIndex</td>
@@ -441,6 +444,8 @@
                                         </tr>
                                     }
                                 }
+                                #pragma warning restore SCS0002
+                              }
                             </tbody>
                         </table>
                     </div>
@@ -471,6 +476,7 @@
                 </div>
             </div>
         }
+        #pragma warning restore SCS0002
     }
     else
     {

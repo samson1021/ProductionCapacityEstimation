@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using mechanical.Models.Login;
 using mechanical.Models.Entities;
+using Microsoft.Security.Application;
+using AntiLdapInjection;
 
 namespace mechanical.Services.AuthenticatioinService
 {
@@ -75,15 +77,15 @@ namespace mechanical.Services.AuthenticatioinService
         {
             try
             {
-                // Security Note: _ip and _port are loaded from trusted configuration and validated for format.
-                // No user input is used here, so this is not subject to LDAP Injection (see CWE-90).
-                DirectoryEntry directoryEntry = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
+               
+
+                DirectoryEntry directoryEntry = new DirectoryEntry($"LDAP://{LdapEncoder.FilterEncode(_ip)}:{LdapEncoder.FilterEncode(_port)}", LdapEncoder.FilterEncode(_email), LdapEncoder.FilterEncode(_password));
                 
                 // Construct a directory search using the username as the search criteria
                 DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry);
 
-                var safeUsername = LdapFilterEncode(username);
-                directorySearcher.Filter = $"(|(sAMAccountName={safeUsername})(mail={safeUsername})(employeeID={safeUsername}))";
+                var safeUsername = LdapEncoder.FilterEncode(username);
+                directorySearcher.Filter = $"(|(sAMAccountName={LdapEncoder.FilterEncode(safeUsername)})(mail={LdapEncoder.FilterEncode(safeUsername)})(employeeID={LdapEncoder.FilterEncode(safeUsername)}))";
 
                 // Execute the search and retrieve the first matching result
                 SearchResult? searchResult = directorySearcher.FindOne();

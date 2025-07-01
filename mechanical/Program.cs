@@ -172,14 +172,31 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie(options =>
 {
-    options.LoginPath = "/Home/Index";
-    options.LogoutPath = "/Home/Logout";
-    // options.LogoutPath = "/Home/Index";
-    //options.AccessDeniedPath = "/Account/AccessDenied";
-    //options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-    //options.SlidingExpiration = true;
+    string SanitizePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Path cannot be empty");
 
-    options.AccessDeniedPath = "/Home/Index";
+        path = path.Trim();
+        if (!path.StartsWith("/"))
+            path = "/" + path;
+
+        if (path.Contains("..") || path.Contains("//"))
+            throw new ArgumentException("Invalid path format");
+
+        return path;
+    }
+
+    options.LoginPath = SanitizePath("/Home/Index");
+    options.LogoutPath = SanitizePath("/Home/Logout");
+//options.LoginPath = "/Home/Index";
+//options.LogoutPath = "/Home/Logout";
+// options.LogoutPath = "/Home/Index";
+//options.AccessDeniedPath = "/Account/AccessDenied";
+//options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+//options.SlidingExpiration = true;
+
+options.AccessDeniedPath = "/Home/Index";
     options.Cookie.Name = "MechanicalCookie"; // Set a unique name for the authentication cookie
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Set the expiration time for the cookie

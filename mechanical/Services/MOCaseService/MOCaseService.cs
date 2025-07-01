@@ -90,8 +90,17 @@ namespace mechanical.Services.MOCaseService
                 }
 
             }
-            collateral.CurrentStage = "Checker Manager";
-            collateral.CurrentStatus = "New";
+            //if (collateral.CurrentStatus == "Correction")
+            //{
+            //    collateral.CurrentStage = "Checker Officer";
+            //    collateral.CurrentStatus = "New";
+            //}
+            //else
+            //{
+                collateral.CurrentStage = "Checker Manager";
+                collateral.CurrentStatus = "New";
+            //}
+                
             _cbeContext.Collaterals.Update(collateral);
             await _cbeContext.SaveChangesAsync();
 
@@ -102,30 +111,59 @@ namespace mechanical.Services.MOCaseService
                 throw new InvalidOperationException("Checker unit in you department is not ready.");
             }
             if (user?.District?.Name == "Head Office")
-            {
-                var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
-                if (checker == null) return false;
-                var caseAssignment = new CaseAssignment()
-                {
-                    CollateralId = CollateralId,
-                    UserId = checker.Id,
-                    Status = "New",
-                    AssignmentDate = DateTime.UtcNow
-                };
-                await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
-                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-                {
-                    CaseId = collateral.CaseId,
-                    Activity = $"<strong>Case send for Checkeing to Checkr Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
-                    CurrentStage = "Maker Manager"
-                });
-                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-                {
-                    CaseId = collateral.CaseId,
-                    Activity = $"<strong>New Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
-                    CurrentStage = "Checker Manager",
-                    UserId = checker.Id
-                });
+            {   //if(collateral.CurrentStage == "Checker Officer")
+            //    {
+            //        var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Officer");
+            //        if (checker == null) return false;
+            //        var caseAssignment = new CaseAssignment()
+            //        {
+            //            CollateralId = CollateralId,
+            //            UserId = checker.Id,
+            //            Status = "New",
+            //            AssignmentDate = DateTime.UtcNow
+            //        };
+            //        await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
+            //        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            //        {
+            //            CaseId = collateral.CaseId,
+            //            Activity = $"<strong>Case send for Checking to Checker Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+            //            CurrentStage = "Maker Manager"
+            //        });
+            //        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            //        {
+            //            CaseId = collateral.CaseId,
+            //            Activity = $"<strong> Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+            //            CurrentStage = "Checker Officer",
+            //            UserId = checker.Id
+            //        });
+            //    }
+            //    else
+            //    {
+                    var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
+                    if (checker == null) return false;
+                    var caseAssignment = new CaseAssignment()
+                    {
+                        CollateralId = CollateralId,
+                        UserId = checker.Id,
+                        Status = "New",
+                        AssignmentDate = DateTime.UtcNow
+                    };
+                    await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
+                    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                    {
+                        CaseId = collateral.CaseId,
+                        Activity = $"<strong>Case send for Checkeing to Checkr Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+                        CurrentStage = "Maker Manager"
+                    });
+                    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                    {
+                        CaseId = collateral.CaseId,
+                        Activity = $"<strong>New Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+                        CurrentStage = "Checker Manager",
+                        UserId = checker.Id
+                    });
+                //}
+                
             }
             else
             {

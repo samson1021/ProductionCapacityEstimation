@@ -234,7 +234,11 @@ namespace mechanical.Controllers
             var collaterals = await _collateralService.MyReturnedCollateral(base.GetCurrentUserId(), CollateralId);
             return View(collaterals);
         }
-
+        public async Task<IActionResult> CorrectionCollaterals(Guid CollateralId)
+        {
+            var collaterals = await _collateralService.CorrectionCollaterals(base.GetCurrentUserId());
+            return View(collaterals);
+        }
         [HttpPost]
         public async Task<IActionResult> SendCheking(Guid CollateralId)
         {
