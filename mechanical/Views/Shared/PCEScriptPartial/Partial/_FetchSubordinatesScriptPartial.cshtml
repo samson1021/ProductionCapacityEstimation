@@ -1,3 +1,4 @@
+@using System.Linq;
 <script>
     function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage) {
         
@@ -7,8 +8,9 @@
             dataType: 'json'
         })
         .done(function (data) {
-
-                        var safeSelectName = $('<div/>').text(selectName).html(); // jQuery XSS escape
+            
+                        
+                        var safeSelectName = $('<div/>').text(selectName).html();  // jQuery XSS escape
                         var selectOption = $('<option selected disabled></option>')
                             .attr('value', '')
                             .text('Select ' + safeSelectName);

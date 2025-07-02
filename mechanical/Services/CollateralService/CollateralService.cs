@@ -551,6 +551,29 @@ namespace mechanical.Services.CollateralService
                         collateral.CurrentStage = "Maker Officer";
                         collateral.CurrentStatus = "Correction";
                         collateral.NumberOfReturns = collateral.NumberOfReturns + 1;
+                        if (collateral.Category == MechanicalCollateralCategory.MOV)
+                        {
+                            //this is to set the user who made it 
+                            var evaluatedBy = await _cbeContext.MotorVehicles.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
+                            evaluatedBy.CheckerUserID = useId;
+                            _cbeContext.Update(evaluatedBy);
+                            await _cbeContext.SaveChangesAsync();
+                        }
+                        else if (collateral.Category == MechanicalCollateralCategory.CMAMachinery)
+                        {
+                            //this is to set the user who made it 
+                            var evaluatedBy = await _cbeContext.ConstMngAgrMachineries.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
+                            evaluatedBy.CheckerUserID = useId;
+                            _cbeContext.Update(evaluatedBy);
+                            await _cbeContext.SaveChangesAsync();
+                        }
+                        else if (collateral.Category == MechanicalCollateralCategory.IBFEqupment)
+                        {//this is to set the user who made it 
+                            var evaluatedBy = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
+                            evaluatedBy.CheckerUserID = useId;
+                            _cbeContext.Update(evaluatedBy);
+                            await _cbeContext.SaveChangesAsync();
+                        }
                     }
                     else if (Status == "Complete")
                     {
