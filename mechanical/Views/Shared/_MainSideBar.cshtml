@@ -104,7 +104,6 @@
                             <p> PCE Valuation<i class="fas fa-angle-left right"></i> </p>
                         </a>
                         <ul class="nav nav-treeview pl-3">
-
                             <li class="nav-item">
                                 <a href="@Url.Action("Create", "PCECase")" class="nav-link">
                                     <i class="fas fa-plus nav-icon"></i>
@@ -112,39 +111,35 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-
                                 <a href="@Url.Action("PCECases", "PCECase", new { Status = "New" })" class="nav-link">
                                     <i class="fas fa-grip-lines nav-icon"></i>
                                     <p> New PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
-
                                 <a href="@Url.Action("PCECases", "PCECase", new { Status = "Pending" })" class="nav-link">
                                     <i class="fas fa-spinner nav-icon"></i>
                                     <p> Pending PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="@Url.Action("PCECases", "PCECase", new { Status = "Returned" })" class="nav-link">
-
-                                    <i class="fas fa-undo nav-icon"></i>
-                                    <p> Returned  PCE Cases </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-
                                 <a href="@Url.Action("PCECases", "PCECase", new { Status = "Completed" })" class="nav-link">
                                     <i class="fas fa-check nav-icon"></i>
                                     <p> Completed PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="@Url.Action("PCECases", "PCECase", new { Status = "Returned" })" class="nav-link">
+                                    <i class="fas fa-undo nav-icon"></i>
+                                    <p> Returned  PCE Cases </p>
+                                </a>
+                            </li>
+                            @* <li class="nav-item">
                                 <a href="@Url.Action("RemarkPCECases", "PCECase")" class="nav-link">
                                     <i class="fas fa-file nav-icon"></i>
                                     <p> Remark Release PCE Cases </p>
                                 </a>
-                            </li>
+                            </li> *@
                             <li class="nav-item">
                                 <a href="@Url.Action("PCETerminatedCases", "PCECase")" class="nav-link" style="color:red;">
                                     <i class="fas fa-ban nav-icon "> </i>
@@ -158,7 +153,6 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-
                                 <a href="@Url.Action("PCECases", "PCECase")" class="nav-link">
                                     <i class="fas fa-circle nav-icon"></i>
                                     <p> All PCE Cases </p>
@@ -589,13 +583,12 @@
                                     <i class="fas fa-circle nav-icon"></i><p> All PCE Cases </p>
                                 </a>
                             </li>
-                            <li class="nav-item">
-
+                            @* <li class="nav-item">
                                 <a href="@Url.Action("RemarkPCECases", "PCECase")" class="nav-link">
                                     <i class="fas fa-file nav-icon"></i>
                                     <p> Remark Release PCE cases </p>
                                 </a>
-                            </li>
+                            </li> *@
 
                             <li class="nav-item">
                                 <a href="@Url.Action("Detail", "InternalReport")" class="nav-link">
@@ -804,17 +797,21 @@
                         </a>
                         <ul class="nav nav-treeview pl-3">
                             <li class="nav-item">
-
                                 <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "New" })" class="nav-link">
                                     <i class="fas fa-grip-lines nav-icon"></i>
                                     <p> New PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
-
                                 <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Pending" })" class="nav-link">
                                     <i class="fas fa-spinner nav-icon"></i>
                                     <p> Pending PCE Cases </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Completed" })" class="nav-link">
+                                    <i class="fas fa-check nav-icon"></i>
+                                    <p> Completed PCE Cases </p>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -825,21 +822,12 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-
-                                <a href="@Url.Action("HOPCECases", "PCECase", new { Status = "Completed" })" class="nav-link">
-                                    <i class="fas fa-check nav-icon"></i>
-                                    <p> Completed PCE Cases </p>
-                                </a>
-                            </li>
-                          
-                            <li class="nav-item">
                                 <a href="@Url.Action("HOPCETerminatedCases", "PCECase")" class="nav-link" style="color:red;">
                                     <i class="fas fa-ban nav-icon "> </i>
                                     <p> Terminated PCE Cases </p>
                                 </a>
                             </li>                           
                             <li class="nav-item">
-
                                 <a href="@Url.Action("HOPCECases", "PCECase")" class="nav-link">
                                     <i class="fas fa-circle nav-icon"></i>
                                     <p> All PCE Cases </p>
