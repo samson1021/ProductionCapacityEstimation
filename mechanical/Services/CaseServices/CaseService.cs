@@ -423,6 +423,25 @@ namespace mechanical.Services.CaseServices
             {
                 await _cbeContext.Rejects.AddAsync(reject);
             }
+            string tests = "gsdfd";
+
+            var history = new CommentHistory
+            {
+                Id = Guid.NewGuid(),
+                CaseId = assignedCases.CaseId,
+                CollateralId = moRejectCaseDto.CollateralId,
+                CommentByUserId = Guid.Parse(httpContext.Session.GetString("userId")),
+                CommentedFieldName = "whole Collateral Returned",
+                Content = moRejectCaseDto.RejectionComment,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                MessageType = Models.Enum.MessageType.NewMessage,
+                Status = "Active"
+            };
+            await _cbeContext.CommentHistorys.AddAsync(history);
+            await _cbeContext.SaveChangesAsync();
+
+
             assignedCases.CurrentStage = "Relation Manager";
             assignedCases.CurrentStatus = "Reject";
             _cbeContext.Collaterals.Update(assignedCases);

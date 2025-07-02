@@ -108,7 +108,7 @@ namespace mechanical.Controllers
             var user = await _context.Users.Include(c => c.Role).Include(c => c.District)
                                             .Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email)
                                             .FirstOrDefaultAsync();
-
+            
             if (user == null)
             {
                 ViewData["Error"] = "Incorrect username or password.";

@@ -81,11 +81,16 @@
                 </div>
             </div>
 
-            <div class="form-check form-switch pt-2 m-4">
-                <input class="form-check-input" type="checkbox" role="switch" asp-for="HasInputOutputData" id="hasInputOutputData" checked>
-                <label class="form-check-label" for="hasInputOutputData">
-                    <h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5>
-                </label>
+            <div class="form-group pt-2 m-4">
+                <label class="form-label d-block"><h5><strong>During site visit, was information about inputs and outputs obtained?</strong></h5></label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" asp-for="HasInputOutputData" id="hasInputOutputDataYes" value="true" checked>
+                    <label class="form-check-label" for="hasInputOutputDataYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" asp-for="HasInputOutputData" id="hasInputOutputDataNo" value="false">
+                    <label class="form-check-label" for="hasInputOutputDataNo">No</label>
+                </div>
             </div>
 
             <div class="border rounded-3 my-2 p-2 position-relative shadow-sm mb-4 bg-light" id="justificationSection" style="display: none;">

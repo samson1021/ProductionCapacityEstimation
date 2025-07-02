@@ -5,6 +5,9 @@ using mechanical.Models.Dto.UploadFileDto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Security.Application;
+using System.Net;
+using AntiLdapInjection;
 
 namespace mechanical.Services.UploadFileService
 {
@@ -32,7 +35,8 @@ namespace mechanical.Services.UploadFileService
             uploadFile.Extension = Path.GetExtension(file.File.FileName);
             
             var uniqueFileName = uploadFile.Id.ToString() + uploadFile.Extension;
-            var filePath = Path.Combine("UploadFile", uniqueFileName);
+            var sanitizedFileName = LdapEncoder.FilterEncode(uniqueFileName);
+            var filePath = Path.Combine("UploadFile", sanitizedFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 file.File.CopyTo(fileStream);

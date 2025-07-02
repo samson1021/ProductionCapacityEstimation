@@ -48,36 +48,134 @@
 
 <script>
     $(document).ready(function () {
-        $.ajax({
-            url: '/UserManagment/GetRoles',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data)
-                $('#example1').DataTable({
-                    data: data,
-                    columns: [
-                        { data: 'Name', 'title': 'Name' },
-                        {
-                            data: null,
-                            render: function (data, type, row) {
-                                var editButton = '<a href="/RoleManagment/edit/' + data.RoleId + '" class="edit-btn" data-id="' + data.RoleId + '">Edit</a>';
-                                var deleteButton = '<a href="/RoleManagment/delete/' + data.RoleId + '" class="delete-btn" data-id="' + data.RoleId + '">Delete</a>';
-                                return editButton + ' | ' + deleteButton;
-                            }
-                        }
-                    ],
-                    // columnDefs: [
-                    //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
-                    // ],
-                    responsive: true,
-                    lengthChange: false,
-                    autoWidth: false,
-                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            }
-        });
+        // $.ajax({
+        //     url: '/UserManagment/GetRoles',
+        //     type: 'GET',
+        //     dataType: 'json',
+        //     success: function (data) {
+        //         console.log(data)
+        //         $('#example1').DataTable({
+        //             data: data,
+        //             columns: [
+        //                 { data: 'Name', 'title': 'Name' },
+        //                 {
+        //                     data: null,
+        //                     render: function (data, type, row) {
+        //                         var editButton = '<a href="/RoleManagment/edit/' + data.RoleId + '" class="edit-btn" data-id="' + data.RoleId + '">Edit</a>';
+        //                         var deleteButton = '<a href="/RoleManagment/delete/' + data.RoleId + '" class="delete-btn" data-id="' + data.RoleId + '">Delete</a>';
+        //                         return editButton + ' | ' + deleteButton;
+        //                     }
+        //                 }
+        //             ],
+        //             // columnDefs: [
+        //             //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
+        //             // ],
+        //             responsive: true,
+        //             lengthChange: false,
+        //             autoWidth: false,
+        //             buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        //         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        //     }
+        // });
+            $.ajax({
+        url: '/UserManagment/GetRoles',
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+        },
+        success: function (data) {
+            $('#example1').DataTable({
+                data: data,
+                columns: [
+                    {
+                        data: 'Name',
+                        title: 'Name',
+                        render: $.fn.dataTable.render.text() // Auto-escapes HTML
+                    },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            // Secure URL construction using encoded values
+                            const editUrl = encodeURI(`/RoleManagment/edit/${data.RoleId}`);
+                            const deleteUrl = encodeURI(`/RoleManagment/delete/${data.RoleId}`);
 
+                            // Secure button construction
+                            return `
+                                <a href="${editUrl}"
+                                   class="edit-btn btn btn-primary"
+                                   data-id="${data.RoleId}"
+                                   data-role-name="${escapeHtml(data.Name)}">
+                                   Edit
+                                </a>
+                                <button class="delete-btn btn btn-danger"
+                                        data-id="${data.RoleId}"
+                                        data-role-name="${escapeHtml(data.Name)}"
+                                        onclick="confirmDeleteRole(this)">
+                                    Delete
+                                </button>
+                            `;
+                        }
+                    }
+                ],
+                responsive: true,
+                lengthChange: false,
+                autoWidth: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        exportOptions: { columns: [0] } // Only export name column
+                    },
+                    {
+                        extend: 'csv',
+                        exportOptions: { columns: [0] }
+                    },
+                    // Other buttons...
+                ]
+            });
+        }
+    });
+
+    // HTML escaping function
+    function escapeHtml(unsafe) {
+        return unsafe?.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;") || '';
+    }
+
+    // Secure delete confirmation
+    function confirmDeleteRole(button) {
+        const roleId = button.dataset.id;
+        const roleName = button.dataset.roleName;
+
+        if (confirm(`Are you sure you want to delete ${roleName}?`)) {
+            deleteRole(roleId);
+        }
+    }
+
+    // Secure delete operation
+    function deleteRole(roleId) {
+        fetch(`/RoleManagment/Delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ id: roleId })
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Failed to delete role');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
         // Edit button click event
         $('#example1').on('click', '.edit-btn', function () {
             var userId = $(this).data('id');

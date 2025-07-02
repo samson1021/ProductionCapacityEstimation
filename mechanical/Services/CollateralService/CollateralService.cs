@@ -245,6 +245,11 @@ namespace mechanical.Services.CollateralService
 
         public async Task<Collateral> EditCollateral(Guid userId, Guid CollaterlId, CollateralPostDto createCollateralDto)
         {
+            if (createCollateralDto.Category == MechanicalCollateralCategory.CMAMachinery)
+            {
+                createCollateralDto.PlateNo = createCollateralDto.CPlateNo;
+            }
+
             var collateral = await _cbeContext.Collaterals.FindAsync(CollaterlId);
             if (collateral == null)
             {
@@ -637,7 +642,7 @@ namespace mechanical.Services.CollateralService
 
         public async Task<IEnumerable<ReturnCollateralDto>> MyReturnedCollaterals(Guid userId)
         {
-            List<CaseAssignment> caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(ca => ca.UserId == userId && ca.Status == "Correction").ToListAsync();
+            List<CaseAssignment> caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(ca => ca.UserId == userId && ca.Status == "Reject").ToListAsync();
             List<Collateral> collaterals = await _cbeContext.Collaterals.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus == "Correction").ToListAsync();
             //List<Collateral> collaterals = new List<Collateral>();
             if (caseAssignments.Count >0)
@@ -645,6 +650,30 @@ namespace mechanical.Services.CollateralService
                collaterals = caseAssignments.Select(res => res.Collateral).ToList();
             }
          
+            List<ReturnCollateralDto> mTLreturnCollateralDtos = new List<ReturnCollateralDto>();
+            if (collaterals != null)
+            {
+                foreach (var caseAssignment in caseAssignments)
+                {
+                    var collatearal = await _cbeContext.Collaterals.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.CollateralId && ca.CurrentStatus == "Reject");
+                    if (collatearal != null)
+                    {
+                        mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
+                    }
+                }
+            }
+            return _mapper.Map<List<ReturnCollateralDto>>(collaterals);
+        }
+        public async Task<IEnumerable<ReturnCollateralDto>> CorrectionCollaterals(Guid userId)
+        {
+            List<CaseAssignment> caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(ca => ca.UserId == userId && ca.Status == "Correction").ToListAsync();
+            List<Collateral> collaterals = await _cbeContext.Collaterals.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus == "Correction").ToListAsync();
+            //List<Collateral> collaterals = new List<Collateral>();
+            if (caseAssignments.Count > 0)
+            {
+                collaterals = caseAssignments.Select(res => res.Collateral).ToList();
+            }
+
             List<ReturnCollateralDto> mTLreturnCollateralDtos = new List<ReturnCollateralDto>();
             if (collaterals != null)
             {

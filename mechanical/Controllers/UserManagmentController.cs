@@ -376,7 +376,6 @@ namespace mechanical.Controllers
         {
             //var districts = _context.Districts.ToList();
             var user = await _userService.GetUser(id);
-            Console.WriteLine("thissssssssssssssssssssss is the snnnnnnnnnnnn:="+user.Name);
             return Json(user);
         }
     }

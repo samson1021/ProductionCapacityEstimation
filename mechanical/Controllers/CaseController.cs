@@ -331,12 +331,12 @@ namespace mechanical.Controllers
             var CaseInfo = await _caseService.GetCaseDetail(caseSchedule.CaseId);
             
             // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
-            var recipientEmail = "yohannessintayhu@cbe.com.et";
-            await _mailService.SendEmail(
-                recipientEmail: recipientEmail,
-                subject: "RM Proposed New Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                body: "Dear! </br> Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + "</br></br> For further Detail please check Collateral Valuation System"
-            );
+            //var recipientEmail = "yohannessintayhu@cbe.com.et";
+            //await _mailService.SendEmail(
+            //    recipientEmail: recipientEmail,
+            //    subject: "RM Proposed New Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+            //    body: "Dear! </br> Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + "</br></br> For further Detail please check Collateral Valuation System"
+            //);
 
             string jsonData = JsonConvert.SerializeObject(caseSchedule);
             return Ok(caseSchedule);

@@ -7,7 +7,14 @@
             dataType: 'json'
         })
         .done(function (data) {
-            var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + selectName);
+
+                        var safeSelectName = $('<div/>').text(selectName).html(); // jQuery XSS escape
+                        var selectOption = $('<option selected disabled></option>')
+                            .attr('value', '')
+                            .text('Select ' + safeSelectName);
+            
+            // var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + selectName);
+            
             $('#OptionDropdown').append(selectOption);
             data.forEach(function (option) {
                 var option = $('<option></option>').attr('value', option.Id).text(option.Name);
