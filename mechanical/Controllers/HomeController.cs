@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Security.Claims;
 using NuGet.Protocol.Plugins;
 using System.DirectoryServices.AccountManagement;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 
 using mechanical.Data;
 using mechanical.Models.Login;
@@ -115,7 +113,7 @@ namespace mechanical.Controllers
                 _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
-            if (logins.Password == "1234")
+            if (_authetnicationService.AuthenticateUserByAD(logins.Email, logins.Password)
             {
                 string userRole = user.Role.Name;
                 var claims = new List<Claim>
