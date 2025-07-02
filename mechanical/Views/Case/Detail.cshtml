@@ -1,6 +1,8 @@
 @using mechanical.Models.Dto.CaseScheduleDto;
 @using mechanical.Models.Dto.TaskManagmentDto
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
+@inject IHttpContextAccessor HttpContextAccessor
+
 
 @{
     var myCase = ViewData["case"] as CaseReturnDto;
@@ -9,6 +11,7 @@
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
     var caseType = ViewData["CaseType"] as string;
     var shareTaskData = ViewData["ShareTaskData"] as ShareTasksDto;
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("userRole");
 }
 
 <section class="content-header">
@@ -86,7 +89,7 @@
                             }
                         }
                     </ul>
-                    @if (caseType != "Shared")
+                    @if (caseType != "Shared" && userRole == "Relation Manager")
                     {
                         <button type="button" class="btn bg-purple mr-2" data-toggle="modal" data-target="#shareCaseModal">
                             Share

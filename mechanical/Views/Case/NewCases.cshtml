@@ -1,5 +1,8 @@
 @model mechanical.Models.Dto.TaskManagmentDto.TaskManagmentPostDto;
-
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("userRole");
+}
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -36,10 +39,13 @@
                     </thead>
                 </table>
                 <div class="row">
-                     @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" /> *@
-                    <div class="row">
-                        <button type="submit" id="shareTaskButton" class="col-xl-2  btn btn-sm  bg-purple"> Share Task <i class="fa-regular fa-share-nodes"></i> </button>
-                    </div>
+                    @if (userRole == "Relation Manager")
+                    {
+                        @* <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" /> *@
+                        <div class="row">
+                            <button type="submit" id="shareTaskButton" class="col-xl-2  btn btn-sm  bg-purple"> Share Task <i class="fa-regular fa-share-nodes"></i> </button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
