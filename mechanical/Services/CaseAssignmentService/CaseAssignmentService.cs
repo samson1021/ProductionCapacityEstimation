@@ -378,7 +378,8 @@ namespace mechanical.Services.CaseAssignmentService
                 }
                 var caseassig = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.CollateralId == collateral.Id).FirstOrDefaultAsync();
                 caseassig.Status = "Pending";
-                _cbeContext.Update(caseassig);
+                 _cbeContext.Update(caseassig);
+                await _cbeContext.SaveChangesAsync();
 
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
