@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Authentication.Cookies;
-
+using Microsoft.EntityFrameworkCore;
 using mechanical.Data;
 using mechanical.Models.Login;
 using mechanical.Models.Entities;
@@ -113,7 +113,7 @@ namespace mechanical.Controllers
                 _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
-            if (_authetnicationService.AuthenticateUserByAD(logins.Email, logins.Password)
+            if (_authetnicationService.AuthenticateUserByAD(logins.Email, logins.Password))
             {
                 string userRole = user.Role.Name;
                 var claims = new List<Claim>
