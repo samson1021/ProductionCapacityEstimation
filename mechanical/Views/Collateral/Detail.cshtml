@@ -125,15 +125,15 @@
                             {
                                 if (Model.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
                                 {
-                                    @await Html.PartialAsync("_motorValuation")
+                                    @await Html.PartialAsync("_motorReValuation")
                                 }
                                 else if (Model.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.IBFEqupment))
                                 {
-                                    @await Html.PartialAsync("_iNDValuation")
+                                    @await Html.PartialAsync("_iNDReValuation")
                                 }
                                 else if (Model.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.CMAMachinery))
                                 {
-                                    @await Html.PartialAsync("_cAMValuation")
+                                    @await Html.PartialAsync("_cAMReValuation")
                                 }
                             }
 

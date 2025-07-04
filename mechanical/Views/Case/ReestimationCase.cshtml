@@ -231,7 +231,7 @@
             });
 
 
-                        function loadCollaterals() {
+                        function loadReCollaterals() {
                 $.ajax({
                     url: '/Collateral/GetRejectCollaterals?CaseId=' + CaseId,
                     type: 'GET',
@@ -249,7 +249,7 @@
                     }
                 });
             }
-               loadCollaterals();
+               loadReCollaterals();
              function LoadCorrectionHistory() {
             $.ajax({
                 url: '/CaseComment/GetCaseCorrectionHistory?caseId=' + CaseId,
