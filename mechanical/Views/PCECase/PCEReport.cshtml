@@ -312,8 +312,13 @@
             var evaluations = PCEEvaluations.ToList(); // Fetch evaluations safely
 
 
-        @foreach (var (evaluation, index) in evaluations.Select((e, i) => (e, i + 1)))
-        {
+        // @foreach (var (evaluation, index) in evaluations.Select((e, i) => (e, i + 1)))
+        // {
+            for (int j = 0; j < evaluations.Count; j++)
+            {
+                var evaluation = evaluations[j];
+                var index = j + 1;
+            
             // <div class="tight-section">
             //     <h5 style="margin-bottom: 2mm;">B. Production Capacity Estimation Summary</h5>
 

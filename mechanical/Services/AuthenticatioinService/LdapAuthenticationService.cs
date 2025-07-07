@@ -126,7 +126,7 @@ namespace mechanical.Services.AuthenticatioinService
 
                 // Security Note: _ip and _port are loaded from trusted configuration and validated for format.
                 // No user input is used here, so this is not subject to LDAP Injection (see CWE-90).
-                DirectoryEntry searchRoot = new DirectoryEntry($"LDAP://{_ip}:{_port}", _email, _password);
+                DirectoryEntry searchRoot = new DirectoryEntry($"LDAP://{LdapEncoder.FilterEncode(_ip)}:{LdapEncoder.FilterEncode(_port)}", LdapEncoder.FilterEncode(_email), LdapEncoder.FilterEncode(_password));
                 DirectorySearcher searcher = new DirectorySearcher(searchRoot);
                 // {
                 //     SearchScope = SearchScope.Subtree,
@@ -136,7 +136,7 @@ namespace mechanical.Services.AuthenticatioinService
                 searcher.PageSize = 1000;
                 
                 var safeSamAccountName = LdapFilterEncode(SmAccountName);
-                searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + safeSamAccountName + "))";
+                searcher.Filter = "(&(objectClass=user)(objectCategory=person)(sAMAccountName=" + LdapEncoder.FilterEncode(safeSamAccountName) + "))";
                 searcher.PropertiesToLoad.Add("sAMAccountName");
                 searcher.PropertiesToLoad.Add("mail");
                 searcher.PropertiesToLoad.Add("employeeID");

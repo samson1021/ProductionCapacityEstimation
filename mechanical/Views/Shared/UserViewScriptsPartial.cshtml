@@ -11,39 +11,7 @@
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 
-@* <script>
-    $(document).ready(function () {
-        $.ajax({
-            url: '/usermanagment/getusers',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data.DistrictName)
-                $('#example1').DataTable({
-                    data: data,
-                    columns: [
-                        // { data: 'Id', 'title': 'ID' },
-                        { data: 'Name', 'title': 'Name' },
-                        { data: 'Email', 'title': 'Email' },
-                        { data: 'DistrictName', 'title': 'District' },
-                        { data: 'Branch', 'title': 'Branch' },
-                        { data: 'RoleName', 'title': 'Role' },
-                        { data: 'Status', 'title': 'Status' },
-                        // { data: 'Browser' },
-                        // { data: 'Platforms' },
-                        // { data: 'EngineVersion' },
-                        // { data: 'CssGrade' }
-                    ],
-                    responsive: true,
-                    lengthChange: false,
-                    autoWidth: false,
-                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            }
-        });
-    });
 
-</script> *@
 
 
 <script>
@@ -58,48 +26,6 @@
         // Display the loading GIF while fetching data
         loading.show();
 
-        // $.ajax({
-        //     url: '/usermanagment/getusers',
-        //     type: 'GET',
-        //     dataType: 'json',
-        //     success: function (data) {
-        //         // Hide the loading GIF
-        //         loading.hide();
-        //         $('#example1').DataTable({
-        //             data: data,
-        //             columns: [
-        //                 { data: 'emp_ID', 'title': 'Emp Id' },
-        //                 { data: 'Name', 'title': 'Name' },
-        //                 { data: 'DistrictName', 'title': 'District' },
-        //                 { data: 'Department', 'title': 'Department' },
-        //                 { data: 'RoleName', 'title': 'Role' },
-        //                 { data: 'Status', 'title': 'Status' },
-        //                 {
-        //                     data: null,
-        //                     render: function (data, type, row) {
-        //                         var editButton = '<a href="/usermanagment/edit/' + data.Id + '" class="edit-btn" data-id="' + data.Id + '">Edit</a>';
-        //                         var deleteButton = '<a href="/usermanagment/delete/' + data.Id + '" class="delete-btn" data-id="' + data.Id + '">Delete</a>';
-        //                         var detailButton = '<a href="/usermanagment/Profile/' + data.Id + '" class="detail-btn" data-id="' + data.Id + '">Detail</a>';
-        //                         return editButton + ' | ' + deleteButton + ' | ' + detailButton;
-        //                     }
-        //                 }
-        //             ],
-        //             // columnDefs: [
-        //             //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
-        //             // ],
-        //             responsive: true,
-        //             lengthChange: false,
-        //             autoWidth: false,
-        //             buttons: ["copy", "excel", "pdf", "print", "colvis"]
-        //         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        //     },
-        //     error: function () {
-        //         // Hide the loading GIF
-        //         loading.hide();
-        //         alert('Error loading data from the database.');
-        //     }
-        // });
-            // Add CSRF token to headers
     const csrfToken = $('input[name="__RequestVerificationToken"]').val();
 
     $.ajax({
@@ -328,39 +254,7 @@
            // /*  e.preventDefault(); // Prev */ent the default link behavior
             var userId = $(this).data('id');
 
-            // Show loading indicator
-            // $('#loading').show();
-
-            // // Fetch detailed information
-            // $.ajax({
-            //     url: '/usermanagment/GetUserDetails/' + userId,
-            //     type: 'GET',
-            //     dataType: 'json',
-            //     success: function (data) {
-            //         // Hide loading indicator
-            //         $('#loading').hide();
-
-            //         // Populate the modal with the fetched data
-            //         var detailsHtml = `
-            //             <p><strong>ID:</strong> ${data.emp_ID}</p>
-            //             <p><strong>Name:</strong> ${data.Name}</p>
-            //             <p><strong>Center:</strong> ${data.DistrictName}</p>
-            //             <p><strong>Department:</strong> ${data.Department}</p>
-            //             <p><strong>Role:</strong> ${data.RoleName}</p>
-            //             <p><strong>Status:</strong> ${data.Status}</p>
-            //         `;
-
-            //         $('#userDetails').html(detailsHtml);
-
-            //         // Show the modal
-            //         $('#detailModal').modal('show');
-            //     },
-            //     error: function () {
-            //         // Hide loading indicator
-            //         $('#loading').hide();
-            //         alert('Error loading user details.');
-            //     }
-            // });
+            
         });
          
     });
