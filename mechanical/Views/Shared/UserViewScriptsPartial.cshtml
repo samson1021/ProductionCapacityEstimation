@@ -47,6 +47,7 @@
 
 
 <script>
+    
     $(document).ready(function () {
         // Get the loading GIF element
         var loading = $('<div id="loading" style="display: none; text-align: center;"><img src="img/waiting.gif" alt="Loading"></div>');
@@ -149,26 +150,30 @@
                         data: null,
                         render: function (data, type, row) {
                             // Secure URL construction
-                            const editUrl = encodeURI(`/UserManagment/Edit/${data.Id}`);
-                            const deleteUrl = encodeURI(`/UserManagment/Delete/${data.Id}`);
-                            const profileUrl = encodeURI(`/UserManagment/Profile/${data.Id}`);
+                            
+                            var SanitizedId = sanitizeAndValidateInput(data.Id);
+                             var SanitizedName = sanitizeAndValidateInput(data.Id);
+                            console.log("Sanitezed indfdwhfuwdsfue "+ SanitizedId);
+                            const editUrl = encodeURI(`/UserManagment/Edit/${SanitizedId}`);
+                            const deleteUrl = encodeURI(`/UserManagment/Delete/${SanitizedId}`);
+                            const profileUrl = encodeURI(`/UserManagment/Profile/${SanitizedId}`);
 
                             // Secure button construction with proper escaping
                             return `
                                 <a href="${editUrl}"
                                    class="btn btn-sm btn-primary edit-btn"
-                                   data-id="${escapeHtml(data.Id)}">
+                                   data-id="${escapeHtml(SanitizedId)}">
                                    <i class="fas fa-edit"></i> Edit
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-btn"
-                                        data-id="${escapeHtml(data.Id)}"
-                                        data-name="${escapeHtml(data.Name)}"
+                                        data-id="${escapeHtml(SanitizedId)}"
+                                        data-name="${escapeHtml(SanitizedName)}"
                                         onclick="confirmDeleteUser(this)">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                                 <a href="${profileUrl}"
                                    class="btn btn-sm btn-info detail-btn"
-                                   data-id="${escapeHtml(data.Id)}">
+                                   data-id="${escapeHtml(SanitizedId)}">
                                    <i class="fas fa-info-circle"></i> Details
                                 </a>
                             `;
@@ -250,6 +255,24 @@
                 deleteUser(userId);
             }
         });
+    }
+     function sanitizeAndValidateInput(input) {
+         console.log("sthjjjjjjjjjjjjjjjjjjjr first" + input);
+        if (typeof input !== 'string') {
+            return ''; // Return an empty string for non-string input
+        }
+
+        // Define a regex for valid characters (alphanumeric and spaces)
+        const validRegex = /^[a-zA-Z0-9\s]*$/;
+        console.log("sthjjjjjjjjjjjjjjjjjjjr middle" + input);
+        // Check if the input matches the regex
+        if (!validRegex.test(input)) {
+            return ''; // Return an empty string if invalid
+        }
+        console.log("sthjjjr after" + input);
+
+
+        return input; // Return the sanitized string
     }
 
     // Secure delete operation
@@ -339,5 +362,8 @@
             //     }
             // });
         });
+         
     });
+    
+  
 </script>

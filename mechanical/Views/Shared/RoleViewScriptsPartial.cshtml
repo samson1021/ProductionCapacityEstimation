@@ -47,7 +47,28 @@
 
 
 <script>
+
+     function sanitizeAndValidateInput(input) {
+         console.log("sthjjjjjjjjjjjjjjjjjjjr first" + input);
+        if (typeof input !== 'string') {
+            return ''; // Return an empty string for non-string input
+        }
+
+        // Define a regex for valid characters (alphanumeric and spaces)
+        const validRegex = /^[a-zA-Z0-9\s]*$/;
+        console.log("sthjjjjjjjjjjjjjjjjjjjr middle" + input);
+        // Check if the input matches the regex
+        if (!validRegex.test(input)) {
+            return ''; // Return an empty string if invalid
+        }
+        console.log("sthjjjr after" + input);
+        
+        
+        return input; // Return the sanitized string
+    }
     $(document).ready(function () {
+            
+       
         // $.ajax({
         //     url: '/UserManagment/GetRoles',
         //     type: 'GET',
@@ -77,6 +98,8 @@
         //         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         //     }
         // });
+
+
             $.ajax({
         url: '/UserManagment/GetRoles',
         type: 'GET',
@@ -97,20 +120,24 @@
                         data: null,
                         render: function (data, type, row) {
                             // Secure URL construction using encoded values
-                            const editUrl = encodeURI(`/RoleManagment/edit/${data.RoleId}`);
-                            const deleteUrl = encodeURI(`/RoleManagment/delete/${data.RoleId}`);
+                            var SanitizedRoleId = sanitizeAndValidateInput(data.RoleId);
+                            var SanitizedName = sanitizeAndValidateInput(data.Name);
+
+                            Console.log("sthjjjjjjjjjjjjjjjjjjjr function" + SanitizedRoleId);
+                            const editUrl = encodeURI(`/RoleManagment/edit/${SanitizedRoleId}`);
+                            const deleteUrl = encodeURI(`/RoleManagment/delete/${SanitizedRoleId}`);
 
                             // Secure button construction
                             return `
                                 <a href="${editUrl}"
                                    class="edit-btn btn btn-primary"
-                                   data-id="${data.RoleId}"
-                                   data-role-name="${escapeHtml(data.Name)}">
+                                   data-id="${SanitizedRoleId}"
+                                   data-role-name="${escapeHtml(SanitizedName)}">
                                    Edit
                                 </a>
                                 <button class="delete-btn btn btn-danger"
-                                        data-id="${data.RoleId}"
-                                        data-role-name="${escapeHtml(data.Name)}"
+                                        data-id="${SanitizedRoleId}"
+                                        data-role-name="${escapeHtml(SanitizedName)}"
                                         onclick="confirmDeleteRole(this)">
                                     Delete
                                 </button>

@@ -101,20 +101,23 @@
                         data: null,
                         render: function (data, type, row) {
                             // Secure URL construction
-                            const editUrl = encodeURI(`/DistrictManagment/Edit/${data.DistrictId}`);
-                            const deleteUrl = encodeURI(`/DistrictManagment/Delete/${data.DistrictId}`);
+                            var sanitizedinputId = sanitizeAndValidateInput(data.DistrictId);
+                            var sanitizedinputName = sanitizeAndValidateInput(data.Name);
+
+                            const editUrl = encodeURI(`/DistrictManagment/Edit/${sanitizedinputId}`);
+                            const deleteUrl = encodeURI(`/DistrictManagment/Delete/${sanitizedinputId}`);
 
                             // Secure button construction with proper escaping
                             return `
                                 <a href="${editUrl}"
                                    class="btn btn-sm btn-primary edit-btn"
-                                   data-id="${escapeHtml(data.DistrictId)}"
-                                   data-name="${escapeHtml(data.Name)}">
+                                   data-id="${escapeHtml(sanitizedinputId)}"
+                                   data-name="${escapeHtml(sanitizedinputName)}">
                                    <i class="fas fa-edit"></i> Edit
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-btn"
-                                        data-id="${escapeHtml(data.DistrictId)}"
-                                        data-name="${escapeHtml(data.Name)}"
+                                        data-id="${escapeHtml(sanitizedinputId)}"
+                                        data-name="${escapeHtml(sanitizedinputName)}"
                                         onclick="confirmDeleteDistrict(this)">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
@@ -179,6 +182,24 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+    }
+    function sanitizeAndValidateInput(input) {
+         console.log("sthjjjjjjjjjjjjjjjjjjjr first" + input);
+        if (typeof input !== 'string') {
+            return ''; // Return an empty string for non-string input
+        }
+
+        // Define a regex for valid characters (alphanumeric and spaces)
+        const validRegex = /^[a-zA-Z0-9\s]*$/;
+        console.log("sthjjjjjjjjjjjjjjjjjjjr middle" + input);
+        // Check if the input matches the regex
+        if (!validRegex.test(input)) {
+            return ''; // Return an empty string if invalid
+        }
+        console.log("sthjjjr after" + input);
+
+
+        return input; // Return the sanitized string
     }
 
     // Secure delete confirmation
