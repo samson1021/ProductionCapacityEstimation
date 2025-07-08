@@ -4,11 +4,13 @@ using mechanical.Services.CaseServices;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CTLCaseController : BaseController
     {
         //private readonly ICTLCaseService _cTLCaseService;

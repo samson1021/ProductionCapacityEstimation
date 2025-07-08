@@ -8,12 +8,14 @@ using mechanical.Controllers;
 using mechanical.Models.ViewModels;
 using mechanical.Models.Dto.NotificationDto;
 using mechanical.Services.NotificationService;
+using Microsoft.AspNetCore.Authorization;
 
 // [ApiController]
 // [Route("api/Notification")]
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class NotificationController : BaseController
     {
         private readonly ILogger<NotificationController> _logger;

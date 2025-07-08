@@ -1,10 +1,12 @@
 ﻿using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 using mechanical.Models.Dto.IndBldgFacilityEquipmentDto;
 using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     [ApiController]
     [Route("api/[controller]")]
     public class IndustrialCollateralCostsController : ControllerBase

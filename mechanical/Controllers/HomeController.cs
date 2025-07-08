@@ -17,9 +17,11 @@ using mechanical.Models.Login;
 using mechanical.Models.Entities;
 using mechanical.Models.Dto.UserDto;
 using mechanical.Services.AuthenticatioinService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class HomeController : Controller
     {
         private readonly CbeContext _context;
@@ -46,7 +48,7 @@ namespace mechanical.Controllers
         {
             HttpContext.Session.SetString("ExpirationTime", DateTime.UtcNow.AddMinutes(SessionTimeoutConfig.TimeoutMinutes).ToBinary().ToString());
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             if (User?.Identity?.IsAuthenticated == true)
@@ -78,6 +80,7 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(loginDto logins)
         {
             if (User?.Identity?.IsAuthenticated == true)
@@ -95,6 +98,7 @@ namespace mechanical.Controllers
 
         // [Authorize]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(loginDto logins)
         {
             if (logins.Email == null || logins.Password == null)
@@ -113,7 +117,7 @@ namespace mechanical.Controllers
                 _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
-            if (logins.Password == "1234")
+            if (_authetnicationService.AuthenticateUserByAD(logins.Email,logins.Password))
             {
                 string userRole = user.Role.Name;
                 var claims = new List<Claim>

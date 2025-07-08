@@ -20,7 +20,8 @@ using mechanical.Services.AuthenticatioinService;
 
 namespace mechanical.Controllers
 {
-    [Authorize(Roles = "Admin,Super Admin,Relation Manager,Maker Manager,Maker TeamLeader")]
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
+   
     public class UserManagmentController : BaseController
     {
         private readonly CbeContext _context;

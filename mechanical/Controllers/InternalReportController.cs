@@ -4,11 +4,13 @@ using mechanical.Services.InternalReportService;
 using mechanical.Services.MailService;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class InternalReportController : BaseController
     {
 

@@ -7,9 +7,11 @@ using mechanical.Services.MOCaseService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CMCaseController : BaseController
     {
         //private readonly ICaseService _caseService;

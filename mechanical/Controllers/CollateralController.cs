@@ -14,9 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using mechanical.Models;
 using Microsoft.AspNetCore.Http;
 using mechanical.Models.Dto.UploadFileDto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CollateralController : BaseController
     {
         private readonly ICaseService _caseService;

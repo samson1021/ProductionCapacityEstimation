@@ -13,6 +13,7 @@ using mechanical.Services.IndBldgFacilityEquipmentService;
 using mechanical.Services.MailService;
 using mechanical.Services.MotorVehicleService;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ using Newtonsoft.Json;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class IndBldgFacilityEquipmentController : BaseController
     {
         private readonly ICollateralService _collateralService;

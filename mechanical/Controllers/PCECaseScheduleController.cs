@@ -16,6 +16,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     [Authorize]
     public class PCECaseScheduleController : BaseController
     {
