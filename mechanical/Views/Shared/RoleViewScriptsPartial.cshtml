@@ -17,19 +17,16 @@
 <script>
 
      function sanitizeAndValidateInput(input) {
-         console.log("sthjjjjjjjjjjjjjjjjjjjr first" + input);
         if (typeof input !== 'string') {
             return ''; // Return an empty string for non-string input
         }
 
         // Define a regex for valid characters (alphanumeric and spaces)
-        const validRegex = /^[a-zA-Z0-9\s]*$/;
-        console.log("sthjjjjjjjjjjjjjjjjjjjr middle" + input);
+        const validRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         // Check if the input matches the regex
         if (!validRegex.test(input)) {
             return ''; // Return an empty string if invalid
         }
-        console.log("sthjjjr after" + input);
         
         
         return input; // Return the sanitized string

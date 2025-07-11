@@ -59,13 +59,17 @@ namespace mechanical.Controllers
             var response = base.GetCurrentUserId();
             var role = _context.Users.Include(c => c.Role).Where(res => res.Id == response).FirstOrDefault();
             List<User> usersWithDistricts = new List<User>();
-            if (role.Name == "Admin")
+            if (role.Role.Name == "Super Admin")
             {
-                usersWithDistricts = _context.Users.Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Admin").ToList();
+                usersWithDistricts = _context.Users.Where(res=>res.Status == "Activated").Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Super Admin").ToList();
+            }
+            else if (role.Role.Name == "Admin")
+            {
+                usersWithDistricts = _context.Users.Where(res => res.Status == "Activated").Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Admin" && res.Role.Name != "Super Admin").ToList();
             }
             else
             {
-                usersWithDistricts = _context.Users.Include(u => u.District).Include(c => c.Role).ToList();
+                usersWithDistricts = _context.Users.Where(res => res.Status == "Activated").Include(u => u.District).Include(c => c.Role).ToList();
             }
             var usersData = usersWithDistricts.Select(u => new
             {
@@ -273,6 +277,19 @@ namespace mechanical.Controllers
                 ModelState.AddModelError("emp_ID", "A user with this Employee Id already exists.");
                 return View(model);
             }
+            var RoleName = await _context.Roles.FirstOrDefaultAsync(res => res.Id == model.RoleId);
+            var DistrictName = await _context.Districts.FirstOrDefaultAsync(res => res.Id == model.DistrictId);
+            if (RoleName.Name == "Maker Manager" || RoleName.Name == "Checker Manager" || RoleName.Name== "District Valuation Manager")
+            {
+                var existingManager = await _context.Users.FirstOrDefaultAsync(res => res.RoleId == model.RoleId && res.DistrictId == model.DistrictId && res.Status =="Activated");
+                if (existingManager != null)
+                {
+                    ModelState.AddModelError("emp_ID", $"A user with role '{RoleName.Name}' already exists for district '{DistrictName.Name}'. " +"Only one Manager can be assigned per district.");
+                    return View(model);
+                }
+            }
+
+
             model.Status = "Activated";
             await _context.Users.AddAsync(model);
             await _context.SaveChangesAsync();
@@ -292,13 +309,14 @@ namespace mechanical.Controllers
             var userId = base.GetCurrentUserId();
             var RoleName = _context.Users.Include(res => res.Role).Where(c => c.Id == userId).FirstOrDefault();
             var roles = new List<object>();
-            if (RoleName.Role.Name == "Super Admin")
-            {
-                roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name == "Admin").Cast<object>().ToList();
-            }
+           
             if (RoleName.Role.Name == "Admin")
             {
                 roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin").Cast<object>().ToList();
+            }
+            else
+            {
+                roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Super Admin").Cast<object>().ToList();
             }
 
             return Json(roles);
@@ -353,13 +371,17 @@ namespace mechanical.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid id, IFormCollection collection)
-        {
-            var user = _context.Users.Find(id);
-
-            _context.Users.Remove(user);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
+        { 
+            var userId = _context.Users.Find(id);
+            if(userId != null){
+                userId.Status = "Deactivated";
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }    
         }
 
         [HttpGet]

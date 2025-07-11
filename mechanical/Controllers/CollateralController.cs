@@ -48,9 +48,18 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
-                var response = new { message = "Collateral created successfully" };
-                return Ok(response);
+                try
+                {
+                    await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
+                    var response = new { message = "Collateral created successfully" };
+                    return Ok(response);
+
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
+              
             }
             return BadRequest();
         }

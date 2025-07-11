@@ -537,7 +537,11 @@
                 },
                 error: function (error) {
                     submitButton.prop('disabled', false).text('Add');
-                    toastr.error("Unable to create collateral");
+                    if (error.responseJSON && error.responseJSON.message) {
+                            toastr.error(error.responseJSON.message);
+                    } else {
+                            toastr.error("Unable to create collateral " + error.message);
+                    }
                     console.log(error);
                 }
             });

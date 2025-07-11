@@ -79,11 +79,12 @@
                             
                             var SanitizedId = sanitizeAndValidateInput(data.Id);
                              var SanitizedName = sanitizeAndValidateInput(data.Id);
-                            console.log("Sanitezed indfdwhfuwdsfue "+ SanitizedId);
-                            const editUrl = encodeURI(`/UserManagment/Edit/${SanitizedId}`);
+
+                             console.log("santized id "+SanitizedId);
+                            const editUrl = encodeURI("/UserManagment/Edit/"+SanitizedId);
                             const deleteUrl = encodeURI(`/UserManagment/Delete/${SanitizedId}`);
                             const profileUrl = encodeURI(`/UserManagment/Profile/${SanitizedId}`);
-
+                            console.log("editied url"+ editUrl);
                             // Secure button construction with proper escaping
                             return `
                                 <a href="${editUrl}"
@@ -91,12 +92,21 @@
                                    data-id="${escapeHtml(SanitizedId)}">
                                    <i class="fas fa-edit"></i> Edit
                                 </a>
-                                <button class="btn btn-sm btn-danger delete-btn"
-                                        data-id="${escapeHtml(SanitizedId)}"
-                                        data-name="${escapeHtml(SanitizedName)}"
-                                        onclick="confirmDeleteUser(this)">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <a href="${deleteUrl}"
+                                   class="btn btn-sm btn-danger delete-btn"
+                                   data-id="${escapeHtml(SanitizedId)}"
+                                   data-name="${escapeHtml(SanitizedName)}"
+                                   onclick="confirmDeleteUser(this)">
+                                   <i class="fas fa-trash"></i> Delete
+                                </a>
+                                @{
+                                // <button class="btn btn-sm btn-danger delete-btn"
+                                //         data-id="${escapeHtml(SanitizedId)}"
+                                //         data-name="${escapeHtml(SanitizedName)}"
+                                //         onclick="confirmDeleteUser(this)">
+                                //     <i class="fas fa-trash"></i> Delete
+                                // </button>
+                                }
                                 <a href="${profileUrl}"
                                    class="btn btn-sm btn-info detail-btn"
                                    data-id="${escapeHtml(SanitizedId)}">
@@ -183,21 +193,19 @@
         });
     }
      function sanitizeAndValidateInput(input) {
-         console.log("sthjjjjjjjjjjjjjjjjjjjr first" + input);
         if (typeof input !== 'string') {
             return ''; // Return an empty string for non-string input
         }
 
         // Define a regex for valid characters (alphanumeric and spaces)
-        const validRegex = /^[a-zA-Z0-9\s]*$/;
-        console.log("sthjjjjjjjjjjjjjjjjjjjr middle" + input);
+        // const validRegex = /^[a-zA-Z0-9\s]*$/;
+        const validRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         // Check if the input matches the regex
         if (!validRegex.test(input)) {
             return ''; // Return an empty string if invalid
         }
-        console.log("sthjjjr after" + input);
 
-
+        console.log("input "+input);
         return input; // Return the sanitized string
     }
 

@@ -1,70 +1,49 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Collections.Concurrent;
-using System.Web.Services.Description;
-
 using mechanical;
 using mechanical.Data;
 using mechanical.Hubs;
-using mechanical.Controllers;
-using mechanical.Models.Entities;
-
-using mechanical.Services.CaseServices;
-using mechanical.Services.UploadFileService;
-using mechanical.Services.CollateralService;
-using mechanical.Services.AnnexService;
-using mechanical.Services.MotorVehicleService;
-using mechanical.Services.SignatureService;
-using mechanical.Services.CaseAssignmentService;
-using mechanical.Services.CaseTimeLineService;
-using mechanical.Services.AuthenticatioinService;
-using mechanical.Services.ConstMngAgrMachineryService;
-using mechanical.Services.CorrectionServices;
-using mechanical.Services.UserService;
-using mechanical.Services.MMCaseService;
-using mechanical.Services.MailService;
-using mechanical.Services.MOCaseService;
-using mechanical.Services.CTLCaseService;
-using mechanical.Services.CaseCommentService;
-using mechanical.Services.CaseScheduleService;
-using mechanical.Services.IndBldgF;
-using mechanical.Services.IndBldgFacilityEquipmentService;
-using mechanical.Services.CaseTerminateService;
-using mechanical.Services.IndBldgFacilityEquipmentCostService;
-using mechanical.Services.InternalReportService;
-using mechanical.Services.TaskManagmentService;
-using mechanical.Services.NotificationService;
-
 /////////////
 using mechanical.Mapper;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.PCE.PCECaseTimeLineService;
-using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.ProductionCapacityService;
+using mechanical.Services.AnnexService;
+using mechanical.Services.AuthenticatioinService;
+using mechanical.Services.CaseAssignmentService;
+using mechanical.Services.CaseCommentService;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseServices;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.CaseTimeLineService;
+using mechanical.Services.CollateralService;
+using mechanical.Services.ConstMngAgrMachineryService;
+using mechanical.Services.CorrectionServices;
+using mechanical.Services.IndBldgF;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Services.IndBldgFacilityEquipmentService;
+using mechanical.Services.InternalReportService;
+using mechanical.Services.MailService;
+using mechanical.Services.MMCaseService;
+using mechanical.Services.MOCaseService;
+using mechanical.Services.MotorVehicleService;
+using mechanical.Services.NotificationService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
-using mechanical.Services.PCE.PCECaseTerminateService;
-using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCECaseTerminateService;
+using mechanical.Services.PCE.PCECaseTimeLineService;
+using mechanical.Services.PCE.PCEEvaluationService;
+using mechanical.Services.PCE.ProductionCapacityService;
+using mechanical.Services.SignatureService;
+using mechanical.Services.TaskManagmentService;
+using mechanical.Services.UploadFileService;
+using mechanical.Services.UserService;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json.Serialization;
 
 /////////////
 var builder = WebApplication.CreateBuilder(args);
@@ -74,6 +53,11 @@ builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache fo
 //{
 //    options.Filters.Add(typeof(HomeController));
 //});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.AddServerHeader = false;
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
@@ -274,7 +258,28 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+//app.Use(async (context, next) =>
+//{
+//    // Add security headers
+//    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+//    context.Response.Headers.Append("X-Frame-Options", "DENY");
+//    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+//    context.Response.Headers.Append("Referrer-Policy", "no-referrer");
+//    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self';");
+//    context.Response.Headers.Append("Server", "");
 
+//    context.Response.Headers.Remove("Server");
+//    await next();
+//});
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Remove("Server");
+    context.Response.Headers.Remove("X-Powered-By");
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff"; // Example additional header
+    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    await next();
+});
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
 app.UseHttpsRedirection();
