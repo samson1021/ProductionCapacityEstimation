@@ -1,4 +1,5 @@
-﻿@model IEnumerable<mechanical.Models.PCE.Dto.PCECaseTimeLineDto.PCECaseTimeLineReturnDto>
+﻿@using Ganss.Xss;
+@model IEnumerable<mechanical.Models.PCE.Dto.PCECaseTimeLineDto.PCECaseTimeLineReturnDto>
 
 <section class="content-header">
     <div class="container-fluid">
@@ -38,7 +39,12 @@
                                     <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                     <div class="timeline-body">
-                                        @System.Net.WebUtility.HtmlEncode(item.Activity)
+                                    @{
+                                            var sanitizer = new HtmlSanitizer();
+                                            var sanitizedContent = sanitizer.Sanitize(item.Activity); // Sanitize HTML input
+                                            @Html.Raw(sanitizedContent)
+                                            
+                                    }
                                     </div>
                                 </div>
                             </div>

@@ -40,6 +40,8 @@ namespace mechanical.Services.CollateralService
             if (collateral.Category == MechanicalCollateralCategory.CMAMachinery)
             {
                 collateral.PlateNo = createCollateralDto.CPlateNo;
+                collateral.ChassisNo = createCollateralDto.CChassisNo;
+                collateral.EngineMotorNo = createCollateralDto.CEngineMotorNo;
             }
 
             collateral.Id = Guid.NewGuid();

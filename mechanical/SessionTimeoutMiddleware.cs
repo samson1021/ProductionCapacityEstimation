@@ -15,7 +15,7 @@ namespace mechanical
         {
             _next = next;
         }
-
+        
         public async Task InvokeAsync(HttpContext context)
         {
             var path = context.Request.Path.ToString().ToLower();
@@ -64,4 +64,5 @@ namespace mechanical
             context.Items["ToastMessage"] = "Your session has expired. Please log in again.";
         }
     }
+    
 }

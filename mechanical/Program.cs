@@ -38,10 +38,12 @@ using mechanical.Services.UserService;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -232,7 +234,11 @@ builder.Services.AddSignalR(options =>
 
 // Register the custom IUserIdProvider
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-
+builder.Services.AddResponseCompression(options =>
+{
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/javascript" });
+});
 var app = builder.Build();
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
 {
@@ -271,15 +277,24 @@ if (!app.Environment.IsDevelopment())
 //    context.Response.Headers.Remove("Server");
 //    await next();
 //});
+
 app.Use(async (context, next) =>
 {
+    
+  
     context.Response.Headers.Remove("Server");
+    
     context.Response.Headers.Remove("X-Powered-By");
     context.Response.Headers["X-Content-Type-Options"] = "nosniff"; // Example additional header
     context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
     context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Cache-Control"] = "no-cache";
+    //context.Response.Headers["Content-Encoding"] = "gzip"; // Be careful with this; it might be set by the server itself
+    context.Response.Headers["Expires"] = "-1";
+    context.Response.Headers["Pragma"] = "no-cache";
     await next();
 });
+
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();
 app.UseHttpsRedirection();

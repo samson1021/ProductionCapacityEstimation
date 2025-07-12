@@ -61,11 +61,11 @@ namespace mechanical.Controllers
             List<User> usersWithDistricts = new List<User>();
             if (role.Role.Name == "Super Admin")
             {
-                usersWithDistricts = _context.Users.Where(res=>res.Status == "Activated").Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Super Admin").ToList();
+                usersWithDistricts = _context.Users.Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Super Admin").ToList();
             }
             else if (role.Role.Name == "Admin")
             {
-                usersWithDistricts = _context.Users.Where(res => res.Status == "Activated").Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Admin" && res.Role.Name != "Super Admin").ToList();
+                usersWithDistricts = _context.Users.Include(u => u.District).Include(c => c.Role).Where(res => res.Role.Name != "Admin" && res.Role.Name != "Super Admin").ToList();
             }
             else
             {
@@ -127,18 +127,18 @@ namespace mechanical.Controllers
             }
             //string RoleName = result.FirstOrDefault()?.Name;
             //Guid RoleId = (Guid)(result.FirstOrDefault()?.Id);
-            var allUsers = _context.Users.Where(u => u.RoleId == roleId).ToList();
+            var allUsers = _context.Users.Where(u => u.RoleId == roleId && u.Status == "Activated").ToList();
 
             if (RoleName == "Maker Officer")
             {
-                allUsers = _context.Users.Where(u => u.Role.Name == "Maker TeamLeader" && u.DistrictId == districtId && u.Department == Department).ToList();
+                allUsers = _context.Users.Where(u => u.Role.Name == "Maker TeamLeader" && u.DistrictId == districtId && u.Department == Department && u.Status == "Activated").ToList();
             }
             else if (RoleName == "Checker Officer")
             {
                 var allRoles = _context.Roles.Where(u => u.Name == "Checker TeamLeader").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
+                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId && u.Status == "Activated").ToList();
 
             }
             else if (RoleName == "Maker TeamLeader")
@@ -146,7 +146,7 @@ namespace mechanical.Controllers
                 var allRoles = _context.Roles.Where(u => u.Name == "Maker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
+                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId && u.Status == "Activated").ToList();
 
             }
             else if (RoleName == "Checker TeamLeader")
@@ -154,7 +154,7 @@ namespace mechanical.Controllers
                 var allRoles = _context.Roles.Where(u => u.Name == "Checker Manager").Select(
                     u => new { u.Id, u.Name, }).ToList();
                 Guid SuperRoleId = (Guid)(allRoles.FirstOrDefault()?.Id);
-                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId).ToList();
+                allUsers = _context.Users.Where(u => u.RoleId == SuperRoleId && u.Department == Department && u.DistrictId == districtId && u.Status == "Activated").ToList();
             }
             else {
                 allUsers = null;
@@ -182,7 +182,7 @@ namespace mechanical.Controllers
             {
                 return BadRequest();
             }
-            var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.SupervisorId == teamLeaderId).ToList();
+            var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.SupervisorId == teamLeaderId && res.Status == "Activated").ToList();
             return Json(makerTeamleaders);
         }
         [HttpGet]
@@ -196,7 +196,7 @@ namespace mechanical.Controllers
             {
                 return BadRequest();
             }
-            var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Checker Officer" && res.SupervisorId == teamLeaderId).ToList();
+            var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Checker Officer" && res.SupervisorId == teamLeaderId && res.Status == "Activated").ToList();
             return Json(makerTeamleaders);
         }
         [AllowAnonymous]
@@ -208,7 +208,7 @@ namespace mechanical.Controllers
             var manager = await _context.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
             if (manager.Role.Name == "District Valuation Manager")
             {
-                var makerTeamleader = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+                var makerTeamleader = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId && res.Status == "Activated").ToList();
                 return Json(makerTeamleader);
             }
 
@@ -218,7 +218,7 @@ namespace mechanical.Controllers
             }
             else
             {
-                var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Maker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+                var makerTeamleaders = _context.Users.Where(res => res.Role.Name == "Maker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId && res.Status == "Activated").ToList();
                 return Json(makerTeamleaders);
             }
 
@@ -232,14 +232,14 @@ namespace mechanical.Controllers
             var manager = await _context.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
             if (manager.Role.Name == "District Valuation Manager")
             {
-                var checkerTeamleader = _context.Users.Where(res => res.Role.Name == "Checker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+                var checkerTeamleader = _context.Users.Where(res => res.Role.Name == "Checker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId && res.Status == "Activated").ToList();
                 return Json(checkerTeamleader);
             }
             if (manager == null || manager.Role.Name != "Checker Manager")
             {
                 return BadRequest();
             }
-            var checkerTeamleaders = _context.Users.Where(res => res.Role.Name == "Checker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId).ToList();
+            var checkerTeamleaders = _context.Users.Where(res => res.Role.Name == "Checker TeamLeader" && res.Department == manager.Department && res.DistrictId == manager.DistrictId && res.Status == "Activated").ToList();
             return Json(checkerTeamleaders);
         }
         public JsonResult GetRole()
@@ -329,7 +329,7 @@ namespace mechanical.Controllers
 
             user.Name = model.Name;
             user.Email = model.Email;
-            user.Status = "Activated";
+            user.Status = model.Status;
             user.Branch = model.Branch;
             //user.Status = model.Status;
             user.PhoneNO = model.PhoneNO;
