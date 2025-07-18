@@ -34,6 +34,7 @@
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
+                    @Html.AntiForgeryToken()
                     <div class="row">
                         <input type="hidden" id="unit" value="@unit" />
                         <input type="hidden" id="segment" value="@segment" />
@@ -41,7 +42,7 @@
                         <div class="form-group col-xl-10">
                             <label asp-for="Segment">Segment <i class="text-danger">*</i></label>
                             <select asp-for="Segment" class="form-control form-control" id="Segment" required>
-                                <option value="" disabled selected>Select Segment</option>
+                                <option value="" selected>Select Segment</option>
                             </select>
                             <span asp-validation-for="Segment" class="text-danger"></span>
                         </div>
@@ -90,6 +91,7 @@
                             <span asp-validation-for="BussinessLicence" class="text-danger"></span>
                         </div>
                     </div>
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     <div class="row">
                         <button type="submit" class="col-xl-4  btn bg-purple">Register</button>
                     </div>
@@ -104,112 +106,167 @@
         await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
     }
     <script>
-        var unitValue = $('#unit').val();
-        var segmentValue = $('#segment').val();
-        var districtValue = $('#district').val();
+        $(function() {
+            // Initialize dropdown on page load
+            initializeForm();
 
-        console.log(segmentValue);
+            // Reinitialize when returning from postback
+            if (window.performance && performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD) {
+                setTimeout(initializeForm, 100);
+            }
 
-        if(segmentValue == "WholesaleConventional" || segmentValue =="WholesaleIFB"){
-            console.log('inside....');
-             $("#businessLicnese").show();
-        } else{
-             $("#businessLicnese").hide();
-        }
-        if (segmentValue === 'AcquiredAssetAdministration') {
-            $("#applicantName").val('CBE');
-            $("#applicantName").prop('readonly', true);
-        }
-
-
-        var options = [];
-        if (unitValue === 'LargeCorporate') {
-            options = [
-                { value: districtValue + '-Large Corporate', text: 'Large Corporate' }
-            ];
-        } else if (unitValue === 'MediumCorporate') {
-            options = [
-                 { value: districtValue + '-Medium Corporate', text: 'Medium Corporate' }
-            ];
-        } else if (unitValue === 'SmallCorporate') {
-            options = [
-                 { value: districtValue + '-Small Corporate', text: 'Small Corporate' }
-            ];
-        } else if (unitValue === 'WholesaleDistrict') {
-            options = [
-                 { value: districtValue + '-SME', text: 'SME' },
-                 { value: districtValue + '-Micro', text: 'Micro' },
-                 { value: districtValue + '-Cooperative-primary', text: 'Cooperative-primary' }
-            ];
-        }else if (unitValue === 'CooperativeAndFinancialInstitution') {
-            options = [
-                 { value: districtValue + '-Cooperative-Union', text: 'Cooperative-Union' },
-                 { value: districtValue + '-Cooperative-league', text: 'Cooperative-league' },
-                 { value: districtValue + '-Cooperative-Federation', text: 'Cooperative-Federation' },
-                 { value: districtValue + '-Financial institution', text: 'Financial institution' }
-            ];
-        }else if (unitValue === 'StateOwnedEnterpriseAndOtherPublic') {
-            options = [
-                 { value: districtValue + '-State Owned Enterprise & OtherPublic', text: 'State Owned Enterprise & OtherPublic' }
-            ];
-        }else if (unitValue === 'RegionalGovernment') {
-            options = [
-                 { value: districtValue + '-Regional Government', text: 'Regional Government' }
-            ];
-        }else if (unitValue === 'CentralGovernment') {
-            options = [
-                 { value: districtValue + '-Central Government', text: 'Central Government' }
-            ];
-        }else if (unitValue === 'IFBCorporate') {
-            options = [
-                 { value: districtValue + '-IFB Large Corporate', text: 'Large Corporate' },
-                 { value: districtValue + '-IFB Medium Corporate', text: 'Medium Corporate' },
-                 { value: districtValue + '-IFB Small Corporate', text: 'Small Corporate' }
-            ];
-        }else if (unitValue === 'IFBSMEBanking') {
-            options = [
-                 { value: districtValue + '-IFB SME Banking', text: 'IFB SME Banking' }
-            ];
-        }else if (unitValue === 'IFBDistrict') {
-            options = [
-                 { value: districtValue + '-IFB SME', text: 'SME' },
-                 { value: districtValue + '-IFB Micro', text: 'Micro' },
-                 { value: districtValue + '-IFB Cooperative-primary', text: 'Cooperative-primary' }
-            ];
-        }else if (unitValue === 'Retail') {
-            options = [
-                 { value: districtValue + '-CBE Staff', text: 'CBE Staff' },
-                 { value: districtValue + '-Diaspora', text: 'Diaspora' },
-                 { value: districtValue + '-Employees of NGO & Int. organization', text: 'Employees of NGO & Int. organization' },
-                 { value: districtValue + '-Employees of high valued corporate customers', text: 'Employees of high valued corporate customers' },
-                 { value: districtValue + '-Exporter & General manager of exporter', text: 'Exporter & General manager of exporter' },
-                 { value: districtValue + '-Middle Customers', text: 'Middle Customers' },
-                 { value: districtValue + '-Other FCY generating entity', text: 'Other FCY generating entity' }
-            ];
-        }else if (unitValue === 'Foreclosure') {
-            options = [
-                 { value: districtValue + '-Foreclosure', text: 'Foreclosure' }
-            ];
-        }else if (unitValue === 'Litigation') {
-            options = [
-                 { value: districtValue + '-Litigation', text: 'Litigation' }
-            ];
-        }else if (unitValue === 'AcquiredAssetAdministration') {
-            options = [
-                 { value: districtValue + '-Acquired Asset Administration', text: 'Acquired Asset Administration' }
-            ];
-        }else if (unitValue === 'FacilityManagement') {
-            options = [
-                 { value: districtValue + '-Facility Management', text: 'Facility Management' }
-            ];
-        }
-
-        // Populate the dropdown
-        var $segmentSelect = $('#Segment');
-        options.forEach(function(option) {
-            $segmentSelect.append(new Option(option.text, option.value));
+            // Handle unit changes
+            $('#unit').change(initializeForm);
         });
 
+        // Main initialization function
+        function initializeForm() {
+            // Get current values
+            var unitValue = $('#unit').val();
+            var segmentValue = $('#segment').val();
+            var districtValue = $('#district').val();
+            var currentSegment = $('#Segment').val(); // Remember current selection
+
+            console.log('Initializing form with values:', {
+                unit: unitValue,
+                segment: segmentValue,
+                district: districtValue
+            });
+
+            // Update business license visibility
+            updateBusinessLicense(segmentValue);
+
+            // Populate segment dropdown
+            populateSegmentDropdown(unitValue, districtValue, currentSegment);
+        }
+
+        // Update business license visibility
+        function updateBusinessLicense(segmentValue) {
+            if (segmentValue == "WholesaleConventional" || segmentValue == "WholesaleIFB") {
+                console.log('Showing business license');
+                $("#businessLicnese").show();
+            } else {
+                $("#businessLicnese").hide();
+            }
+
+            if (segmentValue === 'AcquiredAssetAdministration') {
+                $("#applicantName").val('CBE').prop('readonly', true);
+            }
+        }
+
+        // Populate segment dropdown
+        function populateSegmentDropdown(unitValue, districtValue, currentSegment) {
+            // Generate options based on unit value
+            var dynamicOptions = getSegmentOptions(unitValue, districtValue);
+
+            // Add "Select Segment" as the first option
+            var options = [
+                { value: '', text: '-- Select Segment --' }
+            ].concat(dynamicOptions);
+
+            // Update dropdown
+            var $segmentSelect = $('#Segment');
+            $segmentSelect.empty();
+
+            options.forEach(function(option) {
+                $segmentSelect.append(new Option(option.text, option.value));
+            });
+
+            // Restore selection if possible (but skip if it's empty)
+            if (currentSegment && $segmentSelect.find('option[value="' + currentSegment + '"]').length) {
+                $segmentSelect.val(currentSegment);
+            } else {
+                $segmentSelect.val(''); // Ensure "Select Segment" is selected by default
+            }
+        }
+
+        // Generate segment options
+        function getSegmentOptions(unitValue, districtValue) {
+            var options = [];
+
+            if (unitValue === 'LargeCorporate') {
+                options = [
+                    { value: districtValue + '-Large Corporate', text: 'Large Corporate' }
+                ];
+            } else if (unitValue === 'MediumCorporate') {
+                options = [
+                    { value: districtValue + '-Medium Corporate', text: 'Medium Corporate' }
+                ];
+            } else if (unitValue === 'SmallCorporate') {
+                options = [
+                    { value: districtValue + '-Small Corporate', text: 'Small Corporate' }
+                ];
+            } else if (unitValue === 'WholesaleDistrict') {
+                options = [
+                    { value: districtValue + '-SME', text: 'SME' },
+                    { value: districtValue + '-Micro', text: 'Micro' },
+                    { value: districtValue + '-Cooperative-primary', text: 'Cooperative-primary' }
+                ];
+            } else if (unitValue === 'CooperativeAndFinancialInstitution') {
+                options = [
+                    { value: districtValue + '-Cooperative-Union', text: 'Cooperative-Union' },
+                    { value: districtValue + '-Cooperative-league', text: 'Cooperative-league' },
+                    { value: districtValue + '-Cooperative-Federation', text: 'Cooperative-Federation' },
+                    { value: districtValue + '-Financial institution', text: 'Financial institution' }
+                ];
+            } else if (unitValue === 'StateOwnedEnterpriseAndOtherPublic') {
+                options = [
+                    { value: districtValue + '-State Owned Enterprise & OtherPublic', text: 'State Owned Enterprise & OtherPublic' }
+                ];
+            } else if (unitValue === 'RegionalGovernment') {
+                options = [
+                    { value: districtValue + '-Regional Government', text: 'Regional Government' }
+                ];
+            } else if (unitValue === 'CentralGovernment') {
+                options = [
+                    { value: districtValue + '-Central Government', text: 'Central Government' }
+                ];
+            } else if (unitValue === 'IFBCorporate') {
+                options = [
+                    { value: districtValue + '-IFB Large Corporate', text: 'Large Corporate' },
+                    { value: districtValue + '-IFB Medium Corporate', text: 'Medium Corporate' },
+                    { value: districtValue + '-IFB Small Corporate', text: 'Small Corporate' }
+                ];
+            } else if (unitValue === 'IFBSMEBanking') {
+                options = [
+                    { value: districtValue + '-IFB SME Banking', text: 'IFB SME Banking' }
+                ];
+            } else if (unitValue === 'IFBDistrict') {
+                options = [
+                    { value: districtValue + '-IFB SME', text: 'SME' },
+                    { value: districtValue + '-IFB Micro', text: 'Micro' },
+                    { value: districtValue + '-IFB Cooperative-primary', text: 'Cooperative-primary' }
+                ];
+            } else if (unitValue === 'Retail') {
+                options = [
+                    { value: districtValue + '-CBE Staff', text: 'CBE Staff' },
+                    { value: districtValue + '-Diaspora', text: 'Diaspora' },
+                    { value: districtValue + '-Employees of NGO & Int. organization', text: 'Employees of NGO & Int. organization' },
+                    { value: districtValue + '-Employees of high valued corporate customers', text: 'Employees of high valued corporate customers' },
+                    { value: districtValue + '-Exporter & General manager of exporter', text: 'Exporter & General manager of exporter' },
+                    { value: districtValue + '-Middle Customers', text: 'Middle Customers' },
+                    { value: districtValue + '-Other FCY generating entity', text: 'Other FCY generating entity' }
+                ];
+            } else if (unitValue === 'Foreclosure') {
+                options = [
+                    { value: districtValue + '-Foreclosure', text: 'Foreclosure' }
+                ];
+            } else if (unitValue === 'Litigation') {
+                options = [
+                    { value: districtValue + '-Litigation', text: 'Litigation' }
+                ];
+            } else if (unitValue === 'AcquiredAssetAdministration') {
+                options = [
+                    { value: districtValue + '-Acquired Asset Administration', text: 'Acquired Asset Administration' }
+                ];
+            } else if (unitValue === 'FacilityManagement') {
+                options = [
+                    { value: districtValue + '-Facility Management', text: 'Facility Management' }
+                ];
+            }
+
+            return options;
+        }
         document.getElementById('GetCustomerName').addEventListener('click', function () {
             var customerId = document.getElementById('CustomerId').value;
             if (customerId.length !== 10) {
@@ -287,7 +344,7 @@
         $(document).ready(function () {
 
             $("#GenerateCaseNo").on('click', function () {
-                var employeeId = @empId;
+                var employeeId = @empId
                 console.log(employeeId);
                 var currentDate = new Date();
                 var year = currentDate.getFullYear();

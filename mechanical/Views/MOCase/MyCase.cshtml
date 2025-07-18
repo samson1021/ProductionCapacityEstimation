@@ -461,8 +461,14 @@
                             }, 1500);
                         }
                     },
-                    error: function (xhr, status, error) {
-                        toastr.error('An error occurred while uploading the document.');
+                       error: function (error) {
+                               uploadButton.prop('disabled', false).text('Add');
+                       if (error.responseJSON && error.responseJSON.message) {
+                               toastr.error(error.responseJSON.message);
+                       } else {
+                               toastr.error("Unable to create collateral " + error.message);
+                       }
+                       console.log(error);
                     }
                 });
             });

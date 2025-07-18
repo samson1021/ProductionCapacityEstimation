@@ -37,8 +37,9 @@
             'X-Requested-With': 'XMLHttpRequest'
         },
         success: function (data) {
-            loading.hide();
-
+           
+             loading.hide();
+             console.log("loading");
             $('#example1').DataTable({
                 data: data,
                 columns: [

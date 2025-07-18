@@ -1,3 +1,4 @@
+using Azure;
 using mechanical;
 using mechanical.Data;
 using mechanical.Hubs;
@@ -44,6 +45,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -264,34 +266,57 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+
 //app.Use(async (context, next) =>
 //{
-//    // Add security headers
-//    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
-//    context.Response.Headers.Append("X-Frame-Options", "DENY");
-//    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
-//    context.Response.Headers.Append("Referrer-Policy", "no-referrer");
-//    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self';");
-//    context.Response.Headers.Append("Server", "");
+
 
 //    context.Response.Headers.Remove("Server");
+//    //context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
+//    // Generate a random nonce per request
+//    var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
+//    context.Response.Headers.Add("Content-Security-Policy",
+//        $"default-src 'self'; script-src 'self' 'nonce-{nonce}';");
+
+//    // Pass the nonce to your view (if using Razor)
+//    ViewData["Nonce"] = nonce;
+//    context.Response.Headers.Remove("X-Powered-By");
+//    context.Response.Headers["X-Content-Type-Options"] = "nosniff"; // Example additional header
+//    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+//    context.Response.Headers["X-Frame-Options"] = "DENY";
+//    context.Response.Headers["Cache-Control"] = "no-cache";
+//    //context.Response.Headers["Content-Encoding"] = "gzip"; // Be careful with this; it might be set by the server itself
+//    context.Response.Headers["Expires"] = "-1";
+//    context.Response.Headers["Pragma"] = "no-cache";
+
 //    await next();
 //});
-
 app.Use(async (context, next) =>
 {
-    
-  
+    // Remove server identification headers
     context.Response.Headers.Remove("Server");
-    
     context.Response.Headers.Remove("X-Powered-By");
-    context.Response.Headers["X-Content-Type-Options"] = "nosniff"; // Example additional header
+
+    // For development only - allows inline styles and scripts
+    context.Response.Headers.Append("Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline'; " +  // Allows inline scripts
+        "style-src 'self' 'unsafe-inline'; " +   // Allows inline styles
+        "img-src 'self' data:; " +              // Allows images from self and data URIs
+        "font-src 'self'; " +                   // Allows fonts from self
+        "connect-src 'self'; " +                // Allows AJAX/WebSocket connections
+        "object-src 'none';");                  // Blocks plugins (Flash, etc.)
+
+    // Add other security headers
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
     context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
     context.Response.Headers["X-Frame-Options"] = "DENY";
     context.Response.Headers["Cache-Control"] = "no-cache";
-    //context.Response.Headers["Content-Encoding"] = "gzip"; // Be careful with this; it might be set by the server itself
     context.Response.Headers["Expires"] = "-1";
     context.Response.Headers["Pragma"] = "no-cache";
+
     await next();
 });
 

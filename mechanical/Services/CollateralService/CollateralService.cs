@@ -117,6 +117,10 @@ namespace mechanical.Services.CollateralService
                 }
                 return true;
             }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
             catch (Exception)
             {
                 throw new Exception("unable to upload file");

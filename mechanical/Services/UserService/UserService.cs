@@ -58,11 +58,12 @@ namespace mechanical.Services.UserService
                                         .AsNoTracking()
                                         .Include(u => u.Role)
                                         .Where(u => u.Id != user.Id
-                                                    && u.SupervisorId == user.SupervisorId
                                                     && u.Department == user.Department
-                                                    && u.BroadSegment == user.BroadSegment
-                                                    && u.Unit == user.Unit
+                                                    //&& u.BroadSegment == user.BroadSegment
+                                                    //&& u.Unit == user.Unit
+                                                    && u.Status == "Activated"
                                                     && u.Role.Name == "Relation Manager"
+
                                         )
                                         .ToListAsync();
                                         

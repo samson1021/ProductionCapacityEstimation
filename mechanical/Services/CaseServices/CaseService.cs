@@ -95,7 +95,18 @@ namespace mechanical.Services.CaseServices
                     CaseId = loanCase.Id,
                     Category = "Bussiness Licence"
                 };
-                loanCase.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId, BussinessLicence);
+                try
+                {
+                    loanCase.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId, BussinessLicence);
+                }
+                catch (InvalidOperationException)
+                {
+                    throw;
+                }
+                catch (Exception)
+                {
+                    throw new Exception("unable to upload file");
+                }
             }
             loanCase.CaseOriginatorId = userId;
             loanCase.CreationAt = DateTime.UtcNow;

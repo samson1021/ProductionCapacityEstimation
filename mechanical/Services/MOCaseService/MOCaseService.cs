@@ -6,9 +6,13 @@ using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
 using mechanical.Models.Entities;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UploadFileService;
+using mechanical.Services.NotificationService;
+using mechanical.Models.Dto.NotificationDto;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
 using OpenCvSharp.CPlusPlus;
+using System.Data.SqlClient;
+using iText.Layout.Element;
 
 namespace mechanical.Services.MOCaseService
 {
@@ -19,13 +23,15 @@ namespace mechanical.Services.MOCaseService
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICaseTimeLineService _caseTimeLineService;
         private readonly IUploadFileService _uploadFileService;
-        public MOCaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
+        private readonly INotificationService _notificationService;
+        public MOCaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, INotificationService notificationService, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
             _uploadFileService = uploadFileService;
+            _notificationService = notificationService;
         }
         //public async Task<IEnumerable<MMNewCaseDto>> GetMONewCases()
         //{
@@ -97,10 +103,10 @@ namespace mechanical.Services.MOCaseService
             //}
             //else
             //{
-                collateral.CurrentStage = "Checker Manager";
-                collateral.CurrentStatus = "New";
+            collateral.CurrentStage = "Checker Manager";
+            collateral.CurrentStatus = "New";
             //}
-                
+
             _cbeContext.Collaterals.Update(collateral);
             await _cbeContext.SaveChangesAsync();
 
@@ -110,6 +116,13 @@ namespace mechanical.Services.MOCaseService
             {
                 throw new InvalidOperationException("Checker unit in you department is not ready.");
             }
+
+            // Notification
+            var notificationContent = "New Case evaluation sent for checking";
+            var notificationType = "Case Check";
+            var link = $"/Collateral/Detail/{collateral.Id}";
+            NotificationReturnDto notification;
+
             if (user?.District?.Name == "Head Office")
             {   //if(collateral.CurrentStage == "Checker Officer")
             //    {
@@ -139,31 +152,35 @@ namespace mechanical.Services.MOCaseService
             //    }
             //    else
             //    {
-                    var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
-                    if (checker == null) return false;
-                    var caseAssignment = new CaseAssignment()
-                    {
-                        CollateralId = CollateralId,
-                        UserId = checker.Id,
-                        Status = "New",
-                        AssignmentDate = DateTime.UtcNow
-                    };
-                    await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
-                    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-                    {
-                        CaseId = collateral.CaseId,
-                        Activity = $"<strong>Case send for Checkeing to Checkr Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
-                        CurrentStage = "Maker Manager"
-                    });
-                    await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
-                    {
-                        CaseId = collateral.CaseId,
-                        Activity = $"<strong>New Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
-                        CurrentStage = "Checker Manager",
-                        UserId = checker.Id
-                    });
+                var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
+                if (checker == null) return false;
+                var caseAssignment = new CaseAssignment()
+                {
+                    CollateralId = CollateralId,
+                    UserId = checker.Id,
+                    Status = "New",
+                    AssignmentDate = DateTime.UtcNow
+                };
+                await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
+                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                {
+                    CaseId = collateral.CaseId,
+                    Activity = $"<strong>Case send for Checkeing to Checkr Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+                    CurrentStage = "Maker Manager"
+                });
+                await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+                {
+                    CaseId = collateral.CaseId,
+                    Activity = $"<strong>New Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+                    CurrentStage = "Checker Manager",
+                    UserId = checker.Id
+                });
+
+                // Add Notification
+                notification = await _notificationService.AddNotification(checker.Id, notificationContent, notificationType, link);
+
                 //}
-                
+
             }
             else
             {
@@ -185,10 +202,14 @@ namespace mechanical.Services.MOCaseService
                     CurrentStage = "Checker Manager",
                     UserId = checker.Id
                 });
+                notification = await _notificationService.AddNotification(checker.Id, notificationContent, notificationType, link);
             }
 
             _cbeContext.Collaterals.Update(collateral);
             await _cbeContext.SaveChangesAsync();
+
+            // Realtime Notification
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             return true;
         }

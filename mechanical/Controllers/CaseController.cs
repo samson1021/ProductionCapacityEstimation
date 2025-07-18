@@ -108,10 +108,47 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cases = await _caseService.CreateCase(base.GetCurrentUserId(), caseDto);
-                return RedirectToAction("Detail", new { id = cases.Id });
+                try
+                {
+                    //await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
+                    //var response = new { message = "Collateral created successfully" };
+                    //return Ok(response);
+                    var cases = await _caseService.CreateCase(base.GetCurrentUserId(), caseDto);
+                    return RedirectToAction("Detail", new { id = cases.Id });
+
+                }
+                //catch (Exception ex)
+                //{
+                //    return BadRequest(new { message = ex.Message });
+                //}
+                catch (InvalidOperationException ex)
+                {
+                    //ViewData["UnitValue"] =ModelState.Unit;
+                    //ViewData["DistrictValue"] = model.District;
+                    ViewData["SegmentValue"] = caseDto.Segment; // This can be null/empty
+                    // Return bad request with the exception message
+                    ModelState.AddModelError(nameof(caseDto.BussinessLicence), ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    // Handle other exceptions
+                    ModelState.AddModelError(string.Empty, "An unexpected error occurred. Please try again.");
+
+                }
+                
             }
-            return View();
+            else
+            {
+                // Optional: You can also add a general error message for invalid model state
+                ModelState.AddModelError(string.Empty, "There are some validation errors. Please check your input.");
+            }
+            //if (ModelState.IsValid)
+            //{
+            //    var cases = await _caseService.CreateCase(base.GetCurrentUserId(), caseDto);
+            //    return RedirectToAction("Detail", new { id = cases.Id });
+            //}
+            //return View();
+            return View(caseDto);
         }
 
         [HttpPost]

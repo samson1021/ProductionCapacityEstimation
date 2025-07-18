@@ -107,7 +107,7 @@ namespace mechanical.Controllers
                 return View("Index", logins);
             }
 
-            var user = await _context.Users.Include(c => c.Role).Include(c => c.District)
+            var user = await _context.Users.Include(c => c.Role).Include(c => c.District).Where(c=>c.Status=="Activated")
                                             .Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email)
                                             .FirstOrDefaultAsync();
             
