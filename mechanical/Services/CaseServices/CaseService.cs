@@ -21,6 +21,8 @@ using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.UploadFileService;
 using mechanical.Models.Dto.TaskManagmentDto;
+using mechanical.Models.Dto.NotificationDto;
+using mechanical.Services.NotificationService;
 
 namespace mechanical.Services.CaseServices
 {
@@ -31,15 +33,17 @@ namespace mechanical.Services.CaseServices
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICaseTimeLineService _caseTimeLineService;
         private readonly IUploadFileService _uploadFileService;
+        private readonly INotificationService _notificationService;
 
 
-        public CaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
+        public CaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
             _uploadFileService = uploadFileService;
+            _notificationService = notificationService;
         }
         public async Task<IEnumerable<CaseDto>> GetRmRemarkedCases(Guid userId)
         {
@@ -462,6 +466,15 @@ namespace mechanical.Services.CaseServices
                 Activity = $"<strong>Collateral is rejected.</strong> <br> <i class='text-purple'>",
                 CurrentStage = "Maker Manager",
             });
+            //notification 
+            var notificationContent = "Return Case for Rejected for correction";
+            var notificationType = "Return Case";
+            var link = $"/Collateral/Detail?Id={moRejectCaseDto.CollateralId}"; ;
+            NotificationReturnDto notification = null;
+            // Add Notification
+            notification = await _notificationService.AddNotification(assignedCases.CreatedById, notificationContent, notificationType, link);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             var caseAssignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(res => res.CollateralId == moRejectCaseDto.CollateralId && res.UserId == reject.RejectedBy);
             caseAssignment.Status = "Reject";
@@ -511,6 +524,15 @@ namespace mechanical.Services.CaseServices
                 Activity = $"<strong>Collateral is retuned to Maker.</strong> <br> <i class='text-purple'>",
                 CurrentStage = "Maker Manager",
             });
+            //notification 
+            var notificationContent = "Return Case for Re-estimation to maker";
+            var notificationType = "Return Case";
+            var link = $"/Collateral/Detail?Id={Id}"; ;
+            NotificationReturnDto notification = null;
+            // Add Notification
+            notification = await _notificationService.AddNotification(reject.RejectedBy, notificationContent, notificationType, link);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             var caseAssignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(res => res.CollateralId == Id && res.UserId == reject.RejectedBy);
             if (caseAssignment == null)

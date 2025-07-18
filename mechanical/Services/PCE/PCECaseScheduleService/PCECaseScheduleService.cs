@@ -8,6 +8,9 @@ using mechanical.Data;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
 using mechanical.Models.PCE.Dto.PCECaseScheduleDto;
+using mechanical.Models.Dto.NotificationDto;
+using mechanical.Services.NotificationService;
+using mechanical.Services.PCE.PCECaseService;
 
 namespace mechanical.Services.PCE.PCECaseScheduleService
 {
@@ -16,12 +19,14 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
         private readonly IMapper _mapper;
         private readonly CbeContext _cbeContext;
         private readonly ILogger<PCECaseScheduleService> _logger;
+        private readonly INotificationService _notificationService;
 
-        public PCECaseScheduleService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseScheduleService> logger)
+        public PCECaseScheduleService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseScheduleService> logger, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _logger = logger;
+            _notificationService = notificationService;          
         }
 
         public async Task<PCECaseScheduleReturnDto> CreateSchedule(Guid UserId, PCECaseSchedulePostDto pceCaseScheduleDto)
@@ -34,10 +39,21 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
                 pceCaseSchedule.UserId = UserId;
                 pceCaseSchedule.Status = "Proposed";
                 pceCaseSchedule.CreatedAt = DateTime.UtcNow;
+               
 
                 await _cbeContext.PCECaseSchedules.AddAsync(pceCaseSchedule);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                //notification
+                var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(p=>p.Id== pceCaseSchedule.PCECaseId);
+                var notificationContent = "New PCECase Schedule is Proposed";
+                var notificationType = "PCECase Schedule";
+                var link = $"/PCECase/Detail?Id={pceCaseSchedule.PCECaseId}";
+                NotificationReturnDto notification = null;
+                // Add Notification
+                notification = await _notificationService.AddNotification(pceCase.PCECaseOriginatorId, notificationContent, notificationType, link);
+                // Realtime Nofication
+                if (notification != null) await _notificationService.SendNotification(notification);
 
                 return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
             }
@@ -70,7 +86,30 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                
+                //notification
+                var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(p => p.Id == pceCaseSchedule.PCECaseId);
+                var notificationContent = "PCECase Schedule is updated";
+                var notificationType = "PCECase Schedule";
+                var link = $"/PCECase/Detail?Id={pceCaseSchedule.PCECaseId}";
+                NotificationReturnDto notification = null;
+                // Add Notification
+                var user = await _cbeContext.Users.AsNoTracking().Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == UserId);
+                if (user.Role.Name == "Maker Officer")
+                {
+                    notification = await _notificationService.AddNotification(pceCase.PCECaseOriginatorId, notificationContent, notificationType, link);
+                }
+                else
+                {
+                    // Find a userId with role "Maker Officer"
+                    var moUserId = await _cbeContext.ProductionCapacities
+                        .AsNoTracking()
+                        .Where(u => u.CurrentStage == "Maker Officer" && u.PCECaseId == pceCaseSchedule.PCECaseId)
+                        .Select(u => u.AssignedEvaluatorId)
+                        .FirstOrDefaultAsync();
+                    notification = await _notificationService.AddNotification(moUserId.Value, notificationContent, notificationType, link);
 
+                }
                 return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
             }
 
@@ -103,7 +142,15 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
                 await _cbeContext.PCECaseSchedules.AddAsync(newPCECaseSchedule);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-
+                //notification
+                var notificationContent = "PCECase Schedule is Re-Propesed ";
+                var notificationType = "PCECase Schedule";
+                var link = $"/PCECase/Detail?Id={pceCaseSchedule.PCECaseId}";
+                NotificationReturnDto notification = null;
+                // Add Notification
+                notification = await _notificationService.AddNotification(pceCaseSchedule.UserId, notificationContent, notificationType, link);
+                // Realtime Nofication
+                if (notification != null) await _notificationService.SendNotification(notification);
                 return _mapper.Map<PCECaseScheduleReturnDto>(newPCECaseSchedule);
             }
 
@@ -130,6 +177,15 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                //notification
+                var notificationContent = "PCECase Schedule was Approved";
+                var notificationType = "PCECase Schedule";
+                var link = $"/PCECase/Detail?Id={pceCaseSchedule.PCECaseId}";
+                NotificationReturnDto notification = null;
+                // Add Notification
+                notification = await _notificationService.AddNotification(pceCaseSchedule.UserId, notificationContent, notificationType, link);
+                // Realtime Nofication
+                if (notification != null) await _notificationService.SendNotification(notification);
 
                 return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
             }
@@ -142,7 +198,7 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
         }
 
         public async Task<PCECaseScheduleReturnDto> CreateReschedule(Guid UserId, PCECaseSchedulePostDto pceCaseScheduleDto)
-        {
+          {
             using var transaction = await _cbeContext.Database.BeginTransactionAsync();
             try
             {
@@ -167,6 +223,31 @@ namespace mechanical.Services.PCE.PCECaseScheduleService
                 await _cbeContext.PCECaseSchedules.AddAsync(pceCaseSchedule);
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                //notification
+                var pceCase = await _cbeContext.PCECases.AsNoTracking().FirstOrDefaultAsync(p => p.Id == existingSchedule.PCECaseId);
+                var notificationContent = "PCECase Re-Scheduled is Proposed ";
+                var notificationType = "PCECase Schedule";
+                var link = $"/PCECase/Detail?Id={existingSchedule.PCECaseId}";
+                NotificationReturnDto notification = null;
+                // Add Notification
+                var user = await _cbeContext.Users.AsNoTracking().Include(u=>u.Role).FirstOrDefaultAsync(u=>u.Id==UserId);
+                if (user.Role.Name == "Maker Officer")
+                {
+                    notification = await _notificationService.AddNotification(pceCase.PCECaseOriginatorId, notificationContent, notificationType, link);
+                }
+                else
+                {
+                    // Find a userId with role "Maker Officer"
+                    var moUserId = await _cbeContext.ProductionCapacities
+                        .AsNoTracking()
+                        .Where(u => u.CurrentStage == "Maker Officer" && u.PCECaseId == existingSchedule.PCECaseId)
+                        .Select(u => u.AssignedEvaluatorId)
+                        .FirstOrDefaultAsync();
+                    notification = await _notificationService.AddNotification(moUserId.Value, notificationContent, notificationType, link);
+
+                }
+                // Realtime Nofication
+                if (notification != null) await _notificationService.SendNotification(notification);
 
                 return _mapper.Map<PCECaseScheduleReturnDto>(pceCaseSchedule);
             }
