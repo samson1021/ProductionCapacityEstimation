@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Metrics;
 using Microsoft.VisualBasic;
 using OpenCvSharp.CPlusPlus;
+using mechanical.Services.NotificationService;
+using mechanical.Models.Dto.NotificationDto;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Services.CaseAssignmentService
 {
@@ -20,13 +23,16 @@ namespace mechanical.Services.CaseAssignmentService
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICaseTimeLineService _caseTimeLineService;
+        private readonly INotificationService _notificationService;
 
-        public CaseAssignmentService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, ICaseTimeLineService caseTimeLineService)
+
+        public CaseAssignmentService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _caseTimeLineService = caseTimeLineService;
+            _notificationService = notificationService;
         }
 
         public async Task<List<CaseAssignmentDto>> SendForReestimation(string ReestimationReason, string selectedCollateralIds, string CenterId)
@@ -40,11 +46,15 @@ namespace mechanical.Services.CaseAssignmentService
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
             List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             CaseTimeLinePostDto caseTimeLinePostDto = null;
-
+            //notification 
+            var notificationContent = "New case send for re-estimation";
+            var notificationType = "Case Re-estimation";
+            var link = $"";
+            NotificationReturnDto notification = null;
             foreach (Guid collateralId in collateralIdList)
             {
                 var collateral = await _cbeContext.Collaterals.FindAsync(collateralId);
-
+                link = $"/Collateral/Detail?Id={collateral.Id}";
                 if (collateral != null)
                 {
                     collateral.CurrentStage = "Maker Manager";
@@ -91,9 +101,14 @@ namespace mechanical.Services.CaseAssignmentService
                     CreatedAt = DateTime.UtcNow,
                 };
                 await _cbeContext.CollateralReestimations.AddAsync(caseReEvaluation);
+                // Add Notification
+                notification = await _notificationService.AddNotification(user.Id, notificationContent, notificationType, link);
                 await _cbeContext.SaveChangesAsync();
+               
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
             return caseAssignments;
         }
         public async Task<List<CaseAssignmentDto>> SendForValuation(string selectedCollateralIds, string CenterId)
@@ -107,11 +122,15 @@ namespace mechanical.Services.CaseAssignmentService
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
             List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             CaseTimeLinePostDto caseTimeLinePostDto = null;
-
+            //notification 
+            var notificationContent = "New case send for valuation";
+            var notificationType = "Case Valuation";
+            var link = $"";
+            NotificationReturnDto notification = null;
             foreach (Guid collateralId in collateralIdList)
             {
-
                 var collateral = await _cbeContext.Collaterals.FindAsync(collateralId);
+                link = $"/Collateral/Detail?Id={collateral.Id}";
                 if (collateral != null)
                 {
 
@@ -181,11 +200,10 @@ namespace mechanical.Services.CaseAssignmentService
                             AssignmentDate = DateTime.UtcNow
                         };
                         await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
-                        _cbeContext.Collaterals.Update(collateral);
+                        _cbeContext.Collaterals.Update(collateral);                       
                         await _cbeContext.SaveChangesAsync();
-                        caseAssignments.Add(_mapper.Map<CaseAssignmentDto>(caseAssignment));
+                        caseAssignments.Add(_mapper.Map<CaseAssignmentDto>(caseAssignment));                        
                     }
-
 
                     if (caseTimeLinePostDto == null)
                     {
@@ -198,12 +216,28 @@ namespace mechanical.Services.CaseAssignmentService
                     }
                     caseTimeLinePostDto.Activity += $"<i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}. <br>";
 
+                    // Add Notification                   
+                    var userId = MechanicalUser.Id != Guid.Empty ? MechanicalUser.Id :
+             CivilUser.Id != Guid.Empty ? CivilUser.Id :
+             AgricultureUser.Id; // No need for Guid.Empty fallback here
+
+                    // Optionally, check if userId is still Guid.Empty after the assignment
+                    if (userId == Guid.Empty)
+                    {
+                        // Handle the case where all IDs are empty
+                        throw new InvalidOperationException("No valid user ID found.");
+                    }
+
+                    // Now you can use userId safely
+                    notification = await _notificationService.AddNotification(userId, notificationContent, notificationType, link);
                 }
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
+          
             return caseAssignments;
         }
-
         public async Task<List<CaseAssignmentDto>> AssignMakerTeamleader(Guid userId, string selectedCollateralIds, string employeeId)
         {
 
@@ -214,9 +248,15 @@ namespace mechanical.Services.CaseAssignmentService
 
             List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             CaseTimeLinePostDto caseTimeLinePostDto = null;
+            //notification 
+            var notificationContent = "New case assigned for valuation";
+            var notificationType = "Case Valuation";
+            var link = $"";           
+            NotificationReturnDto notification = null;
             foreach (Guid collateralId in collateralIdList)
             {
                 var collateral = await _cbeContext.Collaterals.FindAsync(collateralId);
+                link = $"/Collateral/Detail?Id={collateral.Id}";
                 if (collateral != null)
                 {
                     collateral.CurrentStage = user.Role.Name;
@@ -260,6 +300,9 @@ namespace mechanical.Services.CaseAssignmentService
                     {
                         collateralCaseId = collateral.CaseId;
                     }
+                    // Add Notification
+                    notification = await _notificationService.AddNotification(user.Id, notificationContent, notificationType, link);
+
                 }
                 var caseassig = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.CollateralId == collateral.Id).FirstOrDefaultAsync();
                 caseassig.Status = "Pending";
@@ -268,6 +311,8 @@ namespace mechanical.Services.CaseAssignmentService
 
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             return caseAssignments;
         }
@@ -280,6 +325,11 @@ namespace mechanical.Services.CaseAssignmentService
 
             List<Guid> caseAssigmentIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             CaseTimeLinePostDto caseTimeLinePostDto = null;
+            //notification 
+            var notificationContent = "New case reassigned for valuation";
+            var notificationType = "Case reassigned for Valuation";
+            var link = $"";
+            NotificationReturnDto notification = null;
             foreach (Guid cassAssigmentId in caseAssigmentIdList)
             {
                 var caseAssignment = await _cbeContext.CaseAssignments.FindAsync(cassAssigmentId);
@@ -309,6 +359,9 @@ namespace mechanical.Services.CaseAssignmentService
                     {
                         collateralCaseId = collateral.CaseId;
                     }
+                    // Add Notification
+                    notification = await _notificationService.AddNotification(user.Id, notificationContent, notificationType, link);
+
                 }
                 var caseassig = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.CollateralId == collateral.Id).FirstOrDefaultAsync();
                 caseassig.Status = "Pending";
@@ -316,6 +369,8 @@ namespace mechanical.Services.CaseAssignmentService
 
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             return caseAssignments;
         }
@@ -326,12 +381,19 @@ namespace mechanical.Services.CaseAssignmentService
             var UserId = Guid.Parse(employeeId);
             var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
+            //notification 
+            var notificationContent = "New case evalaution assigned for checking";
+            var notificationType = "Case assigned for check";
+            var link =$"";
+            NotificationReturnDto notification = null;
 
             List<Guid> collateralIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             CaseTimeLinePostDto caseTimeLinePostDto = null;
             foreach (Guid collateralId in collateralIdList)
             {
                 var collateral = await _cbeContext.Collaterals.FindAsync(collateralId);
+                 link = $"/Collateral/Detail?Id={collateral.Id}";
+
                 if (collateral != null)
                 {
                     collateral.CurrentStage = user.Role.Name;
@@ -375,6 +437,9 @@ namespace mechanical.Services.CaseAssignmentService
                     {
                         collateralCaseId = collateral.CaseId;
                     }
+                    // Add Notification
+                    notification = await _notificationService.AddNotification(user.Id, notificationContent, notificationType, link);
+
                 }
                 var caseassig = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.CollateralId == collateral.Id).FirstOrDefaultAsync();
                 caseassig.Status = "Pending";
@@ -382,6 +447,8 @@ namespace mechanical.Services.CaseAssignmentService
 
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             return caseAssignments;
         }
@@ -392,13 +459,18 @@ namespace mechanical.Services.CaseAssignmentService
             var UserId = Guid.Parse(employeeId);
             var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == UserId);
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
-
+            //notification 
+            var notificationContent = "New case evalaution reassigned for checking";
+            var notificationType = "Case assigned for recheck";
+            var link = $"";
+            NotificationReturnDto notification = null;
             List<Guid> caseAssigmentIdList = selectedCollateralIds.Split(',').Select(x => Guid.Parse(x.Trim())).ToList();
             CaseTimeLinePostDto caseTimeLinePostDto = null;
             foreach (Guid cassAssigmentId in caseAssigmentIdList)
             {
                 var caseAssignment = await _cbeContext.CaseAssignments.FindAsync(cassAssigmentId);
                 var collateral = await _cbeContext.Collaterals.FindAsync(caseAssignment.CollateralId);
+                link = $"/Collateral/Detail?Id={collateral.Id}";
                 if (caseAssignment != null)
                 {
                     if (caseAssignment.Status == "New")
@@ -428,9 +500,13 @@ namespace mechanical.Services.CaseAssignmentService
                 var caseassig = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.CollateralId == collateral.Id).FirstOrDefaultAsync();
                 caseassig.Status = "Pending";
                 _cbeContext.Update(caseassig);
+                // Add Notification
+                notification = await _notificationService.AddNotification(user.Id, notificationContent, notificationType, link);
 
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);
+            // Realtime Nofication
+            if (notification != null) await _notificationService.SendNotification(notification);
 
             return caseAssignments;
         }

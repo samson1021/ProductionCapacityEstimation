@@ -15,6 +15,8 @@ using mechanical.Models.Dto.Correction;
 using Microsoft.VisualBasic;
 using Azure;
 using mechanical.Models.Enum;
+using mechanical.Models.Dto.NotificationDto;
+using mechanical.Services.NotificationService;
 
 namespace mechanical.Services.CollateralService
 {
@@ -25,13 +27,15 @@ namespace mechanical.Services.CollateralService
         private readonly IUploadFileService _uploadFileService;
         private readonly ICaseTimeLineService _caseTimeLineService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public CollateralService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
+        private readonly INotificationService _notificationService;
+        public CollateralService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _uploadFileService = uploadFileService;
             _caseTimeLineService = caseTimeLineService;
             _httpContextAccessor = httpContextAccessor;
+            _notificationService = notificationService;
         }
 
         public async Task<Collateral> CreateCollateral(Guid userId, Guid caseId, CollateralPostDto createCollateralDto)
@@ -548,6 +552,17 @@ namespace mechanical.Services.CollateralService
                         collateral.CurrentStage = "Maker Officer";
                         collateral.CurrentStatus = "Correction";
                         collateral.NumberOfReturns = collateral.NumberOfReturns + 1;
+
+                        //notification 
+                        var notificationContent = "Return collateral for correction check";
+                        var notificationType = "Collateral Correction";
+                        var link = $"/Collateral/Detail?Id={Id}"; ;
+                        NotificationReturnDto notification = null;
+                        // Add Notification
+                        notification = await _notificationService.AddNotification(collateral.CreatedById, notificationContent, notificationType, link);
+                        // Realtime Nofication
+                        if (notification != null) await _notificationService.SendNotification(notification);
+
                     }
                     else if (Status == "Complete")
                     {
@@ -616,6 +631,15 @@ namespace mechanical.Services.CollateralService
                             collateral.CurrentStatus = "Complete";
                         }
 
+                        //notification 
+                        var notificationContent = "The Collateral has been Completed!";
+                        var notificationType = "Completed Collateral";
+                        var link = $"/Collateral/Detail?Id={Id}"; ;
+                        NotificationReturnDto notification = null;
+                        // Add Notification
+                        notification = await _notificationService.AddNotification(collateral.CreatedById, notificationContent, notificationType, link);
+                        // Realtime Nofication
+                        if (notification != null) await _notificationService.SendNotification(notification);
                     }
                     else
                     {

@@ -11,6 +11,8 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using DocumentFormat.OpenXml.Spreadsheet;
+using mechanical.Models.Dto.NotificationDto;
+using mechanical.Services.NotificationService;
 
 namespace mechanical.Services.PCE.PCECaseAssignmentService
 {
@@ -21,14 +23,16 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         private readonly ILogger<PCECaseAssignmentService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
+        private readonly INotificationService _notificationService;
 
-        public PCECaseAssignmentService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseAssignmentService> logger, IHttpContextAccessor httpContextAccessor, IPCECaseTimeLineService IPCECaseTimeLineService)
+        public PCECaseAssignmentService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseAssignmentService> logger, IHttpContextAccessor httpContextAccessor, IPCECaseTimeLineService IPCECaseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _IPCECaseTimeLineService = IPCECaseTimeLineService;
+            _notificationService = notificationService;
 
         }
 
@@ -91,10 +95,16 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 PCECaseTimeLinePostDto pceCaseTimeLineDto = null;
                 List<PCECaseAssignmentDto> pceCaseAssignments = new List<PCECaseAssignmentDto>();
                 List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(Guid.Parse).ToList();
+                //notification 
+                var notificationContent = "New PCECase sent for estimation";
+                var notificationType = "PCECase Send for Estimation";
+                var link = $"";
+                NotificationReturnDto notification = null;
 
                 foreach (var PCEId in PCEIdList)
                 {
                     var production = await GetProductionById(PCEId);
+                    link = $"/ProductionCapacity/Detail?Id={production.Id}";
                     if (production == null) continue;
 
                     await UpdateProduction(production, assignedUser, OperationType);
@@ -106,6 +116,10 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     }
                     UpdateTimelineDto(production, pceCaseTimeLineDto);
                     await UpdatePreviousAssignments(UserId, PCEId);
+
+                    // Add Notification
+                    notification = await _notificationService.AddNotification(assignedUser.Id, notificationContent, notificationType, link);
+
                 }
                 if (pceCaseTimeLineDto != null)
                 {
@@ -114,6 +128,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                // Realtime Nofication
+                if (notification != null) await _notificationService.SendNotification(notification);
 
                 return pceCaseAssignments;
             }
