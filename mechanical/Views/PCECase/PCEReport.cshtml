@@ -305,21 +305,49 @@
     <!-- B. Production Capacity Estimation Summary -->
     @if (PCEEvaluations.Any())
     {
-        foreach (var (evaluation, index) in PCEEvaluations.Select((e, i) => (e, i + 1)))
-        {
+        
+        // foreach (var (evaluation, index) in PCEEvaluations.Select((e, i) => (e, i + 1)))
+        // {
+        
+            var evaluations = PCEEvaluations.ToList(); // Fetch evaluations safely
+
+
+        // @foreach (var (evaluation, index) in evaluations.Select((e, i) => (e, i + 1)))
+        // {
+            for (int j = 0; j < evaluations.Count; j++)
+            {
+                var evaluation = evaluations[j];
+                var index = j + 1;
+            
+            // <div class="tight-section">
+            //     <h5 style="margin-bottom: 2mm;">B. Production Capacity Estimation Summary</h5>
+
+            //     <div class="two-column-print" style="margin-bottom: 2mm;">
+            //         <div class="print-column">
+            //             <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Machine Name:</strong> @evaluation.MachineName</p>
+            //             <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Production Line:</strong> @evaluation.ProductionLineType</p>
+            //             <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Country of Origin:</strong> @evaluation.CountryOfOrigin</p>
+            //             <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Technical Status:</strong> @evaluation.TechnicalObsolescenceStatus</p>
+            //             <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
+            //             @if (evaluation.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other)
+            //             {
+            //                 <p style="margin-bottom: 1mm;line-height: 1.8;">@evaluation.OtherMachineNonFunctionalityReason</p>
+            //             }
+            //         </div>
             <div class="tight-section">
                 <h5 style="margin-bottom: 2mm;">B. Production Capacity Estimation Summary</h5>
 
                 <div class="two-column-print" style="margin-bottom: 2mm;">
                     <div class="print-column">
-                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Machine Name:</strong> @evaluation.MachineName</p>
-                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Production Line:</strong> @evaluation.ProductionLineType</p>
-                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Country of Origin:</strong> @evaluation.CountryOfOrigin</p>
-                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Technical Status:</strong> @evaluation.TechnicalObsolescenceStatus</p>
-                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Functionality status:</strong> @evaluation.MachineFunctionalityStatus @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + evaluation.MachineNonFunctionalityReason : "")</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Machine Name:</strong> @Html.Encode(evaluation.MachineName)</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Production Line:</strong> @Html.Encode(evaluation.ProductionLineType)</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Country of Origin:</strong> @Html.Encode(evaluation.CountryOfOrigin)</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Technical Status:</strong> @Html.Encode(evaluation.TechnicalObsolescenceStatus)</p>
+                        <p style="margin-bottom: 1mm;line-height: 1.8;"><strong>Functionality Status:</strong> @Html.Encode(evaluation.MachineFunctionalityStatus) @(evaluation.MachineFunctionalityStatus == MachineFunctionalityStatus.NonFunctional ? ", " + Html.Encode(evaluation.MachineNonFunctionalityReason) : "")</p>
+
                         @if (evaluation.MachineNonFunctionalityReason == MachineNonFunctionalityReason.Other)
                         {
-                            <p style="margin-bottom: 1mm;line-height: 1.8;">@evaluation.OtherMachineNonFunctionalityReason</p>
+                            <p style="margin-bottom: 1mm;line-height: 1.8;">@Html.Encode(evaluation.OtherMachineNonFunctionalityReason)</p>
                         }
                     </div>
                     <div class="print-column">
@@ -385,8 +413,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var (line, lineIndex) in evaluation.ProductionLines.Select((l, i) => (l, i + 1)))
-                                {
+                            @{
+
+                                    for (int i = 0; i < evaluation.ProductionLines.Count; i++)
+                                    {
+                                        var line = evaluation.ProductionLines[i];
+                                        var lineIndex = i + 1;
+                                    
                                     <tr>
                                         <td style="padding: 1mm;">@lineIndex</td>
                                         <td style="padding: 1mm;">
@@ -396,12 +429,12 @@
                                                 <span style="background-color: yellow; padding: 0 1mm;"> (Bottleneck)</span>
                                             }
                                         </td>
-                                        <td style="padding: 1mm;">@line.OutputType</td>
-                                        <td style="padding: 1mm;">@line.ActualCapacity</td>
-                                        <td style="padding: 1mm;">@(line.DesignCapacity?.ToString() ?? "N/A")</td>
-                                        <td style="padding: 1mm;">@line.AttainableCapacity</td>
-                                        <td style="padding: 1mm;">@line.ProductionUnit/@line.ProductionMeasurement</td>
-                                        <td style="padding: 1mm;">@line.TotalInput</td>
+                                        <td style="padding: 1mm;">@Html.Encode(line.OutputType)</td>
+                                        <td style="padding: 1mm;">@Html.Encode(line.ActualCapacity)</td>
+                                        <td style="padding: 1mm;">@Html.Encode(line.DesignCapacity?.ToString() ?? "N/A")</td>
+                                        <td style="padding: 1mm;">@Html.Encode(line.AttainableCapacity)</td>
+                                        <td style="padding: 1mm;">@Html.Encode(line.ProductionUnit)/@Html.Encode(line.ProductionMeasurement)</td>
+                                        <td style="padding: 1mm;">@Html.Encode(line.TotalInput)</td>
                                         @if (evaluation.HasInputOutputData == false && evaluation.Justifications?.Any() == true)
                                         {
                                             <td colspan="9" style="padding: 1mm;">
@@ -441,6 +474,8 @@
                                         </tr>
                                     }
                                 }
+                                #pragma warning restore SCS0002
+                              }
                             </tbody>
                         </table>
                     </div>
@@ -471,6 +506,7 @@
                 </div>
             </div>
         }
+        #pragma warning restore SCS0002
     }
     else
     {

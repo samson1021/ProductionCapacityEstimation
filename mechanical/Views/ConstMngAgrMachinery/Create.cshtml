@@ -270,10 +270,67 @@
 </section>
 @section Scripts {
     <script>
-        const countryInput = document.getElementById('CountryOfOrigin');
-        countryInput.addEventListener('keydown', (e) => {
-            e.preventDefault();
+        // const countryInput = document.getElementById('CountryOfOrigin');
+        // countryInput.addEventListener('keydown', (e) => {
+        //     e.preventDefault();
+        // });
+
+             document.addEventListener('DOMContentLoaded', function() {
+            const countryInput = document.getElementById('CountryOfOrigin');
+            const countryDatalist = document.getElementById('country');
+
+            // Store original options
+            const originalOptions = Array.from(countryDatalist.options).map(opt => opt.value);
+            let lastValidValue = '';
+
+            // Allow only letters and navigation keys
+            countryInput.addEventListener('keydown', (e) => {
+                const allowedKeys = [
+                    'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape',
+                    'Backspace', 'Delete', 'Home', 'End'
+                ];
+
+                const isLetter = /^[a-zA-Z\s]$/.test(e.key); // Allow letters and space
+
+                if (!allowedKeys.includes(e.key) && !isLetter) {
+                    e.preventDefault();
+                }
+            });
+
+            // Validate when selection is made or field loses focus
+            countryInput.addEventListener('change', validateInput);
+            countryInput.addEventListener('blur', validateInput);
+
+            function validateInput() {
+                if (!originalOptions.includes(countryInput.value)) {
+                    countryInput.value = lastValidValue || '';
+                } else {
+                    lastValidValue = countryInput.value;
+                }
+            }
+
+            // Form submission validation
+            const form = countryInput.closest('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!originalOptions.includes(countryInput.value)) {
+                        e.preventDefault();
+                        countryInput.value = '';
+                        countryInput.focus();
+                        alert('Please select a valid country from the list');
+                    }
+                });
+            }
+
+            // Keep dropdown visible while typing
+            countryInput.addEventListener('input', function() {
+                this.setAttribute('list', 'country');
+            });
         });
+
+
+
+
         document.getElementById('GetExchangeRate').addEventListener('click', function () {
             var currency = document.getElementById("Currency").value;
             if(currency == "" || currency == null){

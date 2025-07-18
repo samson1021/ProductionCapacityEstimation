@@ -11,7 +11,8 @@ namespace mechanical.Models.Dto.CollateralDto
         public required string Role { get; set; }
         public string? Category { get; set; } 
         public string? Type { get; set; }
-        public  string? PlateNo { get; set; }
+        public string? PlateNo { get; set; }
+        public string? CPlateNo { get; set; }
         public  string? ChassisNo { get; set; }
         public string? EngineMotorNo { get; set; }
         public int? ManufactureYear { get; set; }

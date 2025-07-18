@@ -4,10 +4,12 @@ using mechanical.Models.Entities;
 using mechanical.Services.CaseAssignmentService;
 using mechanical.Services.CaseServices;
 using mechanical.Services.CorrectionServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CorrectionController : Controller
     {
 
@@ -51,6 +53,19 @@ namespace mechanical.Controllers
 
         //    return RedirectToAction(Action, new { Id = collateralId });
         //}
+        [HttpPost]
+        public async Task<IActionResult> ReplayForCheckerCorrections(CorrectionPostDto correctionDto, string Controller, string Action)
+        {
+            var collateralId = correctionDto.CollateralID;
+
+            if (ModelState.IsValid)
+            {
+                var correction = await _CorrectionService.CreateCorrection(correctionDto);
+                return Ok();
+            }
+
+            return RedirectToAction(Action, new { Id = collateralId });
+        }
 
     }
 }

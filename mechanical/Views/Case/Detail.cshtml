@@ -1,6 +1,8 @@
 @using mechanical.Models.Dto.CaseScheduleDto;
 @using mechanical.Models.Dto.TaskManagmentDto
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
+@inject IHttpContextAccessor HttpContextAccessor
+
 
 @{
     var myCase = ViewData["case"] as CaseReturnDto;
@@ -9,6 +11,7 @@
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
     var caseType = ViewData["CaseType"] as string;
     var shareTaskData = ViewData["ShareTaskData"] as ShareTasksDto;
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("userRole");
 }
 
 <section class="content-header">
@@ -52,6 +55,11 @@
                                     <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBage"></span>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-four-correction-tab" data-toggle="pill" href="#custom-tabs-four-correction" role="tab" aria-controls="custom-tabs-four-correction" aria-selected="false">
+                                    <i class="fas fa-history"></i> Case History <span class="badge badge-warning right CorrectionBage"></span>
+                                </a>
+                            </li>
                         }
                         else
                         {
@@ -81,7 +89,7 @@
                             }
                         }
                     </ul>
-                    @if (caseType != "Shared")
+                    @if (caseType != "Shared" && userRole == "Relation Manager")
                     {
                         <button type="button" class="btn bg-purple mr-2" data-toggle="modal" data-target="#shareCaseModal">
                             Share
@@ -103,6 +111,11 @@
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @await Html.PartialAsync("_CaseComment")
                     </div>
+
+                    <div class="tab-pane fade" id="custom-tabs-four-correction" role="tabpanel" aria-labelledby="custom-tabs-four-correction-tab">
+                        @await Html.PartialAsync("_CaseCorrectionHistory")
+                    </div>
+
                 </div>
             </div>
         </div>

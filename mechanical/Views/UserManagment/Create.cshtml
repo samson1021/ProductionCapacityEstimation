@@ -256,7 +256,15 @@
             if (selectedRole == 'Relation Manager') {
                 $("#RM").show();
                 $("#CEV").hide();
-            } else {
+            }
+                else if (selectedRole == 'Admin'){
+                    $("#RM").hide();
+                $("#CEV").show();
+                $('#Department').html(`
+                  <option value="" selected disabled>Select valuation unit</option>
+                  <option value="Mechanical">Access Control</option>`);
+                }
+                else {
                 $("#RM").hide();
                 $("#CEV").show();
                 $('#Department').html(`

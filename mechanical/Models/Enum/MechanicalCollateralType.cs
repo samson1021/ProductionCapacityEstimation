@@ -8,10 +8,10 @@ namespace mechanical.Models.Enum
         [Display(Name = "Industrial (Mfg.) Process Line Equipment")]
         IndustrialMfgProcessLineEquipment,
 
-        [Display(Name = "HVAC system, Fuel Station and Security Apparatus etc")]
+        [Display(Name = "HVAC system, Fuel Station and Security Apparatus")]
         HVACSystemFuelStationSecurityApparatus,
 
-        [Display(Name = "Hotel, Office, Laboratory Equipment etc")]
+        [Display(Name = "Hotel, Office and Laboratory Equipment")]
         HotelOfficeLaboratoryEquipment,
        
         [Display(Name = "Building Facility Equipment")]
@@ -91,9 +91,6 @@ namespace mechanical.Models.Enum
 
         [Display(Name = "CUV")]
         CUV,
-
-        [Display(Name = "Others, please specify")]
-        Others,
         
         [Display(Name = "Chain Excavator")]
         ChainExcavator,

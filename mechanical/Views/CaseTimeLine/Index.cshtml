@@ -1,6 +1,6 @@
-﻿@model IEnumerable<mechanical.Models.Dto.CaseTimeLineDto.CaseTimeLineReturnDto>
-@{
-}
+﻿@using Ganss.Xss
+@model IEnumerable<mechanical.Models.Dto.CaseTimeLineDto.CaseTimeLineReturnDto>
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -14,7 +14,7 @@
                 </ol>
             </div>
         </div>
-    </div><!-- /.container-fluid -->
+    </div>
 </section>
 <section class="content">
     <div class="container-fluid">
@@ -22,77 +22,34 @@
             <div class="col-md-12">
                 <div class="timeline">
                     @{
-                        var rmCounter = 0;
-                        var MMCounter = 0;
-                        var CMCounter = 0;
-                        @foreach (var item in Model)
-                    {
-                        if (item.CurrentStage == "Relation Manager")
+                        string previousStage = "";
+                        foreach (var item in Model)
+                        {
+                            if (item.CurrentStage != previousStage)
                             {
-                                if (rmCounter == 0)
-                                {
-                                    <div class="time-label">
-                                        <span class="bg-purple">RM Unit</span>
-                                    </div>
-                                    rmCounter++;
-                                }
-                                <div>
+                                <div class="time-label">
+                                    <span class="bg-purple">@item.CurrentStage</span>
+                                </div>
+                                previousStage = item.CurrentStage;
+                            }
+                            <div>
                                 <i class="fas fa-user bg-purple"></i>
                                 <div class="timeline-item">
                                     <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
-                                        <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
+                                    <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                     <div class="timeline-body">
-                                        @Html.Raw(item.Activity)
+                                    @{
+                                            var sanitizer = new HtmlSanitizer();
+                                            var sanitizedContent = sanitizer.Sanitize(item.Activity); 
+                                            @Html.Raw(sanitizedContent);
+                                    }
+                                       
                                     </div>
                                 </div>
-                                </div>
-                            }else if (item.CurrentStage == "Maker Manager")
-                            {
-                                if (MMCounter == 0)
-                                {
-                                    <div class="time-label">
-                                        <span class="bg-purple">Maker Unit</span>
-                                    </div>
-                                    MMCounter++;
-                                }
-                                <div>
-                                    <i class="fas fa-user bg-purple"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
-                                        <h3 class="timeline-header"> <a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
-
-                                        <div class="timeline-body">
-                                            @Html.Raw(item.Activity)
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                            else if (item.CurrentStage == "Checker Manager")
-                            {
-                                if (CMCounter == 0)
-                                {
-                                    <div class="time-label">
-                                        <span class="bg-purple">Checker Unit</span>
-                                    </div>
-                                    CMCounter++;
-                                }
-                                <div>
-                                    <i class="fas fa-user bg-purple"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fas fa-clock"></i> @item.CreatedAt</span>
-                                        <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
-
-                                        <div class="timeline-body">
-                                            @Html.Raw(item.Activity)
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-
+                            </div>
+                        }
                     }
-                    }
-                   
                     <div>
                         <i class="fas fa-clock bg-gray"></i>
                     </div>

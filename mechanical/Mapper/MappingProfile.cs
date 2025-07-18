@@ -281,7 +281,7 @@ namespace mechanical.Mapper
         
             CreateMap<TaskCommentPostDto, TaskComment>().ReverseMap();
             CreateMap<TaskComment, TaskCommentReturnDto>().ReverseMap();
-
+            CreateMap<CommentHistory, CaseCorrectionHistoryRetunDto>();
         }
 
         string EnumToDisplayName<TEnum>(TEnum enumValue)

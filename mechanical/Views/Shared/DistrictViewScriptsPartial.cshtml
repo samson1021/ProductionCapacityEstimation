@@ -11,73 +11,188 @@
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 
-@* <script>
-    $(document).ready(function () {
-        $.ajax({
-            url: '/usermanagment/getusers',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data.DistrictName)
-                $('#example1').DataTable({
-                    data: data,
-                    columns: [
-                        // { data: 'Id', 'title': 'ID' },
-                        { data: 'Name', 'title': 'Name' },
-                        { data: 'Email', 'title': 'Email' },
-                        { data: 'DistrictName', 'title': 'District' },
-                        { data: 'Branch', 'title': 'Branch' },
-                        { data: 'RoleName', 'title': 'Role' },
-                        { data: 'Status', 'title': 'Status' },
-                        // { data: 'Browser' },
-                        // { data: 'Platforms' },
-                        // { data: 'EngineVersion' },
-                        // { data: 'CssGrade' }
-                    ],
-                    responsive: true,
-                    lengthChange: false,
-                    autoWidth: false,
-                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            }
-        });
-    });
-
-</script> *@
 
 
 <script>
     $(document).ready(function () {
-        $.ajax({
-            url: '/UserManagment/GetDistrict',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data)
-                $('#example1').DataTable({
-                    data: data,
-                    columns: [
-                        { data: 'Name', 'title': 'Name' },
-                        {
-                            data: null,
-                            render: function (data, type, row) {
-                                var editButton = '<a href="/DistrictManagment/edit/' + data.DistrictId + '" class="edit-btn" data-id="' + data.DistrictId + '">Edit</a>';
-                                var deleteButton = '<a href="/DistrictManagment/delete/' + data.DistrictId + '" class="delete-btn" data-id="' + data.DistrictId + '">Delete</a>';
-                                return editButton + ' | ' + deleteButton;
-                            }
+        
+    const csrfToken = $('input[name="__RequestVerificationToken"]').val();
+
+    $.ajax({
+        url: '/UserManagment/GetDistrict',
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'RequestVerificationToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function (data) {
+            $('#example1').DataTable({
+                data: data,
+                columns: [
+                    {
+                        data: 'Name',
+                        title: 'Name',
+                        render: $.fn.dataTable.render.text() // Auto-escapes HTML
+                    },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            // Secure URL construction
+                            var sanitizedinputId = sanitizeAndValidateInput(data.DistrictId);
+                            var sanitizedinputName = sanitizeAndValidateInput(data.Name);
+
+                            const editUrl = encodeURI(`/DistrictManagment/Edit/${sanitizedinputId}`);
+                            const deleteUrl = encodeURI(`/DistrictManagment/Delete/${sanitizedinputId}`);
+
+                            // Secure button construction with proper escaping
+                            return `
+                                <a href="${editUrl}"
+                                   class="btn btn-sm btn-primary edit-btn"
+                                   data-id="${escapeHtml(sanitizedinputId)}"
+                                   data-name="${escapeHtml(sanitizedinputName)}">
+                                   <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button class="btn btn-sm btn-danger delete-btn"
+                                        data-id="${escapeHtml(sanitizedinputId)}"
+                                        data-name="${escapeHtml(sanitizedinputName)}"
+                                        onclick="confirmDeleteDistrict(this)">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            `;
                         }
-                    ],
-                    // columnDefs: [
-                    //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
-                    // ],
-                    responsive: true,
-                    lengthChange: false,
-                    autoWidth: false,
-                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                    }
+                ],
+                responsive: true,
+                lengthChange: false,
+                autoWidth: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        exportOptions: {
+                            columns: [0] // Only export name column
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        exportOptions: {
+                            columns: [0]
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: [0]
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        exportOptions: {
+                            columns: [0]
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: [0]
+                        }
+                    },
+                    'colvis'
+                ],
+                language: {
+                    emptyTable: "No districts found"
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error('Error loading districts:', error);
+            showAlert('Error loading district data. Please try again.', 'danger');
+        }
+    });
+
+    // HTML escaping function
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+    function sanitizeAndValidateInput(input) {
+        if (typeof input !== 'string') {
+            return ''; // Return an empty string for non-string input
+        }
+
+        // Define a regex for valid characters (alphanumeric and spaces)
+        const validRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        // Check if the input matches the regex
+        if (!validRegex.test(input)) {
+            return ''; // Return an empty string if invalid
+        }
+
+
+        return input; // Return the sanitized string
+    }
+
+    // Secure delete confirmation
+    function confirmDeleteDistrict(button) {
+        const districtId = button.dataset.id;
+        const districtName = button.dataset.name;
+
+        Swal.fire({
+            title: 'Confirm Delete',
+            html: `Are you sure you want to delete <strong>${escapeHtml(districtName)}</strong>?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteDistrict(districtId);
             }
         });
+    }
 
+    // Secure delete operation
+    function deleteDistrict(districtId) {
+        fetch(`/DistrictManagment/Delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ id: districtId })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Delete failed');
+            return response.json();
+        })
+        .then(data => {
+            $('#example1').DataTable().ajax.reload();
+            showAlert('District deleted successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Failed to delete district', 'danger');
+        });
+    }
+
+    // Notification function
+    function showAlert(message, type) {
+        const alert = $(`<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+
+        $('#alertContainer').empty().append(alert);
+        setTimeout(() => alert.alert('close'), 5000);
+    }
         // Edit button click event
         $('#example1').on('click', '.edit-btn', function () {
             var userId = $(this).data('id');

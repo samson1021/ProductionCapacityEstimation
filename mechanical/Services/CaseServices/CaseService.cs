@@ -99,7 +99,18 @@ namespace mechanical.Services.CaseServices
                     CaseId = loanCase.Id,
                     Category = "Bussiness Licence"
                 };
-                loanCase.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId, BussinessLicence);
+                try
+                {
+                    loanCase.BussinessLicenceId = await _uploadFileService.CreateUploadFile(userId, BussinessLicence);
+                }
+                catch (InvalidOperationException)
+                {
+                    throw;
+                }
+                catch (Exception)
+                {
+                    throw new Exception("unable to upload file");
+                }
             }
             loanCase.CaseOriginatorId = userId;
             loanCase.CreationAt = DateTime.UtcNow;
@@ -317,6 +328,13 @@ namespace mechanical.Services.CaseServices
             }
             throw new Exception("case with this Id is not found");
         }
+        public async Task<IEnumerable<CaseDto>> GetHOLatestCases(Guid userId)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var NewCollateral = await _cbeContext.CaseAssignments.Include(res => res.Collateral).ThenInclude(res => res.Case).ThenInclude(res => res.CaseOriginator).ToListAsync();
+            var cases = NewCollateral.Select(res => res.Collateral.Case).Distinct().OrderByDescending(res => res.CreationAt).Take(7);
+            return _mapper.Map<IEnumerable<CaseDto>>(cases);
+        }
         public async Task<IEnumerable<CaseDto>> GetMmLatestCases(Guid userId)
         {
             var httpContext = _httpContextAccessor.HttpContext;
@@ -420,6 +438,25 @@ namespace mechanical.Services.CaseServices
             {
                 await _cbeContext.Rejects.AddAsync(reject);
             }
+            string tests = "gsdfd";
+
+            var history = new CommentHistory
+            {
+                Id = Guid.NewGuid(),
+                CaseId = assignedCases.CaseId,
+                CollateralId = moRejectCaseDto.CollateralId,
+                CommentByUserId = Guid.Parse(httpContext.Session.GetString("userId")),
+                CommentedFieldName = "whole Collateral Returned",
+                Content = moRejectCaseDto.RejectionComment,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                MessageType = Models.Enum.MessageType.NewMessage,
+                Status = "Active"
+            };
+            await _cbeContext.CommentHistorys.AddAsync(history);
+            await _cbeContext.SaveChangesAsync();
+
+
             assignedCases.CurrentStage = "Relation Manager";
             assignedCases.CurrentStatus = "Reject";
             _cbeContext.Collaterals.Update(assignedCases);

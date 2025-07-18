@@ -8,9 +8,13 @@ using mechanical.Models.Entities;
 using mechanical.Services.CaseTimeLineService;
 using mechanical.Services.NotificationService;
 using mechanical.Services.UploadFileService;
+using mechanical.Services.NotificationService;
+using mechanical.Models.Dto.NotificationDto;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
 using OpenCvSharp.CPlusPlus;
+using System.Data.SqlClient;
+using iText.Layout.Element;
 
 namespace mechanical.Services.MOCaseService
 {
@@ -94,8 +98,17 @@ namespace mechanical.Services.MOCaseService
                 }
 
             }
+            //if (collateral.CurrentStatus == "Correction")
+            //{
+            //    collateral.CurrentStage = "Checker Officer";
+            //    collateral.CurrentStatus = "New";
+            //}
+            //else
+            //{
             collateral.CurrentStage = "Checker Manager";
             collateral.CurrentStatus = "New";
+            //}
+
             _cbeContext.Collaterals.Update(collateral);
             await _cbeContext.SaveChangesAsync();
 
@@ -112,7 +125,34 @@ namespace mechanical.Services.MOCaseService
             NotificationReturnDto notification=null;
 
             if (user?.District?.Name == "Head Office")
-            {
+            {   //if(collateral.CurrentStage == "Checker Officer")
+            //    {
+            //        var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Officer");
+            //        if (checker == null) return false;
+            //        var caseAssignment = new CaseAssignment()
+            //        {
+            //            CollateralId = CollateralId,
+            //            UserId = checker.Id,
+            //            Status = "New",
+            //            AssignmentDate = DateTime.UtcNow
+            //        };
+            //        await _cbeContext.CaseAssignments.AddAsync(caseAssignment);
+            //        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            //        {
+            //            CaseId = collateral.CaseId,
+            //            Activity = $"<strong>Case send for Checking to Checker Unit.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+            //            CurrentStage = "Maker Manager"
+            //        });
+            //        await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
+            //        {
+            //            CaseId = collateral.CaseId,
+            //            Activity = $"<strong> Case assigned for evaluation.</strong> <br> <i class='text-purple'>Evaluation Center:</i> {cases.District.Name}.",
+            //            CurrentStage = "Checker Officer",
+            //            UserId = checker.Id
+            //        });
+            //    }
+            //    else
+            //    {
                 var checker = await _cbeContext.Users.FirstOrDefaultAsync(res => res.District.Name == "Head Office" && res.Role.Name == "Checker Manager");
                 if (checker == null) return false;
                 var caseAssignment = new CaseAssignment()

@@ -29,12 +29,19 @@
         commaSeparatedRegions = CapitalizeEachWord(string.Join(", ", uniqueRegions));
         var ProportyOF = collaterals.Select(m => m.PropertyOwner).Distinct();
         commaSeparatedPropertyof = CapitalizeEachWord(string.Join(", ", ProportyOF));
-        var Type = collaterals.Select(m => m.Type).Distinct();
-        commaSeparatedType = string.Join(", ", Type);
         var Purpose = collaterals.Select(m => m.Purpose).Distinct();
         commaPurposeType = string.Join(", ", Purpose);
         var name = IndBldgFacilityEquipment.Select(m => m.MechanicalEqpmntName).Distinct();
         commaSeparatedequipmentName = string.Join(", ", name);
+        var Type = collaterals
+            .Select(m => m.Type.GetType()
+            .GetMember(m.Type.ToString())
+            .First()
+            .GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+            .Cast<System.ComponentModel.DataAnnotations.DisplayAttribute>()
+            .FirstOrDefault()?.Name ?? m.Type.ToString())
+            .Distinct();
+        commaSeparatedType = string.Join(", ", Type);
     }
 
     var maker = IndBldgFacilityEquipment.Select(m => m.EvaluatorUser).Distinct();

@@ -14,9 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using mechanical.Models;
 using Microsoft.AspNetCore.Http;
 using mechanical.Models.Dto.UploadFileDto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CollateralController : BaseController
     {
         private readonly ICaseService _caseService;
@@ -46,9 +48,18 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
-                var response = new { message = "Collateral created successfully" };
-                return Ok(response);
+                try
+                {
+                    await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
+                    var response = new { message = "Collateral created successfully" };
+                    return Ok(response);
+
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
+              
             }
             return BadRequest();
         }
@@ -393,6 +404,11 @@ namespace mechanical.Controllers
             var collaterals = await _collateralService.MyReturnedCollaterals(base.GetCurrentUserId());
             return Json(collaterals);
         }
+        public async Task<JsonResult> CorrectionCollaterals()
+        {
+            var collaterals = await _collateralService.CorrectionCollaterals(base.GetCurrentUserId());
+            return Json(collaterals);
+        }
         public async Task<IActionResult> MyReturnedCollateral(Guid CollateralId)
         {
             var collaterals = await _collateralService.MyReturnedCollateral(CollateralId, base.GetCurrentUserId());
@@ -432,6 +448,26 @@ namespace mechanical.Controllers
                 return Redirect($"/MOCase/MyCase?Id={collaterals.CaseId}");
             }
             return Redirect($"/MOCase/MyCase?Id={caseId}");
+        }
+
+               [HttpGet]
+        public async Task<IActionResult> GetCollateralCorrectionHistory(Guid CollateralId)
+        {
+            try
+            {
+                var response = new
+                {
+                    userId = base.GetCurrentUserId(),
+                    caseComments = await _collateralService.GetGetCollateralCorrectionHistorys(CollateralId)
+                };
+                return Content(JsonConvert.SerializeObject(response), "application/json");
+            }
+            catch (Exception ex)
+            {
+
+                return Content("Error"+ex.Message);
+            }
+
         }
     }
 }

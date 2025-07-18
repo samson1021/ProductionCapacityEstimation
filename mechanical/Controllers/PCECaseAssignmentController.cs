@@ -17,8 +17,7 @@ using mechanical.Services.PCE.PCECaseAssignmentService;
 
 namespace mechanical.Controllers
 {
-
-    // [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     [Authorize]
     public class PCECaseAssignmentController : BaseController
     {

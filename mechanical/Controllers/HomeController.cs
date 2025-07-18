@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Security.Claims;
 using NuGet.Protocol.Plugins;
 using System.DirectoryServices.AccountManagement;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,15 +12,16 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-
 using mechanical.Data;
 using mechanical.Models.Login;
 using mechanical.Models.Entities;
 using mechanical.Models.Dto.UserDto;
 using mechanical.Services.AuthenticatioinService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class HomeController : Controller
     {
         private readonly CbeContext _context;
@@ -48,7 +48,7 @@ namespace mechanical.Controllers
         {
             HttpContext.Session.SetString("ExpirationTime", DateTime.UtcNow.AddMinutes(SessionTimeoutConfig.TimeoutMinutes).ToBinary().ToString());
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             if (User?.Identity?.IsAuthenticated == true)
@@ -80,6 +80,7 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(loginDto logins)
         {
             if (User?.Identity?.IsAuthenticated == true)
@@ -97,6 +98,7 @@ namespace mechanical.Controllers
 
         // [Authorize]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(loginDto logins)
         {
             if (logins.Email == null || logins.Password == null)
@@ -105,17 +107,18 @@ namespace mechanical.Controllers
                 return View("Index", logins);
             }
 
-            var user = await _context.Users.Include(c => c.Role).Include(c => c.District)
+            var user = await _context.Users.Include(c => c.Role).Include(c => c.District).Where(c=>c.Status=="Activated")
                                             .Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email)
                                             .FirstOrDefaultAsync();
-
+            
             if (user == null)
             {
                 ViewData["Error"] = "Incorrect username or password.";
                 _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
-            if (logins.Password == "1234")
+            //_authetnicationService.AuthenticateUserByAD(logins.Email, logins.Password)
+            if (logins.Password == "1234") 
             {
                 string userRole = user.Role.Name;
                 var claims = new List<Claim>
@@ -171,6 +174,8 @@ namespace mechanical.Controllers
                     case "Maker TeamLeader":
                         return RedirectToAction("MTL", "Dashboard", user.Role.Name);
                     case "Admin":
+                        return RedirectToAction("Index", "UserManagment");
+                    case "Super Admin":
                         return RedirectToAction("Index", "UserManagment");
                     case "Checker TeamLeader":
                         return RedirectToAction("CTL", "Dashboard", user.Role.Name);

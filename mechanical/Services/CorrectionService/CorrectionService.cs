@@ -27,7 +27,6 @@ namespace mechanical.Services.CorrectionServices
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var loanCase = _mapper.Map<Correction>(createCorrectionDto);
-
             var correction = await _cbeContext.Corrections.FirstOrDefaultAsync(res => res.CollateralID == loanCase.CollateralID && res.CommentedAttribute == loanCase.CommentedAttribute);
             if (correction != null)
             {
@@ -42,6 +41,22 @@ namespace mechanical.Services.CorrectionServices
                     correction.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
                     correction.CreationDate = DateTime.UtcNow;
                     _cbeContext.Corrections.Update(correction);
+
+
+                    var history = new CommentHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        CaseId = correction.CaseId,
+                        CollateralId = loanCase.CollateralID,
+                        CommentByUserId = Guid.Parse(httpContext.Session.GetString("userId")),
+                        CommentedFieldName = loanCase.CommentedAttribute,
+                        Content = loanCase.Comment,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        MessageType = Models.Enum.MessageType.Replay,
+                        Status = "Active"
+                    };
+                    await _cbeContext.CommentHistorys.AddAsync(history);
                     await _cbeContext.SaveChangesAsync();
                 }
 
@@ -55,7 +70,23 @@ namespace mechanical.Services.CorrectionServices
                 loanCase.CommentedByUserId = Guid.Parse(httpContext.Session.GetString("userId"));
                 loanCase.CreationDate = DateTime.UtcNow;
                 await _cbeContext.Corrections.AddAsync(loanCase);
+
+                var history = new CommentHistory {
+                    Id= Guid.NewGuid(),
+                    CaseId=getcaseId,CollateralId=createCorrectionDto.CollateralID,
+                    CommentByUserId= Guid.Parse(httpContext.Session.GetString("userId")),
+                    CommentedFieldName= createCorrectionDto.CommentedAttribute,
+                    Content=createCorrectionDto.Comment,
+                    CreatedAt= DateTime.UtcNow,
+                    UpdatedAt= DateTime.UtcNow,
+                    MessageType= Models.Enum.MessageType.NewMessage,
+                    Status="Active"
+                };
+                 await _cbeContext.CommentHistorys.AddAsync(history);
+
                 await _cbeContext.SaveChangesAsync();
+
+
                 await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
                 {
                     CaseId = loanCase.CaseId,

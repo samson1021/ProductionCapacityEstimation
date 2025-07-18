@@ -1,0 +1,122 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+<script src="~/lib/toastr/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        
+        var CaseId = $('#CollateralId').val();
+        function formatDate(date) {
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            return date.toLocaleString('en-US', options);
+        }
+
+    function LoadCorrectionHistory() {
+        console.log("this Collateral Id Is =========="+CaseId);
+        $.ajax({
+           url: '/Collateral/GetCollateralCorrectionHistory?CollateralId=' + CaseId,
+            method: 'GET',
+            success: function (data) {
+                var currentUserID = data.userId;
+                var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                var countComments = caseCorrections.length;
+                $(".CorrectionBage").text(countComments);
+
+                // Clear previous messages
+                $('.correctionHistories').empty();
+
+                if (caseCorrections && caseCorrections.length > 0) {
+                    caseCorrections.forEach(function (comments) {
+                        // Create a card for each comment
+                        var card = $('<div>').addClass('card mb-3 direct-chat-card'); // Card for each comment
+                        var cardBody = $('<div>').addClass('card-body');
+
+                        // Create elements for user information and comment details
+                        var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                        chatName.append(GetUserInfo(comments.CommentByUserId).then(username => {
+                            $('<span>').text(username).appendTo(chatName);
+                        }));
+
+                        var createdAt = new Date(comments.CreatedAt);
+                        var formattedDate = formatDate(createdAt);
+
+                        var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                        var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                        var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                        var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                        // Append elements to the card body
+                        cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                        card.append(cardBody);
+                        $('.correctionHistories').append(card); // Add the card to the list
+                    });
+                } else {
+                    var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                    $('.correctionHistories').append(noCommentsMsg);
+                }
+            },
+            error: function () {
+                console.log('An error occurred while retrieving case comments.');
+            }
+        });
+    }
+
+    function GetUserInfo(Id, callback){
+        return new Promise(function(resolve , reject){
+
+              $.ajax({
+            url: '/UserManagment/GetuserInfos?id=' + Id,
+            method: 'GET',
+            success: function (data) {
+                var currentUserID = data
+                // var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                // var countComment = data.caseComments.length;
+                ResponseData= currentUserID.Name;
+                                console.log('An error occurred while retrieving case comments.'+ResponseData);
+              resolve(currentUserID.Name);
+            },
+            error: function () {
+                console.log('An error occurred while retrieving case comments.');
+                reject(null);
+            }
+        });
+
+        })
+         
+
+    }
+    // Call the function to load correction history
+    LoadCorrectionHistory();
+    });
+</script>
+<style>
+    .direct-chat-card {
+        border: 1px solid #ddd; /* Card border */
+        border-radius: 5px; /* Rounded corners */
+        padding: 15px; /* Padding inside the card */
+        background-color: #f9f9f9; /* Background color */
+    }
+
+    .card-body {
+        padding: 10px; /* Adjust padding for card body */
+    }
+
+    .direct-chat-name {
+        font-weight: bold; /* Bold text for the name */
+        font-size: 1.2em; /* Slightly larger font size for the name */
+    }
+
+    .direct-chat-timestamp {
+        font-size: 0.9em; /* Smaller font size for the timestamp */
+        color: #999; /* Lighter color for the timestamp */
+    }
+</style>

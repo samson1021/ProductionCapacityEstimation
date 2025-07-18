@@ -1,74 +1,53 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Collections.Concurrent;
-using System.Web.Services.Description;
-
+using Azure;
 using mechanical;
 using mechanical.Data;
 using mechanical.Hubs;
-using mechanical.Controllers;
-using mechanical.Models.Entities;
-
-using mechanical.Services.CaseServices;
-using mechanical.Services.UploadFileService;
-using mechanical.Services.CollateralService;
-using mechanical.Services.AnnexService;
-using mechanical.Services.MotorVehicleService;
-using mechanical.Services.SignatureService;
-using mechanical.Services.CaseAssignmentService;
-using mechanical.Services.CaseTimeLineService;
-using mechanical.Services.AuthenticatioinService;
-using mechanical.Services.ConstMngAgrMachineryService;
-using mechanical.Services.CorrectionServices;
-using mechanical.Services.UserService;
-using mechanical.Services.MMCaseService;
-using mechanical.Services.MailService;
-using mechanical.Services.MOCaseService;
-using mechanical.Services.CTLCaseService;
-using mechanical.Services.CaseCommentService;
-using mechanical.Services.CaseScheduleService;
-using mechanical.Services.IndBldgF;
-using mechanical.Services.IndBldgFacilityEquipmentService;
-using mechanical.Services.CaseTerminateService;
-using mechanical.Services.IndBldgFacilityEquipmentCostService;
-using mechanical.Services.InternalReportService;
-using mechanical.Services.TaskManagmentService;
-using mechanical.Services.NotificationService;
-
 /////////////
 using mechanical.Mapper;
-using mechanical.Models.PCE.Entities;
-using mechanical.Services.PCE.PCEEvaluationService;
-using mechanical.Services.PCE.PCECaseTimeLineService;
-using mechanical.Services.PCE.PCECaseService;
-using mechanical.Services.PCE.ProductionCapacityService;
+using mechanical.Services.AnnexService;
+using mechanical.Services.AuthenticatioinService;
+using mechanical.Services.CaseAssignmentService;
+using mechanical.Services.CaseCommentService;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseServices;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.CaseTimeLineService;
+using mechanical.Services.CollateralService;
+using mechanical.Services.ConstMngAgrMachineryService;
+using mechanical.Services.CorrectionServices;
+using mechanical.Services.IndBldgF;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
+using mechanical.Services.IndBldgFacilityEquipmentService;
+using mechanical.Services.InternalReportService;
+using mechanical.Services.MailService;
+using mechanical.Services.MMCaseService;
+using mechanical.Services.MOCaseService;
+using mechanical.Services.MotorVehicleService;
+using mechanical.Services.NotificationService;
 using mechanical.Services.PCE.PCECaseAssignmentService;
-using mechanical.Services.PCE.PCECaseTerminateService;
-using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseCommentService;
-
-///////////// 
-DotNetEnv.Env.Load();
-/////////////
+using mechanical.Services.PCE.PCECaseScheduleService;
+using mechanical.Services.PCE.PCECaseService;
+using mechanical.Services.PCE.PCECaseTerminateService;
+using mechanical.Services.PCE.PCECaseTimeLineService;
+using mechanical.Services.PCE.PCEEvaluationService;
+using mechanical.Services.PCE.ProductionCapacityService;
+using mechanical.Services.SignatureService;
+using mechanical.Services.TaskManagmentService;
+using mechanical.Services.UploadFileService;
+using mechanical.Services.UserService;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json.Serialization;
 
 /////////////
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +57,11 @@ builder.Services.AddDistributedMemoryCache(); // Add distributed memory cache fo
 //{
 //    options.Filters.Add(typeof(HomeController));
 //});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.AddServerHeader = false;
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
@@ -172,14 +156,31 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie(options =>
 {
-    options.LoginPath = "/Home/Index";
-    options.LogoutPath = "/Home/Logout";
-    // options.LogoutPath = "/Home/Index";
-    //options.AccessDeniedPath = "/Account/AccessDenied";
-    //options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-    //options.SlidingExpiration = true;
+    string SanitizePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Path cannot be empty");
 
-    options.AccessDeniedPath = "/Home/Index";
+        path = path.Trim();
+        if (!path.StartsWith("/"))
+            path = "/" + path;
+
+        if (path.Contains("..") || path.Contains("//"))
+            throw new ArgumentException("Invalid path format");
+
+        return path;
+    }
+
+    options.LoginPath = SanitizePath("/Home/Index");
+    options.LogoutPath = SanitizePath("/Home/Logout");
+//options.LoginPath = "/Home/Index";
+//options.LogoutPath = "/Home/Logout";
+// options.LogoutPath = "/Home/Index";
+//options.AccessDeniedPath = "/Account/AccessDenied";
+//options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+//options.SlidingExpiration = true;
+
+options.AccessDeniedPath = "/Home/Index";
     options.Cookie.Name = "MechanicalCookie"; // Set a unique name for the authentication cookie
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Set the expiration time for the cookie
@@ -235,7 +236,11 @@ builder.Services.AddSignalR(options =>
 
 // Register the custom IUserIdProvider
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-
+builder.Services.AddResponseCompression(options =>
+{
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/javascript" });
+});
 var app = builder.Build();
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
 {
@@ -261,6 +266,59 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+
+//app.Use(async (context, next) =>
+//{
+
+
+//    context.Response.Headers.Remove("Server");
+//    //context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
+//    // Generate a random nonce per request
+//    var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
+//    context.Response.Headers.Add("Content-Security-Policy",
+//        $"default-src 'self'; script-src 'self' 'nonce-{nonce}';");
+
+//    // Pass the nonce to your view (if using Razor)
+//    ViewData["Nonce"] = nonce;
+//    context.Response.Headers.Remove("X-Powered-By");
+//    context.Response.Headers["X-Content-Type-Options"] = "nosniff"; // Example additional header
+//    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+//    context.Response.Headers["X-Frame-Options"] = "DENY";
+//    context.Response.Headers["Cache-Control"] = "no-cache";
+//    //context.Response.Headers["Content-Encoding"] = "gzip"; // Be careful with this; it might be set by the server itself
+//    context.Response.Headers["Expires"] = "-1";
+//    context.Response.Headers["Pragma"] = "no-cache";
+
+//    await next();
+//});
+app.Use(async (context, next) =>
+{
+    // Remove server identification headers
+    context.Response.Headers.Remove("Server");
+    context.Response.Headers.Remove("X-Powered-By");
+
+    // For development only - allows inline styles and scripts
+    context.Response.Headers.Append("Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline'; " +  // Allows inline scripts
+        "style-src 'self' 'unsafe-inline'; " +   // Allows inline styles
+        "img-src 'self' data:; " +              // Allows images from self and data URIs
+        "font-src 'self'; " +                   // Allows fonts from self
+        "connect-src 'self'; " +                // Allows AJAX/WebSocket connections
+        "object-src 'none';");                  // Blocks plugins (Flash, etc.)
+
+    // Add other security headers
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Cache-Control"] = "no-cache";
+    context.Response.Headers["Expires"] = "-1";
+    context.Response.Headers["Pragma"] = "no-cache";
+
+    await next();
+});
 
 app.UseSession(); // Add the session middleware
 //app.UseMiddleware<SessionTimeoutMiddleware>();

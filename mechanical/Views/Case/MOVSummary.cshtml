@@ -21,9 +21,15 @@
         commaSeparatedRegions = CapitalizeEachWord(string.Join(", ", uniqueRegions));
         var ProportyOF = collaterals.Select(m => m.PropertyOwner).Distinct();
         commaSeparatedPropertyof = CapitalizeEachWord(string.Join(", ", ProportyOF));
-        var Type = collaterals.Select(m => m.Type).Distinct();
+        var Type = collaterals
+            .Select(m => m.Type.GetType()
+            .GetMember(m.Type.ToString())
+            .First()
+            .GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+            .Cast<System.ComponentModel.DataAnnotations.DisplayAttribute>()
+            .FirstOrDefault()?.Name ?? m.Type.ToString())
+            .Distinct();
         commaSeparatedType = string.Join(", ", Type);
-
     }
 
     var maker = MotorVehicle.Select(m => m.EvaluatorUser).Distinct();
@@ -116,8 +122,15 @@
                             <u class=" ">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
+                    <div class="form-group row my-0">
+                        <p style="font-size: 16px;" class="my-0 py-0">
+                            <label class="col-form-label pr-2">Type of Mechanical Equipment:</label>
                             <u class=" ">@commaSeparatedType</u>
+                        </p>
                     </div>
+
+                           @*  <u class=" ">@commaSeparatedType</u> *@
+                    
                 </div>
                 <div class="row my-0 py-0">
                     <h5 class="py-0">

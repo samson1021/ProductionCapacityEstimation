@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CreditBackOffice.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class DistrictManagmentController : Controller
     {
         private readonly CbeContext _context;

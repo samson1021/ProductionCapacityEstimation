@@ -31,6 +31,7 @@ namespace mechanical.Services.InternalReportService
             string userRole = _httpContextAccessor.HttpContext.Session.GetString("userRole");
             if (userRole == "")
             {
+                return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
 
             }
             var caseAssignments = _cbeContext.CaseAssignments
@@ -46,6 +47,9 @@ namespace mechanical.Services.InternalReportService
             {
                 caseAssignments = caseAssignments.Where(ca => ca.UserId == userId);
             }
+
+
+
             if (!caseAssignments.Any())
             {
                 return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
@@ -384,8 +388,16 @@ namespace mechanical.Services.InternalReportService
 
         public async Task<(IEnumerable<ValuationReportDto> DistinctCases, IEnumerable<ValuationReportDto> AllProductionCapacities)> GetInternalPCECaseReport(Guid userId)
         {
+
             // Step 1: Fetch all relevant PCECaseAssignments for the user, eager loading all primary related entities.
-            var caseAssignments = await _cbeContext.PCECaseAssignments
+            string userRole = _httpContextAccessor.HttpContext.Session.GetString("userRole");
+
+            if (userRole == "")
+            {
+                return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
+            }
+
+            var caseAssignmentsQuery = _cbeContext.PCECaseAssignments
                 .Include(ca => ca.ProductionCapacity)
                     .ThenInclude(pc => pc.PCECase)
                         .ThenInclude(pce => pce.PCECaseOriginator)
@@ -393,8 +405,19 @@ namespace mechanical.Services.InternalReportService
                     .ThenInclude(pc => pc.PCECase)
                         .ThenInclude(pce => pce.District)
                 .Include(ca => ca.User)
-                .Where(ca => ca.UserId == userId)
-                .ToListAsync();
+                as IQueryable<PCECaseAssignment>;
+
+            // Apply user filter only if not Higher Official
+            if (userRole != "Higher Official")
+            {
+                caseAssignmentsQuery = caseAssignmentsQuery.Where(ca => ca.UserId == userId);
+            }
+
+            var caseAssignments = await caseAssignmentsQuery.ToListAsync();
+
+
+
+
 
             // If no assignments, return empty results early
             if (!caseAssignments.Any())

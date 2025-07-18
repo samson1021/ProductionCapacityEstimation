@@ -2,11 +2,13 @@
 using mechanical.Services.CaseServices;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.PCE.PCECaseService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class DashboardController : BaseController
     {
         private readonly ICaseService _caseService;
@@ -63,7 +65,7 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> HO()
         {
-            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            var latestCase = await _caseService.GetHOLatestCases(base.GetCurrentUserId());
             var newCases = await _PCECaseService.GetLatestHOPCECases();
             ViewData["NewCases"] = newCases;
             return View(latestCase);

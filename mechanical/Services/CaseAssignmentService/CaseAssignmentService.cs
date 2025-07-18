@@ -116,7 +116,7 @@ namespace mechanical.Services.CaseAssignmentService
             var centerId = Guid.Parse(CenterId);
             var districtName = await _cbeContext.Districts.Where(c => c.Id == centerId).Select(c => c.Name).FirstOrDefaultAsync();
             var CivilUser = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Civil" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
-            var MechanicalUser = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
+            var MechanicalUser = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Mechanical" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager")&& res.Status== "Activated");
             var AgricultureUser = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.DistrictId == centerId && res.Department == "Agriculture" && (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
 
             List<CaseAssignmentDto> caseAssignments = new List<CaseAssignmentDto>();
@@ -443,7 +443,8 @@ namespace mechanical.Services.CaseAssignmentService
                 }
                 var caseassig = await _cbeContext.CaseAssignments.Where(res => res.UserId == userId && res.CollateralId == collateral.Id).FirstOrDefaultAsync();
                 caseassig.Status = "Pending";
-                _cbeContext.Update(caseassig);
+                 _cbeContext.Update(caseassig);
+                await _cbeContext.SaveChangesAsync();
 
             }
             if (caseTimeLinePostDto != null) await _caseTimeLineService.CreateCaseTimeLine(caseTimeLinePostDto);

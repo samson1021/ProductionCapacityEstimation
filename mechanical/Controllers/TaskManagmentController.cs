@@ -6,11 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 using mechanical.Models.Dto.TaskManagmentDto;
 using mechanical.Services.TaskManagmentService;
+using Microsoft.AspNetCore.Authorization;
 
 // [ApiController]
 // [Route("api/tasks")]
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class TaskManagmentController : BaseController
     {
         private readonly ILogger<TaskManagmentController> _logger;

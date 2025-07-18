@@ -16,6 +16,8 @@ namespace mechanical.Models.Dto.CollateralDto
         [RegularExpression(@"^\d{2}-[A-Z]{2}-[A-Z]?\d{5}$", ErrorMessage = "Please enter a valid Plate Number")]
         public string? PlateNo { get; set; }
         public string? CPlateNo { get; set; }
+        public string? CChassisNo { get; set; }
+        public string? CEngineMotorNo { get; set; }
         public string? ChassisNo { get; set; }
         public string? EngineMotorNo { get; set; }
         public int? ManufactureYear { get; set; }

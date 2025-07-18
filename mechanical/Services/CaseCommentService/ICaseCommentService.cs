@@ -7,5 +7,6 @@ namespace mechanical.Services.CaseCommentService
     {
         Task<CaseCommentReturnDto> CreateCaseComment(Guid userId, CaseCommentPostDto caseCommentPostDto);
         Task<IEnumerable<CaseCommentReturnDto>> GetCaseComments(Guid caseId);
+        Task<IEnumerable<CaseCorrectionHistoryRetunDto>> GetCaseCorrectionHistory(Guid caseId);
     }
 }

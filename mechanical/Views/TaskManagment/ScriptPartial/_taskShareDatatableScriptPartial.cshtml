@@ -15,20 +15,40 @@
 <script>
     $(document).ready(function () {
 
+        // fetch('/UserManagment/GetPeerRMs')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         var selectOption = $('<option selected disabled></option>').attr('value', '').text('-- Select Relation Manager --');
+        //         $('#CenterDropdown').append(selectOption);
+        //         data.forEach(function (user) {
+        //             var option = $('<option></option>').attr('value', user.Id).text(user.Name);
+        //             $('#CenterDropdown').append(option);
+        //         });
+        //     })
+        //     .catch(error => {
+        //         console.log('Error fetching District data:', error);
+        //     });
         fetch('/UserManagment/GetPeerRMs')
             .then(response => response.json())
             .then(data => {
                 var selectOption = $('<option selected disabled></option>').attr('value', '').text('-- Select Relation Manager --');
                 $('#CenterDropdown').append(selectOption);
-                data.forEach(function (user) {
-                    var option = $('<option></option>').attr('value', user.Id).text(user.Name);
-                    $('#CenterDropdown').append(option);
-                });
+
+                if (data.length === 0) {
+                    // If no RMs are found, add an option to indicate this
+                    var noRmsOption = $('<option></option>').attr('value', '').text('No Peer Relation Managers found');
+                    $('#CenterDropdown').append(noRmsOption);
+                } else {
+                    // Otherwise, append each RM to the dropdown
+                    data.forEach(function (user) {
+                        var option = $('<option></option>').attr('value', user.Id).text(user.Name);
+                        $('#CenterDropdown').append(option);
+                    });
+                }
             })
             .catch(error => {
                 console.log('Error fetching District data:', error);
             });
-
         $('#shareTaskButton').on('click', function () {
             var checkedCases = $('.purple-checkbox:checked');
             var selectedCaseIds = [];

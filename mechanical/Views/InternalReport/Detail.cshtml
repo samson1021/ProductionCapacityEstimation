@@ -34,7 +34,7 @@
                             </div>
 
                             <!-- Buttons -->
-                            <div class="form-group">
+                       @*      <div class="form-group">
                                 <label>&nbsp;</label>
                                 <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
                             </div>
@@ -42,8 +42,20 @@
                             <div class="form-group">
                                 <label>&nbsp;</label>
                                 <button id="resetBtn" class="btn custom-btn" style="border:none;">Clear</button>
-                            </div>
+                            </div> *@
 
+                            <!-- Combined Filter/Clear Button Group -->
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div class="btn-group">
+                                    <button id="filterBtn" class="btn custom-btn" style="border:none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                        Filter
+                                    </button>
+                                    <button id="resetBtn" class="btn custom-btn" style="border:none; border-left: 1px solid rgba(255,255,255,0.3); padding: 8px 12px;">
+                                        ×
+                                    </button>
+                                </div>
+                            </div>
                             <!-- Dropdowns -->
                             <div class="form-group">
                                 <label for="timePeriodDropdown">&nbsp;</label>

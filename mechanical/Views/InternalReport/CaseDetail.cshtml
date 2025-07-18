@@ -1,5 +1,4 @@
-﻿
-<section class="content-header">
+﻿<section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
@@ -18,7 +17,6 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-
                 <div class="row">
                     <div class="col-12 px-0 d-flex flex-wrap justify-content-end">
                         <div class="d-flex flex-wrap align-items-end" style="gap: 2px;">
@@ -33,15 +31,17 @@
                                 <input type="date" id="toDate" class="form-control custom-date" />
                             </div>
 
-                            <!-- Buttons -->
+                            <!-- Combined Filter/Clear Button Group -->
                             <div class="form-group">
                                 <label>&nbsp;</label>
-                                <button id="filterBtn" class="btn custom-btn" style="border:none;">Filter</button>
-                            </div>
-
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <button id="resetBtn" class="btn custom-btn" style="border:none;">Clear</button>
+                                <div class="btn-group">
+                                    <button id="filterBtn" class="btn custom-btn" style="border:none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                        Filter
+                                    </button>
+                                    <button id="resetBtn" class="btn custom-btn" style="border:none; border-left: 1px solid rgba(255,255,255,0.3); padding: 8px 12px;">
+                                        ×
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Dropdowns -->
@@ -78,13 +78,11 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="card-body">
                 <h4 id="reportTitle" class="text-center mb-3">Case Level Report</h4>
 
-
-                  <div class="table-responsive" style="overflow-x: auto;">
+                <div class="table-responsive" style="overflow-x: auto;">
                     <table id="MyNewCase" class="table table-bordered table-striped" style="width: 100%;">
                         <thead>
                             <tr>
@@ -93,16 +91,13 @@
                         </thead>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
 </section>
 
 <style>
-
-  
- .custom-btn {
+    .custom-btn {
         background-color: #6f42c1;
         color: #ffffff;
         margin-right: 5px;
@@ -141,6 +136,24 @@
             box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
 
+    /* Combined Filter/Clear button group styles */
+    .btn-group > #filterBtn {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .btn-group > #resetBtn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        padding: 8px 12px;
+        border-left: 1px solid rgba(255,255,255,0.3);
+    }
+
+        .btn-group > #resetBtn:hover {
+            background-color: #dc3545; /* Red color on hover for clear button */
+        }
+
+    /* Rest of your existing styles... */
     .nav-link-btn {
         color: #6f42c1 !important;
         background: none !important;
@@ -163,31 +176,10 @@
         color: #000000;
     }
 
-  /*   #MyNewCase th:last-child,
-    #MyNewCase td:last-child {
-        background-color: rgba(111, 66, 193, 0.25);
-        position: relative;
-        z-index: 1;
-    } */
-
     .dataTables_scrollBody {
         overflow-x: auto !important;
     }
-    /*
-        .DTFC_Cloned th:last-child,
-    .DTFC_Cloned td:last-child {
-        display: none !important;
-    }
 
-  #MyNewCase th:last-child,
-    #MyNewCase td:last-child {
-        background-color: rgba(111, 66, 193, 0.25);
-        position: sticky;
-        right: 0;
-        z-index: 1;
-        box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-    }
- */
     .table-responsive {
         position: relative;
         overflow: auto;
