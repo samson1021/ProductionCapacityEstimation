@@ -194,7 +194,7 @@
 
                 // Append the file to the formData object
                 formData.append('File', file);
-                formData.append('Emp_Id', UserId);
+                formData.append('Emp_Id', UserId);           
                 // var data = {Emp_Id:"050168"};
                 // var Emp_Id = "050168";
                 console.log(file);
@@ -267,7 +267,7 @@
                 success: function (response) {
                     if (response.response === false) {
                         // Handle the null response
-                        // Show appropriate message in your view page
+                        // Show appropriate message in your view page                      
                         $('#signatureModal').modal('hide');
                         toastr.warning('You cannot enter double signature', 'Warning');
                         setTimeout(function () {
