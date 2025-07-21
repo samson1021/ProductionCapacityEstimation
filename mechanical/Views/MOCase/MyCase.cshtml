@@ -156,8 +156,8 @@
             }
 
             $.ajax({
-                url: `/api/IndustrialCollateralCosts/${caseId}`,
-                type: 'PUT',
+                url: `/api/IndustrialCollateralCosts/Edit/${caseId}`,
+                type: 'POST',
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(postData),
@@ -407,8 +407,8 @@
             if (!confirm('Are you sure you want to delete this industrial collateral record?')) return;
 
             $.ajax({
-                url: `/api/IndustrialCollateralCosts/${id}`,
-                method: 'DELETE',
+                url: `/api/IndustrialCollateralCosts/Delete/${id}`,
+                method: 'POST',
                 success: function() {
                     loadCollaterals(currentCaseId);
                     toastr.success("Collateral deleted successfully");

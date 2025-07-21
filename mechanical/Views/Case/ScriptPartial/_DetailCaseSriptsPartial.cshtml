@@ -115,6 +115,7 @@
             });
 
         var CaseId = $('#CaseId').val();
+        console.log("Guid 1" + CaseId);
         $('#addCollateralButton').on('click',function () {
             $('#addCollateralModal').modal('show');
         });
@@ -405,6 +406,8 @@
 
 
         var CaseId = $('#CaseId').val();
+
+        console.log("Guid 2 " +CaseId);
         function initializeDataTable(data) {
             caseCollateralsTable = $('#caseCollaterals').DataTable({
                 language: {
@@ -468,7 +471,7 @@
 
         function loadCollaterals() {
             $.ajax({
-                url: '/Collateral/GetCollaterals?CaseId=' + CaseId,
+                 url: '/Collateral/GetCollaterals?CaseId=' + CaseId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
