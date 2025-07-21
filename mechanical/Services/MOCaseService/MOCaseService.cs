@@ -3,8 +3,10 @@ using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.CaseTimeLineDto;
 using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
+using mechanical.Models.Dto.NotificationDto;
 using mechanical.Models.Entities;
 using mechanical.Services.CaseTimeLineService;
+using mechanical.Services.NotificationService;
 using mechanical.Services.UploadFileService;
 using mechanical.Services.NotificationService;
 using mechanical.Models.Dto.NotificationDto;
@@ -24,7 +26,7 @@ namespace mechanical.Services.MOCaseService
         private readonly ICaseTimeLineService _caseTimeLineService;
         private readonly IUploadFileService _uploadFileService;
         private readonly INotificationService _notificationService;
-        public MOCaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, INotificationService notificationService, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
+        public MOCaseService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
@@ -116,12 +118,11 @@ namespace mechanical.Services.MOCaseService
             {
                 throw new InvalidOperationException("Checker unit in you department is not ready.");
             }
-
-            // Notification
-            var notificationContent = "New Case evaluation sent for checking";
-            var notificationType = "Case Check";
-            var link = $"/Collateral/Detail/{collateral.Id}";
-            NotificationReturnDto notification;
+            //notification 
+            var notificationContent = "New case evalaution sent for checking";
+            var notificationType = "Case check";
+            var link = $"/Collateral/Detail?Id={collateral.Id}";
+            NotificationReturnDto notification=null;
 
             if (user?.District?.Name == "Head Office")
             {   //if(collateral.CurrentStage == "Checker Officer")
@@ -175,12 +176,8 @@ namespace mechanical.Services.MOCaseService
                     CurrentStage = "Checker Manager",
                     UserId = checker.Id
                 });
-
                 // Add Notification
                 notification = await _notificationService.AddNotification(checker.Id, notificationContent, notificationType, link);
-
-                //}
-
             }
             else
             {
@@ -202,15 +199,14 @@ namespace mechanical.Services.MOCaseService
                     CurrentStage = "Checker Manager",
                     UserId = checker.Id
                 });
-                notification = await _notificationService.AddNotification(checker.Id, notificationContent, notificationType, link);
             }
 
             _cbeContext.Collaterals.Update(collateral);
             await _cbeContext.SaveChangesAsync();
 
-            // Realtime Notification
+            // Realtime Nofication
             if (notification != null) await _notificationService.SendNotification(notification);
-
+            
             return true;
         }
     }
