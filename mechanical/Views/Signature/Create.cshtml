@@ -145,7 +145,7 @@
                 }
             });
         }
-        
+
     }
     $('#signatureModal').on('shown.bs.modal', function () {
 
@@ -195,6 +195,7 @@
                 // Append the file to the formData object
                 formData.append('File', file);
                 formData.append('Emp_Id', UserId);
+                console.log("get in the create js");
                 // var data = {Emp_Id:"050168"};
                 // var Emp_Id = "050168";
                 console.log(file);
@@ -247,7 +248,7 @@
     function clearSignature() {
         signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
     }
-    //uploaded signature from 
+    //uploaded signature from
     $(document).ready(function () {
         $("#UploadButton").click(function () {
             var fileInput = document.getElementById("signatureFileInput");

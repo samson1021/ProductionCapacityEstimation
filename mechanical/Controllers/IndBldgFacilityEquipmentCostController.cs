@@ -61,7 +61,7 @@ namespace mechanical.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPost("Edit/{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] IndBldgFacilityEquipmentCostsPostDto dto)
         {
             try
@@ -76,7 +76,7 @@ namespace mechanical.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
