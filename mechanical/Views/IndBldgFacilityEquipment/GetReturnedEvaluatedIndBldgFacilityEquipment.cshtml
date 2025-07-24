@@ -3,6 +3,7 @@
     var comment = ViewData["comments"] as Dictionary<string, string>;
 
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
+    var indBldgFacilityEquipment = ViewData["indBldgFacilityEquipmentReturnDto"];
 }
 <div class="content-header">
     <div class="container-fluid">
@@ -442,7 +443,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-3">
                     <label asp-for="InvoiceValue">Invoice Value</label>
                     <div class="input-group">
                         <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
@@ -459,7 +460,26 @@
                     </div>
                     <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+                 <div class="form-group col-xl-3">
+                    <label asp-for="IndBldgFacilityEquipmentCosts">Ind Bldg Facility Equipment Costs</label>
+                    <div class="input-group">
+                        <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control" required>
+                            <option disabled value="">Select Insurance, Freight & Other Costs</option>
+                        </select>
+                        @{
+                            try
+                            {
+                                if (comment?["IndBldgFacilityEquipmentCosts"] != null && comment["IndBldgFacilityEquipmentCosts"] != "")
+                                {
+                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts" data-comment="@comment["IndBldgFacilityEquipmentCosts"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                }
+                            }
+                            catch (Exception) { }
+                        }
+                    </div>
+                    <span asp-validation-for="IndBldgFacilityEquipmentCosts" class="text-danger"></span>
+                </div>
+                <div class="form-group col-xl-3">
                     <label asp-for="Currency">Currency</label>
                     <div class="input-group">
                         <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
@@ -476,7 +496,7 @@
                     </div>
                     <span asp-validation-for="Currency" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-3">
                     <label asp-for="ExchangeRate">Exchange Rate</label>
                     <div class="input-group">
                         <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control" placeholder="Enter Exchange Rate" required>

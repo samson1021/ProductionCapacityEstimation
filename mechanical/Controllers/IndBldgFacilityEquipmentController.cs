@@ -104,9 +104,9 @@ namespace mechanical.Controllers
             _cbeContext.SaveChanges();
 
             // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
-            var recipientEmail = "yohannessintayhu@cbe.com.et";
+  
             await _mailService.SendEmail(
-                recipientEmail: recipientEmail,
+                recipientEmail: "test@cbe.com.et",
                 subject: "Remark Release Update ",
                 body: "Dear! </br> Remark release Update  For Applicant:-" + collateral.PropertyOwner + "</br></br> For further Detail please check Collateral Valuation System"
             );
@@ -192,6 +192,16 @@ namespace mechanical.Controllers
             var comments = await _indBldgFacilityEquipment.GetCollateralComment(Id);
             ViewData["comments"] = comments;
             ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), indBldgFacilityEquipment.CollateralId);
+            var costs = await _indBldgFacilityEquipmentCostService.GetByCaseId(collateral.CaseId);
+            ViewBag.IndBldgFacilityEquipmentCostsList = costs
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = $"{x.InsuranceFreightOthersCost:N2}"
+                })
+                .ToList();
+
             return View(indBldgFacilityEquipment);
         }
         //edit the collateral based on the corrction comment 

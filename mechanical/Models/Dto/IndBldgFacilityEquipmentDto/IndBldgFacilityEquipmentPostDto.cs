@@ -1,4 +1,5 @@
-﻿using mechanical.Models.Enum;
+﻿using mechanical.Models.Entities;
+using mechanical.Models.Enum;
 
 namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
 {
@@ -37,5 +38,7 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
         public double InvoiceValue { get; set; }
         public string Currency { get; set; } = string.Empty;
         public double ExchangeRate { get; set; }
+
+        public virtual IndBldgFacilityEquipmentCosts? IndBldgFacilityEquipmentCosts { get; set; }
     }
 }
