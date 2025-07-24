@@ -34,7 +34,8 @@ namespace mechanical.Services.InternalReportService
                 return (DistinctCases: Enumerable.Empty<ValuationReportDto>(), AllProductionCapacities: Enumerable.Empty<ValuationReportDto>());
 
             }
-            var caseAssignments = _cbeContext.CaseAssignments
+          
+            var caseAssignmentss = _cbeContext.CaseAssignments
                         .Include(ca => ca.Collateral)
                             .ThenInclude(pc => pc.Case)
                                 .ThenInclude(c => c.CaseOriginator)
@@ -42,11 +43,15 @@ namespace mechanical.Services.InternalReportService
                             .ThenInclude(pc => pc.Case)
                                 .ThenInclude(pce => pce.District)
                         .Include(ca => ca.User)
+                            .ThenInclude(u => u.Role)
                         as IQueryable<CaseAssignment>;
+
             if (userRole != "Higher Official")
             {
-                caseAssignments = caseAssignments.Where(ca => ca.UserId == userId);
+                caseAssignmentss = caseAssignmentss.Where(ca => ca.UserId == userId);
             }
+
+            var caseAssignments = await caseAssignmentss.ToListAsync();
 
 
 
@@ -59,6 +64,7 @@ namespace mechanical.Services.InternalReportService
             var CaseSchedules = await _cbeContext.CaseSchedules
                 .Where(s => CaseIds.Contains(s.CaseId) && s.Status == "Approved") // Filter approved schedules here
                 .ToListAsync();
+
             var CaseSchedulesByCaseId = CaseSchedules.GroupBy(s => s.CaseId).ToDictionary(g => g.Key, g => g.ToList());
             var constructionEvaluations = await _cbeContext.ConstMngAgrMachineries
                                             .Include(e => e.CheckerUser)
@@ -76,39 +82,29 @@ namespace mechanical.Services.InternalReportService
                                             .Where(e => CollateralIds.Contains(e.CollateralId))
                                             .ToListAsync();
             var caseSchedules = await _cbeContext.CaseSchedules
-                .Where(s => CollateralIds.Contains(s.CaseId) && s.Status == "Approved") // Filter approved schedules here
+                .Where(s => CaseIds.Contains(s.CaseId)) // Filter approved schedules here
                 .ToListAsync();
 
-            var allRoleAssignments = await _cbeContext.CaseAssignments
-                .Include(ca => ca.User)
-                    .ThenInclude(u => u.Role)
-                .Where(ca => CollateralIds.Contains(ca.CollateralId) &&
-                             (ca.User.Role.Name == "Maker Manager" ||
-                              ca.User.Role.Name == "Maker TeamLeader" ||
-                              ca.User.Role.Name == "Maker Officer" ||
-                              ca.User.Role.Name == "Checker Manager" ||
-                              ca.User.Role.Name == "Checker TeamLeader" ||
-                              ca.User.Role.Name == "Checker Officer" ||
-                              ca.User.Role.Name == "District Valuation Manager"))
-                .ToListAsync();
 
-            var assignmentsLookup = allRoleAssignments
-                  .GroupBy(ca => ca.CollateralId)
-                  .ToDictionary(
-                      g => g.Key,
-                      g => g.ToDictionary(
-                          ca => ca.User.Role.Name,
-                          ca => ca
-                      )
-                  );
-            CaseAssignment GetAssignment(Guid collateralId, string roleName)
-            {
-                return assignmentsLookup.TryGetValue(collateralId, out var assignments) &&
-                       assignments.TryGetValue(roleName, out var assignment)
-                    ? assignment
-                    : null;
-            }
+
+            // Get all users with the relevant roles in one query
+            //var roleNames = new List<string>
+            //        {
+            //            "Maker Manager", "Maker TeamLeader", "Maker Officer",
+            //            "Checker Manager", "Checker TeamLeader", "Checker Officer",
+            //            "District Valuation Manager"
+            //        };
+
+            //var usersWithRoles = await _cbeContext.Users
+            //    .Include(u => u.Role)
+            //    .Where(u => roleNames.Contains(u.Role.Name))
+            //    .ToDictionaryAsync(u => u.Id, u => u.Role.Name);
+
+       
+     
             var allCollateralDtos = new List<ValuationReportDto>();
+
+      
             foreach (var caseAssignment in caseAssignments)
             {
                 var c = caseAssignment.Collateral;
@@ -148,18 +144,69 @@ namespace mechanical.Services.InternalReportService
                 }
 
                 var reevaluationCount = collateralEvaluations.Count > 0 ? collateralEvaluations.Count - 1 : 0;
-                //var scheduleDate = caseSpecificSchedules?.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
 
-                var justifications = "";// firstEvaluation?.Justifications?.ToList() ?? new List<Justification>();
-                var timeConsumed = "";// firstEvaluation?.TimeConsumedToCheck;
+                var justifications = "";
+                var timeConsumed = "";
 
-                var makerManagerAssignment = GetAssignment(c.Id, "Maker Manager");
-                var makerTeamLeaderAssignment = GetAssignment(c.Id, "Maker TeamLeader");
-                var makerOfficerAssignment = GetAssignment(c.Id, "Maker Officer");
-                var checkerManagerAssignment = GetAssignment(c.Id, "Checker Manager");
-                var checkerTeamLeaderAssignment = GetAssignment(c.Id, "Checker TeamLeader");
-                var checkerOfficerAssignment = GetAssignment(c.Id, "Checker Officer");
-                var districtEvaluationManagerAssignment = GetAssignment(c.Id, "District Valuation Manager");
+
+                var makerManagerAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "Maker Manager")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var makerTeamLeaderAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "Maker TeamLeader")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var makerOfficerAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "Maker Officer")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var checkerManagerAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "Checker Manager")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var checkerTeamLeaderAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "Checker TeamLeader")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var checkerOfficerAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "Checker Officer")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var districtEvaluationManagerAssignment = await _cbeContext.CaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.CollateralId == c.Id &&
+                                 ca.User.Role.Name == "District Valuation Manager")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+
+
                 var dto = new ValuationReportDto
                 {
                     Id = c.Id,
@@ -168,7 +215,7 @@ namespace mechanical.Services.InternalReportService
                     CreatedAt = c.CreationDate,
                     ApplicantName = Case.ApplicantName,
                     CasePriority = " ",
-                    CaseFRQ = c.NumberOfReturns .ToString(),
+                    CaseFRQ = c.NumberOfReturns.ToString(),
                     RequestedOrgan = Case.Segment ?? " ",
                     CustomerApplicantRelationship = Case.CaseOriginator?.Name ?? "",
                     PurposeOfValuationRequest = c.Purpose,
@@ -227,7 +274,7 @@ namespace mechanical.Services.InternalReportService
                                                             ? GetDateDifference(makerOfficerAssignment.AssignmentDate, makerManagerAssignment.AssignmentDate)
                                                             : null,
                     // start checking
-                    NameOfChecker = firstEvaluation?.CheckerUser?.Name ?? checkerOfficerAssignment?.User?.Name??"",
+                    NameOfChecker = firstEvaluation?.CheckerUser?.Name ?? checkerOfficerAssignment?.User?.Name ?? "",
                     DateSentForChecking = checkerManagerAssignment?.AssignmentDate,
                     DateCaseAssignedToCheckerTeamLeader = Case.District?.Name == "Head Office" ? checkerTeamLeaderAssignment?.AssignmentDate : null,
                     DateCaseAssignedToCheckerValuators = checkerOfficerAssignment?.AssignmentDate,
@@ -264,7 +311,7 @@ namespace mechanical.Services.InternalReportService
             }
 
             var distinctCaseDtos = new List<ValuationReportDto>();
-             
+
 
             var caseAssignmentsList = caseAssignments.ToList(); // Execute query first
 
@@ -311,7 +358,7 @@ namespace mechanical.Services.InternalReportService
                         similarCollateralGroups.Select(g =>
                             $"{g.Count()}({g.Key.Category}, {g.Key.Type}, {g.Key.ManufactureYear})"))
                     : "No similar items";
-   
+
 
                 var totalCollaterals = totalcollateralForCase.Count;
                 var deliveredCollaterals = totalcollateralForCase.Count(ca => ca.Status == "Complete");
@@ -382,8 +429,6 @@ namespace mechanical.Services.InternalReportService
         }
 
 
-
-
         /// ..   start pce internal report
 
         public async Task<(IEnumerable<ValuationReportDto> DistinctCases, IEnumerable<ValuationReportDto> AllProductionCapacities)> GetInternalPCECaseReport(Guid userId)
@@ -428,10 +473,6 @@ namespace mechanical.Services.InternalReportService
             // Collect all unique ProductionCapacity IDs and PCECase IDs from the fetched assignments
             var productionCapacityIds = caseAssignments.Select(ca => ca.ProductionCapacityId).ToHashSet(); // Use HashSet for O(1) lookups
             var pceCaseIds = caseAssignments.Select(ca => ca.ProductionCapacity.PCECaseId).Distinct().ToHashSet();
-
-            // Step 2: Fetch all PCEEvaluations, PCECaseSchedules, ProductionReestimations, and ALL relevant PCECaseAssignments
-            // for the collected IDs in a few separate, targeted queries.
-            // Use ToListAsync() for immediate execution.
 
             var evaluations = await _cbeContext.PCEEvaluations
                 .Include(e => e.Justifications)
@@ -512,14 +553,65 @@ namespace mechanical.Services.InternalReportService
                 var justifications = firstEvaluation?.Justifications?.ToList() ?? new List<Justification>();
                 var timeConsumed = firstEvaluation?.TimeConsumedToCheck;
 
-                // Find assignments for specific roles using the helper
-                var makerManagerAssignment = GetAssignment(pc.Id, "Maker Manager");
-                var makerTeamLeaderAssignment = GetAssignment(pc.Id, "Maker TeamLeader");
-                var makerOfficerAssignment = GetAssignment(pc.Id, "Maker Officer");
-                var checkerManagerAssignment = GetAssignment(pc.Id, "Checker Manager");
-                var checkerTeamLeaderAssignment = GetAssignment(pc.Id, "Checker TeamLeader");
-                var checkerOfficerAssignment = GetAssignment(pc.Id, "Checker Officer");
-                var districtEvaluationManagerAssignment = GetAssignment(pc.Id, "District Valuation Manager");
+
+
+                // Get Maker Manager assignment
+                var makerManagerAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "Maker Manager")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+                // Get Maker Manager assignment
+                var makerTeamLeaderAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "Maker TeamLeader")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                // Get Maker Manager assignment
+                var makerOfficerAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "Maker Officer")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+                // Get Maker Manager assignment
+                var checkerManagerAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "Checker Manager")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+                var checkerTeamLeaderAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "Checker TeamLeader")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+                var checkerOfficerAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "Checker Officer")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
+
+
+                var districtEvaluationManagerAssignment = await _cbeContext.PCECaseAssignments
+                    .Include(ca => ca.User)
+                        .ThenInclude(u => u.Role)
+                    .Where(ca => ca.ProductionCapacityId == pc.Id &&
+                                 ca.User.Role.Name == "District Valuation Manager")
+                    .OrderByDescending(ca => ca.AssignmentDate)
+                    .FirstOrDefaultAsync();
                 var dto = new ValuationReportDto
                 {
 
