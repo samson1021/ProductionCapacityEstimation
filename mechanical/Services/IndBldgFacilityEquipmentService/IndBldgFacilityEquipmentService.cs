@@ -137,10 +137,6 @@ namespace mechanical.Services.IndBldgFacilityEquipmentService
             });
 
             return indBldgFacilityEquipment;
-
-
-
-
         }
     }
 }

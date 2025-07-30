@@ -1,4 +1,6 @@
-﻿using mechanical.Data;
+﻿using AutoMapper;
+using Humanizer;
+using mechanical.Data;
 using mechanical.Models.Dto.CaseDto;
 using mechanical.Models.Dto.ConstMngAgrMachineryDto;
 using mechanical.Models.Dto.MailDto;
@@ -22,6 +24,7 @@ namespace mechanical.Controllers
     [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class MotorVehicleController : BaseController
     {
+        private readonly IMapper _mapper;
         private readonly ICollateralService _collateralService;
         private readonly IMotorVehicleService _motorVehicleService;
         private readonly IConstMngAgrMachineryService _constMngAgriMachineryService;
@@ -29,8 +32,9 @@ namespace mechanical.Controllers
         private readonly IUploadFileService _uploadFileService;
         private readonly IMailService _mailService;
         private readonly ICaseScheduleService _caseScheduleService;
-        public MotorVehicleController(ICollateralService collateralService, ICaseScheduleService caseScheduleService, IConstMngAgrMachineryService constMngAgriMachineryService, IMailService mailService, IMotorVehicleService motorVehicleService, CbeContext cbeContext, IUploadFileService uploadFileService)
+        public MotorVehicleController(IMapper mapper, ICollateralService collateralService, ICaseScheduleService caseScheduleService, IConstMngAgrMachineryService constMngAgriMachineryService, IMailService mailService, IMotorVehicleService motorVehicleService, CbeContext cbeContext, IUploadFileService uploadFileService)
         {
+            _mapper = mapper;
             _collateralService = collateralService;
             _motorVehicleService = motorVehicleService;
             _cbeContext = cbeContext;
@@ -148,10 +152,13 @@ namespace mechanical.Controllers
 
         public async Task<IActionResult> GetReturnedEvaluatedMoterVehicle(Guid Id)
         {
-            var motorVehicleDto = await _motorVehicleService.GetEvaluatedMotorVehicle(Id);
+            var motorVehicleDto = await _cbeContext.MotorVehicles.FirstOrDefaultAsync(res => res.CollateralId == Id);
+            //var motorVehicleDto = await _motorVehicleService.GetEvaluatedMotorVehicle(Id);
+            //var motorVehicleDtoo = _mapper.Map<MotorVehicle>(motorVehicleDto.ReturnMotorVehicleDto);
             var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
             ViewData["comments"] = comments;
             ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);
+
             return View(motorVehicleDto);
         }
         [HttpPost]
