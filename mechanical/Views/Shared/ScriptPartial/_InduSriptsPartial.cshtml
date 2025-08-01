@@ -1,4 +1,5 @@
 ﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
 <script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
@@ -17,6 +18,12 @@
         $('#showCollateralFile').click(function () {
             $('#CollateralFileModal').modal('show');
         });
+        const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
+
+    // const myCaseId = "myCase.Id";
+    CheckAssesmentButton.addEventListener("click", function () {
+        $('#CheckAssesmentModal').modal('show');
+    });
     });
     //this method is to give comment for maker and change the status of collateral 
     $(document).ready(function () {
@@ -55,6 +62,20 @@
             $("#CommentBoxModal").modal('show');
             $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
         });
+
+        $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+         $('.show-comment-box').click(function () {
+        var fieldId = $(this).data('field-id'); // Get the field ID from the button
+        $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
+            });
 
         $('.save-comment').click(function () {
             var fieldId = $(this).data('field-id');
@@ -101,6 +122,45 @@
 
         });
         //this is a method to change the status of a collaterals 
+
+        $('.Replay-comment').click(function () {
+                var fieldId = $('#CommentBoxModal').data('field-id'); // Get the field ID from the modal
+                var comment = $('#comment').val();
+                var collateralId = $('#TxtmovId').val();
+                var EquipmentId = $('#TxtEquipmentId').val();
+
+                console.log("Field ID: " + fieldId); // Check if it's defined
+                console.log("Comment: " + comment);
+
+                // Perform your save operation here
+                var formdata = new FormData();
+                formdata.append('CollateralID', collateralId);
+                formdata.append('EquipmentId', EquipmentId);
+                formdata.append('Comment', comment);
+                formdata.append('CommentedAttribute', fieldId);
+
+                $.ajax({
+                    url: '/Correction/ReplayForCheckerCorrections',
+                    type: 'POST',
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        toastr.success('Successfully Submitted Your Reply', 'Success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                    },
+                    error: function (error) {
+                        toastr.error("Failed to Post Correction");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                        console.log(error);
+                    }
+                });
+            });
+
         $(document).ready(function () {
             // Attach click event handlers to the buttons
             $(".checkedButton").click(function () {
@@ -172,7 +232,37 @@
             })
         }
     })
+    function LoadComments(){
+            $.ajax({
+                url: '/Correction/GetComment',
+                type: 'get',
+                data: { id: userId }, // Pass the ID as a parameter
+                success: function (data) {
+                    // Handle the success scenario
+                    toastr.success('Successfully Submitted Your Comment', 'Success');
+                    // Show message based on user ID
+                    if (userId === 1) {
+                        // Show message for user with ID 1
+                        toastr.info('You are user 1');
+                    } else if (userId === 2) {
+                        // Show message for user with ID 2
+                        toastr.info('You are user 2');
+                    }
+                    setTimeout(function () {
+                        location.reload();
+                    }, 20); // Reload the page after a successful response
+                },
+                error: function (error) {
+                    // Handle the error scenario
+                    toastr.error('Failed to Post Correction');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 20); // Reload the page after an error response
+                    console.log(error);
+                }
+            });
 
+        }
 
 
 

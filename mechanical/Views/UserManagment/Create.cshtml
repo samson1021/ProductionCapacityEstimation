@@ -81,7 +81,8 @@
                             <span asp-validation-for="Department" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-6">
-                            <label asp-for="SupervisorId" class="control-label">SuperVisor </label>
+                            <label asp-for="SupervisorId" class="control-label">SuperVisor <span id="supervisorRequired" class="text-danger d-none">*</span></label>
+                            @* <label asp-for="SupervisorId" class="control-label">SuperVisor </label> *@
                             <select id="SupervisorId" name="SupervisorId" class="form-control"></select>
                             <span asp-validation-for="SupervisorId" class="text-danger"></span>
                         </div>
@@ -274,12 +275,21 @@
                   <option value="Agriculture">Agriculture</option>`);
             }
         });
-
+            const rolesRequiringSupervisor = [
+        'maker teamleader',
+        'maker officer',
+        'checker teamleader',
+        'checker officer'
+        // Add other roles that need supervisors
+    ];
         $("#Department").change(function () {
             var roleId = $("#RoleId").val();
             var Department = $("#Department").val();
             var districtId = $("#DistrictId").val();
             var dropdown = $('#SupervisorId');
+            var roleName = $("#RoleId option:selected").text().toLowerCase(); // Get selected role name
+    
+
             dropdown.empty();
             dropdown.append($('<option></option>').val('').text('Select Supervisor'));
             if (roleId) {
@@ -295,8 +305,17 @@
                             $(data).each(function (index, supervisor) {
                                 dropdown.append($('<option></option>').val(supervisor.Id).text(supervisor.Name));
                             });
+                            if (rolesRequiringSupervisor.includes(roleName)) {
+                                dropdown.prop('required', true);
+                                $('#supervisorRequired').removeClass('d-none');
+                            } else {
+                                dropdown.prop('required', false);
+                                $('#supervisorRequired').addClass('d-none');
+                            }
                         } else {
                             dropdown.prop('disabled', true);
+                            dropdown.prop('required', false);
+                            $('#supervisorRequired').addClass('d-none');
                         }
                     },
                     error: function () {
@@ -307,6 +326,21 @@
             } else {
             }
         });
+    });
+
+        $("#RoleId").change(function() {
+        var roleName = $(this).find("option:selected").text().toLowerCase();
+
+        if (rolesRequiringSupervisor.includes(roleName)) {
+            $('#SupervisorId').prop('required', true);
+            $('#supervisorRequired').removeClass('d-none');
+        } else {
+            $('#SupervisorId').prop('required', false);
+            $('#supervisorRequired').addClass('d-none');
+        }
+
+        // Trigger Department change to reload supervisors
+        $("#Department").trigger('change');
     });
     $(document).ready(function () {
         $('#loadingIndicator').hide();

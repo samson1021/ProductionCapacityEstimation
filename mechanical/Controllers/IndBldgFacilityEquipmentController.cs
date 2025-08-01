@@ -188,7 +188,9 @@ namespace mechanical.Controllers
 
         public async Task<IActionResult> GetReturnedEvaluatedIndBldgFacilityEquipment(Guid Id)
         {
-            var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetReturnedEvaluatedIndBldgFacilityEquipment(Id);
+            //var indBldgFacilityEquipment = await _indBldgFacilityEquipment.GetReturnedEvaluatedIndBldgFacilityEquipment(Id);
+            var indBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment.FirstOrDefaultAsync(res => res.CollateralId == Id);
+
             var comments = await _indBldgFacilityEquipment.GetCollateralComment(Id);
             ViewData["comments"] = comments;
             ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);

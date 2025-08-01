@@ -206,15 +206,16 @@ namespace mechanical.Controllers
             var httpContext = _httpContextAccessor.HttpContext;
             var managerId = Guid.Parse(httpContext.Session.GetString("userId"));
             var manager = await _context.Users.Include(res => res.District).Include(res => res.Role).FirstOrDefaultAsync(res => res.Id == managerId);
-            if (manager.Role.Name == "District Valuation Manager")
-            {
-                var makerTeamleader = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId && res.Status == "Activated").ToList();
-                return Json(makerTeamleader);
-            }
+            
 
             if (manager == null || manager.Role.Name != "Maker Manager")
             {
                 return BadRequest();
+            }
+            else if (manager.Role.Name == "District Valuation Manager")
+            {
+                var makerTeamleader = _context.Users.Where(res => res.Role.Name == "Maker Officer" && res.Department == manager.Department && res.DistrictId == manager.DistrictId && res.Status == "Activated").ToList();
+                return Json(makerTeamleader);
             }
             else
             {

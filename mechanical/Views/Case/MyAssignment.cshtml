@@ -207,10 +207,10 @@
                         { data: 'User', width: '10%' },
                         { data: 'Status', width: '10%' },
                         {
-                            data: 'CaseAssigmentId',
+                            data: 'CollateralId',
                             width: '15%',
                             render: function (data, type, row, meta) {
-                                return '<a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details';
+                                return '<a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details</a>';
                             }
                         }
                     ]
