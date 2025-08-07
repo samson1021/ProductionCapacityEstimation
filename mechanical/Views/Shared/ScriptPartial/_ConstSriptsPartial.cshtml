@@ -65,6 +65,91 @@
 
         });
         $(document).ready(function () {
+
+            const CaseId = $('#TxtmovId').val();
+        console.log("Case ID:", CaseId);
+
+        // Event Handlers
+        $('#CorectionHistoryButton').click(LoadCorrectionHistory);
+        $('#showCollateralFile').click(() => $('#CollateralFileModal').modal('show'));
+            function LoadCorrectionHistory() {
+            console.log("Loading correction history...");
+
+            if (!CaseId) {
+                console.error("Case ID is missing!");
+                return;
+            }
+
+            $.ajax({
+                url: '/Collateral/GetCollateralCorrectionHistory',
+                method: 'GET',
+                data: { CollateralId: CaseId },
+                success: function(data) {
+                    renderCorrectionHistory(data);
+                },
+                error: function() {
+                    console.error('Failed to load correction history');
+                    toastr.error('Failed to load history');
+                }
+            });
+        }
+
+        function renderCorrectionHistory(data) {
+            const $container = $('#CorrectionHistoryModal.correctionHistories').empty();
+            const countComments = data.caseComments?.length || 0;
+
+            $(".CorrectionBage").text(countComments);
+
+            if (countComments > 0) {
+                 data.caseComments.forEach(function (comments) {
+                            // Create a card for each comment
+                            var card = $('<div>').addClass('card mb-3 direct-chat-card');
+                            var cardBody = $('<div>').addClass('card-body');
+
+                            // User information and comment details
+                            var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                            GetUserInfo(comments.CommentByUserId).then(username => {
+                                $('<span>').text(username).appendTo(chatName);
+                            });
+
+                            var createdAt = new Date(comments.CreatedAt);
+                            var formattedDate = formatDate(createdAt);
+
+                            var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                            var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                            var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                            var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                            // Append elements to the card body
+                            cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                            card.append(cardBody);
+                            $('#CorrectionHistoryModal .correctionHistories').append(card);
+                        });
+            } else {
+                $container.append('<div class="no-comments-msg">There are no comments</div>');
+            }
+        }
+                LoadCorrectionHistory();
+                function GetUserInfo(userId) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/UserManagment/GetuserInfos',
+                    method: 'GET',
+                    data: { id: userId },
+                    success: function(data) {
+                        resolve(data?.Name || 'Unknown User');
+                    },
+                    error: function() {
+                        console.error('Failed to fetch user info');
+                        resolve('Unknown User');
+                    }
+                });
+            });
+        }
+
+
+
+
             $("#checkedButton").click(function () {
                 if (confirm("Are you sure you want to send this evaluation to the Relational Manager?")) {
                     sendRequest("Complete");
@@ -124,4 +209,15 @@
             })
         }
     })
+    function formatDate(date) {
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            };
+            return date.toLocaleString('en-US', options);
+        }
 </script>

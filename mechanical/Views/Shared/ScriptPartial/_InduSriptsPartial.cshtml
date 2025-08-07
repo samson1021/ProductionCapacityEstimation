@@ -14,256 +14,238 @@
 <script src="~/lib/toastr/toastr.min.js"></script>
 
 <script>
+  
     $(document).ready(function () {
-        $('#showCollateralFile').click(function () {
-            $('#CollateralFileModal').modal('show');
+        console.log("Document ready initialized");
+
+        // Initialize variables
+        const CaseId = $('#TxtmovId').val();
+        console.log("Case ID:", CaseId);
+
+        // Event Handlers
+        $('#CorectionHistoryButton').click(LoadCorrectionHistory);
+        $('#showCollateralFile').click(() => $('#CollateralFileModal').modal('show'));
+
+        document.getElementById("CheckAssesmentButton").addEventListener("click", function() {
+            $('#CheckAssesmentModal').modal('show');
         });
-        const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
 
-    // const myCaseId = "myCase.Id";
-    CheckAssesmentButton.addEventListener("click", function () {
-        $('#CheckAssesmentModal').modal('show');
-    });
-    });
-    //this method is to give comment for maker and change the status of collateral 
-    $(document).ready(function () {
-        $('#checkAssessmentForm').on('submit', function (e) {
+        // Modal Form Submission
+        $('#checkAssessmentForm').on('submit', function(e) {
             e.preventDefault();
+            submitFormData(this);
+        });
 
-            var formData = new FormData(this);
+        // Comment Box Handlers (merged duplicates)
+        $('.show-comment-box').click(function() {
+            const modal = $(this).data('target');
+            const fieldId = $(this).data('field-id');
+            const comment = $(this).data('comment') || '';
+
+            $('#comment').val(comment);
+            $("#CommentBoxModal")
+                .modal('show')
+                .data('field-id', fieldId);
+
+            $(modal).find('.save-comment, .Replay-comment').attr('data-field-id', fieldId);
+        });
+
+        $('.save-comment').click(submitComment);
+        $('.Replay-comment').click(submitReply);
+
+        // Status Change Buttons
+        $(".checkedButton").click(() => confirmAction("Complete"));
+        $(".saveButton").click(() => sendRequest("saved"));
+        $(".correctionButton").click(() => confirmAction("correction"));
+        $("#btnSaveForResubmiting").click(() => saveReValuation("Save"));
+
+        // Comment Display
+        document.querySelector("#btnComment").addEventListener("click", event => {
+            $('#CommentModal').text(event.target.dataset.comment || 'No comment available');
+        });
+
+        // Core Functions
+        function LoadCorrectionHistory() {
+            console.log("Loading correction history...");
+
+            if (!CaseId) {
+                console.error("Case ID is missing!");
+                return;
+            }
 
             $.ajax({
-                url: $(this).attr('action'),
+                url: '/Collateral/GetCollateralCorrectionHistory',
+                method: 'GET',
+                data: { CollateralId: CaseId },
+                success: function(data) {
+                    renderCorrectionHistory(data);
+                },
+                error: function() {
+                    console.error('Failed to load correction history');
+                    toastr.error('Failed to load history');
+                }
+            });
+        }
+
+        function renderCorrectionHistory(data) {
+            const $container = $('#CorrectionHistoryModal.correctionHistories').empty();
+            const countComments = data.caseComments?.length || 0;
+           
+            $(".CorrectionBage").text(countComments);
+
+            if (countComments > 0) {
+                 data.caseComments.forEach(function (comments) {
+                            // Create a card for each comment
+                            var card = $('<div>').addClass('card mb-3 direct-chat-card');
+                            var cardBody = $('<div>').addClass('card-body');
+
+                            // User information and comment details
+                            var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                            GetUserInfo(comments.CommentByUserId).then(username => {
+                                $('<span>').text(username).appendTo(chatName);
+                            });
+
+                            var createdAt = new Date(comments.CreatedAt);
+                            var formattedDate = formatDate(createdAt);
+
+                            var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                            var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                            var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                            var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                            // Append elements to the card body
+                            cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                            card.append(cardBody);
+                            $('#CorrectionHistoryModal .correctionHistories').append(card);
+                        });
+            } else {
+                $container.append('<div class="no-comments-msg">There are no comments</div>');
+            }
+        }
+                LoadCorrectionHistory();
+        
+
+        function GetUserInfo(userId) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/UserManagment/GetuserInfos',
+                    method: 'GET',
+                    data: { id: userId },
+                    success: function(data) {
+                        resolve(data?.Name || 'Unknown User');
+                    },
+                    error: function() {
+                        console.error('Failed to fetch user info');
+                        resolve('Unknown User');
+                    }
+                });
+            });
+        }
+
+        function submitFormData(form) {
+            const formData = new FormData(form);
+
+            $.ajax({
+                url: form.action,
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (response) {
+                success: function(response) {
                     if (response.redirectUrl) {
                         $('#CheckAssesmentModal').modal('hide');
                         window.open(response.redirectUrl, '_blank');
                     } else {
-                        alert('Unexpected response');
+                        toastr.warning('Unexpected response format');
                     }
                 },
-                error: function (xhr, status, error) {
-                    alert('An error occurred: ' + error);
+                error: function(xhr) {
+                    toastr.error('Error: ' + xhr.statusText);
                 }
             });
-        });
+        }
 
+        function submitComment() {
+            submitCorrectionData($(this).data('field-id'), '/Correction/Create');
+        }
 
-        $('.show-comment-box').click(function () {
-            console.log("show comment"); 
-            var modal = $(this).data('target');
-            var fieldId = $(this).data('field-id');
-            var comment = $(this).data('comment');
-            $('#comment').val(comment ? comment : '');
-            $("#CommentBoxModal").modal('show');
-            $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
-        });
+        function submitReply() {
+            submitCorrectionData($('#CommentBoxModal').data('field-id'), '/Correction/ReplayForCheckerCorrections');
+        }
 
-        $('.show-comment-box').click(function () {
-            var modal = $(this).data('target');
-            var fieldId = $(this).data('field-id');
-            var comment = $(this).data('comment');
-            $('#comment').val(comment ? comment : '');
-            $("#CommentBoxModal").modal('show');
-            $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
-        });
+        function submitCorrectionData(fieldId, endpoint) {
+            if (!fieldId) {
+                toastr.error('Missing field ID');
+                return;
+            }
 
-         $('.show-comment-box').click(function () {
-        var fieldId = $(this).data('field-id'); // Get the field ID from the button
-        $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
-            });
-
-        $('.save-comment').click(function () {
-            var fieldId = $(this).data('field-id');
-            var comment = $('#comment').val();
-            var collateralId = $('#TxtmovId').val();
-            var EquipmentId = $('#TxtEquipmentId').val();
-
-            var Controller = "IndBldgFacilityEquipment";
-            var Action = "GetEvaluatedIndBldgFacilityEquipment";
-            // Perform your save operation here
-            var formdata = new FormData();
-            formdata.append('CollateralID', collateralId);
-            formdata.append('EquipmentId', EquipmentId);
-            formdata.append('Comment', comment);
-            formdata.append('CommentedAttribute', fieldId);
-            formdata.append('Controller', Controller);
-            formdata.append('Action', Action);
-            var correctionDto = JSON.stringify(formdata);
-            console.log('jsonData ID:', correctionDto);
+            const formData = new FormData();
+            formData.append('CollateralID', CaseId);
+            formData.append('EquipmentId', $('#TxtEquipmentId').val());
+            formData.append('Comment', $('#comment').val());
+            formData.append('CommentedAttribute', fieldId);
+            formData.append('Controller', "IndBldgFacilityEquipment");
+            formData.append('Action', "GetEvaluatedIndBldgFacilityEquipment");
 
             $.ajax({
-                url: '/Correction/Create',
-                type: 'Post',
-                data: formdata,
+                url: endpoint,
+                type: 'POST',
+                data: formData,
                 processData: false,
                 contentType: false,
-                success: function (data) {      
-                    toastr.success('Successfuly Submited Your Comment', 'Success');
-                    // Reload the page after a successful response
-                    // Delay the page refresh by 2 seconds (adjust the delay as needed)
-                    setTimeout(function () {
-                        location.reload();
-                    }, 20);
+                success: function() {
+                    toastr.success('Operation successful');
+                    setTimeout(location.reload, 2000);
                 },
-                error: function (error) {
-                    toastr.error("Failed to Post Correction");
-                    setTimeout(function () {
-                        location.reload();
-                    }, 20);
-                    console.log(error);
+                error: function() {
+                    toastr.error('Operation failed');
+                    setTimeout(location.reload, 2000);
                 }
             });
+        }
 
-
-        });
-        //this is a method to change the status of a collaterals 
-
-        $('.Replay-comment').click(function () {
-                var fieldId = $('#CommentBoxModal').data('field-id'); // Get the field ID from the modal
-                var comment = $('#comment').val();
-                var collateralId = $('#TxtmovId').val();
-                var EquipmentId = $('#TxtEquipmentId').val();
-
-                console.log("Field ID: " + fieldId); // Check if it's defined
-                console.log("Comment: " + comment);
-
-                // Perform your save operation here
-                var formdata = new FormData();
-                formdata.append('CollateralID', collateralId);
-                formdata.append('EquipmentId', EquipmentId);
-                formdata.append('Comment', comment);
-                formdata.append('CommentedAttribute', fieldId);
-
-                $.ajax({
-                    url: '/Correction/ReplayForCheckerCorrections',
-                    type: 'POST',
-                    data: formdata,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        toastr.success('Successfully Submitted Your Reply', 'Success');
-                        setTimeout(function () {
-                            location.reload();
-                        }, 20);
-                    },
-                    error: function (error) {
-                        toastr.error("Failed to Post Correction");
-                        setTimeout(function () {
-                            location.reload();
-                        }, 20);
-                        console.log(error);
-                    }
-                });
-            });
-
-        $(document).ready(function () {
-            // Attach click event handlers to the buttons
-            $(".checkedButton").click(function () {
-                if (confirm("Are you sure you want to send this evaluation to the Relational Manager?")) {
-                    sendRequest("Complete");
-                }
-            });
-
-            $(".saveButton").click(function () {
-                sendRequest("saved");
-            });
-
-            $(".correctionButton").click(function () {
-                if (confirm("Are you sure you want to return this evaluation to the Maker?")) {
-                     sendRequest("correction");
-                }
-               
-            });
-            var collateralId = $('#TxtmovId').val();
-            // Function to send the AJAX request
-            function sendRequest(action) {
-                $.ajax({
-                    url: "/Collateral/changeCollateralStatus",
-                    method: "POST",
-                    data: { status: action, Id: collateralId },
-                    success: function (response) {
-                        if (response.success) {
-                            toastr.success('Successfully Return Your collateral to Maker', 'Success');
-                            // Delay the page refresh by 2 seconds (adjust the delay as needed)
-                            setTimeout(function () {
-                                location.reload();
-                                window.location.href = '/CO/Mycases';
-
-                            }, 20);
-                        }else{
-                            toastr.error(response.message);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        // Handle the error response from the server
-                        toastr.error(error);
-                        setTimeout(function () {
-                            location.reload();
-                        }, 20);
-                    }
-                });
+        function confirmAction(action) {
+            if (confirm(`Are you sure you want to ${action} this evaluation?`)) {
+                sendRequest(action);
             }
-        });
-    });
-    //this is the script to show the comment of the filed given by Checker
-    document.querySelector("#btnComment").addEventListener("click", event => {
-        var comment = event.target.dataset.comment;
-        //var modal = $('#CommentBoxModal');
-        $('#CommentModal').text(comment);
-        //modal.find('#comment').val(comment);
-        console.log('jsonData ID:', event.target.dataset.comment);
-
-    })
-
-    $(document).ready(function () {
-        $("#btnSaveForResubmiting").click(function (){
-            saveReValuation("Save");
-        })
-        var collateralId = $('#TxtmovId').val();
-        console.log(collateralId);
-        function saveReValuation(action) {
-            $.ajax({
-                Url: "/MOCase/Mycases"
-            })
         }
-    })
-    function LoadComments(){
+
+        function sendRequest(action) {
             $.ajax({
-                url: '/Correction/GetComment',
-                type: 'get',
-                data: { id: userId }, // Pass the ID as a parameter
-                success: function (data) {
-                    // Handle the success scenario
-                    toastr.success('Successfully Submitted Your Comment', 'Success');
-                    // Show message based on user ID
-                    if (userId === 1) {
-                        // Show message for user with ID 1
-                        toastr.info('You are user 1');
-                    } else if (userId === 2) {
-                        // Show message for user with ID 2
-                        toastr.info('You are user 2');
+                url: "/Collateral/changeCollateralStatus",
+                method: "POST",
+                data: { status: action, Id: CaseId },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(`Status changed to ${action}`);
+                        setTimeout(() => {
+                            window.location.href = '/CO/Mycases';
+                        }, 2000);
+                    } else {
+                        toastr.error(response.message || 'Action failed');
                     }
-                    setTimeout(function () {
-                        location.reload();
-                    }, 20); // Reload the page after a successful response
                 },
-                error: function (error) {
-                    // Handle the error scenario
-                    toastr.error('Failed to Post Correction');
-                    setTimeout(function () {
-                        location.reload();
-                    }, 20); // Reload the page after an error response
-                    console.log(error);
+                error: function(xhr) {
+                    toastr.error('Error: ' + xhr.statusText);
                 }
             });
-
         }
 
+        function saveReValuation(action) {
+            console.log("Saving revaluation...");
+            // Implement actual save logic here
+        }
 
-
+        function formatDate(date) {
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            };
+            return date.toLocaleString('en-US', options);
+        }
+    });
 </script>
