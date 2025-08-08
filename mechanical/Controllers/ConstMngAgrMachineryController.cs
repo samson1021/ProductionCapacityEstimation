@@ -157,7 +157,7 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> GetReturnedEvaluatedConstMngAgrMachinery(Guid Id)
         {
-            var constMngAgMachinery = await _constMngAgriMachineryService.GetEvaluatedConstMngAgrMachinery(Id);
+            var constMngAgMachinery = await _cbeContext.ConstMngAgrMachineries.FirstOrDefaultAsync(x => x.CollateralId == Id);
             var comments = await _constMngAgriMachineryService.GetCollateralComment(Id);
             ViewData["comments"] = comments;
             ViewData["collateralFile"] = await _uploadFileService.GetUploadFileByCollateralId(Id);

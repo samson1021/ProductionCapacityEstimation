@@ -21,8 +21,108 @@
         // Initialize variables
         const CaseId = $('#TxtmovId').val();
         console.log("Case ID:", CaseId);
+            $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
 
+         $('.show-comment-box').click(function () {
+        var fieldId = $(this).data('field-id'); // Get the field ID from the button
+        $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
+            });
+
+        $('.save-comment').click(function () {
+
+            console.log("sinside comment");
+
+            var fieldId = $(this).data('field-id');
+            var comment = $('#comment').val();
+            var collateralId = $('#TxtmovId').val();
+            var EquipmentId = $('#TxtEquipmentId').val();
+
+            var Controller = "IndBldgFacilityEquipment";
+            var Action = "GetEvaluatedIndBldgFacilityEquipment";
+            // Perform your save operation here
+            var formdata = new FormData();
+            formdata.append('CollateralID', collateralId);
+            formdata.append('EquipmentId', EquipmentId);
+            formdata.append('Comment', comment);
+            formdata.append('CommentedAttribute', fieldId);
+            formdata.append('Controller', Controller);
+            formdata.append('Action', Action);
+            var correctionDto = JSON.stringify(formdata);
+            console.log('jsonData ID:', correctionDto);
+
+            $.ajax({
+                url: '/Correction/Create',
+                type: 'Post',
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    toastr.success('Successfuly Submited Your Comment', 'Success');
+                    // Reload the page after a successful response
+                    // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                    setTimeout(function () {
+                        location.reload();
+                    }, 20);
+                },
+                error: function (error) {
+                    toastr.error("Failed to Post Correction");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 20);
+                    console.log(error);
+                }
+            });
+
+
+        });
+        //this is a method to change the status of a collaterals
+
+        $('.Replay-comment').click(function () {
+                var fieldId = $('#CommentBoxModal').data('field-id'); // Get the field ID from the modal
+                var comment = $('#comment').val();
+                var collateralId = $('#TxtmovId').val();
+                var EquipmentId = $('#TxtEquipmentId').val();
+
+                console.log("Field ID: " + fieldId); // Check if it's defined
+                console.log("Comment: " + comment);
+
+                // Perform your save operation here
+                var formdata = new FormData();
+                formdata.append('CollateralID', collateralId);
+                formdata.append('EquipmentId', EquipmentId);
+                formdata.append('Comment', comment);
+                formdata.append('CommentedAttribute', fieldId);
+
+                $.ajax({
+                    url: '/Correction/ReplayForCheckerCorrections',
+                    type: 'POST',
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        toastr.success('Successfully Submitted Your Reply', 'Success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                    },
+                    error: function (error) {
+                        toastr.error("Failed to Post Correction");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                        console.log(error);
+                    }
+                });
+            });
         // Event Handlers
+
         $('#CorectionHistoryButton').click(LoadCorrectionHistory);
         $('#showCollateralFile').click(() => $('#CollateralFileModal').modal('show'));
 
@@ -37,27 +137,12 @@
         });
 
         // Comment Box Handlers (merged duplicates)
-        $('.show-comment-box').click(function() {
-            const modal = $(this).data('target');
-            const fieldId = $(this).data('field-id');
-            const comment = $(this).data('comment') || '';
+        
 
-            $('#comment').val(comment);
-            $("#CommentBoxModal")
-                .modal('show')
-                .data('field-id', fieldId);
+ 
+       
 
-            $(modal).find('.save-comment, .Replay-comment').attr('data-field-id', fieldId);
-        });
-
-        $('.save-comment').click(submitComment);
-        $('.Replay-comment').click(submitReply);
-
-        // Status Change Buttons
-        $(".checkedButton").click(() => confirmAction("Complete"));
-        $(".saveButton").click(() => sendRequest("saved"));
-        $(".correctionButton").click(() => confirmAction("correction"));
-        $("#btnSaveForResubmiting").click(() => saveReValuation("Save"));
+        
 
         // Comment Display
         document.querySelector("#btnComment").addEventListener("click", event => {
@@ -165,20 +250,14 @@
             });
         }
 
-        function submitComment() {
-            submitCorrectionData($(this).data('field-id'), '/Correction/Create');
-        }
-
-        function submitReply() {
-            submitCorrectionData($('#CommentBoxModal').data('field-id'), '/Correction/ReplayForCheckerCorrections');
-        }
+     
 
         function submitCorrectionData(fieldId, endpoint) {
             if (!fieldId) {
                 toastr.error('Missing field ID');
                 return;
             }
-
+            console.log("inside submit Correction");
             const formData = new FormData();
             formData.append('CollateralID', CaseId);
             formData.append('EquipmentId', $('#TxtEquipmentId').val());
@@ -247,5 +326,60 @@
             };
             return date.toLocaleString('en-US', options);
         }
+
+
+     
+
     });
+    $(document).ready(function () {
+            // Attach click event handlers to the buttons
+            $(".checkedButton").click(function () {
+                if (confirm("Are you sure you want to send this evaluation to the Relational Manager?")) {
+                    sendRequest("Complete");
+                }
+            });
+
+            $(".saveButton").click(function () {
+                sendRequest("saved");
+            });
+
+            $(".correctionButton").click(function () {
+                if (confirm("Are you sure you want to return this evaluation to the Maker?")) {
+                     sendRequest("correction");
+                }
+
+
+
+
+            });
+             var collateralId = $('#TxtmovId').val();
+            // Function to send the AJAX request
+            function sendRequest(action) {
+                $.ajax({
+                    url: "/Collateral/changeCollateralStatus",
+                    method: "POST",
+                    data: { status: action, Id: collateralId },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success('Successfully Return Your collateral to Maker', 'Success');
+                            // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                            setTimeout(function () {
+                                location.reload();
+                                window.location.href = '/CO/Mycases';
+
+                            }, 20);
+                        }else{
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle the error response from the server
+                        toastr.error(error);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                    }
+                });
+            }
+            });
 </script>

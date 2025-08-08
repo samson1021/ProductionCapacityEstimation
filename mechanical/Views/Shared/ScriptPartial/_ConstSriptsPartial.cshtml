@@ -161,8 +161,11 @@
             });
         }
 
-        // Correction History Functions
-        function LoadCorrectionHistory() {
+    });
+    $(document).ready(function (){
+         const collateralId = $('#TxtmovId').val();
+         const equipmentId = $('#TxtEquipmentId').val();
+     function LoadCorrectionHistory() {
             console.log("Loading correction history...");
 
             if (!collateralId) {
@@ -253,5 +256,6 @@
 
         // Initial load
         LoadCorrectionHistory();
+
     });
 </script>

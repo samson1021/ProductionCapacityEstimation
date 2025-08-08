@@ -1,4 +1,4 @@
-﻿@model mechanical.Models.Dto.ConstMngAgrMachineryDto.ConstMngAgMachineryReturnDto;
+﻿@model mechanical.Models.Entities.ConstMngAgrMachinery;
 @{
     // var collateral = ViewData["collateral"] as ReturnCollateralDto;
     var comment = ViewData["comments"] as Dictionary<string, string>;
@@ -28,7 +28,6 @@
                 <form method="post" enctype="multipart/form-data" asp-action="EditConstMngAgrMachinery" asp-route-Id="@Model.Id">
                         <input name="CollateralId" id="TxtmovId" value="@Model.CollateralId" type="hidden" />
                         <input name="Id" id="TxtEquipmentId" value="@Model.Id" type="hidden" /> 
-
                     <div class="row">
                         <div class="form-group col-xl-6">
                             <div class="form-group">
