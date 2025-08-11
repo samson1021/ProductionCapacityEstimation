@@ -301,13 +301,14 @@ app.Use(async (context, next) =>
 
     // For development only - allows inline styles and scripts
     context.Response.Headers.Append("Content-Security-Policy",
-        "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline'; " +  // Allows inline scripts
-        "style-src 'self' 'unsafe-inline'; " +   // Allows inline styles
-        "img-src 'self' data:; " +              // Allows images from self and data URIs
-        "font-src 'self'; " +                   // Allows fonts from self
-        "connect-src 'self'; " +                // Allows AJAX/WebSocket connections
-        "object-src 'none';");                  // Blocks plugins (Flash, etc.)
+       "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline'; " +  
+        "style-src 'self' 'unsafe-inline'; " +   
+        "img-src 'self' data:; " +              
+        "font-src 'self'; " +
+         "connect-src * data:; " +
+         "object-src *; " 
+    );                 
 
     // Add other security headers
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
