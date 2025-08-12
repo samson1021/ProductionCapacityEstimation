@@ -30,10 +30,33 @@
             $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
         });
 
-         $('.show-comment-box').click(function () {
-        var fieldId = $(this).data('field-id'); // Get the field ID from the button
-        $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
-            });
+        //  $('.show-comment-box').click(function () {
+        // var fieldId = $(this).data('field-id'); // Get the field ID from the button
+        // $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
+            
+        //  });
+          $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.show-comment-box').click(function () {
+                var fieldId = $(this).data('field-id'); // Get the field ID from the button
+                $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
+        });
 
         $('.save-comment').click(function () {
 
@@ -79,8 +102,6 @@
                     console.log(error);
                 }
             });
-
-
         });
         //this is a method to change the status of a collaterals
 
