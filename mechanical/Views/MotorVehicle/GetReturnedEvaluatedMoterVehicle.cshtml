@@ -294,7 +294,7 @@
                     <div class="form-group col-xl-4">
                         <label id="lblAllocatedPointsRange">Allocated Points Range</label>
                         <div class="input-group">
-                            <select name="AllocatedPointsRange" class="form-control"
+                            <select asp-for="@Model.AllocatedPointsRange" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(AllocatedPointRange)).Cast<AllocatedPointRange>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                 <option value="" disabled>Select Allocated Points Range</option>
                             </select>
