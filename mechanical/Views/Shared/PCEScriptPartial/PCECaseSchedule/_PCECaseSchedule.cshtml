@@ -41,7 +41,7 @@
                                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input asp-for="ScheduleDate" id="ScheduleDate" class="form-control" type="datetime-local" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.UtcNow.ToString("yyyy-MM-dd"))" required />
+                                            <input asp-for="ScheduleDate" id="ScheduleDate" class="form-control" type="datetime-local" value="@(latestPCECaseSchedule?.ScheduleDate != null? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-ddTHH:mm"): DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-ddTHH:mm"))" required />
                                         </div>
                                         <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
                                     </div>
