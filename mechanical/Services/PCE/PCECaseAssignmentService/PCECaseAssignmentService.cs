@@ -103,23 +103,34 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
                 foreach (var PCEId in PCEIdList)
                 {
-                    var production = await GetProductionById(PCEId);
-                    link = $"/ProductionCapacity/Detail?Id={production.Id}";
-                    if (production == null) continue;
+                    // chek for PCECaseAssignments Id
+                    var PCECaseAssignmentsId = await _cbeContext.PCECaseAssignments.AsNoTracking().Where(res => res.Id == PCEId).Select(res => res.Id).FirstOrDefaultAsync();
 
-                    await UpdateProduction(production, assignedUser, OperationType);
-                    await AssignOrUpdateCase(UserId, PCEId, assignedUser, pceCaseAssignments, ReestimationReason, OperationType);
-
-                    if (pceCaseTimeLineDto == null)
+                    if (PCECaseAssignmentsId != Guid.Empty)
                     {
-                        pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, OperationType);
+                        await UpdateAssignedCase(UserId, PCEId, assignedUser, pceCaseAssignments, isReassign, OperationType);
+
                     }
-                    UpdateTimelineDto(production, pceCaseTimeLineDto);
-                    await UpdatePreviousAssignments(UserId, PCEId);
+                    else
+                    {
+                        var production = await GetProductionById(PCEId);
+                        link = $"/ProductionCapacity/Detail?Id={production.Id}";
+                        if (production == null) continue;
 
-                    // Add Notification
-                    notification = await _notificationService.AddNotification(assignedUser.Id, notificationContent, notificationType, link);
+                        await UpdateProduction(production, assignedUser, OperationType);
+                        await AssignOrUpdateCase(UserId, PCEId, assignedUser, pceCaseAssignments, ReestimationReason, OperationType);
 
+                        if (pceCaseTimeLineDto == null)
+                        {
+                            pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, OperationType);
+                        }
+                        UpdateTimelineDto(production, pceCaseTimeLineDto);
+                        await UpdatePreviousAssignments(UserId, PCEId);
+
+                        // Add Notification
+                        notification = await _notificationService.AddNotification(assignedUser.Id, notificationContent, notificationType, link);
+
+                    }
                 }
                 if (pceCaseTimeLineDto != null)
                 {
@@ -198,6 +209,56 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     CreatedAt = DateTime.UtcNow
                 };
                 await _cbeContext.ProductionReestimations.AddAsync(reestimation);
+            }
+        }
+        private async Task UpdateAssignedCase(Guid userId, Guid pceAssignmentId, User assignedUser, List<PCECaseAssignmentDto> caseAssignments, bool isReassign, string operationType)
+        {      
+            var updateExistingAssignment = await _cbeContext.PCECaseAssignments
+                .FirstOrDefaultAsync(res => res.Id == pceAssignmentId);
+
+            if (updateExistingAssignment == null)
+                throw new InvalidOperationException("Assignment not found.");
+
+            // Update assignment
+            updateExistingAssignment.Status = "New";
+            updateExistingAssignment.UserId = assignedUser.Id;
+            updateExistingAssignment.AssignmentDate = DateTime.UtcNow;
+
+            // Track assignment for response
+            caseAssignments.Add(_mapper.Map<PCECaseAssignmentDto>(updateExistingAssignment));
+
+            // Get production details
+            var production = await _cbeContext.ProductionCapacities
+                .AsNoTracking()
+                .Where(p => p.Id == updateExistingAssignment.ProductionCapacityId)                
+                .FirstOrDefaultAsync();
+
+            if (production == null)
+                throw new InvalidOperationException("Production not found.");
+
+            // Create and update timeline
+            var pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, operationType);
+            UpdateTimelineDto(production, pceCaseTimeLineDto);
+           
+            // update production 
+            await UpdateProduction(production, assignedUser, operationType);
+
+
+            // Save timeline and assignment changes
+            await _IPCECaseTimeLineService.PCECaseTimeLine(pceCaseTimeLineDto);
+            await _cbeContext.SaveChangesAsync();
+
+            // Prepare notification AFTER DB save
+            var notificationContent = $"PCE {operationType} for Estimation";
+            var notificationType = notificationContent;
+            var link = string.Empty;
+
+            var notification = await _notificationService.AddNotification(
+                assignedUser.Id, notificationContent, notificationType, link);
+
+            if (notification != null)
+            {
+                await _notificationService.SendNotification(notification);
             }
         }
 
