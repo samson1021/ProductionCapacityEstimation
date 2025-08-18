@@ -267,14 +267,26 @@
         document.body.style.opacity = '1';
     }
 
-    function isSameDate(date1, date2) {
+        function isSameDate(date1, date2) {
         return date1.getUTCFullYear() === date2.getUTCFullYear() &&
-            date1.getUTCMonth() === date2.getUTCMonth() &&
-            date1.getUTCDate() === date2.getUTCDate();
+               date1.getUTCMonth() === date2.getUTCMonth() &&
+               date1.getUTCDate() === date2.getUTCDate() &&
+               date1.getUTCHours() === date2.getUTCHours() &&
+               date1.getUTCMinutes() === date2.getUTCMinutes();
     }
 
-    function stripTime(date) {
-        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    // function stripTime(date) {
+    //     return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    // }
+            function stripTime(date) {
+        // Return a new Date without seconds
+        return new Date(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate(),
+            date.getUTCHours(),
+            date.getUTCMinutes()
+        );
     }
 </script>
 
