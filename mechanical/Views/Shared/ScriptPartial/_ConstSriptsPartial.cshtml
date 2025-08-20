@@ -11,251 +11,337 @@
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/toastr/toastr.min.js"></script>
-
 <script>
     $(document).ready(function () {
-        console.log("Document ready initialized");
-
-        // Initialize variables
-        const collateralId = $('#TxtmovId').val();
-        const equipmentId = $('#TxtEquipmentId').val();
-        console.log("Collateral ID:", collateralId);
-        console.log("Equipment ID:", equipmentId);
-
-        // Modal Handlers
-        $('#showCollateralFile').click(() => $('#CollateralFileModal').modal('show'));
-
-        // Comment Box Handlers
-        $('.show-comment-box').click(function() {
-            const modal = $(this).data('target');
-            const fieldId = $(this).data('field-id');
-            const comment = $(this).data('comment') || '';
-
-            $('#comment').val(comment);
-            $(modal)
-                .modal('show')
-                .data('field-id', fieldId)
-                .find('.save-comment, .Replay-comment')
-                .attr('data-field-id', fieldId);
+        $('#showCollateralFile').click(function () {
+            $('#CollateralFileModal').modal('show');
         });
 
-        $('.save-comment').click(submitComment);
-        $('.Replay-comment').click(submitReply);
-
-        // Status Change Buttons
-        $("#checkedButton").click(() => confirmAction("Complete"));
-        $("#saveButton").click(() => sendRequest("saved"));
-        $(".correctionButton").click(() => confirmAction("correction"));
-        $("#btnSaveForResubmiting").click(() => saveReValuation("Save"));
-
-        // Comment Display
-        document.querySelector("#btnComment").addEventListener("click", event => {
-            $('#CommentModal').text(event.target.dataset.comment || 'No comment available');
-        });
-
-        // Core Functions
-        function submitComment() {
-            submitCorrectionData($(this).data('field-id'), '/Correction/Create');
-        }
-
-        function submitReply() {
-            submitCorrectionData($('#CommentBoxModal').data('field-id'), '/Correction/ReplayForCheckerCorrections');
-        }
-
-        function submitCorrectionData(fieldId, endpoint) {
-            if (!fieldId) {
-                toastr.error('Missing field ID');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('CollateralID', collateralId);
-            formData.append('EquipmentId', equipmentId);
-            formData.append('Comment', $('#comment').val());
-            formData.append('CommentedAttribute', fieldId);
-            formData.append('Controller', "ConstMngAgrMachinery");
-            formData.append('Action', "GetEvaluatedconstMngAgriMachinery");
-
+        var CaseId= $('#TxtmovId').val();
+        function LoadCorrectionHistory() {
+            console.log("gebchalew joye");
             $.ajax({
-                url: endpoint,
+               url: '/Collateral/GetCollateralCorrectionHistory?CollateralId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseCorrections = data.caseComments;
+                    var countComments = caseCorrections.length;
+                    $(".CorrectionBage").text(countComments);
+
+                    // Clear previous messages
+                    $('#CorrectionHistoryModal .correctionHistories').empty();
+
+                    if (caseCorrections && caseCorrections.length > 0) {
+                        caseCorrections.forEach(function (comments) {
+                            // Create a card for each comment
+                            var card = $('<div>').addClass('card mb-3 direct-chat-card');
+                            var cardBody = $('<div>').addClass('card-body');
+
+                            // User information and comment details
+                            var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                            GetUserInfo(comments.CommentByUserId).then(username => {
+                                $('<span>').text(username).appendTo(chatName);
+                            });
+
+                            var createdAt = new Date(comments.CreatedAt);
+                            var formattedDate = formatDate(createdAt);
+
+                            var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                            var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                            var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                            var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                            // Append elements to the card body
+                            cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                            card.append(cardBody);
+                            $('#CorrectionHistoryModal .correctionHistories').append(card);
+                        });
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('#CorrectionHistoryModal .correctionHistories').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+
+         function GetUserInfo(Id, callback){
+         return new Promise(function(resolve , reject){
+
+               $.ajax({
+             url: '/UserManagment/GetuserInfos?id=' + Id,
+             method: 'GET',
+             success: function (data) {
+                 var currentUserID = data
+                 // var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                 // var countComment = data.caseComments.length;
+                 ResponseData= currentUserID.Name;
+                                 console.log('An error occurred while retrieving case comments.'+ResponseData);
+               resolve(currentUserID.Name);
+             },
+             error: function () {
+                 console.log('An error occurred while retrieving case comments.');
+                 reject(null);
+             }
+         });
+
+         })
+
+
+     }
+
+     // Call the function to load correction history
+       LoadCorrectionHistory();
+                   function formatDate(date) {
+             var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+             return date.toLocaleString('en-US', options);
+         }
+
+    });
+    //this method is to give comment for maker and change the status of collateral
+    $(document).ready(function () {
+        $('#checkAssessmentForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            console.log(formData);
+            $.ajax({
+                url: $(this).attr('action'),
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
-                    success: function(response) {
-                        // Handle both JSON and redirect responses
-                        if (response === "") { // Empty response indicates Ok() from server
-                            toastr.success('Comment submitted successfully');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 2000);
-                        }
-                        else if (response.success) { // Handle JSON responses if needed
-                            toastr.success(response.message || 'Operation successful');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 2000);
-                        }
-                        else {
-                            // Handle redirect responses if present
-                            if (response.redirectUrl) {
-                                window.location.href = response.redirectUrl;
-                            } else {
-                                toastr.error(response.message || 'Action completed but with unexpected response');
-                            }
-                        }
-                    },
-                error: function(xhr) {
-                    toastr.error('Error: ' + xhr.statusText);
-                    console.error(xhr.responseText);
-                }
-            });
-        }
-
-        function confirmAction(action) {
-            const actionMessages = {
-                'Complete': 'send this evaluation to the Relational Manager',
-                'correction': 'return this for correction',
-                'saved': 'save this evaluation'
-            };
-
-            if (confirm(`Are you sure you want to ${actionMessages[action] || action}?`)) {
-                sendRequest(action);
-            }
-        }
-
-        function sendRequest(action) {
-            $.ajax({
-                url: "/Collateral/changeCollateralStatus",
-                method: "POST",
-                data: { status: action, Id: collateralId },
-                success: function(response) {
-                    if (response.success) {
-                        toastr.success(`Status changed to ${action}`);
-                        setTimeout(() => {
-                            window.location.href = '/CO/Mycases';
-                        }, 2000);
+                success: function (response) {
+                    if (response.redirectUrl) {
+                        $('#CheckAssesmentModal').modal('hide');
+                        window.open(response.redirectUrl, '_blank');
                     } else {
-                        toastr.error(response.message || 'Action failed');
+                        alert('Unexpected response');
                     }
                 },
-                error: function(xhr) {
-                    toastr.error('Error: ' + xhr.statusText);
-                    console.error(xhr.responseText);
+                error: function (xhr, status, error) {
+                    alert('An error occurred: ' + error);
                 }
             });
-        }
+        });
 
-        function saveReValuation(action) {
-            console.log("Saving revaluation...");
+
+        $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.show-comment-box').click(function () {
+                var fieldId = $(this).data('field-id'); // Get the field ID from the button
+                $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
+        });
+
+        $('.save-comment').click(function () {
+            var fieldId = $(this).data('field-id');
+            var comment = $('#comment').val();
+            var collateralId = $('#TxtmovId').val();
+            var EquipmentId = $('#TxtEquipmentId').val();
+
+
+            // Perform your save operation here
+            var formdata = new FormData();
+            formdata.append('CollateralID', collateralId);
+            formdata.append('EquipmentId', EquipmentId);
+            formdata.append('Comment', comment);
+            formdata.append('CommentedAttribute', fieldId);
+
+            var correctionDto = JSON.stringify(formdata);
+            console.log('jsonData ID:', correctionDto);
+
             $.ajax({
-                url: "/MOCase/Mycases",
-                method: "POST",
-                data: { action: action, id: collateralId },
-                success: function(response) {
-                    toastr.success('Revaluation saved successfully');
+                url: '/Correction/Create',
+                type: 'Post',
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    toastr.success('Successfuly Submited Your Comment', 'Success');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 20);
                 },
-                error: function(xhr) {
-                    toastr.error('Failed to save revaluation');
+                error: function (error) {
+                    toastr.error("Failed to Post Correction");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 20);
+                    console.log(error);
                 }
             });
-        }
+        });
+        //this is a method to change the status of a collaterals
 
-    });
-    $(document).ready(function (){
-         const collateralId = $('#TxtmovId').val();
-         const equipmentId = $('#TxtEquipmentId').val();
-     function LoadCorrectionHistory() {
-            console.log("Loading correction history...");
+          $('.Replay-comment').click(function () {
+                var fieldId = $('#CommentBoxModal').data('field-id'); // Get the field ID from the modal
+                var comment = $('#comment').val();
+                var collateralId = $('#TxtmovId').val();
+                var EquipmentId = $('#TxtEquipmentId').val();
 
-            if (!collateralId) {
-                console.error("Collateral ID is missing!");
-                return;
-            }
+                console.log("Field ID: " + fieldId); // Check if it's defined
+                console.log("Comment: " + comment);
 
-            $.ajax({
-                url: '/Collateral/GetCollateralCorrectionHistory',
-                method: 'GET',
-                data: { CollateralId: collateralId },
-                success: function(data) {
-                    renderCorrectionHistory(data);
-                },
-                error: function(xhr) {
-                    console.error('Failed to load correction history');
-                    toastr.error('Failed to load history: ' + xhr.statusText);
-                }
-            });
-        }
+                // Perform your save operation here
+                var formdata = new FormData();
+                formdata.append('CollateralID', collateralId);
+                formdata.append('EquipmentId', EquipmentId);
+                formdata.append('Comment', comment);
+                formdata.append('CommentedAttribute', fieldId);
 
-        function renderCorrectionHistory(data) {
-            const $container = $('#CorrectionHistoryModal .correctionHistories').empty();
-            const countComments = data.caseComments?.length || 0;
-
-            $(".CorrectionBage").text(countComments);
-
-            if (countComments > 0) {
-                data.caseComments.forEach(function(comments) {
-                    const card = $('<div>').addClass('card mb-3 direct-chat-card');
-                    const cardBody = $('<div>').addClass('card-body');
-
-                    const chatName = $('<a>')
-                        .attr('href', '/UserManagment/Profile/' + comments.CommentByUserId)
-                        .addClass('direct-chat-name');
-
-                    GetUserInfo(comments.CommentByUserId).then(username => {
-                        chatName.append($('<span>').text(username));
-                    });
-
-                    const createdAt = new Date(comments.CreatedAt);
-                    const formattedDate = formatDate(createdAt);
-
-                    cardBody.append(
-                        chatName,
-                        $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate),
-                        $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`),
-                        $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`),
-                        $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`)
-                    );
-
-                    card.append(cardBody);
-                    $container.append(card);
-                });
-            } else {
-                $container.append('<div class="no-comments-msg">There are no comments</div>');
-            }
-        }
-
-        function GetUserInfo(userId) {
-            return new Promise((resolve, reject) => {
                 $.ajax({
-                    url: '/UserManagment/GetuserInfos',
-                    method: 'GET',
-                    data: { id: userId },
-                    success: function(data) {
-                        resolve(data?.Name || 'Unknown User');
+                    url: '/Correction/ReplayForCheckerCorrections',
+                    type: 'POST',
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        toastr.success('Successfully Submitted Your Reply', 'Success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
                     },
-                    error: function(xhr) {
-                        console.error('Failed to fetch user info');
-                        resolve('Unknown User');
+                    error: function (error) {
+                        toastr.error("Failed to Post Correction");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                        console.log(error);
                     }
                 });
             });
-        }
 
-        function formatDate(date) {
-            const options = {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            };
-            return date.toLocaleString('en-US', options);
-        }
 
-        // Initial load
-        LoadCorrectionHistory();
 
+        $(document).ready(function () {
+            // Attach click event handlers to the buttons
+            $(".checkedButton").click(function () {
+                if (confirm("Are you sure you want to send this evaluation to the Relational Manager?")) {
+                    sendRequest("Complete");
+                }
+            });
+
+            $("#saveButton").click(function () {
+                sendRequest("saved");
+            });
+
+            $(".correctionButton").click(function () {
+                if (confirm("Are you sure you want to return this evaluation to the Maker?")) {
+                    sendRequest("correction");
+                }
+            });
+            var collateralId = $('#TxtmovId').val();
+            // Function to send the AJAX request
+            function sendRequest(action) {
+                $.ajax({
+                    url: "/Collateral/changeCollateralStatus",
+                    method: "POST",
+                    data: { status: action, Id: collateralId },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success('Successfully Return Your collateral to Maker', 'Success');
+                            // Delay the page refresh by 2 seconds (adjust the delay as needed)
+                            setTimeout(function () {
+                                location.reload();
+                                window.location.href = '/CO/Mycases';
+
+                            }, 20);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error( error);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                    }
+                });
+            }
+        });
     });
+    //this is the script to show the comment of the filed given by Checker
+    document.querySelector("#btnComment").addEventListener("click", event => {
+        var comment = event.target.dataset.comment;
+        //var modal = $('#CommentBoxModal');
+        $('#CommentModal').text(comment);
+        //modal.find('#comment').val(comment);
+        console.log('jsonData ID:', event.target.dataset.comment);
+
+    })
+
+    $(document).ready(function () {
+        $("#btnSaveForResubmiting").click(function (){
+            saveReValuation("Save");
+        })
+        var collateralId = $('#TxtmovId').val();
+        console.log(collateralId);
+        function saveReValuation(action) {
+            $.ajax({
+                Url: "/MOCase/Mycases"
+            })
+        }
+    })
+    function validateKebeleInput(inputElement) {
+        var zoneError = document.getElementById("Kebele-error");
+        var zoneValue = inputElement.value;
+
+        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
+            zoneError.textContent = "Kebele must contain only alphanumeric characters.";
+        } else {
+            zoneError.textContent = ""; // Clear the error message if valid
+        }
+    }
+
+    function LoadComments(){
+        $.ajax({
+            url: '/Correction/GetComment',
+            type: 'get',
+            data: { id: userId }, // Pass the ID as a parameter
+            success: function (data) {
+                // Handle the success scenario
+                toastr.success('Successfully Submitted Your Comment', 'Success');
+                // Show message based on user ID
+                if (userId === 1) {
+                    // Show message for user with ID 1
+                    toastr.info('You are user 1');
+                } else if (userId === 2) {
+                    // Show message for user with ID 2
+                    toastr.info('You are user 2');
+                }
+                setTimeout(function () {
+                    location.reload();
+                }, 20); // Reload the page after a successful response
+            },
+            error: function (error) {
+                // Handle the error scenario
+                toastr.error('Failed to Post Correction');
+                setTimeout(function () {
+                    location.reload();
+                }, 20); // Reload the page after an error response
+                console.log(error);
+            }
+        });
+
+    }
+
 </script>
