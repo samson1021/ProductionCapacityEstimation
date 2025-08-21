@@ -37,10 +37,10 @@
                     {
                         @: { data: null, render: function (data) { return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '"' + ((data.AssignmentStatus !== "New" && data.AssignmentStatus !== "Reestimate") ? ' disabled' : '') + '>'; } },
                     }
-                }                
-                { data: 'PropertyOwner', width: '25%' },
+                }
+                { data: 'PropertyOwner', width: '35%' },
                 { data: 'Role', width: '25%' },
-                { data: 'ProductionType', width: '35%' },
+                { data: 'MachineName', width: '25%' },
                 @* { data: 'CurrentStatus', width: '35%' }, *@
                 { data: 'AssignmentStatus', width: '35%' },
                 {
@@ -80,11 +80,9 @@
                             {
                                 if (status == "New" || status == "All" || status == "Reestimate")
                                 {                                 
-                                    if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.Today)
+                if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.UtcNow.ToLocalTime())
                                     {                           
                                         <text>
-                                        console.log("sdfsdgfdsg", row.AssignedEvaluatorId);
-                                                console.log("sdfsdgfdsg", '@currentUser?.Id');
                                             if (row.AssignedEvaluatorId === '@currentUser?.Id' && row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                                 
                                                 const evaluateUrl = '@Url.Action("Create", "PCEEvaluation")?PCEId=' + data;

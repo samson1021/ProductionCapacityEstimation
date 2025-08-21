@@ -3,279 +3,544 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Encodings.Web;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.IO;
 
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 
 using mechanical.Data;
+using mechanical.Hubs;
 using mechanical.Utils;
 using mechanical.Models;
 using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
-using mechanical.Models.PCE.Dto.PCEEvaluationDto;
-using mechanical.Models.Dto.UploadFileDto;
-using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Enum.PCEEvaluation;
-using mechanical.Services.UploadFileService;
-using mechanical.Services.PCE.PCECaseTimeLineService;
 using mechanical.Models.Dto.Correction;
+using mechanical.Models.Dto.UploadFileDto;
+using mechanical.Models.PCE.Dto.PCEEvaluationDto;
+using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.ProductionCapacityDto;
 using mechanical.Models.PCE.Dto.PCECaseDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
+using mechanical.Services.UploadFileService;
+using mechanical.Services.NotificationService;
+using mechanical.Services.PCE.PCECaseTimeLineService;
 
 namespace mechanical.Services.PCE.PCEEvaluationService
 {
+    /// <summary>
+    /// Service for handling Production Capacity Evaluation (PCE) operations.
+    /// </summary>
     public class PCEEvaluationService : IPCEEvaluationService
     {
-        private readonly CbeContext _cbeContext;
         private readonly IMapper _mapper;
+        private readonly CbeContext _cbeContext;
+        private readonly IHubContext<NotificationHub> _hubContext;
         private readonly ILogger<PCEEvaluationService> _logger;
         private readonly IUploadFileService _UploadFileService;
         private readonly IPCECaseTimeLineService _pceCaseTimeLineService;
-        
-        public PCEEvaluationService(CbeContext context, IMapper mapper, ILogger<PCEEvaluationService> logger, IUploadFileService UploadFileService, IPCECaseTimeLineService PCECaseTimeLineService)
+        private readonly INotificationService _notificationService;
+
+        private const string StatusNew = "New";
+        private const string StatusPending = "Pending";
+        private const string StatusCompleted = "Completed";
+        private const string StatusReturned = "Returned";
+        private const string StatusReestimate = "Reestimate";
+        private const string RoleMakerOfficer = "Maker Officer";
+        private const string RoleMakerTeamLeader = "Maker TeamLeader";
+        private const string RoleMakerManager = "Maker Manager";
+        private const string RoleRelationManager = "Relation Manager";
+
+        public PCEEvaluationService(CbeContext context, IHubContext<NotificationHub> hubContext, IMapper mapper, ILogger<PCEEvaluationService> logger, INotificationService notificationService, IUploadFileService UploadFileService, IPCECaseTimeLineService PCECaseTimeLineService)
         {
-            _cbeContext = context;
-            _mapper = mapper;
-            _logger = logger;
-            _UploadFileService = UploadFileService;
-            _pceCaseTimeLineService = PCECaseTimeLineService;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _cbeContext = context ?? throw new ArgumentNullException(nameof(context));
+            _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
+            _UploadFileService = UploadFileService ?? throw new ArgumentNullException(nameof(UploadFileService));
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _pceCaseTimeLineService = PCECaseTimeLineService ?? throw new ArgumentNullException(nameof(PCECaseTimeLineService));
         }
 
+        /// <summary>
+        /// Creates a new production capacity valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user creating the valuation.</param>
+        /// <param name="Dto">Valuation data transfer object.</param>
+        /// <returns>The created valuation as a DTO.</returns>
+        /// <exception cref="ApplicationException">Thrown when creation fails.</exception>
         public async Task<PCEEvaluationReturnDto> CreateValuation(Guid UserId, PCEEvaluationPostDto Dto)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            if (Dto == null) throw new ArgumentNullException(nameof(Dto));
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
             {
-                // Encode/Sanitize inputs in Dto to avoid unsafe data being saved
                 EncodingHelper.EncodeObject(Dto);
-                // SanitizerHelper.SanitizeObject(Dto)
 
                 var pceEvaluation = _mapper.Map<PCEEvaluation>(Dto);
                 pceEvaluation.Id = Guid.NewGuid();
                 pceEvaluation.EvaluatorId = UserId;
                 pceEvaluation.CreatedBy = UserId;
-                pceEvaluation.CreatedAt = DateTime.Now;
+                pceEvaluation.CreatedAt = DateTime.UtcNow;
 
-                await _cbeContext.PCEEvaluations.AddAsync(pceEvaluation);
+                if (pceEvaluation.ProductionLines != null && pceEvaluation.ProductionLines.Any())
+                {
+                    foreach (var productionLine in pceEvaluation.ProductionLines)
+                    {
+                        productionLine.PCEEvaluationId = pceEvaluation.Id;
 
-                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId);
+                        if (productionLine.ProductionLineInputs != null && productionLine.ProductionLineInputs.Any())
+                        {
+                            foreach (var input in productionLine.ProductionLineInputs)
+                            {
+                                input.ProductionLineId = productionLine.Id;
+                            }
+                        }
+                    }
+                }
 
-                await HandleFileUploads(UserId, Dto.SupportingEvidences, "Supporting Evidence", pce.PCECaseId, pceEvaluation.Id);
-                await HandleFileUploads(UserId, Dto.ProductionProcessFlowDiagrams, "Production Process Flow Diagram", pce.PCECaseId, pceEvaluation.Id);
-                await UpdatePCEStatus(pce, "Pending", "Maker Officer");
-                await UpdateCaseAssignmentStatus(pce.Id, pceEvaluation.EvaluatorId, "Pending");
-                await LogPCECaseTimeline(pce, "Production valuation is created and pending.");
+                await _cbeContext.PCEEvaluations.AddAsync(pceEvaluation).ConfigureAwait(false);
 
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                var pce = await _cbeContext.ProductionCapacities.FindAsync(pceEvaluation.PCEId).ConfigureAwait(false);
+
+                if (pce == null)
+                {
+                    _logger.LogError("ProductionCapacity not found for PCEId: {PCEId} in CreateValuation", pceEvaluation.PCEId);
+                    throw new KeyNotFoundException("ProductionCapacity not found.");
+                }
+                pce.MachineName = Dto.MachineName;
+                pce.CountryOfOrigin = Dto.CountryOfOrigin;
+                _cbeContext.ProductionCapacities.Update(pce);
+
+                await HandleFileUploads(UserId, new List<IFormFile> { Dto.WitnessForm }, "Witness Form", pce.PCECaseId, pceEvaluation.Id).ConfigureAwait(false);
+                await HandleFileUploads(UserId, Dto.SupportingEvidences, "Supporting Evidence", pce.PCECaseId, pceEvaluation.Id).ConfigureAwait(false);
+                await HandleFileUploads(UserId, Dto.ProductionProcessFlowDiagrams, "Production Process Flow Diagram", pce.PCECaseId, pceEvaluation.Id).ConfigureAwait(false);
+
+                await UpdatePCEStatus(pce, StatusPending, RoleMakerOfficer).ConfigureAwait(false);
+                await UpdateCaseAssignmentStatus(pce.Id, pceEvaluation.EvaluatorId, StatusPending).ConfigureAwait(false);
+                await LogPCECaseTimeline(pce, $"Production valuation for {Dto.MachineName} is created and pending.").ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error creating production capacity valuation. UserId: {UserId}, Dto: {@Dto}", UserId, Dto);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while creating production capacity valuation.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating production capacity valuation");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while creating production capacity valuation.");
-            }            
+                _logger.LogError(ex, "Error creating production capacity valuation. UserId: {UserId}, Dto: {@Dto}", UserId, Dto);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error creating production capacity valuation.", ex);
+            }
         }
 
+        /// <summary>
+        /// Updates an existing production capacity valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user updating the valuation.</param>
+        /// <param name="Id">Valuation ID.</param>
+        /// <param name="Dto">Update DTO.</param>
+        /// <returns>The updated valuation as a DTO.</returns>
+        /// <exception cref="ApplicationException">Thrown when update fails.</exception>
         public async Task<PCEEvaluationReturnDto> UpdateValuation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            if (Dto == null) throw new ArgumentNullException(nameof(Dto));
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
             {
-                var pceEvaluation = await FindValuation(Id);
+                EncodingHelper.EncodeObject(Dto);
+
+                var pceEvaluation = await FindValuation(Id).ConfigureAwait(false);
                 _mapper.Map(Dto, pceEvaluation);
                 pceEvaluation.UpdatedBy = UserId;
-                pceEvaluation.UpdatedAt = DateTime.Now;
+                pceEvaluation.UpdatedAt = DateTime.UtcNow;
 
-                var filesToDelete = await GetFilesToDelete(FileIds: Dto.DeletedFileIds);
-                var filePathsToDelete = await GetFilePathsToDelete(filesToDelete);
+                if (Dto.NewWitnessForm != null)
+                {
+                    await HandleFileUploads(UserId, new List<IFormFile> { Dto.NewWitnessForm }, "Witness Form", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id).ConfigureAwait(false);
 
-                await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
-                await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id);
-                await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is updated.");
+                    if (Dto.WitnessForm != null)
+                    {
+                        Dto.DeletedFileIds ??= new List<Guid>();
+                        if (!Dto.DeletedFileIds.Contains(Dto.WitnessForm.Id))
+                        {
+                            Dto.DeletedFileIds.Add(Dto.WitnessForm.Id);
+                        }
+                    }
+                }
+                else if (Dto.WitnessForm != null && Dto.DeletedFileIds?.Contains(Dto.WitnessForm.Id) == true)
+                {
+                    Dto.DeletedFileIds.Remove(Dto.WitnessForm.Id);
+                }
 
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                var filesToDelete = await GetFilesToDelete(FileIds: Dto.DeletedFileIds).ConfigureAwait(false);
+                var filePathsToDelete = await GetFilePathsToDelete(filesToDelete).ConfigureAwait(false);
 
-                await DeleteFiles(filePathsToDelete);
+                await HandleFileUploads(UserId, Dto.NewSupportingEvidences, "Supporting Evidence", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id).ConfigureAwait(false);
+                await HandleFileUploads(UserId, Dto.NewProductionProcessFlowDiagrams, "Production Process Flow Diagram", pceEvaluation.PCE.PCECaseId, pceEvaluation.Id).ConfigureAwait(false);
+                await LogPCECaseTimeline(pceEvaluation.PCE, $"Production valuation for {pceEvaluation.MachineName} is updated.").ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
+
+                await DeleteFiles(filePathsToDelete).ConfigureAwait(false);
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
             }
-
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error updating production capacity valuation. UserId: {UserId}, Id: {Id}, Dto: {@Dto}", UserId, Id, Dto);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while updating production capacity valuation.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating production capacity valuation");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while updating production capacity valuation.");
+                _logger.LogError(ex, "Error updating production capacity valuation. UserId: {UserId}, Id: {Id}, Dto: {@Dto}", UserId, Id, Dto);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error updating production capacity valuation.", ex);
             }
         }
 
+        /// <summary>
+        /// Deletes a production capacity valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user deleting the valuation.</param>
+        /// <param name="Id">Valuation ID.</param>
+        /// <returns>True if deleted successfully.</returns>
+        /// <exception cref="ApplicationException">Thrown when deletion fails.</exception>
         public async Task<bool> DeleteValuation(Guid UserId, Guid Id)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
             {
-                var pceEvaluation = await FindValuation(Id);
+                var pceEvaluation = await FindValuation(Id).ConfigureAwait(false);
 
                 _cbeContext.PCEEvaluations.Remove(pceEvaluation);
 
-                var previousValuation = await _cbeContext.PCEEvaluations.Where(res => res.PCEId == pceEvaluation.PCEId && res != pceEvaluation).ToListAsync();
-                var currentStatus = previousValuation.Any() ? "Reestimate" : "New";
+                var previousValuation = await _cbeContext.PCEEvaluations
+                                                    .Where(res => res.PCEId == pceEvaluation.PCEId && res != pceEvaluation)
+                                                    .ToListAsync().ConfigureAwait(false);
 
-                await UpdatePCEStatus(pceEvaluation.PCE, currentStatus, "Maker Officer");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, "New");
-                await LogPCECaseTimeline(pceEvaluation.PCE, "The current production valuation is retracted.");
-                
-                var filesToDelete = await GetFilesToDelete(PCEEId: pceEvaluation.Id);
-                var filePathsToDelete = await GetFilePathsToDelete(filesToDelete);
+                var currentStatus = previousValuation.Any() ? StatusReestimate : StatusNew;
 
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await UpdatePCEStatus(pceEvaluation.PCE, currentStatus, RoleMakerOfficer).ConfigureAwait(false);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCE.Id, pceEvaluation.EvaluatorId, StatusNew).ConfigureAwait(false);
+                await LogPCECaseTimeline(pceEvaluation.PCE, $"The current production valuation for {pceEvaluation.MachineName} is retracted.").ConfigureAwait(false);
 
-                await DeleteFiles(filePathsToDelete);
+                var filesToDelete = await GetFilesToDelete(PCEEvaluationId: pceEvaluation.Id).ConfigureAwait(false);
+                var filePathsToDelete = await GetFilePathsToDelete(filesToDelete).ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
+
+                await DeleteFiles(filePathsToDelete).ConfigureAwait(false);
 
                 return true;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error deleting production capacity valuation. UserId: {UserId}, Id: {Id}", UserId, Id);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while deleting production capacity valuation.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting production capacity valuation");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while deleting production capacity valuation.");
+                _logger.LogError(ex, "Error deleting production capacity valuation. UserId: {UserId}, Id: {Id}", UserId, Id);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error deleting production capacity valuation.", ex);
             }
         }
 
+        /// <summary>
+        /// Marks a valuation as completed and updates statuses accordingly.
+        /// </summary>
+        /// <param name="UserId">ID of the user completing the valuation.</param>
+        /// <param name="Id">Valuation ID.</param>
+        /// <returns>True if completed successfully.</returns>
+        /// <exception cref="ApplicationException">Thrown when completion fails.</exception>
         public async Task<bool> CompleteValuation(Guid UserId, Guid Id)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
             {
-                var pceEvaluation = await FindValuation(Id);
+                var pceEvaluation = await FindValuation(Id).ConfigureAwait(false);
+                pceEvaluation.CompletedAt = DateTime.UtcNow;
 
-                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Completed", DateTime.Now);
-                await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");
-                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE.PCECase);
-                await LogPCECaseTimeline(pceEvaluation.PCE, "Production valuation is completed and sent to Relation Manager.");
+                await UpdatePCEStatus(pceEvaluation.PCE, StatusCompleted, RoleRelationManager).ConfigureAwait(false);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, StatusCompleted, DateTime.UtcNow).ConfigureAwait(false);
 
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                string logNotification = $"Valuation for Production {pceEvaluation.MachineName} is completed and sent to Relation Manager {pceEvaluation.PCE.CreatedBy.Name}.";
+                await UpdatePCECaseAssignmentStatusForAll(pceEvaluation.PCE, UserId, StatusCompleted, logNotification).ConfigureAwait(false);
+                await LogPCECaseTimeline(pceEvaluation.PCE, logNotification).ConfigureAwait(false);
+                await UpdatePCECaseStatusIfAllCompleted(pceEvaluation.PCE).ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
                 return true;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error evaluating production capacity. UserId: {UserId}, Id: {Id}", UserId, Id);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while evaluating production capacity.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error evaluating production capacity.");
-                await transaction.RollbackAsync();
-                throw new Exception(ex.Message);
-                throw new ApplicationException("An error occurred while evaluating production capacity.");
+                _logger.LogError(ex, "Error evaluating production capacity. UserId: {UserId}, Id: {Id}", UserId, Id);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error evaluating production capacity.", ex);
             }
         }
 
+        /// <summary>
+        /// Returns a valuation as inadequate and updates statuses accordingly.
+        /// </summary>
+        /// <param name="UserId">ID of the user returning the valuation.</param>
+        /// <param name="Dto">Return DTO.</param>
+        /// <returns>True if returned successfully.</returns>
+        /// <exception cref="ApplicationException">Thrown when return fails.</exception>
         public async Task<bool> ReturnValuation(Guid UserId, ReturnedProductionPostDto Dto)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            if (Dto == null) throw new ArgumentNullException(nameof(Dto));
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
             {
+                EncodingHelper.EncodeObject(Dto);
+
                 var returnPCE = _mapper.Map<ReturnedProduction>(Dto);
                 returnPCE.ReturnedById = UserId;
-                returnPCE.ReturnedAt = DateTime.Now;
+                returnPCE.ReturnedAt = DateTime.UtcNow;
 
-                await _cbeContext.ReturnedProductions.AddAsync(returnPCE);
+                await _cbeContext.ReturnedProductions.AddAsync(returnPCE).ConfigureAwait(false);
 
-                var pce = await _cbeContext.ProductionCapacities.FindAsync(Dto.PCEId);
+                var pce = await _cbeContext.ProductionCapacities.Include(p => p.CreatedBy).FirstOrDefaultAsync(p => p.Id == Dto.PCEId).ConfigureAwait(false);
 
-                await UpdatePCEStatus(pce, "Returned", "Relation Manager");
-                await UpdateCaseAssignmentStatus(Dto.PCEId, UserId, "Returned");
-                await UpdatePCECaseAssignemntStatusForAll(pce, UserId, "Returned");
-                await LogPCECaseTimeline(pce, "PCE is returned as inadequate for evaluation and returned to Relation Manager for correction.");
-                
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                if (pce == null)
+                {
+                    _logger.LogError("ProductionCapacity not found for PCEId: {PCEId} in ReturnValuation", Dto.PCEId);
+                    throw new KeyNotFoundException("ProductionCapacity not found.");
+                }
+
+                await UpdatePCEStatus(pce, StatusReturned, RoleRelationManager).ConfigureAwait(false);
+                await UpdateCaseAssignmentStatus(pce.Id, UserId, StatusReturned).ConfigureAwait(false);
+
+                string logNotification = $"The Production {pce.MachineName} is returned as inadequate for valuation and returned to Relation Manager {pce.CreatedBy.Name} for correction.";
+                await UpdatePCECaseAssignmentStatusForAll(pce, UserId, StatusReturned, logNotification).ConfigureAwait(false);
+                await LogPCECaseTimeline(pce, logNotification).ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
                 return true;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error returning production capacity. UserId: {UserId}, Dto: {@Dto}", UserId, Dto);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while returning production capacity.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error returning production capacity valuation");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while returning production capacity valuation.");
+                _logger.LogError(ex, "Error returning production capacity. UserId: {UserId}, Dto: {@Dto}", UserId, Dto);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error returning production capacity.", ex);
             }
-        } 
-
-        public async Task<bool> HandleRemark(Guid UserId, Guid PCEId, String RemarkType, CreateFileDto FileDto, Guid EvaluatorId)
+        }
+        /// <summary>
+        /// Resends a returned production capacity for valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user resending the valuation.</param>
+        /// <param name="PCEId">Production capacity ID to resend.</param>
+        /// <returns>True if resent successfully.</returns>
+        /// <exception cref="ApplicationException">Thrown when resend fails.</exception>
+        public async Task<bool> ResendValuation(Guid UserId, Guid PCEId)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            return await ResendValuations(UserId, new List<Guid> { PCEId }).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Resends one or more returned production capacities for valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user resending the valuation(s).</param>
+        /// <param name="PCEIds">List of production capacity IDs to resend.</param>
+        /// <returns>True if all resent successfully.</returns>
+        /// <exception cref="ApplicationException">Thrown when resend fails.</exception>
+        public async Task<bool> ResendValuations(Guid UserId, IEnumerable<Guid> PCEIds)
+        {
+            if (PCEIds == null || !PCEIds.Any())
+                throw new ArgumentException("No Production Capacity IDs provided.", nameof(PCEIds));
+
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
-            {             
+            {
+                foreach (var PCEId in PCEIds)
+                {
+                    var pce = await _cbeContext.ProductionCapacities.FirstOrDefaultAsync(p => p.Id == PCEId).ConfigureAwait(false);
+                    var returnedPCE = await _cbeContext.ReturnedProductions
+                                                        .Include(p => p.ReturnedBy)
+                                                            .ThenInclude(u => u.Role)
+                                                        .Where(p => p.PCEId.Equals(PCEId))
+                                                        .OrderByDescending(p => p.ReturnedAt)
+                                                        .FirstOrDefaultAsync()
+                                                        .ConfigureAwait(false);
+                    if (pce == null)
+                    {
+                        _logger.LogError("ProductionCapacity not found for Id: {PCEId} in ResendValuations", PCEId);
+                        throw new KeyNotFoundException($"ProductionCapacity not found for Id: {PCEId}.");
+                    }
+
+                    pce.UpdatedById = UserId;
+                    pce.UpdatedAt = DateTime.UtcNow;
+
+                    await UpdatePCEStatus(pce, StatusNew, RoleMakerOfficer).ConfigureAwait(false);
+                    await UpdateCaseAssignmentStatus(pce.Id, returnedPCE.ReturnedById, StatusNew).ConfigureAwait(false);
+
+                    string logNotification = $"The production {pce.MachineName} is resent to {returnedPCE.ReturnedBy?.Role?.Name} {returnedPCE.ReturnedBy?.Name} for valuation.";
+                    await SendNotificationAsync(returnedPCE.ReturnedById, logNotification, "Valuation", $"/ProductionCapacity/Detail/{pce.Id}").ConfigureAwait(false);
+                    await UpdatePCECaseAssignmentStatusForAll(pce, returnedPCE.ReturnedById, StatusPending, logNotification).ConfigureAwait(false);
+                    await LogPCECaseTimeline(pce, logNotification).ConfigureAwait(false);
+                }
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
+
+                return true;
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error resending production capacities for valuation. UserId: {UserId}, PCEIds: {@PCEIds}", UserId, PCEIds);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while resending production capacities for valuation.", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending production capacities for valuation. UserId: {UserId}, PCEIds: {@PCEIds}", UserId, PCEIds);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error resending production capacities for valuation.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Handles a remark for a production capacity valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user handling the remark.</param>
+        /// <param name="PCEId">Production capacity ID.</param>
+        /// <param name="RemarkType">Type of remark.</param>
+        /// <param name="FileDto">File DTO for the remark.</param>
+        /// <returns>True if handled successfully.</returns>
+        /// <exception cref="ApplicationException">Thrown when handling fails.</exception>
+        public async Task<bool> HandleRemark(Guid UserId, Guid PCEId, String RemarkType, CreateFileDto FileDto)
+        {
+            if (FileDto == null) throw new ArgumentNullException(nameof(FileDto));
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
+            try
+            {
                 var currentStatus = RemarkType == "Verfication" ? "Remark Verfication" : "Remark Justfication";
-            
-                var pce = await _cbeContext.ProductionCapacities.FindAsync(PCEId);
+
+                var pce = await _cbeContext.ProductionCapacities.Include(p => p.AssignedEvaluator).FirstOrDefaultAsync(p => p.Id == PCEId).ConfigureAwait(false);
+                if (pce == null)
+                {
+                    _logger.LogError("ProductionCapacity not found for Id: {PCEId} in HandleRemark", PCEId);
+                    throw new KeyNotFoundException("ProductionCapacity not found.");
+                }
 
                 if (FileDto.File != null)
                 {
                     FileDto.CaseId = pce.PCECaseId;
-                    await _UploadFileService.CreateUploadFile(UserId, FileDto);
+                    await _UploadFileService.CreateUploadFile(UserId, FileDto).ConfigureAwait(false);
                 }
-                await UpdatePCEStatus(pce, currentStatus, "Maker Officer");                
-                await UpdateCaseAssignmentStatus(pce.Id, EvaluatorId, "Remark Handled", DateTime.Now);
-                await LogPCECaseTimeline(pce, "Production Valuation is handled by Maker Officer.");
-                
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+
+                await UpdatePCEStatus(pce, currentStatus, RoleMakerOfficer).ConfigureAwait(false);
+                await UpdateCaseAssignmentStatus(pce.Id, pce.AssignedEvaluatorId, "Remark Handled", DateTime.UtcNow).ConfigureAwait(false);
+                await LogPCECaseTimeline(pce, $"The remark for the Production Valuation {pce.MachineName} is handled by Maker Officer {pce.AssignedEvaluator.Name}.").ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
                 return true;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error handling production capacity valuation. UserId: {UserId}, PCEId: {PCEId}, RemarkType: {RemarkType}", UserId, PCEId, RemarkType);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while handling production capacity valuation.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error handling production capacity valuation");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while handling production capacity valuation.");
+                _logger.LogError(ex, "Error handling production capacity valuation. UserId: {UserId}, PCEId: {PCEId}, RemarkType: {RemarkType}", UserId, PCEId, RemarkType);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error handling production capacity valuation.", ex);
             }
         }
 
-        public async Task<PCEEvaluationReturnDto> ReleaseRemark(Guid UserId, Guid Id, String Remark, Guid EvaluatorId)
+        /// <summary>
+        /// Releases a remark for a production capacity valuation.
+        /// </summary>
+        /// <param name="UserId">ID of the user releasing the remark.</param>
+        /// <param name="Id">Valuation ID.</param>
+        /// <param name="Remark">Remark text.</param>
+        /// <returns>The updated valuation as a DTO.</returns>
+        /// <exception cref="ApplicationException">Thrown when release fails.</exception>
+        public async Task<PCEEvaluationReturnDto> ReleaseRemark(Guid UserId, Guid Id, String Remark)
         {
-            using var transaction = await _cbeContext.Database.BeginTransactionAsync();
+            using var transaction = await _cbeContext.Database.BeginTransactionAsync().ConfigureAwait(false);
             try
-            {             
-                var pceEvaluation = await FindValuation(Id);       
+            {
+                var pceEvaluation = await FindValuation(Id).ConfigureAwait(false);
                 pceEvaluation.Remark = Remark;
                 _cbeContext.Update(pceEvaluation);
 
-                await UpdatePCEStatus(pceEvaluation.PCE, "Completed", "Relation Manager");          
-                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.Now); 
-                await UpdatePCECaseAssignemntStatusForAll(pceEvaluation.PCE, UserId, "Completed");     
-                await LogPCECaseTimeline(pceEvaluation.PCE, "Production Valuation is realesed to Relation Manager.");
-                
-                await _cbeContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await UpdatePCEStatus(pceEvaluation.PCE, StatusCompleted, RoleRelationManager).ConfigureAwait(false);
+                await UpdateCaseAssignmentStatus(pceEvaluation.PCEId, UserId, "Remark Released", DateTime.UtcNow).ConfigureAwait(false);
+
+                string logNotification = $"The Production Valuation for {pceEvaluation.MachineName} is realesed to Relation Manager {pceEvaluation.PCE.CreatedBy.Name}.";
+                await UpdatePCECaseAssignmentStatusForAll(pceEvaluation.PCE, UserId, StatusCompleted, logNotification).ConfigureAwait(false);
+                await LogPCECaseTimeline(pceEvaluation.PCE, logNotification).ConfigureAwait(false);
+
+                await _cbeContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
                 return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
-                // return true;
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error releasing production capacity valuation. UserId: {UserId}, Id: {Id}", UserId, Id);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new ApplicationException("An error occurred while releasing production capacity valuation.", ex);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error releasing production capacity valuation");
-                await transaction.RollbackAsync();
-                throw new ApplicationException("An error occurred while releasing production capacity valuation.");
+                _logger.LogError(ex, "Error releasing production capacity valuation. UserId: {UserId}, Id: {Id}", UserId, Id);
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                throw new Exception("Error releasing production capacity valuation.", ex);
             }
         }
 
         private async Task<PCEEvaluation> FindValuation(Guid Id)
         {
             var pceEvaluation = await _cbeContext.PCEEvaluations
-                                                .Include(pce => pce.ShiftHours)
-                                                .Include(pce => pce.TimeConsumedToCheck)
-                                                .Include(pce => pce.PCE)
+                                                .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.Justifications)
+                                                .Include(e => e.ProductionLines)
+                                                    .ThenInclude(pl => pl.ProductionLineInputs)
+                                                .Include(e => e.Evaluator)
+                                                .Include(e => e.PCE)
+                                                    .ThenInclude(pc => pc.CreatedBy)
+                                                .Include(e => e.PCE)
                                                     .ThenInclude(pc => pc.PCECase)
-                                                        .ThenInclude(p=> p.ProductionCapacities)
-                                                .FirstOrDefaultAsync(pce => pce.Id == Id);                
-            
+                                                .FirstOrDefaultAsync(pce => pce.Id == Id)
+                                                .ConfigureAwait(false);
+
             if (pceEvaluation == null)
             {
                 _logger.LogWarning("Production capacity valuation with Id: {Id} not found", Id);
@@ -285,47 +550,54 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             return pceEvaluation;
         }
 
-        private async Task HandleFileUploads(Guid UserId, ICollection<IFormFile> Files, string Category, Guid PCECaseId, Guid PCEEId)
+        private async Task HandleFileUploads(Guid UserId, List<IFormFile> Files, string Category, Guid PCECaseId, Guid PCEEvaluationId)
         {
             if (Files != null && Files.Any())
             {
                 foreach (var file in Files)
                 {
+                    if (file == null)
+                    {
+                        _logger.LogWarning("Null file encountered in HandleFileUploads for category {Category}, PCECaseId {PCECaseId}, PCEEvaluationId {PCEEvaluationId}", Category, PCECaseId, PCEEvaluationId);
+                        throw new ArgumentNullException(nameof(file), "File cannot be null in HandleFileUploads.");
+                    }
+
                     var fileDto = new CreateFileDto
                     {
-                        File = file ?? throw new ArgumentNullException(nameof(file)),
-                        Catagory = Category,
+                        File = file,
+                        Category = Category,
                         CaseId = PCECaseId,
-                        CollateralId = PCEEId
+                        CollateralId = PCEEvaluationId
                     };
 
-                    await _UploadFileService.CreateUploadFile(UserId, fileDto);
+                    await _UploadFileService.CreateUploadFile(UserId, fileDto).ConfigureAwait(false);
                 }
             }
         }
 
-        private async Task<ICollection<UploadFile>> GetFilesToDelete(Guid? PCEEId = null, string? FileIds = null)
+        private async Task<List<UploadFile>> GetFilesToDelete(Guid? PCEEvaluationId = null, List<Guid>? FileIds = null)
         {
-            ICollection<UploadFile> filesToDelete = null;
-            
-            if (PCEEId != null)
+            List<UploadFile> filesToDelete = null;
+
+            if (PCEEvaluationId != null)
             {
-                filesToDelete = await _cbeContext.UploadFiles.Where(file => file.CollateralId == PCEEId).ToListAsync();
+                filesToDelete = await _cbeContext.UploadFiles.Where(file => file.CollateralId == PCEEvaluationId).ToListAsync().ConfigureAwait(false);
             }
-            else if (!string.IsNullOrEmpty(FileIds))
+            else if (FileIds != null)
             {
-                var fileGuids = FileIds.Split(',').Select(Guid.Parse).ToList();
-                filesToDelete = await _cbeContext.UploadFiles.Where(file => fileGuids.Contains(file.Id)).ToListAsync();        
+                var fileGuids = FileIds.ToList();
+                filesToDelete = await _cbeContext.UploadFiles.Where(file => fileGuids.Contains(file.Id)).ToListAsync().ConfigureAwait(false);
             }
-            
+
             return filesToDelete;
         }
 
-        private async Task<List<string>> GetFilePathsToDelete(ICollection<UploadFile> FilesToDelete)
-        {      
+        private async Task<List<string>> GetFilePathsToDelete(List<UploadFile> FilesToDelete)
+        {
             var filePaths = new List<string>();
 
-            if (FilesToDelete != null){                    
+            if (FilesToDelete != null)
+            {
                 foreach (var file in FilesToDelete)
                 {
                     if (File.Exists(file.Path))
@@ -333,9 +605,9 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                         filePaths.Add(file.Path);
                     }
                 }
-                _cbeContext.UploadFiles.RemoveRange(FilesToDelete); 
+                _cbeContext.UploadFiles.RemoveRange(FilesToDelete);
             }
-            
+
             return filePaths;
         }
 
@@ -350,54 +622,103 @@ namespace mechanical.Services.PCE.PCEEvaluationService
             }
         }
 
-        private async Task UpdatePCEStatus(ProductionCapacity PCE, string Status, string Stage)
+        private async Task UpdatePCEStatus(ProductionCapacity Production, string Status, string Stage)
         {
-            PCE.CurrentStage = Stage;
-            PCE.CurrentStatus = Status;
-            _cbeContext.ProductionCapacities.Update(PCE);
+            if (Production == null) throw new ArgumentNullException(nameof(Production));
+            Production.CurrentStage = Stage;
+            Production.CurrentStatus = Status;
+            _cbeContext.ProductionCapacities.Update(Production);
         }
 
-        private async Task UpdatePCECaseStatusIfAllCompleted(PCECase PCECase)
-        {            
-            // await _cbeContext.Entry(PCECase).Collection(p => p.ProductionCapacities).LoadAsync();
-            var allCompleted = PCECase?.ProductionCapacities?.All(pc => pc.CurrentStatus == "Completed")?? false;
+        /// <summary>
+        /// Updates the PCE case status if all production capacities are completed.
+        /// </summary>
+        /// <param name="Production">Production capacity entity.</param>
+        private async Task UpdatePCECaseStatusIfAllCompleted(ProductionCapacity Production)
+        {
+            if (Production == null) throw new ArgumentNullException(nameof(Production));
+            var caseInfo = await _cbeContext.PCECases
+                                            .Where(p => p.Id == Production.PCECaseId)
+                                            .Select(p => new
+                                            {
+                                                HasCapacities = p.ProductionCapacities.Any(),
+                                                AllOthersCompleted = p.ProductionCapacities
+                                                .Where(pc => pc.Id != Production.Id)
+                                                .All(pc => pc.CurrentStatus == StatusCompleted)
+                                            })
+                                            .FirstOrDefaultAsync().ConfigureAwait(false);
 
-            if (allCompleted)
+            if (caseInfo?.HasCapacities == true && caseInfo.AllOthersCompleted)
             {
-                PCECase.Status = "Completed";
-                PCECase.CompletedAt = DateTime.Now;
-                _cbeContext.PCECases.Update(PCECase);
+                await _cbeContext.PCECases
+                    .Where(p => p.Id == Production.PCECaseId)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(p => p.Status, StatusCompleted)
+                        .SetProperty(p => p.CompletedAt, DateTime.UtcNow)).ConfigureAwait(false);
             }
         }
-        
-        private async Task UpdatePCECaseAssignemntStatusForAll(ProductionCapacity PCE, Guid UserId, string Status = "Completed")
+
+        /// <summary>
+        /// Updates the assignment status for all relevant users in the PCE case.
+        /// </summary>
+        /// <param name="Production">Production capacity entity.</param>
+        /// <param name="UserId">User ID.</param>
+        /// <param name="Status">Status to set.</param>
+        /// <param name="notification">Notification message.</param>
+        private async Task UpdatePCECaseAssignmentStatusForAll(ProductionCapacity Production, Guid? UserId, string Status = StatusCompleted, string notification = null)
         {
-            if (PCE.CreatedById != null)
-            {                
-                await UpdateCaseAssignmentStatus(PCE.Id, PCE.CreatedById, Status);
-            }
-            var MOUser = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == UserId);
-            var MOSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOUser.SupervisorId);
-            
-            await UpdateCaseAssignmentStatus(PCE.Id, MOSupervisor.Id, Status);  
-            
-            if (MOSupervisor.Role.Name == "Maker TeamLeader")
+            if (UserId == null || Production == null)
+                return;
+
+            // Update assignment for the creator if available
+            if (Production.CreatedById != null)
             {
-                var MTLSupervisor = _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefault(res => res.Id == MOSupervisor.SupervisorId);
-                if(MTLSupervisor != null)
+                await UpdateCaseAssignmentStatus(Production.Id, Production.CreatedById, Status).ConfigureAwait(false);
+                if (Status != StatusPending && notification != null)
                 {
-                    await UpdateCaseAssignmentStatus(PCE.Id, MTLSupervisor.Id, Status);
+                    await SendNotificationAsync(Production.CreatedById, notification, "Valuation", $"/ProductionCapacity/Detail/{Production.Id}").ConfigureAwait(false);
                 }
-        
-            }  
+            }
+
+            // Load user with role and supervisor in a single query
+            var user = await _cbeContext.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == UserId).ConfigureAwait(false);
+
+            if (user?.Role?.Name == RoleMakerTeamLeader || user?.Role?.Name == RoleMakerOfficer)
+            {
+                // Load supervisor with role
+                var supervisor = await _cbeContext.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == user.SupervisorId).ConfigureAwait(false);
+
+                if (supervisor != null)
+                {
+                    await UpdateCaseAssignmentStatus(Production.Id, supervisor.Id, Status).ConfigureAwait(false);
+                    if (notification != null)
+                        await SendNotificationAsync(supervisor.Id, notification, "Valuation", $"/ProductionCapacity/Detail/{Production.Id}").ConfigureAwait(false);
+
+                    if (supervisor.Role?.Name == RoleMakerTeamLeader)
+                    {
+                        // Load super supervisor with role
+                        var superSupervisor = await _cbeContext.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == supervisor.SupervisorId).ConfigureAwait(false);
+
+                        if (superSupervisor != null)
+                        {
+                            await UpdateCaseAssignmentStatus(Production.Id, superSupervisor.Id, Status).ConfigureAwait(false);
+                            if (notification != null)
+                                await SendNotificationAsync(superSupervisor.Id, notification, "Valuation", $"/ProductionCapacity/Detail/{Production.Id}").ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
         }
 
         private async Task UpdateCaseAssignmentStatus(Guid PCEId, Guid? UserId, string Status, DateTime? CompletedAt = null)
         {
+            if (UserId == null || PCEId == null)
+                return;
             var assignment = await _cbeContext.PCECaseAssignments
                                                 .Where(pca => pca.ProductionCapacityId == PCEId && pca.UserId == UserId)
                                                 .OrderByDescending(pca => pca.AssignmentDate)
-                                                .FirstOrDefaultAsync();
+                                                .FirstOrDefaultAsync().ConfigureAwait(false);
+
             if (assignment != null)
             {
                 assignment.Status = Status;
@@ -408,26 +729,41 @@ namespace mechanical.Services.PCE.PCEEvaluationService
 
         private async Task LogPCECaseTimeline(ProductionCapacity Production, string Activity)
         {
-            await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+            if (Production != null)
             {
-                Activity = $"<strong class=\"text-info\">{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}.",
-                CurrentStage = Production.CurrentStage,
-                PCECaseId = Production.PCECaseId
-            });
+                await _pceCaseTimeLineService.PCECaseTimeLine(new PCECaseTimeLinePostDto
+                {
+                    // Activity = $"<strong class=\"text-info\">{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}.",
+                    Activity = $"<strong>{HtmlEncoder.Default.Encode(Activity)}</strong><br><i class='text-purple'>Property Owner:</i> {HtmlEncoder.Default.Encode(Production.PropertyOwner)}. &nbsp; <i class='text-purple'>Role:</i> {HtmlEncoder.Default.Encode(Production.Role)}.",
+                    CurrentStage = Production.CurrentStage,
+                    PCECaseId = Production.PCECaseId
+                }).ConfigureAwait(false);
+            }
         }
 
         ///////// PCE Evaluation //////////////
+
+        /// <summary>
+        /// Gets a production capacity valuation by its ID.
+        /// </summary>
+        /// <param name="UserId">User ID.</param>
+        /// <param name="Id">Valuation ID.</param>
+        /// <returns>The valuation as a DTO.</returns>
         public async Task<PCEEvaluationReturnDto> GetValuation(Guid UserId, Guid Id)
         {
             try
             {
                 var pceEvaluation = await _cbeContext.PCEEvaluations
                                                 .AsNoTracking()
-                                                .Include(e => e.ShiftHours)
                                                 .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.Justifications)
+                                                .Include(e => e.ProductionLines)
+                                                    .ThenInclude(pl => pl.ProductionLineInputs)
+                                                .Include(e => e.Evaluator)
                                                 .Include(e => e.PCE)
-                                                    .ThenInclude(e => e.PCECase)
-                                                .FirstOrDefaultAsync(e => e.Id == Id);
+                                                    .ThenInclude(pc => pc.PCECase)
+                                                .FirstOrDefaultAsync(e => e.Id == Id)
+                                                .ConfigureAwait(false);
 
                 if (pceEvaluation == null)
                 {
@@ -435,125 +771,434 @@ namespace mechanical.Services.PCE.PCEEvaluationService
                     throw new KeyNotFoundException("Production capacity valuation not found");
                 }
 
-                var uploadFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
-                var supportingEvidences = uploadFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
-                var productionProcessFlowDiagrams = uploadFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+                var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId.HasValue && uf.CollateralId.Value == pceEvaluation.Id).ToListAsync().ConfigureAwait(false);
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
 
                 var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
-                pceEvaluationDto.SupportingEvidences = _mapper.Map<ICollection<ReturnFileDto>>(supportingEvidences);
-                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<ICollection<ReturnFileDto>>(productionProcessFlowDiagrams);
+                pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+
+                var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                pceEvaluationDto.TotalCapacity = totalCapacity;
+
+                var bottleneck = pceEvaluationDto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                if (bottleneck != null)
+                {
+                    pceEvaluationDto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                    pceEvaluationDto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                    pceEvaluationDto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                    pceEvaluationDto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                }
 
                 return pceEvaluationDto;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation. UserId: {UserId}, Id: {Id}", UserId, Id);
+                throw new ApplicationException("An error occurred while fetching production capacity valuation.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching production capacity valuation");
-                throw new ApplicationException("An error occurred while fetching production capacity valuation.");
+                _logger.LogError(ex, "Error fetching production capacity valuation. UserId: {UserId}, Id: {Id}", UserId, Id);
+                throw new Exception("Error fetching production capacity valuation.", ex);
             }
         }
 
+        /// <summary>
+        /// Gets the latest valuation for a given production capacity ID.
+        /// </summary>
+        /// <param name="UserId">User ID.</param>
+        /// <param name="PCEId">Production capacity ID.</param>
+        /// <returns>The latest valuation as a DTO.</returns>
         public async Task<PCEEvaluationReturnDto> GetValuationByPCEId(Guid UserId, Guid PCEId)
         {
             try
             {
                 var pceEvaluation = await _cbeContext.PCEEvaluations
                                                     .AsNoTracking()
-                                                    .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(e => e.Justifications)
+                                                    .Include(e => e.ProductionLines)
+                                                        .ThenInclude(pl => pl.ProductionLineInputs)
+                                                    .Include(e => e.Evaluator)
                                                     .Include(e => e.PCE)
-                                                        .ThenInclude(e => e.PCECase)
-                                                    // .OrderByDescending(e => e.UpdatedAt.HasValue ? e.UpdatedAt.Value : e.CreatedAt)
+                                                        .ThenInclude(pc => pc.PCECase)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
-                                                    .FirstOrDefaultAsync(e => e.PCEId == PCEId);
+                                                    .FirstOrDefaultAsync(e => e.PCEId == PCEId)
+                                                    .ConfigureAwait(false);
 
                 if (pceEvaluation == null)
                 {
                     return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
                 }
-                var uploadFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId == pceEvaluation.Id).ToListAsync();
-                var supportingEvidences = uploadFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
-                var productionProcessFlowDiagrams = uploadFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+                var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId.HasValue && uf.CollateralId.Value == pceEvaluation.Id).ToListAsync().ConfigureAwait(false);
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
 
                 var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
-                pceEvaluationDto.SupportingEvidences = _mapper.Map<ICollection<ReturnFileDto>>(supportingEvidences);
-                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<ICollection<ReturnFileDto>>(productionProcessFlowDiagrams);
+                pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+
+                var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                pceEvaluationDto.TotalCapacity = totalCapacity;
+
+                var bottleneck = pceEvaluationDto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                if (bottleneck != null)
+                {
+                    pceEvaluationDto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                    pceEvaluationDto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                    pceEvaluationDto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                    pceEvaluationDto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                }
 
                 return pceEvaluationDto;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}", PCEId);
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
-                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}", PCEId);
+                throw new Exception("Error fetching production capacity valuation.", ex);
             }
         }
 
+        /// <summary>
+        /// Gets all valuations for a given PCE case ID.
+        /// </summary>
+        /// <param name="UserId">User ID.</param>
+        /// <param name="PCECaseId">PCE case ID.</param>
+        /// <returns>Enumerable of valuation DTOs.</returns>
         public async Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsByPCECaseId(Guid UserId, Guid PCECaseId)
         {
             try
             {
                 var pceEntities = await _cbeContext.PCEEvaluations
                                                     .AsNoTracking()
-                                                    .Include(e => e.ShiftHours)
                                                     .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(e => e.Justifications)
+                                                    .Include(e => e.ProductionLines)
+                                                        .ThenInclude(pl => pl.ProductionLineInputs)
+                                                    .Include(e => e.Evaluator)
                                                     .Include(e => e.PCE)
-                                                        .ThenInclude(e => e.PCECase)
+                                                        .ThenInclude(pc => pc.PCECase)
                                                     .Where(e => e.PCE.PCECaseId == PCECaseId)
                                                     .OrderByDescending(e => e.UpdatedAt)
                                                     .ThenByDescending(e => e.CreatedAt)
-                                                    .ToListAsync();
+                                                    .ToListAsync().ConfigureAwait(false);
 
                 if (pceEntities == null || !pceEntities.Any())
                 {
                     return Enumerable.Empty<PCEEvaluationReturnDto>();
                 }
 
-                var pceEvaluationIds = pceEntities.Select(e => e.Id).ToList();
-                var uploadFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => pceEvaluationIds.Contains(uf.CollateralId.Value)).ToListAsync();          
-                var supportingEvidences = uploadFiles.Where(uf => uf.Catagory == "Supporting Evidence").ToList();
-                var productionProcessFlowDiagrams = uploadFiles.Where(uf => uf.Catagory == "Production Process Flow Diagram").ToList();
+                // Efficiently fetch all files for all evaluations in a single query
+                var evalIds = pceEntities.Select(e => e.Id).ToList();
+                var files = await _cbeContext.UploadFiles.AsNoTracking()
+                    .Where(uf => uf.CollateralId.HasValue && evalIds.Contains(uf.CollateralId.Value))
+                    .ToListAsync().ConfigureAwait(false);
 
                 var pceEntitiesDto = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(pceEntities).ToList();
 
                 foreach (var dto in pceEntitiesDto)
                 {
-                    dto.SupportingEvidences = _mapper.Map<ICollection<ReturnFileDto>>(supportingEvidences);
-                    dto.ProductionProcessFlowDiagrams = _mapper.Map<ICollection<ReturnFileDto>>(productionProcessFlowDiagrams);
+                    var uploadedFiles = files.Where(uf => uf.CollateralId.HasValue && uf.CollateralId.Value == dto.Id).ToList();
+                    dto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                    dto.WitnessForm = _mapper.Map<ReturnFileDto>(uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form"));
+                    dto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(uploadedFiles.Where(uf => uf.Category == "Supporting Evidence"));
+                    dto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram"));
+
+                    var totalCapacity = dto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                    dto.TotalCapacity = totalCapacity;
+
+                    var bottleneck = dto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                    if (bottleneck != null)
+                    {
+                        dto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                        dto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                        dto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                        dto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                    }
                 }
 
                 return pceEntitiesDto;
             }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation with PCECaseId: {PCECaseId}", PCECaseId);
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCECaseId}.", ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}");
-                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.");
+                _logger.LogError(ex, "Error fetching production capacity valuation with PCECaseId: {PCECaseId}", PCECaseId);
+                throw new Exception("Error fetching production capacity valuation.", ex);
             }
-        }                   
-    
+        }
+
+        /// <summary>
+        /// Gets a summary of all valuations for a given PCE case ID.
+        /// </summary>
+        /// <param name="UserId">User ID.</param>
+        /// <param name="PCECaseId">PCE case ID.</param>
+        /// <returns>Enumerable of valuation DTOs.</returns>
+        public async Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsSummaryByPCECaseId(Guid UserId, Guid PCECaseId)
+        {
+            try
+            {
+                var pceEntities = await _cbeContext.PCEEvaluations
+                                    .AsNoTracking()
+                                    .Include(e => e.TimeConsumedToCheck)
+                                    .Include(e => e.PCE)
+                                        .ThenInclude(e => e.PCECase)
+                                    .Include(e => e.ProductionLines)
+                                        .ThenInclude(e => e.ProductionLineInputs)
+                                    .Include(e => e.Justifications)
+                                    .Include(e => e.Evaluator)
+                                    .Where(e => e.PCE.PCECaseId == PCECaseId)
+                                    .ToListAsync().ConfigureAwait(false);
+
+                if (pceEntities == null || !pceEntities.Any())
+                {
+                    return Enumerable.Empty<PCEEvaluationReturnDto>();
+                }
+                var pceEntitiesDto = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(pceEntities).ToList();
+
+                return pceEntitiesDto;
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation summary with PCECaseId: {PCECaseId}", PCECaseId);
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCECaseId}.", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation summary with PCECaseId: {PCECaseId}", PCECaseId);
+                throw new Exception("Error fetching production capacity valuation.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Gets the valuation history for a given production capacity.
+        /// </summary>
+        /// <param name="UserId">User ID.</param>
+        /// <param name="PCEId">Production capacity ID.</param>
+        /// <returns>Valuation history DTO.</returns>
         public async Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId)
         {
+            var pce = await _cbeContext.ProductionCapacities
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(res => res.Id == PCEId)
+                                        .ConfigureAwait(false)
+                                        ?? throw new KeyNotFoundException("Production Capacity not found.");
 
-            var pce = await _cbeContext.ProductionCapacities.AsNoTracking().FirstOrDefaultAsync(res => res.Id == PCEId);                 
-            
             PCEEvaluationReturnDto latestEvaluation = null;
 
-            if (pce.CurrentStatus != "New" && pce.CurrentStatus != "Reestimate" && pce.CurrentStatus != "Returned")
-            {  
-                latestEvaluation = await GetValuationByPCEId(UserId, PCEId);
+            if (pce != null && pce.CurrentStatus != StatusNew && pce.CurrentStatus != StatusReestimate && pce.CurrentStatus != StatusReturned)
+            {
+                latestEvaluation = await GetValuationByPCEId(UserId, PCEId).ConfigureAwait(false);
             }
 
             var previousEvaluations = await _cbeContext.PCEEvaluations
                                                         .AsNoTracking()
-                                                        .Include(p => p.PCE)
+                                                        .Include(e => e.TimeConsumedToCheck)
+                                                        .Include(e => e.Justifications)
+                                                        .Include(e => e.ProductionLines)
+                                                            .ThenInclude(pl => pl.ProductionLineInputs)
+                                                        .Include(e => e.Evaluator)
+                                                        .Include(e => e.PCE)
                                                             .ThenInclude(pc => pc.PCECase)
-                                                        .Where(res => res.PCEId == PCEId && (latestEvaluation == null || res.Id != latestEvaluation.Id))
-                                                        .ToListAsync();
-            
+                                                        .Where(e => e.PCEId == PCEId && (latestEvaluation == null || e.Id != latestEvaluation.Id))
+                                                        .ToListAsync().ConfigureAwait(false);
+
             return new PCEValuationHistoryDto
             {
                 LatestEvaluation = latestEvaluation,
                 PreviousEvaluations = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(previousEvaluations)
             };
-        }   
+        }
+
+        //Ho
+        /// <summary>
+        /// Gets a head office valuation by its ID.
+        /// </summary>
+        /// <param name="Id">Valuation ID.</param>
+        /// <returns>The valuation as a DTO.</returns>
+        public async Task<PCEEvaluationReturnDto> GetHOValuation(Guid Id)
+        {
+            try
+            {
+                var pceEvaluation = await _cbeContext.PCEEvaluations
+                                                .AsNoTracking()
+                                                .Include(e => e.TimeConsumedToCheck)
+                                                .Include(e => e.Justifications)
+                                                .Include(e => e.ProductionLines)
+                                                    .ThenInclude(pl => pl.ProductionLineInputs)
+                                                .Include(e => e.Evaluator)
+                                                .Include(e => e.PCE)
+                                                    .ThenInclude(pc => pc.PCECase)
+                                                .FirstOrDefaultAsync(e => e.Id == Id)
+                                                .ConfigureAwait(false);
+
+                if (pceEvaluation == null)
+                {
+                    _logger.LogWarning("Production capacity valuation with Id {Id} not found", Id);
+                    throw new KeyNotFoundException("Production capacity valuation not found");
+                }
+
+                var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId.HasValue && uf.CollateralId.Value == pceEvaluation.Id).ToListAsync().ConfigureAwait(false);
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
+
+                var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
+                pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+
+                var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                pceEvaluationDto.TotalCapacity = totalCapacity;
+
+                var bottleneck = pceEvaluationDto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                if (bottleneck != null)
+                {
+                    pceEvaluationDto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                    pceEvaluationDto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                    pceEvaluationDto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                    pceEvaluationDto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                }
+
+                return pceEvaluationDto;
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation. Id: {Id}", Id);
+                throw new ApplicationException("An error occurred while fetching production capacity valuation.", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation. Id: {Id}", Id);
+                throw new Exception("Error fetching production capacity valuation.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Gets the latest head office valuation for a given production capacity ID.
+        /// </summary>
+        /// <param name="PCEId">Production capacity ID.</param>
+        /// <returns>The latest valuation as a DTO.</returns>
+        public async Task<PCEEvaluationReturnDto> GetHOValuationByPCEId(Guid PCEId)
+        {
+            try
+            {
+                var pceEvaluation = await _cbeContext.PCEEvaluations
+                                                    .AsNoTracking()
+                                                    .Include(e => e.TimeConsumedToCheck)
+                                                    .Include(e => e.Justifications)
+                                                    .Include(e => e.ProductionLines)
+                                                        .ThenInclude(pl => pl.ProductionLineInputs)
+                                                    .Include(e => e.Evaluator)
+                                                    .Include(e => e.PCE)
+                                                        .ThenInclude(pc => pc.PCECase)
+                                                    .OrderByDescending(e => e.UpdatedAt)
+                                                    .ThenByDescending(e => e.CreatedAt)
+                                                    .FirstOrDefaultAsync(e => e.PCEId == PCEId)
+                                                    .ConfigureAwait(false);
+
+                if (pceEvaluation == null)
+                {
+                    return _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
+                }
+                var uploadedFiles = await _cbeContext.UploadFiles.AsNoTracking().Where(uf => uf.CollateralId.HasValue && uf.CollateralId.Value == pceEvaluation.Id).ToListAsync().ConfigureAwait(false);
+                var witnessForm = uploadedFiles.FirstOrDefault(uf => uf.Category == "Witness Form");
+                var supportingEvidences = uploadedFiles.Where(uf => uf.Category == "Supporting Evidence").ToList();
+                var productionProcessFlowDiagrams = uploadedFiles.Where(uf => uf.Category == "Production Process Flow Diagram").ToList();
+
+                var pceEvaluationDto = _mapper.Map<PCEEvaluationReturnDto>(pceEvaluation);
+                pceEvaluationDto.UploadedFiles = _mapper.Map<List<ReturnFileDto>>(uploadedFiles);
+                pceEvaluationDto.WitnessForm = _mapper.Map<ReturnFileDto>(witnessForm);
+                pceEvaluationDto.SupportingEvidences = _mapper.Map<List<ReturnFileDto>>(supportingEvidences);
+                pceEvaluationDto.ProductionProcessFlowDiagrams = _mapper.Map<List<ReturnFileDto>>(productionProcessFlowDiagrams);
+
+                var totalCapacity = pceEvaluationDto.ProductionLines?.Where(pl => pl.ActualCapacity != null && pl.ActualCapacity > 0).Sum(pl => pl.ActualCapacity) ?? 0;
+                pceEvaluationDto.TotalCapacity = totalCapacity;
+
+                var bottleneck = pceEvaluationDto.ProductionLines?.FirstOrDefault(pl => pl.IsBottleneck);
+                if (bottleneck != null)
+                {
+                    pceEvaluationDto.BottleneckProductionLine ??= new BottleneckProductionLineDto();
+                    pceEvaluationDto.BottleneckProductionLine.LineName = bottleneck.LineName;
+                    pceEvaluationDto.BottleneckProductionLine.Capacity = bottleneck.ActualCapacity;
+                    pceEvaluationDto.BottleneckProductionLine.Unit = bottleneck.ProductionUnit;
+                }
+
+                return pceEvaluationDto;
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}", PCEId);
+                throw new ApplicationException("An error occurred while fetching production capacity valuation with ID: {PCEId}.", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching production capacity valuation with ID: {PCEId}", PCEId);
+                throw new Exception("Error fetching production capacity valuation.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Gets the head office valuation history for a given production capacity.
+        /// </summary>
+        /// <param name="PCEId">Production capacity ID.</param>
+        /// <returns>Valuation history DTO.</returns>
+        public async Task<PCEValuationHistoryDto> GetHOValuationHistory(Guid PCEId)
+        {
+            var pce = await _cbeContext.ProductionCapacities
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(res => res.Id == PCEId)
+                                        .ConfigureAwait(false)
+                                        ?? throw new KeyNotFoundException("Production Capacity not found.");
+
+            PCEEvaluationReturnDto latestEvaluation = null;
+
+            if (pce != null && pce.CurrentStatus != StatusNew && pce.CurrentStatus != StatusReestimate && pce.CurrentStatus != StatusReturned)
+            {
+                latestEvaluation = await GetHOValuationByPCEId(PCEId).ConfigureAwait(false);
+            }
+
+            var previousEvaluations = await _cbeContext.PCEEvaluations
+                                                        .AsNoTracking()
+                                                        .Include(e => e.TimeConsumedToCheck)
+                                                        .Include(e => e.Justifications)
+                                                        .Include(e => e.ProductionLines)
+                                                            .ThenInclude(pl => pl.ProductionLineInputs)
+                                                        .Include(e => e.Evaluator)
+                                                        .Include(e => e.PCE)
+                                                            .ThenInclude(pc => pc.PCECase)
+                                                        .Where(e => e.PCEId == PCEId && (latestEvaluation == null || e.Id != latestEvaluation.Id))
+                                                        .ToListAsync().ConfigureAwait(false);
+
+            return new PCEValuationHistoryDto
+            {
+                LatestEvaluation = latestEvaluation,
+                PreviousEvaluations = _mapper.Map<IEnumerable<PCEEvaluationReturnDto>>(previousEvaluations)
+            };
+        }
+
+        private async Task SendNotificationAsync(Guid recipientId, string message, string type, string url)
+        {
+            var notification = await _notificationService.AddNotification(recipientId, message, type, url).ConfigureAwait(false);
+            await _notificationService.SendNotification(notification).ConfigureAwait(false);
+        }
     }
 }

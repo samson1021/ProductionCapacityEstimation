@@ -1,6 +1,6 @@
 ﻿@model mechanical.Models.PCE.Dto.ProductionCapacityDto.ProductionReturnDto
 
-@{    
+@{
     ViewData["Title"] = ViewBag.Title as string;
 }
 
@@ -8,14 +8,14 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h4>Production Capacity Estimation Detail</h4>
+                <h4>Production Capacity Detail</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
                     <li class="breadcrumb-item active"><a href="@Url.Action("PCECases", "PCECase")">PCE Cases</a></li>
                     <li class="breadcrumb-item"><a href="@Url.Action("Productions", "ProductionCapacity")">Productions</a></li>
-                    <li class="breadcrumb-item active">PCE Detail</li>
+                    <li class="breadcrumb-item active">Production Detail</li>
                 </ol>
             </div>
         </div>
@@ -29,10 +29,10 @@
             <div class="card-header p-0 border-bottom-0">
                 <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="custom-tabs-four-general-tab" data-toggle="pill" href="#custom-tabs-four-general" role="tab" aria-controls="custom-tabs-four-general" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Information</a>
+                        <a class="nav-link" id="custom-tabs-four-general-tab" data-toggle="pill" href="#custom-tabs-four-general" role="tab" aria-controls="custom-tabs-four-general" aria-selected="true"><i class="nav-icon fas fa-home"></i>  General Information</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="custom-tabs-four-valuation-tab" data-toggle="pill" href="#custom-tabs-four-valuation" role="tab" aria-controls="custom-tabs-four-valuation" aria-selected="false"><i class="nav-icon fas fa-file"></i>  Valuation</a>
+                        <a class="nav-link active" id="custom-tabs-four-valuation-tab" data-toggle="pill" href="#custom-tabs-four-valuation" role="tab" aria-controls="custom-tabs-four-valuation" aria-selected="false"><i class="nav-icon fas fa-file"></i>  Valuation</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-valuations-tab" data-toggle="pill" href="#custom-tabs-four-valuations" role="tab" aria-controls="custom-tabs-four-valuations" aria-selected="false"><i class="nav-icon fas fa-file"></i>  Previous Valuations</a>
@@ -42,8 +42,8 @@
                     </li>
                 </ul>
             </div>
-            <div class="card-body">     
-                <div class="ribbon-wrapper ribbon-xl">                    
+            <div class="card-body">
+                <div class="ribbon-wrapper ribbon-lg">
                     @{
                         var status = Model.AssignmentStatus?.ToString().Trim();
                         @* if (string.Equals(status, "New", StringComparison.OrdinalIgnoreCase)) { *@
@@ -59,12 +59,12 @@
                             <div class="ribbon bg-dark">@status</div>
                         }
                     }
-                </div>                
+                </div>
                 <div class="tab-content" id="custom-tabs-four-tabContent">
-                    <div class="tab-pane fade show active" id="custom-tabs-four-general" role="tabpanel" aria-labelledby="custom-tabs-four-general-tab">
+                    <div class="tab-pane fade" id="custom-tabs-four-general" role="tabpanel" aria-labelledby="custom-tabs-four-general-tab">
                         @await Html.PartialAsync("_PCEGeneralInfo")
                     </div>
-                    <div class="tab-pane fade" id="custom-tabs-four-valuation" role="tabpanel" aria-labelledby="custom-tabs-four-valuation-tab">                       
+                    <div class="tab-pane fade show active" id="custom-tabs-four-valuation" role="tabpanel" aria-labelledby="custom-tabs-four-valuation-tab">                       
                         @await Html.PartialAsync("_ProductionValuation")
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-four-valuations" role="tabpanel" aria-labelledby="custom-tabs-four-valuations-tab">
@@ -88,7 +88,7 @@
         await Html.RenderPartialAsync("Partial/_PrevousValuationDatatableScriptsPartial");
     }
 
-    <Script>    
+    <script>    
         handleButtonClick(
             "evaluate-btn",
             "Are you sure you want to send this evaluation?",

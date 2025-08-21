@@ -11,6 +11,8 @@ using mechanical.Models.PCE.Dto.PCECaseTimeLineDto;
 using mechanical.Models.PCE.Dto.PCECaseAssignmentDto;
 using mechanical.Services.PCE.PCECaseTimeLineService;
 using DocumentFormat.OpenXml.Spreadsheet;
+using mechanical.Models.Dto.NotificationDto;
+using mechanical.Services.NotificationService;
 
 namespace mechanical.Services.PCE.PCECaseAssignmentService
 {
@@ -21,14 +23,16 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         private readonly ILogger<PCECaseAssignmentService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPCECaseTimeLineService _IPCECaseTimeLineService;
+        private readonly INotificationService _notificationService;
 
-        public PCECaseAssignmentService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseAssignmentService> logger, IHttpContextAccessor httpContextAccessor, IPCECaseTimeLineService IPCECaseTimeLineService)
+        public PCECaseAssignmentService(CbeContext cbeContext, IMapper mapper, ILogger<PCECaseAssignmentService> logger, IHttpContextAccessor httpContextAccessor, IPCECaseTimeLineService IPCECaseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _IPCECaseTimeLineService = IPCECaseTimeLineService;
+            _notificationService = notificationService;
 
         }
 
@@ -62,7 +66,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             {
                 if (string.IsNullOrEmpty(SelectedPCEIds))
                 {
-                    if (OperationType == "Assign"){
+                    if (OperationType == "Assign")
+                    {
                         throw new Exception("Please, select at least one production to assign.");
                     }
                     throw new Exception("Please, select at least one production to send for estimation.");
@@ -70,39 +75,62 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
                 if (string.IsNullOrEmpty(EmployeeOrCenterId))
                 {
-                    if (OperationType == "Assign"){
+                    if (OperationType == "Assign")
+                    {
                         throw new Exception("Please, select a user to assign.");
                     }
                     throw new Exception("Please, select an evaluation center.");
                 }
-                
+
                 var assignedUser = await GetAssignedUser(EmployeeOrCenterId, OperationType);
                 if (assignedUser == null)
                 {
-                    if (OperationType == "Assign"){
+                    if (OperationType == "Assign")
+                    {
                         throw new Exception("The assigned user is not found.");
-                    }                    
+                    }
                     throw new Exception("The evaluation center is not ready.");
                 }
 
                 PCECaseTimeLinePostDto pceCaseTimeLineDto = null;
                 List<PCECaseAssignmentDto> pceCaseAssignments = new List<PCECaseAssignmentDto>();
                 List<Guid> PCEIdList = SelectedPCEIds.Split(',').Select(Guid.Parse).ToList();
+                //notification 
+                var notificationContent = "New PCECase sent for estimation";
+                var notificationType = "PCECase Send for Estimation";
+                var link = $"";
+                NotificationReturnDto notification = null;
 
                 foreach (var PCEId in PCEIdList)
                 {
-                    var production = await GetProductionById(PCEId);
-                    if (production == null) continue;
-                    
-                    await UpdateProduction(production, assignedUser, OperationType);
-                    await AssignOrUpdateCase(UserId, PCEId, assignedUser, pceCaseAssignments, ReestimationReason, OperationType);
-                    
-                    if (pceCaseTimeLineDto == null)
+                    // chek for PCECaseAssignments Id
+                    var PCECaseAssignmentsId = await _cbeContext.PCECaseAssignments.AsNoTracking().Where(res => res.Id == PCEId).Select(res => res.Id).FirstOrDefaultAsync();
+
+                    if (PCECaseAssignmentsId != Guid.Empty)
                     {
-                        pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, OperationType);
+                        await UpdateAssignedCase(UserId, PCEId, assignedUser, pceCaseAssignments, isReassign, OperationType);
+
                     }
-                    UpdateTimelineDto(production, pceCaseTimeLineDto);
-                    await UpdatePreviousAssignments(UserId, PCEId);
+                    else
+                    {
+                        var production = await GetProductionById(PCEId);
+                        link = $"/ProductionCapacity/Detail?Id={production.Id}";
+                        if (production == null) continue;
+
+                        await UpdateProduction(production, assignedUser, OperationType);
+                        await AssignOrUpdateCase(UserId, PCEId, assignedUser, pceCaseAssignments, ReestimationReason, OperationType);
+
+                        if (pceCaseTimeLineDto == null)
+                        {
+                            pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, OperationType);
+                        }
+                        UpdateTimelineDto(production, pceCaseTimeLineDto);
+                        await UpdatePreviousAssignments(UserId, PCEId);
+
+                        // Add Notification
+                        notification = await _notificationService.AddNotification(assignedUser.Id, notificationContent, notificationType, link);
+
+                    }
                 }
                 if (pceCaseTimeLineDto != null)
                 {
@@ -111,6 +139,8 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
 
                 await _cbeContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+                // Realtime Nofication
+                if (notification != null) await _notificationService.SendNotification(notification);
 
                 return pceCaseAssignments;
             }
@@ -122,22 +152,22 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             }
         }
 
-        private async Task<CreateUser> GetAssignedUser(string id, string OperationType)
+        private async Task<User> GetAssignedUser(string id, string OperationType)
         {
             if (OperationType == "Assign")
             {
-                return await _cbeContext.CreateUsers
+                return await _cbeContext.Users
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.Id == Guid.Parse(id));
             }
             else
             {
-                return await _cbeContext.CreateUsers
+                return await _cbeContext.Users
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
-                                                             res.Department == "Mechanical" && 
+                                                             res.Department == "Mechanical" &&
                                                             (res.Role.Name == "Maker Manager" || res.Role.Name == "District Valuation Manager"));
             }
         }
@@ -145,10 +175,10 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
         private async Task<ProductionCapacity> GetProductionById(Guid PCEId)
         {
             return await _cbeContext.ProductionCapacities.Include(res => res.PCECase).FirstOrDefaultAsync(pc => pc.Id == PCEId);//.FindAsync(PCEId);
-                
+
         }
 
-        private async Task AssignOrUpdateCase(Guid UserId, Guid PCEId, CreateUser assignedUser, List<PCECaseAssignmentDto> caseAssignments, string ReestimationReason, string OperationType)
+        private async Task AssignOrUpdateCase(Guid UserId, Guid PCEId, User assignedUser, List<PCECaseAssignmentDto> caseAssignments, string ReestimationReason, string OperationType)
         {
             var existingAssignment = await _cbeContext.PCECaseAssignments.FirstOrDefaultAsync(res => res.ProductionCapacityId == PCEId && res.UserId == assignedUser.Id);
 
@@ -164,7 +194,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                     ProductionCapacityId = PCEId,
                     UserId = assignedUser.Id,
                     Status = "New",
-                    AssignmentDate = DateTime.Now
+                    AssignmentDate = DateTime.UtcNow
                 };
                 await _cbeContext.PCECaseAssignments.AddAsync(newAssignment);
                 caseAssignments.Add(_mapper.Map<PCECaseAssignmentDto>(newAssignment));
@@ -176,9 +206,59 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 {
                     ProductionCapacityId = PCEId,
                     Reason = ReestimationReason,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
                 await _cbeContext.ProductionReestimations.AddAsync(reestimation);
+            }
+        }
+        private async Task UpdateAssignedCase(Guid userId, Guid pceAssignmentId, User assignedUser, List<PCECaseAssignmentDto> caseAssignments, bool isReassign, string operationType)
+        {      
+            var updateExistingAssignment = await _cbeContext.PCECaseAssignments
+                .FirstOrDefaultAsync(res => res.Id == pceAssignmentId);
+
+            if (updateExistingAssignment == null)
+                throw new InvalidOperationException("Assignment not found.");
+
+            // Update assignment
+            updateExistingAssignment.Status = "New";
+            updateExistingAssignment.UserId = assignedUser.Id;
+            updateExistingAssignment.AssignmentDate = DateTime.UtcNow;
+
+            // Track assignment for response
+            caseAssignments.Add(_mapper.Map<PCECaseAssignmentDto>(updateExistingAssignment));
+
+            // Get production details
+            var production = await _cbeContext.ProductionCapacities
+                .AsNoTracking()
+                .Where(p => p.Id == updateExistingAssignment.ProductionCapacityId)                
+                .FirstOrDefaultAsync();
+
+            if (production == null)
+                throw new InvalidOperationException("Production not found.");
+
+            // Create and update timeline
+            var pceCaseTimeLineDto = CreateTimelineDto(production.PCECaseId, assignedUser, isReassign, operationType);
+            UpdateTimelineDto(production, pceCaseTimeLineDto);
+           
+            // update production 
+            await UpdateProduction(production, assignedUser, operationType);
+
+
+            // Save timeline and assignment changes
+            await _IPCECaseTimeLineService.PCECaseTimeLine(pceCaseTimeLineDto);
+            await _cbeContext.SaveChangesAsync();
+
+            // Prepare notification AFTER DB save
+            var notificationContent = $"PCE {operationType} for Estimation";
+            var notificationType = notificationContent;
+            var link = string.Empty;
+
+            var notification = await _notificationService.AddNotification(
+                assignedUser.Id, notificationContent, notificationType, link);
+
+            if (notification != null)
+            {
+                await _notificationService.SendNotification(notification);
             }
         }
 
@@ -193,14 +273,14 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             }
         }
 
-        private async Task UpdateProduction(ProductionCapacity production, CreateUser assignedUser, string OperationType)
+        private async Task UpdateProduction(ProductionCapacity production, User assignedUser, string OperationType)
         {
             production.CurrentStage = assignedUser.Role.Name;
 
             if (OperationType == "Reestimation" || OperationType == "Valuation")
             {
                 production.PCECase.Status = "Pending";
-             
+
                 if (OperationType == "Reestimation")
                 {
                     production.CurrentStatus = "Reestimate";
@@ -208,29 +288,29 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                 else
                 {
                     var previousEvaluations = await _cbeContext.PCEEvaluations.AsNoTracking().Where(res => res.PCEId == production.Id).ToListAsync();
-              
+
                     if (previousEvaluations != null && previousEvaluations.Any())
                     {
                         production.CurrentStatus = "Reestimate";
                     }
                     else
-                    {                        
+                    {
                         production.CurrentStatus = "New";
                     }
                 }
             }
             else
-            {                
+            {
                 if (assignedUser.Role.Name == "Maker Officer")
                 {
                     production.AssignedEvaluatorId = assignedUser.Id;
                 }
             }
-            
+
             _cbeContext.ProductionCapacities.Update(production);
         }
 
-        private PCECaseTimeLinePostDto CreateTimelineDto(Guid PCECaseId, CreateUser assignedUser, bool isReassign, string OperationType)
+        private PCECaseTimeLinePostDto CreateTimelineDto(Guid PCECaseId, User assignedUser, bool isReassign, string OperationType)
         {
             string activity = $"<strong>Production has been {(isReassign ? "re-assigned" : "assigned")} to {assignedUser.Name} ({assignedUser.Role.Name}).</strong><br>";
             if (OperationType == "Reestimation" || OperationType == "Valuation")
@@ -252,6 +332,6 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
                                     $"<i class='text-purple'>Role:</i> {production.Role}. " +
                                     $"<i class='text-purple'>Production Category:</i> {production.Category}. " +
                                     $"<i class='text-purple'>Production Type:</i> {production.Type}.<br>";
-        }        
+        }
     }
 }

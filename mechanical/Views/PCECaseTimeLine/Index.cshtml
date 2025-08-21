@@ -1,4 +1,5 @@
-﻿@model IEnumerable<mechanical.Models.PCE.Dto.PCECaseTimeLineDto.PCECaseTimeLineReturnDto>
+﻿@using Ganss.Xss;
+@model IEnumerable<mechanical.Models.PCE.Dto.PCECaseTimeLineDto.PCECaseTimeLineReturnDto>
 
 <section class="content-header">
     <div class="container-fluid">
@@ -13,7 +14,7 @@
                 </ol>
             </div>
         </div>
-    </div><!-- /.container-fluid -->
+    </div>
 </section>
 <section class="content">
     <div class="container-fluid">
@@ -21,13 +22,13 @@
             <div class="col-md-12">
                 <div class="timeline">
                     @{
-                        string previousStage = null;
+                        string previousStage = "";
                         foreach (var item in Model)
                         {
                             if (item.CurrentStage != previousStage)
                             {
                                 <div class="time-label">
-                                    <span class="bg-purple">@item.CurrentStage Unit</span>
+                                    <span class="bg-purple">@item.CurrentStage</span>
                                 </div>
                                 previousStage = item.CurrentStage;
                             }
@@ -38,13 +39,17 @@
                                     <h3 class="timeline-header"><a href="@Url.Action("Profile","UserManagment")?id=@item.UserId">@item.User.Name</a> (@item.User.Role.Name)</h3>
 
                                     <div class="timeline-body">
-                                        @Html.Raw(item.Activity)
+                                    @{
+                                            var sanitizer = new HtmlSanitizer();
+                                            var sanitizedContent = sanitizer.Sanitize(item.Activity); // Sanitize HTML input
+                                            @Html.Raw(sanitizedContent)
+                                            
+                                    }
                                     </div>
                                 </div>
                             </div>
                         }
                     }
-
                     <div>
                         <i class="fas fa-clock bg-gray"></i>
                     </div>

@@ -1,4 +1,5 @@
-﻿using mechanical.Models.Enum;
+﻿using mechanical.Models.Entities;
+using mechanical.Models.Enum;
 
 namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
 {
@@ -6,7 +7,8 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
     {
         public Guid Id { get; set; }
         public required Guid CollateralId { get; set; }
-
+        public required Guid IndBldgFacilityEquipmentCostsId { get; set; }
+        public string? MechanicalEqpmntName { get; set; }
         public IndustrialBuildingMachineryType IndustrialBuildingMachineryType { get; set; }
         public EngineType EngineType { get; set; }
         public PowerSupply PowerSupply { get; set; }
@@ -36,5 +38,7 @@ namespace mechanical.Models.Dto.IndBldgFacilityEquipmentDto
         public double InvoiceValue { get; set; }
         public string Currency { get; set; } = string.Empty;
         public double ExchangeRate { get; set; }
+
+        public virtual IndBldgFacilityEquipmentCosts? IndBldgFacilityEquipmentCosts { get; set; }
     }
 }

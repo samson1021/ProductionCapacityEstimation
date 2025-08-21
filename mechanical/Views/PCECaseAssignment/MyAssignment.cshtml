@@ -63,7 +63,7 @@
                         <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
                         <th>Property Owner</th>
                         <th>Role</th>
-                        <th>Catagory</th>
+                        <th>Category</th>
                         <th>Type</th>
                         <th>Assignment Date</th>
                         <th>Case Owner</th>
@@ -85,7 +85,7 @@
 <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-purple">
                 <h5 class="modal-title" id="assignModalLabel">Re-Assign Production(s)</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -121,15 +121,14 @@
     <script>
         $(document).ready(function () {
 
-            var selectName = '@Html.Raw(selectName)';
-            var emptyMessage = '@Html.Raw(emptyMessage)';
-            var currentUserRole = '@Html.Raw(currentUserRole)';
-            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
-            var assignUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(assignUrl))';
-            var getSubordinateUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(getSubordinateUrl))';
+            var selectName = '@selectName';
+            var emptyMessage = '@emptyMessage';
+            var currentUserRole = '@currentUserRole';
+            var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
+            var assignUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(assignUrl)';
+            var getSubordinateUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(getSubordinateUrl)';
 
             loadProductions(fetchUrl, emptyMessage);
-            // loadProductions('@Html.Raw(fetchUrl)', emptyMessage);
             initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage);
         });
     </script>

@@ -27,21 +27,27 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-route-Id="@Model.Id">
                     <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="constructionMiningAgriculturalMachineryType">Cons, Min & Agri Machinery Type</label>
                             <select asp-for="@Model.constructionMiningAgriculturalMachineryType " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(ConstructionMiningAgriculturalMachineryType)).Cast<ConstructionMiningAgriculturalMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.constructionMiningAgriculturalMachineryType.ToString()) }), "Value", "Text"))">
                             </select>
                             <span asp-validation-for="constructionMiningAgriculturalMachineryType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                    </div><div class="row">
+                        <div class="form-group col-xl-6">
                             <label asp-for="EngineType"> Engine/Motor Type </label>
                             <select asp-for="@Model.EngineType " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.EngineType.ToString()) }), "Value", "Text"))">
                             </select>
                             <span asp-validation-for="EngineType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
                             <label asp-for="PowerSupply">Power Supply</label>
                             <select asp-for="@Model.PowerSupply " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.PowerSupply.ToString()) }), "Value", "Text"))">
@@ -259,7 +265,7 @@
                 <thead>
                     <tr>
                         <th>File Name</th>
-                        <th>File Catagory</th>
+                        <th>File Category</th>
                         <th>File Type</th>
                         <th>Action</th>
                     </tr>
@@ -270,7 +276,7 @@
                         {
                             <tr>
                                 <td>@collateralFile.Name</td>
-                                <td>@collateralFile.Catagory</td>
+                                <td>@collateralFile.Category</td>
                                 <td>@collateralFile.ContentType</td>
                                 <td>
                                     <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id =collateralFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;

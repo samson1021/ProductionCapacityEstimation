@@ -8,7 +8,7 @@ namespace mechanical.Services.PCE.ProductionCapacityService
     public interface IProductionCapacityService
     {
         Task<ProductionCapacity> CreateProductionCapacity(Guid UserId, Guid PCECaseId, ProductionPostDto createProductionDto);
-        Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionEdittDto createProductionDto);
+        Task<ProductionCapacity> EditProduction(Guid UserId, Guid ProductionCapacityId, ProductionEditDto createProductionDto);
         Task<bool> DeleteProduction(Guid UserId, Guid Id);
         
         Task<bool> DeleteProductionFile(Guid UserId, Guid Id);
@@ -18,8 +18,12 @@ namespace mechanical.Services.PCE.ProductionCapacityService
         Task<ProductionReturnDto> GetProduction(Guid UserId, Guid Id);
         Task<IEnumerable<ProductionReturnDto>> GetProductions(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
         Task<int> GetProductionCountAsync(Guid UserId, Guid? PCECaseId = null, string Stage = null, string Status = null);
-       
+
         Task<IEnumerable<ProductionReturnDto>> GetRemarkProductions(Guid UserId, Guid PCECaseId);
-        Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId);        
+        Task<IEnumerable<ProductionAssignmentDto>> GetAssignedProductions(Guid UserId, Guid PCECaseId);
+        // Ho
+        Task<ProductionReturnDto> GetHOProduction(Guid Id);
+        Task<IEnumerable<ProductionReturnDto>> GetHOProductions(Guid? PCECaseId = null, string Status = null);
+        Task<ProductionDetailDto> GetHOProductionDetails(Guid Id);
     }
 }

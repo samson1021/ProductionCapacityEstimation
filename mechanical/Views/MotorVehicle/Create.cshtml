@@ -28,7 +28,12 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
                     <input asp-for="CollateralId" value=@collateral?.Id type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="EngineType">Engine Type</label>
                             <select asp-for="EngineType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -36,7 +41,9 @@
                             </select>
                             <span asp-validation-for="EngineType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
                             <label asp-for="NoOfCylinder">Number of Cylinders</label>
                             <select asp-for="NoOfCylinder" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(NoOfCylinder)).Cast<NoOfCylinder>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -44,7 +51,7 @@
                             </select>
                             <span asp-validation-for="NoOfCylinder" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
                             <label asp-for="TransmissionType">Transmission Type</label>
                             <select asp-for="TransmissionType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(TransmissionType)).Cast<TransmissionType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -201,7 +208,10 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-5" id="GetExchangeRate" value="Get Exchange Rate" required>
+                            </div>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
@@ -229,36 +239,68 @@
     <script src="~/lib/toastr/toastr.min.js"></script>
 
     <script>
+             document.addEventListener('DOMContentLoaded', function() {
+            const countryInput = document.getElementById('CountryOfOrigin');
+            const countryDatalist = document.getElementById('country');
+
+            // Store original options
+            const originalOptions = Array.from(countryDatalist.options).map(opt => opt.value);
+            let lastValidValue = '';
+
+            // Allow only letters and navigation keys
+            countryInput.addEventListener('keydown', (e) => {
+                const allowedKeys = [
+                    'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape',
+                    'Backspace', 'Delete', 'Home', 'End'
+                ];
+
+                const isLetter = /^[a-zA-Z\s]$/.test(e.key); // Allow letters and space
+
+                if (!allowedKeys.includes(e.key) && !isLetter) {
+                    e.preventDefault();
+                }
+            });
+
+            // Validate when selection is made or field loses focus
+            countryInput.addEventListener('change', validateInput);
+            countryInput.addEventListener('blur', validateInput);
+
+            function validateInput() {
+                if (!originalOptions.includes(countryInput.value)) {
+                    countryInput.value = lastValidValue || '';
+                } else {
+                    lastValidValue = countryInput.value;
+                }
+            }
+
+            // Form submission validation
+            const form = countryInput.closest('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!originalOptions.includes(countryInput.value)) {
+                        e.preventDefault();
+                        countryInput.value = '';
+                        countryInput.focus();
+                        alert('Please select a valid country from the list');
+                    }
+                });
+            }
+
+            // Keep dropdown visible while typing
+            countryInput.addEventListener('input', function() {
+                this.setAttribute('list', 'country');
+            });
+        });
 
 
-        // // Currency input event listener
-        // var currencyInput = document.getElementById("Currency");
-        // console.log(currencyInput);
-        //     currencyInput.addEventListener('change', function () {
-        //         var currencyValue = this.value;
-        //         var url = "@Url.Action("Currency", "MotorVehicle")";
-
-        //         fetch(url, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({ currency: currencyValue })
-
-        //         })
-        //             .then(response => response.json())
-        //             .then(data => {
-
-        //                 document.getElementById("ExchangeRate").value = data.exchangeRate;
-        //             })
-        //             .catch(error => {
-        //                 console.error('Error:', error);
-        //             });
-        //     });
-
-        document.getElementById('Currency').addEventListener('change', function () {
+        document.getElementById('GetExchangeRate').addEventListener('click', function () {
+            var currency = document.getElementById("Currency").value;
+            if(currency == "" || currency == null){
+                  toastr.error("please select currency ...");
+                  return;
+            }
             showLoadingIndicator();
-            var currency = this.value;
+
             $.ajax({
                 type: 'POST',
                 url: '/MotorVehicle/Currency',
@@ -333,7 +375,7 @@
         });
         document.getElementById("EngineNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("EngineNo-error").textContent = "Only alphanumeric characters are allowed.";
@@ -344,7 +386,7 @@
         });
         document.getElementById("ModelNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("ModelNo-error").textContent = "Only alphanumeric characters are allowed.";
@@ -355,7 +397,7 @@
         });
         document.getElementById("SerialNo").addEventListener("input", function () {
             var input = this.value;
-            var alphanumericRegex = /^[A-Za-z0-9]+$/;
+            var alphanumericRegex = /^[a-zA-Z0-9]+$/;
             if (!alphanumericRegex.test(input)) {
                 this.setCustomValidity("Only alphanumeric characters are allowed.");
                 document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";

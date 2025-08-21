@@ -1,11 +1,15 @@
-﻿using mechanical.Models.Enum;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using mechanical.Models.Enum;
+
 namespace mechanical.Models.Entities
 {
+    [Index(nameof(CaseId))]
     public class Collateral
     {
+        [Key]
         public Guid Id { get; set; }
         public required Guid CaseId { get; set; }
         public required string PropertyOwner { get; set; } 
@@ -52,8 +56,12 @@ namespace mechanical.Models.Entities
         public string? PurposeOfTheLand { get; set; }
         public string? PlotOfLand { get; set; }
         public string? LHCNo { get; set; }
+
+        public int NumberOfReturns  { get; set; } = 0;
         
-        public virtual CreateUser? CreatedBy { get; set; }
+        [ForeignKey("CreatedById")]
+        public virtual User? CreatedBy { get; set; }
+        [ForeignKey("CaseId")]
         public virtual Case? Case { get; set; }
     }
 }

@@ -82,11 +82,13 @@
 </section>
 <section class="content" style="max-width: 300mm; font-family: 'Times New Roman', Times, serif; text-align: justify; line-height: 1.5; font-size: 12pt; margin: 0 auto;">
     <div class="card disableprint" style="margin: 10mm 20mm;">
-        <div class="card-body d-flex justify-content-end">
-            <div>
-                <button id="print-btn" class="btn btn-outline-secondary printbtn" style="background-color: #6f42c1; color: white;">Print</button>
-                <!-- <button id="download-btn" class="btn btn-outline-secondary downloadbtn" style="background-color: #6f42c1; color: white; margin-left:10px">Download as PDF</button> -->
-            </div>
+        <div class="d-flex justify-content-end mb-3" style="padding-right: 10mm; padding-top:5mm;">
+            <button id="print-btn" class="btn btn-purple printbtn mr-2">
+                <i class="fas fa-print"></i> Print
+            </button>
+            <button id="download-btn" class="btn btn-purple downloadbtn">
+                <i class="fas fa-file-pdf"></i> Download PDF
+            </button>
         </div>
     </div>
 
@@ -120,7 +122,7 @@
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <p class="mb-1 mr-4">
-                                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToShortDateString()</u>
+                                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.UtcNow.ToString("dd/MM/yyyy")</u>
                                         </p>
                                     </div>
                                     <div class="d-flex justify-content-end">
@@ -227,12 +229,12 @@
                                             <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
                                             <u class="  "> @pce.ManufactureYear &nbsp; </u>
                                             <label class="col-form-label pl-2">Country of Origin:</label>
-                                            <u class="  ">@pce.CountryOfOrgin</u>
-                                        </p>                                        
+                                            <u class="  ">@pce.CountryOfOrigin</u>
+                                        </p>
                                         <p class="my-0 py-0">
                                             <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                            <u class="  "> @pce.CountryOfOrgin</u>
-                                        </p>                                        
+                                            <u class="  "> @pce.CountryOfOrigin</u>
+                                        </p>
                                     </div>
                                     <div class="form-group row my-0">
                                         <p class="my-0 py-0">
@@ -274,18 +276,6 @@
                                             <u class="  "> @evaluation.TechnicalObsolescenceStatus</u>
                                         </p>
                                     </div>
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">B.&nbsp; &nbsp; Depreciation Rate Applied:</label>
-                                            <u class="  ">@evaluation.DepreciationRateApplied</u>
-                                        </p>
-                                    </div>
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
-                                            <u class="  ">  @evaluation.Discrepancies </u>
-                                        </p>
-                                    </div>
                                 </div>
                                 <div class="form-group mb-1">
                                     <label class=" col-form-label font-weight-bold">Survey remark:</label>
@@ -296,18 +286,6 @@
                                 <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
 
                                 <div class="pl-4">
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">A.&nbsp; &nbsp;Type of Output it Produces</label>
-                                            <u class="  "> @evaluation.OutputType </u>
-                                        </p>
-                                    </div>
-                                    <div class="form-group row my-0 pl-4">
-                                        <p class="my-0 py-0">
-                                            <label class="col-form-label pr-2">B.&nbsp; &nbsp; Phase of the Output, (Finished Product, Raw Material for Next Line)</label>
-                                            <u class="  "> @evaluation.OutputPhase </u>
-                                        </p>
-                                    </div>
                                     <table class="table table-border-none table-responsive">
                                         <thead style="border-bottom: 3px solid #6f42c1;">
                                             <tr>
@@ -322,11 +300,11 @@
                                         <tbody>
                                             <tr>
                                                 <td>1</td>
-                                                <td>@evaluation.ProductionLineOrEquipmentName</td>
-                                                <td>@pce.ManufactureYear</td>                                                   
-                                                <td>@evaluation.ProductionUnit</td>
-                                                <td>@evaluation.ProductionMeasurement</td>
-                                                <td>@evaluation.ActualProductionCapacity</td>
+                                                <td>@pce.ManufactureYear</td>       
+                                                <td>evaluation.ProductionMeasurement</td>
+                                                @* <td>@evaluation.ProductionMeasurement</td> *@
+                                                <td>evaluation.ActualCapacity</td>
+                                                @* <td>@evaluation.ActualCapacity</td> *@
                                             </tr>
                                         </tbody>
                                     </table>
@@ -377,7 +355,7 @@
                                                 {
                                                     <tr>
                                                         <td>@productionFile.Name</td>
-                                                        <td>@productionFile.Catagory</td>
+                                                        <td>@productionFile.Category</td>
                                                         <td>@productionFile.ContentType</td>
                                                         <td>
                                                         <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
@@ -399,249 +377,6 @@
                 </div>
             }
         }
-       @*  else
-        {
-            <div class="container-fluid page-break-after" style=" padding: 5mm 20mm;">
-                <div class="card py-4 ">
-                    <div class="card-body px-2 mx-2">
-                        <div class="d-flex justify-content-between">
-                            <div class="">
-                                &nbsp;
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <img src="~/img/cbelogo.png" alt="Logo" class="mr-3" style="max-height: 50px;">
-                                <h4 class="mb-0">Commercial Bank of Ethiopia</h4>
-                            </div> <div class="">
-                                &nbsp;
-                            </div>                           
-                        </div>
-                        <hr class="my-1 border-1 border-dotted border-dark">
-                        <div>
-                            <div class="d-flex flex-column py-2">
-                                <div class="d-flex justify-content-center">
-                                    <h5 class="mb-1"> Production Capacity Estimation</h5>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <p class="mb-1 mr-4">
-                                        Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@DateTime.Now.ToShortDateString()</u>
-                                    </p>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <p class="mb-1 mr-4 " style="font-weight:500">
-                                        Case No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@pceCase.CaseNo</u>
-                                    </p>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <p class="mb-1 mr-4 " style="font-weight:500">
-                                        PCE Reference No: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@pce.Id</u>
-                                    </p>
-                                </div>
-                            </div>
-                            <h5 class="mt-1 pl-4">A. General Data Collection</h5>
-                            <div class="row my-0 py-0">
-                                <p class="py-0">
-                                    <label class="col-form-label">CBE Branch:</label>
-                                    <u class="border-bottom border:0.5px solid #000000  pb-1"> </u>
-                                </p>
-                            </div>
-                            <div class="pl-4">
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">1.&nbsp; &nbsp;Segment:</label>
-                                        <u class=" ">@pceCase.Segment</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">1.&nbsp; &nbsp;Applicant name:</label>
-                                        <u class=" ">@pceCase.ApplicantName</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0 my-0">
-                                        <label class="col-form-label pr-2">2.&nbsp; &nbsp; Address of Applicant:</label> &nbsp;
-                                        Town: <u class="   px-2">&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;;</u>
-                                        Sub-City: <u class="  px-2">&nbsp; &nbsp; &nbsp; &nbsp; ;</u>
-                                        Woreda: <u class="   px-2">&nbsp;&nbsp;</u>
-                                    </p>
-                                </div>
-                             
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp; Is the Production Machine Purchased by CBE's partial Financing?</label>
-                                        <u class="  "> &nbsp;&nbsp;No </u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0 my-0">
-                                        <label class="col-form-label pr-2">4.&nbsp; &nbsp; Production Machine Location:</label> &nbsp;
-                                        Town: <u class="   px-2">@pce.Region &nbsp; ;</u>
-                                        Sub-City: <u class="  px-2">@pce.SubCity &nbsp; ;</u>
-                                        Woreda: <u class="   px-2"> @pce.Wereda</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">5.&nbsp; &nbsp; Business or Trade License no:</label>
-                                        <u class="  "> @pce.BusinessLicenseNumber</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">6.&nbsp; &nbsp; LHC number where the equipment Installed:</label>
-                                        <u class="  "> @pce.MachineryInstalledPlace</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp; Owner Name in the LHC:</label>
-                                        <u class="  "> @pce.OwnerName</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">7.&nbsp; &nbsp; Name/Type of the equipment or machine:</label>
-                                        <u class="  "> @pce.MachineName </u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">                                        
-                                        <label class="col-form-label pr-2">8.&nbsp; &nbsp; Year of manufacturing:</label>
-                                        <u class="  "> @pce.ManufactureYear &nbsp; </u>
-                                        <label class="col-form-label pl-2">Country of Origin:</label>
-                                        <u class="  ">@pce.CountryOfOrgin</u>                                        
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">9.&nbsp; &nbsp; Place of inspection:</label>
-                                        <u class="  "> =============  </u>
-                                        <label class="col-form-label pl-2"> Date of inspection: </label>
-                                        <u class="  "> ============= </u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">10.&nbsp; &nbsp;Name of CRM who accompanied the Inspection:</label>
-                                        <u class="  "> &nbsp; &nbsp; &nbsp; &nbsp;  </u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">11.&nbsp; &nbsp;Purpose of capacity estimation:</label>
-                                        <u class="  "> @pce.Purpose  </u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp; Time Consumed to Check Production Process: &nbsp; &nbsp; Start</label>
-                                        <u class="  ">  =============</u>
-                                        <label class="col-form-label pl-2"> End   </label>
-                                        <u class="  "> =============</u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">12.&nbsp; &nbsp;Equipment Machinery Status:</label>
-                                    </p>
-                                </div>
-                               
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">C.&nbsp; &nbsp; Discrepancies between documentary (commercial invoice, customs declaration, business license, LHC) description and physical identity:</label>
-                                        <u class="  ">   ============= </u>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="form-group mb-1">
-                                <label class=" col-form-label font-weight-bold">Survey remark:</label>
-                                <u class="pl-4">  =============  ============= ============= ============= ============= </u>
-                            </div>
-                            <br />
-                            <h5 class="mt-1 pl-4">B. Production Capacity Estimation Summary</h5>
-
-                            <div class="pl-4">
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">A.&nbsp; &nbsp;Type of Output it Produces</label>
-                                        <u class="  ">  ============= </u>
-                                    </p>
-                                </div>
-                                <div class="form-group row my-0 pl-4">
-                                    <p class="my-0 py-0">
-                                        <label class="col-form-label pr-2">B.&nbsp; &nbsp; Phase of the Output, (Finished Product, Raw Material for Next Line)</label>
-                                        <u class="  ">  =============</u>
-                                    </p>
-                                </div>
-                                <table class="table table-border-none table-responsive">
-                                    <thead style="border-bottom: 3px solid #6f42c1;">
-                                        <tr>
-                                            <th style="width: 50px;">No</th>
-                                            <th style="width: 200px;white-space: normal;">Production Line/Equ name</th>
-                                            <th style="width: 200px;">Year of<br>Manufg</th>
-                                            <th style="width: 200px;">Unit<br>Meast</th>
-                                            <th style="width: 50px;">Qty.</th>
-                                            <th style="width: 200px;white-space: normal;">Total Current Actual Capacity(Qty./Unit time)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>   ============= </td>
-                                            <td>@pce.ManufactureYear</td>
-                                            <td> =============</td>
-                                            <td> =============</td>
-                                            <td> =============</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="form-group mb-1">
-                                    <label class=" col-form-label font-weight-bold">Conclusion </label>
-                                    <u class="pl-4">&nbsp; </u>
-                                </div>
-                            </div>
-                            <div class="approvedby" style="display:block">
-                                <p>Capacity estimated by: - _______________________________________; Signature: _________________Date: ________________</p>
-                            </div>
-                            <div class="requieddoc" id="requieddoc">
-                                <br />
-                                <h5 class="mt-1 pl-4">C.  Documents used for Production Capacity Estimation</h5>
-
-                                <table class="table table-border-none table-responsive">
-                                    <thead style="border-bottom: 3px solid #6f42c1;">
-                                        <tr>
-                                            <th style="width: 300px;">File Name</th>
-                                            <th style="width: 300px;">File Category</th>
-                                            <th style="width: 250px;">Content Type</th>
-                                            <th style="width: 250px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if (productionFiles != null && productionFiles.Any(e => e.CollateralId == pce.Id ))
-                                        {
-                                            @foreach (var productionFile in productionFiles.Where(e => e.CollateralId == pce.Id ))
-                                            {
-
-                                                <tr>
-                                                    <td>@productionFile.Name</td>
-                                                    <td>@productionFile.Catagory</td>
-                                                    <td>@productionFile.ContentType</td>
-                                                    <td>
-                                                        <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
-                                                        <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile" ,new { Id = productionFile.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>&nbsp;|&nbsp;
-                                                    </td>
-                                                </tr>
-                                            }
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="page-number"></div>
-                    </div>
-                </div>
-            </div>
-        } *@
     }
     
 </section>
@@ -651,48 +386,6 @@
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
     <script src="~/js/jsPDF/jspdf.umd.min.js"></script>
-    @*<script>
-        // Your JavaScript code that uses the jsPDF library
-        document.getElementById('download-btn').addEventListener('click', function () {
-            const doc = new jsPDF();
-            const pageContent = document.querySelector('body').innerHTML;
-            doc.addHTML(pageContent, function () {
-                doc.save('document.pdf');
-            });
-        });
-   
-        document.getElementById('print-btn').addEventListener('click', function () {
-            document.querySelector('footer').style.display = 'none';
-            document.getElementById('requieddoc').style.display = 'none';
-
-            @{ isPrinting = true; }
-            document.body.classList.add('printing');
-            window.print();
-
-            @{ isPrinting = false; }
-            document.body.classList.remove('printing');
-            document.querySelector('footer').style.display = 'block';
-            document.getElementById('custom-footer').style.display = 'none';
-            document.getElementById('requieddoc').style.display = 'block';
-        });
-  
-        window.addEventListener('beforeprint', function () {
-            var pageNumbers = document.querySelectorAll('.page-number');
-            var totalPages = pageNumbers.length;
-            for (var i = 0; i < pageNumbers.length; i++) {
-                pageNumbers[i].textContent = 'Page ' + (i + 1) + ' of ' + totalPages;
-            }
-        });
-
-        window.addEventListener('DOMContentLoaded', function() {
-            var pageNumbers = document.querySelectorAll('.page-number');
-            var totalPages = pageNumbers.length;
-            for (var i = 0; i < pageNumbers.length; i++) {
-                pageNumbers[i].textContent = 'Page ' + (i + 1) + ' of ' + totalPages;
-            }
-        });
-    </script>*@
-
     <script>
         document.getElementById('print-btn').addEventListener('click', function () {
             document.querySelector('footer').style.display = 'none';

@@ -1,5 +1,5 @@
 ﻿@{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
 }
 <section class="content">
@@ -22,7 +22,7 @@
                         <h3 class="card-title">Case Information</h3>
                     </div>
                     <div class="card-body">
-                        <h6><strong>Segment:</strong> @myCase.Segement</h6>
+                        <h6><strong>Segment:</strong> @myCase.Segment</h6>
                         <h6 style="margin-top:1.2rem;"><strong>Case No:</strong> @myCase.CaseNo</h6>
                         <h6 style ="margin-top:1.2rem;"><strong>Status:</strong> @myCase.Status</h6>
                         <h6 style="margin-top:1.2rem;"><strong>Center: </strong> @myCase.District</h6>
@@ -58,7 +58,7 @@
                                         <tr>
 
                                             <td>@myCase.BussinessLicence.Name</td>
-                                            <td>@myCase.BussinessLicence.Catagory</td>
+                                            <td>@myCase.BussinessLicence.Category</td>
                                             <td><a href="/UploadFile/ViewFile?id=@myCase.BussinessLicence.Id" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile?id=@myCase.BussinessLicence.Id" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
                                         </tr>
                                     }
@@ -73,7 +73,7 @@
                                             {
                                                 <tr>
                                                     <td>@item.Name</td>
-                                                    <td>@item.Catagory</td>
+                                                    <td>@item.Category</td>
                                                     <td><a href="/UploadFile/ViewFile?id=@item.Id" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile?id=@item.Id" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>
                                                 </tr>
                                             }

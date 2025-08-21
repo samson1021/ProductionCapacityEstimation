@@ -1,3 +1,8 @@
+function secureRandomString() {
+	const array = new Uint32Array(1);
+	window.crypto.getRandomValues(array);
+	return array[0].toString().replace(/\D/g, "");
+}
 /*!
  * jQuery JavaScript Library v3.6.0
  * https://jquery.com/
@@ -329,7 +334,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 jQuery.extend( {
 
 	// Unique for each copy of jQuery on the page
-	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
+	expando: "jQuery" + ( version + secureRandomString() ).replace( /\D/g, "" ),
 
 	// Assume jQuery is ready without the ready module
 	isReady: true,
@@ -2683,7 +2688,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				elems = seed || byElement && Expr.find[ "TAG" ]( "*", outermost ),
 
 				// Use integer dirruns iff this is the outermost matcher
-				dirrunsUnique = ( dirruns += contextBackup == null ? 1 : Math.random() || 0.1 ),
+				dirrunsUnique = ( dirruns += contextBackup == null ? 1 : secureRandomString() || 0.1 ),
 				len = elems.length;
 
 			if ( outermost ) {

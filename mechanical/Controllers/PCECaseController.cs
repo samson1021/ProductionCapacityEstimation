@@ -21,10 +21,10 @@ using mechanical.Services.PCE.PCEEvaluationService;
 using mechanical.Services.PCE.PCECaseScheduleService;
 using mechanical.Services.PCE.PCECaseTerminateService;
 using mechanical.Services.CaseServices;
-using mechanical.Services.PCE.PCEEvaluationService;
 
 namespace mechanical.Controllers.PCE
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     [Authorize]
     public class PCECaseController : BaseController
     {
@@ -328,17 +328,23 @@ namespace mechanical.Controllers.PCE
 
             double customerId = Convert.ToDouble(pceReportData.PCECases.CustomerId);
 
-            //var customerinfo = await _caseService.GetCustomerName(customerId);
-            var customerinfo = "err";
-            if (customerinfo == null) { return BadRequest("Unable Customer Name"); }
-            ViewData["customerinfo"] = customerinfo;
+            var customerinfo = await _caseService.GetCustomerName(customerId);
 
+            if (customerinfo == null || customerinfo== "err") { 
+            
+            ViewData["customerinfo"] = "Unable Customer Name";
 
-
-            if (pceReportData.PCEEvaluations != null || pceReportData.PCEEvaluations.Any())
+            }
+            else
             {
-                var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
-                var EvaluatorNames = _cbeContext.CreateUsers.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();
+                ViewData["customerinfo"] = customerinfo;
+
+            }
+
+            if ((pceReportData.PCEEvaluations != null && pceReportData.PCEEvaluations.Count() != 0) || pceReportData.PCEEvaluations.Any())
+            {
+                var userIdss = _cbeContext.Users.Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                var EvaluatorNames = _cbeContext.Users.Include(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(c => c.Id == pceReportData.PCEEvaluations[0].EvaluatorId).FirstOrDefault();
                 var EvaluatorName = EvaluatorNames.Name;
                 var signaturefilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
                 ViewData["signiture"] = EvaluatorNames;
@@ -360,12 +366,12 @@ namespace mechanical.Controllers.PCE
                 ViewData["EvaluatorReport"] = evaluatorReportDto;
             }
 
-
             ViewData["PCECase"] = pceReportData.PCECases;
             ViewData["Productions"] = pceReportData.Productions;
             ViewData["PCEEvaluations"] = pceReportData.PCEEvaluations;
             ViewData["PCECaseSchedule"] = pceReportData.PCECaseSchedule;
             ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            ViewData["ProductionLines"] = pceReportData.ProductionLines;
 
             return View();
         }
@@ -396,8 +402,8 @@ namespace mechanical.Controllers.PCE
 
                 foreach (var evaluation in pceReportData.PCEEvaluations)
                 {
-                    var userIdss = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
-                    var evaluatorName = _cbeContext.CreateUsers.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.Name).FirstOrDefault();
+                    var userIdss = _cbeContext.Users.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.emp_ID).FirstOrDefault();
+                    var evaluatorName = _cbeContext.Users.Where(c => c.Id == evaluation.EvaluatorId).Select(c => c.Name).FirstOrDefault();
                     var signatureFilename = _cbeContext.Signatures.Where(c => c.Emp_Id == userIdss).Select(c => c.SignatureFileId).FirstOrDefault();
 
                     var evaluatorReportDto = new EvaluatorReportDto
@@ -429,9 +435,9 @@ namespace mechanical.Controllers.PCE
         {
             var pceCase = await _PCECaseService.GetPCECase(base.GetCurrentUserId(), Id);
 
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
+            //var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), Id);
 
-            ViewData["pceEvaluations"] = pceEvaluations;
+            //ViewData["pceEvaluations"] = pceEvaluations;
             ViewData["PCECase"] = pceCase;
             return View();
         }
@@ -439,7 +445,7 @@ namespace mechanical.Controllers.PCE
         [HttpGet]
         public async Task<IActionResult> GetPCESummary(Guid PCECaseId)
         {
-            var pceEvaluations = await _PCEEvaluationService.GetValuationsByPCECaseId(base.GetCurrentUserId(), PCECaseId);
+            var pceEvaluations = await _PCEEvaluationService.GetValuationsSummaryByPCECaseId(base.GetCurrentUserId(), PCECaseId);
             string jsonData = JsonConvert.SerializeObject(pceEvaluations, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             return Content(jsonData, "application/json");
         } 
@@ -471,14 +477,15 @@ namespace mechanical.Controllers.PCE
             }
 
             var CaseInfo = await _PCECaseService.GetPCECase(userId, pceCaseTerminate.PCECaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = "getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + pceCaseTerminate.Reason + " For further Detail please check PCE Valuation System",
-            });
+
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                body: "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + pceCaseTerminate.Reason + " For further Detail please check PCE Valuation System"
+            );
+
             string jsonData = JsonConvert.SerializeObject(pceCaseTerminate);
             return Ok(pceCaseTerminate);
         }
@@ -529,5 +536,207 @@ namespace mechanical.Controllers.PCE
 
             return View();
         }
+        // HO
+        [HttpGet]
+        public async Task<IActionResult> HOPCECases(string Status = "All")
+        {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
+            }
+
+            if (Status == "Reestimate")
+            {
+                Status = "Completed";
+            }
+
+            ViewBag.Status = Status;
+            ViewData["Title"] = Status + " PCE Cases";
+            ViewBag.Url = "/PCECase/GetHOPCECases";
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+
+            return View("HOPCECases");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHOPCECases(string Status = "All", int? Limit = null)
+        {
+
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Invalid status.");
+            }
+
+            IEnumerable<PCECaseReturnDto> pceCases = null;
+
+            // var userId = base.GetCurrentUserId();
+
+            if (Status == "Reestimate")
+            {
+                pceCases = await _PCECaseService.GetHOPCECases("Completed");
+            }
+            else
+            {
+                pceCases = await _PCECaseService.GetHOPCECases(Status);
+            }
+
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load {Status} PCE Cases");
+            }
+
+            string jsonData = JsonConvert.SerializeObject(pceCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHODashboardPCECaseCount()
+        {
+            var pceCaseCount = await _PCECaseService.GetHODashboardPCECaseCount();
+            string jsonData = JsonConvert.SerializeObject(pceCaseCount, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+      
+       
+        [HttpGet]
+        public async Task<IActionResult> HODetail(Guid Id, string Status = "All")
+        {
+            var allowedStatuses = new[] { "", "All", "New", "Pending", "Completed", "Returned", "Terminated", "Remarked", "Reestimate" };
+
+            if (!allowedStatuses.Any(s => s.Equals(Status, StringComparison.OrdinalIgnoreCase)))
+            {
+                // Error page
+                return BadRequest("Invalid status.");
+                // return NotFound("Resource not found.");
+                // return Unauthorized("Authentication required.");
+                // return StatusCode(500, "An unexpected error occurred.");
+                // return Forbid("You do not have permission to access this resource.");
+            }
+
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+
+            if (pceCase == null)
+            {
+                return RedirectToAction("PCECases");
+            }
+
+            var PCECaseTerminate = await _PCECaseTerminateService.GetCaseTerminates(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+            var latestPCECaseSchedule = await _PCECaseScheduleService.GetLatestSchedule(Id);
+
+            ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+            ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseTerminate"] = PCECaseTerminate;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["LatestPCECaseSchedule"] = latestPCECaseSchedule;
+            ViewData["Title"] = "PCE Case Details";
+            ViewBag.Status = Status;
+
+            return View();
+        }
+        public async Task<IActionResult> HORemarkPCECases()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+
+        public async Task<IActionResult> HOemarkPCECase(Guid Id)
+        {
+            var userId = base.GetCurrentUserId();
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+
+            if (pceCase == null)
+            {
+                return RedirectToAction("PCECases");
+            }
+
+            ViewData["CurrentUser"] = await _UserService.GetUserById(userId);
+            ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["Id"] = userId;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHORemarkedPCECases()
+        {
+            var pceCases = await _PCECaseService.GetHORemarkedPCECases();
+
+            if (pceCases == null)
+            {
+                return BadRequest("Unable to load Remarked PCE Cases.");
+            }
+
+            string jsonData = JsonConvert.SerializeObject(pceCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            return Content(jsonData, "application/json");
+        }
+        // PCE Terminate Cases
+        [HttpGet]
+        public async Task<IActionResult> HOPCETerminatedCases()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHOPCETerminatedCases()
+        {
+            var newCases = await _PCECaseTerminateService.GetHOPCECaseTerminates();
+            return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> HOPCESummary(Guid Id)
+        {
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+            
+            ViewData["PCECase"] = pceCase;
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> HOPCECasesReport()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHOPCECasesReport()
+        {
+            var newCases = await _PCECaseService.GetHOPCECasesReport();
+            return Content(JsonConvert.SerializeObject(newCases, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), "application/json");
+        }
+        public async Task<IActionResult> HOPCECaseDetailReport(Guid id)
+        {
+            var pceCaseDto = await _PCECaseService.GetHOPCECaseDetailReport(id);
+            return View(pceCaseDto);
+        }
+        [HttpGet]
+        public async Task<IActionResult> HOPCEReestimationCases()
+        {
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+            return View();
+        }
+
+        public async Task<IActionResult> HOPCEReestimationCase(Guid Id)
+        {
+            var pceCase = await _PCECaseService.GetHOPCECase(Id);
+
+            if (pceCase == null)
+            {
+                return RedirectToAction("PCECases");
+            }
+
+            var pceCaseSchedule = await _PCECaseScheduleService.GetSchedules(Id);
+
+            ViewData["PCECase"] = pceCase;
+            ViewData["PCECaseSchedule"] = pceCaseSchedule;
+            ViewData["CurrentUser"] = await _UserService.GetUserById(base.GetCurrentUserId());
+
+            return View();
+        }
+
     }
 }

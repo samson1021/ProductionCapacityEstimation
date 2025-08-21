@@ -5,6 +5,7 @@ using mechanical.Models.Entities;
 using mechanical.Services.CaseServices;
 using mechanical.Services.SignatureService;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -13,6 +14,7 @@ using NuGet.Packaging.Signing;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class SignatureController : BaseController
     {
         private readonly ISignatureService _signature;
@@ -52,7 +54,7 @@ namespace mechanical.Controllers
         public ActionResult Create()
         {
             var userID = base.GetCurrentUserId();
-            var UserIds=_cbeContext.CreateUsers.Where(i=>i.Id == userID).Select(i=>i.emp_ID).FirstOrDefault();
+            var UserIds=_cbeContext.Users.Where(i=>i.Id == userID).Select(i=>i.emp_ID).FirstOrDefault();
             ViewData["UserId"] = UserIds;
             return View();
         }

@@ -41,7 +41,7 @@
                                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input asp-for="ScheduleDate" id="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required /> @* type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" *@
+                                            <input asp-for="ScheduleDate" id="ScheduleDate" class="form-control" type="datetime-local" value="@(latestPCECaseSchedule?.ScheduleDate != null? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-ddTHH:mm"): DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-ddTHH:mm"))" required />
                                         </div>
                                         <span class="text-danger" id="dateError"></span> <!-- Error message will be displayed here -->
                                     </div>
@@ -144,7 +144,7 @@
 <div class="modal" id="proposeNewSchedule-modals" tabindex="-1" role="dialog" aria-labelledby="proposeNewSchedule-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-purple">
                 <h5 class="modal-title" id="proposeNewSchedule-modal-label">Propose Scheduled Date</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -155,8 +155,8 @@
                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required />
-                        @* <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToUniversalTime().ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required /> *@
+                        <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="datetime-local" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.UtcNow.ToString("yyyy-MM-dd"))" required />
+                        @* <input id="proposeScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToUniversalTime().ToString("yyyy-MM-dd") : DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd"))" required /> *@
                         <span class="text-danger" id="proposeDateError"></span>
                     </div>
                     <div class="form-group">
@@ -176,7 +176,7 @@
 <div class="modal" id="reschedule-modals" tabindex="-1" role="dialog" aria-labelledby="reschedule-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-purple">
                 <h5 class="modal-title" id="reschedule-modal-label">Re Scheduled </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -187,7 +187,7 @@
                     <input type="hidden" name="PCECaseId" value="@myPCECase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="rescheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required />
+                        <input id="rescheduleDate" name="ScheduleDate" class="form-control" type="datetime-local" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.UtcNow.ToString("yyyy-MM-dd"))" required />
                         <span class="text-danger" id="rescheduleDateError"></span> <!-- Error message will be displayed here -->
 
                     </div>
@@ -208,7 +208,7 @@
 <div class="modal" id="updateSchedule-modals" tabindex="-1" role="dialog" aria-labelledby="updateSchedule-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-purple">
                 <h5 class="modal-title" id="updateSchedule-modal-label">Update Scheduled Date</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -220,7 +220,7 @@
                     <div class="form-group">
 
                         <div class="input-group">
-                            <input id="updateScheduleDate" name="ScheduleDate" class="form-control" type="date" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" required />
+                            <input id="updateScheduleDate" name="ScheduleDate" class="form-control" type="datetime-local" value="@(latestPCECaseSchedule?.ScheduleDate != null ? latestPCECaseSchedule.ScheduleDate.ToString("yyyy-MM-dd") : DateTime.UtcNow.ToString("yyyy-MM-dd"))" required />
                         </div>
                         <span class="text-danger" id="updateDateError"></span> <!-- Error message will be displayed here -->
 

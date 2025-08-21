@@ -1,4 +1,4 @@
-﻿@model mechanical.Models.Entities.CreateUser
+﻿@model mechanical.Models.Entities.User
 @using mechanical.Models.Enum;
 @{
     ViewData["Title"] = "Create";
@@ -81,12 +81,17 @@
                             <span asp-validation-for="Department" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-6">
-                            <label asp-for="SupervisorId" class="control-label">SuperVisor </label>
+                            <label asp-for="SupervisorId" class="control-label">SuperVisor <span id="supervisorRequired" class="text-danger d-none">*</span></label>
+                            @* <label asp-for="SupervisorId" class="control-label">SuperVisor </label> *@
                             <select id="SupervisorId" name="SupervisorId" class="form-control"></select>
                             <span asp-validation-for="SupervisorId" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row" id="RM">
+                            <select name="Department" id="Department" hidden class="form-control" required>
+                                <option value="CRM" selected > </option>
+                            </select>
+
                         <div class="form-group col-lg-6">
                             <label asp-for="BroadSegment">Broad Segment <i class="text-danger">*</i></label>
                             <select id="BroadSegmentDropdown" asp-for="BroadSegment" required class="form-control form-control-sm"
@@ -103,6 +108,7 @@
                             <span asp-validation-for="Unit" class="text-danger"></span>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="form-group">
                             <input type="submit" value="Submit" class="btn btn-primary" />
@@ -195,7 +201,7 @@
                 case "AcquiredAssetAdministration":
                     UnitDropdown.append('<option value="AcquiredAssetAdministration">Acquired Asset Administration</option>');
                     break;
-                case "Litigation":
+                case "FacilityManagement":
                     UnitDropdown.append('<option value="FacilityManagement">Facility Management</option>');
                     break;
                 default:
@@ -251,7 +257,15 @@
             if (selectedRole == 'Relation Manager') {
                 $("#RM").show();
                 $("#CEV").hide();
-            } else {
+            }
+                else if (selectedRole == 'Admin'){
+                    $("#RM").hide();
+                $("#CEV").show();
+                $('#Department').html(`
+                  <option value="" selected disabled>Select valuation unit</option>
+                  <option value="Mechanical">Access Control</option>`);
+                }
+                else {
                 $("#RM").hide();
                 $("#CEV").show();
                 $('#Department').html(`
@@ -261,12 +275,21 @@
                   <option value="Agriculture">Agriculture</option>`);
             }
         });
-
+            const rolesRequiringSupervisor = [
+        'maker teamleader',
+        'maker officer',
+        'checker teamleader',
+        'checker officer'
+        // Add other roles that need supervisors
+    ];
         $("#Department").change(function () {
             var roleId = $("#RoleId").val();
             var Department = $("#Department").val();
             var districtId = $("#DistrictId").val();
             var dropdown = $('#SupervisorId');
+            var roleName = $("#RoleId option:selected").text().toLowerCase(); // Get selected role name
+    
+
             dropdown.empty();
             dropdown.append($('<option></option>').val('').text('Select Supervisor'));
             if (roleId) {
@@ -282,8 +305,17 @@
                             $(data).each(function (index, supervisor) {
                                 dropdown.append($('<option></option>').val(supervisor.Id).text(supervisor.Name));
                             });
+                            if (rolesRequiringSupervisor.includes(roleName)) {
+                                dropdown.prop('required', true);
+                                $('#supervisorRequired').removeClass('d-none');
+                            } else {
+                                dropdown.prop('required', false);
+                                $('#supervisorRequired').addClass('d-none');
+                            }
                         } else {
                             dropdown.prop('disabled', true);
+                            dropdown.prop('required', false);
+                            $('#supervisorRequired').addClass('d-none');
                         }
                     },
                     error: function () {
@@ -294,6 +326,21 @@
             } else {
             }
         });
+    });
+
+        $("#RoleId").change(function() {
+        var roleName = $(this).find("option:selected").text().toLowerCase();
+
+        if (rolesRequiringSupervisor.includes(roleName)) {
+            $('#SupervisorId').prop('required', true);
+            $('#supervisorRequired').removeClass('d-none');
+        } else {
+            $('#SupervisorId').prop('required', false);
+            $('#supervisorRequired').addClass('d-none');
+        }
+
+        // Trigger Department change to reload supervisors
+        $("#Department").trigger('change');
     });
     $(document).ready(function () {
         $('#loadingIndicator').hide();
@@ -321,9 +368,9 @@
                         }
                         $('#Name').val(data.DisplayName);
                         $('#Email').val(data.Email);
-                        $('#title').val(data.jobTitle);
+                        $('#title').val(data.JobTitle);
                         $('#Branch').val(data.Department);
-                        $('#company').val(data.company);
+                        $('#company').val(data.Company);
                     },
                     error: function () {
                         // Hide loading indicator

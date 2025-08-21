@@ -12,7 +12,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
         // public required string RequestingUnit { get; set; }
         public  string? Type { get; set; } 
         public string CustomerId { get; set; } = string.Empty; 
-        public string CustomerEmail { get; set; } = string.Empty;
+        public string? CustomerEmail { get; set; } = string.Empty;
         
         public Guid DistrictId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -20,6 +20,7 @@ namespace mechanical.Models.PCE.Dto.PCECaseDto
 
         public string Status { get; set; } = string.Empty; 
         public string? District { get; set; }
+        public string? UserName { get; set; } // New property for Employee Name      
         public int NoOfProductions { get; set; } = 0;
         public int TotalNoOfProductions { get; set; } = 0;
 

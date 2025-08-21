@@ -9,24 +9,24 @@ namespace mechanical.Models.Dto.ConstMngAgrMachineryDto
         public required Guid CollateralId { get; set; }
         public Guid EvaluatorUserID { get; set; }
         public Guid CheckerUserID { get; set; }
-
+        public string? MechanicalEqpmntName { get; set; }
         public string constructionMiningAgriculturalMachineryType { get; set; } = string.Empty;
-        public string  EngineType { get; set; }=string.Empty;
-        public string  PowerSupply { get; set; }=string.Empty;
-        public string  NoOfCylinder { get; set; }=string.Empty;
-        public string  TransmissionType { get; set; }=string.Empty;
-        public string  IgnitionSystem { get; set; }=string.Empty;
-        public string  CoolingType { get; set; }=string.Empty;
+        public string EngineType { get; set; } = string.Empty;
+        public string PowerSupply { get; set; } = string.Empty;
+        public string NoOfCylinder { get; set; } = string.Empty;
+        public string TransmissionType { get; set; } = string.Empty;
+        public string IgnitionSystem { get; set; } = string.Empty;
+        public string CoolingType { get; set; } = string.Empty;
         public string EnginePower { get; set; } = string.Empty;
         public string WorkingProductionCapacity { get; set; } = string.Empty;
-        public string  TechnologyStandard { get; set; }=string.Empty;
+        public string TechnologyStandard { get; set; } = string.Empty;
         public string MakerPreferenceType { get; set; } = string.Empty;
-        public string  CabinType { get; set; }=string.Empty;
-        public string  NumberOfAxle { get; set; }=string.Empty;
+        public string CabinType { get; set; } = string.Empty;
+        public string NumberOfAxle { get; set; } = string.Empty;
         public string Color { get; set; } = string.Empty;
         public string MakerCompany { get; set; } = string.Empty;
-        public string  CurrentEqpmntCondition { get; set; }=string.Empty;
-        public string  AllocatedPointsRange { get; set; }=string.Empty;
+        public string CurrentEqpmntCondition { get; set; } = string.Empty;
+        public string AllocatedPointsRange { get; set; } = string.Empty;
         public string ModelNo { get; set; } = string.Empty;
         public string EngineNo { get; set; } = string.Empty;
         public string ChassisNo { get; set; } = string.Empty;
@@ -53,5 +53,8 @@ namespace mechanical.Models.Dto.ConstMngAgrMachineryDto
 
 
         public virtual Collateral? Collateral { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     }
 }

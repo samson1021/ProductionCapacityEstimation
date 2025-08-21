@@ -12,10 +12,11 @@
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
 <script>
     $(document).ready(function () {
         var selectedCategory = document.getElementById("selectedCategory").value;
-
+        console.log("the IIIIIIiiiiiiiiiiiiiiiiiiii"+selectedCategory);
         var categoryDropdown = document.getElementById("categoryDropdown");
         for (var i = 0; i < categoryDropdown.options.length; i++) {
             if (categoryDropdown.options[i].text === selectedCategory) {
@@ -24,6 +25,11 @@
             }
         }
         var typeDropdown = $("#typeDropdown");
+
+
+
+
+
         function populateTypeDropdown() {
             var category = $("#categoryDropdown").val();
             typeDropdown = $("#typeDropdown");
@@ -114,8 +120,8 @@
                     break;
                 case "IBFEqupment":
                     typeDropdown.append('<option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>');
-                    typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>');
-                    typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>');
+                    typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus</option>');
+                    typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office and Laboratory Equipment</option>');
                     break;
                 default:
                     break;

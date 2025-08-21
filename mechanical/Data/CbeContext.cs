@@ -7,79 +7,26 @@ using mechanical.Models.Entities;
 using mechanical.Models.PCE.Entities;
 
 //using mechanical.Migrations;
-
 namespace mechanical.Data
 {
     public class CbeContext : DbContext
-
     {
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-            modelBuilder.Entity<PCEEvaluation>()
-                .Property(e => e.DepreciationRateApplied)
-                .HasColumnType("decimal(18,2)");
-
-            modelBuilder.Entity<PCEEvaluation>()
-                .Property(e => e.EffectiveProductionHour)
-                .HasColumnType("decimal(18,2)");
-
-
-            modelBuilder.Entity<Signatures>()
-                .HasOne(c => c.SignatureFile)
-                .WithOne()
-                .HasForeignKey<Signatures>(c => c.SignatureFileId);
-
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                var entity = modelBuilder.Entity(entityType.ClrType);
-                var idProperty = entity.Property("Id");
-                if (idProperty != null && idProperty.Metadata.ClrType == typeof(Guid))
-                {
-                    idProperty.HasDefaultValueSql("NEWID()");
-                    idProperty.ValueGeneratedOnAdd();
-                }
-            }
- 
-            base.OnModelCreating(modelBuilder);
-            
-            modelBuilder.Entity<PCEEvaluation>()
-                .HasMany(e => e.ShiftHours)
-                .WithOne()
-                .HasForeignKey(ti => ti.PCEEId);          
-
-            modelBuilder.Entity<PCEEvaluation>()
-                .HasOne(pe => pe.TimeConsumedToCheck)
-                .WithOne() 
-                .HasForeignKey<DateTimeRange>(dt => dt.PCEEId); 
-
-            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
-                v => v.ToDateTime(TimeOnly.MinValue),
-                v => DateOnly.FromDateTime(v));
-
-            modelBuilder.Entity<PCEEvaluation>(entity =>
-            {
-                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
-            });
-        }
-        public CbeContext(DbContextOptions<CbeContext> options) : base(options)
-        {
-        }
-
         //production capacity estimation
-        public DbSet<PCECase> PCECases { get; set; }  
-        public DbSet<ProductionCapacity> ProductionCapacities { get; set; } 
-        public virtual DbSet<PCEEvaluation> PCEEvaluations { get; set; }
-        public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }  
-        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }  
+        public DbSet<PCECase> PCECases { get; set; }
+        public DbSet<ProductionCapacity> ProductionCapacities { get; set; }
+        public DbSet<PCEEvaluation> PCEEvaluations { get; set; }
+        public DbSet<ProductionLine> ProductionLines { get; set; }
+        public DbSet<ProductionLineInput> ProductionLineInputs { get; set; }
+        public DbSet<Justification> Justifications { get; set; }
+        public DbSet<PCECaseAssignment> PCECaseAssignments { get; set; }
+        public DbSet<PCECaseTimeLine> PCECaseTimeLines { get; set; }
         public DbSet<PCECaseSchedule> PCECaseSchedules { get; set; }
         public DbSet<PCECaseTerminate> PCECaseTerminates { get; set; }
-        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }    
+        public DbSet<ProductionReestimation> ProductionReestimations { get; set; }
         public DbSet<ReturnedProduction> ReturnedProductions { get; set; }
         public DbSet<PCECaseComment> PCECaseComments { get; set; }
-        public DbSet<TimeInterval> TimeIntervals { get; set; }
         public DbSet<DateTimeRange> DateTimeRanges { get; set; }
-        
+
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseAssignment> CaseAssignments { get; set; }
         public DbSet<CollateralReestimation> CollateralReestimations { get; set; }
@@ -91,26 +38,133 @@ namespace mechanical.Data
         public DbSet<Collateral> Collaterals { get; set; }
         public DbSet<ConstMngAgrMachinery> ConstMngAgrMachineries { get; set; }
         public DbSet<IndBldgFacilityEquipment> IndBldgFacilityEquipment { get; set; }
+        public DbSet<IndBldgFacilityEquipmentCosts> IndBldgFacilityEquipmentCosts { get; set; }
         public DbSet<MotorVehicle> MotorVehicles { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
 
-
-        public virtual DbSet<CreateRole> CreateRoles { get; set; }
-        public virtual DbSet<CreateUser> CreateUsers { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<District> Districts { get; set; }
-        public virtual DbSet<Signatures>  Signatures { get; set; }
+        public virtual DbSet<Signatures> Signatures { get; set; }
         public virtual DbSet<EmployeeInfoes> Employees { get; set; }
         public virtual DbSet<Correction> Corrections { get; set; }
         public virtual DbSet<Reject> Rejects { get; set; }
-        public virtual DbSet<Reject> TaskComment { get; set; }
-	
-	    public virtual DbSet<Reject> TaskManagment { get; set; }
-	    public virtual DbSet<Reject> TaskNotification { get; set; }
+        public virtual DbSet<TaskComment> TaskComments { get; set; }
+	    public virtual DbSet<TaskManagment> TaskManagments { get; set; }
+	    public virtual DbSet<Notification> Notifications { get; set; }
+	    public virtual DbSet<CommentHistory> CommentHistorys { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure Users self-referencing relationship
+            // modelBuilder.Entity<User>()
+            //     .HasOne(u => u.Supervisor)
+            //     .WithMany()
+            //     .HasForeignKey(u => u.SupervisorId)
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // modelBuilder.Entity<Collateral>()
+            //     .HasOne(c => c.Case)
+            //     .WithMany()
+            //     .HasForeignKey(c => c.CaseId)
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // modelBuilder.Entity<Signatures>()
+            //     .HasOne(s => s.User)
+            //     .WithOne()
+            //     .HasForeignKey<Signatures>(s => s.UserId)
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // modelBuilder.Entity<PCECase>()
+            //     .HasOne(p => p.PCECaseOriginator)
+            //     .WithMany()
+            //     .HasForeignKey(p => p.PCECaseOriginatorId)
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // modelBuilder.Entity<ProductionCapacity>()
+            //     .HasOne(p => p.PCECase)
+            //     .WithMany()
+            //     .HasForeignKey(p => p.PCECaseId)
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // modelBuilder.Entity<ProductionLine>()
+            //     .Property(pl => pl.Id)
+            //     .HasDefaultValueSql("NEWSEQUENTIALID()")
+            //     .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<ProductionLine>()
+                .HasOne(pl => pl.PCEEvaluation)
+                .WithMany(pe => pe.ProductionLines)
+                .HasForeignKey(pl => pl.PCEEvaluationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductionLine>(entity =>
+            {
+                entity.Property(p => p.ActualCapacity).HasPrecision(18, 2);
+                entity.Property(p => p.AttainableCapacity).HasPrecision(18, 2);
+                entity.Property(p => p.ConversionRatio).HasPrecision(18, 2);
+                entity.Property(p => p.DesignCapacity).HasPrecision(18, 2);
+                entity.Property(p => p.TotalInput).HasPrecision(18, 2);
+            });
+
+            modelBuilder.Entity<ProductionLineInput>()
+                .HasOne(pli => pli.ProductionLine)
+                .WithMany(pl => pl.ProductionLineInputs)
+                .HasForeignKey(pli => pli.ProductionLineId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductionLineInput>(entity =>
+            {
+                entity.Property(p => p.Quantity).HasPrecision(18, 2);
+            });
+
+            modelBuilder.Entity<Signatures>()
+                .HasOne(c => c.SignatureFile)
+                .WithOne()
+                .HasForeignKey<Signatures>(s => s.SignatureFileId);
+
+            // Add indexes using Fluent API
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.UserId)
+                .HasDatabaseName("IX_Notifications_UserId");
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.IsRead)
+                .HasDatabaseName("IX_Notifications_IsRead");
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.CreatedAt)
+                .HasDatabaseName("IX_Notifications_CreatedAt");
+
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+                v => v.ToDateTime(TimeOnly.MinValue),
+                v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<PCEEvaluation>(entity =>
+            {
+                entity.Property(e => e.InspectionDate).HasConversion(dateOnlyConverter);
+            });
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var entity = modelBuilder.Entity(entityType.ClrType);
+                var idProperty = entity.Property("Id");
+                if (idProperty != null && idProperty.Metadata.ClrType == typeof(Guid))
+                {
+                    idProperty.HasDefaultValueSql("NEWID()");
+                    idProperty.ValueGeneratedOnAdd();
+                }
+            }
+
+            base.OnModelCreating(modelBuilder);
+        }
+        public CbeContext(DbContextOptions<CbeContext> options) : base(options)
+        {
+        }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //       => optionsBuilder.UseSqlServer("Server=DESKTOP-OJQ5A2C\\DOMAIN;Database=mechanical;Trusted_Connection=True;TrustServerCertificate=true;");
-
     }
 }

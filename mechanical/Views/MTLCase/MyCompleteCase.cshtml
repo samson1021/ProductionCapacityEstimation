@@ -2,13 +2,14 @@
 @using mechanical.Models.Dto.CaseTerminateDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
-    var caseTerminate = ViewData["caseTerminate"] as IEnumerable<CaseTerminateReturnDto>;
+    var motorVehicle = ViewData["motorVehicle"];
+    var indBldgFacEq = ViewData["indBldgFacEq"];
+    var conMngAgr = ViewData["conMngAgr"];
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
 }
-
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -46,16 +47,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" style="color:red;" id="custom-tabs-four-Terminate-tab" data-toggle="pill" href="#custom-tabs-four-Terminate" role="tab" aria-controls="custom-tabs-four-Terminate" aria-selected="false">
-                            <i class="fas fa-ban"> </i>
-                            Terminate @{
-                                if (caseTerminate.Count() > 0)
-                                {
-                                    <span class="right badge badge-danger">New</span>
-                                }
-                            }
+                        <a class="nav-link" id="custom-tabs-four-correction-tab" data-toggle="pill" href="#custom-tabs-four-correction" role="tab" aria-controls="custom-tabs-four-correction" aria-selected="false">
+                            <i class="fas fa-history"></i> Case History <span class="badge badge-warning right CorrectionBage"></span>
                         </a>
                     </li>
+
+
                 </ul>
             </div>
             <div class="card-body">
@@ -72,14 +69,9 @@
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @await Html.PartialAsync("_CaseComment")
                     </div>
-                    @{
-                        if (caseTerminate.Count() > 0)
-                        {
-                            <div class="tab-pane fade" id="custom-tabs-four-Terminate" role="tabpanel" aria-labelledby="custom-tabs-four-Terminate-tab">
-                                @await Html.PartialAsync("_CaseTerminate")
-                            </div>
-                        }
-                    }
+                    <div class="tab-pane fade" id="custom-tabs-four-correction" role="tabpanel" aria-labelledby="custom-tabs-four-correction-tab">
+                        @await Html.PartialAsync("_CaseCorrectionHistory")
+                    </div>
                 </div>
             </div>
         </div>
@@ -167,7 +159,7 @@
             data.forEach(function (collateralFile) {
                 tableBody += '<tr>';
                 tableBody += '<td>' + collateralFile.Name + '</td>';
-                tableBody += '<td>' + collateralFile.Catagory + '</td>';
+                tableBody += '<td>' + collateralFile.Category + '</td>';
                 tableBody += '<td>' + collateralFile.ContentType + '</td>';
                 tableBody += '<td><a href="/UploadFile/ViewFile/' + collateralFile.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + collateralFile.Id + '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>';
                 tableBody += '</tr>';

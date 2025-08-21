@@ -11,42 +11,11 @@
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 
-@* <script>
-    $(document).ready(function () {
-        $.ajax({
-            url: '/usermanagment/getusers',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                console.log(data.DistrictName)
-                $('#example1').DataTable({
-                    data: data,
-                    columns: [
-                        // { data: 'Id', 'title': 'ID' },
-                        { data: 'Name', 'title': 'Name' },
-                        { data: 'Email', 'title': 'Email' },
-                        { data: 'DistrictName', 'title': 'District' },
-                        { data: 'Branch', 'title': 'Branch' },
-                        { data: 'RoleName', 'title': 'Role' },
-                        { data: 'Status', 'title': 'Status' },
-                        // { data: 'Browser' },
-                        // { data: 'Platforms' },
-                        // { data: 'EngineVersion' },
-                        // { data: 'CssGrade' }
-                    ],
-                    responsive: true,
-                    lengthChange: false,
-                    autoWidth: false,
-                    buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            }
-        });
-    });
 
-</script> *@
 
 
 <script>
+    
     $(document).ready(function () {
         // Get the loading GIF element
         var loading = $('<div id="loading" style="display: none; text-align: center;"><img src="img/waiting.gif" alt="Loading"></div>');
@@ -57,49 +26,226 @@
         // Display the loading GIF while fetching data
         loading.show();
 
-        $.ajax({
-            url: '/usermanagment/getusers',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                // Hide the loading GIF
-                loading.hide();
-                $('#example1').DataTable({
-                    data: data,
-                    columns: [
-                        { data: 'emp_ID', 'title': 'Emp Id' },
-                        { data: 'Name', 'title': 'Name' },
-                        { data: 'DistrictName', 'title': 'District' },
-                        { data: 'Department', 'title': 'Department' },
-                        { data: 'RoleName', 'title': 'Role' },
-                        { data: 'Status', 'title': 'Status' },
-                        
-                        {
-                            data: null,
-                            render: function (data, type, row) {
-                                var editButton = '<a href="/usermanagment/edit/' + data.Id + '" class="edit-btn" data-id="' + data.Id + '">Edit</a>';
-                                var deleteButton = '<a href="/usermanagment/delete/' + data.Id + '" class="delete-btn" data-id="' + data.Id + '">Delete</a>';
-                                var detailButton = '<a href="#" class="detail-btn" data-id="' + data.Id + '">Detail</a>';
-                                return editButton + ' | ' + deleteButton + ' | ' + detailButton;
+    const csrfToken = $('input[name="__RequestVerificationToken"]').val();
+
+    $.ajax({
+        url: '/UserManagment/GetUsers',
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'RequestVerificationToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function (data) {
+           
+             loading.hide();
+             console.log("loading");
+            $('#example1').DataTable({
+                data: data,
+                columns: [
+                    {
+                        data: 'emp_ID',
+                        title: 'Emp Id',
+                        render: $.fn.dataTable.render.text() // Auto-escapes HTML
+                    },
+                    {
+                        data: 'Name',
+                        title: 'Name',
+                        render: $.fn.dataTable.render.text()
+                    },
+                    {
+                        data: 'DistrictName',
+                        title: 'District',
+                        render: $.fn.dataTable.render.text()
+                    },
+                    {
+                        data: 'Department',
+                        title: 'Department',
+                        render: $.fn.dataTable.render.text()
+                    },
+                    {
+                        data: 'RoleName',
+                        title: 'Role',
+                        render: $.fn.dataTable.render.text()
+                    },
+                    {
+                        data: 'Status',
+                        title: 'Status',
+                        render: $.fn.dataTable.render.text()
+                    },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            // Secure URL construction
+                            
+                            var SanitizedId = sanitizeAndValidateInput(data.Id);
+                             var SanitizedName = sanitizeAndValidateInput(data.Id);
+
+                             console.log("santized id "+SanitizedId);
+                            const editUrl = encodeURI("/UserManagment/Edit/"+SanitizedId);
+                            const deleteUrl = encodeURI(`/UserManagment/Delete/${SanitizedId}`);
+                            const profileUrl = encodeURI(`/UserManagment/Profile/${SanitizedId}`);
+                            console.log("editied url"+ editUrl);
+                            // Secure button construction with proper escaping
+                            return `
+                                <a href="${editUrl}"
+                                   class="btn btn-sm btn-primary edit-btn"
+                                   data-id="${escapeHtml(SanitizedId)}">
+                                   <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="${deleteUrl}"
+                                   class="btn btn-sm btn-danger delete-btn"
+                                   data-id="${escapeHtml(SanitizedId)}"
+                                   data-name="${escapeHtml(SanitizedName)}"
+                                   onclick="confirmDeleteUser(this)">
+                                   <i class="fas fa-trash"></i> Delete
+                                </a>
+                                @{
+                                // <button class="btn btn-sm btn-danger delete-btn"
+                                //         data-id="${escapeHtml(SanitizedId)}"
+                                //         data-name="${escapeHtml(SanitizedName)}"
+                                //         onclick="confirmDeleteUser(this)">
+                                //     <i class="fas fa-trash"></i> Delete
+                                // </button>
+                                }
+                                <a href="${profileUrl}"
+                                   class="btn btn-sm btn-info detail-btn"
+                                   data-id="${escapeHtml(SanitizedId)}">
+                                   <i class="fas fa-info-circle"></i> Details
+                                </a>
+                            `;
+                        }
+                    }
+                ],
+                responsive: true,
+                lengthChange: false,
+                autoWidth: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        exportOptions: {
+                            columns: ':visible',
+                            modifier: {
+                                selected: null
                             }
                         }
-                    ],
-                    // columnDefs: [
-                    //     { targets: [0], visible: false, searchable: false } // Hide the first column (ID)
-                    // ],
-                    responsive: true,
-                    lengthChange: false,
-                    autoWidth: false,
-                    buttons: ["copy", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            },
-            error: function () {
-                // Hide the loading GIF
-                loading.hide();
-                alert('Error loading data from the database.');
+                    },
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    'colvis'
+                ],
+                language: {
+                    emptyTable: "No users found"
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            loading.hide();
+            console.error('Error:', error);
+            showAlert('Error loading user data. Please try again.', 'danger');
+        }
+    });
+
+    // HTML escaping function
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Secure delete confirmation
+    function confirmDeleteUser(button) {
+        const userId = button.dataset.id;
+        const userName = button.dataset.name;
+
+        Swal.fire({
+            title: 'Confirm Delete',
+            html: `Are you sure you want to delete <strong>${escapeHtml(userName)}</strong>?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteUser(userId);
             }
         });
+    }
+     function sanitizeAndValidateInput(input) {
+        if (typeof input !== 'string') {
+            return ''; // Return an empty string for non-string input
+        }
 
+        // Define a regex for valid characters (alphanumeric and spaces)
+        // const validRegex = /^[a-zA-Z0-9\s]*$/;
+        const validRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        // Check if the input matches the regex
+        if (!validRegex.test(input)) {
+            return ''; // Return an empty string if invalid
+        }
+
+        console.log("input "+input);
+        return input; // Return the sanitized string
+    }
+
+    // Secure delete operation
+    function deleteUser(userId) {
+        fetch(`/UserManagment/Delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ id: userId })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Delete failed');
+            return response.json();
+        })
+        .then(data => {
+            $('#example1').DataTable().ajax.reload();
+            showAlert('User deleted successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Failed to delete user', 'danger');
+        });
+    }
+
+    // Notification function
+    function showAlert(message, type) {
+        const alert = $(`<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+
+        $('#alertContainer').empty().append(alert);
+        setTimeout(() => alert.alert('close'), 5000);
+    }
         // Edit button click event
         $('#example1').on('click', '.edit-btn', function () {
             var userId = $(this).data('id');
@@ -114,41 +260,13 @@
             // ...
         });
         $('#example1').on('click', '.detail-btn', function (e) {
-            e.preventDefault(); // Prevent the default link behavior
+           // /*  e.preventDefault(); // Prev */ent the default link behavior
             var userId = $(this).data('id');
 
-            // Show loading indicator
-            $('#loading').show();
-
-            // Fetch detailed information
-            $.ajax({
-                url: '/usermanagment/GetUserDetails/' + userId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // Hide loading indicator
-                    $('#loading').hide();
-
-                    // Populate the modal with the fetched data
-                    var detailsHtml = `
-                        <p><strong>ID:</strong> ${data.emp_ID}</p>
-                        <p><strong>Name:</strong> ${data.Name}</p>
-                        <p><strong>Center:</strong> ${data.DistrictName}</p>
-                        <p><strong>Department:</strong> ${data.Department}</p>
-                        <p><strong>Role:</strong> ${data.RoleName}</p>
-                        <p><strong>Status:</strong> ${data.Status}</p>
-                    `;
-                    $('#userDetails').html(detailsHtml);
-
-                    // Show the modal
-                    $('#detailModal').modal('show');
-                },
-                error: function () {
-                    // Hide loading indicator
-                    $('#loading').hide();
-                    alert('Error loading user details.');
-                }
-            });
+            
         });
+         
     });
+    
+  
 </script>

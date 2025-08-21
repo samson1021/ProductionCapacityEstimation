@@ -1,4 +1,6 @@
-﻿@model mechanical.Models.Dto.CollateralDto.ReturnCollateralDto;
+﻿﻿
+@model mechanical.Models.Dto.CollateralDto.ReturnCollateralDto;
+
 @{
     var collateralFiles = ViewData["collateralFiles"] as IEnumerable<ReturnFileDto>;
 }
@@ -22,7 +24,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="row" >
-                     <form method="post" enctype="multipart/form-data" asp-action="Edit">
+                    <form method="post" enctype="multipart/form-data" asp-action="Edit">
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <input asp-for="Id" hidden />
@@ -45,7 +47,7 @@
                                 <input type="hidden" id="selectedCategory" value="@Model.Category" />
                                 <label asp-for="Category">Category *</label>
                                 <select id="categoryDropdown" asp-for="Category" required class="form-control form-control-sm"
-                                    asp-items="@(new SelectList(Enum.GetValues(typeof(MechanicalCollateralCategory)).Cast<MechanicalCollateralCategory>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
+                                asp-items="@(new SelectList(Enum.GetValues(typeof(MechanicalCollateralCategory)).Cast<MechanicalCollateralCategory>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
                                     <option value="" disabled selected>Select Equipment Category</option>
                                 </select>
                                 <span asp-validation-for="Category" class="text-danger"></span>
@@ -58,7 +60,7 @@
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
                         </div>
-                       
+
                         @if (Model.Category == "IND (Mfg) & BLDG FACILITY EQUIPMENT")
                         {
                             <div class="row" id="IndusteryProp">
@@ -82,11 +84,25 @@
                         else
                         {
                             <div class="row">
-                                <div class="form-group col-lg-4">
-                                    <label asp-for="PlateNo">Plate Number</label>
-                                    <input asp-for="PlateNo" type="text" class="form-control form-control-sm" placeholder="00-XX-X00000" id="PlateName" maxlength="12">
-                                    <span asp-validation-for="PlateNo" class="text-danger"></span>
-                                </div>
+                                @{
+                                    if (Model.Category == "CONST, MNG & AGR MACHINERY")
+                                    {
+                                        <div class="form-group col-lg-4">
+                                            <label asp-for="CPlateNo">Plate Number</label>
+                                            <input asp-for="CPlateNo" type="text" class="form-control form-control-sm" value=@Model.PlateNo id="PlateName" maxlength="12">
+                                            <span asp-validation-for="CPlateNo" class="text-danger"></span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="form-group col-lg-4">
+                                            <label asp-for="PlateNo">Plate Number</label>
+                                            <input asp-for="PlateNo" type="text" class="form-control form-control-sm" placeholder="00-XX-X00000" id="PlateName" maxlength="12">
+                                            <span asp-validation-for="PlateNo" class="text-danger"></span>
+                                        </div>
+                                    }
+                                }
+                              
                                 <div class="form-group col-lg-4">
                                     <label asp-for="ChassisNo">Chassis Number</label>
                                     <input asp-for="ChassisNo" type="text" class="form-control form-control-sm" id="ChassisNo" placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" maxlength="25">
@@ -137,7 +153,7 @@
                                             <option value="Harrari">Harrari</option>
                                             <option value="Oromia">Oromia</option>
                                             <option value="Sidama">Sidama</option>
-                                            <option value="Somalia">Somalia</option>
+                                            <option value="Somali">Somali</option>
                                             <option value="South western Ethiopia">South western Ethiopia</option>
                                             <option value="Southern Ethiopia">Southern Ethiopia</option>
                                             <option value="Tigray">Tigray</option>
@@ -196,7 +212,7 @@
                             </tr>
                             <tr>
                                 <th>Document Name</th>
-                                <th>Document Catagory</th>
+                                <th>Document Category</th>
                                 <th>Document Action</th>
                             </tr>
                         </thead>
@@ -211,7 +227,7 @@
                                     {
                                         <tr>
                                             <td>@collateral.Name</td>
-                                            <td>@collateral.Catagory</td>
+                                            <td>@collateral.Category</td>
                                             <td>
                                                 <a class="text-purple" href="@Url.Action("ViewFile","UploadFile" ,new { Id = collateral.Id })" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;
                                                 <a class="text-purple" href="@Url.Action("DownloadFile","UploadFile" ,new { Id = collateral.Id })" target="_blank">Download <i class="fas fas-solid fa-download"></i></a>&nbsp;|&nbsp;
@@ -235,7 +251,7 @@
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-danger">
                     <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -263,9 +279,9 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label name-for="DocumentCatagory">Document Catagory*</label>
-                        <select name="DocumentCatagory" class="form-control form-control-sm" id="DocumentCatagory" required>
-                            <option value="" disabled selected>Select Document Catagory *</option>
+                        <label name-for="DocumentCategory">Document Category*</label>
+                        <select name="DocumentCategory" class="form-control form-control-sm" id="DocumentCategory" required>
+                            <option value="" disabled selected>Select Document Category *</option>
                             <option value="Title Deed Certificate">Title Deed Certificate</option>
                             <option value="Commercial Invoice">Commercial Invoice</option>
                             <option value="Proforma invoice">Proforma invoice</option>
@@ -275,7 +291,7 @@
                             <option value="Sales Document">Sales Document</option>
                             <option value="Other Supportive Document">Other Supportive Document</option>
                         </select>
-                        <span name-for="DocumentCatagory" class="text-danger"></span>
+                        <span name-for="DocumentCategory" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                       <label name-for="File">Business License</label>
@@ -319,7 +335,7 @@
                         // Handle the response from the controller if needed
                         toastr.success('Rejection comment saved successfully');
                         $('#sendEvaluationButtonModal1').modal('hide');
-                        window.location.href = "https://localhost:7166/MOCase/MyCases";
+                        window.location.reload();
                     },
                     error: function (error) {
                         // Handle the error if needed
@@ -355,7 +371,6 @@
 
             $('#uploadLink').on('click', function (e) {
                 e.preventDefault();
-                console.log("from the modal");
                 var caseId = $(this).data('id');
                 $('#uploadModal').data('caseId', caseId);
                 $('#uploadModal').modal('show');
@@ -364,14 +379,13 @@
 
             $('#uploadFile').on('click', function () {
                 var caseId = $('#uploadModal').data('caseId');
-
                 var fileInput = document.getElementById('CollateralDocument');
                 var file = fileInput.files[0];
-                var DocumentCatagory = document.getElementById('DocumentCatagory').value;
+                var DocumentCategory = document.getElementById('DocumentCategory').value;
                 var formData = new FormData();
                 formData.append('BussinessLicence', file);
                 formData.append('caseId', caseId);
-                formData.append('DocumentCatagory', DocumentCatagory)
+                formData.append('DocumentCategory', DocumentCategory)
 
                 $.ajax({
                     url: '@Url.Action("UploadCollateralFile", "Collateral")',
@@ -391,5 +405,4 @@
             });
         });
     </script>
- 
 }

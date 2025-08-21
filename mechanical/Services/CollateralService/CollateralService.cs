@@ -15,6 +15,8 @@ using mechanical.Models.Dto.Correction;
 using Microsoft.VisualBasic;
 using Azure;
 using mechanical.Models.Enum;
+using mechanical.Models.Dto.NotificationDto;
+using mechanical.Services.NotificationService;
 
 namespace mechanical.Services.CollateralService
 {
@@ -25,22 +27,27 @@ namespace mechanical.Services.CollateralService
         private readonly IUploadFileService _uploadFileService;
         private readonly ICaseTimeLineService _caseTimeLineService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public CollateralService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService)
+        private readonly INotificationService _notificationService;
+        public CollateralService(CbeContext cbeContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUploadFileService uploadFileService, ICaseTimeLineService caseTimeLineService, INotificationService notificationService)
         {
             _cbeContext = cbeContext;
             _mapper = mapper;
             _uploadFileService = uploadFileService;
             _caseTimeLineService = caseTimeLineService;
             _httpContextAccessor = httpContextAccessor;
+            _notificationService = notificationService;
         }
-     
+
         public async Task<Collateral> CreateCollateral(Guid userId, Guid caseId, CollateralPostDto createCollateralDto)
         {
             var collateral = _mapper.Map<Collateral>(createCollateralDto);
-            if(collateral.Category == MechanicalCollateralCategory.CMAMachinery)
+            if (collateral.Category == MechanicalCollateralCategory.CMAMachinery)
             {
                 collateral.PlateNo = createCollateralDto.CPlateNo;
+                collateral.ChassisNo = createCollateralDto.CChassisNo;
+                collateral.EngineMotorNo = createCollateralDto.CEngineMotorNo;
             }
+
             collateral.Id = Guid.NewGuid();
             collateral.CaseId = caseId;
             try
@@ -55,12 +62,12 @@ namespace mechanical.Services.CollateralService
                     await this.UploadFile(userId, "Packing List", collateral, createCollateralDto.PackingList);
                     await this.UploadFile(userId, "LHC", collateral, createCollateralDto.TitleDeed);
                 }
-              
+
                 await this.UploadFile(userId, "Commercial Invoice", collateral, createCollateralDto.CommercialInvoice);
                 await this.UploadFile(userId, "Custom Declaration", collateral, createCollateralDto.CustomDeclaration);
-               
+
                 await this.UploadFile(userId, "Sales Document", collateral, createCollateralDto.SalesDocument);
-                if(createCollateralDto.OtherDocument != null)
+                if (createCollateralDto.OtherDocument != null)
                 {
                     foreach (var otherDocument in createCollateralDto.OtherDocument)
                     {
@@ -68,11 +75,15 @@ namespace mechanical.Services.CollateralService
                     }
                 }
             }
-            catch(Exception)
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch (Exception)
             {
                 throw new Exception("unable to upload file");
             }
-            collateral.CreationDate = DateTime.Now;
+            collateral.CreationDate = DateTime.UtcNow;
             collateral.CreatedById = userId;
             collateral.CurrentStage = "Relation Manager";
             collateral.CurrentStatus = "New";
@@ -84,13 +95,13 @@ namespace mechanical.Services.CollateralService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Relation Manager"
             });
 
             return collateral;
         }
-        public async Task<bool> CreateMOFile(Guid userId, Guid caseId, string DocumentType,IEnumerable<IFormFile>? Document)
+        public async Task<bool> CreateMOFile(Guid userId, Guid caseId, string DocumentType, IEnumerable<IFormFile>? Document)
         {
             try
             {
@@ -102,7 +113,7 @@ namespace mechanical.Services.CollateralService
                         {
                             File = otherDocument ?? throw new ArgumentNullException(nameof(otherDocument)),
                             CaseId = caseId,
-                            Catagory = DocumentType
+                            Category = DocumentType
                         };
                         await _uploadFileService.CreateUploadFile(userId, moDocuments);
                     }
@@ -110,12 +121,17 @@ namespace mechanical.Services.CollateralService
                 }
                 return true;
             }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
             catch (Exception)
             {
                 throw new Exception("unable to upload file");
             }
-           
+
         }
+
         public async Task<Collateral> CreateCivilCollateral(Guid userId, Guid caseId, CivilCollateralPostDto createCivilCollateralDto)
         {
             var collateral = _mapper.Map<Collateral>(createCivilCollateralDto);
@@ -145,7 +161,7 @@ namespace mechanical.Services.CollateralService
             {
                 throw new Exception("unable to upload file");
             }
-            collateral.CreationDate = DateTime.Now;
+            collateral.CreationDate = DateTime.UtcNow;
             collateral.CreatedById = userId;
             collateral.CurrentStage = "Relation Manager";
             collateral.CurrentStatus = "New";
@@ -157,7 +173,7 @@ namespace mechanical.Services.CollateralService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Relation Manager"
             });
 
@@ -186,7 +202,7 @@ namespace mechanical.Services.CollateralService
             {
                 throw new Exception("unable to upload file");
             }
-            collateral.CreationDate = DateTime.Now;
+            collateral.CreationDate = DateTime.UtcNow;
             collateral.CreatedById = userId;
             collateral.CurrentStage = "Relation Manager";
             collateral.CurrentStatus = "New";
@@ -198,7 +214,7 @@ namespace mechanical.Services.CollateralService
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong>A new collateral has been added. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Relation Manager"
             });
 
@@ -207,16 +223,17 @@ namespace mechanical.Services.CollateralService
 
         public async Task<IEnumerable<CollateralAssignmentDto>> GetMyAssignmentCollateral(Guid UserId, Guid CaseId)
         {
-            var userSupervised= await _cbeContext.CreateUsers.Where(res=>res.SupervisorId==UserId).ToListAsync();
+            var userSupervised = await _cbeContext.Users.Where(res => res.SupervisorId == UserId).ToListAsync();
             var collateralAssigmentDtos = new List<CollateralAssignmentDto>();
 
             foreach (var item in userSupervised)
             {
                 var caseAssignment = await _cbeContext.CaseAssignments.Include(x => x.User).Include(x => x.Collateral).Where(res => res.UserId == item.Id && res.Collateral.CaseId == CaseId).ToListAsync();
-                caseAssignment = caseAssignment.DistinctBy(res => res.CollateralId) .ToList();
+                caseAssignment = caseAssignment.DistinctBy(res => res.CollateralId).ToList();
                 foreach (var items in caseAssignment)
                 {
-                    var collateralAssigmentDto = new CollateralAssignmentDto{
+                    var collateralAssigmentDto = new CollateralAssignmentDto
+                    {
                         CollateralId = items.CollateralId,
                         CaseId = CaseId,
                         PropertyOwner = items.Collateral.PropertyOwner,
@@ -240,33 +257,36 @@ namespace mechanical.Services.CollateralService
                 .FirstOrDefault() as DisplayAttribute)?.Name ?? enumValue.ToString();
         }
 
-
-
         public async Task<Collateral> EditCollateral(Guid userId, Guid CollaterlId, CollateralPostDto createCollateralDto)
         {
+            if (createCollateralDto.Category == MechanicalCollateralCategory.CMAMachinery)
+            {
+                createCollateralDto.PlateNo = createCollateralDto.CPlateNo;
+            }
+
             var collateral = await _cbeContext.Collaterals.FindAsync(CollaterlId);
             if (collateral == null)
             {
                 throw new Exception("collateral not Found");
             }
-            if(collateral.CreatedById != userId)
+            if (collateral.CreatedById != userId)
             {
                 throw new Exception("you don't have permission");
             }
-            if(collateral.CurrentStage =="Relation Manager")
+            if (collateral.CurrentStage == "Relation Manager")
             {
                 createCollateralDto.CaseId = collateral.CaseId;
                 createCollateralDto.CollateralType = collateral.CollateralType;
                 _mapper.Map(createCollateralDto, collateral);
-                 _cbeContext.Collaterals.Update(collateral);
+                _cbeContext.Collaterals.Update(collateral);
                 await _cbeContext.SaveChangesAsync();
                 return collateral;
             }
-                throw new Exception("unable to Edit collateral");
+            throw new Exception("unable to Edit collateral");
         }
         public async Task<IEnumerable<ReturnCollateralDto>> GetCollaterals(Guid CaseId)
         {
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && (res.CurrentStatus=="New" && res.CurrentStage=="Relation Manager")).ToListAsync();
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && (res.CurrentStatus == "New" && res.CurrentStage == "Relation Manager")).ToListAsync();
             return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
         }
         public async Task<IEnumerable<ReturnCollateralDto>> GetRejectedCollaterals(Guid CaseId)
@@ -300,7 +320,7 @@ namespace mechanical.Services.CollateralService
                     File = file,
                     CaseId = collateral.CaseId,
                     CollateralId = collateral.Id,
-                    Catagory = Category
+                    Category = Category
                 });
             }
         }
@@ -350,8 +370,8 @@ namespace mechanical.Services.CollateralService
         // }
         public async Task<IEnumerable<ReturnCollateralDto>> GetMMCollaterals(Guid userId, Guid CaseId)
         {
-            
-            var caseAssignments = await _cbeContext.CaseAssignments.Include(res=>res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status=="New").ToListAsync();
+
+            var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status == "New").ToListAsync();
             var collaterals = caseAssignments.Select(res => res.Collateral);
             return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
         }
@@ -360,16 +380,73 @@ namespace mechanical.Services.CollateralService
 
             var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status == "Complete").ToListAsync();
             var collaterals = caseAssignments.Select(res => res.Collateral);
-            return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+            var returnCollateralDtos = _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+            foreach (var collateral in returnCollateralDtos)
+            {
+                if (collateral.Category == "MOTOR VEHICLE")
+                {
+                    var mov = await _cbeContext.MotorVehicles.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                    if (mov != null)
+                    {
+                        collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                    }
+                }
+                else if (collateral.Category == "CONST, MNG & AGR MACHINERY")
+                {
+                    var mov = await _cbeContext.ConstMngAgrMachineries.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                    if (mov != null)
+                    {
+                        collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                    }
+                }
+                else if (collateral.Category == "IND (Mfg) & BLDG FACILITY EQUIPMENT")
+                {
+                    var mov = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                    if (mov != null)
+                    {
+                        collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                    }
+                }
+            }
+            return returnCollateralDtos;
         }
+
         public async Task<IEnumerable<ReturnCollateralDto>> GetCMCollaterals(Guid userId, Guid CaseId)
         {
-            var user = await _cbeContext.CreateUsers.Include(res=>res.District).FirstOrDefaultAsync(res=>res.Id == userId);
-            if(user.District.Name == "Head Office")
+            var user = await _cbeContext.Users.Include(res => res.District).FirstOrDefaultAsync(res => res.Id == userId);
+            if (user.District.Name == "Head Office")
             {
                 var caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(res => res.UserId == userId && res.Collateral.CaseId == CaseId && res.Status == "New").ToListAsync();
                 var collaterals = caseAssignments.Select(res => res.Collateral);
-                return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+                var returnCollateralDtos = _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
+                foreach (var collateral in returnCollateralDtos)
+                {
+                    if (collateral.Category == "MOTOR VEHICLE")
+                    {
+                        var mov = await _cbeContext.MotorVehicles.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                        if (mov != null)
+                        {
+                            collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                        }
+                    }
+                    else if (collateral.Category == "CONST, MNG & AGR MACHINERY")
+                    {
+                        var mov = await _cbeContext.ConstMngAgrMachineries.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                        if (mov != null)
+                        {
+                            collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                        }
+                    }
+                    else if (collateral.Category == "IND (Mfg) & BLDG FACILITY EQUIPMENT")
+                    {
+                        var mov = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == collateral.Id).FirstOrDefaultAsync();
+                        if (mov != null)
+                        {
+                            collateral.MechanicalEqpmntName = mov.MechanicalEqpmntName;
+                        }
+                    }
+                }
+                return returnCollateralDtos;
 
             }
             else
@@ -378,7 +455,7 @@ namespace mechanical.Services.CollateralService
                 var collaterals = caseAssignments.Select(res => res.Collateral);
                 return _mapper.Map<IEnumerable<ReturnCollateralDto>>(collaterals);
             }
-        
+
         }
         public async Task<IEnumerable<ReturnCollateralDto>> GetRemarkCollaterals(Guid userId, Guid CaseId)
         {
@@ -472,21 +549,55 @@ namespace mechanical.Services.CollateralService
             try
             {
                 var collateral = await _cbeContext.Collaterals.FirstOrDefaultAsync(res => res.Id == Id);
-                var caseassignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(res=>res.UserId == useId && res.CollateralId == Id);
-                
+                var caseassignment = await _cbeContext.CaseAssignments.FirstOrDefaultAsync(res => res.UserId == useId && res.CollateralId == Id);
+
                 if (collateral != null)
                 {
                     collateral.CurrentStatus = Status;
-                    if (Status== "correction")
+                    if (Status == "correction")
                     {
                         var correction = await _cbeContext.Corrections.Where(res => res.CollateralID == Id && res.CommentedByUserId == useId).ToListAsync();
-                        if(correction.Count == 0)
+                        if (correction.Count == 0)
                         {
                             throw new Exception("correction");
                         }
                         caseassignment.Status = "Correction";
                         collateral.CurrentStage = "Maker Officer";
                         collateral.CurrentStatus = "Correction";
+                        collateral.NumberOfReturns = collateral.NumberOfReturns + 1;
+                        if (collateral.Category == MechanicalCollateralCategory.MOV)
+                        {
+                            //this is to set the user who made it 
+                            var evaluatedBy = await _cbeContext.MotorVehicles.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
+                            evaluatedBy.CheckerUserID = useId;
+                            _cbeContext.Update(evaluatedBy);
+                            await _cbeContext.SaveChangesAsync();
+                        }
+                        else if (collateral.Category == MechanicalCollateralCategory.CMAMachinery)
+                        {
+                            //this is to set the user who made it 
+                            var evaluatedBy = await _cbeContext.ConstMngAgrMachineries.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
+                            evaluatedBy.CheckerUserID = useId;
+                            _cbeContext.Update(evaluatedBy);
+                            await _cbeContext.SaveChangesAsync();
+                        }
+                        else if (collateral.Category == MechanicalCollateralCategory.IBFEqupment)
+                        {//this is to set the user who made it 
+                            var evaluatedBy = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
+                            evaluatedBy.CheckerUserID = useId;
+                            _cbeContext.Update(evaluatedBy);
+                            await _cbeContext.SaveChangesAsync();
+                        }
+                        //notification 
+                        var notificationContent = "The Collateral has been Completed!";
+                        var notificationType = "Completed";
+                        var link = $"/Collateral/Detail?Id={Id}"; ;
+                        NotificationReturnDto notification = null;
+                        // Add Notification
+                        notification = await _notificationService.AddNotification(collateral.CreatedById, notificationContent, notificationType, link);
+                        // Realtime Nofication
+                        if (notification != null) await _notificationService.SendNotification(notification);
+
                     }
                     else if (Status == "Complete")
                     {
@@ -507,6 +618,7 @@ namespace mechanical.Services.CollateralService
                             foreach (var assignment in collAssginmet)
                             {
                                 assignment.Status = "Complete";
+                                assignment.CompletionDate = DateTime.UtcNow;
                                 _cbeContext.CaseAssignments.Update(assignment);
 
                             }
@@ -526,6 +638,7 @@ namespace mechanical.Services.CollateralService
                             foreach (var assignment in collAssginmet)
                             {
                                 assignment.Status = "Complete";
+                                assignment.CompletionDate = DateTime.UtcNow;
                                 _cbeContext.CaseAssignments.Update(assignment);
 
                             }
@@ -533,25 +646,35 @@ namespace mechanical.Services.CollateralService
                             collateral.CurrentStage = "Checker Officer";
                             collateral.CurrentStatus = "Complete";
                         }
-                        else if (collateral.Category== MechanicalCollateralCategory.IBFEqupment)
+                        else if (collateral.Category == MechanicalCollateralCategory.IBFEqupment)
                         {//this is to set the user who made it 
                             var evaluatedBy = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.CollateralId == Id).FirstOrDefaultAsync();
                             evaluatedBy.CheckerUserID = useId;
                             _cbeContext.Update(evaluatedBy);
                             await _cbeContext.SaveChangesAsync();
 
-                        var collAssginmet = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == Id).ToListAsync();
-                        foreach (var assignment in collAssginmet)
-                        {
-                            assignment.Status = "Complete";
-                            _cbeContext.CaseAssignments.Update(assignment);
+                            var collAssginmet = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == Id).ToListAsync();
+                            foreach (var assignment in collAssginmet)
+                            {
+                                assignment.Status = "Complete";
+                                assignment.CompletionDate = DateTime.UtcNow;
+                                _cbeContext.CaseAssignments.Update(assignment);
 
                             }
                             await _cbeContext.SaveChangesAsync();
                             collateral.CurrentStage = "Checker Officer";
                             collateral.CurrentStatus = "Complete";
                         }
-                        
+
+                        //notification 
+                        var notificationContent = "The Collateral has been Completed!";
+                        var notificationType = "Completed Collateral";
+                        var link = $"/Collateral/Detail?Id={Id}"; ;
+                        NotificationReturnDto notification = null;
+                        // Add Notification
+                        notification = await _notificationService.AddNotification(collateral.CreatedById, notificationContent, notificationType, link);
+                        // Realtime Nofication
+                        if (notification != null) await _notificationService.SendNotification(notification);
                     }
                     else
                     {
@@ -575,15 +698,44 @@ namespace mechanical.Services.CollateralService
 
         public async Task<IEnumerable<ReturnCollateralDto>> MyReturnedCollaterals(Guid userId)
         {
-            List<CaseAssignment> caseAssignments = await _cbeContext.CaseAssignments.Where(ca => ca.UserId == userId && ca.Status== "Correction").ToListAsync();
-            List<Collateral> collaterals = await _cbeContext.Collaterals.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus== "Correction").ToListAsync();
+            List<CaseAssignment> caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(ca => ca.UserId == userId && ca.Status == "Reject").ToListAsync();
+            List<Collateral> collaterals = await _cbeContext.Collaterals.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus == "Correction").ToListAsync();
+            //List<Collateral> collaterals = new List<Collateral>();
+            if (caseAssignments.Count >0)
+            {
+               collaterals = caseAssignments.Select(res => res.Collateral).ToList();
+            }
+         
+            List<ReturnCollateralDto> mTLreturnCollateralDtos = new List<ReturnCollateralDto>();
+            if (collaterals != null)
+            {
+                foreach (var caseAssignment in caseAssignments)
+                {
+                    var collatearal = await _cbeContext.Collaterals.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.CollateralId && ca.CurrentStatus == "Reject");
+                    if (collatearal != null)
+                    {
+                        mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
+                    }
+                }
+            }
+            return _mapper.Map<List<ReturnCollateralDto>>(collaterals);
+        }
+        public async Task<IEnumerable<ReturnCollateralDto>> CorrectionCollaterals(Guid userId)
+        {
+            List<CaseAssignment> caseAssignments = await _cbeContext.CaseAssignments.Include(res => res.Collateral).Where(ca => ca.UserId == userId && ca.Status == "Correction").ToListAsync();
+            List<Collateral> collaterals = await _cbeContext.Collaterals.Where(ca => ca.CurrentStage == "Maker Officer" && ca.CurrentStatus == "Correction").ToListAsync();
+            //List<Collateral> collaterals = new List<Collateral>();
+            if (caseAssignments.Count > 0)
+            {
+                collaterals = caseAssignments.Select(res => res.Collateral).ToList();
+            }
 
             List<ReturnCollateralDto> mTLreturnCollateralDtos = new List<ReturnCollateralDto>();
             if (collaterals != null)
             {
                 foreach (var caseAssignment in caseAssignments)
                 {
-                    var collatearal = await _cbeContext.Collaterals.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.CollateralId && ca.CurrentStatus == "Correction");
+                    var collatearal = await _cbeContext.Collaterals.FirstOrDefaultAsync(ca => ca.Id == caseAssignment.CollateralId && ca.CurrentStatus == "Reject");
                     if (collatearal != null)
                     {
                         mTLreturnCollateralDtos.Add(_mapper.Map<ReturnCollateralDto>(collatearal));
@@ -653,17 +805,17 @@ namespace mechanical.Services.CollateralService
             var comments = await _cbeContext.Corrections.Where(ca => ca.CollateralID == CollateralId).ToListAsync();
             if (comments != null)
             {
-              return _mapper.Map<IEnumerable<CorrectionRetunDto>>(comments);
-             }
-                
-            
+                return _mapper.Map<IEnumerable<CorrectionRetunDto>>(comments);
+            }
+
+
             return null;
         }
 
         public async Task<bool> DeleteCocllateral(Guid userId, Guid id)
         {
-            var collateral = await _cbeContext.Collaterals.Where(c=>c.Id==id&& c.CreatedById==userId&&c.CurrentStage=="Relation Manager").FirstOrDefaultAsync();
-            if(collateral != null)
+            var collateral = await _cbeContext.Collaterals.Where(c => c.Id == id && c.CreatedById == userId && c.CurrentStage == "Relation Manager").FirstOrDefaultAsync();
+            if (collateral != null)
             {
                 _cbeContext.Remove(collateral);
                 await _cbeContext.SaveChangesAsync();
@@ -682,7 +834,7 @@ namespace mechanical.Services.CollateralService
             {
                 return false;
             }
-            if(file.userId != userId)
+            if (file.userId != userId)
             {
                 return false;
             }
@@ -692,26 +844,33 @@ namespace mechanical.Services.CollateralService
             }
             return false;
         }
-        public async Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCatagory)
+        public async Task<bool> UploadCollateralFile(Guid userId, IFormFile file, Guid caseId, string DocumentCategory)
         {
             var collateral = await _cbeContext.Collaterals.FindAsync(caseId);
             if (collateral == null)
             {
                 return false;
             }
-            
+
             var CollateralFile = new CreateFileDto()
             {
                 File = file ?? throw new ArgumentNullException(nameof(file)),
                 CollateralId = caseId,
-                Catagory = DocumentCatagory,
-               
+                Category = DocumentCategory,
+
             };
-             if(await _uploadFileService.CreateUploadFile(userId, CollateralFile)!=Guid.Empty)
+            if (await _uploadFileService.CreateUploadFile(userId, CollateralFile) != Guid.Empty)
             {
                 return true;
             }
             return false;
         }
+        public async Task<IEnumerable<CaseCorrectionHistoryRetunDto>> GetGetCollateralCorrectionHistorys(Guid caseId)
+        {
+            var caseComment = await _cbeContext.CommentHistorys.Include(res => res.CommentBy).Where(res => res.CollateralId == caseId).OrderBy(res => res.CreatedAt).ToListAsync();
+            return _mapper.Map<IEnumerable<CaseCorrectionHistoryRetunDto>>(caseComment);
+        }
+   
+   
     }
 }

@@ -14,9 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using mechanical.Models;
 using Microsoft.AspNetCore.Http;
 using mechanical.Models.Dto.UploadFileDto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CollateralController : BaseController
     {
         private readonly ICaseService _caseService;
@@ -26,7 +28,7 @@ namespace mechanical.Controllers
         private readonly IConstMngAgrMachineryService _constMngAgrMachineryService;
         private readonly IIndBldgFacilityEquipmentService _indBldgFacilityEquipmentService;
         private readonly CbeContext _cbeContext;
-        public CollateralController(ICaseService caseService,IConstMngAgrMachineryService constMngAgrMachineryService, IIndBldgFacilityEquipmentService indBldgFacilityEquipmentService, ICollateralService collateralService, CbeContext cbeContext, IUploadFileService uploadFileService,IMotorVehicleService motorVehicleService)
+        public CollateralController(ICaseService caseService, IConstMngAgrMachineryService constMngAgrMachineryService, IIndBldgFacilityEquipmentService indBldgFacilityEquipmentService, ICollateralService collateralService, CbeContext cbeContext, IUploadFileService uploadFileService, IMotorVehicleService motorVehicleService)
         {
             _caseService = caseService;
             _collateralService = collateralService;
@@ -41,14 +43,23 @@ namespace mechanical.Controllers
             return View();
         }
         [HttpPost]
-     //   [ValidateAntiForgeryToken]
+        //   [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Guid caseId, CollateralPostDto collateralDto)
         {
             if (ModelState.IsValid)
             {
-                await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId,collateralDto);
-                var response = new { message = "Collateral created successfully" };
-                return Ok(response);
+                try
+                {
+                    await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
+                    var response = new { message = "Collateral created successfully" };
+                    return Ok(response);
+
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
+              
             }
             return BadRequest();
         }
@@ -121,14 +132,14 @@ namespace mechanical.Controllers
             return View(response);
         }
         [HttpPost]
-        public async Task<IActionResult> handleRemark(Guid CollateralId, Guid EvaluatorUserID ,String RemarkType,CreateFileDto uploadFile, Guid CheckerUserID)
+        public async Task<IActionResult> handleRemark(Guid CollateralId, Guid EvaluatorUserID, String RemarkType, CreateFileDto uploadFile, Guid CheckerUserID)
         {
             var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == CollateralId && res.UserId == EvaluatorUserID).FirstOrDefaultAsync();
             caseAssignment.Status = "Remark";
             _cbeContext.Update(caseAssignment);
 
             var collateral = await _cbeContext.Collaterals.Where(res => res.Id == CollateralId).FirstOrDefaultAsync();
-            if(RemarkType == "Verfication")
+            if (RemarkType == "Verfication")
             {
                 collateral.CurrentStatus = "Remark Verfication";
             }
@@ -155,11 +166,11 @@ namespace mechanical.Controllers
             if (ModelState.IsValid)
             {
                 var collateral = await _collateralService.EditCollateral(base.GetCurrentUserId(), id, collateralPostDto);
-                if(collateral.CurrentStatus == "Reject")
+                if (collateral.CurrentStatus == "Reject")
                 {
                     return RedirectToAction("RejectedDetail", "Case", new { Id = collateral.CaseId });
                 }
-                return RedirectToAction("Detail","Case", new { Id = collateral.CaseId });
+                return RedirectToAction("Detail", "Case", new { Id = collateral.CaseId });
             }
             return View();
         }
@@ -176,9 +187,9 @@ namespace mechanical.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadCollateralFile(IFormFile BussinessLicence, Guid caseId, string DocumentCatagory)
+        public async Task<ActionResult> UploadCollateralFile(IFormFile BussinessLicence, Guid caseId, string DocumentCategory)
         {
-            if (await _collateralService.UploadCollateralFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCatagory))
+            if (await _collateralService.UploadCollateralFile(base.GetCurrentUserId(), BussinessLicence, caseId, DocumentCategory))
             {
                 return Ok();
             }
@@ -190,9 +201,9 @@ namespace mechanical.Controllers
         {
             var response = await _collateralService.GetCollateral(base.GetCurrentUserId(), id);
             var loanCase = await _caseService.GetCaseDetail(id);
-           
-            var restimation = await _cbeContext.CollateralReestimations.Where(res=> res.CollateralId == id).FirstOrDefaultAsync();
-            if(restimation != null)
+
+            var restimation = await _cbeContext.CollateralReestimations.Where(res => res.CollateralId == id).FirstOrDefaultAsync();
+            if (restimation != null)
             {
                 ViewData["restimation"] = restimation;
             }
@@ -202,9 +213,9 @@ namespace mechanical.Controllers
             var rejectedCollateral = await _cbeContext.Rejects.Where(res => res.CollateralId == id).FirstOrDefaultAsync();
             var remarkTypeCollateral = await _cbeContext.Collaterals.Where(res => res.Id == id).FirstAsync();
 
-            if (rejectedCollateral!=null)
+            if (rejectedCollateral != null)
             {
-                var user = await _cbeContext.CreateUsers.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedCollateral.RejectedBy);
+                var user = await _cbeContext.Users.Include(res => res.Role).FirstOrDefaultAsync(rea => rea.Id == rejectedCollateral.RejectedBy);
                 ViewData["user"] = user;
 
             }
@@ -228,8 +239,8 @@ namespace mechanical.Controllers
             ViewData["rejectedCollateral"] = rejectedCollateral;
             ViewData["CurrentUserId"] = base.GetCurrentUserId();
             var userId = base.GetCurrentUserId();
-            var UserForRole = await _cbeContext.CreateUsers.Where(res => res.Id==userId).FirstOrDefaultAsync();
-            var role = await _cbeContext.CreateRoles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
+            var UserForRole = await _cbeContext.Users.Where(res => res.Id == userId).FirstOrDefaultAsync();
+            var role = await _cbeContext.Roles.Where(res => res.Id == UserForRole.RoleId).FirstOrDefaultAsync();
             ViewData["loggedRole"] = role;
             ViewData["remarkTypeCollateral"] = remarkTypeCollateral;
             return View(response);
@@ -252,21 +263,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMMCollaterals(Guid CaseId)
         {
-            var collaterals = await _collateralService.GetMMCollaterals(base.GetCurrentUserId(),CaseId);
-            string jsonData = JsonConvert.SerializeObject(collaterals);
-            return Content(jsonData, "application/json");
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetMMCompleteCollaterals(Guid CaseId)
-        {
-            var collaterals = await _collateralService.GetMMCompleteCollaterals(base.GetCurrentUserId(), CaseId);
-            string jsonData = JsonConvert.SerializeObject(collaterals);
-            return Content(jsonData, "application/json");
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetMyAssigmentCollateral(Guid CaseId)
-        {
-            var collaterals = await _collateralService.GetMyAssignmentCollateral(base.GetCurrentUserId(), CaseId);
+            var collaterals = await _collateralService.GetMMCollaterals(base.GetCurrentUserId(), CaseId);
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }
@@ -277,6 +274,23 @@ namespace mechanical.Controllers
             string jsonData = JsonConvert.SerializeObject(collaterals);
             return Content(jsonData, "application/json");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMMCompleteCollaterals(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetMMCompleteCollaterals(base.GetCurrentUserId(), CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+
+        public async Task<IActionResult> GetMyAssigmentCollateral(Guid CaseId)
+        {
+            var collaterals = await _collateralService.GetMyAssignmentCollateral(base.GetCurrentUserId(), CaseId);
+            string jsonData = JsonConvert.SerializeObject(collaterals);
+            return Content(jsonData, "application/json");
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetMMPendCollaterals(Guid CaseId)
         {
@@ -288,7 +302,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteCocllateral(Guid id)
         {
-          
+
             if (await _collateralService.DeleteCocllateral(base.GetCurrentUserId(), id))
 
             {
@@ -346,13 +360,13 @@ namespace mechanical.Controllers
                 }
                 else
                 {
-                 
+
                     return Json(new { success = false, message = "unexpected error occur please contact the Systme Admin" });
                 }
             }
             catch (Exception ex)
             {
-                if(ex.Message!=null && ex.Message != string.Empty)
+                if (ex.Message != null && ex.Message != string.Empty)
                 {
                     if (ex.Message == "correction")
                     {
@@ -371,11 +385,11 @@ namespace mechanical.Controllers
                 {
                     return Json(new { success = false, message = "unexpected error occur please contact the Systme Admin" });
                 }
-                
+
             }
-              
-         
-                
+
+
+
         }
         //[HttpGet]
         //public async Task<IActionResult> GetCMCollaterals(Guid CaseId)
@@ -387,7 +401,12 @@ namespace mechanical.Controllers
 
         public async Task<JsonResult> MyReturnedCollaterals()
         {
-            var collaterals =await _collateralService.MyReturnedCollaterals(base.GetCurrentUserId());
+            var collaterals = await _collateralService.MyReturnedCollaterals(base.GetCurrentUserId());
+            return Json(collaterals);
+        }
+        public async Task<JsonResult> CorrectionCollaterals()
+        {
+            var collaterals = await _collateralService.CorrectionCollaterals(base.GetCurrentUserId());
             return Json(collaterals);
         }
         public async Task<IActionResult> MyReturnedCollateral(Guid CollateralId)
@@ -397,7 +416,7 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> MyResubmitedCollaterals()
         {
-            var collaterals =await _collateralService.MyResubmitedCollaterals(base.GetCurrentUserId());
+            var collaterals = await _collateralService.MyResubmitedCollaterals(base.GetCurrentUserId());
 
             return View(collaterals);
 
@@ -414,20 +433,41 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
-               var collaterals= await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
-                CaseAssignment ass=new CaseAssignment { 
-                    UserId = base.GetCurrentUserId(), 
-                    CollateralId= collaterals.Id,
-                    AssignmentDate=DateTime.Now,
-                    Status="New"
+                var collaterals = await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
+                CaseAssignment ass = new CaseAssignment
+                {
+                    UserId = base.GetCurrentUserId(),
+                    CollateralId = collaterals.Id,
+                    AssignmentDate = DateTime.UtcNow,
+                    Status = "New"
                 };
                 await _cbeContext.CaseAssignments.AddAsync(ass);
                 await _cbeContext.SaveChangesAsync();
 
                 var response = new { message = "Collateral created successfully" };
-                return RedirectToAction("MyCase", "MOCase" ,new {Id=collaterals.CaseId});
+                return Redirect($"/MOCase/MyCase?Id={collaterals.CaseId}");
             }
-            return BadRequest();
+            return Redirect($"/MOCase/MyCase?Id={caseId}");
+        }
+
+               [HttpGet]
+        public async Task<IActionResult> GetCollateralCorrectionHistory(Guid CollateralId)
+        {
+            try
+            {
+                var response = new
+                {
+                    userId = base.GetCurrentUserId(),
+                    caseComments = await _collateralService.GetGetCollateralCorrectionHistorys(CollateralId)
+                };
+                return Content(JsonConvert.SerializeObject(response), "application/json");
+            }
+            catch (Exception ex)
+            {
+
+                return Content("Error"+ex.Message);
+            }
+
         }
     }
 }

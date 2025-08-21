@@ -1,47 +1,52 @@
-﻿
-using mechanical.Models.Dto.CaseDto;
-using mechanical.Services.CaseServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using AutoMapper;
 using Newtonsoft.Json;
-using mechanical.Models.Enum;
-using System.ComponentModel.DataAnnotations;
-using mechanical.Data;
-using Microsoft.EntityFrameworkCore;
-using mechanical.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
 using System.Data;
-using mechanical.Services.CaseAssignmentService;
-using mechanical.Models.Dto.CaseAssignmentDto;
-using Microsoft.AspNetCore.Http;
-using mechanical.Services.CaseScheduleService;
 using System.Linq;
 using System.Net.Http;
-using mechanical.Models.Dto.CaseScheduleDto;
-using mechanical.Models.Dto.MailDto;
-using mechanical.Services.MailService;
-using AutoMapper;
-using mechanical.Models.Dto.CaseTerminateDto;
-using mechanical.Services.CaseTerminateService;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis.Operations;
+
+using mechanical.Data;
+using mechanical.Models.Enum;
+using mechanical.Models.Entities;
+using mechanical.Models.Dto.CaseDto;
+using mechanical.Models.Dto.MailDto;
+using mechanical.Models.Dto.CaseScheduleDto;
+using mechanical.Models.Dto.CaseTerminateDto;
+using mechanical.Models.Dto.CaseAssignmentDto;
+using mechanical.Models.Dto.IndBldgFacilityEquipmentCostsDto;
+using mechanical.Services.MailService;
+using mechanical.Services.CaseServices;
 using mechanical.Services.UploadFileService;
+using mechanical.Services.CaseScheduleService;
+using mechanical.Services.CaseTerminateService;
+using mechanical.Services.CaseAssignmentService;
+using mechanical.Services.IndBldgFacilityEquipmentCostService;
 
 namespace mechanical.Controllers
 {
-   
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CaseController : BaseController
     {
         private readonly ICaseService _caseService;
         private readonly ICaseAssignmentService _caseAssignmentService;
         private readonly CbeContext _cbeContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICaseScheduleService   _caseScheduleService;
+        private readonly ICaseScheduleService _caseScheduleService;
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IMailService _mailService;
         private readonly IMapper _mapper;
         private readonly IUploadFileService _uploadFileService;
-        public CaseController(IMapper mapper,IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService,ICaseService caseService,ICaseScheduleService caseScheduleService, CbeContext cbeContext, IHttpContextAccessor httpContextAccessor,ICaseAssignmentService caseAssignmentService, IMailService mailService)
+        private readonly IIndBldgFacilityEquipmentCostService _indBldgFacilityEquipmentCostService;
+
+        public CaseController(IIndBldgFacilityEquipmentCostService indBldgFacilityEquipmentCostService, IMapper mapper, IUploadFileService uploadFileService, ICaseTerminateService caseTerminateService, ICaseService caseService, ICaseScheduleService caseScheduleService, CbeContext cbeContext, IHttpContextAccessor httpContextAccessor, ICaseAssignmentService caseAssignmentService, IMailService mailService)
         {
+            _indBldgFacilityEquipmentCostService = indBldgFacilityEquipmentCostService;
             _caseService = caseService;
             _cbeContext = cbeContext;
             _httpContextAccessor = httpContextAccessor;
@@ -81,6 +86,7 @@ namespace mechanical.Controllers
             ViewData["moFile"] = moFile;
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> GetRemarkedCases()
         {
@@ -90,10 +96,8 @@ namespace mechanical.Controllers
             return Content(jsonData, "application/json");
         }
 
-
-
         [HttpGet]
-        public  IActionResult Create()
+        public IActionResult Create()
         {
             ViewData["EmployeeId"] = HttpContext.Session.GetString("EmployeeId") ?? null;
             return View();
@@ -104,10 +108,47 @@ namespace mechanical.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cases = await _caseService.CreateCase(base.GetCurrentUserId(), caseDto);
-                return RedirectToAction("Detail", new { id = cases.Id });
+                try
+                {
+                    //await _collateralService.CreateCollateral(base.GetCurrentUserId(), caseId, collateralDto);
+                    //var response = new { message = "Collateral created successfully" };
+                    //return Ok(response);
+                    var cases = await _caseService.CreateCase(base.GetCurrentUserId(), caseDto);
+                    return RedirectToAction("Detail", new { id = cases.Id });
+
+                }
+                //catch (Exception ex)
+                //{
+                //    return BadRequest(new { message = ex.Message });
+                //}
+                catch (InvalidOperationException ex)
+                {
+                    //ViewData["UnitValue"] =ModelState.Unit;
+                    //ViewData["DistrictValue"] = model.District;
+                    ViewData["SegmentValue"] = caseDto.Segment; // This can be null/empty
+                    // Return bad request with the exception message
+                    ModelState.AddModelError(nameof(caseDto.BussinessLicence), ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    // Handle other exceptions
+                    ModelState.AddModelError(string.Empty, "An unexpected error occurred. Please try again.");
+
+                }
+                
             }
-            return View();
+            else
+            {
+                // Optional: You can also add a general error message for invalid model state
+                ModelState.AddModelError(string.Empty, "There are some validation errors. Please check your input.");
+            }
+            //if (ModelState.IsValid)
+            //{
+            //    var cases = await _caseService.CreateCase(base.GetCurrentUserId(), caseDto);
+            //    return RedirectToAction("Detail", new { id = cases.Id });
+            //}
+            //return View();
+            return View(caseDto);
         }
 
         [HttpPost]
@@ -159,7 +200,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> GetHOCases()
         {
-            var cases = await _cbeContext.Cases.Include(res=>res.District).Include(res=>res.Collaterals).ToListAsync();
+            var cases = await _cbeContext.Cases.Include(res => res.District).Include(res => res.Collaterals).ToListAsync();
             var caseDtos = _mapper.Map<IEnumerable<CaseDto>>(cases);
             return Content(JsonConvert.SerializeObject(caseDtos), "application/json");
         }
@@ -188,18 +229,41 @@ namespace mechanical.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> Detail(Guid id)
+        public async Task<IActionResult> Detail(Guid id, string? CaseType)
         {
-            var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
+            object ShareTaskData;
+            object loanCase; // Declare loanCase here
+
+            if (CaseType != "Owner")
+            {
+                ShareTaskData = await _caseService.SharedCaseInfo(id);
+                loanCase = await _caseService.GetShareTaskCase(base.GetCurrentUserId(), id); // Assign here
+
+            }
+            else
+            {
+                ShareTaskData = null;
+                loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id); // Assign here
+
+            }
+
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
-            if (loanCase == null) { return RedirectToAction("NewCases"); }
-            ViewData["case"] = loanCase;
-            ViewData["CaseSchedule"] = caseSchedule;
-            ViewData["Id"] = base.GetCurrentUserId();
+            if (loanCase == null)
+            {
+                return RedirectToAction("NewCases");
+            }
+
             var moFile = await _uploadFileService.GetMoUploadFile(id);
             ViewData["moFile"] = moFile;
+            ViewData["case"] = loanCase;
+            ViewData["CaseType"] = CaseType;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            ViewData["ShareTaskData"] = ShareTaskData;
+
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> PendDetail(Guid id)
         {
@@ -233,7 +297,8 @@ namespace mechanical.Controllers
                 await _caseAssignmentService.SendForValuation(selectedCollateralIds, CenterId);
                 var response = new { message = "Collaterals assigned successfully" };
                 return Ok(response);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 var error = new { message = ex.Message };
                 return BadRequest(error);
@@ -244,7 +309,7 @@ namespace mechanical.Controllers
         {
             try
             {
-                await _caseAssignmentService.SendForReestimation(ReestimationReason,selectedCollateralIds, CenterId);
+                await _caseAssignmentService.SendForReestimation(ReestimationReason, selectedCollateralIds, CenterId);
                 var response = new { message = "Collaterals assigned successfully" };
                 return Ok(response);
             }
@@ -262,8 +327,8 @@ namespace mechanical.Controllers
             {
                 return BadRequest();
             }
-            return RedirectToAction("MyCases" , "MOCase");
-            
+            return RedirectToAction("MyCases", "MOCase");
+
         }
         [HttpPost]
         public async Task<IActionResult> RetrunToMaker(Guid Id)
@@ -302,14 +367,15 @@ namespace mechanical.Controllers
             var caseSchedule = await _caseScheduleService.CreateCaseSchedule(base.GetCurrentUserId(), CaseSchedulePostDto);
             if (caseSchedule == null) { return BadRequest("Unable to Create case Schdule"); }
             var CaseInfo = await _caseService.GetCaseDetail(caseSchedule.CaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = " getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "RM Proposed New Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! </br> Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + "</br></br> For further Detail please check Collateral Valuation System",
-            });
+            
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            //var recipientEmail = "yohannessintayhu@cbe.com.et";
+            //await _mailService.SendEmail(
+            //    recipientEmail: recipientEmail,
+            //    subject: "RM Proposed New Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+            //    body: "Dear! </br> Valuation Schedule Update  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseSchedule.ScheduleDate + "</br></br> For further Detail please check Collateral Valuation System"
+            //);
+
             string jsonData = JsonConvert.SerializeObject(caseSchedule);
             return Ok(caseSchedule);
         }
@@ -331,7 +397,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<ActionResult> UploadBussinessLicence(IFormFile BussinessLicence, Guid caseId)
         {
-            if (await _caseService.UploadBussinessLicence(base.GetCurrentUserId(),BussinessLicence, caseId))
+            if (await _caseService.UploadBussinessLicence(base.GetCurrentUserId(), BussinessLicence, caseId))
             {
                 return Ok();
             }
@@ -349,7 +415,7 @@ namespace mechanical.Controllers
             var rejected = await _cbeContext.Rejects.FirstOrDefaultAsync(res => res.CollateralId == Id);
             var caseAssignment = await _cbeContext.CaseAssignments.Where(res => res.CollateralId == Id && res.UserId == rejected.RejectedBy).FirstOrDefaultAsync();
             caseAssignment.Status = "New";
-            caseAssignment.AssignmentDate = DateTime.Now;
+            caseAssignment.AssignmentDate = DateTime.UtcNow;
             _cbeContext.Update(caseAssignment);
             var collateral = await _cbeContext.Collaterals.FindAsync(Id);
             collateral.CurrentStage = "Maker Officer";
@@ -359,15 +425,17 @@ namespace mechanical.Controllers
             return RedirectToAction("RejectedCases", "Case");
         }
         [HttpGet]
-        public async Task<IActionResult>  GetNextCaseNumber()
+        public async Task<IActionResult> GetNextCaseNumber()
         {
             var userId = base.GetCurrentUserId();
-            var userNumber = await _cbeContext.ConsecutiveNumbers.Where(res=>res.UserId == userId).FirstOrDefaultAsync();
+            var userNumber = await _cbeContext.ConsecutiveNumbers.Where(res => res.UserId == userId).FirstOrDefaultAsync();
 
-            if (userNumber == null) { 
+            if (userNumber == null)
+            {
                 userNumber = new ConsecutiveNumber { UserId = userId, NextNumber = 1 };
                 await _cbeContext.ConsecutiveNumbers.AddAsync(userNumber);
-            } else
+            }
+            else
             {
                 userNumber.NextNumber++;
                 _cbeContext.Update(userNumber);
@@ -435,11 +503,11 @@ namespace mechanical.Controllers
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
             var constMngAgrMachinery = await _cbeContext.ConstMngAgrMachineries
                                 .Include(res => res.EvaluatorUser)
-                                    .ThenInclude(res => res.Signatures).ThenInclude(res=>res.SignatureFile)
+                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
                                  .Include(res => res.CheckerUser)
                                     .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
-            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.CMAMachinery &&  res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer" ).ToListAsync();
-            var caseSchedule =await _cbeContext.CaseSchedules.Where(res=>res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
+            var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.CMAMachinery && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
+            var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
             ViewData["cases"] = cases;
             ViewData["collaterals"] = collaterals;
             ViewData["constMngAgrMachinery"] = constMngAgrMachinery;
@@ -460,7 +528,24 @@ namespace mechanical.Controllers
 
             var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.IBFEqupment && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
             var caseSchedule = await _cbeContext.CaseSchedules.Where(res => res.CaseId == CaseId && res.Status == "Approved").FirstOrDefaultAsync();
+            List<EquipmentGrouViewModel> equipmentGrouViewModels = new List<EquipmentGrouViewModel>();
+            var groupedByCostId = IndBldgFacilityEquipment.GroupBy(res => res.IndBldgFacilityEquipmentCostsId).ToList();
+            foreach (var group in groupedByCostId)
+            {
+                var costs = await _indBldgFacilityEquipmentCostService.GetByCostId(group.FirstOrDefault().IndBldgFacilityEquipmentCostsId);
+                equipmentGrouViewModels.Add(new EquipmentGrouViewModel
+                {
+                    EquipmentItems = group.ToList(),
+                    Cost = costs
+                });
+
+            }
+            ViewData["EquipmentGrouViewModel"] = equipmentGrouViewModels;
+
             ViewData["cases"] = cases;
+
+
+
             ViewData["collaterals"] = collaterals;
             ViewData["IndBldgFacilityEquipment"] = IndBldgFacilityEquipment;
             ViewData["caseSchedule"] = caseSchedule;
@@ -470,12 +555,22 @@ namespace mechanical.Controllers
         public async Task<IActionResult> IndBldgFacilityEquipmentReport(Guid CaseId)
         {
             var cases = await _cbeContext.Cases.FindAsync(CaseId);
-           
+            double? totalReplacementCost = 0;
+            double? totalEstimationValue = 0;
+
             var IndBldgFacilityEquipment = await _cbeContext.IndBldgFacilityEquipment
                                .Include(res => res.EvaluatorUser)
                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile)
                                 .Include(res => res.CheckerUser)
                                    .ThenInclude(res => res.Signatures).ThenInclude(res => res.SignatureFile).Where(res => res.Collateral.CaseId == CaseId && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            var groupedByCostId = IndBldgFacilityEquipment.GroupBy(res => res.IndBldgFacilityEquipmentCostsId).ToList();
+            foreach (var group in groupedByCostId)
+            {
+                var costs = await _indBldgFacilityEquipmentCostService.GetByCostId(group.FirstOrDefault().IndBldgFacilityEquipmentCostsId);
+                totalReplacementCost += costs.TotalReplacementCost;
+                totalEstimationValue += costs.TotalNetEstimationValue;
+            }
+
 
 
             var collaterals = await _cbeContext.Collaterals.Where(res => res.CaseId == CaseId && res.Category == MechanicalCollateralCategory.IBFEqupment && res.CurrentStatus == "Complete" && res.CurrentStage == "Checker Officer").ToListAsync();
@@ -484,20 +579,18 @@ namespace mechanical.Controllers
             ViewData["collaterals"] = collaterals;
             ViewData["IndBldgFacilityEquipment"] = IndBldgFacilityEquipment;
             ViewData["caseSchedule"] = caseSchedule;
+            ViewData["TotalRC"] = totalReplacementCost;
+            ViewData["TotalNt"] = totalEstimationValue;
             return View();
         }
 
-        //[HttpGet]
-        //public IActionResult MyPendingCases()
-        //{
-        //    return View();
-        //}
         [HttpGet]
         public IActionResult MyCompleteCases()
         {
-            
+
             return View();
         }
+
         [HttpGet]
         public IActionResult ReestimationCases()
         {
@@ -523,10 +616,223 @@ namespace mechanical.Controllers
             ViewData["moFile"] = moFile;
             return View();
         }
+
         [HttpGet]
-        public async Task<IActionResult> MyCompleteCase(Guid id)
+        public async Task<IActionResult> MyCompleteCase(Guid id, string CaseType)
         {
-            
+
+            object ShareTaskData;
+
+            if (CaseType != "Owner")
+            {
+                ShareTaskData = await _caseService.SharedCaseInfo(id);
+            }
+            else
+            {
+                ShareTaskData = null;
+            }
+
+            var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            //var motorvechiel = await _cbeContext.MotorVehicles.Where(res => res.Collaterial.CaseId == CaseId).ToListAsync();
+            if (loanCase == null) { return RedirectToAction("GetCompleteCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["Id"] = base.GetCurrentUserId();
+            List<MotorVehicle> motorVehicle = null;
+            try
+            {
+                motorVehicle = await _cbeContext.MotorVehicles.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            List<ConstMngAgrMachinery> conMngAgr = null;
+            try
+            {
+                conMngAgr = await _cbeContext.ConstMngAgrMachineries.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            List<IndBldgFacilityEquipment> indBldgFacEq = null;
+            try
+            {
+                indBldgFacEq = await _cbeContext.IndBldgFacilityEquipment.Where(res => res.Collateral.CaseId == id && res.Collateral.CurrentStatus == "Complete" && res.Collateral.CurrentStage == "Checker Officer").ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log the error, display a message, etc.)
+                Console.WriteLine($"An error occurred while retrieving motor vehicles: {ex.Message}");
+            }
+            ViewData["motorVehicle"] = motorVehicle;
+            ViewData["indBldgFacEq"] = indBldgFacEq;
+            ViewData["conMngAgr"] = conMngAgr;
+
+            var moFile = await _uploadFileService.GetMoUploadFile(id);
+            ViewData["moFile"] = moFile;
+            ViewData["CaseType"] = CaseType;
+            ViewData["ShareTaskData"] = ShareTaskData;
+
+            return View();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCompleteCases()
+        {
+            var myCase = await _caseService.GetRmCompleteCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTotalCases()
+        {
+            var id = base.GetCurrentUserId();
+            var myCase = new object();
+            var userRole = await _cbeContext.Users.Where(res => res.Id == id).Include(res => res.Role).FirstOrDefaultAsync();
+            if (userRole.Role.Name == "Relation Manager" || userRole.Role.Name == "Higher Official")
+            {
+                myCase = await _caseService.GetRmTotalCases(id);
+            }
+            else
+            {
+                myCase = await _caseService.GetTotalCases(id);
+            }
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateTermination(CaseTerminatePostDto caseTerminatePostDto)
+        {
+            var caseTerminate = await _caseTermnateService.CreateCaseTerminate(base.GetCurrentUserId(), caseTerminatePostDto);
+            if (caseTerminate == null) { return BadRequest("Unable to Create case Schdule"); }
+            var CaseInfo = await _caseService.GetCaseDetail(caseTerminate.CaseId);
+
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
+                body: "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseTerminate.Reason + " For further Detail please check Collateral Valuation System"
+            );
+
+            string jsonData = JsonConvert.SerializeObject(caseTerminate);
+            return Ok(caseTerminate);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTermination(Guid Id, CaseTerminatePostDto caseTerminatePostDto)
+        {
+            var caseTerminate = await _caseTermnateService.UpdateCaseTerminate(base.GetCurrentUserId(), Id, caseTerminatePostDto);
+            if (caseTerminate == null) { return BadRequest("Unable to update case Termination"); }
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ApproveCaseTermination(Guid Id)
+        {
+            var caseSchedule = await _caseService.ApproveCaseTermination(Id);
+            if (caseSchedule == null) { return BadRequest("Unable to update case Schdule"); }
+            return Ok();
+        }
+
+        public async Task<IActionResult> ReceivedCases()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetReceivedCases()
+        {
+            var cases = await _caseService.GetReceivedCases(base.GetCurrentUserId());
+            return Json(cases);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetMyCases()
+        {
+            var cases = await _caseService.GetMyCases(base.GetCurrentUserId());
+            var result = cases.Select(c => new { Id = c.Id, CaseNo = c.CaseNo });
+            return Json(result);
+        }
+        [HttpGet]
+        public IActionResult TotalHONewCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult TotalHOCompletedCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult TotalHORemarkCases()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult TotalHOCases()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult TotalHOPendingCases()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTotalHONewCases()
+        {
+            var newCases = await _caseService.GetTotalHONewCases(base.GetCurrentUserId());
+            return Content(JsonConvert.SerializeObject(newCases), "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetTotalHOPendingCases()
+        {
+            var myCase = await _caseService.GetTotalHOPendingCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> TotalHOPendDetail(Guid id)
+        {
+            var loanCase = await _caseService.GetHOPendingCase(base.GetCurrentUserId(), id);
+            var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
+            var caseTerminate = await _caseTermnateService.GetCaseTerminates(id);
+            if (loanCase == null) { return RedirectToAction("NewCases"); }
+            ViewData["case"] = loanCase;
+            ViewData["CaseSchedule"] = caseSchedule;
+            ViewData["caseTerminate"] = caseTerminate;
+            ViewData["Id"] = base.GetCurrentUserId();
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetHOCompleteCases()
+        {
+            var myCase = await _caseService.GetHOCompleteCases(base.GetCurrentUserId());
+            string jsonData = JsonConvert.SerializeObject(myCase);
+            return Content(jsonData, "application/json");
+        }
+        [HttpGet]
+        public async Task<IActionResult> MyHOCompleteCase(Guid id, string CaseType)
+        {
+
+            object ShareTaskData;
+
+            if (CaseType != "Owner")
+            {
+                ShareTaskData = await _caseService.SharedCaseInfo(id);
+            }
+            else
+            {
+                ShareTaskData = null;
+            }
+
+
             var loanCase = await _caseService.GetCase(base.GetCurrentUserId(), id);
             var caseSchedule = await _caseScheduleService.GetCaseSchedules(id);
             //var motorvechiel = await _cbeContext.MotorVehicles.Where(res => res.Collaterial.CaseId == CaseId).ToListAsync();
@@ -567,66 +873,14 @@ namespace mechanical.Controllers
             ViewData["motorVehicle"] = motorVehicle;
             ViewData["indBldgFacEq"] = indBldgFacEq;
             ViewData["conMngAgr"] = conMngAgr;
-            var moFile = await _uploadFileService.GetMoUploadFile(id);
-            ViewData["moFile"] = moFile;
+
+
+
+            ViewData["CaseType"] = CaseType;
+            ViewData["ShareTaskData"] = ShareTaskData;
+
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> GetCompleteCases()
-        {
-            var myCase = await _caseService.GetRmCompleteCases(base.GetCurrentUserId());
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetTotalCases()
-        {
-            var id = base.GetCurrentUserId();
-            var myCase= new object();
-            var userRole= await _cbeContext.CreateUsers.Where(res=>res.Id == id).Include(res=>res.Role).FirstOrDefaultAsync();
-            if (userRole.Role.Name == "Relation Manager")
-            {
-                 myCase = await _caseService.GetRmTotalCases(id);
-            }
-            else
-            {
-                 myCase = await _caseService.GetTotalCases(id);
-            }
-            string jsonData = JsonConvert.SerializeObject(myCase);
-            return Content(jsonData, "application/json");
-        }
-        [HttpPost]
-        public async Task<IActionResult> CreateTermination(CaseTerminatePostDto caseTerminatePostDto)
-        {
-            var caseTerminate = await _caseTermnateService.CreateCaseTerminate(base.GetCurrentUserId(), caseTerminatePostDto);
-            if (caseTerminate == null) { return BadRequest("Unable to Create case Schdule"); }
-            var CaseInfo = await _caseService.GetCaseDetail(caseTerminate.CaseId);
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = "getnetadane1@cbe.com.et",
-                SenderPassword = "Gechlove@1234",
-                RecipantEmail = "yohannessintayhu@cbe.com.et",
-                Subject = "Valuation Schedule for Case Number " + CaseInfo.CaseNo,
-                Body = "Dear! Case Termination request  For Applicant:-" + CaseInfo.ApplicantName + " Is " + caseTerminate.Reason + " For further Detail please check Collateral Valuation System",
-            });
-            string jsonData = JsonConvert.SerializeObject(caseTerminate);
-            return Ok(caseTerminate);
-        }
-        [HttpPost]
-        public async Task<IActionResult> UpdateTermination(Guid Id,CaseTerminatePostDto caseTerminatePostDto)
-        {
-            var caseTerminate = await _caseTermnateService.UpdateCaseTerminate(base.GetCurrentUserId(), Id, caseTerminatePostDto);
-            if (caseTerminate == null) { return BadRequest("Unable to update case Termination"); }
-            return Ok();
-        }
-        [HttpPost]
-        public async Task<IActionResult> ApproveCaseTermination(Guid Id)
-        {
-            var caseSchedule = await _caseService.ApproveCaseTermination(Id);
-            if (caseSchedule == null) { return BadRequest("Unable to update case Schdule"); }
-            return Ok();
-        }
-
         //[HttpGet]
         //public async Task<IActionResult> MyCase(Guid Id)
         //{

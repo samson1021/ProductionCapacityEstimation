@@ -5,6 +5,7 @@ namespace mechanical.Models.Dto.MotorVehicleDto
     public class CreateMotorVehicleDto
     {
         public required Guid CollateralId { get; set; }
+        public string? MechanicalEqpmntName { get; set; }
         public EngineType EngineType { get; set; }
         public NoOfCylinder NoOfCylinder { get; set; }
         public TransmissionType TransmissionType { get; set; }

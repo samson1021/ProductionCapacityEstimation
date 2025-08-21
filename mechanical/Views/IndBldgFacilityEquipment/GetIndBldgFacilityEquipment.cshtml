@@ -38,32 +38,42 @@
                     <h4 class="text-center">General Information</h4>
                 </div>
             </div>
-            <div class="row" style="margin-top:1.25rem;">
-                <div class="row col-lg-4">
-                    <div class="col-lg-6">
-                        <label>Indu(Mfg) & Bud Facility Machinery Type:</label>
+                <div class="row" style="margin-top:1.25rem;">
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Mechanical Equipment Name:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.MechanicalEqpmntName </div>
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div>@Model.IndustrialBuildingMachineryType </div>
-                    </div>
-                </div>
-                <div class="row col-lg-4">
-                    <div class="col-lg-6">
-                        <label>Power Source & Fuel Type:</label>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>@Model.EngineType</div>
-                    </div>
-                </div>
-                <div class="row col-lg-4">
-                    <div class="col-lg-6">
-                        <label>Power Supply:</label>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>@Model.PowerSupply</div>
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Indu(Mfg) & Bud Facility Machinery Type:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.IndustrialBuildingMachineryType </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="row" style="margin-top:1.25rem;">
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Power Source & Fuel Type:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.EngineType</div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-6">
+                        <div class="col-lg-6">
+                            <label>Power Supply:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>@Model.PowerSupply</div>
+                        </div>
+                    </div>
+                </div>
             <div class="row" style="margin-top:1.25rem;">
                 <div class="row col-lg-4">
                     <div class="col-lg-6">
@@ -297,6 +307,14 @@
                         <div class="text-puprle" id="NetEstimationValue">@Model.NetEstimationValue</div>
                     </div>
                 </div>
+                        <div class="row col-lg-6">
+                            <div class="col-lg-6">
+                                <label>Cost Of Insurance,Freight & others(ETB):</label>
+                            </div>
+                            <div class="col-lg-6">
+                            <div id="NetEstimationValuee">@Model.IndBldgFacilityEquipmentCosts.InsuranceFreightOthersCost </div>
+                            </div>
+                        </div>
             </div>
 
                 <div class="row col-12">
@@ -346,12 +364,21 @@
                                     alert('An error occurred. Please try again.'); // Show error message
                                 }
                             },
-                            error: function (xhr, status, error) {
-                                console.error('AJAX Error: ', status, error); // For debugging
-                                var errorMessage = xhr.responseJSON && xhr.responseJSON.message
-                                    ? xhr.responseJSON.message
-                                    : 'An unexpected error occurred.';
-                                alert(errorMessage); // Show error message
+                             error: function (xhr) {
+                                // 1. First try to parse JSON (if server returns JSON)
+                                let errorMsg = xhr.responseJSON?.message || xhr.responseJSON?.title;
+
+                                // 2. If no JSON message, use raw response text
+                                if (!errorMsg) {
+                                    errorMsg = xhr.responseText || "Unknown error occurred";
+                                }
+
+                                // 3. Final fallback (should never happen)
+                                if (!errorMsg) {
+                                    errorMsg = "Operation failed. Please try again.";
+                                }
+
+                                toastr.error(errorMsg); // Now this WILL show your message
                             }
                         });
                     }

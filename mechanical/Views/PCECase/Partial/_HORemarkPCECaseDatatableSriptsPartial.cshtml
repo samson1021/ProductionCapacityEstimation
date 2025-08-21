@@ -1,0 +1,51 @@
+﻿<script>
+    $(document).ready(function () {
+        loadProductions();
+    });
+
+    function initializeDataTable(data) {
+        $('#Productions').DataTable({
+            language: {
+                emptyTable: "There is no Production register for this PCECase"
+            },
+            responsive: true,
+            pageLength: 5,
+            lengthChange: false,
+            autoWidth: false,
+            buttons: ["copy", "csv", "excel", { extend: 'pdf', title: 'My PCECase - pdf' }, { extend: 'print', title: 'My PCECase - Print' }, "colvis"],
+            data: data,
+            columns: [
+                { data: 'PropertyOwner', width: '20%' },
+                { data: 'Role', width: '15%' },
+                { data: 'Category', width: '25%' },
+                { data: 'Type', width: '25%' },
+                {
+                    data: 'Id',
+                    width: '15%',
+                    render: function (data, type, row, meta) {
+                        return '<a href="@Url.Action("HODetail", "ProductionCapacity")?Id=' + data + '">Details</a>';
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#Productions_wrapper .col-md-6:eq(0)');
+    }
+
+    function loadProductions() {
+
+        $.ajax({
+            url: '/ProductionCapacity/GetHORemarkProductions?PCECaseId=' + '@ViewData["PCECaseId"]',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($.fn.DataTable.isDataTable('#Productions')) {
+                    $('#Productions').DataTable().destroy();
+                }
+                initializeDataTable(data);
+            },
+            error: function (error) {
+                toastr.error("Failed to load Productions");
+                console.log(error);
+            }
+        });
+    }
+</script>

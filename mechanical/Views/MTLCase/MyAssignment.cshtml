@@ -1,7 +1,7 @@
 ﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
 }
@@ -31,7 +31,7 @@
                         <th><input type="checkbox" class="form-check bg-purple" id="selectAllCheckbox"></th>
                         <th>Property Owner</th>
                         <th>Role</th>
-                        <th>Equipment Catagory</th>
+                        <th>Equipment Category</th>
                         <th>Equipment Type</th>
                         <th>Assignment Date</th>
                         <th>Case Owner</th>
@@ -209,7 +209,7 @@
                         { data: 'User', width: '10%' },
                         { data: 'Status', width: '10%' },
                         {
-                            data: 'CaseAssigmentId',
+                            data: 'CollateralId',
                             width: '15%',
                             render: function (data, type, row, meta) {
                                 return '<a href="@Url.Action("Detail", "Collateral")?Id=' + data + '">Details';

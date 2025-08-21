@@ -55,12 +55,40 @@
                                 <button type="button" class="btn btn-outline-info CheckAssesmentButton" data-toggle="modal" data-target="#CheckAssesmentModal">
                                     Evaluation Tool <i class="fas fa-toolbox"></i>
                                 </button>
+                                <button type="button" id="CorectionHistoryButton" class="btn btn-outline-info" data-toggle="modal" data-target="#CorrectionHistoryModal" >
+                                    View Collateral History
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
+                        <label id="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                        <div class="input-group">
+                            <input id="MechanicalEqpmntName" value=@Model.MechanicalEqpmntName type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                        {
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-6">
                         <label id="IndustrialBuildingMachineryType">Machinery Name</label>
                         <div class="input-group">
                             <input id="IndustrialBuildingMachineryType" value=@Model.IndustrialBuildingMachineryType type="text" class="form-control" readonly />
@@ -85,55 +113,57 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                </div>
+                <div class="row">
+                    <div class="form-group col-xl-6">
                         <label id="lblEngineType">Power Source & Fuel Type</label>
-                            <div class="input-group">
-                                <input id="txtCollateralId" value="@Model.EngineType" type="text" class="form-control" readonly />
-                                <div class="input-group-append">
-                                    @{
-                                        try
+                        <div class="input-group">
+                            <input id="txtCollateralId" value="@Model.EngineType" type="text" class="form-control" readonly />
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
+                                        if (comment?["EngineType"] != null && comment["EngineType"] != "")
                                         {
-                                            if (comment?["EngineType"] != null && comment["EngineType"] != "")
-                                            {
-                                                <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment["EngineType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
-                                            }
-                                            else
-                                            {
-                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
-                                            }
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType" data-comment="@comment["EngineType"]"> <i class="fas fa-exclamation-triangle"></i> </button>
                                         }
-                                        catch (Exception)
+                                        else
                                         {
                                             <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
                                         }
                                     }
-                                </div>
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="EngineType"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
                             </div>
+                        </div>
                     </div>
-                    <div class="form-group col-xl-4">
+                    <div class="form-group col-xl-6">
                         <label id="PowerSupply">Power Supply</label>
-                            <div class="input-group">
+                        <div class="input-group">
                             <input id="PowerSupply" value="@Model.PowerSupply" type="text" class="form-control" readonly />
-                                <div class="input-group-append">
-                                    @{
-                                        try
-                                        {
+                            <div class="input-group-append">
+                                @{
+                                    try
+                                    {
                                         if (comment?["PowerSupply"] != null && comment["PowerSupply"] != "")
-                                            {
-                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment["PowerSupply"]"> <i class="fas fa-exclamation-triangle"></i> </button>
-                                            }
-                                            else
-                                            {
-                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
-                                            }
-                                        }
-                                        catch (Exception)
                                         {
-                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
+                                            <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply" data-comment="@comment["PowerSupply"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
                                         }
                                     }
-                                </div>
+                                    catch (Exception)
+                                    {
+                                        <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="PowerSupply"> <i class="fas fa-plus"></i> </button>
+                                    }
+                                }
                             </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -826,12 +856,40 @@
                                     </div>
                             </div>
                             <div class="col-sm-6">
+                                <label>Ind Bldg Facility Equipment Costs</label>
+                                <div class="input-group">
+                                    <input id="IndBldgFacilityEquipmentCosts" type="text" class="form-control" value="@Model.IndBldgFacilityEquipmentCosts.InsuranceFreightOthersCost" readonly />
+                                    <div class="input-group-append">
+                                        @{
+                                            try
+                                            {
+                                                if (comment?["IndBldgFacilityEquipmentCosts"] != null && comment["IndBldgFacilityEquipmentCosts"] != "")
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts" data-comment="@comment["IndBldgFacilityEquipmentCosts"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts"> <i class="fas fa-plus"></i> </button>
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                <button type="button" class="btn btn-outline-info show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts"> <i class="fas fa-plus"></i> </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Please Enter Your Additional Comments </label>
                                     <div class="input-group">
                                         <div class="input-group-append">
                                             <label class="btn btn-outline-info show-comment-box" data-toggle="modal"
-                                                    data-target="#CommentBoxModal" data-field-id="AdditionalComment"> Additional Comment
+                                                   data-target="#CommentBoxModal" data-field-id="AdditionalComment">
+                                                Additional Comment
                                                 <i class="fas fa-plus"></i>
                                             </label>
                                             @{
@@ -865,6 +923,9 @@
                                         <button type="button" class="btn btn-outline-info CheckAssesmentButton" data-toggle="modal" data-target="#CheckAssesmentModal">
                                             Evaluation Tool <i class="fas fa-toolbox"></i>
                                         </button>
+                                        <button type="button" id="CorectionHistoryButton" class="btn btn-outline-info" data-toggle="modal" data-target="#CorrectionHistoryModal">
+                                            View Collateral History
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -883,13 +944,16 @@
             formatAndDisplayValue('ReplacementCost');
             formatAndDisplayValue('txtInvoiceValue');
             formatAndDisplayValue('NetEstimationValue');
+            formatAndDisplayValue('IndBldgFacilityEquipmentCosts');
+                 console.log("Document ready initialized");
+            
       
-    const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
+    // const CheckAssesmentButton = document.getElementById("CheckAssesmentButton");
 
-    // const myCaseId = "myCase.Id";
-    CheckAssesmentButton.addEventListener("click", function () {
-        $('#CheckAssesmentModal').modal('show');
-    });
+    // // const myCaseId = "myCase.Id";
+    // CheckAssesmentButton.addEventListener("click", function () {
+    //     $('#CheckAssesmentModal').modal('show');
+    // });
 </script>
 @section Scripts {
     @{
@@ -912,7 +976,7 @@
                 <thead>
                     <tr>
                         <th>File Name</th>
-                        <th>File Catagory</th>
+                        <th>File Category</th>
                         <th>File Type</th>
                         <th>Action</th>
                     </tr>
@@ -927,7 +991,7 @@
                             {
                                 <tr>
                                     <td>@collateralFile.Name</td>
-                                    <td>@collateralFile.Catagory</td>
+                                    <td>@collateralFile.Category</td>
                                     <td>@collateralFile.ContentType</td>
                                     <td><a href="@Url.Action("DownloadFile", "Collateral", new { id = collateralFile.Id })">Download</a></td>
                                 </tr>
@@ -961,6 +1025,26 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary save-comment">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="CorrectionHistoryModal" tabindex="-1" role="dialog" aria-labelledby="CorrectionHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CorrectionHistoryModalLabel">Collateral Correction History</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="correctionHistories" style="height:30rem; overflow-y: auto;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span>@DateTime.Now</span>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

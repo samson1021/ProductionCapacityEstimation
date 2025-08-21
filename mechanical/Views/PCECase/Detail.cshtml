@@ -179,7 +179,6 @@
         await Html.RenderPartialAsync("PCEScriptPartial/PCECaseSchedule/_PCECaseScheduleScriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCEComment/_PCECaseCommentDatatableScriptPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/PCETerminate/_PCECaseTerminatedDatatableScriptPartial");
-
         await Html.RenderPartialAsync("~/Views/ProductionCapacity/Partial/_ProductionsTableDatatableSriptsPartial.cshtml");
 
         if (currentUserRole == "Relation Manager" && (status == "New" || status == "All"))
@@ -204,23 +203,18 @@
     <script>
         $(document).ready(function () {
 
-            // var assignUrl = '@Html.Raw(assignUrl)';
-            var selectName = '@Html.Raw(selectName)';
-            var emptyMessage = '@Html.Raw(emptyMessage)';
-            var currentUserRole = '@Html.Raw(currentUserRole)';
-            // var getSubordinateUrl = '@Html.Raw(getSubordinateUrl)';
-            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
-            var assignUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(assignUrl))';
-            var getSubordinateUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(getSubordinateUrl))';
+            var selectName = '@selectName';
+            var emptyMessage = '@emptyMessage';
+            var currentUserRole = '@currentUserRole';
+            var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
+            var assignUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(assignUrl)';
+            var getSubordinateUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(getSubordinateUrl)';
 
-            // loadProductions(fetchUrl, emptyMessage);
-            loadProductions('@Html.Raw(fetchUrl)', emptyMessage);
-
-        @if (currentUserRole != "Maker Officer")
-        {
-            <text>initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage); </text>
-        }
-                });
-
+            loadProductions(fetchUrl, emptyMessage);
+            @if (currentUserRole != "Maker Officer")
+            {
+                <text>initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage);</text>
+            }
+        });
     </script>
 }

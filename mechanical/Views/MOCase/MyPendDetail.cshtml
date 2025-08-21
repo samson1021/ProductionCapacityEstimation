@@ -1,7 +1,7 @@
 ﻿@using mechanical.Models.Dto.CaseScheduleDto;
 @model mechanical.Models.Dto.CollateralDto.CollateralPostDto
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
     var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
     var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
     var moFile = ViewData["moFile"] as IEnumerable<ReturnFileDto>;
@@ -43,6 +43,11 @@
                             Comments <span class="badge badge-warning right CommentBage"> </span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-correction-tab" data-toggle="pill" href="#custom-tabs-four-correction" role="tab" aria-controls="custom-tabs-four-correction" aria-selected="false">
+                            <i class="fas fa-history"></i> Case History <span class="badge badge-warning right CorrectionBage"></span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -59,6 +64,11 @@
                     <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
                         @await Html.PartialAsync("_CaseComment")
                     </div>
+
+                    <div class="tab-pane fade" id="custom-tabs-four-correction" role="tabpanel" aria-labelledby="custom-tabs-four-correction-tab">
+                        @await Html.PartialAsync("_CaseCorrectionHistory")
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -152,7 +162,7 @@
                         <tr>
                             <th>Property Owner</th>
                             <th>Role</th>
-                            <th>Equipment Catagory</th>
+                            <th>Equipment Category</th>
                             <th>Equipment Type</th>
                             <th>Action</th>
                         </tr>
@@ -169,7 +179,114 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-           
+           var currentCaseId = '@myCase.Id'; // You'll need to set this from your page
+
+        function initializeDataTable(data) {
+            $('#industrialCollateralTable').DataTable({
+                language: {
+                    emptyTable: "There is no industrial cost registered"
+                },
+                responsive: true,
+                pageLength: 7,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", {
+                    extend: 'pdf',
+                    title: 'Industrial Collaterals - pdf'
+                }, {
+                    extend: 'print',
+                    title: 'Industrial Collaterals - Print'
+                }, "colvis"],
+                data: data,
+                columns: [
+                    {
+                        data: null,
+                        width: '8%',
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+                    {
+                        data: 'InsuranceFreightOthersCost',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'DepreciatedInsuranceFreightOthersCost',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'LandTransportLoadingUnloadingInstallationCommissioningCost',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'DepreciatedLandTransportLoadingUnloadingInstallationCommissioningCost',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'TotalReplacementCost',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'TotalNetEstimationValue',
+                        width: '18%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '')
+                    },
+                    {
+                        data: 'CollateralCount',
+                        width: '10%'
+                    }
+                ],
+                initComplete: function() {
+                    this.api().columns().header().each(function(header) {
+                        if ($(header).text().includes('CIF')) {
+                            $(header).attr('title', 'Cost of Insurance, Freight & others');
+                        } else if ($(header).text().includes('LT&LUCC')) {
+                            $(header).attr('title', 'Land Transport, Loading/Unloading & Commissioning Cost');
+                        }
+                    });
+                }
+            }).buttons().container().appendTo('#industrialCollateralTable_wrapper .col-md-6:eq(0)');
+        }
+
+         function loadCollaterals(caseId) {
+            $.ajax({
+                url: `/api/IndustrialCollateralCosts/by-case/${caseId}`,
+                method: 'GET',
+                dataType: 'json',
+                contentType: 'application/json'
+            })
+            .done(function(data) {
+                if ($.fn.DataTable.isDataTable('#industrialCollateralTable')) {
+                    $('#industrialCollateralTable').DataTable().destroy();
+                }
+                initializeDataTable(data);
+                // toastr.success("Collaterals loaded successfully");
+
+                $(document).off('click', '.edit-btn, .delete-btn').on('click', '.edit-btn, .delete-btn', function() {
+                    const id = $(this).data('id');
+                    if ($(this).hasClass('edit-btn')) {
+                        handleEdit(id);
+                    } else {
+                        handleDelete(id);
+                    }
+                });
+            })
+            .fail(function(xhr, status, error) {
+                console.error('Error loading collaterals:', error);
+                const message = xhr.responseJSON || error;
+                toastr.error(`Failed to load collaterals: ${message}`);
+            });
+        }
+
+
+        $("#addCostOfInsuranceFreightButton").click(function(){
+              loadCollaterals(currentCaseId);
+        })
 
         });
         function fetchCollateralDetails(collateralId) {
@@ -193,7 +310,7 @@
             data.forEach(function (collateralFile) {
                 tableBody += '<tr>';
                 tableBody += '<td>' + collateralFile.Name + '</td>';
-                tableBody += '<td>' + collateralFile.Catagory + '</td>';
+                tableBody += '<td>' + collateralFile.Category + '</td>';
                 tableBody += '<td>' + collateralFile.ContentType + '</td>';
                 tableBody += '<td><a href="/UploadFile/ViewFile/' + collateralFile.Id + '" target="_blank">View <i class="fas fas-solid fa-eye"></i></a>&nbsp;|&nbsp;<a href="/UploadFile/DownloadFile/' + collateralFile.Id + '" target="_blank">Download <i class="fas fas-solid fa-download"></i></a></td>';
                 tableBody += '</tr>';

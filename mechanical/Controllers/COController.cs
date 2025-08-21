@@ -8,9 +8,11 @@ using mechanical.Services.MMCaseService;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.CaseScheduleService;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class COController : BaseController
     {
         private readonly ICaseService _caseService;
@@ -21,17 +23,15 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
 
-
-        public COController(ICaseService caseService, ICaseTerminateService caseTermnateService,IUploadFileService uploadFileService ,ICaseScheduleService caseScheduleService, ICMCaseService CoCaseService,IMMCaseService mOCaseService, ICollateralService collateralService)
+        public COController(ICaseService caseService, ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService, ICaseScheduleService caseScheduleService, ICMCaseService CoCaseService, IMMCaseService mOCaseService, ICollateralService collateralService)
         {
             _caseService = caseService;
             _collateralService = collateralService;
-            _mOCaseService = mOCaseService; 
+            _mOCaseService = mOCaseService;
             _caseScheduleService = caseScheduleService;
             _CoCaseService = CoCaseService;
             _caseTermnateService = caseTermnateService;
             _uploadFileService = uploadFileService;
-
         }
 
         [HttpGet]
@@ -40,12 +40,12 @@ namespace mechanical.Controllers
 
             return View();
         }
-        
+
         public IActionResult RemarkCases()
         {
             return View();
         }
-        
+
         public async Task<IActionResult> RemarkCase(Guid Id)
         {
             var loanCase = await _caseService.GetCaseDetail(Id);
@@ -58,7 +58,7 @@ namespace mechanical.Controllers
             ViewData["moFile"] = moFile;
             return View();
         }
-         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetRemarkedCases()
         {
             var myCase = await _CoCaseService.GetCoRemarkedCases(GetCurrentUserId());
@@ -78,7 +78,7 @@ namespace mechanical.Controllers
         [HttpGet]
         public async Task<IActionResult> Evaluation(Guid Id)
         {
-            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(),Id);
+            var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
             if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
             {
                 return RedirectToAction("GetEvaluatedMoterVehicle", "MotorVehicle", new { Id = Id });

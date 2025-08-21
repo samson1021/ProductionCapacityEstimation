@@ -1,13 +1,14 @@
 ﻿using mechanical.Models.Entities;
 using mechanical.Data;
 using mechanical.Models;
-using mechanical.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CreditBackOffice.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class RoleManagmentController : Controller
     {
         // GET: RoleManagmentController
@@ -19,7 +20,7 @@ namespace CreditBackOffice.Controllers
         // GET: DistrictManagmentController
         public ActionResult Index()
         {
-            var RoleList = _context.CreateRoles.ToList();
+            var RoleList = _context.Roles.ToList();
             return View(RoleList);
         }
 
@@ -38,10 +39,10 @@ namespace CreditBackOffice.Controllers
         // POST: DistrictManagmentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateRole model)
+        public ActionResult Create(Role model)
         {
 
-            _context.CreateRoles.Add(model);
+            _context.Roles.Add(model);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
@@ -51,16 +52,16 @@ namespace CreditBackOffice.Controllers
         // GET: DistrictManagmentController/Edit/5
         public ActionResult Edit(Guid id)
         {
-            var Role = _context.CreateRoles.FirstOrDefault(c => c.Id == id);
+            var Role = _context.Roles.FirstOrDefault(c => c.Id == id);
             return View(Role);
         }
 
         // POST: DistrictManagmentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CreateUser model)
+        public ActionResult Edit(User model)
         {
-            var role = _context.CreateRoles.FirstOrDefault(c => c.Id == model.Id);
+            var role = _context.Roles.FirstOrDefault(c => c.Id == model.Id);
             role.Name = model.Name;
             _context.Entry(role).State = EntityState.Modified;
             _context.SaveChanges();
@@ -71,7 +72,7 @@ namespace CreditBackOffice.Controllers
         // GET: DistrictManagmentController/Delete/5
         public ActionResult Delete(Guid id)
         {
-            var role = _context.CreateRoles.FirstOrDefault(c => c.Id == id);
+            var role = _context.Roles.FirstOrDefault(c => c.Id == id);
             return View(role);
 
         }
@@ -81,9 +82,9 @@ namespace CreditBackOffice.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid id, IFormCollection collection)
         {
-            var role = _context.CreateRoles.Find(id);
+            var role = _context.Roles.Find(id);
 
-            _context.CreateRoles.Remove(role);
+            _context.Roles.Remove(role);
             _context.SaveChanges();
 
             return RedirectToAction("Index");

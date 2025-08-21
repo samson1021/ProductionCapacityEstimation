@@ -1,8 +1,9 @@
-﻿@model mechanical.Models.Dto.IndBldgFacilityEquipmentDto.IndBldgFacilityEquipmentPostDto;
+﻿@model mechanical.Models.Entities.IndBldgFacilityEquipment;
 @{
     var comment = ViewData["comments"] as Dictionary<string, string>;
 
     var collateralFiles = ViewData["collateralFile"] as IEnumerable<ReturnFileDto>;
+    var indBldgFacilityEquipment = ViewData["indBldgFacilityEquipmentReturnDto"];
 }
 <div class="content-header">
     <div class="container-fluid">
@@ -24,9 +25,28 @@
 <section class="content col-xl-12 connectedSortable">
     <div class="card-body">
         <form method="post" enctype="multipart/form-data" asp-action="EditIndBldgFacilityEquipment" asp-route-Id="@Model.Id">
-            <input asp-for="CollateralId" value=@Model.Id type="hidden" />
+            @* <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" /> *@
+            <input name="CollateralId" id="TxtmovId" value="@Model.CollateralId" type="hidden" />
+            <input name="Id" id="TxtEquipmentId" value="@Model.Id" type="hidden" />
             <div class="row">
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-6">
+                    <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                    <div class="input-group">
+                        <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Motor Power (Cc/Kw/Hp)" required>
+                        @{
+                            try
+                            {
+                                if (comment?["MechanicalEqpmntName"] != null && comment["MechanicalEqpmntName"] != "")
+                                {
+                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="MechanicalEqpmntName" data-comment="@comment["MechanicalEqpmntName"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                }
+                            }
+                            catch (Exception) { }
+                        }
+                    </div>
+                    <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-xl-6">
                     <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
                     <div class="input-group">
                         <select asp-for="IndustrialBuildingMachineryType" class="form-control"
@@ -46,7 +66,8 @@
                     </div>
                     <span asp-validation-for="IndustrialBuildingMachineryType" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+            </div><div class="row">
+                <div class="form-group col-xl-6">
                     <label asp-for="EngineType"> Power Source & Fuel Type</label>
                     <div class="input-group">
                         <select asp-for="EngineType" class="form-control"
@@ -66,7 +87,7 @@
                     </div>
                     <span asp-validation-for="EngineType" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-6">
                     <label asp-for="PowerSupply">Power Supply</label>
                     <div class="input-group">
                         <select asp-for="PowerSupply" class="form-control"
@@ -424,7 +445,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-3">
                     <label asp-for="InvoiceValue">Invoice Value</label>
                     <div class="input-group">
                         <input asp-for="InvoiceValue" type="number" class="form-control" placeholder="Invoice Value" required>
@@ -441,7 +462,26 @@
                     </div>
                     <span asp-validation-for="InvoiceValue" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+                 <div class="form-group col-xl-3">
+                    <label asp-for="IndBldgFacilityEquipmentCosts">Ind Bldg Facility Equipment Costs</label>
+                    <div class="input-group">
+                        <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control" required>
+                            <option disabled value="">Select Insurance, Freight & Other Costs</option>
+                        </select>
+                        @{
+                            try
+                            {
+                                if (comment?["IndBldgFacilityEquipmentCosts"] != null && comment["IndBldgFacilityEquipmentCosts"] != "")
+                                {
+                                    <button type="button" class="btn btn-outline-danger show-comment-box" data-toggle="modal" data-target="#CommentBoxModal" data-field-id="IndBldgFacilityEquipmentCosts" data-comment="@comment["IndBldgFacilityEquipmentCosts"]"> <i class="fas fa-exclamation-triangle"></i> </button>
+                                }
+                            }
+                            catch (Exception) { }
+                        }
+                    </div>
+                    <span asp-validation-for="IndBldgFacilityEquipmentCosts" class="text-danger"></span>
+                </div>
+                <div class="form-group col-xl-3">
                     <label asp-for="Currency">Currency</label>
                     <div class="input-group">
                         <input asp-for="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
@@ -458,7 +498,7 @@
                     </div>
                     <span asp-validation-for="Currency" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xl-4">
+                <div class="form-group col-xl-3">
                     <label asp-for="ExchangeRate">Exchange Rate</label>
                     <div class="input-group">
                         <input asp-for="ExchangeRate" list="currencyList" type="text" class="form-control" placeholder="Enter Exchange Rate" required>
@@ -531,6 +571,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary Replay-comment">Save</button>
             </div>
         </div>
     </div>

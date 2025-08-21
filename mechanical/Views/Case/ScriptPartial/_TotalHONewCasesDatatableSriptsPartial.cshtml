@@ -1,0 +1,107 @@
+﻿<script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
+<script src="~/lib/datatable/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/datatables.buttons.min.js"></script>
+<script src="~/lib/datatable/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/datatable/js/jszip.min.js"></script>
+<script src="~/lib/datatable/js/pdfmake.min.js"></script>
+<script src="~/lib/datatable/js/vfs_fonts.js"></script>
+<script src="~/lib/datatable/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatable/js/buttons.print.min.js"></script>
+<script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Case/GetTotalHONewCases',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#MyNewCase').DataTable({
+                    data: data,
+                    columns: [
+                        {
+                            data: null,
+                            render: function (data, type, row, meta) {
+                             
+                                if (row.CaseType === 'Shared') {
+                                    // return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '" disabled>';
+                                    return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '" class="always-unchecked" disabled >';
+                                    // return "";
+                                } else {
+                                    return '<input class="purple-checkbox" type="checkbox" value="' + data.Id + '">';
+                                }
+                            }
+                        },
+                        {
+                            data: 'CreationAt',
+                            width: '15%',
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                return date.toLocaleString(); 
+                            }
+                        }, 
+                        { data: 'CaseNo', width: '10%' },
+                        { data: 'ApplicantName', width: '15%' },
+                        { data: 'CustomerId', width: '10%' },
+                        { data: 'NoOfCollateral', width: '10%' },
+                        { data: 'TotalNoOfCollateral', width: '10%' },
+                        {
+                            data: 'CaseType',
+                            width: '10%',
+                        },
+                        {
+                            data: 'TaskName',
+                            width: '10%',
+                            render: function (data, type, row, meta) {
+                                if (!data) return '';
+                                var tasks = data.split(',').map(task => task.trim());
+                                var taskLinks = tasks.map(task => {
+                                    if (task === 'Report Generation') {
+                                        return '<a href="/Case/MyCompleteCase?Id=' + row.Id + '&CaseType=' + encodeURIComponent(row.CaseType) + '">' + task + '</a>';
+                                    } else {
+                                        return '<a href="/Case/Detail?Id=' + row.Id + '&CaseType=' + encodeURIComponent(row.CaseType) + '">' + task + '</a>';
+                                    }
+                                });
+                                return taskLinks.join(', ');
+                            }
+                        },
+                         {
+                        data: 'Id',
+                        width: '10%',
+                        render: function (data, type, row, meta) {
+                            return '<a href="@Url.Action("TotalHOPendDetail", "Case")?Id=' + data + '&CaseType=' + encodeURIComponent(row.CaseType) + '">Details | </a>' +
+                                '<a href="@Url.Action("Index", "CaseTimeLine")?CaseId=' + data + '"> <i class="nav-icon fas fa-sitemap"></i></a>';
+                        }
+                    }
+                    ], 
+                    order: [[0, 'desc']],
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    buttons: [{extend: 'copy',title: 'RM New Case'},
+                    {extend: 'csv',title: 'RM New Case'}, 
+                    { extend: 'excel', title: 'RM New Case'}, 
+                    { extend: 'pdf',title: 'RM New Case - pdf'},
+                    { extend: 'print',title: 'RM New Case - Print' },  'colvis'   ]
+                }).buttons().container().appendTo('#MyNewCase_wrapper .col-md-6:eq(0)');
+            }
+        });
+        // "Select All" Checkbox Logic
+        $('#selectAllNonDisableCheckbox').on('change', function () {
+            var isChecked = $(this).is(':checked');
+            // Only select non-disabled checkboxes (CaseType !== 'Shared')
+            $('#MyNewCase .purple-checkbox:not(:disabled)').prop('checked', isChecked);
+        });
+        // Update "Select All" state when individual checkboxes change
+        $('#MyNewCase').on('change', '.purple-checkbox:not(:disabled)', function () {
+            var allEnabledChecked = $('#MyNewCase .purple-checkbox:not(:disabled)').length ===
+                $('#MyNewCase .purple-checkbox:not(:disabled):checked').length;
+            $('#selectAllNonDisableCheckbox').prop('checked', allEnabledChecked);
+        });
+
+
+            });
+   
+</script>

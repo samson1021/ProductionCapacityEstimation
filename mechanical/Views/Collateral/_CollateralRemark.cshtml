@@ -5,7 +5,7 @@
     var movaluation = ViewData["movaluation"] as ReturnMotorVehicleDto;
     var Cavaluation = ViewData["Cavaluation"] as ConstMngAgMachineryReturnDto;
     var Ibvaluation = ViewData["Ibvaluation"] as IndBldgFacilityEquipmentReturnDto;
-    var loggedRole = ViewData["loggedRole"] as CreateRole;
+    var loggedRole = ViewData["loggedRole"] as Role;
     var remarkTypeCollateral = ViewData["remarkTypeCollateral"] as Collateral;
 }
 
@@ -25,14 +25,14 @@
                         {
                             if (movaluation.Remark != null && movaluation.Remark != "")
                             {
-                                <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Catagory">@movaluation.Remark</textarea>
+                                <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Category">@movaluation.Remark</textarea>
                             }
                         }
                         else if (Model.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.IBFEqupment))
                         {
                             if ( Ibvaluation.Remark != null && Ibvaluation.Remark != "" )
                             {
-                                <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Catagory">@Ibvaluation.Remark</textarea>
+                                <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Category">@Ibvaluation.Remark</textarea>
 
                             }
                         }
@@ -40,11 +40,11 @@
                         {
                             if (Cavaluation.Remark != null && Cavaluation.Remark != "")
                             {
-                                <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Catagory">@Cavaluation.Remark</textarea>
+                                <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Category">@Cavaluation.Remark</textarea>
                             }
                            
                         }
-                        <span validation-for="Catagory" class="text-danger"></span>
+                        <span validation-for="Category" class="text-danger"></span>
                         </div>
                     </div>
               
@@ -72,8 +72,8 @@
                                     <div class="row">
                                         <div class="col-lg-10 form-group ">
                                             <label>Remark</label>
-                                            <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Catagory">@movaluation.Remark</textarea>
-                                            <span validation-for="Catagory" class="text-danger"></span>
+                                            <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Category">@movaluation.Remark</textarea>
+                                            <span validation-for="Category" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -99,9 +99,9 @@
                                             <h5 class="text-primary">Remark Release supporting document(not manadatory) </h5>
                                             <div class="row">
                                                 <div class="form-group col-lg-10">
-                                                    <label for="Catagory">Supporting Document Category</label>
-                                                    <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
-                                                    <span validation-for="Catagory" class="text-danger"></span>
+                                                    <label for="Category">Supporting Document Category</label>
+                                                    <input name="Category" type="text" class="form-control form-control-sm" id="Category">
+                                                    <span validation-for="Category" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -136,8 +136,8 @@
                                         <div class="row">
                                             <div class="col-lg-10 form-group ">
                                                 <label>Remark</label>
-                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" id="Catagory" name="Remark">@movaluation.Remark</textarea>
-                                                <span validation-for="Catagory" class="text-danger"></span>
+                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" id="Category" name="Remark">@movaluation.Remark</textarea>
+                                                <span validation-for="Category" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -159,8 +159,8 @@
                                         <div class="row">
                                             <div class="col-lg-10 form-group ">
                                                 <label>Remark</label>
-                                                <textarea type="text" rows="2" value="" readonly class="form-control form-control-sm" name="Remark" id="Catagory">@movaluation.Remark</textarea>
-                                                <span validation-for="Catagory" class="text-danger"></span>
+                                                <textarea type="text" rows="2" value="" readonly class="form-control form-control-sm" name="Remark" id="Category">@movaluation.Remark</textarea>
+                                                <span validation-for="Category" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -201,8 +201,8 @@
                                     <div class="row">
                                         <div class="col-lg-10 form-group ">
                                             <label>Remark</label>
-                                            <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Catagory">@Ibvaluation.Remark</textarea>
-                                            <span validation-for="Catagory" class="text-danger"></span>
+                                            <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Category">@Ibvaluation.Remark</textarea>
+                                            <span validation-for="Category" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -227,9 +227,9 @@
                                             <h5 class="text-primary">Remark Release supporting document(not manadatory) </h5>
                                             <div class="row">
                                                 <div class="form-group col-lg-10">
-                                                    <label for="Catagory">Supporting Document Category</label>
-                                                    <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
-                                                    <span validation-for="Catagory" class="text-danger"></span>
+                                                    <label for="Category">Supporting Document Category</label>
+                                                    <input name="Category" type="text" class="form-control form-control-sm" id="Category">
+                                                    <span validation-for="Category" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -264,8 +264,8 @@
                                         <div class="row">
                                             <div class="col-lg-10 form-group ">
                                                 <label>Remark</label>
-                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" id="Catagory" name="Remark">@Ibvaluation.Remark</textarea>
-                                                <span validation-for="Catagory" class="text-danger"></span>
+                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" id="Category" name="Remark">@Ibvaluation.Remark</textarea>
+                                                <span validation-for="Category" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -287,8 +287,8 @@
                                         <div class="row">
                                             <div class="col-lg-10 form-group ">
                                                 <label>Remark</label>
-                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" name="Remark" id="Catagory">@Ibvaluation.Remark</textarea>
-                                                <span validation-for="Catagory" class="text-danger"></span>
+                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" name="Remark" id="Category">@Ibvaluation.Remark</textarea>
+                                                <span validation-for="Category" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -327,8 +327,8 @@
                                     <div class="row">
                                         <div class="col-lg-10 form-group ">
                                             <label>Remark</label>
-                                            <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Catagory">@Cavaluation.Remark</textarea>
-                                            <span validation-for="Catagory" class="text-danger"></span>
+                                            <textarea type="text" rows="2" readonly value="" class="form-control form-control-sm" id="Category">@Cavaluation.Remark</textarea>
+                                            <span validation-for="Category" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -353,9 +353,9 @@
                                             <h5 class="text-primary">Remark Release supporting document(not manadatory) </h5>
                                             <div class="row">
                                                 <div class="form-group col-lg-10">
-                                                    <label for="Catagory">Supporting Document Category</label>
-                                                    <input name="Catagory" type="text" class="form-control form-control-sm" id="Catagory">
-                                                    <span validation-for="Catagory" class="text-danger"></span>
+                                                    <label for="Category">Supporting Document Category</label>
+                                                    <input name="Category" type="text" class="form-control form-control-sm" id="Category">
+                                                    <span validation-for="Category" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -391,8 +391,8 @@
                                         <div class="row">
                                             <div class="col-lg-10 form-group ">
                                                 <label>Remark</label>
-                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" name="Remark"  id="Catagory">@Cavaluation.Remark</textarea>
-                                                <span validation-for="Catagory" class="text-danger"></span>
+                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" name="Remark"  id="Category">@Cavaluation.Remark</textarea>
+                                                <span validation-for="Category" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -415,8 +415,8 @@
                                         <div class="row">
                                             <div class="col-lg-10 form-group ">
                                                 <label>Remark</label>
-                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" name="Remark" id="Catagory">@Cavaluation.Remark</textarea>
-                                                <span validation-for="Catagory" class="text-danger"></span>
+                                                <textarea type="text" rows="2" value="" class="form-control form-control-sm" name="Remark" id="Category">@Cavaluation.Remark</textarea>
+                                                <span validation-for="Category" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">

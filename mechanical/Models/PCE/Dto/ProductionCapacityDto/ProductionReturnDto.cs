@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-
+using mechanical.Models.PCE.Dto.PCEEvaluationDto;
 using mechanical.Models.PCE.Entities;
 
 namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
@@ -29,7 +29,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string MachineName { get; set; }     
         
         [Display(Name = "Country of Origin")]
-        public string CountryOfOrgin { get; set; }
+        public string CountryOfOrigin { get; set; }
         
         [Display(Name = "Business License Number")]
         public string BusinessLicenseNumber { get; set; } 
@@ -84,7 +84,7 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? HouseNo { get; set; }
         
         [Display(Name = "Product Description")]
-        public string ProductDescription { get; set; }
+        public string? ProductDescription { get; set; }
         
         [Display(Name = "Production Type")]
         public string? ProductionType { get; set; }
@@ -108,5 +108,6 @@ namespace mechanical.Models.PCE.Dto.ProductionCapacityDto
         public string? AssignmentStatus { get; set; }
         
         public virtual PCECase PCECase { get; set; }
+        public IEnumerable<ProductionLineReturnDto> ProductionLines { get; set; }
     }
 }

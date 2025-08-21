@@ -19,8 +19,8 @@ namespace mechanical.Models.PCE.Enum.ProductionCapacity
         [Display(Name = "Kilinto")]
         Kilinto,
 
-        [Display(Name = "Combolcha")]
-        Combolcha,
+        [Display(Name = "Kombolcha")]
+        Kombolcha,
 
         [Display(Name = "Debrebirhan")]
         Debrebirhan,
@@ -37,7 +37,7 @@ namespace mechanical.Models.PCE.Enum.ProductionCapacity
         [Display(Name = "Mekelle")]
         Mekelle,   
              
-        [Display(Name = "Others please specify")]
-        Otherspleasespecify
+        [Display(Name = "Others")]
+        Others
     }
 }

@@ -1,0 +1,677 @@
+@using mechanical.Models.PCE.Enum.PCEEvaluation
+
+<script>
+    $(document).ready(function () {
+        const measurementUnits = @Json.Serialize(((MeasurementUnit[])Enum.GetValues(typeof(MeasurementUnit))).ToDictionary(e => (int)e, e => Enum.GetName(typeof(MeasurementUnit), e)));
+        const $productionLineContainer = $('#productionLineContainer');
+
+        // Add production line
+        function addProductionLine() {
+            const template = $('#productionLineTemplate').html();
+            const index = $('.production-line-container').length;
+            // const index = $('#productionLineContainer .production-line-evaluation-item').length;
+            const html = template
+                .replace(/__INDEX__/g, index)
+                .replace(/__INDEX_1__/g, index + 1);
+            
+            const $newContainer  = $(html).hide();
+            $('#productionLineContainer').append($newContainer);
+
+            // Initialize validation
+            $.validator.unobtrusive.parse($newContainer );
+
+            $newContainer .slideDown(300, function() {
+                if (index > 0) $(this).find('input:first').focus();
+            });
+            
+            updateRemoveButtons();
+            updateLineNumbers();
+        }
+
+        function addInputMaterial($line) {
+            const inputTemplate = $('#productionLineInputTemplate').html();
+            const $inputsContainer = $line.find('.inputs-container');
+            const lineIndex = $line.closest('.production-line-container').data('line-index');
+            const inputIndex = $line.find('.input-item').length;
+            
+            const html = inputTemplate
+                .replace(/__LINE_INDEX__/g, lineIndex)
+                .replace(/__INPUT_INDEX__/g, inputIndex);
+
+            const $newInput = $(html).hide();
+            $inputsContainer.append($newInput);
+            $newInput.slideDown(200);
+
+            $inputsContainer.find('.alert').hide();
+
+            $.validator.unobtrusive.parse($newInput);
+
+            HandleSourceTypeChange($newInput, lineIndex);
+
+            $newInput.find('.input-quantity, .input-unit-dropdown').on('input change', calculateTotals);
+            calculateTotals();
+        }
+
+        // Handle SourceType change
+        function HandleSourceTypeChange($input, lineIndex = null) {
+            const productionLineType = parseInt($('#ProductionLineType').val());
+            const isInterdependent = parseInt(productionLineType) === @((int)ProductionLineType.Interdependent);
+            const $sourceType = $input.find('.source-type');
+            const $typeContainer = $input.find('.input-type-container');
+            const $quantityContainer = $input.find('.input-quantity-container');
+            const $unitContainer = $input.find('.input-unit-container');
+            
+            // Adjust container widths based on production line type
+            adjustContainerWidths($typeContainer, $quantityContainer, $unitContainer, isInterdependent);
+            
+            // Handle source type visibility and behavior
+            handleSourceTypeBehavior($input, $sourceType, isInterdependent, lineIndex);
+        }
+
+        // Helper functions
+        function adjustContainerWidths($typeContainer, $quantityContainer, $unitContainer, isInterdependent) {
+            const typeWidth = isInterdependent ? '3' : '4';
+            const quantityWidth = isInterdependent ? '3' : '4';
+            const unitWidth = isInterdependent ? '2' : '3';
+            
+            $typeContainer.removeClass('col-md-4 col-md-3').addClass(`col-md-${typeWidth}`);
+            $quantityContainer.removeClass('col-md-4 col-md-3').addClass(`col-md-${quantityWidth}`);
+            $unitContainer.removeClass('col-md-3 col-md-2').addClass(`col-md-${unitWidth}`);
+        }
+
+        function handleSourceTypeBehavior($input, $sourceType, isInterdependent, lineIndex) {
+            const $sourceTypeContainer = $sourceType.closest('.source-type-container');
+            const $previousLineContainer = $input.find('.previous-line-container');
+            const $inputFields = $input.find('.input-type, .input-quantity, .input-unit-dropdown');
+            
+            // Set source type visibility and disabled state
+            $sourceTypeContainer.toggle(isInterdependent);
+            $sourceType.prop('disabled', !isInterdependent);
+            
+            // Special case for first line
+            if (lineIndex === 0) {
+                $sourceType.val(0).trigger('change').prop('disabled', true);
+                $previousLineContainer.hide();
+                $input.find('.input-type-container, .input-unit-container').show();
+                $inputFields.prop('readonly', false).prop('disabled', false);
+                $input.find('.input-type-hidden').remove();
+                return;
+            }
+            
+            if (!isInterdependent) {
+                $sourceType.val(0).trigger('change').prop('disabled', true);
+                return;
+            }
+            
+            // Setup source type change handler for interdependent lines
+            $sourceType.off('change').on('change', function() {
+                handleSourceTypeSelection($(this).closest('.input-item'), lineIndex);
+                calculateTotals();
+            }).trigger('change');
+        }
+
+        function handleSourceTypeSelection($inputItem, lineIndex) {
+            const sourceType = parseInt($inputItem.find('.source-type').val());
+            const isPreviousOutput = parseInt(sourceType) === @((int)SourceType.PreviousOutput);
+            
+            $inputItem.find('.input-type-container').toggle(!isPreviousOutput);
+            $inputItem.find('.previous-line-container').toggle(isPreviousOutput);
+            
+            if (!isPreviousOutput) {
+                resetInputFields($inputItem);
+                return;
+            }
+            
+            setupPreviousLineSelection($inputItem, lineIndex);
+        }
+
+        function resetInputFields($inputItem) {
+            $inputItem.find('.input-type, .input-quantity, .input-unit-dropdown')
+                .val('')
+                .prop('readonly', false)
+                .prop('disabled', false);
+            $inputItem.find('.input-type-hidden').remove();
+        }
+
+        function setupPreviousLineSelection($inputItem, currentLineIndex) {
+            const $previousLineDropdown = $inputItem.find('.previous-line-dropdown');
+            $previousLineDropdown.empty().append('<option value="" disabled selected>-- Select Line --</option>');
+
+            // Populate eligible previous lines
+            $('.production-line-container').each(function() {
+                const prevLineIndex = $(this).data('line-index');
+                if (prevLineIndex < currentLineIndex) {
+                    const outputPhase = $(this).find('[name$=".OutputPhase"]').val();
+                    if (parseInt(outputPhase) !== @((int)OutputPhase.FinishedProduct)) {
+                        const outputType = $(this).find('[name$=".OutputType"]').val();
+                        $previousLineDropdown.append(
+                            `<option value="${prevLineIndex}">Line ${prevLineIndex + 1}: ${outputType}</option>`
+                        );
+                    }
+                }
+            });
+
+            $previousLineDropdown.off('change').on('change', function() {
+                handlePreviousLineSelection($inputItem, $(this).val());
+            });
+        }
+
+        function handlePreviousLineSelection($inputItem, selectedLineIndex) {
+            if (!selectedLineIndex) {
+                resetInputFields($inputItem);
+                return;
+            }
+
+            const $selectedLine = $(`.production-line-container[data-line-index="${selectedLineIndex}"]`);
+            const outputType = $selectedLine.find('[name$=".OutputType"]').val();
+            const actualCapacity = $selectedLine.find('[name$=".ActualCapacity"]').val();
+            const productionUnit = $selectedLine.find('.production-unit-dropdown').val();
+
+            // Set and lock input-type
+            const $typeInput = $inputItem.find('.input-type');
+            $typeInput
+                .val(outputType)
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                })
+                .attr('readonly', true); // This works for input fields
+
+            // Create or update hidden input for type
+            let $hiddenTypeInput = $inputItem.find('.input-type-hidden');
+            if ($hiddenTypeInput.length === 0) {
+                $hiddenTypeInput = $(`<input type="hidden" class="input-type-hidden" name="${$typeInput.attr('name')}" value="${outputType}"/>`);
+                $inputItem.append($hiddenTypeInput);
+            } else {
+                $hiddenTypeInput.val(outputType);
+            }
+
+            // Set and lock input-quantity
+            const $quantityInput = $inputItem.find('.input-quantity');
+            $quantityInput
+                .val(actualCapacity)
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                })
+                .attr('readonly', true);
+
+            const $unitDropdown = $inputItem.find('.input-unit-dropdown');
+            $unitDropdown
+                .val(productionUnit)
+                .trigger('change')
+                .css({
+                    'pointer-events': 'none',
+                    'background-color': '#f5f5f5'
+                });
+
+            // Create or update hidden input for unit
+            let $hiddenUnitInput = $inputItem.find('.input-unit-hidden');
+            if ($hiddenUnitInput.length === 0) {
+                $hiddenUnitInput = $(`<input type="hidden" class="input-unit-hidden" name="${$unitDropdown.attr('name')}" value="${productionUnit}"/>`);
+                $inputItem.append($hiddenUnitInput);
+            } else {
+                $hiddenUnitInput.val(productionUnit);
+            }
+        }
+
+        // Remove production line
+        function removeProductionLine($line) {
+            const $container = $line.closest('.production-line-container');
+            const lineIndex = $container.data('line-index');
+            const id = $container.find('input[type="hidden"][id$="_Id"]').val();
+            // const id = $line.find('[id$="_Id"]').val();
+            if (id) {
+                const $hidden = $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'DeletedProductionLineIds')
+                    .val(id);
+                $('#deleted-production-line-ids-container').append($hidden);
+            }
+            $container.slideUp(300, function() {
+                $(this).remove();
+                updateLineNumbers();
+                updateRemoveButtons();
+            });
+        }
+
+        // Remove input material
+        function removeInputMaterial($input) {
+            const $container = $input.closest('.inputs-container');
+            $input.slideUp(200, function() {
+                $(this).remove(); // Remove element first
+                calculateTotals();
+                updateInputNumbers($container); // Re-index remaining inputs AFTER removal
+
+                // Show alert container if no inputs remain
+                let $alert = $container.find('.alert.alert-info');
+                if ($container.children('.input-item').length === 0) {
+                    if ($alert.length === 0) {
+                        $alert = $('<div class="alert alert-info">No input materials added yet.</div>');
+                        $container.append($alert);
+                    }
+                    $alert.show();
+                } else {
+                    $alert.hide();
+                }
+            });
+        }
+
+        function updateInputNumbers($container) {
+            // Re-index remaining inputs
+            $container.find('.input-item').each(function(index) {
+                $(this).find('[name]').each(function() {
+                    const name = $(this).attr('name')
+                        // .replace(/\[\d+\]/, `[${index}]`);
+                        // .replace(/ProductionLineInputs\[\d+\]/g, `ProductionLineInputs[${index}]`);
+                        .replace(
+                            /ProductionLines\[\d+\]\.ProductionLineInputs\[\d+\]/g, 
+                            `ProductionLines[${$container.closest('.production-line-container').data('line-index')}].ProductionLineInputs[${index}]`
+                        )
+                    $(this).attr('name', name);
+                });
+            });
+        }
+
+        // Update line numbers
+        function updateLineNumbers() {
+            $('.production-line-container').each(function(index) {
+                const $container = $(this);
+                $container.attr('data-line-index', index);
+
+                // Update displayed line number
+                $container.find('.line-counter').text(index + 1);
+
+                // Update all field names and IDs
+                $container.find('[name]').each(function() {
+                    const $field = $(this);
+                    const name = $field.attr('name');
+                    
+                    if (name) {
+                        // $field.attr('name', name.replace(/\[\d+\]/g, `[${index}]`);
+                        $field.attr('name', name.replace(/ProductionLines\[\d+\]/g, `ProductionLines[${index}]`));
+                    }
+                    
+                    // Update validation message targets
+                    const $validationMsg = $field.next('.field-validation-valid');
+                    if ($validationMsg.length) {
+                        const validationMessageFor = $validationMsg.attr('data-valmsg-for').replace(/\[\d+\]/, `[${index}]`);
+                        $validationMsg.attr('data-valmsg-for', validationMessageFor);
+                    }
+                });
+            });
+            // Update displayed line numbers
+            $('.line-counter').each(function(index) {
+                $(this).text(index + 1);
+            });
+        }
+
+        // Update remove buttons visibility
+        function updateRemoveButtons() {
+            const $lines = $('.production-line-form');
+            $('.remove-line-btn').toggle($lines.length > 1);
+        }
+
+        function toggleOutputPhaseVisibility() {
+            $('.production-line-form').each(function () {
+                const $form = $(this);
+                const productionLineType = document.getElementById('ProductionLineType').value;
+                const $outputPhaseContainer = $form.find('.output-phase-container');
+                const $outputPhaseSelect = $form.find('.output-phase');
+
+                if (parseInt(productionLineType) === @((int)ProductionLineType.Interdependent)) {
+                    $outputPhaseContainer.show();
+                    $outputPhaseSelect.prop('required', true);
+                } else {
+                    $outputPhaseContainer.hide();
+                    $outputPhaseSelect.prop('required', false).val('');
+                }
+            });
+        }
+
+        // Toggle all input materials according to production line type
+        function toggleInputMaterials() {
+            $('.production-line-container').each(function () {
+                const $line = $(this);
+                const lineIndex = $line.data('line-index');
+                $line.find('.input-item').each(function () {
+                    HandleSourceTypeChange($(this), lineIndex);
+                });
+            });
+        }
+
+        // Update unit labels based on selected dropdown values
+        function updateUnitLabels() {
+            $('.production-line-form').each(function () {
+                const $line = $(this);
+
+                // Update input unit labels
+                $line.find('.input-item').each(function () {
+                    const $inputItem = $(this);
+                    const selectedInputUnit = $inputItem.find('.input-unit-dropdown').val();
+                    const displayInputUnitName = selectedInputUnit && measurementUnits[selectedInputUnit] && measurementUnits[selectedInputUnit] != "Other" ? measurementUnits[selectedInputUnit].toLowerCase() : 'units';
+                    $inputItem.find('.input-unit-label').text(displayInputUnitName);
+                });
+
+                // Update production unit label
+                const selectedTotalUnit = $line.find('.input-unit-dropdown').val();
+                const displayUnitName = selectedTotalUnit && measurementUnits[selectedTotalUnit] && measurementUnits[selectedTotalUnit] != "Other" ? measurementUnits[selectedTotalUnit].toLowerCase() : 'units';
+                $line.find('.total-input-unit-label').text(displayUnitName);
+
+                const selectedProductionUnit = $line.find('.production-unit-dropdown').val();
+                const displayName = selectedProductionUnit && measurementUnits[selectedProductionUnit] && measurementUnits[selectedProductionUnit] != "Other" ? measurementUnits[selectedProductionUnit].toLowerCase() : 'units';
+                $line.find('.production-unit-label').text(displayName);
+            });
+        }
+
+        // Calculate total input and conversion ratio
+        function calculateTotals() {
+            let formIsValid = true;
+            $('.production-line-form').each(function() {
+                const $line = $(this);
+                let totalInput = 0;
+                let units = new Set();
+                let hasError = false;
+
+                $line.find('.input-item').each(function() {
+                    const $inputItem = $(this);
+                    const sourceType = $inputItem.find('.source-type').val();
+                    const quantity = parseFloat($inputItem.find('.input-quantity').val()) || 0;
+                    let unit;
+
+                    if (parseInt(sourceType) === @((int)SourceType.PreviousOutput)) {
+                        const referencedLineIndex = $inputItem.find('.previous-line-dropdown').val();
+                        if (referencedLineIndex) {
+                            const $referencedLine = $(`.production-line-container[data-line-index="${referencedLineIndex}"]`);
+                            unit = $referencedLine.find('.production-unit-dropdown').val();
+                        }
+                    } else {
+                        unit = $inputItem.find('.input-unit-dropdown').val();
+                    }
+
+                    if (unit) units.add(unit);
+                    if (!isNaN(quantity)) totalInput += quantity;
+                });
+
+                if (units.size > 1) {
+                    formIsValid = false;
+                    hasError = true;
+                    $line.find('.inputs-container').addClass('border border-danger');
+                    $line.find('.unit-error-message').remove();
+                    $line.find('.inputs-container').after('<div class="text-danger unit-error-message">All inputs must have the same unit.</div>');
+                } else {
+                    $line.find('.inputs-container').removeClass('border border-danger');
+                    $line.find('.unit-error-message').remove();
+                }
+
+                const actualCapacity = parseFloat($line.find('.capacity-input').first().val()) || 0;
+                const conversionRatio = actualCapacity > 0 && !hasError ? (actualCapacity / totalInput * 100) : 0;
+
+                $line.find('.total-input').val(totalInput.toFixed(2));
+                $line.find('.conversion-ratio').val(conversionRatio.toFixed(2));
+            });
+
+            $('button[type="submit"]').prop('disabled', !formIsValid);
+        }
+
+        function reindexJustifications() {
+            const $hiddenContainer = $('#justificationHiddenFields');
+            $hiddenContainer.empty();
+            let index = 0;
+
+            $('#justificationContainer .form-check').each(function () {
+                const $checkbox = $(this).find('.justification-checkbox');
+                if ($checkbox.is(':checked')) {
+                    const reason = $checkbox.data('reason');
+                    const displayName = $checkbox.data('display');
+                    const $textarea = $(this).find('.justification-text');
+                    const justificationText = $textarea.length ? $textarea.val() : "";
+
+                    // Add hidden fields for selected justification
+                    $hiddenContainer.append(`
+                        <input type="hidden" name="Justifications[${index}].Reason" value="${reason}" />
+                        <input type="hidden" name="Justifications[${index}].JustificationText" value="${justificationText}" />
+                    `);
+                    index++;
+                }
+            });
+        }
+
+       // Show/hide justification error message
+        function showJustificationError(show) {
+            let $error = $('#justificationError');
+            if (show) {
+                if ($error.length === 0) {
+                    $error = $('<div id="justificationError" class="text-danger mb-2">Please select at least one justification.</div>');
+                    $('#justificationSection').prepend($error);
+                }
+                $error.show();
+            } else {
+                $error.hide();
+            }
+        }
+
+        const toggleInputsSection = function() {
+            const justificationSection = document.getElementById('justificationSection');
+            const inputsSection = document.querySelector('.inputs-section');
+            const totalconversionContainer = document.querySelector('.total-input-conversion-ratio-container');
+            const showInputs = getHasInputOutputDataValue();
+
+            if (justificationSection) justificationSection.style.display = showInputs ? 'none' : 'block';
+            if (inputsSection) {
+                inputsSection.style.display = showInputs ? 'block' : 'none';
+                $('.inputs-container').each(function () {
+                    $(this).closest('.inputs-section').toggle(showInputs);
+                });
+                if (totalconversionContainer) totalconversionContainer.style.display = showInputs ? 'block' : 'none';
+                $('.total-input-conversion-ratio-container').each(function () {
+                    $(this).closest('.inputs-section').toggle(showInputs);
+                });
+            }
+
+            if (showInputs) {
+                // Uncheck all justification checkboxes and reset other justifications
+                $('.justification-checkbox').prop('checked', false).trigger('change');
+            } else {
+                // Clear inputs container
+                $('.inputs-container').empty();
+            }
+        };
+
+        $('form').on('submit', function(e) {
+            reindexJustifications();
+            // Validation to require at least one justification if hasInputOutputData is unchecked
+            let justificationValid = true;
+            if (!getHasInputOutputDataValue()) {
+                const checkedCount = $('.justification-checkbox:checked').length;
+                if (checkedCount === 0) {
+                    showJustificationError(true);
+                    justificationValid = false;
+                } else {
+                    showJustificationError(false);
+                }
+            } else {
+                showJustificationError(false);
+            }
+
+            // Remove all hidden inputs for is-bottleneck before adding new ones
+            $('input[type="hidden"][name$=".IsBottleneck"]').remove();
+            $('.is-bottleneck').each(function() {
+                if (!$(this).is(':checked') && $(this).attr('name')) {
+                    $(this).before('<input type="hidden" name="' + $(this).attr('name') + '" value="false" />');
+                }
+            });
+
+            // Manually re-parse validation to include dynamic elements
+            $(this).removeData('validator');
+            $(this).removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($(this));
+
+            if (!$(this).valid() || !justificationValid) {
+                e.preventDefault();
+                // Scroll to first error
+                let $firstError = $('.field-validation-error').first();
+                if (!justificationValid) {
+                    $firstError = $('#justificationError');
+                }
+                if ($firstError.length && $firstError.offset()) {
+                    $('html, body').animate({
+                        scrollTop: $firstError.offset().top - 100
+                    }, 200);
+                }
+            }
+        });
+
+        // Remove error class on change
+        $(document).on('change', '.previous-line-dropdown, .input-type', function() {
+            $(this).removeClass('is-invalid');
+        });
+
+        // Toggle input-output data sections
+        function getHasInputOutputDataValue() {
+            // Returns true if the Yes radio is selected
+            return $('input[name="HasInputOutputData"]:checked').val() === "true";
+        }
+
+        // Attach event listener to both Yes/No radios
+        $('input[name="HasInputOutputData"]').on('change', function() {
+            toggleInputsSection();
+            const showJustification = !getHasInputOutputDataValue();
+            $('#justificationSection').toggle(showJustification);
+
+            // If hiding, uncheck all justification boxes
+            if (!showJustification) {
+                $('.justification-checkbox').prop('checked', false).trigger('change');
+            }
+            showJustificationError(false);
+        });
+
+        // On page load, trigger the correct section visibility
+        $(function() {
+            toggleInputsSection();
+            const showJustification = !getHasInputOutputDataValue();
+            $('#justificationSection').toggle(showJustification);
+        });
+
+        // On page load
+        $('.justification-checkbox').each(function() {
+            const $checkbox = $(this);
+            if($checkbox.is(':checked')) {
+                $checkbox.trigger('change');
+            }
+        });
+
+        // Initialize any pre-checked boxes
+        $('.justification-checkbox:checked').trigger('change');
+
+        // Update justification checkbox handling
+        $(document).on('change', '.justification-checkbox', function() {
+            const $container = $(this).closest('.form-check');
+            const $textarea = $container.find('.justification-text');
+            
+            reindexJustifications();
+
+            // Hide justification error if at least one is checked
+            if ($('.justification-checkbox:checked').length > 0) {
+                showJustificationError(false);
+            }
+            
+            if ($container.data('reason') === "Others") {
+                if (this.checked) {
+                    $textarea.show().prop('disabled', false);
+                } else {
+                    $textarea.hide().prop('disabled', true).val('');
+                }
+            }
+
+            // Re-parse validation
+            const $form = $('form');
+            $form.removeData('validator');
+            $form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($form);
+        });
+        
+        // Consolidated event listener for ProductionLineType changes
+        $(document).on('change', '#ProductionLineType', function() {
+            toggleOutputPhaseVisibility();
+            toggleInputMaterials();
+        });
+        
+        // Attach event listener to bottleneck checkboxes
+        $(document).on('change', '.is-bottleneck', function () {
+            if ($(this).is(':checked')) {
+                $('.is-bottleneck').not(this).prop('checked', false);
+            }
+        });
+
+        $(document).on('change', '.output-phase', function() {
+            $('.production-line-container').each(function() {
+                const $line = $(this);
+                const lineIndex = $line.data('line-index');
+                $line.find('.input-item').each(function() {
+                    const $inputItem = $(this);
+                    if (parseInt($inputItem.find('.source-type').val()) === @((int)SourceType.PreviousOutput)) {
+                        $inputItem.find('.source-type').trigger('change');
+                    }
+                });
+            });
+        });
+        // Initialize the first line's inputs
+        try {
+            if ($('#productionLineContainer .production-line-evaluation-item').length === 0) {
+                addProductionLine();
+            }
+        } catch (error) {
+            console.error('Error initializing the first production line:', error);
+        } finally{
+            $('.production-line-container').each(function(index) {
+                $(this).attr('data-line-index', index);
+            });
+            updateLineNumbers();
+        }
+
+        // Add new line button
+        $('#addProductionLineBtn').click(function(e) {
+            e.preventDefault();
+            addProductionLine();
+            toggleInputsSection();
+            toggleOutputPhaseVisibility();
+        });
+
+        // Event delegation for dynamic elements
+        $productionLineContainer.on('change', '.production-unit-dropdown', function () {
+            updateUnitLabels();
+        });
+
+        $productionLineContainer.on('click', '.remove-line-btn', function() {
+            removeProductionLine($(this).closest('.production-line-form'));
+        });
+
+        $productionLineContainer.on('click', '.add-input-btn', function() {
+            addInputMaterial($(this).closest('.production-line-form'));
+        });
+        
+        $productionLineContainer.on('click', '.remove-input-btn', function() {
+            removeInputMaterial($(this).closest('.input-item'));
+        });
+
+        $productionLineContainer.on('change', '.input-unit-dropdown', function () {
+            updateUnitLabels();
+            calculateTotals();
+        });
+
+        $productionLineContainer.on('input', '.input-quantity', function () {
+            calculateTotals();
+        });
+        
+        $productionLineContainer.on('input', '.capacity-input', calculateTotals);
+
+        updateUnitLabels();
+
+        // Initialize validation
+        $.validator.unobtrusive.parse(document);
+
+        // Initialize tooltips
+        $('[title]').tooltip();
+    });
+</script>

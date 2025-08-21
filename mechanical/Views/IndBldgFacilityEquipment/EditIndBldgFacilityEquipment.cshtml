@@ -27,23 +27,30 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-route-Id="@Model.Id">
                     <input asp-for="CollateralId" value=@Model.CollateralId type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
                             <select asp-for="@Model.IndustrialBuildingMachineryType " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialBuildingMachineryType)).Cast<IndustrialBuildingMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.IndustrialBuildingMachineryType.ToString()) }), "Value", "Text"))">
                             </select>
                             <span asp-validation-for="IndustrialBuildingMachineryType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
                             <label asp-for="EngineType"> Power Source & Fuel Type</label>
                             <select asp-for="@Model.EngineType " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.EngineType.ToString()) }), "Value", "Text"))">
                             </select>
                             <span asp-validation-for="EngineType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
                             <label asp-for="PowerSupply">Power Supply</label>
-                           <select asp-for="@Model.PowerSupply " class="form-control"
+                            <select asp-for="@Model.PowerSupply " class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString(), Selected = ( e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name == Model.PowerSupply.ToString()) }), "Value", "Text"))">
                             </select>
                             <span asp-validation-for="PowerSupply" class="text-danger"></span>
@@ -180,6 +187,15 @@
                             <label asp-for="ExchangeRate">Exchange Rate</label>
                             <input asp-for="ExchangeRate"  type="number" class="form-control" placeholder="Enter Exchange Rate" required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="IndBldgFacilityEquipmentCostsId">Insurance, Freight & Other Costs</label>
+                            <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control" required>
+                                <option disabled value="">Select Insurance, Freight & Other Costs</option>
+                            </select>
+                            <span asp-validation-for="IndBldgFacilityEquipmentCostsId" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">

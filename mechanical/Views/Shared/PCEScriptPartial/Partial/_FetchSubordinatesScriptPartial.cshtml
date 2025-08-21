@@ -1,3 +1,4 @@
+@using System.Linq;
 <script>
     function initializeForAssignment(getSubordinateUrl, assignUrl, selectName, fetchUrl, currentUserRole, emptyMessage) {
         
@@ -7,7 +8,15 @@
             dataType: 'json'
         })
         .done(function (data) {
-            var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + selectName);
+            
+                        
+                        var safeSelectName = $('<div/>').text(selectName).html();  // jQuery XSS escape
+                        var selectOption = $('<option selected disabled></option>')
+                            .attr('value', '')
+                            .text('Select ' + safeSelectName);
+            
+            // var selectOption = $('<option selected disabled></option>').attr('value', '').text('Select ' + selectName);
+            
             $('#OptionDropdown').append(selectOption);
             data.forEach(function (option) {
                 var option = $('<option></option>').attr('value', option.Id).text(option.Name);
@@ -36,6 +45,21 @@
                 $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
 
                 $('#assignModal').modal('show');
+            }
+        });
+
+        $('#resendButton').on('click', function () {
+            var SelectedPCEIds = [];
+
+            $('.purple-checkbox:checked').each(function () {
+                SelectedPCEIds.push($(this).val());
+            });
+            if (SelectedPCEIds.length === 0) {
+                toastr.error('Please select at least one Production');
+            } else {
+                $('#SelectedPCEIds').val(SelectedPCEIds.join(','));
+
+                $('#resendModal').modal('show');
             }
         });
 
@@ -91,6 +115,36 @@
                     toastr.success(response.message);
                     $('#assignModal').modal('hide');
                     $('#assignForm')[0].reset();
+                    loadProductions(fetchUrl, emptyMessage);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var error = xhr.responseJSON;
+                    toastr.error(error.message);
+                }
+            });
+        });
+        
+        $('#resendForm').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var resendUrl = $(this).attr('action');
+            var selectedPCEIds = formData.get('SelectedPCEIds');
+
+            if (!selectedPCEIds) {
+                toastr.error("Please, select at least one production to resend.");
+                return;
+            }            
+
+            $.ajax({
+                url: resendUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('#resendModal').modal('hide');
+                    $('#resendForm')[0].reset();
                     loadProductions(fetchUrl, emptyMessage);
                 },
                 error: function (xhr, textStatus, errorThrown) {

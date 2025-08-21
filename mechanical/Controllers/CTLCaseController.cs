@@ -4,11 +4,13 @@ using mechanical.Services.CaseServices;
 using mechanical.Services.CaseTerminateService;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CTLCaseController : BaseController
     {
         //private readonly ICTLCaseService _cTLCaseService;
@@ -19,13 +21,12 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
 
-
-        public CTLCaseController(/*ICTLCaseService cTLCaseService,*/ICaseTerminateService caseTermnateService,IUploadFileService uploadFileService ,ICaseAssignmentService caseAssignment,ICaseScheduleService caseScheduleService,ICaseService caseService, IMMCaseService mMCaseService)
+        public CTLCaseController(/*ICTLCaseService cTLCaseService,*/ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService, ICaseAssignmentService caseAssignment, ICaseScheduleService caseScheduleService, ICaseService caseService, IMMCaseService mMCaseService)
         {
             //_cTLCaseService = cTLCaseService;
             _caseAssignmentService = caseAssignment;
             _caseService = caseService;
-            _mmCaseService = mMCaseService; 
+            _mmCaseService = mMCaseService;
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
             _uploadFileService = uploadFileService;
@@ -88,7 +89,7 @@ namespace mechanical.Controllers
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }
-        [HttpPost] 
+        [HttpPost]
         public async Task<IActionResult> ReAssignCheckerOfficer(string selectedCollateralIds, string employeeId)
         {
             await _caseAssignmentService.ReAssignCheckerTeamleader(base.GetCurrentUserId(), selectedCollateralIds, employeeId);

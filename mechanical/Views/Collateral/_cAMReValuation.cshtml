@@ -1,0 +1,375 @@
+﻿@using mechanical.Models.Dto.ConstMngAgrMachineryDto;
+@model mechanical.Models.Dto.CollateralDto.ReturnCollateralDto;
+@{
+    var Cavaluation = ViewData["Cavaluation"] as ConstMngAgMachineryReturnDto;
+    var CurrentUserId = ViewData["CurrentUserId"] as Guid? ?? Guid.Empty;
+    var currentStage = Model.CurrentStage;
+    var currentStatus = Model.CurrentStatus;
+}
+
+<section class="content">
+    <section class="col-xl-12 connectedSortable">
+        <div class="card">
+            <div class="card-body">
+                @{
+                    if (Cavaluation != null)
+                    {
+
+                        <div class="row mb-2">
+                            <div class="col-sm-12 col-xl-12">
+                                <h4 class="m-0 text-center"> Collateral valuation result</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="container col-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h4 class="text-center">General Information</h4>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-6">
+                                        <div class="col-lg-6">
+                                            <label>Mechanical Equipment Name:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.MechanicalEqpmntName</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-6">
+                                        <div class="col-lg-6">
+                                            <label>Machinery Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.constructionMiningAgriculturalMachineryType</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Year Of Manufacture:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.YearOfManufacture</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Country Of Origin:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.CountryOfOrigin</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Model Number:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.ModelNo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Engine Number:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.EngineNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>TD No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.TDNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Plate No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.PlateNo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Chassis No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.ChassisNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Serial No:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.SerialNo</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Engine Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.EngineType</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Power Supply:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.PowerSupply</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Number of Cylinder:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.NoOfCylinder</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Transmission Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.TransmissionType</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Ignition System:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.IgnitionSystem</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Cooling Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.CoolingType</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Engine power:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.EnginePower</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Working Production Capacity:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.WorkingProductionCapacity</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Technology Standard:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.TechnologyStandard</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Maker Preference Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.MakerPreferenceType</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Cabin Type:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.CabinType</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Number of Axel:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.NumberOfAxle</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Color:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.Color</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="container col-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h4 class="text-center">Assessment Information</h4>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Current Equipment Condition:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.CurrentEqpmntCondition</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Allocated Points Range:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.AllocatedPointsRange </div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Market Share Factor:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.MarketShareFactor</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Depreciation Rate:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.DepreciationRate</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Equipment Condition Factor:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.EqpmntConditionFactor</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Replacement Cost:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div id="ReplacementCost">@Cavaluation.ReplacementCost</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label class="text-purple">Net Estimation Value:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="text-purple" id="NetEstimationValue">@Cavaluation.NetEstimationValue</div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Physical and Installation Assessment:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.PhysicalAndInstallationAssesment </div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-4">
+                                        <div class="col-lg-6">
+                                            <label>Overall Survey Assessment:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.OverallSurveyAssesment</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:1.25rem;">
+                                    <div class="row col-lg-3">
+                                        <div class="col-lg-6">
+                                            <label>Remark:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div>@Cavaluation.Remark </div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-3">
+                                        <div class="col-lg-6">
+                                            <label>Invoice Value:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div id="InvoiceValue">@Cavaluation.InvoiceValue </div>
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-3">
+                                        <div class="col-lg-6">
+                                            <label>Currency:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div></div>@Cavaluation.Currency
+                                        </div>
+                                    </div>
+                                    <div class="row col-lg-3">
+                                        <div class="col-lg-6">
+                                            <label>Exchange Rate:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div></div>@Cavaluation.ExchangeRate
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        
+                    }
+                    else
+                    {
+                        <div>
+                            <h6 class="text-center">not evaluated yet </h6>
+                        </div>
+                    }
+
+                }
+               
+            </div>
+        </div>
+
+    </section>
+</section>

@@ -1,6 +1,17 @@
 ﻿@using mechanical.Models.PCE.Dto.PCECaseDto
 @model PCEReportDataDto
 
+<style>
+    /* Style for disabled button */
+    a.disabled {
+        pointer-events: none;
+        background-color: gray !important;
+        color: white !important;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -31,12 +42,12 @@
                                     <h5 class="card-subtitle mb-2 text-muted">Applicant Name: @Model.PCECases.ApplicantName</h5>
                                 </div>
                             </div>
-                            <div class="col-md-4 text-end">
+@*                             <div class="col-md-4 text-end">
                                 <!-- <button class="btn btn-primary" style="background-color:purple; color: white">Case Report</button> -->
-                                <a class="btn btn-primary" style="background-color:purple; color: white" href="@Url.Action("PCEAllReport", "PCECase")?Id= @Model.PCECases.Id">
+                                <a class="btn btn-primary pce-report-btn" style="background-color:purple; color: white" href="@Url.Action("PCEAllReport", "PCECase")?Id= @Model.PCECases.Id">
                                     <i class="fas fa-file-alt mr-2"></i>PCE Report
                                 </a>
-                            </div>
+                            </div> *@
                         </div>
                     </div>
                 </div>
@@ -78,22 +89,27 @@
                                         }
                                         else
                                         {
-                                          <td> Not Evaluated yet  </td>
+                                            <td> Not Evaluated yet  </td>
                                         }
+                                    }
+                                    else
+                                    {
+                                        <td> Not Evaluated yet  </td>
                                     }
 
                                     <td>
                                         @if (@item.CurrentStatus == "Completed")
                                         {
-                                            <a class="btn btn-primary" style="background-color:purple; color: white" href="@Url.Action("PCEReport", "PCECase")?Id= @item.Id">
+                                            <a class="btn btn-primary pce-report-btn" style="background-color:purple; color: white" href="@Url.Action("PCEReport", "PCECase")?Id= @item.Id">
                                                 <i class="fas fa-file-alt mr-2"></i>PCE Report
                                             </a>
-                                        }else{
+                                        }
+                                        else{
                                             <a class="btn btn-primary" style="background-color:purple; color: white" href="" disabled>
                                                 <i class="fas fa-file-alt mr-2"></i>In Progress
                                             </a>
                                         }
-
+                                        
                                     </td>
                                 </tr>
                             }
@@ -115,4 +131,17 @@
     @{
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     }
+    <script>
+        // Disable PCE Report link after click
+        document.querySelectorAll('.pce-report-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                this.classList.add('disabled');
+                this.textContent = '';
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-file-alt mr-2';
+                this.appendChild(icon);
+                this.appendChild(document.createTextNode('PCE Report...'));
+            });
+        });
+    </script>
 }

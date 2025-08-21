@@ -5,11 +5,14 @@ namespace mechanical.Models.Dto.CollateralDto
     {
         public Guid Id { get; set; }
         public required Guid CaseId { get; set; }
+
+        public string? MechanicalEqpmntName { get; set; }
         public required string PropertyOwner { get; set; }
         public required string Role { get; set; }
         public string? Category { get; set; } 
         public string? Type { get; set; }
-        public  string? PlateNo { get; set; }
+        public string? PlateNo { get; set; }
+        public string? CPlateNo { get; set; }
         public  string? ChassisNo { get; set; }
         public string? EngineMotorNo { get; set; }
         public int? ManufactureYear { get; set; }
@@ -29,5 +32,7 @@ namespace mechanical.Models.Dto.CollateralDto
         public string? Purpose { get; set; }
         public string? ModelNo { get; set; }
         public string? CollateralType { get; set; }
+
+        public int NumberOfReturns { get; set; } = 0;
     }
 }

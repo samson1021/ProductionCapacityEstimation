@@ -1,48 +1,42 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - mechanical</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/mechanical.styles.css" asp-append-version="true" />
-    <link href="~/css/adminlte.min.css" rel="stylesheet"/>
-    <link href="~/css/all.min.css" rel="stylesheet"/>
-    <link href="~/css/icheck-bootstrap.min.css" rel="stylesheet"/>
-   @*  <link href="~/lib/fontawesome-free/css/all.min.css" rel="stylesheet" /> *@
-    <link href="~/lib/overlayscrollbars/css/overlayscrollbars.min.css" rel="stylesheet" />
-
-    <link href="~/lib/datatable/css/datatables.bootstrap4.min.css" rel="stylesheet" />
-    <link href="~/lib/datatable/css/buttons.bootstrap4.min.css" rel="stylesheet" />
-    <link href="~/lib/datatable/css/responsive.bootstrap4.min.css" rel="stylesheet" />
-    <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
-</head>
-<body class="hold-transition sidebar-mini layout-fixed accent-purple">
-    <div class="wrapper">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - mechanical</title>
         
-        <div class="content-wrapper">
-            @RenderBody()
-        </div>
-        <footer class="main-footer">
-            <div class="float-right d-none d-sm-block">
-                <b>Version</b> 3.2.0
+        <link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/mechanical.styles.css" asp-append-version="true" />
+        <link href="~/css/adminlte.min.css" rel="stylesheet"/>
+        <link href="~/css/all.min.css" rel="stylesheet"/>
+        <link href="~/css/icheck-bootstrap.min.css" rel="stylesheet"/>
+        <link href="~/lib/overlayscrollbars/css/overlayscrollbars.min.css" rel="stylesheet" />
+        <link href="~/lib/datatable/css/datatables.bootstrap4.min.css" rel="stylesheet" />
+        <link href="~/lib/datatable/css/buttons.bootstrap4.min.css" rel="stylesheet" />
+        <link href="~/lib/datatable/css/responsive.bootstrap4.min.css" rel="stylesheet" />
+        <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
+    </head>
+    <body class="hold-transition sidebar-mini layout-fixed accent-purple">
+        <div class="wrapper">
+            
+            <div class="content-wrapper">
+                @RenderBody()
             </div>
-            <strong>&copy; 2023 - mechanical - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></strong>
-        </footer>
-    </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/adminlte.min.js"></script>
-    <script src="~/js/dashboard.js"></script>
-    <script src="~/lib/chart.js/chart.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Version</b> 3.2.0
+                </div>
+                <strong>&copy; 2023 - mechanical - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></strong>
+            </footer>
+        </div>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/bootstrap/js/bootstrap.min.js"></script>
+        @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/adminlte.min.js"></script>
+        <script src="~/js/dashboard.js"></script>
+        <script src="~/lib/chart.js/chart.min.js"></script>
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
 </html>

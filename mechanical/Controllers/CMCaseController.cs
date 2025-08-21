@@ -7,9 +7,11 @@ using mechanical.Services.MOCaseService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using mechanical.Services.UploadFileService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class CMCaseController : BaseController
     {
         //private readonly ICaseService _caseService;
@@ -21,13 +23,13 @@ namespace mechanical.Controllers
         private readonly ICaseTerminateService _caseTermnateService;
         private readonly IUploadFileService _uploadFileService;
 
-        public CMCaseController(/*ICaseService caseService*/ ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService,IMMCaseService mMCaseService,ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment, ICaseService caseService)
+        public CMCaseController(/*ICaseService caseService*/ ICaseTerminateService caseTermnateService, IUploadFileService uploadFileService, IMMCaseService mMCaseService, ICaseScheduleService caseScheduleService, ICaseAssignmentService caseAssignment, ICaseService caseService)
         {
             //_caseService = caseService;
             _caseAssignmentService = caseAssignment;
             //_cMCaseService = cMCaseService;
             _mMCaseService = mMCaseService;
-            _caseService = caseService; 
+            _caseService = caseService;
             _caseScheduleService = caseScheduleService;
             _caseTermnateService = caseTermnateService;
             _uploadFileService = uploadFileService;
@@ -87,7 +89,7 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignTeamleader(string selectedCollateralIds, string employeeId)
         {
-            await _caseAssignmentService.AssignCheckerTeamleader(base.GetCurrentUserId(),selectedCollateralIds, employeeId);
+            await _caseAssignmentService.AssignCheckerTeamleader(base.GetCurrentUserId(), selectedCollateralIds, employeeId);
             var response = new { message = "Collaterals assigned successfully" };
             return Ok(response);
         }

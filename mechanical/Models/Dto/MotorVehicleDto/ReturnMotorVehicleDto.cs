@@ -9,6 +9,7 @@ namespace mechanical.Models.Dto.MotorVehicleDto
         public required Guid CollateralId { get; set; }
         public Guid EvaluatorUserID { get; set; }
         public Guid CheckerUserID { get; set; }
+        public string? MechanicalEqpmntName { get; set; }
         public string EngineType { get; set; } = string.Empty;
         public string NoOfCylinder { get; set; } = string.Empty;
         public string TransmissionType { get; set; } = string.Empty;
@@ -45,6 +46,9 @@ namespace mechanical.Models.Dto.MotorVehicleDto
         public string Currency { get; set; } = string.Empty;
         public double ExchangeRate { get; set; }
 
-        public  Collateral Collaterial { get; set; }
+        public Collateral Collaterial { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     }
 }

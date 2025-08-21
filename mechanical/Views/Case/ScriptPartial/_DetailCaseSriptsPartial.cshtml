@@ -1,6 +1,5 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-<script src="~/bootstrap/js/bootstrap.min.js"></script>﻿
 <script src="~/lib/datatable/js/jquery.datatables.min.js"></script>
 <script src="~/lib/datatable/js/datatables.bootstrap4.min.js"></script>
 <script src="~/lib/datatable/js/datatables.responsive.min.js"></script>
@@ -14,14 +13,16 @@
 <script src="~/lib/datatable/js/buttons.print.min.js"></script>
 <script src="~/lib/datatable/js/buttons.colvis.min.js"></script>
 <script src="~/lib/toastr/toastr.min.js"></script>
+
 <script>
     console.log("debug");
-    $(document).ready(function () {
+    $(function () {
+
         $('#UpdateSchedule').on('click', function (event) {
             event.preventDefault();
             $('#datetimepicker-modal').modal('show');
         });
-        $('#datetimepicker-form').submit(function (event) {
+        $('#datetimepicker-form').on('submit', function (event) {
             event.preventDefault();
             var formData = new FormData(this);
             var Id = $('#CaseSchedulleId').val();
@@ -41,7 +42,7 @@
                 }
             });
         });
-        $('#AcceptButton').click(function (event) {
+        $('#AcceptButton').on('click',function (event) {
             event.preventDefault();
             var formData = new FormData();
             var Id = $('#CaseScheduleId').val();
@@ -114,10 +115,11 @@
             });
 
         var CaseId = $('#CaseId').val();
-        $('#addCollateralButton').click(function () {
+        console.log("Guid 1" + CaseId);
+        $('#addCollateralButton').on('click',function () {
             $('#addCollateralModal').modal('show');
         });
-        $('#proposeNewScheduleButton').click(function () {
+        $('#proposeNewScheduleButton').on('click',function () {
             $('#proposeNewSchedule-modal').modal('show');
         });
         var caseCollateralsTable;
@@ -166,7 +168,7 @@
             var allChecked = $('.purple-checkbox').length === $('.purple-checkbox:checked').length;
             $('#selectAllCheckbox').prop('checked', allChecked);
         });
-        $('#assignForm').submit(function (e) {
+        $('#assignForm').on('submit',function (e) {
             e.preventDefault();
 
             var formData = new FormData(this);
@@ -287,8 +289,82 @@
         }
 
         loadComments();
+   function LoadCorrectionHistory() {
+            $.ajax({
+                url: '/CaseComment/GetCaseCorrectionHistory?caseId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                    var countComments = caseCorrections.length;
+                    $(".CorrectionBage").text(countComments);
 
-        function sendMessage(message, CaseId) {
+                    // Clear previous messages
+                    $('.correctionHistories').empty();
+
+                    if (caseCorrections && caseCorrections.length > 0) {
+                        caseCorrections.forEach(function (comments) {
+                            // Create a card for each comment
+                            var card = $('<div>').addClass('card mb-3 direct-chat-card'); // Card for each comment
+                            var cardBody = $('<div>').addClass('card-body');
+
+                            // Create elements for user information and comment details
+                            var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                            chatName.append(GetUserInfo(comments.CommentByUserId).then(username => {
+                                $('<span>').text(username).appendTo(chatName);
+                            }));
+
+                            var createdAt = new Date(comments.CreatedAt);
+                            var formattedDate = formatDate(createdAt);
+
+                            var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                            var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                            var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                            var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                            // Append elements to the card body
+                            cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                            card.append(cardBody);
+                            $('.correctionHistories').append(card); // Add the card to the list
+                        });
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('.correctionHistories').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+
+    function GetUserInfo(Id, callback){
+        return new Promise(function(resolve , reject){
+
+              $.ajax({
+            url: '/UserManagment/GetuserInfos?id=' + Id,
+            method: 'GET',
+            success: function (data) {
+                var currentUserID = data
+                // var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                // var countComment = data.caseComments.length;
+                ResponseData= currentUserID.Name;
+                                console.log('An error occurred while retrieving case comments.'+ResponseData);
+              resolve(currentUserID.Name);
+            },
+            error: function () {
+                console.log('An error occurred while retrieving case comments.');
+                reject(null);
+            }
+        });
+
+        })
+
+
+    }
+    // Call the function to load correction history
+    LoadCorrectionHistory();
+     function sendMessage(message, CaseId) {
             var requestData = {
                 Content: message,
                 CaseId: CaseId
@@ -311,7 +387,7 @@
             });
         }
 
-        $('#SendButton').click(function (e) {
+        $('#SendButton').on('click',function (e) {
             e.preventDefault();
             var message = $('input[name="message"]').val();
             if (message.trim() !== '') {
@@ -330,6 +406,8 @@
 
 
         var CaseId = $('#CaseId').val();
+
+        console.log("Guid 2 " +CaseId);
         function initializeDataTable(data) {
             caseCollateralsTable = $('#caseCollaterals').DataTable({
                 language: {
@@ -393,7 +471,7 @@
 
         function loadCollaterals() {
             $.ajax({
-                url: '/Collateral/GetCollaterals?CaseId=' + CaseId,
+                 url: '/Collateral/GetCollaterals?CaseId=' + CaseId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -409,20 +487,29 @@
                 }
             });
         }
-        $('#addMechanicalCollateralForm').submit(function (e) {
+        $('#addMechanicalCollateralForm').on('submit',function (e) {
             e.preventDefault();
-
+            console.log('jquerryyy...');
             var formDataArray = $(this).serializeArray();
             var Category = getAttributeByName(formDataArray, 'Category');
 
-            if (Category == "MOV" || Category == "CMAMachinery") {
+            if (Category == "MOV") {
                 var PlateName = getAttributeByName(formDataArray, 'PlateNo').trim();
                 var ChassisNo = getAttributeByName(formDataArray, 'ChassisNo').trim();
                 if (PlateName === "" || ChassisNo === "") {
                     toastr.error("Please fill in all required fields.");
                     return;
                 }
-            } else if (Category == "IBFEqupment") {
+            } else if(Category == "CMAMachinery"){
+                 var PlateName = getAttributeByName(formDataArray, 'CPlateNo').trim();
+                 var ChassisNo = document.getElementById('conChassisNoMac').value.trim();
+                console.log(ChassisNo);
+                if (PlateName === "" || ChassisNo === "") {
+                    toastr.error("Please fill in all required fields.");
+                    return;
+                }
+            
+            }else if (Category == "IBFEqupment") {
                 var MachineName = getAttributeByName(formDataArray, 'MachineName').trim();
                 var Purpose = getAttributeByName(formDataArray, 'Purpose').trim();
 
@@ -435,6 +522,7 @@
 
             var submitButton = $(this).find('button[type="submit"]');
             submitButton.prop('disabled', true).text('Processing...');
+
             var formData = new FormData(this);
 
             $.ajax({
@@ -445,28 +533,27 @@
                 contentType: false,
                 success: function (response) {
                     toastr.success(response.message);
-                
+                    // $('#addMechanicalCollateralForm')[0].reset();
                     $('#addMechanicalCollateralModal').modal('hide');
-                    $('#addMechanicalCollateralForm')[0].reset();
-
                     submitButton.prop('disabled', false).text('Add');
 
                     loadCollaterals();
                 },
                 error: function (error) {
                     submitButton.prop('disabled', false).text('Add');
-                    toastr.error("Unable to create collateral");
+                    if (error.responseJSON && error.responseJSON.message) {
+                            toastr.error(error.responseJSON.message);
+                    } else {
+                            toastr.error("Unable to create collateral " + error.message);
+                    }
                     console.log(error);
                 }
             });
         });
         loadCollaterals();
-        $('#addCivilCollateralForm').submit(function (e) {
+        $('#addCivilCollateralForm').on('submit',function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
-            
-
-
             var formData = new FormData(this);
 
             $.ajax({
@@ -488,11 +575,10 @@
             });
         });
         loadCollaterals();
-        $('#addAgricultureCollateralForm').submit(function (e) {
+        $('#addAgricultureCollateralForm').on('submit',function (e) {
             e.preventDefault();
             var formDataArray = $(this).serializeArray();
             console.log("here");
-           
 
             var formData = new FormData(this);
 
@@ -536,7 +622,7 @@
         $(".MVprop").hide();
         $(".MVprop2").hide();
         $(".conprop").hide();
-        
+
         var typeDropdown = $("#typeDropdown");
         typeDropdown.prop("disabled", true);
         function populateTypeDropdown() {
@@ -578,6 +664,7 @@
                     $(".MVprop").show();
                     $(".MVprop2").show();
                     $(".conprop").hide();
+
                     break;
                 case "CMAMachinery":
                     typeDropdown.append('<option value="ChainExcavator">Chain Excavator</option>');
@@ -632,26 +719,29 @@
                     typeDropdown.append('<option value="DiscHarrow">Disc harrow</option>');
                     typeDropdown.append('<option value="Harvester">Harvester</option>');
                     typeDropdown.append('<option value="Other">Others, please specify</option>');
+
                     $(".IndusteryProp").hide();
                     $(".MVprop").hide();
                     $(".conprop").show();
                     $(".MVprop2").show();
-           
+
                     break;
                 case "IBFEqupment":
                     typeDropdown.append('<option value="IndustrialMfgProcessLineEquipment">Industrial (Mfg.) Process Line Equipment</option>');
                     typeDropdown.append('<option value="HVACSystemFuelStationSecurityApparatus">HVAC system, Fuel Station and Security Apparatus etc</option>');
                     typeDropdown.append('<option value="HotelOfficeLaboratoryEquipment">Hotel, Office, Laboratory Equipment etc</option>');
+
                     $(".IndusteryProp").show();
                     $(".MVprop").hide();
                     $(".conprop").hide();
                     $(".MVprop2").hide();
+
                     break;
                 default:
                     break;
             }
         }
-        $("#categoryDropdown").change(function () {
+        $("#categoryDropdown").on('change',function () {
             typeDropdown.prop("disabled", false);
             populateTypeDropdown();
         });
@@ -660,7 +750,7 @@
         var scrollHeight = chatMessages[0].scrollHeight;
         chatMessages.scrollTop(scrollHeight);
 
-        $('#proposeNewSchedule-form').submit(function (event) {
+        $('#proposeNewSchedule-form').on('submit',function (event) {
             event.preventDefault();
             var formData = new FormData(this);
             var Id = $('#CaseScheduleId').val();

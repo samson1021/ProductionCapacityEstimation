@@ -17,14 +17,13 @@ using mechanical.Services.PCE.PCECaseAssignmentService;
 
 namespace mechanical.Controllers
 {
-
-    // [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     [Authorize]
     public class PCECaseAssignmentController : BaseController
     {
         private readonly IUserService _UserService;
         private readonly IPCECaseService _PCECaseService;
-        private readonly ILogger<PCECaseAssignmentController> _logger;
+        //private readonly ILogger<PCECaseAssignmentController> _logger;
         private readonly IPCECaseAssignmentService _PCECaseAssignmentService;
 
         public PCECaseAssignmentController(IUserService UserService, IPCECaseAssignmentService PCECaseAssignmentService, IPCECaseService PCECaseService)

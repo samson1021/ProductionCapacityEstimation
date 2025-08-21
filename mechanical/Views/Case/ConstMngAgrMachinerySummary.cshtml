@@ -22,14 +22,21 @@
         commaSeparatedRegions = CapitalizeEachWord(string.Join(", ", uniqueRegions));
         var ProportyOF = collaterals.Select(m => m.PropertyOwner).Distinct();
         commaSeparatedPropertyof = CapitalizeEachWord(string.Join(", ", ProportyOF));
-        var Type = collaterals.Select(m => m.Type).Distinct();
+        var Type = collaterals
+            .Select(m => m.Type.GetType()
+            .GetMember(m.Type.ToString())
+            .First()
+            .GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+            .Cast<System.ComponentModel.DataAnnotations.DisplayAttribute>()
+            .FirstOrDefault()?.Name ?? m.Type.ToString())
+            .Distinct();
         commaSeparatedType = string.Join(", ", Type);
     }
 
     var maker = constMngAgrMachinery.Select(m => m.EvaluatorUser).Distinct();
     var checker = constMngAgrMachinery.Select(m => m.CheckerUser).Distinct();
 
-    var caseScheduleDate = DateTime.Now;
+    var caseScheduleDate = DateTime.UtcNow;
     if (caseSchedule != null)
     {
         caseScheduleDate = caseSchedule.ScheduleDate;
@@ -83,7 +90,7 @@
                 <div class="d-flex flex-column py-2">
                     <div class="d-flex justify-content-end">
                         <p class="mb-1 mr-4">
-                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToShortDateString()</u>
+                            Date: <u class="border-bottom border:1px solid #000000  pb-1 mr-2">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
                     <div class="d-flex justify-content-end">
@@ -112,7 +119,7 @@
                     <div class="form-group row my-0">
                         <p style="font-size: 16px;" class="my-0 py-0">
                             <label class="col-form-label pr-2">Date of Valuation: </label>
-                            <u class=" ">@caseScheduleDate.ToShortDateString()</u>
+                            <u class=" ">@caseScheduleDate.ToString("dd/MM/yyyy")</u>
                         </p>
                     </div>
                     <div class="form-group row my-0">
@@ -133,7 +140,8 @@
                         <thead style="border-bottom: 3px solid #6f42c1;">
                             <tr>
                                 <th>S/No.</th>
-                                <th>Machine Name</th>
+                                <th>Name</th>
+                                <th>type</th>
                                 <th>Plate No.</th>
                                 <th>YoMfg</th>
                                 <th>Origin</th>
@@ -156,6 +164,7 @@
                                 {
                                     <tr>
                                         <td class="col-sno"> @x</td>
+                                        <td>@item.MechanicalEqpmntName</td>
                                         <td>@EnumHelper.GetEnumDisplayName(item.Collateral.Type)</td>
                                         <td>@item.PlateNo</td>
                                         <td>@item.YearOfManufacture</td>
@@ -209,7 +218,7 @@
                         foreach (var item in maker)
                         {
                             <p style="font-size: 18px;">
-                                Maker’s Name :- &nbsp;&nbsp;<u><strong>(@item.Name)</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
+                                Maker’s Name :- &nbsp;&nbsp;<u><strong>@item.Name</strong></u>;&nbsp;&nbsp;&nbsp;&nbsp; Signature:&nbsp;&nbsp;
                                 <span style="text-decoration: underline; margin: 0 5px;">
                                     @if (item.Signatures != null)
                                     {
@@ -220,7 +229,7 @@
                                         <span>Not Registered</span>
                                     }
                                 </span>
-                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToString("dd/MM/yyyy")</strong></u>
                             </p>
                         }
                     }
@@ -242,7 +251,7 @@
                                         <span>Not Registered</span>
                                     }
                                 </span>
-                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToShortDateString()</strong></u>
+                                &nbsp;&nbsp; &nbsp;&nbsp; Evaluated Date: &nbsp;&nbsp;&nbsp;&nbsp; <u><strong>@caseScheduleDate.ToString("dd/MM/yyyy")</strong></u>
                             </p>
                         }
                     }

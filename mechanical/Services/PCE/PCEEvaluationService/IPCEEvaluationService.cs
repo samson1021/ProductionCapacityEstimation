@@ -18,14 +18,21 @@ namespace mechanical.Services.PCE.PCEEvaluationService
         Task<PCEEvaluationReturnDto> UpdateValuation(Guid UserId, Guid Id, PCEEvaluationUpdateDto Dto);
         Task<bool> DeleteValuation(Guid UserId, Guid Id);
         Task<bool> ReturnValuation(Guid UserId, ReturnedProductionPostDto Dto);
+        Task<bool> ResendValuation(Guid UserId, Guid PCEId);
+        Task<bool> ResendValuations(Guid UserId, IEnumerable<Guid> SelectedPCEIds);
         Task<bool> CompleteValuation(Guid UserId, Guid Id);
 
-        Task<bool> HandleRemark(Guid UserId, Guid PCEId, String RemarkType, CreateFileDto FileDto, Guid EvaluatorId);
-        Task<PCEEvaluationReturnDto> ReleaseRemark(Guid UserId, Guid Id, String Remark, Guid EvaluatorId);
+        Task<bool> HandleRemark(Guid UserId, Guid PCEId, String RemarkType, CreateFileDto FileDto);
+        Task<PCEEvaluationReturnDto> ReleaseRemark(Guid UserId, Guid Id, String Remark);
         
         Task<PCEEvaluationReturnDto> GetValuation(Guid UserId, Guid Id);
         Task<PCEEvaluationReturnDto> GetValuationByPCEId(Guid UserId, Guid PCEId);
         Task<PCEValuationHistoryDto> GetValuationHistory(Guid UserId, Guid PCEId);
         Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsByPCECaseId(Guid UserId, Guid PCECaseId);
+        Task<IEnumerable<PCEEvaluationReturnDto>> GetValuationsSummaryByPCECaseId(Guid UserId, Guid PCECaseId);
+        //HO
+        Task<PCEEvaluationReturnDto> GetHOValuation(Guid Id);
+        Task<PCEEvaluationReturnDto> GetHOValuationByPCEId(Guid PCEId);
+        Task<PCEValuationHistoryDto> GetHOValuationHistory(Guid PCEId);
     }
 }

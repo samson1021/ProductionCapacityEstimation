@@ -1,6 +1,6 @@
 ﻿@model mechanical.Models.Dto.CollateralDto.AgricultureCollateralPostDto;
 @{
-    var myCase = ViewData["case"] as CaseReturntDto;
+    var myCase = ViewData["case"] as CaseReturnDto;
 }
 
 <div class="modal fade" id="addAgricultureCollateralModal" tabindex="-1" role="dialog" aria-labelledby="addCollateralModalLabel" aria-hidden="true">
@@ -16,7 +16,14 @@
             {
                 <div class="modal-body" style="padding-top:0px;">
                     <div class="card-body">
-                        <input asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
+                        <in
+                            
+                            
+                            
+                            
+                            
+                            
+                            asp-for="CaseId" value=@myCase.Id type="hidden" id="CaseId" />
                         <div class="row">
                             <div class="form-group col-lg-6">
                                 <label asp-for="PropertyOwner">Property Owner <i class="text-danger">*</i></label>
@@ -48,7 +55,7 @@
                                     <option value="Harrari">Harrari</option>
                                     <option value="Oromia">Oromia</option>
                                     <option value="Sidama">Sidama</option>
-                                    <option value="Somalia">Somalia</option>
+                                    <option value="Somali">Somali</option>
                                     <option value="South western Ethiopia">South western Ethiopia</option>
                                     <option value="Southern Ethiopia">Southern Ethiopia</option>
                                     <option value="Tigray">Tigray</option>
@@ -196,7 +203,7 @@
 
     function validateInputAgr(inputId, errorId) {
         var input = document.getElementById(inputId).value;
-        var alphanumericRegex = /^[A-Za-z0-9]+$/;
+        var alphanumericRegex = /^[a-zA-Z0-9\s]+$/;
         console.log("from agr");
         if (!alphanumericRegex.test(input)) {
             document.getElementById(inputId).setCustomValidity("Only alphanumeric characters are allowed.");
@@ -257,155 +264,4 @@
             otherRegionInput.removeAttribute("name"); // Remove the name attribute
         }
     }
-    // document.getElementById("PropertyAddress").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("PropertyAddress-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("PropertyAddress-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("PurposeOfTheLand").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("PurposeOfTheLand-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("PurposeOfTheLand-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("PropertyOwnerAgr").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     console.log("from agri");
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("PropertyOwnerAgr-error").textContent = "Only alphanumeric characters are allowed.";
-    //         console.log("here agr");
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("PropertyOwnerAgr-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("InvoiceNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("InvoiceNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("InvoiceNo-error").textContent = "";
-    //     }
-    // });
-    // document.getElementById("SerialNo").addEventListener("input", function () {
-    //     var input = this.value;
-    //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    //     if (!alphanumericRegex.test(input)) {
-    //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    //         document.getElementById("SerialNo-error").textContent = "Only alphanumeric characters are allowed.";
-    //     } else {
-    //         this.setCustomValidity("");
-    //         document.getElementById("SerialNo-error").textContent = "";
-    //     }
-    // });
-    // function for the Region dropdown value
-    // function handleRegionChange(selectElement) {
-    //     var otherRegionInput = document.getElementById("OtherRegion");
-    //     if (selectElement.value === "Others") {
-    //         otherRegionInput.style.display = "block";
-    //         otherRegionInput.setAttribute("required", "required");
-    //         otherRegionInput.setAttribute("name", "Region"); // Set the name attribute to "Region"
-    //     } else {
-    //         otherRegionInput.style.display = "none";
-    //         otherRegionInput.removeAttribute("required");
-    //         otherRegionInput.removeAttribute("name"); // Remove the name attribute
-    //     }
-    // }
-    // //this is to validate all collateral addresses
-    // function validateZoneInput(inputElement) {
-    //     var zoneError = document.getElementById("Zone-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "Zone must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateCityInput(inputElement) {
-    //     var zoneError = document.getElementById("City-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "City must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateSubCityInput(inputElement) {
-    //     var zoneError = document.getElementById("SubCity-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "SubCity must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateWeredaInput(inputElement) {
-    //     var zoneError = document.getElementById("Wereda-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "Wereda must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // function validateKebeleInput(inputElement) {
-    //     var zoneError = document.getElementById("Kebele-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "Kebele must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
-    // // document.getElementById("PropertyOwnerAgr").addEventListener("input", function () {
-    // //     var input = this.value;
-    // //     console.log("this is from agr");
-    // //     var alphanumericRegex = /^[A-Za-z0-9]+$/;
-    // //     if (!alphanumericRegex.test(input)) {
-    // //         this.setCustomValidity("Only alphanumeric characters are allowed.");
-    // //         document.getElementById("PropertyOwnerAgr-error").textContent = "Only alphanumeric characters are allowed.";
-    // //         console.log("this is from agr if");
-    // //     } else {
-    // //         this.setCustomValidity("");
-    // //         console.log("this is from agr else");
-    // //         document.getElementById("PropertyOwnerAgr-error").textContent = "";
-    // //     }
-    // // });
-    // function validateHouseNoInput(inputElement) {
-    //     var zoneError = document.getElementById("HouseNo-error");
-    //     var zoneValue = inputElement.value;
-
-    //     var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
-    //     if (zoneValue.length > 0 && !alphanumericRegex.test(zoneValue)) {
-    //         zoneError.textContent = "HouseNo must contain only alphanumeric characters.";
-    //     } else {
-    //         zoneError.textContent = ""; // Clear the error message if valid
-    //     }
-    // }
 </script>

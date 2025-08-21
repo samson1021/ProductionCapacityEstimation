@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using mechanical.Data;
 using mechanical.Models;
 using mechanical.Models.Dto.CaseTimeLineDto;
@@ -27,25 +27,25 @@ namespace mechanical.Services.MotorVehicleService
             _motorVehicleAnnexService = motorVehicleAnnexService;
             _caseTimeLineService = caseTimeLineService;
         }
-        public async Task<MotorVehicle> CreateMotorVehicle( Guid userId, CreateMotorVehicleDto createMotorVehicleDto)
+        public async Task<MotorVehicle> CreateMotorVehicle(Guid userId, CreateMotorVehicleDto createMotorVehicleDto)
         {
             var motorVehicle = _mapper.Map<MotorVehicle>(createMotorVehicleDto);
 
             var collateral = await _cbeContext.Collaterals.FindAsync(motorVehicle.CollateralId);
 
             motorVehicle.MarketShareFactor = await _motorVehicleAnnexService.GetMOVMarketShareFactor(motorVehicle.MotorVehicleMake, motorVehicle.BodyType);
-            motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.Now.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
+            motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.UtcNow.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
             motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
             motorVehicle.EvaluatorUserID = userId;
             _cbeContext.MotorVehicles.Add(motorVehicle);
-      
+
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong class=\"text-sucess\">collateral maker Evaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong class=\"text-sucess\">collateral maker Evaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Maker Manager"
             });
 
@@ -127,14 +127,14 @@ namespace mechanical.Services.MotorVehicleService
             }
 
         }
-        public async Task<ReturnMotorVehicleDto> CheckMotorVehicle(Guid userId, Guid Id,CreateMotorVehicleDto createMotorVehicleDto)
+        public async Task<ReturnMotorVehicleDto> CheckMotorVehicle(Guid userId, Guid Id, CreateMotorVehicleDto createMotorVehicleDto)
         {
             var motorVehicle = _mapper.Map<MotorVehicle>(createMotorVehicleDto);
 
             var collateral = await _cbeContext.Collaterals.FindAsync(motorVehicle.CollateralId);
 
             motorVehicle.MarketShareFactor = await _motorVehicleAnnexService.GetMOVMarketShareFactor(motorVehicle.MotorVehicleMake, motorVehicle.BodyType);
-            motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.Now.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
+            motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.UtcNow.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
             motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
@@ -145,7 +145,7 @@ namespace mechanical.Services.MotorVehicleService
 
         public async Task<ReturnMotorVehicleDto> GetMotorVehicle(Guid Id)
         {
-            var motorVehicle = await _cbeContext.MotorVehicles.Include(res=>res.Collateral).FirstOrDefaultAsync(res=>res.Id==Id);
+            var motorVehicle = await _cbeContext.MotorVehicles.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.Id == Id);
             return _mapper.Map<ReturnMotorVehicleDto>(motorVehicle);
 
         }
@@ -162,7 +162,7 @@ namespace mechanical.Services.MotorVehicleService
             var motorVehicle = await _cbeContext.MotorVehicles.Include(res => res.Collateral).FirstOrDefaultAsync(res => res.CollateralId == Id);
             if (motorVehicle != null)
             {
-                var motorVehicles =  _cbeContext.Collaterals.Where(res => res.Id == motorVehicle.CollateralId).FirstOrDefault();
+                var motorVehicles = _cbeContext.Collaterals.Where(res => res.Id == motorVehicle.CollateralId).FirstOrDefault();
                 caseCommenAttributeDto.PropertyOwner = motorVehicles.PropertyOwner;
                 caseCommenAttributeDto.Role = motorVehicles.Role;
                 caseCommenAttributeDto.Type = motorVehicles.Type.ToString();
@@ -170,7 +170,7 @@ namespace mechanical.Services.MotorVehicleService
                 caseCommenAttributeDto.CollateralId = motorVehicle.CollateralId;
             }
 
-            returnEvaluatedCaseDto.ReturnMotorVehicleDto = _mapper.Map< ReturnMotorVehicleDto> (motorVehicle);
+            returnEvaluatedCaseDto.ReturnMotorVehicleDto = _mapper.Map<ReturnMotorVehicleDto>(motorVehicle);
             returnEvaluatedCaseDto.CaseCommenAttributeDto = caseCommenAttributeDto;
 
             return returnEvaluatedCaseDto;
@@ -186,17 +186,17 @@ namespace mechanical.Services.MotorVehicleService
             var collateral = await _cbeContext.Collaterals.FindAsync(motorVehicle.CollateralId);
 
             motorVehicle.MarketShareFactor = await _motorVehicleAnnexService.GetMOVMarketShareFactor(motorVehicle.MotorVehicleMake, motorVehicle.BodyType);
-            motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.Now.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
+            motorVehicle.DepreciationRate = await _motorVehicleAnnexService.GetMOVDepreciationRate(DateTime.UtcNow.Year - motorVehicle.YearOfManufacture, motorVehicle.BodyType);
             motorVehicle.EqpmntConditionFactor = await _motorVehicleAnnexService.GetEquipmentConditionFactor(motorVehicle.CurrentEqpmntCondition, motorVehicle.AllocatedPointsRange);
             motorVehicle.ReplacementCost = (motorVehicle.InvoiceValue * motorVehicle.ExchangeRate);
             motorVehicle.NetEstimationValue = motorVehicle.MarketShareFactor * motorVehicle.DepreciationRate * motorVehicle.EqpmntConditionFactor * motorVehicle.ReplacementCost;
-           
+            motorVehicle.LastUpdatedAt = DateTime.UtcNow;
             _cbeContext.Update(motorVehicle);
             await _cbeContext.SaveChangesAsync();
             await _caseTimeLineService.CreateCaseTimeLine(new CaseTimeLinePostDto
             {
                 CaseId = collateral.CaseId,
-                Activity = $" <strong class=\"text-sucess\">collateral maker Revaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Catagory:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
+                Activity = $" <strong class=\"text-sucess\">collateral maker Revaluation has been Completed. </strong> <br> <i class='text-purple'>Property Owner:</i> {collateral.PropertyOwner}. &nbsp; <i class='text-purple'>Role:</i> {collateral.Role}.&nbsp; <i class='text-purple'>Collateral Category:</i> {EnumHelper.GetEnumDisplayName(collateral.Category)}. &nbsp; <i class='text-purple'>Collateral Type:</i> {EnumHelper.GetEnumDisplayName(collateral.Type)}.",
                 CurrentStage = "Maker Manager"
             });
 

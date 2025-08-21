@@ -16,6 +16,90 @@
         $('#showCollateralFile').click(function () {
             $('#CollateralFileModal').modal('show');
         });
+
+        var CaseId= $('#TxtmovId').val();
+        function LoadCorrectionHistory() {
+            console.log("gebchalew joye");
+            $.ajax({
+               url: '/Collateral/GetCollateralCorrectionHistory?CollateralId=' + CaseId,
+                method: 'GET',
+                success: function (data) {
+                    var currentUserID = data.userId;
+                    var caseCorrections = data.caseComments;
+                    var countComments = caseCorrections.length;
+                    $(".CorrectionBage").text(countComments);
+
+                    // Clear previous messages
+                    $('#CorrectionHistoryModal .correctionHistories').empty();
+
+                    if (caseCorrections && caseCorrections.length > 0) {
+                        caseCorrections.forEach(function (comments) {
+                            // Create a card for each comment
+                            var card = $('<div>').addClass('card mb-3 direct-chat-card');
+                            var cardBody = $('<div>').addClass('card-body');
+
+                            // User information and comment details
+                            var chatName = $('<a>').attr('href', '/UserManagment/Profile/' + comments.CommentByUserId).addClass('direct-chat-name');
+                            GetUserInfo(comments.CommentByUserId).then(username => {
+                                $('<span>').text(username).appendTo(chatName);
+                            });
+
+                            var createdAt = new Date(comments.CreatedAt);
+                            var formattedDate = formatDate(createdAt);
+
+                            var commentedFieldName = $('<div>').html(`<strong>Commented Field Name:</strong> ${comments.CommentedFieldName}`);
+                            var commentText = $('<div>').html(`<strong>Comment:</strong> ${comments.Content}`);
+                            var commentType = $('<div>').html(`<strong>Type:</strong> ${comments.MessageType}`);
+                            var timestamp = $('<span>').addClass('direct-chat-timestamp float-right').text(formattedDate);
+
+                            // Append elements to the card body
+                            cardBody.append(chatName, timestamp, commentedFieldName, commentText, commentType);
+                            card.append(cardBody);
+                            $('#CorrectionHistoryModal .correctionHistories').append(card);
+                        });
+                    } else {
+                        var noCommentsMsg = $('<div>').addClass('no-comments-msg').text('There are no comments related to this case.');
+                        $('#CorrectionHistoryModal .correctionHistories').append(noCommentsMsg);
+                    }
+                },
+                error: function () {
+                    console.log('An error occurred while retrieving case comments.');
+                }
+            });
+        }
+
+         function GetUserInfo(Id, callback){
+         return new Promise(function(resolve , reject){
+
+               $.ajax({
+             url: '/UserManagment/GetuserInfos?id=' + Id,
+             method: 'GET',
+             success: function (data) {
+                 var currentUserID = data
+                 // var caseCorrections = data.caseComments; // Assuming this is an array of comments
+                 // var countComment = data.caseComments.length;
+                 ResponseData= currentUserID.Name;
+                                 console.log('An error occurred while retrieving case comments.'+ResponseData);
+               resolve(currentUserID.Name);
+             },
+             error: function () {
+                 console.log('An error occurred while retrieving case comments.');
+                 reject(null);
+             }
+         });
+
+         })
+
+            
+     }
+
+     // Call the function to load correction history
+       LoadCorrectionHistory();
+                   function formatDate(date) {
+             var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+             return date.toLocaleString('en-US', options);
+         }
+
     });
     //this method is to give comment for maker and change the status of collateral 
     $(document).ready(function () {
@@ -51,6 +135,20 @@
             $('#comment').val(comment ? comment : '');
             $("#CommentBoxModal").modal('show');
             $(modal).find('.save-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.show-comment-box').click(function () {
+            var modal = $(this).data('target');
+            var fieldId = $(this).data('field-id');
+            var comment = $(this).data('comment');
+            $('#comment').val(comment ? comment : '');
+            $("#CommentBoxModal").modal('show');
+            $(modal).find('.Replay-comment').attr('data-field-id', fieldId); // Store the field ID in the modal's save button
+        });
+
+        $('.show-comment-box').click(function () {
+                var fieldId = $(this).data('field-id'); // Get the field ID from the button
+                $('#CommentBoxModal').data('field-id', fieldId); // Store it in the modal
         });
 
         $('.save-comment').click(function () {
@@ -91,7 +189,48 @@
                 }
             });
         });
-        //this is a method to change the status of a collaterals 
+        //this is a method to change the status of a collaterals
+
+          $('.Replay-comment').click(function () {
+                var fieldId = $('#CommentBoxModal').data('field-id'); // Get the field ID from the modal
+                var comment = $('#comment').val();
+                var collateralId = $('#TxtmovId').val();
+                var EquipmentId = $('#TxtEquipmentId').val();
+
+                console.log("Field ID: " + fieldId); // Check if it's defined
+                console.log("Comment: " + comment);
+
+                // Perform your save operation here
+                var formdata = new FormData();
+                formdata.append('CollateralID', collateralId);
+                formdata.append('EquipmentId', EquipmentId);
+                formdata.append('Comment', comment);
+                formdata.append('CommentedAttribute', fieldId);
+
+                $.ajax({
+                    url: '/Correction/ReplayForCheckerCorrections',
+                    type: 'POST',
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        toastr.success('Successfully Submitted Your Reply', 'Success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                    },
+                    error: function (error) {
+                        toastr.error("Failed to Post Correction");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 20);
+                        console.log(error);
+                    }
+                });
+            });
+
+
+
         $(document).ready(function () {
             // Attach click event handlers to the buttons
             $(".checkedButton").click(function () {
@@ -204,6 +343,5 @@
         });
 
     }
-
 
 </script>

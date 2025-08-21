@@ -23,7 +23,7 @@
             data: data,
             columns: [
                 { data: 'PCE.PropertyOwner', width: '30%' },
-                { data: 'ProductionLineOrEquipmentName', width: '30%' },
+                { data: 'MachineName', width: '30%' },
                 { data: 'PCE.ProductionType', width: '15%' },
                 {                    
                     data: 'CreatedAt',
@@ -46,7 +46,7 @@
 
     function loadPreviousValuations() {
 
-        var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl))';
+        var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(FetchUrl)';
         $.ajax({
             url: fetchUrl,
             type: 'GET',

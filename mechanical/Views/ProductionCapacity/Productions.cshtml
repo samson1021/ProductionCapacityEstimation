@@ -51,7 +51,7 @@
                                 } 
                                 <th>Property Owners</th>
                                 <th>Role</th>
-                                <th>Production Type</th>
+                                <th>Production Type</th> 
                                 <th>Status</th>
                                 @* <th>Assignment Status</th> *@
                                 <th>Action</th>
@@ -71,10 +71,10 @@
         await Html.RenderPartialAsync("Partial/_ProductionsTableDatatableSriptsPartial");
         await Html.RenderPartialAsync("PCEScriptPartial/Partial/_CommonLibrariesScriptPartial");
     } 
-    <script>$(document).ready(function () {
-        
-            var fetchUrl = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl))';
-            var emptyMessage = '@Html.Raw(emptyMessage)';
+    <script>
+        $(document).ready(function () {
+            var fetchUrl = '@System.Web.HttpUtility.JavaScriptStringEncode(fetchUrl)';
+            var emptyMessage = '@emptyMessage';
 
             loadProductions(fetchUrl, emptyMessage);
         });

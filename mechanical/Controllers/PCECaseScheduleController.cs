@@ -16,6 +16,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     [Authorize]
     public class PCECaseScheduleController : BaseController
     {
@@ -103,18 +104,17 @@ namespace mechanical.Controllers
         }
 
         private async Task<IActionResult> SendScheduleEmail(PCECaseScheduleReturnDto PCECaseSchedule, string subjectPrefix)
-        {            
+        {
             var userId = base.GetCurrentUserId();
             var pceCaseInfo = await _PCECaseService.GetPCECase(userId, PCECaseSchedule.PCECaseId);
             
-            await _mailService.SendEmail(new MailPostDto
-            {
-                SenderEmail = "sender@cbe.com.et",
-                SenderPassword = "test@1234",
-                RecipantEmail = "recipient@cbe.com.et",
-                Subject = $"{subjectPrefix}{pceCaseInfo.CaseNo}",
-                Body = $"Dear! Valuation Schedule For Applicant: {pceCaseInfo.ApplicantName} is {PCECaseSchedule.ScheduleDate}. For further details, please check the Production Valuation System."
-            });
+            // var recipientEmail = await _cbeContext.Users.Where(u => u.Id == CaseInfo.ApplicantId).Select(u => u.Email).FirstOrDefaultAsync();
+            var recipientEmail = "yohannessintayhu@cbe.com.et";
+            await _mailService.SendEmail(
+                recipientEmail: recipientEmail,
+                subject: $"{subjectPrefix}{pceCaseInfo.CaseNo}",
+                body: $"Dear! Valuation Schedule For Applicant: {pceCaseInfo.ApplicantName} is {PCECaseSchedule.ScheduleDate}. For further details, please check the Production Valuation System."
+            );
 
             string jsonData = JsonConvert.SerializeObject(PCECaseSchedule);
             return Ok(PCECaseSchedule);

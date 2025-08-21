@@ -1,27 +1,27 @@
-﻿//using CreditBackOffice.Models;
-using mechanical.Data;
-using mechanical.Models.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Net.Http;
 using System.Diagnostics;
 using System.Security.Claims;
 using NuGet.Protocol.Plugins;
 using System.DirectoryServices.AccountManagement;
-using mechanical.Models.Login;
-using mechanical.Services.AuthenticatioinService;
-using System.Text;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System.Net.Http;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using mechanical.Data;
+using mechanical.Models.Login;
+using mechanical.Models.Entities;
 using mechanical.Models.Dto.UserDto;
+using mechanical.Services.AuthenticatioinService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class HomeController : Controller
     {
         private readonly CbeContext _context;
@@ -37,105 +37,113 @@ namespace mechanical.Controllers
             _authetnicationService = authetnicationService;
         }
 
-       
+        // Centralized session timeout config
+        public static class SessionTimeoutConfig
+        {
+            public const double TimeoutMinutes = 20;
+        }
+
+        // Helper to set session expiration
+        protected void SetSessionExpiration()
+        {
+            HttpContext.Session.SetString("ExpirationTime", DateTime.UtcNow.AddMinutes(SessionTimeoutConfig.TimeoutMinutes).ToBinary().ToString());
+        }
+        [AllowAnonymous]
         public IActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User?.Identity?.IsAuthenticated == true)
             {
-                if (HttpContext.Session.GetString("userId") != null)
+                var userIdStr = HttpContext.Session.GetString("userId");
+                if (!string.IsNullOrWhiteSpace(userIdStr) && Guid.TryParse(userIdStr, out var userId))
                 {
-                    var loggedUser = _context.CreateUsers.Include(c => c.Role).Include(c=>c.District).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
-
+                    var loggedUser = _context.Users.Include(c => c.Role).Include(c => c.District).FirstOrDefault(u => u.Id == userId);
                     if (loggedUser != null)
                     {
+                        TempData["ToastMessage"] = "You are already logged in.";
                         return RedirectToDashboard(loggedUser);
                     }
-
-                    return RedirectToAction("Logout");
                 }
+                // Auth cookie present but session missing or invalid: sign out
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+                HttpContext.Session.Clear();
+                if (TempData["ToastMessage"] != null)
+                {
+                    ViewBag.ToastMessage = TempData["ToastMessage"];
+                }
+                else
+                {
+                    ViewBag.ToastMessage =  "Your have been logged out. Please log in again.";
+                }
+                return RedirectToAction("Index", "Home");
             }
-
-            return View();
-        }
-        
-
-
-        public IActionResult Privacy()
-        {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(loginDto logins)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User?.Identity?.IsAuthenticated == true)
             {
-                if (HttpContext.Session.GetString("userId") != null)
+                var loggedUser = await GetUserBySessionAsync();
+                if (loggedUser != null)
                 {
-                    var loggedUser = await _context.CreateUsers.Include(c => c.Role).Include(c => c.District).FirstOrDefaultAsync(u => u.Id == Guid.Parse(HttpContext.Session.GetString("userId")));
-
-                    if (loggedUser != null)
-                    {
-                        return RedirectToDashboard(loggedUser);
-                    }
-
-                    return RedirectToAction("Logout");
+                    TempData["ToastMessage"] = "You are already logged in.";
+                    return RedirectToDashboard(loggedUser);
                 }
-            
+                return RedirectToAction("Logout");
             }
+            return await Login(logins);
+        }
 
+        // [Authorize]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(loginDto logins)
+        {
             if (logins.Email == null || logins.Password == null)
             {
-                if (logins.Password == null)
-                {
-                    ModelState.AddModelError(nameof(logins.Password), "The Password field is required.");
-                }
+                _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
 
-            var user = _context.CreateUsers.Include(c => c.Role).Include(c => c.District).Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email).FirstOrDefault();
-
+            var user = await _context.Users.Include(c => c.Role).Include(c => c.District).Where(c=>c.Status=="Activated")
+                                            .Where(c => c.Email.ToUpper() == logins.Email.ToUpper() || c.emp_ID == logins.Email)
+                                            .FirstOrDefaultAsync();
+            
             if (user == null)
             {
-                ViewData["Error"] = "You do not have the necessary permissions to use the system.";
+                ViewData["Error"] = "Incorrect username or password.";
+                _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
-            if (logins.Password=="1234")
+            //_authetnicationService.AuthenticateUserByAD(logins.Email, logins.Password)
+            if (logins.Password == "1234") 
             {
                 string userRole = user.Role.Name;
-
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Role, userRole)
+                    new Claim(ClaimTypes.Role, userRole),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name)
                 };
-
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var authProperties = new AuthenticationProperties
                 {
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(SessionTimeoutConfig.TimeoutMinutes)
                 };
-
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-                byte[] userId = Encoding.UTF8.GetBytes(user.Id.ToString());
-                _httpContextAccessor.HttpContext.Session.Set("UserId", userId);
-                HttpContext.Session.SetString("userRole", userRole);
-                HttpContext.Session.SetString("userName", user.Name);
-                HttpContext.Session.SetString("userId", user.Id.ToString());
-                HttpContext.Session.SetString("EmployeeId", user.emp_ID.ToString());
-                var viewbagg = ViewBag.UserRole;
-                if (HttpContext.Session.TryGetValue("ExpirationTime", out var expirationTimeBytes))
-                {
-                    var expirationTime = DateTime.FromBinary(BitConverter.ToInt64(expirationTimeBytes, 0));
-                    if (expirationTime < DateTime.UtcNow)
-                    {
-                        throw new SessionTimeoutException("Session has expired.");
-                    }
-                }
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                SetUserSession(user);
+                SetSessionExpiration();
+                _logger.LogInformation("User {Email} logged in successfully as {Role}", user.Email, userRole);
+                
+                TempData["ToastMessage"] = $"Welcome, {user.Name}!";
                 return RedirectToDashboard(user);
             }
             else
             {
                 ViewData["Error"] = "Incorrect username or password.";
+                _logger.LogWarning("Login attempt failed for email: {Email}", logins.Email);
                 return View("Index", logins);
             }
         }
@@ -146,15 +154,12 @@ namespace mechanical.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
+            TempData["ToastMessage"] = "You have been logged out.";
             return RedirectToAction("Index", "Home");
-
-            // await HttpContext.SignOutAsync();
-            // return Ok();
         }
 
-       
-        public IActionResult RedirectToDashboard(CreateUser user)
-        {   
+        public IActionResult RedirectToDashboard(User user)
+        {
             if (user != null)
             {
                 switch (user.Role.Name)
@@ -170,6 +175,8 @@ namespace mechanical.Controllers
                         return RedirectToAction("MTL", "Dashboard", user.Role.Name);
                     case "Admin":
                         return RedirectToAction("Index", "UserManagment");
+                    case "Super Admin":
+                        return RedirectToAction("Index", "UserManagment");
                     case "Checker TeamLeader":
                         return RedirectToAction("CTL", "Dashboard", user.Role.Name);
                     case "Checker Manager":
@@ -184,7 +191,59 @@ namespace mechanical.Controllers
                 }
             }
 
+            TempData["ToastMessage"] =  "You have not logged in yet. Please log in again.";
             return RedirectToAction("Index", "Home");
         }
+        
+        public IActionResult Privacy()
+        {
+            return View();
+        } 
+        
+        // Helper: Get user by session
+        private async Task<User?> GetUserBySessionAsync()
+        {
+            var userIdStr = HttpContext.Session.GetString("userId");
+            if (Guid.TryParse(userIdStr, out var userId))
+            {
+                return await _context.Users
+                    .Include(c => c.Role)
+                    .Include(c => c.District)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+            }
+            return null;
+        }
+
+        // Helper: Set user session
+        private void SetUserSession(User user)
+        {
+            HttpContext.Session.SetString(SessionKeys.UserId, user.Id.ToString());
+            HttpContext.Session.SetString(SessionKeys.UserRole, user.Role.Name);
+            HttpContext.Session.SetString(SessionKeys.UserName, user.Name);
+            HttpContext.Session.SetString(SessionKeys.EmployeeId, user.emp_ID.ToString());
+            if (user.Role.Name == "Relation Manager")
+            {
+                HttpContext.Session.SetString("unit", user.Unit?.ToString() ?? "");
+                HttpContext.Session.SetString("segment", user.BroadSegment?.ToString() ?? "");
+                HttpContext.Session.SetString("district", user.District?.Name ?? "");
+            }
+        }
+
+        // Session key constants
+        public static class SessionKeys
+        {
+            public const string UserId = "userId";
+            public const string UserRole = "userRole";
+            public const string UserName = "userName";
+            public const string EmployeeId = "EmployeeId";
+        }
+
+        [HttpGet]
+        public IActionResult Ping()
+        {
+            SetSessionExpiration();
+            return Ok();
+        }
+
     }
 }

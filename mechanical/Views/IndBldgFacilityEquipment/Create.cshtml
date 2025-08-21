@@ -28,7 +28,12 @@
                 <form method="post" enctype="multipart/form-data" asp-action="Create">
                     <input asp-for="CollateralId" value=@collateral?.Id type="hidden" />
                     <div class="row">
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="MechanicalEqpmntName">Mechanical Equipment Name</label>
+                            <input asp-for="MechanicalEqpmntName" type="text" class="form-control" id="MechanicalEqpmntName" placeholder="Mechanical Equipment Name" required>
+                            <span asp-validation-for="MechanicalEqpmntName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-xl-6">
                             <label asp-for="IndustrialBuildingMachineryType">Indu(Mfg) & Bud Facility Machinery Type</label>
                             <select asp-for="IndustrialBuildingMachineryType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(IndustrialBuildingMachineryType)).Cast<IndustrialBuildingMachineryType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -36,7 +41,9 @@
                             </select>
                             <span asp-validation-for="IndustrialBuildingMachineryType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                        </div>
+                        <div class="row">
+                        <div class="form-group col-xl-6">
                             <label asp-for="EngineType"> Power Source & Fuel Type</label>
                             <select asp-for="EngineType" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(EngineType)).Cast<EngineType>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -44,7 +51,7 @@
                             </select>
                             <span asp-validation-for="EngineType" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-xl-4">
+                        <div class="form-group col-xl-6">
                             <label asp-for="PowerSupply">Power Supply</label>
                             <select asp-for="PowerSupply" class="form-control"
                                     asp-items="@(new SelectList(Enum.GetValues(typeof(PowerSupply)).Cast<PowerSupply>().Select(e => new SelectListItem { Text = e.GetType().GetMember(e.ToString())[0].GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().FirstOrDefault()?.Name, Value = e.ToString() }), "Value", "Text"))">
@@ -180,13 +187,25 @@
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="Currency">Currency</label>
-                            <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                            <div class="input-group" style="margin:0;">
+                                <input asp-for="Currency" Id="Currency" list="currencyList" type="text" class="form-control" placeholder="Select Currency" required>
+                                <input type="button" class="form-control btn btn-outline-primary  col-lg-5" id="GetExchangeRate" value="Get Exchange Rate" required>
+                            </div>
                             <span asp-validation-for="Currency" class="text-danger"></span>
                         </div>
                         <div class="form-group col-xl-4">
                             <label asp-for="ExchangeRate">Exchange Rate</label>
                             <input asp-for="ExchangeRate" Id="ExchangeRate" type="number" class="form-control" readonly required>
                             <span asp-validation-for="ExchangeRate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xl-6">
+                            <label asp-for="IndBldgFacilityEquipmentCostsId">Insurance, Freight & Other Costs</label>
+                            <select asp-for="IndBldgFacilityEquipmentCostsId" asp-items="ViewBag.IndBldgFacilityEquipmentCostsList" class="form-control" required>
+                                <option disabled value="">Select Insurance, Freight & Other Costs</option>
+                            </select>
+                            <span asp-validation-for="IndBldgFacilityEquipmentCostsId" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
@@ -206,7 +225,48 @@
 </section>
 @section Scripts {
     <script>
-        $(function () {
+        // $(function () {
+        //     document.addEventListener('DOMContentLoaded', function() {
+        //         const dropdown = document.getElementById('insuranceCostDropdown');
+        //         if (dropdown && dropdown.options.length <= 1) {
+        //             const dropdownContainer = dropdown.parentElement;
+        //             dropdown.remove();
+
+        //             const placeholderBtn = document.createElement('button');
+        //             placeholderBtn.className = 'btn btn-link p-0 text-danger';
+        //             const icon = document.createElement('i');
+        //             icon.className = 'fas fa-plus-circle';
+        //             placeholderBtn.appendChild(icon);
+        //             placeholderBtn.appendChild(document.createTextNode(' Create Insurance, Freight & Others Cost'));
+        //             placeholderBtn.setAttribute('data-toggle', 'modal');
+        //             placeholderBtn.setAttribute('data-target', '#createInsuranceModal');
+
+        //             dropdownContainer.appendChild(placeholderBtn);
+        //         }
+        //     });
+                      
+
+            // Prevent entering custom text
+            countryInput.addEventListener('keydown', function(e) {
+                // Allow navigation keys
+                if ([8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46].includes(e.keyCode)) {
+                    return;
+                }
+
+                // If datalist is empty (no matches), prevent input
+                if (countryDatalist.options.length === 0) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Validate on blur to ensure a valid option is selected
+            countryInput.addEventListener('blur', function() {
+                if (this.value && !Array.from(countryDatalist.options).some(option => option.value === this.value)) {
+                    this.value = '';
+                }
+            });
+        });
             $('#rejectionModal1').on('shown.bs.modal', function () {
                 $('#rejectionComment').focus();
             });
@@ -244,9 +304,72 @@
     }
 }
 <script>
-    document.getElementById('Currency').addEventListener('change', function () {
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const countryInput = document.getElementById('CountryOfOrigin');
+        const countryDatalist = document.getElementById('country');
+
+        // Store original options
+        const originalOptions = Array.from(countryDatalist.options).map(opt => opt.value);
+        let lastValidValue = '';
+
+        // Allow only letters and navigation keys
+        countryInput.addEventListener('keydown', (e) => {
+            const allowedKeys = [
+                'ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape',
+                'Backspace', 'Delete', 'Home', 'End'
+            ];
+
+            const isLetter = /^[a-zA-Z\s]$/.test(e.key); // Allow letters and space
+
+            if (!allowedKeys.includes(e.key) && !isLetter) {
+                e.preventDefault();
+            }
+        });
+
+        // Validate when selection is made or field loses focus
+        countryInput.addEventListener('change', validateInput);
+        countryInput.addEventListener('blur', validateInput);
+
+        function validateInput() {
+            if (!originalOptions.includes(countryInput.value)) {
+                countryInput.value = lastValidValue || '';
+            } else {
+                lastValidValue = countryInput.value;
+            }
+        }
+
+        // Form submission validation
+        const form = countryInput.closest('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!originalOptions.includes(countryInput.value)) {
+                    e.preventDefault();
+                    countryInput.value = '';
+                    countryInput.focus();
+                    alert('Please select a valid country from the list');
+                }
+            });
+        }
+
+        // Keep dropdown visible while typing
+        countryInput.addEventListener('input', function() {
+            this.setAttribute('list', 'country');
+        });
+    });
+
+
+
+
+    document.getElementById('GetExchangeRate').addEventListener('click', function () {
+        var currency = document.getElementById("Currency").value;
+        if(currency == "" || currency == null){
+                toastr.error("please select currency ...");
+                return;
+        }
         showLoadingIndicator();
-        var currency = this.value;
+
         $.ajax({
             type: 'POST',
             url: '/MotorVehicle/Currency',
@@ -262,7 +385,6 @@
             }
         });
     });
-
 
     function showLoadingIndicator() {
         document.body.style.pointerEvents = 'none';
@@ -319,7 +441,7 @@
         var motorerror = document.getElementById("motor-error");
         var motorValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        var alphanumericRegex = /^[a-zA-Z0-9]*$/;
         if (motorValue.length > 0 && !alphanumericRegex.test(motorValue)) {
             motorerror.textContent = "Motor No must contain only alphanumeric characters.";
         } else {
@@ -330,7 +452,7 @@
         var serialerror = document.getElementById("serial-error");
         var SerialValue = inputElement.value;
 
-        var alphanumericRegex = /^[a-zA-Z0-9\s]*$/;
+        var alphanumericRegex = /^[a-zA-Z0-9]*$/;
         if (SerialValue.length > 0 && !alphanumericRegex.test(SerialValue)) {
             serialerror.textContent = "Wereda must contain only alphanumeric characters.";
         } else {

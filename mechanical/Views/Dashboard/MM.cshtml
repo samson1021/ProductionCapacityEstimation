@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="#" class="small-box-footer" style="color: white; display: inline-block;">
+                                <a href="@Url.Action("MyCases","MMCase")" class="small-box-footer" style="color: white; display: inline-block;">
                                     More info<i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
@@ -129,7 +129,7 @@
                                             <tr>
                                                 <td><a href="@Url.Action("Mycase", "MMCase")?Id=@item.Id">@item.CaseNo</a></td>
                                                 <td>@item.CreationAt</td>
-                                                <td>@item.Segement</td>
+                                                <td>@item.Segment</td>
                                                 <td>@item.ApplicantName</td>
                                                 <td>@item.CustomerId</td>
                                                 <td>@item.NoOfCollateral</td>

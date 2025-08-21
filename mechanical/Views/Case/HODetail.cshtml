@@ -1,0 +1,161 @@
+﻿@using mechanical.Models.Dto.CaseScheduleDto;
+@using mechanical.Models.Dto.TaskManagmentDto
+@model mechanical.Models.Dto.CollateralDto.CollateralPostDto
+
+@{
+    var myCase = ViewData["case"] as CaseReturnDto;
+    var caseSchedule = ViewData["CaseSchedule"] as IEnumerable<CaseScheduleReturnDto>;
+    var userId = ViewData["Id"] as Guid? ?? Guid.Empty;
+    var caseType = ViewData["CaseType"] as string;
+    var shareTaskData = ViewData["ShareTaskData"] as ShareTasksDto;
+
+    @*
+                            SharedCase
+                            Owner
+                            Case Follow
+                            
+                            Collateral Addition
+                            Report Generation *@
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4>Case Detail</h4>
+                 @* <h3>@caseType</h3>  *@
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="@Url.Action("MyCases", "Case")">My Case</a></li>
+                    <li class="breadcrumb-item active">Case Detail</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-purple card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true"><i class="nav-icon fas fa-home"></i> General Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false"><i class="nav-icon fas fa-file"></i> Collaterals Information</a>
+                        </li>
+           
+                        @if (shareTaskData == null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">
+                                    <i class="nav-icon fas fa-calendar-alt"></i> Schedules
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
+                                    <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBage"></span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-four-correction-tab" data-toggle="pill" href="#custom-tabs-four-correction" role="tab" aria-controls="custom-tabs-four-correction" aria-selected="false">
+                                    <i class="fas fa-history"></i> Case History <span class="badge badge-warning right CorrectionBage"></span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            foreach (var taskName in shareTaskData.TaskNames)
+                            {
+                                if (string.IsNullOrEmpty(taskName) ||
+                                taskName == "Report Generation" ||
+                                taskName == "Collateral Addition")
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">
+                                            <i class="nav-icon fas fa-calendar-alt"></i> @taskName
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">
+                                            <i class="fas fa-comments"></i> Comments <span class="badge badge-warning right CommentBage"></span>
+                                        </a>
+                                    </li>
+                                    break;
+                                }
+
+                            }
+                        }
+                    </ul>
+                   @*  @if (caseType != "Shared")
+                    {
+                        <button type="button" class="btn btn-primary mr-2" data-bs-toggle="modal" data-bs-target="#shareCaseModal">
+                            Share
+                        </button>
+                    } *@
+                   
+                   
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade " id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                        @await Html.PartialAsync("_HOGeneralInfo")
+                    </div>
+                    
+                    <div class="tab-pane fade show active" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                        @await Html.PartialAsync("_HOCreateCollateral", Model, new ViewDataDictionary(ViewData) { { "ShareTaskDatas", shareTaskData } })
+                    </div>
+
+                    <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                        @await Html.PartialAsync("_CaseSchedule")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+                        @await Html.PartialAsync("_CaseComment")
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-correction" role="tabpanel" aria-labelledby="custom-tabs-four-correction-tab">
+                        @await Html.PartialAsync("_CaseCorrectionHistory")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Share Case Modal -->
+@* <div class="modal fade" id="shareCaseModal" tabindex="-1" aria-labelledby="shareCaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="shareCaseModalLabel">Share Case</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @await Html.PartialAsync("~/Views/TaskManagment/_shareCasePartial.cshtml")
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="shareCaseButton">
+                    <span id="shareSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    Share Case
+                </button>
+            </div>
+        </div>
+    </div>
+</div> *@
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("ScriptPartial/_HODetailCaseSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_DetailCaseDataTableSriptsPartial");
+        await Html.RenderPartialAsync("ScriptPartial/_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("~/Views/TaskManagment/ScriptPartial/_shareCaseScriptPartial.cshtml");
+    }
+}

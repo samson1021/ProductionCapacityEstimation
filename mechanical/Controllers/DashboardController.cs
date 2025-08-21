@@ -2,11 +2,13 @@
 using mechanical.Services.CaseServices;
 using mechanical.Services.MMCaseService;
 using mechanical.Services.PCE.PCECaseService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace mechanical.Controllers
 {
+    [Authorize(Roles = "Admin,Super Admin,Maker Manager,District Valuation Manager ,Maker Officer, Maker TeamLeader, Relation Manager,Checker Manager, Checker TeamLeader, Checker Officer")]
     public class DashboardController : BaseController
     {
         private readonly ICaseService _caseService;
@@ -63,7 +65,9 @@ namespace mechanical.Controllers
         }
         public async Task<IActionResult> HO()
         {
-            var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
+            var latestCase = await _caseService.GetHOLatestCases(base.GetCurrentUserId());
+            var newCases = await _PCECaseService.GetLatestHOPCECases();
+            ViewData["NewCases"] = newCases;
             return View(latestCase);
         }
         public async Task<IActionResult> Admin()
@@ -71,13 +75,13 @@ namespace mechanical.Controllers
             var latestCase = await _caseService.GetMmLatestCases(base.GetCurrentUserId());
             return RedirectToAction("Index", "UserManagment");
         }
-
+        
         public async Task<IActionResult> Index(string Role)
         {
             var userId = base.GetCurrentUserId();
             if (Role == null)  
             {
-                    Role = (await _cbeContext.CreateUsers.Include(res=>res.Role).Where(res=>res.Id == userId).FirstOrDefaultAsync()).Role.Name;
+                    Role = (await _cbeContext.Users.Include(res=>res.Role).Where(res=>res.Id == userId).FirstOrDefaultAsync()).Role.Name;
             }       
             
             if (Role == "Relation Manager")
@@ -94,6 +98,8 @@ namespace mechanical.Controllers
                 return RedirectToAction("CTL");
             else if (Role == "Checker Officer")
                 return RedirectToAction("CO");
+            else if (Role == "Higher Official")
+                return RedirectToAction("HO");
             else return RedirectToAction("Admin");
 
             // if (role.Role.Name == "Relation Manager")
