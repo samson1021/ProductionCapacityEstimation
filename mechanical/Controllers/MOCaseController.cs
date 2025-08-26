@@ -101,18 +101,18 @@ namespace mechanical.Controllers
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
 
             var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
-
+            
             if (scheduledDate == null)
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
+            else if (scheduledDate.ScheduleDate > DateTime.Now)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
 
             if (collateral.Category == EnumHelper.GetEnumDisplayName(MechanicalCollateralCategory.MOV))
-            {
+            { 
                 var redirectUrl = Url.Action("Create", "MotorVehicle", new { Id = Id });
                 return Json(new { success = true, redirectUrl });
             }
