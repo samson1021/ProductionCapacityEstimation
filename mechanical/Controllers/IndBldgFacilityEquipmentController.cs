@@ -53,7 +53,7 @@ namespace mechanical.Controllers
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.UtcNow)
+            else if (scheduledDate.ScheduleDate > DateTime.Now)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }

@@ -23,9 +23,9 @@
                             <div class="form-group">
 
                                 <div class="input-group">
-                                    <input asp-for="ScheduleDate" type="datetime-local" class="form-control" />
+                                    <input asp-for="ScheduleDate" id="dateId"type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required/>
                                 </div>
-                                <span class="text-danger"></span>
+                                <span class="text-danger" id="errorid" ></span>
                             </div>
                             <div class="form-group">
                                 <button type="submit"  class="btn bg-purple btn-sm" >Submit</button>
@@ -108,8 +108,9 @@
                     <input type="hidden" name="CaseId" value="@myCase.Id" />
                     <div class="form-group">
                         <label for=ScheduleDate>Schedule Date</label>
+                        <input asp-for="ScheduleDate" id="proposeDateId" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
                         <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" class="form-control" />
-                        <span class="text-danger"></span>
+                        <span class="text-danger id=" proposerrorId" "></span>
                     </div>
                     <div class="form-group">
                         <label for=Reason>Reason</label>
@@ -141,9 +142,9 @@
                     <div class="form-group">
 
                         <div class="input-group">
-                            <input name="ScheduleDate" type="datetime-local" class="form-control" />
+                            <input asp-for="ScheduleDate" id="updatDateId" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
                         </div>
-                        <span class="text-danger"></span>
+                        <span class="text-danger" id="updatErrorId"></span>
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Submit" class="btn bg-purple  btn-sm" />
@@ -153,5 +154,3 @@
         </div>
     </div>
 </div>
-
-    
