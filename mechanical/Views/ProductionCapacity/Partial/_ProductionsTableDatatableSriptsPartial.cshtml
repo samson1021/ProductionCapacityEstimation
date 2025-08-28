@@ -8,8 +8,17 @@
 
     var currentUserRole = currentUser?.Role?.Name as string;
 }
+@functions {
+    public DateTime CurrentTimeTruncated()
+    {
+        var now = DateTime.Now;
+        return new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+    }
+}
 
 <script>
+    Console.log("DateTime.UtcNow.ToLocalTime()",DateTime.UtcNow.ToLocalTime());
+    Console.log("latestPCECaseSchedule",latestPCECaseSchedule);
     function initializeDataTable(data, emptyMessage) {
         const $productionsTable = $('#Productions'); 
         $productionsTable.DataTable({
@@ -80,7 +89,7 @@
                             {
                                 if (status == "New" || status == "All" || status == "Reestimate")
                                 {                                 
-                if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= DateTime.UtcNow.ToLocalTime())
+                            if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= CurrentTimeTruncated())
                                     {                           
                                         <text>
                                             if (row.AssignedEvaluatorId === '@currentUser?.Id' && row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
