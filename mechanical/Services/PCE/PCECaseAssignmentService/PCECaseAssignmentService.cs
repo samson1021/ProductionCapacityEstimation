@@ -157,6 +157,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             if (OperationType == "Assign")
             {
                 return await _cbeContext.Users
+                                        .Where(res=>res.Status == "Activated")
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.Id == Guid.Parse(id));
@@ -164,6 +165,7 @@ namespace mechanical.Services.PCE.PCECaseAssignmentService
             else
             {
                 return await _cbeContext.Users
+                                        .Where(res => res.Status == "Activated")
                                         .Include(res => res.Role)
                                         .Include(res => res.District)
                                         .FirstOrDefaultAsync(res => res.DistrictId == Guid.Parse(id) &&
