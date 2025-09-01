@@ -8,13 +8,7 @@
 
     var currentUserRole = currentUser?.Role?.Name as string;
 }
-@functions {
-    public DateTime CurrentTimeTruncated()
-    {
-        var now = DateTime.Now;
-        return new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
-    }
-}
+
 
 <script>
     Console.log("DateTime.UtcNow.ToLocalTime()",DateTime.UtcNow.ToLocalTime());
@@ -82,15 +76,23 @@
                                         if (row.AssignmentStatus == "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                             link += ` | <a class="text-warning" href="#" onclick="openReturnModal('${data}')">Return</a>`;
                                         }
-                                    </text>
-                                }
-                            }
-                            else if (currentUserRole == "Maker Officer")
-                            {
-                                if (status == "New" || status == "All" || status == "Reestimate")
-                                {                                 
-                            if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= CurrentTimeTruncated())
-                                    {                           
+                </text>
+            }
+        }
+        else if (currentUserRole == "Maker Officer")
+        {
+            if (status == "New" || status == "All" || status == "Reestimate")
+            {                 
+                var now = DateTime.UtcNow;
+                TimeZoneInfo eastAfricanZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
+                DateTime EastAfricanTime = TimeZoneInfo.ConvertTimeFromUtc(now, eastAfricanZone);
+                var time = new DateTime(EastAfricanTime.Year, EastAfricanTime.Month, EastAfricanTime.Day, EastAfricanTime.Hour, EastAfricanTime.Minute, 0);
+                var scheDate = latestPCECaseSchedule.ScheduleDate;
+                Console.WriteLine("time now" + time);
+                                         Console.WriteLine("time saved" + scheDate);
+                if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= time)
+                                    {        
+                                        
                                         <text>
                                             if (row.AssignedEvaluatorId === '@currentUser?.Id' && row.AssignmentStatus === "New" && (row.CurrentStatus === "New" || row.CurrentStatus === "Reestimate")) {
                                                 
