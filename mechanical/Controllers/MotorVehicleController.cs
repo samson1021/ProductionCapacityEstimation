@@ -48,12 +48,15 @@ namespace mechanical.Controllers
         {
             var collateral = await _collateralService.GetCollateral(base.GetCurrentUserId(), Id);
             var scheduledDate = await _caseScheduleService.GetApprovedCaseSchedule(collateral.CaseId);
+            // Compare with current EAT
+            var eatTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
+            var currentEAT = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eatTimeZone);
 
             if (scheduledDate == null)
             {
                 return Json(new { success = false, message = "Please first set a schedule date befor making evaluation." });
             }
-            else if (scheduledDate.ScheduleDate > DateTime.Now)
+            else if (scheduledDate.ScheduleDate > currentEAT)
             {
                 return Json(new { success = false, message = "Please you can't make evaluation before the approve date" });
             }
@@ -68,7 +71,10 @@ namespace mechanical.Controllers
         [HttpPost]
         public async Task<IActionResult> Currency([FromForm] string currency)
         {
-            var currencyDate = DateTime.UtcNow;
+            // Compare with current EAT
+            var eatTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
+            var currentEAT = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eatTimeZone);
+            var currencyDate = currentEAT;
             var exchangeRate = await _motorVehicleService.Currency(currency, currencyDate);
             return Json(new { exchangeRate });
         }
@@ -219,8 +225,10 @@ namespace mechanical.Controllers
                 collateral.CurrentStatus = "New";
                 caseAssignment.Status = "New";
             }
-
-            caseAssignment.AssignmentDate = DateTime.UtcNow;
+            // Compare with current EAT
+            var eatTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
+            var currentEAT = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eatTimeZone);
+            caseAssignment.AssignmentDate = currentEAT;
             _cbeContext.Update(caseAssignment);
             _cbeContext.Update(caseAssignmentChange);
 
