@@ -305,15 +305,40 @@ namespace mechanical.Controllers
 
             return Content(jsonData, "application/json");
         }
+        [HttpGet]
+        public JsonResult GetRoles(Guid districtId)
+        {
+            var userId = base.GetCurrentUserId();
+            var RoleName = _context.Users.Include(res => res.Role).Where(c => c.Id == userId).FirstOrDefault();
+            var roles = new List<object>();
+            var districtName = _context.Districts.Where(c => c.Id == districtId).FirstOrDefault();
+            if (RoleName.Role.Name == "Admin")
+            {   
+                if(districtName.Name == "Head Office")
+                    roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin").Cast<object>().ToList();
+                else
+                    roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin" && c.Name != "Checker Manager" && c.Name != "Checker Teamleader" && c.Name != "Maker Teamleader" && c.Name != "Maker Manager").Cast<object>().ToList();
+            }
+            else
+            {
+                if (districtName.Name == "Head Office")
+                    roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Super Admin").Cast<object>().ToList();
+                else
+                    roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Super Admin" && c.Name != "Checker Manager" && c.Name != "Checker Teamleader" && c.Name != "Maker Teamleader" && c.Name != "Maker Manager").Cast<object>().ToList();
+            }
+            return Json(roles);
+        }
         public JsonResult GetRoles()
         {
             var userId = base.GetCurrentUserId();
             var RoleName = _context.Users.Include(res => res.Role).Where(c => c.Id == userId).FirstOrDefault();
             var roles = new List<object>();
-           
+            
             if (RoleName.Role.Name == "Admin")
             {
-                roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin").Cast<object>().ToList();
+                
+                    roles = _context.Roles.Select(c => new { RoleId = c.Id, Name = c.Name }).Where(c => c.Name != "Admin" && c.Name != "Super Admin").Cast<object>().ToList();
+               
             }
             else
             {
@@ -322,7 +347,6 @@ namespace mechanical.Controllers
 
             return Json(roles);
         }
-
         [HttpPost]
         public ActionResult SaveEdited(User model)
         {

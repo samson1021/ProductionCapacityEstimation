@@ -228,26 +228,29 @@
                 console.log("your list of districts are" + datas);
             }
         });
+        $('#DistrictId').change(function () {
+            var selectedDistrictId = $(this).val();
+            $.ajax({
+                type: "GET",
+                url: '/UserManagment/GetRoles',
+                data: { districtId: selectedDistrictId }, // Send selected district ID
+                dataType: 'json',
+                success: function (data) {
+                    console.log("your list of roles are" + data);
+                    var dropdown = $('#RoleId');
+                    dropdown.empty();
+                    dropdown.append($('<option></option>').val('').text('Select role for this user'));
+                    $(data).each(function (index, role) {
 
-        $.ajax({
-            type: "GET",
-            url: '/UserManagment/GetRoles',
-            dataType: 'json',
-            success: function (data) {
-                console.log("your list of roles are" + data);
-                var dropdown = $('#RoleId');
-                dropdown.empty();
-                dropdown.append($('<option></option>').val('').text('Select role for this user'));
-                $(data).each(function (index, role) {
-
-                    dropdown.append($('<option></option>').val(role.RoleId).text(role.Name));
-                });
-            },
-            error: function () {
-                alert('Error getting roles.');
-                console.log("your list of roles are" + data);
-            }
-        });
+                        dropdown.append($('<option></option>').val(role.RoleId).text(role.Name));
+                    });
+                },
+                error: function () {
+                    alert('Error getting roles.');
+                    console.log("your list of roles are" + data);
+                }
+            });
+            });
         $("#RM").hide();
         $("#CEV").hide();
 
