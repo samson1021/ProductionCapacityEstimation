@@ -87,9 +87,7 @@
                 TimeZoneInfo eastAfricanZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
                 DateTime EastAfricanTime = TimeZoneInfo.ConvertTimeFromUtc(now, eastAfricanZone);
                 var time = new DateTime(EastAfricanTime.Year, EastAfricanTime.Month, EastAfricanTime.Day, EastAfricanTime.Hour, EastAfricanTime.Minute, 0);
-                var scheDate = latestPCECaseSchedule.ScheduleDate;
-                Console.WriteLine("time now" + time);
-                                         Console.WriteLine("time saved" + scheDate);
+
                 if (latestPCECaseSchedule != null && latestPCECaseSchedule?.Status == "Approved" && latestPCECaseSchedule?.ScheduleDate <= time)
                                     {        
                                         

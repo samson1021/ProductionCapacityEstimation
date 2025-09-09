@@ -128,8 +128,11 @@ namespace mechanical.Services.CaseScheduleService
             {
                 throw new Exception("unauthorized user");
             }
+            // Compare with current EAT
+            var eatTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
+            var currentEAT = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eatTimeZone);
             _mapper.Map(caseCommentPostDto, caseSchedule);
-            caseSchedule.CreatedAt = DateTime.UtcNow;
+            caseSchedule.CreatedAt = currentEAT;
             _cbeContext.Update(caseSchedule);
             await _cbeContext.SaveChangesAsync();
             //notification
@@ -149,13 +152,16 @@ namespace mechanical.Services.CaseScheduleService
             }
             else
             {
-                // Find a userId with role "Maker Officer"
-                var moUserId = await _cbeContext.Users
-                    .AsNoTracking()
-                    .Where(u => u.Role.Name == "Maker Officer" && u.Id == user.Id)
-                    .Select(u => u.Id)
-                    .FirstOrDefaultAsync();
-                notification = await _notificationService.AddNotification(moUserId, notificationContent, notificationType, link);
+                // Try to find user
+                var UserId = await _cbeContext.Users
+    .AsNoTracking()
+    .Where(u => (u.Role.Name == "Maker Officer" || u.Role.Name == "Relation Manager")
+                && u.Id == user.Id)
+    .OrderBy(u => u.Role.Name == "Relation Manager") // Maker Officer comes first
+    .Select(u => u.Id)
+    .FirstOrDefaultAsync();
+
+                notification = await _notificationService.AddNotification(UserId, notificationContent, notificationType, link);
 
             }
             // Realtime Nofication
