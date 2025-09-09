@@ -102,8 +102,18 @@
                 <form id="proposeNewSchedule-form">
                     <input type="hidden" name="CaseId" value="@myCase.Id" />
                     <div class="form-group">
+                        @{
+                            // East Africa timezone
+                            var eatTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
+
+                            // Default value for the input: current EAT
+                            var scheduleDateEAT = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eatTimeZone);
+
+                            // Format for datetime-local input
+                            var scheduleDateStr = scheduleDateEAT.ToString("yyyy-MM-ddTHH:mm");
+                        }
                         <label for=ScheduleDate>Schedule Date</label>
-                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" class="form-control" />
+                        <input id="ScheduleDate" name="ScheduleDate" type="datetime-local" value="@scheduleDateStr" class="form-control" />
                         <span class="text-danger"></span>
                     </div>
                      <div class="form-group">
@@ -134,9 +144,18 @@
                 <form id="datetimepicker-form">
                     <input type="hidden" name="CaseId" value="@myCase.Id" />
                     <div class="form-group">
+                        @{
+                            // East Africa timezone
+                            var eatTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. Africa Standard Time");
 
+                            // Default value for the input: current EAT
+                            var scheduleDateEAT = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eatTimeZone);
+
+                            // Format for datetime-local input
+                            var scheduleDateStr = scheduleDateEAT.ToString("yyyy-MM-ddTHH:mm");
+                        }
                         <div class="input-group">
-                            <input name="ScheduleDate" type="datetime-local" class="form-control" />
+                            <input name="ScheduleDate" type="datetime-local" value="@scheduleDateStr"class="form-control" />
                         </div>
                         <span class="text-danger"></span>
                     </div>
